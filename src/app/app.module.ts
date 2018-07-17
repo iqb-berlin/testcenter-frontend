@@ -1,18 +1,55 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientModule } from '@angular/common/http';
+import { NgModule, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { LocationStrategy, HashLocationStrategy } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 
-import { AppRoutingModule } from './app-routing.module';
+import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule,
+  MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule } from '@angular/material';
+
 import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
+
+import { AboutDialogComponent } from './about-dialog/about-dialog.component';
+import { IqbCommonModule } from './iqb-common';
+import { AdminModule } from './admin';
+import { HomeComponent } from './home/home.component';
+
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HomeComponent,
+    AboutDialogComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatMenuModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatInputModule,
+    MatTooltipModule,
+    MatDialogModule,
+    MatTabsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    AdminModule,
+    AppRoutingModule,
+    IqbCommonModule
   ],
-  providers: [],
+  entryComponents: [
+    AboutDialogComponent,
+  ],
+  providers: [
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

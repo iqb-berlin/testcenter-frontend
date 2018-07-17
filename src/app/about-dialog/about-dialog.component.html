@@ -1,0 +1,19 @@
+<h1 mat-dialog-title>Programm-Info</h1>
+<mat-dialog-content>
+  <ul>
+    <li>Programmname: {{ appName }}</li>
+    <li>Programmversion: {{ appVersion }}</li>
+    <li>Copyright: {{ appPublisher }}</li>
+  </ul>
+  <p>Der Zugriff auf den nicht-öffentlichen Bereich ist nur über Kontaktaufnahme mit dem IQB möglich.
+    Das System befindet sich in einem sehr frühen Entwicklungsstadium. Informationen zur OpenCBA-Initiative
+    sind auch nur direkt über das IQB erhältlich.
+  </p>
+  <ul>
+    <li>Login-Status: {{ data.status }}</li>
+    <li>Arbeitsbereich: {{ data.workspace }}</li>
+  </ul>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-raised-button mat-dialog-close>Schließen</button>
+</mat-dialog-actions>

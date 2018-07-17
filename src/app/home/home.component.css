@@ -1,0 +1,14 @@
+div.intro-main {
+  margin: 40px;
+}
+
+form {
+  margin: 40px;
+  min-width: 150px;
+  max-width: 500px;
+}
+
+.full-width {
+  width: 100%;
+}
+
