@@ -1,4 +1,4 @@
-import { BytesPipe } from './../../iqb-common';
+import { BytesPipe } from '../../iqb-common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, Optional, Inject, forwardRef } from '@angular/core';
 import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
   HttpErrorResponse, HttpEvent } from '@angular/common/http';

@@ -15,6 +15,8 @@ import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 import { IqbCommonModule } from './iqb-common';
 import { AdminModule } from './admin';
 import { HomeComponent } from './home/home.component';
+import { SuperadminModule } from './superadmin';
+
 
 
 @NgModule({
@@ -38,6 +40,7 @@ import { HomeComponent } from './home/home.component';
     ReactiveFormsModule,
     HttpClientModule,
     AdminModule,
+    SuperadminModule,
     AppRoutingModule,
     IqbCommonModule
   ],

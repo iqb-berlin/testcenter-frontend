@@ -1,11 +1,11 @@
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { BackendService } from './backend/backend.service';
-import { IqbFilesModule } from './../iqb-files';
-import { IqbCommonModule } from './../iqb-common';
+import { IqbFilesModule } from '../iqb-files';
+import { IqbCommonModule } from '../iqb-common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgModule, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { StatusService } from './status.service';
+import { MainDatastoreService } from './maindatastore.service';
 
 import { HttpClientModule } from '@angular/common/http';
 import { AdminRoutingModule } from './admin-routing.module';
@@ -54,7 +54,7 @@ import { MonitorComponent } from './monitor/monitor.component';
   ],
   providers: [
     BackendService,
-    StatusService
+    MainDatastoreService
   ],
   entryComponents: [
     LoginDialogComponent

@@ -1,15 +1,15 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { StatusService } from './status.service';
+import { MainDatastoreService } from './maindatastore.service';
 
 describe('StatusService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [StatusService]
+      providers: [MainDatastoreService]
     });
   });
 
-  it('should be created', inject([StatusService], (service: StatusService) => {
+  it('should be created', inject([MainDatastoreService], (service: MainDatastoreService) => {
     expect(service).toBeTruthy();
   }));
 });

@@ -1,11 +1,11 @@
-import { environment } from './../environments/environment';
+import { environment } from '../environments/environment';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { FormGroup } from '@angular/forms';
 
 import { LoginStatusResponseData } from './admin/backend/backend.service';
-import { StatusService } from './admin';
+import { MainDatastoreService } from './admin';
 import { IqbCommonModule, ConfirmDialogComponent, ConfirmDialogData } from './iqb-common';
 import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 
@@ -19,21 +19,23 @@ import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 export class AppComponent implements OnInit {
   public title = '';
   public isLoggedIn = false;
+  public isSuperadmin = false;
 
   constructor (
-    private ass: StatusService,
+    private mds: MainDatastoreService,
     private router: Router,
     public aboutDialog: MatDialog) { }
 
   ngOnInit() {
-    this.ass.isAdmin$.subscribe(
+    this.mds.isAdmin$.subscribe(
       is => this.isLoggedIn = is);
 
-    this.ass.pageTitle$.subscribe(
-      t => {
-        this.title = t;
-      }
-    );
+    this.mds.pageTitle$.subscribe(
+      t => this.title = t);
+
+    this.mds.isSuperadmin$.subscribe(
+      is => this.isSuperadmin = is);
+
   }
 
   // *******************************************************************************************************
@@ -41,20 +43,20 @@ export class AppComponent implements OnInit {
     const dialogRef = this.aboutDialog.open(AboutDialogComponent, {
       width: '500px',
       data: {
-        status: this.ass.isAdmin$.getValue() ? ('angemeldet als ' + this.ass.loginName$.getValue()) : 'nicht angemeldet',
-        workspace: this.ass.isAdmin$.getValue() ? this.ass.myWorkspaceName : '-'
+        status: this.mds.isAdmin$.getValue() ? ('angemeldet als ' + this.mds.loginName$.getValue()) : 'nicht angemeldet',
+        workspace: this.mds.isAdmin$.getValue() ? this.mds.myWorkspaceName : '-'
       }
     });
   }
 
   // *******************************************************************************************************
   login() {
-    this.ass.login_dialog();
+    this.mds.login_dialog();
   }
 
   // *******************************************************************************************************
   logout() {
-    this.ass.logout();
+    this.mds.logout();
   }
 
 }

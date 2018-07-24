@@ -9,7 +9,9 @@ export class BackendService {
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
-    private http: HttpClient) { }
+    private http: HttpClient) {
+      this.serverUrl = this.serverUrl + 'admin/';
+    }
 
   private errorHandler(error: Error | any): Observable<any> {
     return Observable.throw(error);
@@ -122,6 +124,20 @@ export class BackendService {
         );
   }
 
+  // *******************************************************************
+  getBookletlist(token: string, wsId: number): Observable<BookletlistResponseData[] | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<BookletlistResponseData[]>(this.serverUrl + 'getBookletList.php', {at: token, ws: wsId}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
     const myreturn: ServerError = {
@@ -149,6 +165,7 @@ export interface LoginStatusResponseData {
   admintoken: string;
   name: string;
   workspaces: WorkspaceData[];
+  is_superadmin: boolean;
 }
 
 export interface WorkspaceData {
@@ -176,4 +193,10 @@ export interface CheckWorkspaceResponseData {
   errors: string[];
   infos: string[];
   warnings: string[];
+}
+
+export interface BookletlistResponseData {
+  name: string;
+  laststate: string;
+  locked: boolean;
 }

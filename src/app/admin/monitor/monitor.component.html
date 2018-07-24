@@ -1,3 +1,7 @@
-<p>
-  monitor works!
-</p>
+<div *ngIf="isAdmin">
+  <ul>
+    <li *ngFor="let booklet of booklets">
+      Name: {{booklet.name}}, Locked: {{booklet.locked}}
+    </li>
+  </ul>
+</div>

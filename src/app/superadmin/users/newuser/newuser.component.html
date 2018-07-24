@@ -1,0 +1,26 @@
+<form [formGroup]="newuserform">
+  <h1 mat-dialog-title>Neue/r Nutzer/in</h1>
+
+  <mat-dialog-content>
+    <p>
+      <mat-form-field class="full-width">
+        <input matInput formControlName="name" placeholder="Name" [value]="data.name">
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field class="full-width">
+        <input matInput type="password" formControlName="pw" placeholder="Kennwort">
+      </mat-form-field>
+    </p>
+    <div class="infobox">
+      <p>Nach dem Anlegen des Nutzers können Sie die Rechte zuweisen.
+      </p>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" type="submit" [mat-dialog-close]="newuserform" [disabled]="newuserform.invalid">Speichern</button>
+    <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
+  </mat-dialog-actions>
+
+</form>

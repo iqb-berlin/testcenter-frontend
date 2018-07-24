@@ -2,7 +2,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { MatTabsModule, MatSelectModule, MatFormFieldModule } from '@angular/material';
-import { StatusService } from './status.service';
+import { MainDatastoreService } from './maindatastore.service';
 import { WorkspaceData } from './backend/backend.service';
 
 
@@ -25,13 +25,13 @@ export class AdminComponent implements OnInit {
 
   // CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
   constructor(
-    private ass: StatusService
+    private mds: MainDatastoreService
   ) {
-    this.ass.isAdmin$.subscribe(is => this.isAdmin = is);
-    this.ass.workspaceList$.subscribe(wsL => {
+    this.mds.isAdmin$.subscribe(is => this.isAdmin = is);
+    this.mds.workspaceList$.subscribe(wsL => {
       this.myWorkspaces = wsL;
     });
-    this.ass.notLoggedInMessage$.subscribe(msg => {
+    this.mds.notLoggedInMessage$.subscribe(msg => {
       if ((msg === null) || (msg.length === 0)) {
         this.notLoggedInMessage = 'Bitte anmelden!';
       } else {
@@ -42,15 +42,15 @@ export class AdminComponent implements OnInit {
 
   // CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
   ngOnInit() {
-    this.ass.workspaceId$.subscribe(id => {
+    this.mds.workspaceId$.subscribe(id => {
       this.wsSelector.setValue(id, {emitEvent: false});
     });
 
     this.wsSelector.valueChanges
       .subscribe(wsId => {
-        this.ass.updateWorkspaceId(wsId);
+        this.mds.updateWorkspaceId(wsId);
     });
 
-    this.ass.updatePageTitle('Testverwaltung');
+    this.mds.updatePageTitle('Testverwaltung');
   }
 }

@@ -22,6 +22,10 @@
       <mat-icon>settings</mat-icon>
       <span>Testverwaltung</span>
     </button>
+    <button mat-menu-item *ngIf="isSuperadmin" [routerLink]="['/superadmin/users']">
+      <mat-icon>settings</mat-icon>
+      <span>Nutzer/Arbeitsbereiche</span>
+    </button>
     <button mat-menu-item *ngIf="isLoggedIn" (click)="logout()">
       <mat-icon>exit_to_app</mat-icon>
       <span>Logout</span>

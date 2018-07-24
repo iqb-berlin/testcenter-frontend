@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, OnDestroy, QueryList, ViewChildren, Input, Output } from '@angular/core';
-import { IqbFileUploadComponent, UploadStatus } from './../iqbFileUpload/iqbFileUpload.component';
+import { IqbFileUploadComponent, UploadStatus } from '../iqbFileUpload/iqbFileUpload.component';
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 
 

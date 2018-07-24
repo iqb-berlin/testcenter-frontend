@@ -1,4 +1,4 @@
-import { IqbCommonModule } from './../iqb-common';
+import { IqbCommonModule } from '../iqb-common';
 import { NgModule } from '@angular/core';
 import { IqbFileUploadComponent } from './iqbFileUpload/iqbFileUpload.component';
 import { IqbFileUploadQueueComponent } from './iqbFileUploadQueue/iqbFileUploadQueue.component';
