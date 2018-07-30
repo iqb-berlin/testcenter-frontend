@@ -6,7 +6,7 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule,
-  MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule } from '@angular/material';
+  MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule, MatCardModule } from '@angular/material';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -16,6 +16,7 @@ import { IqbCommonModule } from './iqb-common';
 import { AdminModule } from './admin';
 import { HomeComponent } from './home/home.component';
 import { SuperadminModule } from './superadmin';
+import { FlexLayoutModule } from "@angular/flex-layout";
 
 
 
@@ -28,12 +29,14 @@ import { SuperadminModule } from './superadmin';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    FlexLayoutModule,
     MatButtonModule,
     MatFormFieldModule,
     MatMenuModule,
     MatToolbarModule,
     MatIconModule,
     MatInputModule,
+    MatCheckboxModule,
     MatTooltipModule,
     MatDialogModule,
     MatTabsModule,
@@ -42,7 +45,8 @@ import { SuperadminModule } from './superadmin';
     AdminModule,
     SuperadminModule,
     AppRoutingModule,
-    IqbCommonModule
+    IqbCommonModule,
+    MatCardModule
   ],
   entryComponents: [
     AboutDialogComponent,

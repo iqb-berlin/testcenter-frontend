@@ -1,10 +1,11 @@
 <div *ngIf="isAdmin">
-  <ul>
-    <li *ngFor="let booklet of booklets">
-      Name: {{booklet.name}}, Locked: {{booklet.locked}}
-    </li>
-  </ul>
+  <mat-card *ngFor="let booklet of booklets">
+
+    <mat-card-title></mat-card-title>
+    <mat-card-content>
+      <p>Name: {{booklet.name}}</p>
+      <p>Locked: {{booklet.locked}}</p>
+    </mat-card-content>
+
+  </mat-card>
 </div>
-
-
-

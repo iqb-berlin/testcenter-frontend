@@ -3,6 +3,7 @@ import { MainDatastoreService } from './../maindatastore.service';
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { MatSnackBar, MatSort } from '@angular/material';
 import { Observable, throwError } from 'rxjs';
+import { MaterialModule } from '../../material.module';
 
 @Component({
   templateUrl: './monitor.component.html',

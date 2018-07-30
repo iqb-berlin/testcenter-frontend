@@ -16,7 +16,7 @@ import { ResultsComponent } from './results/results.component';
 
 import { MatTableModule, MatTabsModule, MatButtonModule, MatIconModule, MatToolbarModule,
   MatCheckboxModule, MatSortModule, MatDialogModule, MatTooltipModule, MatSnackBarModule,
-  MatSelectModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule } from '@angular/material';
+  MatSelectModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatCardModule } from '@angular/material';
 import { MonitorComponent } from './monitor/monitor.component';
 
 @NgModule({
@@ -30,6 +30,7 @@ import { MonitorComponent } from './monitor/monitor.component';
     MatSelectModule,
     MatCheckboxModule,
     MatSortModule,
+    MatCardModule,
     HttpClientModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
