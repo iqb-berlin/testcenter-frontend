@@ -138,6 +138,19 @@ export class BackendService {
         );
   }
 
+  getRegisteredTestTakers(token: string, wsId: number): Observable<RegisteredTestTakersResponseData | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<RegisteredTestTakersResponseData>(this.serverUrl + 'getTotalUsers.php', {at: token, ws: wsId}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
     const myreturn: ServerError = {
@@ -199,4 +212,8 @@ export interface BookletlistResponseData {
   name: string;
   laststate: string;
   locked: boolean;
+}
+
+export interface RegisteredTestTakersResponseData {
+  howMany: number;
 }

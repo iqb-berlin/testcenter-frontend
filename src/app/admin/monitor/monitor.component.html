@@ -1,11 +1,7 @@
 <div *ngIf="isAdmin">
-  <div class="Title">Booklet Sessions<div>
-  <mat-card *ngFor="let booklet of booklets">
-
-    <mat-card-title></mat-card-title>
+  <mat-card>
     <mat-card-content>
-      <p>Name: {{booklet.name}}</p>
-      <p>Locked: {{booklet.locked}}</p>
+      There are {{ currentlyRegisteredTestTakers }} currently registered test takers.
     </mat-card-content>
 
   </mat-card>

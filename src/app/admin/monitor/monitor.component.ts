@@ -1,9 +1,7 @@
-import { BackendService, BookletlistResponseData, ServerError } from './../backend/backend.service';
+import { BackendService, BookletlistResponseData, ServerError, RegisteredTestTakersResponseData } from './../backend/backend.service';
 import { MainDatastoreService } from './../maindatastore.service';
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { MatSnackBar, MatSort } from '@angular/material';
-import { Observable, throwError } from 'rxjs';
-import { MaterialModule } from '../../material.module';
 
 @Component({
   templateUrl: './monitor.component.html',
@@ -11,6 +9,7 @@ import { MaterialModule } from '../../material.module';
 })
 export class MonitorComponent implements OnInit {
   private isAdmin = false;
+  private currentlyRegisteredTestTakers = 0;
   private booklets:  BookletlistResponseData[];
 
   @ViewChild(MatSort) sort: MatSort;
@@ -28,28 +27,46 @@ export class MonitorComponent implements OnInit {
 
   ngOnInit() {
     this.mds.workspaceId$.subscribe(ws => {
-      this.updateBookletList();
+      
+      let adminToken = this.mds.adminToken$.getValue();
+      let workspaceId = this.mds.workspaceId$.getValue();
+
+      let observableResponse = this.bs.getRegisteredTestTakers(adminToken, workspaceId);
+      observableResponse.subscribe(
+        
+        (dataresponse: RegisteredTestTakersResponseData)=> {
+          
+          this.currentlyRegisteredTestTakers = dataresponse.howMany;
+        
+        },
+        
+        (err: ServerError) => {
+        
+          // this.mds.updateAdminStatus('', '', [], false, err.label);
+        
+        } 
+      );
     });
   }
 
   // ***********************************************************************************
-  updateBookletList() {
-    if (this.isAdmin) {
-      const myWorkspaceId = this.mds.workspaceId$.getValue();
-      if (myWorkspaceId < 0) {
-        this.booklets = [];
-      } else {
-        this.bs.getBookletlist(this.mds.adminToken$.getValue(), myWorkspaceId).subscribe(
-          (dataresponse: BookletlistResponseData[]) => {
-            this.booklets = dataresponse;
-          }, (err: ServerError) => {
-            this.mds.updateAdminStatus('', '', [], false, err.label);
-          }
-        );
-      }
-    } else {
-      this.booklets = [];
-    }
-  }
+  // updateBookletList() {
+  //   if (this.isAdmin) {
+  //     const myWorkspaceId = this.mds.workspaceId$.getValue();
+  //     if (myWorkspaceId < 0) {
+  //       this.booklets = [];
+  //     } else {
+  //       this.bs.getBookletlist(this.mds.adminToken$.getValue(), myWorkspaceId).subscribe(
+  //         (dataresponse: BookletlistResponseData[]) => {
+  //           this.booklets = dataresponse;
+  //         }, (err: ServerError) => {
+  //           this.mds.updateAdminStatus('', '', [], false, err.label);
+  //         }
+  //       );
+  //     }
+  //   } else {
+  //     this.booklets = [];
+  //   }
+  // }
 
 }
