@@ -151,6 +151,32 @@ export class BackendService {
         );
   }
 
+  getTotalBooklets(token: string, wsId: number): Observable<TotalBookletsResponseData | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<TotalBookletsResponseData>(this.serverUrl + 'getTotalBooklets.php', {at: token, ws: wsId}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  getTotalUnits(token: string, wsId: number): Observable<TotalUnitsResponseData | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<TotalUnitsResponseData>(this.serverUrl + 'getTotalUnits.php', {at: token, ws: wsId}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
     const myreturn: ServerError = {
@@ -215,5 +241,13 @@ export interface BookletlistResponseData {
 }
 
 export interface RegisteredTestTakersResponseData {
-  howMany: number;
+  howManyUsers: number;
+}
+
+export interface TotalBookletsResponseData {
+  howManyBooklets: number;
+}
+
+export interface TotalUnitsResponseData {
+  howManyUnits: number;
 }

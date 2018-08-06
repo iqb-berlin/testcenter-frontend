@@ -1,4 +1,4 @@
-import { BackendService, BookletlistResponseData, ServerError, RegisteredTestTakersResponseData } from './../backend/backend.service';
+import { BackendService, BookletlistResponseData, ServerError, RegisteredTestTakersResponseData, TotalBookletsResponseData, TotalUnitsResponseData } from './../backend/backend.service';
 import { MainDatastoreService } from './../maindatastore.service';
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { MatSnackBar, MatSort } from '@angular/material';
@@ -10,7 +10,10 @@ import { MatSnackBar, MatSort } from '@angular/material';
 export class MonitorComponent implements OnInit {
   private isAdmin = false;
   private currentlyRegisteredTestTakers = 0;
+  private numberofBooklets = 0;
+  private numberofUnits = 0;
   private booklets:  BookletlistResponseData[];
+
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -36,7 +39,7 @@ export class MonitorComponent implements OnInit {
         
         (dataresponse: RegisteredTestTakersResponseData)=> {
           
-          this.currentlyRegisteredTestTakers = dataresponse.howMany;
+          this.currentlyRegisteredTestTakers = dataresponse.howManyUsers;
         
         },
         
@@ -47,6 +50,51 @@ export class MonitorComponent implements OnInit {
         } 
       );
     });
+
+    this.mds.workspaceId$.subscribe(ws => {
+      
+      let adminToken = this.mds.adminToken$.getValue();
+      let workspaceId = this.mds.workspaceId$.getValue();
+
+      let observableResponse = this.bs.getTotalBooklets(adminToken, workspaceId);
+      observableResponse.subscribe(
+        
+        (dataresponse: TotalBookletsResponseData)=> {
+          
+          this.numberofBooklets = dataresponse.howManyBooklets;
+        
+        },
+        
+        (err: ServerError) => {
+        
+          // this.mds.updateAdminStatus('', '', [], false, err.label);
+        
+        } 
+      );
+    });
+
+    this.mds.workspaceId$.subscribe(ws => {
+      
+      let adminToken = this.mds.adminToken$.getValue();
+      let workspaceId = this.mds.workspaceId$.getValue();
+
+      let observableResponse = this.bs.getTotalUnits(adminToken, workspaceId);
+      observableResponse.subscribe(
+        
+        (dataresponse: TotalUnitsResponseData)=> {
+          
+          this.numberofUnits = dataresponse.howManyUnits;
+        
+        },
+        
+        (err: ServerError) => {
+        
+          // this.mds.updateAdminStatus('', '', [], false, err.label);
+        
+        } 
+      );
+    });
+    
   }
 
   // ***********************************************************************************
