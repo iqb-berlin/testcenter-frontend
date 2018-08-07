@@ -3,15 +3,23 @@
     <mat-card-content>
       There are {{ currentlyRegisteredTestTakers }} currently registered test takers.
     </mat-card-content>
+    <button (click)="changeShowStatus(1)" mat-flat-button colour="primary">View/Hide Test Takers</button>  
   </mat-card>
+  <div  *ngFor="let name of loginNames"><mat-card *ngIf="showHide">Test taker name: {{ name }} </mat-card></div>
+  
   <mat-card>
     <mat-card-content>
       There are {{ numberofBooklets }} booklets in total.
     </mat-card-content>
+    <button (click)="changeShowStatus(2)" mat-flat-button colour="primary">View booklets</button>
   </mat-card>
+  <div  *ngFor="let bookletName of bookletNames"><mat-card *ngIf="showHide">Booklet: {{ bookletName }} </mat-card></div>
+  
   <mat-card>
     <mat-card-content>
       There are {{ numberofUnits }} units in total.
     </mat-card-content>
+    <button (click)="changeShowStatus(3)" mat-flat-button colour="primary">View units</button>
   </mat-card>
+  <div  *ngFor="let unitName of unitNames"><mat-card *ngIf="showHide">Unit: {{ unitName }} </mat-card></div>
 </div>

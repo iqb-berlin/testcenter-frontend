@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 // import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { catchError } from 'rxjs/operators';
@@ -177,6 +177,45 @@ export class BackendService {
         );
   }
 
+  getDetailedTestTakers(token: string, wsId: number): Observable<DetailedTestTakersResponseData | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<DetailedTestTakersResponseData>(this.serverUrl + 'getDetailedTestTakers.php', {at: token, ws: wsId}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  getDetailedBooklets(token: string, wsId: number): Observable<DetailedBookletsResponseData | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<DetailedBookletsResponseData>(this.serverUrl + 'getDetailedBooklets.php', {at: token, ws: wsId}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  getDetailedUnits(token: string, wsId: number): Observable<DetailedUnitsResponseData | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<DetailedUnitsResponseData>(this.serverUrl + 'getDetailedUnits.php', {at: token, ws: wsId}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
     const myreturn: ServerError = {
@@ -250,4 +289,17 @@ export interface TotalBookletsResponseData {
 
 export interface TotalUnitsResponseData {
   howManyUnits: number;
+}
+
+export interface DetailedTestTakersResponseData {
+  loginNames: string[];
+}
+
+export interface DetailedBookletsResponseData {
+  bookletNames: string;
+}
+
+export interface DetailedUnitsResponseData {
+  unitNames: string;
+  unitIds: string;
 }

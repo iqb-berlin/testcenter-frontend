@@ -1,7 +1,7 @@
-import { BackendService, BookletlistResponseData, ServerError, RegisteredTestTakersResponseData, TotalBookletsResponseData, TotalUnitsResponseData } from './../backend/backend.service';
+import { BackendService, BookletlistResponseData, ServerError, RegisteredTestTakersResponseData, TotalBookletsResponseData, TotalUnitsResponseData, DetailedTestTakersResponseData, DetailedBookletsResponseData, DetailedUnitsResponseData } from './../backend/backend.service';
 import { MainDatastoreService } from './../maindatastore.service';
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
-import { MatSnackBar, MatSort } from '@angular/material';
+import { MatSnackBar, MatSort, MatButtonModule } from '@angular/material';
 
 @Component({
   templateUrl: './monitor.component.html',
@@ -13,6 +13,11 @@ export class MonitorComponent implements OnInit {
   private numberofBooklets = 0;
   private numberofUnits = 0;
   private booklets:  BookletlistResponseData[];
+  private loginNames: string[];
+  private bookletNames: string;
+  private unitNames: string;
+  private unitIds: string;
+  showHide: boolean;
 
 
   @ViewChild(MatSort) sort: MatSort;
@@ -23,12 +28,28 @@ export class MonitorComponent implements OnInit {
     private mds: MainDatastoreService,
     public snackBar: MatSnackBar
   ) {
-    this.booklets = [];
+    this.showHide = false;
+//   this.booklets = [];
     this.mds.isAdmin$.subscribe(
       i => this.isAdmin = i);
   }
 
   ngOnInit() {
+    
+    this.showTestTakers();
+    this.showBooklets();
+    this.showUnits();
+    this.detailedTestTakers();
+    this.detailedBooklets();
+    this.detailedUnits();
+
+  }
+
+  changeShowStatus(e){
+    this.showHide = !this.showHide;
+  }
+
+  showTestTakers() {
     this.mds.workspaceId$.subscribe(ws => {
       
       let adminToken = this.mds.adminToken$.getValue();
@@ -44,13 +65,13 @@ export class MonitorComponent implements OnInit {
         },
         
         (err: ServerError) => {
-        
           // this.mds.updateAdminStatus('', '', [], false, err.label);
-        
         } 
       );
     });
+  }
 
+  showBooklets() {
     this.mds.workspaceId$.subscribe(ws => {
       
       let adminToken = this.mds.adminToken$.getValue();
@@ -66,13 +87,13 @@ export class MonitorComponent implements OnInit {
         },
         
         (err: ServerError) => {
-        
           // this.mds.updateAdminStatus('', '', [], false, err.label);
-        
         } 
       );
     });
+  }
 
+  showUnits() {
     this.mds.workspaceId$.subscribe(ws => {
       
       let adminToken = this.mds.adminToken$.getValue();
@@ -88,33 +109,73 @@ export class MonitorComponent implements OnInit {
         },
         
         (err: ServerError) => {
-        
           // this.mds.updateAdminStatus('', '', [], false, err.label);
-        
         } 
       );
     });
-    
   }
 
-  // ***********************************************************************************
-  // updateBookletList() {
-  //   if (this.isAdmin) {
-  //     const myWorkspaceId = this.mds.workspaceId$.getValue();
-  //     if (myWorkspaceId < 0) {
-  //       this.booklets = [];
-  //     } else {
-  //       this.bs.getBookletlist(this.mds.adminToken$.getValue(), myWorkspaceId).subscribe(
-  //         (dataresponse: BookletlistResponseData[]) => {
-  //           this.booklets = dataresponse;
-  //         }, (err: ServerError) => {
-  //           this.mds.updateAdminStatus('', '', [], false, err.label);
-  //         }
-  //       );
-  //     }
-  //   } else {
-  //     this.booklets = [];
-  //   }
-  // }
+  detailedTestTakers() {
+    this.mds.workspaceId$.subscribe(ws => {
+      
+      let adminToken = this.mds.adminToken$.getValue();
+      let workspaceId = this.mds.workspaceId$.getValue();
 
+      let observableResponse = this.bs.getDetailedTestTakers(adminToken, workspaceId);
+      observableResponse.subscribe(
+        
+        (dataresponse: DetailedTestTakersResponseData)=> {
+          
+          this.loginNames = dataresponse.loginNames;
+        },
+        
+        (err: ServerError) => {
+          // this.mds.updateAdminStatus('', '', [], false, err.label);
+        } 
+      );
+    });
+  }
+
+  detailedBooklets() {
+    this.mds.workspaceId$.subscribe(ws => {
+      
+      let adminToken = this.mds.adminToken$.getValue();
+      let workspaceId = this.mds.workspaceId$.getValue();
+
+      let observableResponse = this.bs.getDetailedBooklets(adminToken, workspaceId);
+      observableResponse.subscribe(
+        
+        (dataresponse: DetailedBookletsResponseData)=> {
+          
+          this.bookletNames = dataresponse.bookletNames;
+        },
+        
+        (err: ServerError) => {
+          // this.mds.updateAdminStatus('', '', [], false, err.label);
+        } 
+      );
+    });
+  }
+
+  detailedUnits() {
+    this.mds.workspaceId$.subscribe(ws => {
+      
+      let adminToken = this.mds.adminToken$.getValue();
+      let workspaceId = this.mds.workspaceId$.getValue();
+
+      let observableResponse = this.bs.getDetailedTestTakers(adminToken, workspaceId);
+      observableResponse.subscribe(
+        
+        (dataresponse: DetailedUnitsResponseData)=> {
+          
+          this.unitNames = dataresponse.unitNames;
+          this.unitIds = dataresponse.unitIds;
+        },
+        
+        (err: ServerError) => {
+          // this.mds.updateAdminStatus('', '', [], false, err.label);
+        } 
+      );
+    });
+  }
 }
