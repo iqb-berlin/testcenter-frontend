@@ -18,6 +18,7 @@ import { MatTableModule, MatTabsModule, MatButtonModule, MatIconModule, MatToolb
   MatCheckboxModule, MatSortModule, MatDialogModule, MatTooltipModule, MatSnackBarModule,
   MatSelectModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatCardModule } from '@angular/material';
 import { MonitorComponent } from './monitor/monitor.component';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @NgModule({
   imports: [
@@ -31,6 +32,7 @@ import { MonitorComponent } from './monitor/monitor.component';
     MatCheckboxModule,
     MatSortModule,
     MatCardModule,
+    MatExpansionModule,
     HttpClientModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,

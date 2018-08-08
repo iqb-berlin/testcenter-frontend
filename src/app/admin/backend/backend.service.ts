@@ -177,40 +177,40 @@ export class BackendService {
         );
   }
 
-  getDetailedTestTakers(token: string, wsId: number): Observable<DetailedTestTakersResponseData | ServerError> {
+  getDetailedTestTakers(token: string, wsId: number): Observable<DetailedTestTakerResponseData[] | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<DetailedTestTakersResponseData>(this.serverUrl + 'getDetailedTestTakers.php', {at: token, ws: wsId}, httpOptions)
+      .post<DetailedTestTakerResponseData[]>(this.serverUrl + 'getDetailedTestTakers.php', {at: token, ws: wsId}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
   }
 
-  getDetailedBooklets(token: string, wsId: number): Observable<DetailedBookletsResponseData | ServerError> {
+  getDetailedBooklets(token: string, wsId: number): Observable<DetailedBookletResponseData[] | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<DetailedBookletsResponseData>(this.serverUrl + 'getDetailedBooklets.php', {at: token, ws: wsId}, httpOptions)
+      .post<DetailedBookletResponseData[]>(this.serverUrl + 'getDetailedBooklets.php', {at: token, ws: wsId}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
   }
 
-  getDetailedUnits(token: string, wsId: number): Observable<DetailedUnitsResponseData | ServerError> {
+  getDetailedUnits(token: string, wsId: number): Observable<DetailedUnitResponseData[] | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<DetailedUnitsResponseData>(this.serverUrl + 'getDetailedUnits.php', {at: token, ws: wsId}, httpOptions)
+      .post<DetailedUnitResponseData[]>(this.serverUrl + 'getDetailedUnits.php', {at: token, ws: wsId}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
@@ -291,15 +291,15 @@ export interface TotalUnitsResponseData {
   howManyUnits: number;
 }
 
-export interface DetailedTestTakersResponseData {
-  loginNames: string[];
+export interface DetailedTestTakerResponseData {
+  Name: string;
 }
 
-export interface DetailedBookletsResponseData {
-  bookletNames: string;
+export interface DetailedBookletResponseData {
+  Name: string;
 }
 
-export interface DetailedUnitsResponseData {
-  unitNames: string;
-  unitIds: string;
+export interface DetailedUnitResponseData {
+  Name: string;
+  ID: string;
 }

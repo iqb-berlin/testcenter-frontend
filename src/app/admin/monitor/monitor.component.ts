@@ -1,4 +1,4 @@
-import { BackendService, BookletlistResponseData, ServerError, RegisteredTestTakersResponseData, TotalBookletsResponseData, TotalUnitsResponseData, DetailedTestTakersResponseData, DetailedBookletsResponseData, DetailedUnitsResponseData } from './../backend/backend.service';
+import { BackendService, BookletlistResponseData, ServerError, RegisteredTestTakersResponseData, TotalBookletsResponseData, TotalUnitsResponseData, DetailedTestTakerResponseData, DetailedBookletResponseData, DetailedUnitResponseData } from './../backend/backend.service';
 import { MainDatastoreService } from './../maindatastore.service';
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { MatSnackBar, MatSort, MatButtonModule } from '@angular/material';
@@ -13,10 +13,9 @@ export class MonitorComponent implements OnInit {
   private numberofBooklets = 0;
   private numberofUnits = 0;
   private booklets:  BookletlistResponseData[];
-  private loginNames: string[];
-  private bookletNames: string;
-  private unitNames: string;
-  private unitIds: string;
+  private testTakerData: DetailedTestTakerResponseData[];
+  private bookletData: DetailedBookletResponseData[];
+  private unitData: DetailedUnitResponseData[];
   showHide: boolean;
 
 
@@ -45,10 +44,6 @@ export class MonitorComponent implements OnInit {
 
   }
 
-  changeShowStatus(e){
-    this.showHide = !this.showHide;
-  }
-
   showTestTakers() {
     this.mds.workspaceId$.subscribe(ws => {
       
@@ -73,11 +68,8 @@ export class MonitorComponent implements OnInit {
 
   showBooklets() {
     this.mds.workspaceId$.subscribe(ws => {
-      
-      let adminToken = this.mds.adminToken$.getValue();
-      let workspaceId = this.mds.workspaceId$.getValue();
 
-      let observableResponse = this.bs.getTotalBooklets(adminToken, workspaceId);
+      let observableResponse = this.bs.getTotalBooklets(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
       observableResponse.subscribe(
         
         (dataresponse: TotalBookletsResponseData)=> {
@@ -116,17 +108,14 @@ export class MonitorComponent implements OnInit {
   }
 
   detailedTestTakers() {
-    this.mds.workspaceId$.subscribe(ws => {
-      
-      let adminToken = this.mds.adminToken$.getValue();
-      let workspaceId = this.mds.workspaceId$.getValue();
+    this.mds.workspaceId$.subscribe(ws => {    
 
-      let observableResponse = this.bs.getDetailedTestTakers(adminToken, workspaceId);
+      let observableResponse = this.bs.getDetailedTestTakers(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
       observableResponse.subscribe(
         
-        (dataresponse: DetailedTestTakersResponseData)=> {
+        (dataresponse: DetailedTestTakerResponseData[])=> {
           
-          this.loginNames = dataresponse.loginNames;
+          this.testTakerData = dataresponse;
         },
         
         (err: ServerError) => {
@@ -138,16 +127,13 @@ export class MonitorComponent implements OnInit {
 
   detailedBooklets() {
     this.mds.workspaceId$.subscribe(ws => {
-      
-      let adminToken = this.mds.adminToken$.getValue();
-      let workspaceId = this.mds.workspaceId$.getValue();
 
-      let observableResponse = this.bs.getDetailedBooklets(adminToken, workspaceId);
+      let observableResponse = this.bs.getDetailedBooklets(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
       observableResponse.subscribe(
         
-        (dataresponse: DetailedBookletsResponseData)=> {
+        (dataresponse: DetailedBookletResponseData[])=> {
           
-          this.bookletNames = dataresponse.bookletNames;
+          this.bookletData = dataresponse;
         },
         
         (err: ServerError) => {
@@ -159,17 +145,13 @@ export class MonitorComponent implements OnInit {
 
   detailedUnits() {
     this.mds.workspaceId$.subscribe(ws => {
-      
-      let adminToken = this.mds.adminToken$.getValue();
-      let workspaceId = this.mds.workspaceId$.getValue();
 
-      let observableResponse = this.bs.getDetailedTestTakers(adminToken, workspaceId);
+      let observableResponse = this.bs.getDetailedUnits(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
       observableResponse.subscribe(
         
-        (dataresponse: DetailedUnitsResponseData)=> {
+        (dataresponse: DetailedUnitResponseData[])=> {
           
-          this.unitNames = dataresponse.unitNames;
-          this.unitIds = dataresponse.unitIds;
+          this.unitData = dataresponse;
         },
         
         (err: ServerError) => {
