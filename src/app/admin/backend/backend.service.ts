@@ -177,40 +177,40 @@ export class BackendService {
         );
   }
 
-  getDetailedTestTakers(token: string, wsId: number): Observable<DetailedTestTakerResponseData[] | ServerError> {
+  getDetailedTestTakers(token: string, wsId: number): Observable<DetailedTestTakerResponseData | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<DetailedTestTakerResponseData[]>(this.serverUrl + 'getDetailedTestTakers.php', {at: token, ws: wsId}, httpOptions)
+      .post<DetailedTestTakerResponseData>(this.serverUrl + 'getDetailedTestTakers.php', {at: token, ws: wsId}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
   }
 
-  getDetailedBooklets(token: string, wsId: number): Observable<DetailedBookletResponseData[] | ServerError> {
+  getDetailedBooklets(token: string, wsId: number): Observable<DetailedBookletResponseData | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<DetailedBookletResponseData[]>(this.serverUrl + 'getDetailedBooklets.php', {at: token, ws: wsId}, httpOptions)
+      .post<DetailedBookletResponseData>(this.serverUrl + 'getDetailedBooklets.php', {at: token, ws: wsId}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
   }
 
-  getDetailedUnits(token: string, wsId: number): Observable<DetailedUnitResponseData[] | ServerError> {
+  getDetailedUnits(token: string, wsId: number): Observable<InnerUnitInfo[] | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<DetailedUnitResponseData[]>(this.serverUrl + 'getDetailedUnits.php', {at: token, ws: wsId}, httpOptions)
+      .post<InnerUnitInfo[]>(this.serverUrl + 'getDetailedUnits.php', {at: token, ws: wsId}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
@@ -292,14 +292,21 @@ export interface TotalUnitsResponseData {
 }
 
 export interface DetailedTestTakerResponseData {
+  loginNames: string[];
+}
+
+export interface InnerBookletInfo {
+  ID: string;
   Name: string;
+  Project: string;
 }
 
 export interface DetailedBookletResponseData {
-  Name: string;
+  bookletNames: InnerBookletInfo[];
 }
 
-export interface DetailedUnitResponseData {
+export interface InnerUnitInfo {
   Name: string;
   ID: string;
 }
+

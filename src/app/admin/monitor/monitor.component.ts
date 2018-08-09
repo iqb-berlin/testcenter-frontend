@@ -1,4 +1,4 @@
-import { BackendService, BookletlistResponseData, ServerError, RegisteredTestTakersResponseData, TotalBookletsResponseData, TotalUnitsResponseData, DetailedTestTakerResponseData, DetailedBookletResponseData, DetailedUnitResponseData } from './../backend/backend.service';
+import { BackendService, BookletlistResponseData, ServerError, RegisteredTestTakersResponseData, TotalBookletsResponseData, TotalUnitsResponseData, DetailedTestTakerResponseData, DetailedBookletResponseData, InnerBookletInfo, InnerUnitInfo } from './../backend/backend.service';
 import { MainDatastoreService } from './../maindatastore.service';
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { MatSnackBar, MatSort, MatButtonModule } from '@angular/material';
@@ -13,10 +13,12 @@ export class MonitorComponent implements OnInit {
   private numberofBooklets = 0;
   private numberofUnits = 0;
   private booklets:  BookletlistResponseData[];
-  private testTakerData: DetailedTestTakerResponseData[];
-  private bookletData: DetailedBookletResponseData[];
-  private unitData: DetailedUnitResponseData[];
-  showHide: boolean;
+  private testTakerData: string[] = [];
+  private bookletData: InnerBookletInfo[] = [];
+  private unitData: InnerUnitInfo[] = [];
+  showHide1: boolean;
+  showHide2: boolean;
+  showHide3: boolean;
 
 
   @ViewChild(MatSort) sort: MatSort;
@@ -27,7 +29,9 @@ export class MonitorComponent implements OnInit {
     private mds: MainDatastoreService,
     public snackBar: MatSnackBar
   ) {
-    this.showHide = false;
+    this.showHide1 = false;
+    this.showHide2 = false;
+    this.showHide3 = false;
 //   this.booklets = [];
     this.mds.isAdmin$.subscribe(
       i => this.isAdmin = i);
@@ -35,41 +39,59 @@ export class MonitorComponent implements OnInit {
 
   ngOnInit() {
     
-    this.showTestTakers();
-    this.showBooklets();
-    this.showUnits();
-    this.detailedTestTakers();
-    this.detailedBooklets();
-    this.detailedUnits();
 
-  }
+    // 'this' means something here
+    let doSomething = (newValue: any) => {
+      // 'this' means the same thing here
+      console.log('Either token or workspace has a new value');
+      console.log('latest value of admin token' + this.mds.adminToken$.getValue());
+      console.log('latest value of workspace id' + this.mds.workspaceId$.getValue());
+      if (this.mds.adminToken$.getValue() != '' && this.mds.workspaceId$.getValue()>0 ) {
+        // the last values of admintoken and workspace id are both available to use here        
 
-  showTestTakers() {
-    this.mds.workspaceId$.subscribe(ws => {
+        this.showTestTakersRequest(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
+        
+        this.showBookletsRequest(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
+
+        this.showUnitsRequest(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
+
+        this.detailedTestTakersRequest(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
+
+        this.detailedBookletsRequest(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
+
+        this.detailedUnitsRequest(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
+
+      }
       
-      let adminToken = this.mds.adminToken$.getValue();
-      let workspaceId = this.mds.workspaceId$.getValue();
+    }
+      this.mds.workspaceId$.subscribe(doSomething);
+      this.mds.adminToken$.subscribe(doSomething);
 
-      let observableResponse = this.bs.getRegisteredTestTakers(adminToken, workspaceId);
-      observableResponse.subscribe(
-        
-        (dataresponse: RegisteredTestTakersResponseData)=> {
-          
-          this.currentlyRegisteredTestTakers = dataresponse.howManyUsers;
-        
-        },
-        
-        (err: ServerError) => {
-          // this.mds.updateAdminStatus('', '', [], false, err.label);
-        } 
-      );
-    });
   }
 
-  showBooklets() {
-    this.mds.workspaceId$.subscribe(ws => {
 
-      let observableResponse = this.bs.getTotalBooklets(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
+  showTestTakersRequest(adminToken: string, workspaceId: number) {
+            let observableResponse = this.bs.getRegisteredTestTakers(adminToken, workspaceId);
+        observableResponse.subscribe(
+          
+          (dataresponse: RegisteredTestTakersResponseData)=> {
+            
+            this.currentlyRegisteredTestTakers = dataresponse.howManyUsers;
+          
+          },
+          
+          (err: ServerError) => {
+            // this.mds.updateAdminStatus('', '', [], false, err.label);
+          } 
+        ); 
+  }
+
+
+
+  showBookletsRequest(adminToken: string, workspaceId: number) {
+
+
+      let observableResponse = this.bs.getTotalBooklets(adminToken, workspaceId);
       observableResponse.subscribe(
         
         (dataresponse: TotalBookletsResponseData)=> {
@@ -82,14 +104,10 @@ export class MonitorComponent implements OnInit {
           // this.mds.updateAdminStatus('', '', [], false, err.label);
         } 
       );
-    });
   }
 
-  showUnits() {
-    this.mds.workspaceId$.subscribe(ws => {
-      
-      let adminToken = this.mds.adminToken$.getValue();
-      let workspaceId = this.mds.workspaceId$.getValue();
+  showUnitsRequest(adminToken: string, workspaceId: number) {
+
 
       let observableResponse = this.bs.getTotalUnits(adminToken, workspaceId);
       observableResponse.subscribe(
@@ -104,60 +122,60 @@ export class MonitorComponent implements OnInit {
           // this.mds.updateAdminStatus('', '', [], false, err.label);
         } 
       );
-    });
   }
 
-  detailedTestTakers() {
-    this.mds.workspaceId$.subscribe(ws => {    
+  detailedTestTakersRequest(adminToken: string, workspaceId: number) {
+   
 
-      let observableResponse = this.bs.getDetailedTestTakers(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
+      let observableResponse = this.bs.getDetailedTestTakers(adminToken, workspaceId);
       observableResponse.subscribe(
         
-        (dataresponse: DetailedTestTakerResponseData[])=> {
-          
-          this.testTakerData = dataresponse;
+        (dataresponse: DetailedTestTakerResponseData)=> {
+          this.testTakerData = dataresponse.loginNames;
         },
         
         (err: ServerError) => {
           // this.mds.updateAdminStatus('', '', [], false, err.label);
         } 
       );
-    });
+
   }
 
-  detailedBooklets() {
-    this.mds.workspaceId$.subscribe(ws => {
+  detailedBookletsRequest(adminToken: string, workspaceId: number) {
 
-      let observableResponse = this.bs.getDetailedBooklets(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
+
+      let observableResponse = this.bs.getDetailedBooklets(adminToken, workspaceId);
       observableResponse.subscribe(
         
-        (dataresponse: DetailedBookletResponseData[])=> {
-          
-          this.bookletData = dataresponse;
+        (dataresponse: DetailedBookletResponseData)=> {
+          console.log(dataresponse);
+          this.bookletData = dataresponse.bookletNames;
         },
         
         (err: ServerError) => {
           // this.mds.updateAdminStatus('', '', [], false, err.label);
         } 
       );
-    });
+
   }
 
-  detailedUnits() {
-    this.mds.workspaceId$.subscribe(ws => {
+  detailedUnitsRequest(adminToken: string, workspaceId: number) {
 
-      let observableResponse = this.bs.getDetailedUnits(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
+
+      let observableResponse = this.bs.getDetailedUnits(adminToken, workspaceId);
       observableResponse.subscribe(
         
-        (dataresponse: DetailedUnitResponseData[])=> {
-          
+        (dataresponse: InnerUnitInfo[])=> {
+
           this.unitData = dataresponse;
+
+          
         },
         
         (err: ServerError) => {
           // this.mds.updateAdminStatus('', '', [], false, err.label);
         } 
       );
-    });
+
   }
 }
