@@ -1,0 +1,18 @@
+<iqb-file-upload
+  [file]="file"
+  [id]="i"
+  *ngFor="let file of files; let i = index"
+  [httpUrl]="httpUrl"
+  [fileAlias]="fileAlias"
+  [tokenName]="tokenName"
+  [token]="token"
+  [folderName]="folderName"
+  [folder]="folder"
+
+  (removeFileRequestEvent)="removeFile($event)"
+  (statusChangedEvent)="analyseStatus()">
+</iqb-file-upload>
+<br/>
+<button mat-raised-button color="primary" [disabled]="disableUploadAllButton"
+  *ngIf="files.length > 0" (click)="uploadAll()">Alle hochladen</button>
+<button mat-raised-button color="primary" *ngIf="files.length > 0" (click)="removeAll()">Liste leeren</button>

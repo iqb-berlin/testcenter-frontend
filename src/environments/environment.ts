@@ -3,7 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  testcenterUrl: 'https://ocba2.iqb.hu-berlin.de/',
+  appName: 'IQB-Testcenter',
+  appPublisher: 'IQB - Institut zur Qualitätsentwicklung im Bildungswesen',
+  appVersion: '0 (dev)'
 };
 
 /*

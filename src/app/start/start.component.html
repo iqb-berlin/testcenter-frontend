@@ -1,0 +1,31 @@
+<div class="page-body">
+  <div class="sheetofpaper">
+    <div class="codeinput" *ngIf="showCodeinput">
+      <p>Für das Starten eines Tests ist die Eingabe eines Start-Kennwortes nötig. Damit werden einzelne
+        Testpersonen erkennbar. Bei Fragen bitte an die Betreuerin bzw. den Betreuer des Tests wenden!</p>
+
+      <form [formGroup]="codeinputform" (ngSubmit)="codeinput()">
+        <mat-form-field class="full-width">
+          <input matInput formControlName="code" placeholder="Kennwort">
+        </mat-form-field>
+        <button mat-raised-button type="submit" [disabled]="codeinputform.invalid">Weiter</button>
+      </form>
+
+      <p *ngIf="isError">{{ errorMessage }}</p>
+    </div>
+
+    <div class="testselect" *ngIf="showTeststartButtons">
+      <p>{{ select_message }}</p>
+
+      <div class="buttongroup">
+        <button mat-raised-button class="testselectbutton" (click)="buttonStartTest($event)"
+          [value]="t.filename_and_lastUnit" [disabled]="!t.isEnabled" *ngFor="let t of testlist">
+            <p class="booklet_title">{{t.title}}</p>
+            <p class="booklet_status">{{t.statustxt}}</p>
+        </button>
+      </div>
+    </div>
+
+    <p *ngIf="isError">{{ errorMessage }}</p>
+  </div>
+</div>

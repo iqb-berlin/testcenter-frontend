@@ -1,1 +1,66 @@
-/* You can add global styles to this file, and also import other style files */
+@import "../node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css";
+
+/* orienta-regular - latin */
+@font-face {
+  font-family: 'Orienta';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Orienta'), local('Orienta-Regular'),
+       url('assets/orienta-v5-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url('assets/orienta-v5-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+body {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  font-family: "Orienta";
+  background-color: #B0BEC5;
+}
+
+.page-body {
+  overflow-x: auto;
+  position: absolute;
+  width: 100%;
+  top: 70px;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  justify-content: left;
+}
+
+.sheetofpaper {
+  flex:  10 0 900px;
+  box-shadow: 5px 10px 20px black;
+  background-color: white;
+  min-height: 90%;
+  margin: 15px;
+  padding: 5px;
+}
+
+.spinner-container {
+  position: fixed;
+  z-index: 999;
+  height: 2em;
+  width: 2em;
+  overflow: show;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+iframe.unitHost {
+  width: 100%;
+  border: none;
+}
+
+p.unitMessage {
+  margin: 50px;
+  text-align: center;
+}
+

@@ -1,0 +1,29 @@
+<div class="page-body">
+  <div class="sheetofpaper">
+    <div class="intro-main">
+      <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
+      betreibt auf diesen Seiten eine Pilotanwendung für den Standard OpenCBA. Es handelt sich dabei um eine Initiative
+      von Institutionen zur Entwicklung eines modularen Systems zum computerbasierten Testen.</p>
+      <p>Um sich für einen bestimmten Test anzumelden, geben Sie bitte den Namen und das Kennwort für einen Tests ein.
+        Sie können über das Seitenmenü oben rechts weitere Funktionen aufrufen.</p>
+      <p *ngIf="isSession">Derzeit sind Sie am System angemeldet. Über das Menü oben rechts können Sie zur Startseite eines Tests gelangen.</p>
+      <p>Bei Fragen zu diesem System wenden Sie sich bitte an <a href="mailto:mechtel@iqb.hu-berlin.de?subject=Zum%20OpenCBA-Testsystem">Martin Mechtel</a>.</p>
+    </div>
+
+
+    <form [formGroup]="testtakerloginform" (ngSubmit)="testtakerlogin()">
+      <mat-form-field class="full-width">
+        <input matInput formControlName="testname" placeholder="Testname">
+      </mat-form-field>
+      <mat-form-field class="full-width">
+        <input matInput type="password" formControlName="testpw" placeholder="Kennwort" (keyup.enter)="testtakerlogin()">
+      </mat-form-field>
+      <button mat-raised-button type="submit" [disabled]="testtakerloginform.invalid">Test starten</button>
+    </form>
+
+    <div *ngIf="isError" class="intro-main">
+        <p>{{ errorMessage }}</p>
+    </div>
+
+  </div>
+</div>
