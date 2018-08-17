@@ -9,7 +9,10 @@ export class ResultsComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    
+    this.clickButton(1);
   }
 
+  clickButton(e) {
+    console.log();
+  }
 }
