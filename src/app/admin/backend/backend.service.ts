@@ -292,7 +292,10 @@ export interface TotalUnitsResponseData {
 }
 
 export interface DetailedTestTakerResponseData {
-  loginNames: string[];
+  loginNames: Array<{
+    name: string,
+    codes: Array<string>
+  }>;
 }
 
 export interface InnerBookletInfo {

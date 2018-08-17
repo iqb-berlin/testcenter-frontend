@@ -1,19 +1,41 @@
 import { BackendService, BookletlistResponseData, ServerError, RegisteredTestTakersResponseData, TotalBookletsResponseData, TotalUnitsResponseData, DetailedTestTakerResponseData, DetailedBookletResponseData, InnerBookletInfo, InnerUnitInfo } from './../backend/backend.service';
 import { MainDatastoreService } from './../maindatastore.service';
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
-import { MatSnackBar, MatSort, MatButtonModule } from '@angular/material';
+import { MatSnackBar, MatSort } from '@angular/material';
+
+export interface GroupItem {
+  name: string;
+  number_of_testtakers: number;
+  logins: number;
+  responses: number;
+}
+
+const GROUP_DATA: GroupItem[] = [
+  {name: 'Group Hydrogen', number_of_testtakers: 12, logins: 20, responses: 30},
+  {name: 'Group Helium', number_of_testtakers: 42, logins:  20, responses: 30},
+  {name: 'Group Lithium', number_of_testtakers: 2, logins:  20, responses: 30},
+  {name: 'Group Beryllium', number_of_testtakers: 92, logins:  20, responses: 30},
+  {name: 'Group Boron', number_of_testtakers: 12, logins: 20, responses: 30},
+  {name: 'Group Carbon', number_of_testtakers: 122, logins: 20, responses: 30},
+  {name: 'Group Nitrogen', number_of_testtakers: 142, logins: 20, responses: 30},
+  {name: 'Group Oxygen', number_of_testtakers: 152, logins: 20, responses: 30},
+  {name: 'Group Fluorine', number_of_testtakers: 182, logins: 20, responses: 30},
+  {name: 'Group Neon', number_of_testtakers: 202, logins:  20, responses: 30},
+];
 
 @Component({
   templateUrl: './monitor.component.html',
   styleUrls: ['./monitor.component.css']
 })
 export class MonitorComponent implements OnInit {
+  displayedColumns: string[] = ['name', 'number_of_testtakers', 'logins', 'responses'];
+  dataSource = GROUP_DATA;
   private isAdmin = false;
   private currentlyRegisteredTestTakers = 0;
   private numberofBooklets = 0;
   private numberofUnits = 0;
   private booklets:  BookletlistResponseData[];
-  private testTakerData: string[] = [];
+  private testTakerData: DetailedTestTakerResponseData = {"loginNames": []};
   private bookletData: InnerBookletInfo[] = [];
   private unitData: InnerUnitInfo[] = [];
   showHide1: boolean;
@@ -43,22 +65,14 @@ export class MonitorComponent implements OnInit {
     // 'this' means something here
     let doSomething = (newValue: any) => {
       // 'this' means the same thing here
-      console.log('Either token or workspace has a new value');
-      console.log('latest value of admin token' + this.mds.adminToken$.getValue());
-      console.log('latest value of workspace id' + this.mds.workspaceId$.getValue());
       if (this.mds.adminToken$.getValue() != '' && this.mds.workspaceId$.getValue()>0 ) {
         // the last values of admintoken and workspace id are both available to use here        
 
         this.showTestTakersRequest(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
-        
         this.showBookletsRequest(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
-
         this.showUnitsRequest(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
-
         this.detailedTestTakersRequest(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
-
         this.detailedBookletsRequest(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
-
         this.detailedUnitsRequest(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
 
       }
@@ -131,7 +145,7 @@ export class MonitorComponent implements OnInit {
       observableResponse.subscribe(
         
         (dataresponse: DetailedTestTakerResponseData)=> {
-          this.testTakerData = dataresponse.loginNames;
+          this.testTakerData = dataresponse;
         },
         
         (err: ServerError) => {
@@ -148,7 +162,6 @@ export class MonitorComponent implements OnInit {
       observableResponse.subscribe(
         
         (dataresponse: DetailedBookletResponseData)=> {
-          console.log(dataresponse);
           this.bookletData = dataresponse.bookletNames;
         },
         

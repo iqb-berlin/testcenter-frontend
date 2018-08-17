@@ -19,6 +19,7 @@ import { MatTableModule, MatTabsModule, MatButtonModule, MatIconModule, MatToolb
   MatSelectModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatCardModule } from '@angular/material';
 import { MonitorComponent } from './monitor/monitor.component';
 import { MatExpansionModule } from '@angular/material/expansion';
+import {MatGridListModule} from '@angular/material/grid-list';
 
 @NgModule({
   imports: [
@@ -43,6 +44,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatInputModule,
     MatToolbarModule,
     MatSnackBarModule,
+    MatGridListModule,
     IqbCommonModule
   ],
   exports: [
