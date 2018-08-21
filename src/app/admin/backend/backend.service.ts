@@ -124,97 +124,7 @@ export class BackendService {
         );
   }
 
-  // *******************************************************************
-  getBookletlist(token: string, wsId: number): Observable<BookletlistResponseData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<BookletlistResponseData[]>(this.serverUrl + 'getBookletList.php', {at: token, ws: wsId}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  getRegisteredTestTakers(token: string, wsId: number): Observable<RegisteredTestTakersResponseData | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<RegisteredTestTakersResponseData>(this.serverUrl + 'getTotalUsers.php', {at: token, ws: wsId}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  getTotalBooklets(token: string, wsId: number): Observable<TotalBookletsResponseData | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<TotalBookletsResponseData>(this.serverUrl + 'getTotalBooklets.php', {at: token, ws: wsId}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  getTotalUnits(token: string, wsId: number): Observable<TotalUnitsResponseData | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<TotalUnitsResponseData>(this.serverUrl + 'getTotalUnits.php', {at: token, ws: wsId}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  getDetailedTestTakers(token: string, wsId: number): Observable<DetailedTestTakerResponseData | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<DetailedTestTakerResponseData>(this.serverUrl + 'getDetailedTestTakers.php', {at: token, ws: wsId}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  getDetailedBooklets(token: string, wsId: number): Observable<DetailedBookletResponseData | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<DetailedBookletResponseData>(this.serverUrl + 'getDetailedBooklets.php', {at: token, ws: wsId}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  getDetailedUnits(token: string, wsId: number): Observable<InnerUnitInfo[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<InnerUnitInfo[]>(this.serverUrl + 'getDetailedUnits.php', {at: token, ws: wsId}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
+/*******************************/
 
   showStats(adminToken: string, workspaceId: number): Observable<GroupResponse[]>{
     const httpOptions = {
@@ -283,45 +193,7 @@ export interface CheckWorkspaceResponseData {
   warnings: string[];
 }
 
-export interface BookletlistResponseData {
-  name: string;
-  laststate: string;
-  locked: boolean;
-}
 
-export interface RegisteredTestTakersResponseData {
-  howManyUsers: number;
-}
-
-export interface TotalBookletsResponseData {
-  howManyBooklets: number;
-}
-
-export interface TotalUnitsResponseData {
-  howManyUnits: number;
-}
-
-export interface DetailedTestTakerResponseData {
-  loginNames: Array<{
-    name: string,
-    codes: Array<string>
-  }>;
-}
-
-export interface InnerBookletInfo {
-  ID: string;
-  Name: string;
-  Project: string;
-}
-
-export interface DetailedBookletResponseData {
-  bookletNames: InnerBookletInfo[];
-}
-
-export interface InnerUnitInfo {
-  Name: string;
-  ID: string;
-}
 
 export interface GroupResponse {
   name: string;

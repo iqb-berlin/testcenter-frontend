@@ -1,14 +1,3 @@
-<!-- 
-<mat-grid-list *ngIf="isAdmin" cols="4" rowHeight="100px">
-    <mat-grid-tile
-        *ngFor="let tile of tiles"
-        [colspan]="tile.cols"
-        [rowspan]="tile.rows"
-        [style.background]="tile.color">
-      {{tile.text}}
-    </mat-grid-tile>
-</mat-grid-list> -->
-  
 <table mat-table [dataSource]="groupStats" matSort  class="mat-elevation-z8">
 
   <ng-container matColumnDef="name">
@@ -34,77 +23,7 @@
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
-<!-- 
-<mat-card>
-  <mat-card-content>
-    There are {{ currentlyRegisteredTestTakers }} currently registered test takers.
-  </mat-card-content>
-  <button (click)="showHide1 = !showHide1" mat-flat-button colour="primary">Show/Hide Test Takers</button> 
-  <div  *ngFor="let loginNameData of testTakerData.loginNames">
-    <div *ngIf="showHide1">
-        <mat-card>Test taker name: {{ loginNameData.name }} 
-          
-          
-        <div *ngFor="let loginCode of loginNameData.codes">            
-          <br> Code: {{ loginCode }}
-        </div>
 
-        </mat-card>
-    </div>  
-
-    </div> 
-</mat-card>
-
-<mat-card>
-  <mat-card-content>
-    There are {{ numberofBooklets }} booklets in total.
-  </mat-card-content>
-  <button (click)="showHide2 = !showHide2" mat-flat-button colour="primary">Show/Hide booklets</button>
-
-  <div  *ngFor="let innerBookletInfo of bookletData">
-    <mat-card *ngIf="showHide2">Booklet: {{ innerBookletInfo.Name }} 
-    </mat-card>
-  </div>
-</mat-card>
-
-<mat-card>
-  <mat-card-content>
-    There are {{ numberofUnits }} units in total.
-  </mat-card-content>
-  <button (click)="showHide3 = !showHide3" mat-flat-button colour="primary">Show/Hide units</button>
-
-  <div  *ngFor="let innerUnitInfo of unitData">
-    <mat-card *ngIf="showHide3">Unit: {{ innerUnitInfo.Name }} </mat-card> 
-  </div>
-</mat-card> -->
-
-
-
-  <!-- <mat-card>
-    <mat-accordion multi="true">
-        <mat-expansion-panel> 
-          <mat-expansion-panel-header>
-              There are {{ currentlyRegisteredTestTakers }} currently registered test takers.
-          </mat-expansion-panel-header>
-          
-        </mat-expansion-panel>
-  
-        <mat-expansion-panel> 
-            <mat-expansion-panel-header>
-              There are {{ numberofBooklets }} booklets in total.
-            </mat-expansion-panel-header>
-
-          </mat-expansion-panel>
-  
-          <mat-expansion-panel> 
-              <mat-expansion-panel-header>
-                There are {{ numberofUnits }} units in total.
-              </mat-expansion-panel-header>
-              
-            </mat-expansion-panel>
-      </mat-accordion>
-  </mat-card> -->
- 
 
 
 
