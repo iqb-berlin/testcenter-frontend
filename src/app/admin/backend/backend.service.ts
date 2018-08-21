@@ -216,6 +216,16 @@ export class BackendService {
         );
   }
 
+  showStats(adminToken: string, workspaceId: number): Observable<GroupResponse[]>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<GroupResponse[]>(this.serverUrl + 'getTestStats.php', {at: adminToken, ws: workspaceId}, httpOptions);
+  }
+
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
     const myreturn: ServerError = {
@@ -313,3 +323,9 @@ export interface InnerUnitInfo {
   ID: string;
 }
 
+export interface GroupResponse {
+  name: string;
+  testsTotal: number;
+  testsStarted: number;
+  responsesGiven: number;
+}

@@ -1,35 +1,16 @@
-import { BackendService, BookletlistResponseData, ServerError, RegisteredTestTakersResponseData, TotalBookletsResponseData, TotalUnitsResponseData, DetailedTestTakerResponseData, DetailedBookletResponseData, InnerBookletInfo, InnerUnitInfo } from './../backend/backend.service';
+import { BackendService, BookletlistResponseData, ServerError, RegisteredTestTakersResponseData, TotalBookletsResponseData, TotalUnitsResponseData, DetailedTestTakerResponseData, DetailedBookletResponseData, InnerBookletInfo, InnerUnitInfo, GroupResponse } from './../backend/backend.service';
 import { MainDatastoreService } from './../maindatastore.service';
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
-import { MatSnackBar, MatSort } from '@angular/material';
+import { MatSnackBar, MatSort, MatTableDataSource, MatSortModule } from '@angular/material';
 
-export interface GroupItem {
-  name: string;
-  number_of_testtakers: number;
-  logins: number;
-  responses: number;
-}
-
-const GROUP_DATA: GroupItem[] = [
-  {name: 'Group Hydrogen', number_of_testtakers: 12, logins: 20, responses: 30},
-  {name: 'Group Helium', number_of_testtakers: 42, logins:  20, responses: 30},
-  {name: 'Group Lithium', number_of_testtakers: 2, logins:  20, responses: 30},
-  {name: 'Group Beryllium', number_of_testtakers: 92, logins:  20, responses: 30},
-  {name: 'Group Boron', number_of_testtakers: 12, logins: 20, responses: 30},
-  {name: 'Group Carbon', number_of_testtakers: 122, logins: 20, responses: 30},
-  {name: 'Group Nitrogen', number_of_testtakers: 142, logins: 20, responses: 30},
-  {name: 'Group Oxygen', number_of_testtakers: 152, logins: 20, responses: 30},
-  {name: 'Group Fluorine', number_of_testtakers: 182, logins: 20, responses: 30},
-  {name: 'Group Neon', number_of_testtakers: 202, logins:  20, responses: 30},
-];
 
 @Component({
   templateUrl: './monitor.component.html',
   styleUrls: ['./monitor.component.css']
 })
 export class MonitorComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'number_of_testtakers', 'logins', 'responses'];
-  dataSource = GROUP_DATA;
+  displayedColumns: string[] = ['name', 'testsTotal', 'testsStarted', 'responsesGiven'];
+  private groupStats = new MatTableDataSource<GroupResponse>([]);
   private isAdmin = false;
   private currentlyRegisteredTestTakers = 0;
   private numberofBooklets = 0;
@@ -60,8 +41,9 @@ export class MonitorComponent implements OnInit {
   }
 
   ngOnInit() {
-    
-
+    this.mds.adminToken$.subscribe(at => this.updateStats());
+    this.mds.workspaceId$.subscribe(ws => this.updateStats());
+/*
     // 'this' means something here
     let doSomething = (newValue: any) => {
       // 'this' means the same thing here
@@ -74,15 +56,25 @@ export class MonitorComponent implements OnInit {
         this.detailedTestTakersRequest(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
         this.detailedBookletsRequest(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
         this.detailedUnitsRequest(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue());
-
+        
+        this.showStats(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue()); // this is done by me
       }
       
     }
       this.mds.workspaceId$.subscribe(doSomething);
       this.mds.adminToken$.subscribe(doSomething);
-
+*/
   }
 
+  updateStats() {
+    this.bs.showStats(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue()).subscribe(
+      (responseData: GroupResponse[]) => {
+        this.groupStats = new MatTableDataSource<GroupResponse>(responseData);
+        this.groupStats.sort = this.sort;
+      }
+    )
+
+  }
 
   showTestTakersRequest(adminToken: string, workspaceId: number) {
             let observableResponse = this.bs.getRegisteredTestTakers(adminToken, workspaceId);
@@ -191,4 +183,6 @@ export class MonitorComponent implements OnInit {
       );
 
   }
+
+ 
 }

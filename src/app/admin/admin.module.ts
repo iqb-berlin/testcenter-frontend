@@ -6,6 +6,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NgModule, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MainDatastoreService } from './maindatastore.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 import { HttpClientModule } from '@angular/common/http';
 import { AdminRoutingModule } from './admin-routing.module';
@@ -45,7 +47,8 @@ import {MatGridListModule} from '@angular/material/grid-list';
     MatToolbarModule,
     MatSnackBarModule,
     MatGridListModule,
-    IqbCommonModule
+    IqbCommonModule,
+    BrowserAnimationsModule 
   ],
   exports: [
     AdminComponent
