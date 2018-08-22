@@ -203,7 +203,7 @@ export class BackendService {
       myreturn.label = 'Fehler: ' + errorObj.message;
     }
 
-    return Observable.throw(myreturn.label);
+    return throwError(myreturn.label);
   }
 }
 
