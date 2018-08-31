@@ -1,6 +1,6 @@
 import { BackendService, GroupResponse } from './../backend/backend.service';
 import { MainDatastoreService } from './../maindatastore.service';
-import { Component, OnInit, Inject, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSnackBar, MatSort, MatTableDataSource } from '@angular/material';
 
 
@@ -15,8 +15,7 @@ export class MonitorComponent implements OnInit {
 
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(@Inject('SERVER_URL') 
-    private serverUrl: string,
+  constructor(
     private bs: BackendService,
     private mds: MainDatastoreService,
     public snackBar: MatSnackBar
@@ -39,5 +38,5 @@ export class MonitorComponent implements OnInit {
     )
 
   }
- 
+
 }

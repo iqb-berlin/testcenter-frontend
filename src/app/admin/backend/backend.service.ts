@@ -11,7 +11,7 @@ export class BackendService {
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
       this.serverUrl = this.serverUrl + 'admin/';
-    }
+  }
 
   private errorHandler(error: Error | any): Observable<any> {
     return Observable.throw(error);
