@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, OnDestroy, QueryList, ViewChildren, Input, Output } from '@angular/core';
-import { IqbFileUploadComponent, UploadStatus } from '../iqbFileUpload/iqbFileUpload.component';
+import { IqbFilesUploadComponent, UploadStatus } from '../iqbFilesUpload/iqbFilesUpload.component';
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 
 
@@ -7,18 +7,18 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
  * A material design file upload queue component.
  */
 @Component({
-    selector: 'iqb-file-upload-queue',
-    templateUrl: `iqbFileUploadQueue.component.html`,
-    exportAs: 'iqbFileUploadQueue',
+    selector: 'iqb-files-upload-queue',
+    templateUrl: `iqbFilesUploadQueue.component.html`,
+    exportAs: 'iqbFilesUploadQueue',
   })
-  export class IqbFileUploadQueueComponent implements OnDestroy {
+  export class IqbFilesUploadQueueComponent implements OnDestroy {
 
-    @ViewChildren(IqbFileUploadComponent) fileUploads: QueryList<IqbFileUploadComponent>;
+    @ViewChildren(IqbFilesUploadComponent) fileUploads: QueryList<IqbFilesUploadComponent>;
 
     private files: Array<any> = [];
     private numberOfErrors = 0;
     private numberOfUploads = 0;
-    private disableUploadAllButton: boolean;
+    private disableClearButton = true;
 
     /* Http request input bindings */
     @Input()
@@ -49,19 +49,11 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
     @Input()
     folder: string;
 
-    @Output() uploadCompleteEvent = new EventEmitter<IqbFileUploadQueueComponent>();
+    @Output() uploadCompleteEvent = new EventEmitter<IqbFilesUploadQueueComponent>();
 
     // +++++++++++++++++++++++++++++++++++++++++++++++++
     add(file: any) {
       this.files.push(file);
-      this.disableUploadAllButton = false;
-    }
-
-    // +++++++++++++++++++++++++++++++++++++++++++++++++
-    public uploadAll() {
-      this.fileUploads.forEach((fileUpload) => {
-        fileUpload.upload();
-      });
     }
 
     // +++++++++++++++++++++++++++++++++++++++++++++++++
@@ -77,11 +69,11 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
     }
 
     // +++++++++++++++++++++++++++++++++++++++++++++++++
-    removeFile(fileToRemove: IqbFileUploadComponent) {
+    removeFile(fileToRemove: IqbFilesUploadComponent) {
       this.files.splice(fileToRemove.id, 1);
     }
 
-    // +++++++++++++++++++++++++++++++++++++++++++++++++
+/*    // +++++++++++++++++++++++++++++++++++++++++++++++++
     updateStatus() {
       this.numberOfErrors = 0;
       this.numberOfUploads = 0;
@@ -90,7 +82,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 
         fileUpload.upload();
       });
-    }
+    } */
 
     // +++++++++++++++++++++++++++++++++++++++++++++++++
     analyseStatus() {
@@ -98,7 +90,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
       let someoneisbusy = false;
       let someoneisready = false;
       this.fileUploads.forEach((fileUpload) => {
-        if (fileUpload.status === UploadStatus.ok) {
+        if ((fileUpload.status === UploadStatus.ok) || (fileUpload.status === UploadStatus.error)) {
           someoneiscomplete = true;
         } else if (fileUpload.status === UploadStatus.busy) {
           someoneisbusy = true;
@@ -110,7 +102,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 
       if (someoneiscomplete && !someoneisbusy) {
         this.uploadCompleteEvent.emit();
+        this.disableClearButton = false;
       }
-      this.disableUploadAllButton = !someoneisready || someoneisbusy;
     }
 }

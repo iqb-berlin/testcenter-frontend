@@ -1,20 +1,18 @@
 import { BytesPipe } from '../../iqb-common';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, Optional, Inject, forwardRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, Optional, Inject, forwardRef, HostBinding } from '@angular/core';
 import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
   HttpErrorResponse, HttpEvent } from '@angular/common/http';
 
 
 @Component({
-    selector: 'iqb-file-upload',
-    templateUrl: `./iqbFileUpload.component.html`,
-    exportAs: 'iqbFileUpload',
-    host: {
-      'class': 'iqb-file-upload',
-    },
-    styleUrls: ['./../iqbFile.scss'],
+    selector: 'iqb-files-upload',
+    templateUrl: `./iqbFilesUpload.component.html`,
+    exportAs: 'iqbFilesUpload',
+    styleUrls: ['./../iqb-files.scss'],
   })
 
-  export class IqbFileUploadComponent implements OnInit {
+  export class IqbFilesUploadComponent implements OnInit {
+    @HostBinding('class') myclass = 'iqb-files-upload';
 
     constructor(
       private myHttpClient: HttpClient) { }
@@ -99,8 +97,8 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
       return this._id;
     }
 
-    @Output() removeFileRequestEvent = new EventEmitter<IqbFileUploadComponent>();
-    @Output() statusChangedEvent = new EventEmitter<IqbFileUploadComponent>();
+    @Output() removeFileRequestEvent = new EventEmitter<IqbFilesUploadComponent>();
+    @Output() statusChangedEvent = new EventEmitter<IqbFilesUploadComponent>();
 
     private progressPercentage = 0;
     public loaded = 0;
@@ -114,10 +112,11 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
     ngOnInit() {
       this._status = UploadStatus.ready;
       this.requestResponseText = '';
+      this.upload();
     }
 
     // ==================================================================
-    public upload(): void {
+    private upload(): void {
       if (this.status === UploadStatus.ready) {
 
         this.status = UploadStatus.busy;
@@ -152,6 +151,7 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
               this.status = UploadStatus.error;
             } else {
               this.status = UploadStatus.ok;
+              this.remove();
             }
           }
         }, (errorObj: HttpErrorResponse) => {

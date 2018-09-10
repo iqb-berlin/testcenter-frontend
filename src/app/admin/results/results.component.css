@@ -1,5 +1,12 @@
-.mat-raised-button {
-  position: absolute;
-  top: 50%;
-  left: 40%;
+.mat-card {
+  max-width: 50%;
+  margin-top: 20px;
+}
+
+.title {
+  margin-top: 2550px;
+}
+
+table {
+  width: 100%;
 }

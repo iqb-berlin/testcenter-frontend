@@ -3,9 +3,9 @@ import { Component, Directive, ElementRef, EventEmitter, HostListener,
 
 
   @Directive({
-    selector: 'input[iqbFileUploadInputFor], div[iqbFileUploadInputFor]',
+    selector: 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]',
   })
-  export class IqbFileUploadInputForDirective  {
+  export class IqbFilesUploadInputForDirective  {
 
 
     private _queue: any = null;
@@ -17,8 +17,8 @@ import { Component, Directive, ElementRef, EventEmitter, HostListener,
     }
 
 
-    @Input('iqbFileUploadInputFor')
-    set fileUploadQueue(value: any) {
+    @Input('iqbFilesUploadInputFor')
+    set filesUploadQueue(value: any) {
         if (value) {
             this._queue = value;
         }

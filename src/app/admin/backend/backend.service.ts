@@ -126,14 +126,14 @@ export class BackendService {
 
 /*******************************/
 
-  showStats(adminToken: string, workspaceId: number): Observable<GroupResponse[]>{
+  showStats(adminToken: string, workspaceId: number, responseOnly: boolean): Observable<GroupResponse[]>{
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<GroupResponse[]>(this.serverUrl + 'getTestStats.php', {at: adminToken, ws: workspaceId}, httpOptions);
+      .post<GroupResponse[]>(this.serverUrl + 'getTestStats.php', {at: adminToken, ws: workspaceId, rso: responseOnly}, httpOptions);
   }
 
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .

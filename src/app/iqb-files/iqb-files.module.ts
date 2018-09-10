@@ -1,8 +1,8 @@
 import { IqbCommonModule } from '../iqb-common';
 import { NgModule } from '@angular/core';
-import { IqbFileUploadComponent } from './iqbFileUpload/iqbFileUpload.component';
-import { IqbFileUploadQueueComponent } from './iqbFileUploadQueue/iqbFileUploadQueue.component';
-import { IqbFileUploadInputForDirective } from './iqbFileUploadInputFor/iqbFileUploadInputFor.directive';
+import { IqbFilesUploadComponent } from './iqbFilesUpload/iqbFilesUpload.component';
+import { IqbFilesUploadQueueComponent } from './iqbFilesUploadQueue/iqbFilesUploadQueue.component';
+import { IqbFilesUploadInputForDirective } from './iqbFilesUploadInputFor/iqbFilesUploadInputFor.directive';
 
 import { MatProgressBarModule, MatCardModule, MatButtonModule } from '@angular/material';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,13 +21,13 @@ import { CommonModule } from '@angular/common';
     CommonModule
   ],
   declarations: [
-    IqbFileUploadComponent,
-    IqbFileUploadQueueComponent,
-    IqbFileUploadInputForDirective
+    IqbFilesUploadComponent,
+    IqbFilesUploadQueueComponent,
+    IqbFilesUploadInputForDirective
   ],
   exports: [
-    IqbFileUploadQueueComponent,
-    IqbFileUploadInputForDirective,
+    IqbFilesUploadQueueComponent,
+    IqbFilesUploadInputForDirective,
   ]
 })
 export class IqbFilesModule { }

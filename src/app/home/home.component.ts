@@ -10,7 +10,7 @@ import { FormGroup, FormBuilder, FormArray, FormControl, Validators } from '@ang
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  testtakerloginform: FormGroup;
+  adminloginform: FormGroup;
   public isLoggedIn = false;
   isError = false;
   errorMessage = '';
@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit {
     this.mds.isAdmin$.subscribe(
       is => this.isLoggedIn = is);
 
-    this.testtakerloginform = this.fb.group({
+    this.adminloginform = this.fb.group({
       testname: this.fb.control('', [Validators.required, Validators.minLength(3)]),
       testpw: this.fb.control('', [Validators.required, Validators.minLength(3)])
     });
@@ -34,6 +34,6 @@ export class HomeComponent implements OnInit {
     this.isError = false;
     this.errorMessage = '';
 
-    this.mds.login(this.testtakerloginform.get('testname').value, this.testtakerloginform.get('testpw').value);
+    this.mds.login(this.adminloginform.get('testname').value, this.adminloginform.get('testpw').value);
   }
 }

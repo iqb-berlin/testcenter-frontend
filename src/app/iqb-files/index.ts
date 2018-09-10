@@ -1,3 +1,3 @@
-export { IqbFileUploadQueueComponent } from './iqbFileUploadQueue/iqbFileUploadQueue.component';
-export { IqbFileUploadInputForDirective } from  './iqbFileUploadInputFor/iqbFileUploadInputFor.directive';
+export { IqbFilesUploadQueueComponent } from './iqbFilesUploadQueue/iqbFilesUploadQueue.component';
+export { IqbFilesUploadInputForDirective } from  './iqbFilesUploadInputFor/iqbFilesUploadInputFor.directive';
 export { IqbFilesModule } from './iqb-files.module';

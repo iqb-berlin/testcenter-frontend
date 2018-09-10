@@ -10,14 +10,14 @@
   </div>
 
 
-  <form [formGroup]="testtakerloginform" (ngSubmit)="login()">
+  <form [formGroup]="adminloginform" (ngSubmit)="login()">
     <mat-form-field class="full-width">
       <input matInput formControlName="testname" placeholder="Testname">
     </mat-form-field>
     <mat-form-field class="full-width">
       <input matInput type="password" formControlName="testpw" placeholder="Kennwort" (keyup.enter)="login()">
     </mat-form-field>
-    <button mat-raised-button type="submit" [disabled]="testtakerloginform.invalid">Test starten</button>
+    <button mat-raised-button type="submit" [disabled]="adminloginform.invalid">Anmeldung</button>
   </form>
 
   <div *ngIf="isError" class="intro-main">

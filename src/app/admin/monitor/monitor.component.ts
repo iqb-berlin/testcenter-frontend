@@ -30,7 +30,7 @@ export class MonitorComponent implements OnInit {
   }
 
   updateStats() {
-    this.bs.showStats(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue()).subscribe(
+    this.bs.showStats(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue(), false).subscribe(
       (responseData: GroupResponse[]) => {
         this.groupStats = new MatTableDataSource<GroupResponse>(responseData);
         this.groupStats.sort = this.sort;
