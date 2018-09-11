@@ -8,7 +8,7 @@ import { MatSnackBar, MatSort, MatTableDataSource } from '@angular/material';
   styleUrls: ['./results.component.css']
 })
 export class ResultsComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'testsTotal', 'testsStarted', 'responsesGiven'];
+  displayedColumns: string[] = ['check', 'name', 'testsTotal', 'testsStarted', 'responsesGiven'];
   private groupStats = new MatTableDataSource<GroupResponse>([]);
   private isAdmin = false;
   private downloadButton = Object;

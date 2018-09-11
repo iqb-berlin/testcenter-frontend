@@ -53,9 +53,9 @@
       <mat-icon>check</mat-icon>
     </button>
 
-    <input #hiddenfileinput type="file" name="fileforopencba" multiple [iqbFileUploadInputFor]="fileUploadQueue" [hidden]="true"/>
+    <input #hiddenfileinput type="file" name="fileforopencba" multiple [iqbFilesUploadInputFor]="fileUploadQueue" [hidden]="true"/>
 
-    <iqb-file-upload-queue #fileUploadQueue
+    <iqb-files-upload-queue #fileUploadQueue
       [httpUrl]="uploadUrl"
       [fileAlias]="fileNameAlias"
       [tokenName]="'at'"
@@ -63,7 +63,7 @@
       [folderName]="'ws'"
       [folder]="workspace"
       (uploadCompleteEvent)="updateFileList()">
-    </iqb-file-upload-queue>
+    </iqb-files-upload-queue>
 
     <p *ngFor="let e of checkErrors" class="checkerror">
       {{ e }}

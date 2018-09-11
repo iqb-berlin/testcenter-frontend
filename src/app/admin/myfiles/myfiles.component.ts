@@ -10,7 +10,7 @@ import { Input, Output, EventEmitter, Component, OnInit, Inject, ElementRef } fr
 import { NgModule, ViewChild } from '@angular/core';
 import { MatSort, MatDialog } from '@angular/material';
 import { HttpEventType, HttpErrorResponse, HttpEvent } from '@angular/common/http';
-import { IqbFileUploadQueueComponent, IqbFileUploadInputForDirective } from '../../iqb-files';
+import { IqbFilesUploadQueueComponent, IqbFilesUploadInputForDirective } from '../../iqb-files';
 
 
 @Component({
