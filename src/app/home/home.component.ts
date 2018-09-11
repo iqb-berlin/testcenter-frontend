@@ -20,7 +20,7 @@ export class HomeComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit() {
-    this.mds.pageTitle$.next('IQB-Testcenter - Willkommen!');
+    this.mds.pageTitle$.next('IQB-Testcenter-Verwaltung - Willkommen!');
     this.mds.isAdmin$.subscribe(
       is => this.isLoggedIn = is);
 
