@@ -136,6 +136,30 @@ export class BackendService {
       .post<GroupResponse[]>(this.serverUrl + 'getTestStats.php', {at: adminToken, ws: workspaceId, rso: responseOnly}, httpOptions);
   }
 
+  downloadCSVResponses(adminToken: string, workspaceId: number, groups: GroupResponse[]): Observable<string>{
+    const customHeaders = new HttpHeaders().set('Content-Type', 'application/json');
+    const httpOptions = {headers: customHeaders, responseType: 'text' as 'json'};
+      
+    return this.http
+      .post<string>(this.serverUrl + 'getCSVResponses.php', {at: adminToken, ws: workspaceId, groups: groups }, httpOptions);
+  }
+
+  downloadCSVResponses2(adminToken: string, workspaceId: number, groups: GroupResponse[]): void{
+    let url = this.serverUrl;
+    url += 'getCSVResponses.php?';
+    url += 'at=';
+    url += adminToken;
+    url += '&ws=';
+    url += workspaceId;
+    groups.forEach(group => {
+      url += '&groups[]=';
+      url += group;
+    });
+    window.open(url);
+  }
+
+
+
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
     const myreturn: ServerError = {

@@ -1,11 +1,21 @@
 
 <table mat-table [dataSource]="groupStats" matSort  class="mat-elevation-z8">
   
-  <ng-container matColumnDef="check">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Select</th>
-    <td mat-cell *matCellDef="let element"><mat-checkbox></mat-checkbox></td>
+  <ng-container matColumnDef="selectCheckbox">
+    <mat-header-cell *matHeaderCellDef fxFlex="70px">
+      <mat-checkbox (change)="$event ? masterToggle() : null"
+                    [checked]="tableselectionCheckbox.hasValue() && isAllSelected()"
+                    [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()">
+      </mat-checkbox>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row" fxFlex="70px">
+      <mat-checkbox (click)="$event.stopPropagation()"
+                    (change)="$event ? tableselectionCheckbox.toggle(row) : null"
+                    [checked]="tableselectionCheckbox.isSelected(row)">
+      </mat-checkbox>
+    </mat-cell>
   </ng-container>
-
+  
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Group Name</th>
     <td mat-cell *matCellDef="let element">{{element.name}}</td>
@@ -29,6 +39,9 @@
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
+<!-- <p>number of selected rows: {{  tableselectionCheckbox.selected.length }}</p> -->
+
+<button mat-button [disabled]="tableselectionCheckbox.selected.length === 0" (click)= "downloadOnClick()">Save Data to CSV</button>
 
 
 
