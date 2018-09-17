@@ -1,8 +1,8 @@
-div.codeinput, div.testselect {
+div.inputform {
   margin: 40px;
 }
 
-div.buttongroup {
+div.bookletbuttongroup {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -18,7 +18,7 @@ form {
   width: 100%;
 }
 
-button.testselectbutton {
+button.bookletselectbutton {
   margin: 10px;
 }
 

@@ -1,7 +1,4 @@
-import { TestControllerModule } from './test-controller';
-import { IqbCommonModule } from './iqb-common';
-import { GlobalStoreService } from './shared/global-store.service';
-import { BackendService } from './shared/backend.service';
+import { AboutComponent } from './about/about.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -11,19 +8,20 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule,
   MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule } from '@angular/material';
 import { AppRoutingModule } from './app-routing.module';
-
 import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
-import { AboutDialogComponent } from './about-dialog/about-dialog.component';
+
+// import { TestControllerModule } from './test-controller';
+import { IqbCommonModule } from './iqb-common';
+import { BackendService } from './backend.service';
 import { StartComponent } from './start/start.component';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
-    AboutDialogComponent,
     StartComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,
@@ -37,17 +35,17 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
     MatTooltipModule,
     MatDialogModule,
     MatTabsModule,
+    FlexLayoutModule,
     ReactiveFormsModule,
     HttpClientModule,
-    TestControllerModule,
+//    TestControllerModule,
     AppRoutingModule,
     IqbCommonModule
   ],
-  entryComponents: [
-    AboutDialogComponent,
-  ],
+  // entryComponents: [
+  //   AboutDialogComponent,
+  // ],
   providers: [
-    GlobalStoreService,
     BackendService,
     {
       provide: LocationStrategy,

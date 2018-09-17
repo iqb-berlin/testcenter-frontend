@@ -1,31 +1,98 @@
 <div class="page-body">
-  <div class="sheetofpaper">
-    <div class="codeinput" *ngIf="showCodeinput">
-      <p>Für das Starten eines Tests ist die Eingabe eines Start-Kennwortes nötig. Damit werden einzelne
-        Testpersonen erkennbar. Bei Fragen bitte an die Betreuerin bzw. den Betreuer des Tests wenden!</p>
+  <div class="sheetofpaper" fxLayout="row">
 
-      <form [formGroup]="codeinputform" (ngSubmit)="codeinput()">
-        <mat-form-field class="full-width">
-          <input matInput formControlName="code" placeholder="Kennwort">
-        </mat-form-field>
-        <button mat-raised-button type="submit" [disabled]="codeinputform.invalid">Weiter</button>
-      </form>
+    <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+    <div fxFlex fxLayout="column" fxLayoutGap="30px">
 
-      <p *ngIf="isError">{{ errorMessage }}</p>
-    </div>
+      <!-- - - - - - - - - - - - - - - - - -->
+      <div *ngIf="showLoginForm">
+        <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
+          betreibt auf diesen Seiten eine Pilotanwendung für das computerbasierte Leistungstesten von
+          Schülerinnen und Schülern. Der Zugang zu einem Test ist nur möglich, wenn Sie von Testverantwortlichen
+          Zugangsdaten erhalten haben, die Sie bitte rechts eingeben. Es sind keine weiteren Seiten öffentlich verfügbar.</p>
 
-    <div class="testselect" *ngIf="showTeststartButtons">
-      <p>{{ select_message }}</p>
+        <p>Die mit diesem Testsystem erhobenen Daten sind vertraulich und enthalten grundsätzlich keinen direkten
+          Personenbezug. Es werden z. B. nie Namen gespeichert. Um Auskünfte zu einer bestimmten Studie
+          zu erhalten, wenden Sie sich bitte an das <a href="mailto:mechtel@iqb.hu-berlin.de?subject=Zum%20IQB-Testsystem">
+            IQB</a>. Wir benötigen dazu den ungefähren Testzeitraum und das Bundesland, in dem die Studie
+            durchgeführt wurde.</p>
+      </div>
 
-      <div class="buttongroup">
-        <button mat-raised-button class="testselectbutton" (click)="buttonStartTest($event)"
-          [value]="t.filename_and_lastUnit" [disabled]="!t.isEnabled" *ngFor="let t of testlist">
-            <p class="booklet_title">{{t.title}}</p>
-            <p class="booklet_status">{{t.statustxt}}</p>
-        </button>
+      <!-- - - - - - - - - - - - - - - - - -->
+      <div *ngIf="!showLoginForm">
+        <p>Anmeldestatus: {{ loginStatusText }}</p>
+      </div>
+
+      <!-- - - - - - - - - - - - - - - - - -->
+      <div *ngIf="showCodeForm">
+        <p>Für das Starten eines Tests ist die Eingabe eines Personen-Codes nötig.</p>
+        <p>{{ codeInputPromt }}</p>
+      </div>
+
+      <!-- - - - - - - - - - - - - - - - - -->
+      <div *ngIf="showBookletButtons">
+        <p *ngIf="bookletlist.length === 0">Fehler: Kein Testmaterial für diese Anmeldung gefunden.</p>
+        <p *ngIf="bookletlist.length === 1">{{ bookletSelectPromptOne }}</p>
+        <p *ngIf="bookletlist.length > 1">{{ bookletSelectPromptMany }}</p>
+      </div>
+
+      <!-- - - - - - - - - - - - - - - - - -->
+      <div *ngIf="showTestRunningButtons">
+          <p>Es wird gerade ein Test ausgeführt. Bitte wählen Sie durch Klichen auf einen der beiden Schaltflächen
+            rechts, ob der Test fortgesetzt oder beendet werden soll!</p>
       </div>
     </div>
 
-    <p *ngIf="isError">{{ errorMessage }}</p>
+    <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+    <div fxFlex="200px" fxLayout="column">
+      <!-- - - - - - - - - - - - - - - - - -->
+      <form [formGroup]="testtakerloginform" (ngSubmit)="testtakerlogin()" *ngIf="showLoginForm">
+        <mat-form-field class="full-width">
+          <input matInput formControlName="testname" placeholder="Anmeldename">
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <input matInput type="password" formControlName="testpw" placeholder="Kennwort" (keyup.enter)="testtakerlogin()">
+        </mat-form-field>
+        <button mat-raised-button type="submit" [disabled]="testtakerloginform.invalid" color="primary">Weiter</button>
+      </form>
+
+      <!-- - - - - - - - - - - - - - - - - -->
+      <form [formGroup]="codeinputform" (ngSubmit)="codeinput()" *ngIf="showCodeForm">
+        <mat-form-field class="full-width">
+          <input matInput formControlName="code" placeholder="Personen-Code"(keyup.enter)="codeinput()">
+        </mat-form-field>
+        <button mat-raised-button type="submit" [disabled]="codeinputform.invalid" color="primary">Weiter</button>
+      </form>
+
+      <!-- - - - - - - - - - - - - - - - - -->
+      <div fxLayout="row" fxLayoutGap="20px" *ngIf="showBookletButtons">
+        <p *ngIf="bookletlist.length === 0">
+          Für diese Anmeldung wurde kein Test gefunden.
+        </p>
+        <button mat-raised-button class="bookletselectbutton" (click)="buttonStartTest($event)"
+          [value]="b.filename_and_lastUnit" [disabled]="!t.isEnabled" *ngFor="let b of bookletlist">
+            <p class="booklet_title">{{b.title}}</p>
+            <p class="booklet_status">{{b.statustxt}}</p>
+        </button>
+      </div>
+
+      <!-- - - - - - - - - - - - - - - - - -->
+      <div *ngIf="showTestRunningButtons">
+        <div fxLayout="row" fxLayoutGap="20px">
+          <button mat-raised-button color="primary">Zum Test zurückkehren</button>
+          <button mat-raised-button color="primary">Test beenden</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+    <div fxFlex="200px" fxLayout="column">
+      <button mat-raised-button color="foreground" *ngIf="!showLoginForm">Test-Anmeldung ändern</button>
+      <button mat-raised-button color="foreground" *ngIf="validCodes.length > 1">Personen-Code ändern</button>
+      <p *ngIf="!showLoginForm || validCodes.length > 1">&nbsp;</p>
+      <button mat-raised-button color="foreground">Impressum/Datenschutz</button>
+      <p> {{ errorMsg }}</p>
+    </div>
   </div>
 </div>
