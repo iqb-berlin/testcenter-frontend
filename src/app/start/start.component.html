@@ -1,15 +1,58 @@
 <div class="page-body">
-  <div class="sheetofpaper" fxLayout="row">
+  <div class="sheetofpaper" fxLayout="row" fxLayoutGap="30px" style="padding: 30px;">
 
     <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
-    <div fxFlex fxLayout="column" fxLayoutGap="30px">
+    <div fxFlex="250px" fxLayout="column">
+      <!-- - - - - - - - - - - - - - - - - -->
+      <form [formGroup]="testtakerloginform" (ngSubmit)="testtakerlogin()" *ngIf="showLoginForm" fxLayout="column">
+        <mat-form-field class="full-width">
+          <input matInput formControlName="testname" placeholder="Anmeldename" (keyup.enter)="pw.focus()">
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <input matInput #pw type="password" formControlName="testpw" placeholder="Kennwort" (keyup.enter)="testtakerlogin()">
+        </mat-form-field>
+        <button mat-raised-button type="submit" [disabled]="testtakerloginform.invalid" color="primary">Weiter</button>
+      </form>
+
+      <!-- - - - - - - - - - - - - - - - - -->
+      <form [formGroup]="codeinputform" (ngSubmit)="codeinput()" *ngIf="showCodeForm" fxLayout="column">
+        <mat-form-field class="full-width">
+          <input matInput formControlName="code" placeholder="Personen-Code"(keyup.enter)="codeinput()">
+        </mat-form-field>
+        <button mat-raised-button type="submit" [disabled]="codeinputform.invalid" color="primary">Weiter</button>
+      </form>
+
+      <!-- - - - - - - - - - - - - - - - - -->
+      <div fxLayout="row" fxLayoutGap="10px" *ngIf="showBookletButtons" fxLayout="column">
+        <p *ngIf="bookletlist.length === 0">
+          Für diese Anmeldung wurde kein Test gefunden.
+        </p>
+        <button mat-raised-button class="bookletselectbutton" (click)="buttonStartTest(b)"
+          [value]="b.filename_and_lastUnit" [disabled]="!b.isEnabled" *ngFor="let b of bookletlist">
+            <p class="booklet_title">{{b.title}}</p>
+            <p class="booklet_status">{{b.statustxt}}</p>
+        </button>
+      </div>
+
+      <!-- - - - - - - - - - - - - - - - - -->
+      <div *ngIf="showTestRunningButtons">
+        <div fxLayout="column" fxLayoutGap="20px">
+          <button mat-raised-button color="primary">Zum Test zurückkehren</button>
+          <button mat-raised-button color="primary">Test beenden</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+    <div fxFlex fxLayout="column">
 
       <!-- - - - - - - - - - - - - - - - - -->
       <div *ngIf="showLoginForm">
         <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
           betreibt auf diesen Seiten eine Pilotanwendung für das computerbasierte Leistungstesten von
           Schülerinnen und Schülern. Der Zugang zu einem Test ist nur möglich, wenn Sie von Testverantwortlichen
-          Zugangsdaten erhalten haben, die Sie bitte rechts eingeben. Es sind keine weiteren Seiten öffentlich verfügbar.</p>
+          Zugangsdaten erhalten haben, die Sie bitte links eingeben. Es sind keine weiteren Seiten öffentlich verfügbar.</p>
 
         <p>Die mit diesem Testsystem erhobenen Daten sind vertraulich und enthalten grundsätzlich keinen direkten
           Personenbezug. Es werden z. B. nie Namen gespeichert. Um Auskünfte zu einer bestimmten Studie
@@ -38,60 +81,17 @@
 
       <!-- - - - - - - - - - - - - - - - - -->
       <div *ngIf="showTestRunningButtons">
-          <p>Es wird gerade ein Test ausgeführt. Bitte wählen Sie durch Klichen auf einen der beiden Schaltflächen
-            rechts, ob der Test fortgesetzt oder beendet werden soll!</p>
+          <p>Es wird gerade ein Test ausgeführt. Bitte wählen Sie durch Klicken auf einen der beiden Schaltflächen
+            links, ob der Test fortgesetzt oder beendet werden soll!</p>
       </div>
     </div>
 
     <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
-    <div fxFlex="200px" fxLayout="column">
-      <!-- - - - - - - - - - - - - - - - - -->
-      <form [formGroup]="testtakerloginform" (ngSubmit)="testtakerlogin()" *ngIf="showLoginForm">
-        <mat-form-field class="full-width">
-          <input matInput formControlName="testname" placeholder="Anmeldename">
-        </mat-form-field>
-        <mat-form-field class="full-width">
-          <input matInput type="password" formControlName="testpw" placeholder="Kennwort" (keyup.enter)="testtakerlogin()">
-        </mat-form-field>
-        <button mat-raised-button type="submit" [disabled]="testtakerloginform.invalid" color="primary">Weiter</button>
-      </form>
-
-      <!-- - - - - - - - - - - - - - - - - -->
-      <form [formGroup]="codeinputform" (ngSubmit)="codeinput()" *ngIf="showCodeForm">
-        <mat-form-field class="full-width">
-          <input matInput formControlName="code" placeholder="Personen-Code"(keyup.enter)="codeinput()">
-        </mat-form-field>
-        <button mat-raised-button type="submit" [disabled]="codeinputform.invalid" color="primary">Weiter</button>
-      </form>
-
-      <!-- - - - - - - - - - - - - - - - - -->
-      <div fxLayout="row" fxLayoutGap="20px" *ngIf="showBookletButtons">
-        <p *ngIf="bookletlist.length === 0">
-          Für diese Anmeldung wurde kein Test gefunden.
-        </p>
-        <button mat-raised-button class="bookletselectbutton" (click)="buttonStartTest($event)"
-          [value]="b.filename_and_lastUnit" [disabled]="!t.isEnabled" *ngFor="let b of bookletlist">
-            <p class="booklet_title">{{b.title}}</p>
-            <p class="booklet_status">{{b.statustxt}}</p>
-        </button>
-      </div>
-
-      <!-- - - - - - - - - - - - - - - - - -->
-      <div *ngIf="showTestRunningButtons">
-        <div fxLayout="row" fxLayoutGap="20px">
-          <button mat-raised-button color="primary">Zum Test zurückkehren</button>
-          <button mat-raised-button color="primary">Test beenden</button>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
-    <div fxFlex="200px" fxLayout="column">
-      <button mat-raised-button color="foreground" *ngIf="!showLoginForm">Test-Anmeldung ändern</button>
-      <button mat-raised-button color="foreground" *ngIf="validCodes.length > 1">Personen-Code ändern</button>
+    <div fxFlex="200px" fxLayout="column" fxLayoutGap="10px">
+      <button mat-raised-button color="foreground" *ngIf="!showLoginForm" (click)="changeLogin()">Test-Anmeldung ändern</button>
+      <button mat-raised-button color="foreground" *ngIf="validCodes.length > 1" (click)="changeCode()">Personen-Code ändern</button>
       <p *ngIf="!showLoginForm || validCodes.length > 1">&nbsp;</p>
-      <button mat-raised-button color="foreground">Impressum/Datenschutz</button>
+      <button mat-raised-button color="foreground" [routerLink]="['/about']">Impressum/Datenschutz</button>
       <p> {{ errorMsg }}</p>
     </div>
   </div>

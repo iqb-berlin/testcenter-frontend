@@ -1,5 +1,7 @@
-import { BackendService, ServerError, LoginData, BookletStatus, BookletDataList } from './backend.service';
-import { BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { BackendService, ServerError, LoginData, BookletStatus, BookletData,
+  BookletnamesByCode } from './backend.service';
+import { BehaviorSubject, Observable, merge } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -17,17 +19,40 @@ export class LogindataService {
   public bookletDbId$ = new BehaviorSubject<number>(0);
   public bookletLabel$ = new BehaviorSubject<string>('');
   public globalErrorMsg$ = new BehaviorSubject<string>('');
-  public allBooklets$ = new BehaviorSubject<BookletDataList>(null);
+  public bookletsByCode$ = new BehaviorSubject<BookletnamesByCode>(null);
+  public bookletData$ = new BehaviorSubject<BookletData[]>([]);
+  public loginToken$ = new BehaviorSubject<string>('');
+  public loginStatusText$ = new BehaviorSubject<string>('');
 
   constructor(
     private bs: BackendService
   ) {
+    merge(
+      this.personCode$,
+      this.loginName$,
+      this.bookletLabel$
+        ).subscribe(t => {
+            let myreturn = '';
+            const ln = this.loginName$.getValue();
+            if (ln.length > 0) {
+              myreturn = this.workspaceName$.getValue() + ' - angemeldet als "' + ln;
+              const c = this.personCode$.getValue();
+              myreturn += c.length > 0 ? ('/' + c + '"') : '"';
+              myreturn += ' (' + this.groupName$.getValue() + '/' + this.loginMode$.getValue() + ')';
+              const bL = this.bookletLabel$.getValue();
+              myreturn += bL.length > 0 ? ('; "' + bL + '" gestartet') : '; kein Test gestartet';
+            } else {
+              myreturn = 'nicht angemeldet';
+            }
+            this.loginStatusText$.next(myreturn);
+      }
+    );
+
     // on reload of application:
     // look for personToken and get booklets and (if stored) selected booklet
     const pt = localStorage.getItem('pt');
     if ((typeof pt !== 'string') || (pt.length === 0)) {
       localStorage.setItem('bi', '');
-      console.log('yop');
     } else {
       this.bs.getLoginDataByPersonToken(pt).subscribe(loginDataUntyped => {
         if (loginDataUntyped instanceof ServerError) {
@@ -41,7 +66,8 @@ export class LogindataService {
           this.groupName$.next(loginData.groupname);
           this.workspaceName$.next(loginData.workspaceName);
           this.personCode$.next(loginData.code);
-          this.allBooklets$.next(loginData.booklets);
+          this.bookletsByCode$.next(loginData.codeswithbooklets);
+          this.bookletData$.next(loginData.booklets);
           this.loginMode$.next(loginData.mode);
           this.personToken$.next(pt);
           this.loginName$.next(loginData.loginname);

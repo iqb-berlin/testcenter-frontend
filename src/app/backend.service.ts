@@ -14,19 +14,6 @@ export class BackendService {
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) { }
 
-  /*
-  getStatus(admintoken: string, logintoken: string, sessiontoken: string): Observable<LoginResponseData> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<LoginResponseData>(this.serverUrl + 'getStatus.php', {at: admintoken, lt: logintoken, st: sessiontoken}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  } */
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
   login(name: string, password: string): Observable<string | ServerError> {
@@ -117,14 +104,14 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  startBookletByLoginToken(logintoken: string, code: string, bookletFilename: string): Observable<PersonTokenAndBookletId | ServerError> {
+  startBookletByLoginToken(logintoken: string, code: string, bookletFilename: string): Observable<string | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<PersonTokenAndBookletId>(this.serverUrl +
+      .post<string>(this.serverUrl +
             'startBookletByLoginToken.php', {lt: logintoken, c: code, b: bookletFilename}, httpOptions)
         .pipe(
           catchError(this.handleError)
@@ -167,7 +154,7 @@ export class BackendService {
 
 // #############################################################################################
 
-// class to be able to use instanceof to check type
+// class instead of interface to be able to use instanceof to check type
 export class ServerError {
   public code: number;
   public label: string;
@@ -177,20 +164,14 @@ export class ServerError {
   }
 }
 
-export interface LoginResponseData {
-  t: string;
-  n: string;
-  ws: string;
-}
-
 export interface BookletData {
   name: string;
   filename: string;
   title: string;
 }
 
-export interface BookletDataList {
-  [code: string]: BookletData[];
+export interface BookletnamesByCode {
+  [code: string]: string[];
 }
 
 export interface LoginData {
@@ -198,7 +179,8 @@ export interface LoginData {
   groupname: string;
   loginname: string;
   workspaceName: string;
-  booklets: BookletDataList;
+  booklets: BookletData[];
+  codeswithbooklets: BookletnamesByCode;
   code: string;
 }
 
@@ -208,11 +190,24 @@ export interface BookletStatus {
   canStart: boolean;
   id: number;
   label: string;
-  name: string;
 }
 
-export interface PersonTokenAndBookletId {
-  personToken: string;
-  bookletId: number;
+export class PersonTokenAndBookletId {
+  readonly personToken: string;
+  readonly bookletId: number;
+  constructor(serverreturn: string) {
+    if ((typeof serverreturn !== 'string') || (serverreturn.length === 0)) {
+      this.personToken = '';
+      this.bookletId = 0;
+    } else {
+      const retSplits = serverreturn.split('##');
+      this.personToken = retSplits[0];
+      if (retSplits.length > 1) {
+        this.bookletId = +retSplits[1];
+      } else {
+        this.bookletId = 0;
+      }
+    }
+  }
 }
 

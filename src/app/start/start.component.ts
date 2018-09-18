@@ -1,9 +1,9 @@
-import { map } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
 import { LogindataService } from './../logindata.service';
 import { MessageDialogComponent, MessageDialogData, MessageType } from './../iqb-common';
 import { MatDialog } from '@angular/material';
 import { BackendService, BookletData, PersonTokenAndBookletId,
-  BookletDataList, LoginData, BookletStatus, ServerError } from './../backend.service';
+  BookletnamesByCode, LoginData, BookletStatus, ServerError } from './../backend.service';
 import { Router } from '@angular/router';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -28,7 +28,6 @@ export class StartComponent implements OnInit {
   private testtakerloginform: FormGroup;
   private codeinputform: FormGroup;
   private errorMsg = '';
-  private loginToken = '';
 
   // ??
   // private sessiondata: PersonBooklets;
@@ -47,6 +46,7 @@ export class StartComponent implements OnInit {
 
   ngOnInit() {
     this.lds.pageTitle$.next('IQB-Testcenter - Start');
+    this.lds.loginStatusText$.subscribe(t => this.loginStatusText = t);
 
     this.lds.personToken$.subscribe(pt => {
       const bId = this.lds.bookletDbId$.getValue();
@@ -55,18 +55,11 @@ export class StartComponent implements OnInit {
         this.showCodeForm = false;
         this.showBookletButtons = bId === 0;
         this.showTestRunningButtons = bId > 0;
-        this.loginStatusText = 'angemeldet als "' + this.lds.loginName$.getValue();
-        const code = this.lds.personCode$.getValue();
-        if (code.length > 0) {
-          this.loginStatusText += '/' + code;
-        }
-        this.loginStatusText += '", ' + this.lds.loginMode$.getValue();
       } else {
-        this.showLoginForm = this.loginToken.length === 0;
+        this.showLoginForm = this.lds.loginToken$.getValue().length === 0;
         this.showCodeForm = this.validCodes.length > 1;
         this.showBookletButtons = false;
         this.showTestRunningButtons = false;
-        this.loginStatusText = 'nicht angemeldet';
       }
     });
 
@@ -95,6 +88,7 @@ export class StartComponent implements OnInit {
     this.codeinputform = this.fb.group({
       code: this.fb.control('', [Validators.required, Validators.minLength(1)])
     });
+
   }
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -112,31 +106,33 @@ export class StartComponent implements OnInit {
           this.lds.personCode$.next('');
           this.lds.globalErrorMsg$.next('');
           this.lds.workspaceName$.next('');
-          this.lds.allBooklets$.next(null);
+          this.lds.bookletsByCode$.next(null);
+          this.lds.bookletData$.next([]);
           this.lds.bookletDbId$.next(0);
           this.lds.bookletLabel$.next('');
           this.lds.loginMode$.next('');
           this.lds.loginName$.next('');
 
-          this.loginToken = loginTokenUntyped as string;
+          this.lds.loginToken$.next(loginTokenUntyped as string);
 
           // overwrite all data
-          this.bs.getLoginDataByLoginToken(this.loginToken).subscribe(
+          this.bs.getLoginDataByLoginToken(this.lds.loginToken$.getValue()).subscribe(
             loginDataUntyped => {
               if (loginDataUntyped instanceof ServerError) {
                 const e = loginDataUntyped as ServerError;
                 this.lds.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
-                this.loginToken = '';
+                this.lds.loginToken$.next('');
               } else {
                 const loginData = loginDataUntyped as LoginData;
                 this.lds.personToken$.next('');
-                this.lds.allBooklets$.next(loginData.booklets);
+                this.lds.bookletsByCode$.next(loginData.codeswithbooklets);
+                this.lds.bookletData$.next(loginData.booklets);
                 this.lds.groupName$.next(loginData.groupname);
                 this.lds.workspaceName$.next(loginData.workspaceName);
                 this.lds.loginMode$.next(loginData.mode);
                 this.lds.loginName$.next(loginData.loginname);
 
-                this.validCodes = Object.keys(loginData.booklets);
+                this.validCodes = Object.keys(loginData.codeswithbooklets);
                 this.showLoginForm = false;
 
                 if (this.validCodes.length > 1) {
@@ -145,7 +141,7 @@ export class StartComponent implements OnInit {
                   this.lds.personCode$.next((this.validCodes.length > 0) ? this.validCodes[0] : '');
                   this.showCodeForm = false;
                   this.showBookletButtons = true;
-                  this.bookletlist = this.getStartButtonData(this.lds.allBooklets$.getValue());
+                  this.bookletlist = this.getStartButtonData();
                 }
               }
             });
@@ -180,49 +176,46 @@ export class StartComponent implements OnInit {
       this.lds.personToken$.next('');
       this.showCodeForm = false;
       this.showBookletButtons = true;
-      this.bookletlist = this.getStartButtonData(this.lds.allBooklets$.getValue());
+      this.bookletlist = this.getStartButtonData();
     }
   }
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  getStartButtonData(allBooklets: BookletDataList): StartButtonData[] {
+  getStartButtonData(): StartButtonData[] {
     const myreturn: StartButtonData[] = [];
-    const lt = this.loginToken;
+    const codeToBooklets = this.lds.bookletsByCode$.getValue();
+    const bookletData = this.lds.bookletData$.getValue();
+    const lt = this.lds.loginToken$.getValue();
     const pt = this.lds.personToken$.getValue();
     const code = this.lds.personCode$.getValue();
 
     if (pt.length > 0 || lt.length > 0) {
-      const myBooklets = allBooklets[this.lds.personCode$.getValue()];
-      for (const booklet of myBooklets) {
-        const myTest = new StartButtonData(booklet.name, booklet.title, booklet.filename);
-        if (pt.length > 0) {
-          myTest.getBookletStatusByPersonToken(this.bs, pt);
-        } else {
-          myTest.getBookletStatusByLoginToken(this.bs, lt, code);
+      const myBooklets = codeToBooklets[code];
+
+      for (const booklet of bookletData) {
+        if (myBooklets.indexOf(booklet.name) >= 0) {
+          const myTest = new StartButtonData(booklet.name, booklet.title, booklet.filename);
+          if (pt.length > 0) {
+            myTest.getBookletStatusByPersonToken(this.bs, pt);
+          } else {
+            myTest.getBookletStatusByLoginToken(this.bs, lt, code);
+          }
+          myreturn.push(myTest);
         }
-        myreturn.push(myTest);
       }
     }
     return myreturn;
   }
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  buttonStartTest(event) {
-    let myElement = event.target;
-    do {
-      if (myElement.localName !== 'button') {
-        myElement = myElement.parentElement;
-      }
-    } while (myElement.localName !== 'button');
-
-    const ButtonDataSplits = myElement.value.split('##');
-    const lt = this.loginToken;
+  buttonStartTest(b: StartButtonData) {
+    const lt = this.lds.loginToken$.getValue();
     const pt = this.lds.personToken$.getValue();
     const code = this.lds.personCode$.getValue();
 
     if (pt.length > 0 || lt.length > 0) {
       if (pt.length > 0) {
-        this.bs.startBookletByPersonToken(pt, ButtonDataSplits[0]).subscribe(
+        this.bs.startBookletByPersonToken(pt, b.filename).subscribe(
           bookletIdUntyped => {
             if (bookletIdUntyped instanceof ServerError) {
               const e = bookletIdUntyped as ServerError;
@@ -231,7 +224,7 @@ export class StartComponent implements OnInit {
               const bookletId = bookletIdUntyped as number;
               if (bookletId > 0) {
                 this.lds.bookletDbId$.next(bookletId);
-                console.log('jippi: ' + bookletId.toString());
+                this.lds.bookletLabel$.next(b.title);
                 // ************************************************
 
                 // this.router.navigateByUrl('/u');
@@ -244,17 +237,17 @@ export class StartComponent implements OnInit {
           }
         );
       } else {
-        this.bs.startBookletByLoginToken(lt, code, ButtonDataSplits[0]).subscribe(
+        this.bs.startBookletByLoginToken(lt, code, b.filename).subscribe(
           startDataUntyped => {
             if (startDataUntyped instanceof ServerError) {
               const e = startDataUntyped as ServerError;
               this.lds.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
             } else {
-              const startData = startDataUntyped as PersonTokenAndBookletId;
+              const startData = new PersonTokenAndBookletId(startDataUntyped as string);
               if (startData.bookletId > 0) {
                 this.lds.bookletDbId$.next(startData.bookletId);
                 this.lds.personToken$.next(startData.personToken);
-                console.log('jippi: ' + startData.bookletId.toString());
+                this.lds.bookletLabel$.next(b.title);
                 // ************************************************
 
                 // this.router.navigateByUrl('/u');
@@ -271,6 +264,22 @@ export class StartComponent implements OnInit {
       this.lds.globalErrorMsg$.next('ungültige Anmeldung');
     }
   }
+
+  // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  changeLogin() {
+    this.showBookletButtons = false;
+    this.showCodeForm = false;
+    this.showLoginForm = true;
+    this.showTestRunningButtons = false;
+  }
+
+  // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  changeCode() {
+    this.showBookletButtons = false;
+    this.showCodeForm = true;
+    this.showLoginForm = false;
+    this.showTestRunningButtons = false;
+  }
 }
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -282,7 +291,7 @@ export class StartButtonData {
   filename: string;
   isEnabled: boolean;
   statustxt: string;
-  filename_and_lastUnit: string;
+  lastUnit: number;
 
   constructor(
     name: string,
@@ -305,7 +314,7 @@ export class StartButtonData {
         const respData = respDataUntyped as BookletStatus;
         this.statustxt = respData.statusLabel;
         this.isEnabled = respData.canStart;
-        this.filename_and_lastUnit = this.filename + '##' + respData.lastUnit;
+        this.lastUnit = respData.lastUnit;
       }
     });
   }
@@ -319,7 +328,7 @@ export class StartButtonData {
         const respData = respDataUntyped as BookletStatus;
         this.statustxt = respData.statusLabel;
         this.isEnabled = respData.canStart;
-        this.filename_and_lastUnit = this.filename + '##' + respData.lastUnit;
+        this.lastUnit = respData.lastUnit;
       }
     });
   }
