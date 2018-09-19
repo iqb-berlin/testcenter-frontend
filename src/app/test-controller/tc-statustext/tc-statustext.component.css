@@ -1,0 +1,6 @@
+div {
+  background-color:rgba(0, 191, 255, 0.5);
+  margin-top: -40px;
+  margin-left: 100px;
+  z-index: 300;
+}

@@ -63,7 +63,10 @@
 
       <!-- - - - - - - - - - - - - - - - - -->
       <div *ngIf="!showLoginForm">
-        <p>Anmeldestatus: {{ loginStatusText }}</p>
+        <p>Anmeldestatus:</p>
+        <ul>
+          <li *ngFor="let line of loginStatusText">{{ line }}</li>
+        </ul>
       </div>
 
       <!-- - - - - - - - - - - - - - - - - -->

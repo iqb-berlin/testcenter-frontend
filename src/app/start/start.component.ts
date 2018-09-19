@@ -15,7 +15,7 @@ import { FormGroup, FormBuilder, FormArray, FormControl, Validators, ReactiveFor
 export class StartComponent implements OnInit {
   // for template
   private showLoginForm = true;
-  private loginStatusText = 'nicht angemeldet';
+  private loginStatusText = ['nicht angemeldet'];
   private showCodeForm = false;
   private codeInputPromt = 'Bitte gib den Personen-Code ein, den du auf dem Zettel am Platz gefunden hast!';
   private showBookletButtons = false;

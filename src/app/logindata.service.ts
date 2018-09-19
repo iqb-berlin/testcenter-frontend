@@ -1,7 +1,7 @@
 import { map } from 'rxjs/operators';
 import { BackendService, ServerError, LoginData, BookletStatus, BookletData,
   BookletnamesByCode } from './backend.service';
-import { BehaviorSubject, Observable, merge } from 'rxjs';
+import { BehaviorSubject, Subject, merge } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -9,20 +9,29 @@ import { Injectable } from '@angular/core';
 })
 export class LogindataService {
 
+  // observed only by app.components for the page header
   public pageTitle$ = new BehaviorSubject<string>('IQB-Testcenter - Willkommen');
+
+  // key for test-controller
+  // only these two are stored in localStorage
+  public bookletDbId$ = new BehaviorSubject<number>(0);
+  public personToken$ = new BehaviorSubject<string>('');
+
+  // for start.component.ts, but info also for test-controller
   public loginName$ = new BehaviorSubject<string>('');
   public loginMode$ = new BehaviorSubject<string>('');
   public workspaceName$ = new BehaviorSubject<string>('');
   public groupName$ = new BehaviorSubject<string>('');
-  public personToken$ = new BehaviorSubject<string>('');
   public personCode$ = new BehaviorSubject<string>('');
-  public bookletDbId$ = new BehaviorSubject<number>(0);
   public bookletLabel$ = new BehaviorSubject<string>('');
   public globalErrorMsg$ = new BehaviorSubject<string>('');
   public bookletsByCode$ = new BehaviorSubject<BookletnamesByCode>(null);
   public bookletData$ = new BehaviorSubject<BookletData[]>([]);
   public loginToken$ = new BehaviorSubject<string>('');
-  public loginStatusText$ = new BehaviorSubject<string>('');
+  public loginStatusText$ = new BehaviorSubject<string[]>([]);
+
+  // set by app.component.ts
+  public postMessage$ = new Subject<MessageEvent>();
 
   constructor(
     private bs: BackendService
@@ -32,17 +41,17 @@ export class LogindataService {
       this.loginName$,
       this.bookletLabel$
         ).subscribe(t => {
-            let myreturn = '';
+            let myreturn = [];
             const ln = this.loginName$.getValue();
             if (ln.length > 0) {
-              myreturn = this.workspaceName$.getValue() + ' - angemeldet als "' + ln;
+              myreturn.push('Studie: ' + this.workspaceName$.getValue());
               const c = this.personCode$.getValue();
-              myreturn += c.length > 0 ? ('/' + c + '"') : '"';
-              myreturn += ' (' + this.groupName$.getValue() + '/' + this.loginMode$.getValue() + ')';
+              myreturn.push('angemeldet als "' + ln + (c.length > 0 ? ('/' + c + '"') : '"'));
+              myreturn.push('Gruppe: ' + this.groupName$.getValue() + '/' + this.loginMode$.getValue());
               const bL = this.bookletLabel$.getValue();
-              myreturn += bL.length > 0 ? ('; "' + bL + '" gestartet') : '; kein Test gestartet';
+              myreturn.push('Testheft: ' + (bL.length > 0 ? ('"' + bL + '" gestartet') : 'kein Test gestartet'));
             } else {
-              myreturn = 'nicht angemeldet';
+              myreturn = ['nicht angemeldet'];
             }
             this.loginStatusText$.next(myreturn);
       }

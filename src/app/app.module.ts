@@ -10,7 +10,7 @@ import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule,
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-// import { TestControllerModule } from './test-controller';
+import { TestControllerModule } from './test-controller';
 import { IqbCommonModule } from './iqb-common';
 import { BackendService } from './backend.service';
 import { StartComponent } from './start/start.component';
@@ -38,13 +38,10 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     FlexLayoutModule,
     ReactiveFormsModule,
     HttpClientModule,
-//    TestControllerModule,
+    TestControllerModule,
     AppRoutingModule,
     IqbCommonModule
   ],
-  // entryComponents: [
-  //   AboutDialogComponent,
-  // ],
   providers: [
     BackendService,
     {

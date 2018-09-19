@@ -1,3 +1,4 @@
+import { TestControllerService } from './test-controller';
 import { LogindataService } from './logindata.service';
 import { merge } from 'rxjs';
 
@@ -17,20 +18,30 @@ export class AppComponent implements OnInit {
 
   constructor (
     private lds: LogindataService,
+    private tcs: TestControllerService,
     private router: Router) { }
 
   ngOnInit() {
+
+    merge(
+      this.lds.pageTitle$,
+      this.tcs.pageTitle$).subscribe(t => {
+        this.title = t;
+      });
+
     this.lds.pageTitle$.subscribe(t => {
       this.title = t;
     });
-    // merge(
-    //   this.gss.pageTitle$,
-    //   this.tss.pageTitle$).subscribe(t => {
-    //     this.title = t;
-    //   });
 
-    // window.addEventListener('message', (event) => {
-    //   this.lds.processMessagePost(event);
-    // }, false);
+    // give a message to the central message broadcast
+    window.addEventListener('message', (event: MessageEvent) => {
+      const msgData = event.data;
+      const msgType = msgData['type'];
+      if ((msgType !== undefined) || (msgType !== null)) {
+        if (msgType.substr(0, 7) === 'OpenCBA') {
+          this.lds.postMessage$.next(event);
+        }
+      }
+    });
   }
 }
