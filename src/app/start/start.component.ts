@@ -1,8 +1,8 @@
 import { BehaviorSubject } from 'rxjs';
-import { LogindataService, PersonTokenAndBookletId } from './../logindata.service';
+import { LogindataService } from './../logindata.service';
 import { MessageDialogComponent, MessageDialogData, MessageType } from './../iqb-common';
 import { MatDialog } from '@angular/material';
-import { BackendService, BookletData,
+import { BackendService, Authorisation,
   BookletnamesByCode, LoginData, BookletStatus, ServerError } from './../backend.service';
 import { Router } from '@angular/router';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
@@ -20,14 +20,15 @@ export class StartComponent implements OnInit {
   private codeInputPromt = 'Bitte gib den Personen-Code ein, den du auf dem Zettel am Platz gefunden hast!';
   private showBookletButtons = false;
   private bookletlist: StartButtonData[] = [];
-  private bookletSelectPromptOne = 'Bitte klick auf die Schaltfläche rechts, um den Test zu starten!';
-  private bookletSelectPromptMany = 'Bitte klicken Sie auf eine der Schaltflächen rechts, um einen Test zu starten!';
+  private bookletSelectPromptOne = 'Bitte klick auf die Schaltfläche links, um den Test zu starten!';
+  private bookletSelectPromptMany = 'Bitte klicken Sie auf eine der Schaltflächen links, um einen Test zu starten!';
   private showTestRunningButtons = false;
   private validCodes = [];
 
   private testtakerloginform: FormGroup;
   private codeinputform: FormGroup;
   private errorMsg = '';
+  private testFinishButtonText = 'Test beenden';
 
   // ??
   // private sessiondata: PersonBooklets;
@@ -87,6 +88,14 @@ export class StartComponent implements OnInit {
 
     this.codeinputform = this.fb.group({
       code: this.fb.control('', [Validators.required, Validators.minLength(1)])
+    });
+
+    this.lds.loginMode$.subscribe(m => {
+      if (m === 'hot') {
+        this.testFinishButtonText = 'Test beenden';
+      } else {
+        this.testFinishButtonText = 'Test verlassen';
+      }
     });
 
   }
@@ -244,7 +253,7 @@ export class StartComponent implements OnInit {
               const e = startDataUntyped as ServerError;
               this.lds.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
             } else {
-              const startData = new PersonTokenAndBookletId(startDataUntyped as string);
+              const startData = new Authorisation(startDataUntyped as string);
 
               if (startData.bookletId > 0) {
                 this.lds.bookletDbId$.next(startData.bookletId);
@@ -282,6 +291,39 @@ export class StartComponent implements OnInit {
     this.showCodeForm = true;
     this.showLoginForm = false;
     this.showTestRunningButtons = false;
+  }
+
+  // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  buttonFinishTest() {
+    if (this.lds.loginMode$.getValue() === 'hot') {
+      this.bs.finishBooklet(Authorisation.fromPersonTokenAndBookletId(
+            this.lds.personToken$.getValue(), this.lds.bookletDbId$.getValue())).subscribe(
+        finOkUntyped => {
+          if (finOkUntyped instanceof ServerError) {
+            const e = finOkUntyped as ServerError;
+            this.lds.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
+          } else {
+            const finOK = finOkUntyped as boolean;
+            if (finOK) {
+              this.showLoginForm = false;
+              this.showCodeForm = false;
+              this.showBookletButtons = true;
+              this.showTestRunningButtons = false;
+              this.lds.bookletDbId$.next(0);
+              this.lds.bookletLabel$.next('');
+              this.bookletlist = this.getStartButtonData();
+            }
+          }
+      });
+    } else {
+      this.showLoginForm = false;
+      this.showCodeForm = false;
+      this.showBookletButtons = true;
+      this.showTestRunningButtons = false;
+      this.lds.bookletDbId$.next(0);
+      this.lds.bookletLabel$.next('');
+      this.bookletlist = this.getStartButtonData();
+    }
   }
 }
 

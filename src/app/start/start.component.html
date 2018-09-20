@@ -37,8 +37,8 @@
       <!-- - - - - - - - - - - - - - - - - -->
       <div *ngIf="showTestRunningButtons">
         <div fxLayout="column" fxLayoutGap="20px">
-          <button mat-raised-button color="primary">Zum Test zurückkehren</button>
-          <button mat-raised-button color="primary">Test beenden</button>
+          <button mat-raised-button color="primary" [routerLink]="['/t']">Zum Test zurückkehren</button>
+          <button mat-raised-button color="primary" (click)="buttonFinishTest()">{{ testFinishButtonText }}</button>
         </div>
       </div>
 

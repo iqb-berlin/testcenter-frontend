@@ -1,0 +1,11 @@
+button.mat-menu-item {
+  margin: 0px;
+}
+
+button {
+  margin: 5px;
+}
+
+.material-icons {
+  font-size: 1.6rem;
+}

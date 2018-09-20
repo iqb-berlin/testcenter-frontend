@@ -3,7 +3,8 @@ import { TestControllerService } from '../test-controller.service';
 
 @Component({
   selector: 'tc-menu-buttons',
-  templateUrl: './tc-menu-buttons.component.html'
+  templateUrl: './tc-menu-buttons.component.html',
+  styleUrls: ['./tc-menu-buttons.component.css']
 })
 export class TcMenuButtonsComponent implements OnInit {
   private showTestStartMenuEntry = false;

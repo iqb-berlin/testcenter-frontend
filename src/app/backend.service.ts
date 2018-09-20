@@ -4,9 +4,6 @@ import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 
-
-
-
 @Injectable()
 export class BackendService {
 
@@ -132,6 +129,20 @@ export class BackendService {
         );
   }
 
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  finishBooklet(auth: Authorisation): Observable<boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<boolean>(this.serverUrl + 'lockBooklet.php', {au: auth.toAuthString}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
@@ -190,4 +201,35 @@ export interface BookletStatus {
   canStart: boolean;
   id: number;
   label: string;
+}
+
+// eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+export class Authorisation {
+  readonly personToken: string;
+  readonly bookletId: number;
+
+  static fromPersonTokenAndBookletId(personToken: string, bookletId: number): Authorisation {
+    return new Authorisation(personToken + '##' + bookletId.toString());
+  }
+
+  constructor(authString: string) {
+    if ((typeof authString !== 'string') || (authString.length === 0)) {
+      this.personToken = '';
+      this.bookletId = 0;
+    } else {
+      const retSplits = authString.split('##');
+      this.personToken = retSplits[0];
+
+      if (retSplits.length > 1) {
+        this.bookletId = +retSplits[1];
+      } else {
+        this.bookletId = 0;
+      }
+    }
+  }
+
+  toAuthString(): string {
+    return this.personToken + '##' + this.bookletId.toString();
+  }
+
 }

@@ -77,26 +77,26 @@ export class LogindataService {
     if ((typeof pt !== 'string') || (pt.length === 0)) {
       this.bookletDbId$.next(0);
     } else {
-      this.bs.getLoginDataByPersonToken(pt).subscribe(loginDataUntyped => {
-        if (loginDataUntyped instanceof ServerError) {
-          const e = loginDataUntyped as ServerError;
-          this.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
-          this.bookletDbId$.next(0);
-          this.personToken$.next('');
-        } else {
-          const loginData = loginDataUntyped as LoginData;
-          this.globalErrorMsg$.next('');
-          this.groupName$.next(loginData.groupname);
-          this.workspaceName$.next(loginData.workspaceName);
-          this.personCode$.next(loginData.code);
-          this.bookletsByCode$.next(loginData.codeswithbooklets);
-          this.bookletData$.next(loginData.booklets);
-          this.loginMode$.next(loginData.mode);
-          this.personToken$.next(pt);
-          this.loginName$.next(loginData.loginname);
+      const b = this.bookletDbId$.getValue();
+      if (b > 0) {
+        this.bs.getLoginDataByPersonToken(pt).subscribe(loginDataUntyped => {
+          if (loginDataUntyped instanceof ServerError) {
+            const e = loginDataUntyped as ServerError;
+            this.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
+            this.bookletDbId$.next(0);
+            this.personToken$.next('');
+          } else {
+            const loginData = loginDataUntyped as LoginData;
+            this.globalErrorMsg$.next('');
+            this.groupName$.next(loginData.groupname);
+            this.workspaceName$.next(loginData.workspaceName);
+            this.personCode$.next(loginData.code);
+            this.bookletsByCode$.next(loginData.codeswithbooklets);
+            this.bookletData$.next(loginData.booklets);
+            this.loginMode$.next(loginData.mode);
+            this.personToken$.next(pt);
+            this.loginName$.next(loginData.loginname);
 
-          const b = this.bookletDbId$.getValue();
-          if (b > 0) {
             this.bs.getBookletStatusByDbId(pt, b).subscribe(bookletStatusUntyped => {
               if (bookletStatusUntyped instanceof ServerError) {
                 const e = bookletStatusUntyped as ServerError;
@@ -105,43 +105,18 @@ export class LogindataService {
               } else {
                 const bookletStatus = bookletStatusUntyped as BookletStatus;
                 this.globalErrorMsg$.next('');
-                this.bookletLabel$.next(bookletStatus.label);
-                if (!bookletStatus.canStart) {
+                if (bookletStatus.canStart) {
+                  this.bookletLabel$.next(bookletStatus.label);
+                } else {
                   this.bookletDbId$.next(0);
                 }
               }
             });
           }
-        }
-      }
-    );
-
-    }
-  }
-}
-
-// eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-export class PersonTokenAndBookletId {
-  readonly personToken: string;
-  readonly bookletId: number;
-
-  constructor(authString: string) {
-    if ((typeof authString !== 'string') || (authString.length === 0)) {
-      this.personToken = '';
-      this.bookletId = 0;
-    } else {
-      const retSplits = authString.split('##');
-      this.personToken = retSplits[0];
-
-      if (retSplits.length > 1) {
-        this.bookletId = +retSplits[1];
+        });
       } else {
-        this.bookletId = 0;
+        this.personToken$.next('');
       }
     }
-  }
-
-  toAuthString(): string {
-    return this.personToken + '##' + this.bookletId.toString();
   }
 }
