@@ -52,7 +52,7 @@ export class BackendService {
       })
     };
     return this.http
-      .post<LoginData>(this.serverUrl + 'getLoginDataByPersonToken.php', {lt: persontoken}, httpOptions)
+      .post<LoginData>(this.serverUrl + 'getLoginDataByPersonToken.php', {pt: persontoken}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
@@ -191,23 +191,3 @@ export interface BookletStatus {
   id: number;
   label: string;
 }
-
-export class PersonTokenAndBookletId {
-  readonly personToken: string;
-  readonly bookletId: number;
-  constructor(serverreturn: string) {
-    if ((typeof serverreturn !== 'string') || (serverreturn.length === 0)) {
-      this.personToken = '';
-      this.bookletId = 0;
-    } else {
-      const retSplits = serverreturn.split('##');
-      this.personToken = retSplits[0];
-      if (retSplits.length > 1) {
-        this.bookletId = +retSplits[1];
-      } else {
-        this.bookletId = 0;
-      }
-    }
-  }
-}
-

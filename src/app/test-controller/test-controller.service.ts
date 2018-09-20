@@ -195,3 +195,4 @@ export class UnitDef {
     return myResources;
   }
 }
+

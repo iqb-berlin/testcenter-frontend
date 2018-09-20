@@ -1,4 +1,3 @@
-import { map } from 'rxjs/operators';
 import { BackendService, ServerError, LoginData, BookletStatus, BookletData,
   BookletnamesByCode } from './backend.service';
 import { BehaviorSubject, Subject, merge } from 'rxjs';
@@ -14,8 +13,8 @@ export class LogindataService {
 
   // key for test-controller
   // only these two are stored in localStorage
-  public bookletDbId$ = new BehaviorSubject<number>(0);
-  public personToken$ = new BehaviorSubject<string>('');
+  public bookletDbId$ = new BehaviorSubject<number>(+localStorage.getItem('bi'));
+  public personToken$ = new BehaviorSubject<string>(localStorage.getItem('pt'));
 
   // for start.component.ts, but info also for test-controller
   public loginName$ = new BehaviorSubject<string>('');
@@ -36,39 +35,54 @@ export class LogindataService {
   constructor(
     private bs: BackendService
   ) {
+    this.personToken$.subscribe((t: string) => localStorage.setItem('pt', t));
+    this.bookletDbId$.subscribe((id: number) => localStorage.setItem('bi', id.toString()));
+
     merge(
       this.personCode$,
       this.loginName$,
       this.bookletLabel$
         ).subscribe(t => {
-            let myreturn = [];
             const ln = this.loginName$.getValue();
-            if (ln.length > 0) {
-              myreturn.push('Studie: ' + this.workspaceName$.getValue());
-              const c = this.personCode$.getValue();
-              myreturn.push('angemeldet als "' + ln + (c.length > 0 ? ('/' + c + '"') : '"'));
-              myreturn.push('Gruppe: ' + this.groupName$.getValue() + '/' + this.loginMode$.getValue());
-              const bL = this.bookletLabel$.getValue();
-              myreturn.push('Testheft: ' + (bL.length > 0 ? ('"' + bL + '" gestartet') : 'kein Test gestartet'));
-            } else {
-              myreturn = ['nicht angemeldet'];
+            const bL = this.bookletLabel$.getValue();
+            const c = this.personCode$.getValue();
+            if ((ln !== null) && (bL !== null) && (c !== null)) {
+              let myreturn = [];
+              if (ln.length > 0) {
+                myreturn.push('Studie: ' + this.workspaceName$.getValue());
+                myreturn.push('angemeldet als "' + ln + (c.length > 0 ? ('/' + c + '"') : '"'));
+                myreturn.push('Gruppe: ' + this.groupName$.getValue());
+                const loginmode = this.loginMode$.getValue();
+                if (loginmode === 'trial') {
+                  myreturn.push('Ausführungsmodus "trial": Die Zeit-Beschränkungen, die eventuell ' +
+                              'für das Testheft oder bestimmte Aufgaben festgelegt wurden, gelten nicht. Sie können ' +
+                              'Kommentare über das Menü oben rechts speichern.');
+                } else if (loginmode === 'review') {
+                  myreturn.push('Ausführungsmodus "review": Beschränkungen für Zeit und Navigation sind nicht wirksam. Antworten werden ' +
+                              'nicht gespeichert. Sie können ' +
+                              'Kommentare über das Menü oben rechts speichern.');
+                }
+                myreturn.push('Testheft: ' + (bL.length > 0 ? ('"' + bL + '" gestartet') : 'kein Test gestartet'));
+              } else {
+                myreturn = ['nicht angemeldet'];
+              }
+              this.loginStatusText$.next(myreturn);
             }
-            this.loginStatusText$.next(myreturn);
       }
     );
 
     // on reload of application:
     // look for personToken and get booklets and (if stored) selected booklet
-    const pt = localStorage.getItem('pt');
+    const pt = this.personToken$.getValue();
     if ((typeof pt !== 'string') || (pt.length === 0)) {
-      localStorage.setItem('bi', '');
+      this.bookletDbId$.next(0);
     } else {
       this.bs.getLoginDataByPersonToken(pt).subscribe(loginDataUntyped => {
         if (loginDataUntyped instanceof ServerError) {
           const e = loginDataUntyped as ServerError;
           this.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
-          localStorage.setItem('pt', '');
-          localStorage.setItem('bi', '');
+          this.bookletDbId$.next(0);
+          this.personToken$.next('');
         } else {
           const loginData = loginDataUntyped as LoginData;
           this.globalErrorMsg$.next('');
@@ -81,21 +95,19 @@ export class LogindataService {
           this.personToken$.next(pt);
           this.loginName$.next(loginData.loginname);
 
-          const b = localStorage.getItem('bi');
-          if (b !== null) {
-            this.bs.getBookletStatusByDbId(pt, +b).subscribe(bookletStatusUntyped => {
+          const b = this.bookletDbId$.getValue();
+          if (b > 0) {
+            this.bs.getBookletStatusByDbId(pt, b).subscribe(bookletStatusUntyped => {
               if (bookletStatusUntyped instanceof ServerError) {
                 const e = bookletStatusUntyped as ServerError;
                 this.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
-                localStorage.setItem('bi', '');
+                this.bookletDbId$.next(0);
               } else {
                 const bookletStatus = bookletStatusUntyped as BookletStatus;
                 this.globalErrorMsg$.next('');
-                if (bookletStatus.canStart) {
-                  this.bookletDbId$.next(bookletStatus.id);
-                  this.bookletLabel$.next(bookletStatus.label);
-                } else {
-                  localStorage.setItem('bi', '');
+                this.bookletLabel$.next(bookletStatus.label);
+                if (!bookletStatus.canStart) {
+                  this.bookletDbId$.next(0);
                 }
               }
             });
@@ -105,13 +117,31 @@ export class LogindataService {
     );
 
     }
+  }
+}
 
-    this.personToken$.subscribe(t => localStorage.setItem('pt', t));
-    this.bookletDbId$.subscribe(id => localStorage.setItem('bi', id.toString()));
+// eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+export class PersonTokenAndBookletId {
+  readonly personToken: string;
+  readonly bookletId: number;
+
+  constructor(authString: string) {
+    if ((typeof authString !== 'string') || (authString.length === 0)) {
+      this.personToken = '';
+      this.bookletId = 0;
+    } else {
+      const retSplits = authString.split('##');
+      this.personToken = retSplits[0];
+
+      if (retSplits.length > 1) {
+        this.bookletId = +retSplits[1];
+      } else {
+        this.bookletId = 0;
+      }
+    }
   }
 
-  // *****************************************************
-  login(name: string, pw: string) {
-
+  toAuthString(): string {
+    return this.personToken + '##' + this.bookletId.toString();
   }
 }

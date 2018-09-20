@@ -1,8 +1,8 @@
 import { BehaviorSubject } from 'rxjs';
-import { LogindataService } from './../logindata.service';
+import { LogindataService, PersonTokenAndBookletId } from './../logindata.service';
 import { MessageDialogComponent, MessageDialogData, MessageType } from './../iqb-common';
 import { MatDialog } from '@angular/material';
-import { BackendService, BookletData, PersonTokenAndBookletId,
+import { BackendService, BookletData,
   BookletnamesByCode, LoginData, BookletStatus, ServerError } from './../backend.service';
 import { Router } from '@angular/router';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
@@ -227,7 +227,8 @@ export class StartComponent implements OnInit {
                 this.lds.bookletLabel$.next(b.title);
                 // ************************************************
 
-                // this.router.navigateByUrl('/u');
+                // by setting bookletDbId$ the test-controller will load the booklet
+                this.router.navigateByUrl('/t');
 
                 // ************************************************
               } else {
@@ -244,13 +245,15 @@ export class StartComponent implements OnInit {
               this.lds.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
             } else {
               const startData = new PersonTokenAndBookletId(startDataUntyped as string);
+
               if (startData.bookletId > 0) {
                 this.lds.bookletDbId$.next(startData.bookletId);
                 this.lds.personToken$.next(startData.personToken);
                 this.lds.bookletLabel$.next(b.title);
                 // ************************************************
 
-                // this.router.navigateByUrl('/u');
+                // by setting bookletDbId$ the test-controller will load the booklet
+                this.router.navigateByUrl('/t');
 
                 // ************************************************
               } else {
