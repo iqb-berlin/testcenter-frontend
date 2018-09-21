@@ -4,7 +4,7 @@ import { BackendService, ServerError } from './../backend.service';
 import { UnithostComponent } from './unithost.component';
 import { Injectable, Component } from '@angular/core';
 import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot, Resolve } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
@@ -36,15 +36,9 @@ export class UnitResolver implements Resolve<UnitDef> {
 
   resolve(next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<UnitDef> {
-      if (this.tcs.isSession$.getValue() === true) {
-        return this.tcs.getUnitAt(next.params['u'])
-          .pipe(
-            switchMap((newUnit: UnitDef) => {
-              this.tcs.unitname$.next(newUnit.name);
-              return this.tcs.fetchUnitData(newUnit);
-            }));
+      if (this.tcs.authorisation$.getValue() !== null) {
+        return of(this.tcs.getUnitForPlayer(next.params['u']));
       } else {
-        this.tcs.unitname$.next('');
         return null;
       }
     }

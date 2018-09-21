@@ -29,7 +29,7 @@
         </p>
         <button mat-raised-button class="bookletselectbutton" (click)="buttonStartTest(b)"
           [disabled]="!b.isEnabled" *ngFor="let b of bookletlist">
-            <p class="booklet_title">{{b.title}}</p>
+            <p class="booklet_title">{{b.label}}</p>
             <p class="booklet_status">{{b.statustxt}}</p>
         </button>
       </div>
@@ -38,7 +38,7 @@
       <div *ngIf="showTestRunningButtons">
         <div fxLayout="column" fxLayoutGap="20px">
           <button mat-raised-button color="primary" [routerLink]="['/t']">Zum Test zurückkehren</button>
-          <button mat-raised-button color="primary" (click)="buttonFinishTest()">{{ testFinishButtonText }}</button>
+          <button mat-raised-button color="primary" (click)="buttonEndTest()">{{ testEndButtonText }}</button>
         </div>
       </div>
 

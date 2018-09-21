@@ -101,14 +101,14 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  startBookletByLoginToken(logintoken: string, code: string, bookletFilename: string): Observable<string | ServerError> {
+  startBookletByLoginToken(logintoken: string, code: string, bookletFilename: string): Observable<PersonTokenAndBookletId | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<string>(this.serverUrl +
+      .post<PersonTokenAndBookletId>(this.serverUrl +
             'startBookletByLoginToken.php', {lt: logintoken, c: code, b: bookletFilename}, httpOptions)
         .pipe(
           catchError(this.handleError)
@@ -130,14 +130,14 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  finishBooklet(auth: Authorisation): Observable<boolean | ServerError> {
+  EndBooklet(persontoken: string, bookletDbId: number): Observable<boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<boolean>(this.serverUrl + 'lockBooklet.php', {au: auth.toAuthString}, httpOptions)
+      .post<boolean>(this.serverUrl + 'lockBooklet.php', {pt: persontoken, b: bookletDbId}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
@@ -176,9 +176,9 @@ export class ServerError {
 }
 
 export interface BookletData {
-  name: string;
+  id: string;
   filename: string;
-  title: string;
+  label: string;
 }
 
 export interface BookletnamesByCode {
@@ -203,33 +203,7 @@ export interface BookletStatus {
   label: string;
 }
 
-// eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-export class Authorisation {
-  readonly personToken: string;
-  readonly bookletId: number;
-
-  static fromPersonTokenAndBookletId(personToken: string, bookletId: number): Authorisation {
-    return new Authorisation(personToken + '##' + bookletId.toString());
-  }
-
-  constructor(authString: string) {
-    if ((typeof authString !== 'string') || (authString.length === 0)) {
-      this.personToken = '';
-      this.bookletId = 0;
-    } else {
-      const retSplits = authString.split('##');
-      this.personToken = retSplits[0];
-
-      if (retSplits.length > 1) {
-        this.bookletId = +retSplits[1];
-      } else {
-        this.bookletId = 0;
-      }
-    }
-  }
-
-  toAuthString(): string {
-    return this.personToken + '##' + this.bookletId.toString();
-  }
-
+export interface PersonTokenAndBookletId {
+  pt: string;
+  b: number;
 }

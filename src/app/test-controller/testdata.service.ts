@@ -1,5 +1,5 @@
 import { BehaviorSubject ,  Observable, Subject } from 'rxjs';
-import { BackendService, SessionData, UnitData, ServerError } from './backend.service';
+import { BackendService, BookletData, UnitData, ServerError } from './backend.service';
 import { Injectable, Component, Input, Output, EventEmitter, Pipe } from '@angular/core';
 import { Element } from '@angular/compiler';
 import { mergeAll, switchMap, map } from 'rxjs/operators';

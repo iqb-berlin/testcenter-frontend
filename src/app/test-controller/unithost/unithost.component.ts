@@ -1,4 +1,3 @@
-import { LogindataService } from './../../logindata.service';
 import { UnitDef, TestControllerService } from './../test-controller.service';
 import { Subscriber ,  Subscription } from 'rxjs';
 import { BackendService } from './../backend.service';
@@ -13,20 +12,37 @@ import { Location } from '@angular/common';
 })
 
 export class UnithostComponent implements OnInit, OnDestroy {
-  private message = 'yoyoyo';
+  // private message = 'yoyoyo';
 
   // public showIframe = false;
   private iFrameHostElement: HTMLElement;
   private iFrameItemplayer: HTMLIFrameElement;
   private routingSubscription: Subscription;
+  public currentValidPages: string[] = [];
+
+    // changed by itemplayer via postMessage, observed here to save (see below)
+    // public restorePoint$ = new BehaviorSubject<string>('');
+    // public response$ = new BehaviorSubject<string>('');
+    // public log$ = new BehaviorSubject<string>('');
 
   constructor(
-    private lds: LogindataService,
     private tcs: TestControllerService,
     private bs: BackendService,
     private location: Location,
     private route: ActivatedRoute
   ) {
+
+    // this.restorePoint$.pipe(
+    //   debounceTime(1000)
+    // ).subscribe(data => this.bs.setUnitRestorePoint(this.lds.personToken$.getValue(), this._currentUnitId, data));
+
+    // this.response$.pipe(
+    //   debounceTime(1000)
+    // ).subscribe(data => this.bs.setUnitResponses(this.lds.personToken$.getValue(), this._currentUnitId, data));
+
+    // this.log$.pipe(
+    //   bufferTime(1000)
+    // ).subscribe(data => this.bs.setUnitLog(this.lds.personToken$.getValue(), this._currentUnitId, data));
   }
 
   ngOnInit() {
@@ -36,8 +52,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     this.routingSubscription = this.route.params.subscribe(
       params => {
-        this.message = 'u: ' + params['u'];
-/*
+        // this.message = 'u: ' + params['u'];
+
+
         // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
         while (this.iFrameHostElement.hasChildNodes()) {
           this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
@@ -45,19 +62,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
         const newUnit: UnitDef = this.route.snapshot.data['unit'];
 
         if ((newUnit === null) || (newUnit === undefined)) {
-          const messageElement = <HTMLElement>document.createElement('p');
-          messageElement.setAttribute('class', 'unitMessage');
-          messageElement.innerHTML = this.message;
-          this.iFrameHostElement.appendChild(messageElement);
-
           this.tcs.pageTitle$.next('Problem?');
-          this.tcs.updateUnitId(-1);
         } else {
-          this.tcs.pageTitle$.next(newUnit.title);
-          this.tcs.updateUnitId(newUnit.sequenceId);
+          this.tcs.pageTitle$.next(newUnit.label);
 
           this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-          this.iFrameItemplayer.setAttribute('srcdoc', newUnit.getItemplayerHtml());
+          this.iFrameItemplayer.setAttribute('srcdoc', this.bs.getItemplayer(newUnit.unitDefinitionType));
           this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
           this.iFrameItemplayer.setAttribute('class', 'unitHost');
           this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
@@ -67,7 +77,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
           // this.tss.pendingItemRestorePoint$.next(newUnit.restorePoint);
 
           this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-        } */
+        }
       });
   }
 

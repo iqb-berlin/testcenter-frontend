@@ -1,3 +1,6 @@
+<div class="spinner-container" *ngIf="dataLoading">
+  <mat-spinner></mat-spinner>
+</div>
 <div class="page-body">
   <div class="tcSidenav" fxFlex="110px" fxLayout="column" fxLayoutGap="10px">
     <p>Aufgaben:</p>
@@ -12,7 +15,7 @@
       <button (click)="showUnitComponent = !showUnitComponent">Click</button>
     </p>
 
-    <router-outlet *ngIf="showUnitComponent"></router-outlet>
+    <router-outlet *ngIf="currentUnit !== null"></router-outlet>
 
   </div>
 </div>
