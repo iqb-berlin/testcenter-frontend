@@ -42,7 +42,7 @@ export class TestControllerService {
   private _currentUnitId = '';
 
   // .................................................................................
-  private allUnits: UnitDef[] = [];
+  public allUnits$ = new BehaviorSubject<UnitDef[]>([]);
   private currentUnitId$ = new BehaviorSubject<number>(0);
   public isSession$ = new BehaviorSubject<boolean>(false);
 
@@ -159,6 +159,7 @@ export class ResourceData {
 export class UnitDef {
   sequenceId: number;
   name: string;
+  locked: boolean;
   title: string;
   resources: ResourceData[];
   restorePoint: string;
@@ -172,6 +173,7 @@ export class UnitDef {
     this.restorePoint = '';
     this.unitDefinition = '';
     this.itemplayerId = '';
+    this.locked = false;
   }
 
   getItemplayerHtml() {

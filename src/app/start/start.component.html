@@ -28,7 +28,7 @@
           Für diese Anmeldung wurde kein Test gefunden.
         </p>
         <button mat-raised-button class="bookletselectbutton" (click)="buttonStartTest(b)"
-          [value]="b.filename_and_lastUnit" [disabled]="!b.isEnabled" *ngFor="let b of bookletlist">
+          [disabled]="!b.isEnabled" *ngFor="let b of bookletlist">
             <p class="booklet_title">{{b.title}}</p>
             <p class="booklet_status">{{b.statustxt}}</p>
         </button>

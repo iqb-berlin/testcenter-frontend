@@ -1,0 +1,15 @@
+.tcSidenav {
+  background-color: teal;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.tcSidenav > p, .tcSidenav > button {
+  margin: 15px 10px 0px 10px;
+}
+
+.errorMsg {
+  margin: 20px;
+  color: brown;
+}

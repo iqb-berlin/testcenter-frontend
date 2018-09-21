@@ -13,7 +13,7 @@ import { Location } from '@angular/common';
 })
 
 export class UnithostComponent implements OnInit, OnDestroy {
-  private message = '';
+  private message = 'yoyoyo';
 
   // public showIframe = false;
   private iFrameHostElement: HTMLElement;
@@ -27,9 +27,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     private location: Location,
     private route: ActivatedRoute
   ) {
-    this.lds.globalErrorMsg$.subscribe(s => {
-      this.message = s;
-    });
   }
 
   ngOnInit() {
@@ -39,6 +36,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     this.routingSubscription = this.route.params.subscribe(
       params => {
+        this.message = 'u: ' + params['u'];
+/*
         // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
         while (this.iFrameHostElement.hasChildNodes()) {
           this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
@@ -68,7 +67,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
           // this.tss.pendingItemRestorePoint$.next(newUnit.restorePoint);
 
           this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-        }
+        } */
       });
   }
 

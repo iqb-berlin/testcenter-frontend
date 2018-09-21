@@ -9,9 +9,9 @@ import { MatProgressSpinnerModule, MatIconModule } from '@angular/material';
 import { TestControllerComponent } from './test-controller.component';
 import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameChild.directive';
 import { routingProviders } from './unithost/unit-routing';
-import { TcStatustextComponent } from './tc-statustext/tc-statustext.component';
 import { TcMenuButtonsComponent } from './tc-menu-buttons/tc-menu-buttons.component';
 import { TcNaviButtonsComponent } from './tc-navi-buttons/tc-navi-buttons.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 
 @NgModule({
@@ -19,13 +19,13 @@ import { TcNaviButtonsComponent } from './tc-navi-buttons/tc-navi-buttons.compon
     CommonModule,
     TestControllerRoutingModule,
     MatProgressSpinnerModule,
+    FlexLayoutModule,
     MatIconModule
   ],
   declarations: [
     UnithostComponent,
     TestControllerComponent,
     ResizeIFrameChildDirective,
-    TcStatustextComponent,
     TcMenuButtonsComponent,
     TcNaviButtonsComponent
   ],
@@ -35,7 +35,6 @@ import { TcNaviButtonsComponent } from './tc-navi-buttons/tc-navi-buttons.compon
   ],
   exports: [
     TestControllerComponent,
-    TcStatustextComponent,
     TcNaviButtonsComponent,
     TcMenuButtonsComponent
   ]

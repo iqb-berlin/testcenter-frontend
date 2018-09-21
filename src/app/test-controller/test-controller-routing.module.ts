@@ -14,12 +14,12 @@ const routes: Routes = [
 //      {path: '', redirectTo: 'u/0', pathMatch: 'full'},
 //      {path: 'u', redirectTo: 'u/0', pathMatch: 'full'},
       {path: 'u/:u',
-        component: UnithostComponent,
+        component: UnithostComponent
         // canActivate: [UnitActivateGuard],
         // canDeactivate: [UnitDeactivateGuard],
-        resolve: {
-          unit: UnitResolver
-        }
+        // resolve: {
+        //   unit: UnitResolver
+        // }
       }
     ]
   }];

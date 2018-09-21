@@ -1,0 +1,18 @@
+<div class="page-body">
+  <div class="tcSidenav" fxFlex="110px" fxLayout="column" fxLayoutGap="10px">
+    <p>Aufgaben:</p>
+    <button mat-raised-button (click)="console.log(u.sequenceId)"
+      [disabled]="u.locked" *ngFor="let u of allUnits">
+      {{ u.sequenceId }}
+    </button>
+  </div>
+  <div fxFlex fxLayout="column">
+    <p *ngIf="errorMsg.length > 0" class="errorMsg"> {{ errorMsg }}</p>
+    <p>
+      <button (click)="showUnitComponent = !showUnitComponent">Click</button>
+    </p>
+
+    <router-outlet *ngIf="showUnitComponent"></router-outlet>
+
+  </div>
+</div>
