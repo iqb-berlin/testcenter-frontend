@@ -71,7 +71,8 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  getBookletStatusByNameAndLoginToken(logintoken: string, code: string, bookletname: string): Observable<BookletStatus | ServerError> {
+  getBookletStatusByNameAndLoginToken(logintoken: string, code: string,
+      bookletid: string, bookletlabel: string): Observable<BookletStatus | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
@@ -79,7 +80,7 @@ export class BackendService {
     };
     return this.http
       .post<BookletStatus>(this.serverUrl + 'getBookletStatusByNameAndLoginToken.php', {
-        lt: logintoken, b: bookletname, c: code}, httpOptions)
+        lt: logintoken, b: bookletid, c: code, bl: bookletlabel}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
@@ -130,7 +131,7 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  EndBooklet(persontoken: string, bookletDbId: number): Observable<boolean | ServerError> {
+  endBooklet(persontoken: string, bookletDbId: number): Observable<boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
@@ -181,8 +182,8 @@ export interface BookletData {
   label: string;
 }
 
-export interface BookletnamesByCode {
-  [code: string]: string[];
+export interface BookletDataListByCode {
+  [code: string]: BookletData[];
 }
 
 export interface LoginData {
@@ -190,8 +191,7 @@ export interface LoginData {
   groupname: string;
   loginname: string;
   workspaceName: string;
-  booklets: BookletData[];
-  codeswithbooklets: BookletnamesByCode;
+  booklets: BookletDataListByCode;
   code: string;
 }
 

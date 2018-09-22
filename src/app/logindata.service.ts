@@ -1,5 +1,5 @@
 import { BackendService, ServerError, LoginData, BookletStatus, BookletData,
-  BookletnamesByCode } from './backend.service';
+  BookletDataListByCode } from './backend.service';
 import { BehaviorSubject, Subject, merge } from 'rxjs';
 import { Injectable } from '@angular/core';
 
@@ -24,7 +24,7 @@ export class LogindataService {
   public personCode$ = new BehaviorSubject<string>('');
   public bookletLabel$ = new BehaviorSubject<string>('');
   public globalErrorMsg$ = new BehaviorSubject<string>('');
-  public bookletsByCode$ = new BehaviorSubject<BookletnamesByCode>(null);
+  public bookletsByCode$ = new BehaviorSubject<BookletDataListByCode>(null);
   public bookletData$ = new BehaviorSubject<BookletData[]>([]);
   public loginToken$ = new BehaviorSubject<string>('');
   public loginStatusText$ = new BehaviorSubject<string[]>([]);
@@ -91,8 +91,8 @@ export class LogindataService {
             this.groupName$.next(loginData.groupname);
             this.workspaceName$.next(loginData.workspaceName);
             this.personCode$.next(loginData.code);
-            this.bookletsByCode$.next(loginData.codeswithbooklets);
-            this.bookletData$.next(loginData.booklets);
+            this.bookletsByCode$.next(loginData.booklets);
+            this.bookletData$.next(loginData.booklets[loginData.code]);
             this.loginMode$.next(loginData.mode);
             this.personToken$.next(pt);
             this.loginName$.next(loginData.loginname);

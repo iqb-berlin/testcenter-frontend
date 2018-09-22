@@ -3,7 +3,7 @@ import { LogindataService } from './../logindata.service';
 import { MessageDialogComponent, MessageDialogData, MessageType } from './../iqb-common';
 import { MatDialog } from '@angular/material';
 import { BackendService, PersonTokenAndBookletId,
-  BookletnamesByCode, LoginData, BookletStatus, ServerError } from './../backend.service';
+  BookletDataListByCode, LoginData, BookletStatus, ServerError } from './../backend.service';
 import { Router } from '@angular/router';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -134,14 +134,14 @@ export class StartComponent implements OnInit {
               } else {
                 const loginData = loginDataUntyped as LoginData;
                 this.lds.personToken$.next('');
-                this.lds.bookletsByCode$.next(loginData.codeswithbooklets);
-                this.lds.bookletData$.next(loginData.booklets);
+                this.lds.bookletsByCode$.next(loginData.booklets);
+                this.lds.bookletData$.next([]);
                 this.lds.groupName$.next(loginData.groupname);
                 this.lds.workspaceName$.next(loginData.workspaceName);
                 this.lds.loginMode$.next(loginData.mode);
                 this.lds.loginName$.next(loginData.loginname);
 
-                this.validCodes = Object.keys(loginData.codeswithbooklets);
+                this.validCodes = Object.keys(loginData.booklets);
                 this.showLoginForm = false;
 
                 if (this.validCodes.length > 1) {
@@ -150,6 +150,7 @@ export class StartComponent implements OnInit {
                   this.lds.personCode$.next((this.validCodes.length > 0) ? this.validCodes[0] : '');
                   this.showCodeForm = false;
                   this.showBookletButtons = true;
+                  this.lds.bookletData$.next(loginData.booklets['']);
                   this.bookletlist = this.getStartButtonData();
                 }
               }
@@ -162,6 +163,7 @@ export class StartComponent implements OnInit {
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   codeinput() {
     const myCode = this.codeinputform.get('code').value as string;
+    this.lds.personToken$.next('');
     if (myCode.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
@@ -182,9 +184,10 @@ export class StartComponent implements OnInit {
       });
     } else {
       this.lds.personCode$.next(myCode);
-      this.lds.personToken$.next('');
       this.showCodeForm = false;
       this.showBookletButtons = true;
+      const codeToBooklets = this.lds.bookletsByCode$.getValue();
+      this.lds.bookletData$.next(codeToBooklets[myCode]);
       this.bookletlist = this.getStartButtonData();
     }
   }
@@ -192,25 +195,20 @@ export class StartComponent implements OnInit {
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   getStartButtonData(): StartButtonData[] {
     const myreturn: StartButtonData[] = [];
-    const codeToBooklets = this.lds.bookletsByCode$.getValue();
-    const bookletData = this.lds.bookletData$.getValue();
     const lt = this.lds.loginToken$.getValue();
     const pt = this.lds.personToken$.getValue();
     const code = this.lds.personCode$.getValue();
 
+    const bookletData = this.lds.bookletData$.getValue();
     if (pt.length > 0 || lt.length > 0) {
-      const myBooklets = codeToBooklets[code];
-
       for (const booklet of bookletData) {
-        if (myBooklets.indexOf(booklet.id) >= 0) {
-          const myTest = new StartButtonData(booklet.id, booklet.label, booklet.filename);
-          if (pt.length > 0) {
-            myTest.getBookletStatusByPersonToken(this.bs, pt);
-          } else {
-            myTest.getBookletStatusByLoginToken(this.bs, lt, code);
-          }
-          myreturn.push(myTest);
+        const myTest = new StartButtonData(booklet.id, booklet.label, booklet.filename);
+        if (pt.length > 0) {
+          myTest.getBookletStatusByPersonToken(this.bs, pt);
+        } else {
+          myTest.getBookletStatusByLoginToken(this.bs, lt, code);
         }
+        myreturn.push(myTest);
       }
     }
     return myreturn;
@@ -221,7 +219,7 @@ export class StartComponent implements OnInit {
     const lt = this.lds.loginToken$.getValue();
     const pt = this.lds.personToken$.getValue();
     const code = this.lds.personCode$.getValue();
-
+console.log(b);
     if (pt.length > 0 || lt.length > 0) {
       if (pt.length > 0) {
         this.bs.startBookletByPersonToken(pt, b.filename).subscribe(
@@ -296,7 +294,7 @@ export class StartComponent implements OnInit {
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   buttonEndTest() {
     if (this.lds.loginMode$.getValue() === 'hot') {
-      this.bs.EndBooklet(this.lds.personToken$.getValue(), this.lds.bookletDbId$.getValue()).subscribe(
+      this.bs.endBooklet(this.lds.personToken$.getValue(), this.lds.bookletDbId$.getValue()).subscribe(
         finOkUntyped => {
           if (finOkUntyped instanceof ServerError) {
             const e = finOkUntyped as ServerError;
@@ -350,7 +348,7 @@ export class StartButtonData {
   }
 
   public getBookletStatusByLoginToken(bs: BackendService, loginToken: string, code: string) {
-    bs.getBookletStatusByNameAndLoginToken(loginToken, code, this.id).subscribe(respDataUntyped => {
+    bs.getBookletStatusByNameAndLoginToken(loginToken, code, this.id, this.label).subscribe(respDataUntyped => {
       if (respDataUntyped instanceof ServerError) {
         const e = respDataUntyped as ServerError;
         this.statustxt = e.code.toString() + ': ' + e.label;

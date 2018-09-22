@@ -1,0 +1,36 @@
+<form [formGroup]="reviewform">
+  <h1 mat-dialog-title>Kommentar geben</h1>
+
+  <mat-dialog-content fxLayout="column">
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <p>Kommentar für:</p>
+        <mat-radio-group formControlName="target" fxLayout="row" fxLayoutGap="10px">
+            <mat-radio-button value="b" [matTooltip]="data.bookletname">aktuelles Testheft</mat-radio-button>
+            <mat-radio-button value="u" [disabled]="data.unitname.length === 0" [matTooltip]="data.unitname">aktuelle Aufgabe</mat-radio-button>
+        </mat-radio-group>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <p>Priorität:</p>
+        <mat-radio-group formControlName="priority" fxLayout="row" fxLayoutGap="10px">
+            <mat-radio-button value="1">dringend/kritisch</mat-radio-button>
+            <mat-radio-button value="2">mittelfristig</mat-radio-button>
+            <mat-radio-button value="3">optional</mat-radio-button>
+        </mat-radio-group>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <p>Kategorie:</p>
+        <mat-checkbox formControlName="tech">Technisches</mat-checkbox>
+        <mat-checkbox formControlName="content">Inhaltlich</mat-checkbox>
+        <mat-checkbox formControlName="design">Gestaltung</mat-checkbox>
+    </div>
+    <mat-form-field>
+      <textarea matInput formControlName="entry" placeholder="Kommentar" rows="15"></textarea>
+      <mat-icon matSuffix>mode_edit</mat-icon>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" type="submit" [mat-dialog-close]="reviewform" [disabled]="reviewform.invalid">Speichern</button>
+    <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
+  </mat-dialog-actions>
+</form>

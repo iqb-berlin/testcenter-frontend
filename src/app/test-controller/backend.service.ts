@@ -72,6 +72,37 @@ export class BackendService {
   }
 
   // 888888888888888888888888888888888888888888888888888888888888888888
+  saveUnitReview(auth: Authorisation, unitDbId: number, priority: number,
+        categories: string, entry: string): Observable<boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+    .post<boolean>(this.serverUrl + 'addUnitReview.php', {au: auth.toAuthString(), u: unitDbId,
+        p: priority, c: categories, e: entry}, httpOptions)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  // 888888888888888888888888888888888888888888888888888888888888888888
+  saveBookletReview(auth: Authorisation, priority: number, categories: string, entry: string): Observable<boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+    .post<boolean>(this.serverUrl + 'addBookletReview.php', {au: auth.toAuthString(),
+        p: priority, c: categories, e: entry}, httpOptions)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  // 888888888888888888888888888888888888888888888888888888888888888888
   getItemplayer(unitDefinitionType: string): string {
     unitDefinitionType = this.normaliseFileName(unitDefinitionType, 'html');
     if (this.itemplayers.hasOwnProperty(unitDefinitionType)) {

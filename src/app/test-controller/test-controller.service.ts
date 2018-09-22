@@ -55,6 +55,7 @@ export class TestControllerService {
         this.authorisation$.next(null);
       }
     });
+    this.lds.loginMode$.subscribe(m => this.isReviewMode$.next((m === 'trial') || (m === 'review')));
   }
 
   getUnitForPlayer(unitId): UnitDef {
@@ -178,6 +179,7 @@ export class ResourceData {
 export class UnitDef {
   sequenceId: number;
   id: string;
+  dbId: number;
   locked: boolean;
   label: string;
   resources: ResourceData[];
