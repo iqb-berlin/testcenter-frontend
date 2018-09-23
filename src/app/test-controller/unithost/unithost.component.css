@@ -1,3 +1,6 @@
 #iFrameHost {
-  width: 100%;
+  /* width: 100%; */
+  background-color: white;
+  margin: 0px;
+  border: none;
 }

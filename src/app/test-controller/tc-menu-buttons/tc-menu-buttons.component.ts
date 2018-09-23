@@ -29,11 +29,17 @@ export class TcMenuButtonsComponent implements OnInit {
   }
 
   showReviewDialog() {
-    const currentUnit = this.tcs.currentUnit$.getValue();
+    const currentUnitPos = this.tcs.currentUnitPos$.getValue();
+    let currentUnitId = '';
     const currentBookletId = this.lds.bookletDbId$.getValue();
     let currentUnitLabel = '';
-    if (currentUnit !== null) {
-      currentUnitLabel = currentUnit.label;
+    if (currentUnitPos >= 0) {
+      const booklet = this.tcs.booklet$.getValue();
+      if (booklet !== null) {
+        const currentUnit = booklet.getUnitAt(currentUnitPos);
+        currentUnitLabel = currentUnit.label;
+        currentUnitId = currentUnit.id;
+      }
     }
     const dialogRef = this.reviewDialog.open(ReviewDialogComponent, {
       width: '700px',
@@ -51,7 +57,7 @@ export class TcMenuButtonsComponent implements OnInit {
           if (targetSelection === 'u') {
             this.bs.saveUnitReview(
                 this.tcs.authorisation$.getValue(),
-                currentUnit.dbId,
+                currentUnitId,
                 (<FormGroup>result).get('priority').value,
                 dialogRef.componentInstance.getCategories(),
                 (<FormGroup>result).get('entry').value

@@ -8,21 +8,48 @@ import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
+  constructor(
+    private tcs: TestControllerService,
+    private bs: BackendService
+  ) {}
+
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-      console.log('UnitActivateGuard');
+
+    const targetUnitSequenceId = next.params['u'] as number;
+    const currentBooklet = this.tcs.booklet$.getValue();
+    if (currentBooklet === null) {
+      console.log('booklet null');
+    } else if ((targetUnitSequenceId < 0) || (currentBooklet.units.length < targetUnitSequenceId - 1)) {
+      console.log('unit# out of range');
+    } else {
+      const newUnit = currentBooklet.getUnitAt(targetUnitSequenceId);
+      console.log('inside canActivate: ' + newUnit.label + '; ' + newUnit.unitDefinitionType);
+      if (newUnit.locked) {
+        console.log('unit is locked');
+      } else if (!this.bs.isItemplayerReady(newUnit.unitDefinitionType)) {
+        console.log('itemplayer for unit not available');
+      } else {
+        this.tcs.setCurrentUnit(targetUnitSequenceId);
+      }
+    }
     return true;
   }
 }
 
 @Injectable()
 export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
+  constructor(
+    private tcs: TestControllerService,
+    private bs: BackendService
+  ) {}
+
   canDeactivate(
     component: UnithostComponent,
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-      console.log('UnitDeactivateGuard');
+    console.log('left unit');
     return true;
   }
 }
@@ -31,18 +58,19 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
 // enriches the routing data with unit data and resources:
 // places in data['unit'] the unit object
 export class UnitResolver implements Resolve<UnitDef> {
-  constructor(private tcs: TestControllerService,
-  private bs: BackendService) { }
+  constructor(private tcs: TestControllerService) { }
 
   resolve(next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<UnitDef> {
-      if (this.tcs.authorisation$.getValue() !== null) {
-        return of(this.tcs.getUnitForPlayer(next.params['u']));
-      } else {
-        return null;
-      }
-    }
+
+    // const targetUnitSequenceId = next.params['u'] as number;
+    // const currentBooklet = this.tcs.booklet$.getValue();
+    // const newUnit = currentBooklet.units[targetUnitSequenceId];
+    // this.tcs.currentUnit$.next(newUnit);
+    // return of(newUnit);
+    return null;
+  }
 }
 
 
-export const routingProviders = [UnitActivateGuard, UnitDeactivateGuard, UnitResolver];
+export const unitRoutingProviders = [UnitActivateGuard, UnitDeactivateGuard, UnitResolver];

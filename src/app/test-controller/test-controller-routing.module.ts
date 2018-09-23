@@ -11,14 +11,12 @@ const routes: Routes = [
     path: 't',
     component: TestControllerComponent,
     children: [
-//      {path: '', redirectTo: 'u/0', pathMatch: 'full'},
-//      {path: 'u', redirectTo: 'u/0', pathMatch: 'full'},
       {path: 'u/:u',
-        component: UnithostComponent
-        // canActivate: [UnitActivateGuard],
+        component: UnithostComponent,
+        canActivate: [UnitActivateGuard],
         // canDeactivate: [UnitDeactivateGuard],
         // resolve: {
-        //   unit: UnitResolver
+        //   unitData: UnitResolver
         // }
       }
     ]

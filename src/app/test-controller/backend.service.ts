@@ -36,7 +36,7 @@ export class BackendService {
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  saveUnitReview(auth: Authorisation, unitDbId: number, priority: number,
+  saveUnitReview(auth: Authorisation, unit: string, priority: number,
     categories: string, entry: string): Observable<boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -44,7 +44,7 @@ export class BackendService {
       })
     };
     return this.http
-    .post<boolean>(this.serverUrl + 'addUnitReview.php', {au: auth.toAuthString(), u: unitDbId,
+    .post<boolean>(this.serverUrl + 'addUnitReview.php', {au: auth.toAuthString(), u: unit,
         p: priority, c: categories, e: entry}, httpOptions)
       .pipe(
         catchError(this.handleError)
@@ -95,7 +95,7 @@ export class BackendService {
       );
   }
 
-  // 888888888888888888888888888888888888888888888888888888888888888888
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
   loadItemplayerOk(auth: Authorisation, unitDefinitionType: string): Observable<boolean> {
     unitDefinitionType = this.normaliseFileName(unitDefinitionType, 'html');
     if (this.itemplayers.hasOwnProperty(unitDefinitionType)) {
@@ -106,13 +106,15 @@ export class BackendService {
       return this.getUnitResourceTxt(auth, unitDefinitionType)
           .pipe(
             switchMap(myData => {
+              console.log('inside switchMap');
+
               if (myData instanceof ServerError) {
                 return of(false);
               } else {
                 const itemplayerData = myData as string;
                 if (itemplayerData.length > 0) {
                   this.itemplayers[unitDefinitionType] = itemplayerData;
-                  console.log(Object.keys(this.itemplayers));
+                  console.log('inside itemplayer load');
                   return of(true);
                 } else {
                   return of(false);
@@ -123,14 +125,20 @@ export class BackendService {
   }
 
 
-  // 888888888888888888888888888888888888888888888888888888888888888888
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
   getItemplayer(unitDefinitionType: string): string {
     unitDefinitionType = this.normaliseFileName(unitDefinitionType, 'html');
-    if (this.itemplayers.hasOwnProperty(unitDefinitionType)) {
+    if ((unitDefinitionType.length > 0) && this.itemplayers.hasOwnProperty(unitDefinitionType)) {
       return this.itemplayers[unitDefinitionType];
     } else {
       return '';
     }
+  }
+
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  isItemplayerReady(unitDefinitionType: string): boolean {
+    unitDefinitionType = this.normaliseFileName(unitDefinitionType, 'html');
+    return (unitDefinitionType.length > 0) && this.itemplayers.hasOwnProperty(unitDefinitionType);
   }
 
   // 888888888888888888888888888888888888888888888888888888888888888888

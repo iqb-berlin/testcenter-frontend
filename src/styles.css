@@ -25,11 +25,11 @@ body {
   width: 100%;
   top: 70px;
   bottom: 0;
-  display: flex;
+  /* display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: flex-start;
-  justify-content: left;
+  justify-content: left; */
 }
 
 .sheetofpaper {
@@ -56,7 +56,9 @@ body {
 
 iframe.unitHost {
   width: 100%;
+  background-color: white;
   border: none;
+  margin: 0px;
 }
 
 p.unitMessage {

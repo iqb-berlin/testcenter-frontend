@@ -24,7 +24,7 @@ import { Component, Directive, ElementRef, EventEmitter, HostListener,
         let myIFrame: HTMLIFrameElement;
         myIFrame = iFrameList[0];
         const divHeight = this._element.clientHeight;
-        myIFrame.setAttribute('height', String(divHeight));
+        myIFrame.setAttribute('height', String(divHeight - 5));
       }
     }
   }

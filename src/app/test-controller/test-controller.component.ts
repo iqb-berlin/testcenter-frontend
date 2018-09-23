@@ -8,10 +8,10 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./test-controller.component.css']
 })
 export class TestControllerComponent implements OnInit {
-  private showUnitComponent = true;
+  private showUnitComponent = false;
   private allUnits: UnitDef[] = [];
-  private currentUnit: UnitDef = null;
   private errorMsg = '';
+  private statusMsg = '';
   private dataLoading = false;
 
   constructor (
@@ -25,22 +25,20 @@ export class TestControllerComponent implements OnInit {
       } else {
         this.allUnits = b.units;
       }
+      this.updateStatus();
     });
     this.lds.globalErrorMsg$.subscribe(m => this.errorMsg = m);
-    this.tcs.currentUnit$.subscribe(u => this.currentUnit = u);
+    this.tcs.currentUnitPos$.subscribe(u => this.updateStatus());
   }
 
   ngOnInit() {
-    // both for start and reload situation
-    // const auth = this.tcs.authorisation$.getValue();
     this.tcs.authorisation$.subscribe(authori => {
-      if (authori !== null) {
+      if (authori == null) {
+        this.resetBookletData();
+      } else {
         this.loadBooklet(authori);
       }
     });
-    // if (auth !== null) {
-      // this.loadBooklet(auth);
-    // }
   }
 
   private loadBooklet(auth: Authorisation) {
@@ -50,16 +48,64 @@ export class TestControllerComponent implements OnInit {
         const e = myData as ServerError;
         this.lds.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
         this.tcs.booklet$.next(null);
+        this.tcs.currentUnitPos$.next(-1);
       } else {
         this.lds.globalErrorMsg$.next('');
         const myBookletData = myData as BookletData;
         const myBookletDef = new BookletDef(myBookletData);
         myBookletDef.loadUnits(this.bs, auth).subscribe(okList => {
+          console.log('inside loadUnits');
           this.dataLoading = false;
           this.tcs.booklet$.next(myBookletDef);
-          this.tcs.goToUnitByPosition(myBookletData.u);
+          this.tcs.currentUnitPos$.next(-1);
+          // this.tcs.goToUnitByPosition(myBookletData.u);
         });
       }
     });
+  }
+
+  private resetBookletData() {
+    this.tcs.booklet$.next(null);
+    this.tcs.currentUnitPos$.next(-1);
+    this.tcs.showNaviButtons$.next(false);
+    this.tcs.itemplayerValidPages$.next([]);
+    this.tcs.itemplayerCurrentPage$.next('');
+    this.tcs.nextUnit$.next('');
+    this.tcs.prevUnit$.next('');
+    this.tcs.unitRequest$.next('');
+    this.tcs.canLeaveTest$.next(false);
+    this.tcs.itemplayerPageRequest$.next('');
+  }
+
+  private updateStatus() {
+    const cu = this.tcs.currentUnitPos$.getValue();
+    if (cu >= 0) {
+      this.statusMsg = '';
+    } else {
+      this.tcs.pageTitle$.next('IQB-Testcenter');
+
+      if (this.allUnits.length === 0) {
+        this.statusMsg = 'Es stehen keine Informationen über ein gewähltes Testheft zur Verfügung.';
+      } else {
+        let allLocked = true;
+        for (let i = 0; i < this.allUnits.length; i++) {
+          if (!this.allUnits[i].locked) {
+            allLocked = false;
+            break;
+          }
+        }
+        if (allLocked) {
+          this.statusMsg = 'Alle Aufgaben sind für die Bearbeitung gesperrt. Der Test kann nicht fortgesetzt werden.';
+        } else {
+          this.statusMsg = 'Bitte wählen Sie links eine Aufgabe!';
+        }
+      }
+    }
+    this.showUnitComponent = this.statusMsg.length === 0;
+  }
+
+  sideNaviButtonClick(targetId: number) {
+    console.log(targetId);
+    this.tcs.goToUnitByPosition(targetId);
   }
 }

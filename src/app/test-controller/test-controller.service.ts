@@ -15,7 +15,7 @@ export class TestControllerService {
 
   public authorisation$ = new BehaviorSubject<Authorisation>(null);
   public booklet$ = new BehaviorSubject<BookletDef>(null);
-  public currentUnit$ = new BehaviorSubject<UnitDef>(null);
+  public currentUnitPos$ = new BehaviorSubject<number>(-1);
 
   // for Navi-Buttons:
   public canReview$ = new BehaviorSubject<boolean>(false);
@@ -29,6 +29,8 @@ export class TestControllerService {
   public itemplayerPageRequest$ = new BehaviorSubject<string>('');
 
   // ))))))))))))))))))))))))))))))))))))))))))))))))
+
+
   // public unitname$ = new BehaviorSubject<string>('-');
   // private saveToBackend$: Observable<string>;
   //
@@ -53,7 +55,6 @@ export class TestControllerService {
         this.authorisation$.next(Authorisation.fromPersonTokenAndBookletId(pt, b));
       } else {
         this.authorisation$.next(null);
-        this.resetBookletData();
       }
     });
 
@@ -68,19 +69,6 @@ export class TestControllerService {
         this.canReview$.next(false);
       }
     });
-  }
-
-  resetBookletData() {
-    this.booklet$.next(null);
-    this.currentUnit$.next(null);
-    this.showNaviButtons$.next(false);
-    this.itemplayerValidPages$.next([]);
-    this.itemplayerCurrentPage$.next('');
-    this.nextUnit$.next('');
-    this.prevUnit$.next('');
-    this.unitRequest$.next('');
-    this.canLeaveTest$.next(false);
-    this.itemplayerPageRequest$.next('');
   }
 
   getUnitForPlayer(unitId): UnitDef {
@@ -101,6 +89,13 @@ export class TestControllerService {
     const myBooklet = this.booklet$.getValue();
     if (myBooklet !== null) {
       this.router.navigateByUrl('/t/u/' + pos);
+    }
+  }
+
+  setCurrentUnit(targetUnitSequenceId: number) {
+    const currentBooklet = this.booklet$.getValue();
+    if ((targetUnitSequenceId >= 0) && (currentBooklet !== null) && (currentBooklet.units.length >= targetUnitSequenceId - 1)) {
+      this.currentUnitPos$.next(targetUnitSequenceId);
     }
   }
 }
@@ -164,6 +159,13 @@ export class BookletDef {
     return forkJoin(myUnitLoadings);
   }
 
+  getUnitAt(pos: number): UnitDef {
+    if ((this.units.length > 0) && (pos < this.units.length)) {
+      return this.units[pos];
+    } else {
+      return null;
+    }
+  }
 }
 
 // .....................................................................
@@ -204,7 +206,6 @@ export class ResourceData {
 export class UnitDef {
   sequenceId: number;
   id: string;
-  dbId: number;
   locked: boolean;
   label: string;
   resources: ResourceData[];

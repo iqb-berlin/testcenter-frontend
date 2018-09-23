@@ -9,7 +9,7 @@ import { MatProgressSpinnerModule, MatIconModule, MatMenuModule, MatTooltipModul
   MatDialogModule, MatSnackBarModule, MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatInputModule } from '@angular/material';
 import { TestControllerComponent } from './test-controller.component';
 import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameChild.directive';
-import { routingProviders } from './unithost/unit-routing';
+import { unitRoutingProviders } from './unithost/unit-routing';
 import { TcMenuButtonsComponent } from './tc-menu-buttons/tc-menu-buttons.component';
 import { TcNaviButtonsComponent } from './tc-navi-buttons/tc-navi-buttons.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -47,8 +47,7 @@ import { ReactiveFormsModule } from '../../../node_modules/@angular/forms';
     ReviewDialogComponent
   ],
   providers: [
-    BackendService,
-    routingProviders
+    unitRoutingProviders
   ],
   exports: [
     TestControllerComponent,
