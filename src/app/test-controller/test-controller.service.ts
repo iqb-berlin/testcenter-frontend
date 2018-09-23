@@ -1,7 +1,7 @@
 import { Router } from '@angular/router';
 import { Authorisation } from './backend.service';
 import { LogindataService } from './../logindata.service';
-import { BehaviorSubject, of, Observable, forkJoin } from 'rxjs';
+import { BehaviorSubject, of, Observable, forkJoin, merge } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { debounceTime, bufferTime, switchMap, map } from 'rxjs/operators';
 import { BackendService, BookletData, ServerError, UnitData } from './backend.service';
@@ -18,7 +18,7 @@ export class TestControllerService {
   public currentUnit$ = new BehaviorSubject<UnitDef>(null);
 
   // for Navi-Buttons:
-  public isReviewMode$ = new BehaviorSubject<boolean>(true);
+  public isReviewMode$ = new BehaviorSubject<boolean>(false);
   public showNaviButtons$ = new BehaviorSubject<boolean>(false);
   public itemplayerValidPages$ = new BehaviorSubject<string[]>([]);
   public itemplayerCurrentPage$ = new BehaviorSubject<string>('');
@@ -53,9 +53,30 @@ export class TestControllerService {
         this.authorisation$.next(Authorisation.fromPersonTokenAndBookletId(pt, b));
       } else {
         this.authorisation$.next(null);
+
+        this.booklet$.next(null);
+        this.currentUnit$.next(null);
+        this.showNaviButtons$.next(false);
+        this.itemplayerValidPages$.next([]);
+        this.itemplayerCurrentPage$.next('');
+        this.nextUnit$.next('');
+        this.prevUnit$.next('');
+        this.unitRequest$.next('');
+        this.canLeaveTest$.next(false);
+        this.itemplayerPageRequest$.next('');
       }
     });
-    this.lds.loginMode$.subscribe(m => this.isReviewMode$.next((m === 'trial') || (m === 'review')));
+    merge(
+      this.lds.loginMode$,
+      this.lds.bookletDbId$
+    ).subscribe(k => {
+      const mode = this.lds.loginMode$.getValue();
+      if ((mode === 'trial') || (mode === 'review')) {
+        this.isReviewMode$.next(this.lds.bookletDbId$.getValue() > 0);
+      } else {
+        this.isReviewMode$.next(false);
+      }
+    });
   }
 
   getUnitForPlayer(unitId): UnitDef {

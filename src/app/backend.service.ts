@@ -9,7 +9,9 @@ export class BackendService {
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
-    private http: HttpClient) { }
+    private http: HttpClient) {
+      this.serverUrl = this.serverUrl + 'php_start/';
+    }
 
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
@@ -117,6 +119,7 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  // ??????????????????????? startBookletByPersonToken.php not available yet
   startBookletByPersonToken(persontoken: string, bookletFilename: string): Observable<number | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -138,7 +141,7 @@ export class BackendService {
       })
     };
     return this.http
-      .post<boolean>(this.serverUrl + 'lockBooklet.php', {pt: persontoken, b: bookletDbId}, httpOptions)
+      .post<boolean>(this.serverUrl + 'endBooklet.php', {pt: persontoken, b: bookletDbId}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );

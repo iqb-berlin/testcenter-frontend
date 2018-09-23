@@ -23,7 +23,10 @@ export class TcMenuButtonsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.tcs.isReviewMode$.subscribe(is => this.showReviewMenuEntry = is);
+    this.tcs.isReviewMode$.subscribe(is => {
+        this.showReviewMenuEntry = is;
+        console.log(this.showReviewMenuEntry);
+      });
   }
 
   showReviewDialog() {

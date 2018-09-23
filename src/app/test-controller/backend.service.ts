@@ -17,7 +17,9 @@ export class BackendService {
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
-    private http: HttpClient) {}
+    private http: HttpClient) {
+      this.serverUrl = this.serverUrl + 'php_tc/';
+    }
 
   private normaliseFileName(fn: string, ext: string): string {
     fn = fn.toUpperCase();
@@ -33,7 +35,38 @@ export class BackendService {
     }
   }
 
-  // 888888888888888888888888888888888888888888888888888888888888888888
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  saveUnitReview(auth: Authorisation, unitDbId: number, priority: number,
+    categories: string, entry: string): Observable<boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+    .post<boolean>(this.serverUrl + 'addUnitReview.php', {au: auth.toAuthString(), u: unitDbId,
+        p: priority, c: categories, e: entry}, httpOptions)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  saveBookletReview(auth: Authorisation, priority: number, categories: string, entry: string): Observable<boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+    .post<boolean>(this.serverUrl + 'addBookletReview.php', {au: auth.toAuthString(),
+        p: priority, c: categories, e: entry}, httpOptions)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
   getBookletData(auth: Authorisation): Observable<BookletData | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -71,36 +104,6 @@ export class BackendService {
     }
   }
 
-  // 888888888888888888888888888888888888888888888888888888888888888888
-  saveUnitReview(auth: Authorisation, unitDbId: number, priority: number,
-        categories: string, entry: string): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-    .post<boolean>(this.serverUrl + 'addUnitReview.php', {au: auth.toAuthString(), u: unitDbId,
-        p: priority, c: categories, e: entry}, httpOptions)
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
-
-  // 888888888888888888888888888888888888888888888888888888888888888888
-  saveBookletReview(auth: Authorisation, priority: number, categories: string, entry: string): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-    .post<boolean>(this.serverUrl + 'addBookletReview.php', {au: auth.toAuthString(),
-        p: priority, c: categories, e: entry}, httpOptions)
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
 
   // 888888888888888888888888888888888888888888888888888888888888888888
   getItemplayer(unitDefinitionType: string): string {

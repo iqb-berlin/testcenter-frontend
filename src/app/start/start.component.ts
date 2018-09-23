@@ -306,9 +306,7 @@ console.log(b);
               this.showCodeForm = false;
               this.showBookletButtons = true;
               this.showTestRunningButtons = false;
-              this.lds.bookletDbId$.next(0);
-              this.lds.bookletLabel$.next('');
-              this.bookletlist = this.getStartButtonData();
+              this.resetBooklet();
             }
           }
       });
@@ -317,12 +315,17 @@ console.log(b);
       this.showCodeForm = false;
       this.showBookletButtons = true;
       this.showTestRunningButtons = false;
-      this.lds.bookletDbId$.next(0);
-      this.lds.bookletLabel$.next('');
-      this.bookletlist = this.getStartButtonData();
+      this.resetBooklet();
     }
   }
+
+  private resetBooklet() {
+    this.lds.bookletDbId$.next(0);
+    this.lds.bookletLabel$.next('');
+    this.bookletlist = this.getStartButtonData();
+  }
 }
+
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
