@@ -60,6 +60,7 @@ export class LogindataService {
                 } else if (loginmode === 'review') {
                   myreturn.push('Ausführungsmodus "review": Beschränkungen für Zeit und Navigation sind nicht wirksam. Antworten werden ' +
                               'nicht gespeichert. Sie können ' +
+                              (bL.length > 0 ? ' für das aktuelle Testheft bzw. die Aufgaben ' : ' nach der Auswahl eines Testheftes ') +
                               'Kommentare über das Menü oben rechts speichern.');
                 }
                 myreturn.push('Testheft: ' + (bL.length > 0 ? ('"' + bL + '" gestartet') : 'kein Test gestartet'));

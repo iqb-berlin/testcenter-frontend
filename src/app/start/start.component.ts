@@ -117,7 +117,7 @@ export class StartComponent implements OnInit {
           this.lds.workspaceName$.next('');
           this.lds.bookletsByCode$.next(null);
           this.lds.bookletData$.next([]);
-          this.lds.bookletDbId$.next(0);
+          this.lds.bookletDbId$.next(0); // very important: to let test-controller reset booklet data
           this.lds.bookletLabel$.next('');
           this.lds.loginMode$.next('');
           this.lds.loginName$.next('');
@@ -219,7 +219,7 @@ export class StartComponent implements OnInit {
     const lt = this.lds.loginToken$.getValue();
     const pt = this.lds.personToken$.getValue();
     const code = this.lds.personCode$.getValue();
-console.log(b);
+
     if (pt.length > 0 || lt.length > 0) {
       if (pt.length > 0) {
         this.bs.startBookletByPersonToken(pt, b.filename).subscribe(

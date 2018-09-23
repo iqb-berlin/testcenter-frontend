@@ -18,7 +18,7 @@ export class TestControllerService {
   public currentUnit$ = new BehaviorSubject<UnitDef>(null);
 
   // for Navi-Buttons:
-  public isReviewMode$ = new BehaviorSubject<boolean>(false);
+  public canReview$ = new BehaviorSubject<boolean>(false);
   public showNaviButtons$ = new BehaviorSubject<boolean>(false);
   public itemplayerValidPages$ = new BehaviorSubject<string[]>([]);
   public itemplayerCurrentPage$ = new BehaviorSubject<string>('');
@@ -47,36 +47,40 @@ export class TestControllerService {
     private router: Router,
     private lds: LogindataService
   ) {
-    this.lds.personToken$.subscribe(pt => {
-      const b = this.lds.bookletDbId$.getValue();
+    this.lds.bookletDbId$.subscribe(b => {
+      const pt = this.lds.personToken$.getValue();
       if ((pt.length > 0) && (b > 0)) {
         this.authorisation$.next(Authorisation.fromPersonTokenAndBookletId(pt, b));
       } else {
         this.authorisation$.next(null);
-
-        this.booklet$.next(null);
-        this.currentUnit$.next(null);
-        this.showNaviButtons$.next(false);
-        this.itemplayerValidPages$.next([]);
-        this.itemplayerCurrentPage$.next('');
-        this.nextUnit$.next('');
-        this.prevUnit$.next('');
-        this.unitRequest$.next('');
-        this.canLeaveTest$.next(false);
-        this.itemplayerPageRequest$.next('');
+        this.resetBookletData();
       }
     });
+
     merge(
       this.lds.loginMode$,
       this.lds.bookletDbId$
     ).subscribe(k => {
       const mode = this.lds.loginMode$.getValue();
       if ((mode === 'trial') || (mode === 'review')) {
-        this.isReviewMode$.next(this.lds.bookletDbId$.getValue() > 0);
+        this.canReview$.next(this.lds.bookletDbId$.getValue() > 0);
       } else {
-        this.isReviewMode$.next(false);
+        this.canReview$.next(false);
       }
     });
+  }
+
+  resetBookletData() {
+    this.booklet$.next(null);
+    this.currentUnit$.next(null);
+    this.showNaviButtons$.next(false);
+    this.itemplayerValidPages$.next([]);
+    this.itemplayerCurrentPage$.next('');
+    this.nextUnit$.next('');
+    this.prevUnit$.next('');
+    this.unitRequest$.next('');
+    this.canLeaveTest$.next(false);
+    this.itemplayerPageRequest$.next('');
   }
 
   getUnitForPlayer(unitId): UnitDef {
@@ -228,7 +232,7 @@ export class UnitDef {
   }
 
   loadOk(bs: BackendService, auth: Authorisation): Observable<boolean> {
-    return bs.getUnit(auth, this.id)
+    return bs.getUnitData(auth, this.id)
       .pipe(
         switchMap(myData => {
           if (myData instanceof ServerError) {

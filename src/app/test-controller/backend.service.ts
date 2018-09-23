@@ -74,10 +74,25 @@ export class BackendService {
       })
     };
     return this.http
-      .post<BookletData>(this.serverUrl + 'getBookletData.php', {au: auth}, httpOptions)
+      .post<BookletData>(this.serverUrl + 'getBookletData.php', {au: auth.toAuthString()}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
+  }
+
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  getUnitData(auth: Authorisation, unitid: string): Observable<UnitData | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+
+    return this.http
+    .post<UnitData>(this.serverUrl + 'getUnitData.php', {au: auth.toAuthString(), u: unitid}, httpOptions)
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   // 888888888888888888888888888888888888888888888888888888888888888888
@@ -86,15 +101,18 @@ export class BackendService {
     if (this.itemplayers.hasOwnProperty(unitDefinitionType)) {
       return of(true);
     } else {
+      // to avoid multiple calls before returning:
+      this.itemplayers[unitDefinitionType] = null;
       return this.getUnitResourceTxt(auth, unitDefinitionType)
           .pipe(
             switchMap(myData => {
               if (myData instanceof ServerError) {
                 return of(false);
               } else {
-                const unitDef = myData as string;
-                if (unitDef.length > 0) {
-                  this.itemplayers[unitDefinitionType] = unitDef;
+                const itemplayerData = myData as string;
+                if (itemplayerData.length > 0) {
+                  this.itemplayers[unitDefinitionType] = itemplayerData;
+                  console.log(Object.keys(this.itemplayers));
                   return of(true);
                 } else {
                   return of(false);
@@ -132,21 +150,6 @@ export class BackendService {
           catchError(this.handleError)
         );
     }
-  }
-
-  // 888888888888888888888888888888888888888888888888888888888888888888
-  getUnit(auth: Authorisation, unitid: string): Observable<UnitData | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-
-    return this.http
-    .post<UnitData>(this.serverUrl + 'getUnit.php', {au: auth.toAuthString, u: unitid}, httpOptions)
-      .pipe(
-        catchError(this.handleError)
-      );
   }
 
   // 888888888888888888888888888888888888888888888888888888888888888888
@@ -199,7 +202,7 @@ export class BackendService {
       };
 
       return this.http
-      .post<string>(this.serverUrl + 'getUnitResourceTxt.php', {au: auth.toAuthString, r: resId}, myHttpOptions)
+      .post<string>(this.serverUrl + 'getUnitResourceTxt.php', {au: auth.toAuthString(), r: resId}, myHttpOptions)
         .pipe(
           catchError(this.handleError)
         );

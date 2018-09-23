@@ -31,15 +31,16 @@ export class TestControllerComponent implements OnInit {
   }
 
   ngOnInit() {
-    const auth = this.tcs.authorisation$.getValue();
+    // both for start and reload situation
+    // const auth = this.tcs.authorisation$.getValue();
     this.tcs.authorisation$.subscribe(authori => {
       if (authori !== null) {
         this.loadBooklet(authori);
       }
     });
-    if (auth !== null) {
-      this.loadBooklet(auth);
-    }
+    // if (auth !== null) {
+      // this.loadBooklet(auth);
+    // }
   }
 
   private loadBooklet(auth: Authorisation) {

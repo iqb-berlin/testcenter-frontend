@@ -2,11 +2,11 @@
   <mat-spinner></mat-spinner>
 </div>
 <div class="page-body">
-  <div class="tcSidenav" fxFlex="110px" fxLayout="column" fxLayoutGap="10px">
-    <p>Aufgaben:</p>
+  <div class="tcSidenav" fxFlex="110px" fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="5px">
+    <p>Aufgaben</p>
     <button mat-raised-button (click)="console.log(u.sequenceId)"
       [disabled]="u.locked" *ngFor="let u of allUnits">
-      {{ u.sequenceId }}
+      {{ u.sequenceId + 1 }}
     </button>
   </div>
   <div fxFlex fxLayout="column">
