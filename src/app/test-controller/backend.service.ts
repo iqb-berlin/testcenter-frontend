@@ -12,7 +12,7 @@ export class BackendService {
 
   private lastBookletState = '';
   private lastUnitResponses = '';
-  private lastUnitRestorePoint = '';
+  private restorePoints: {[unitname: string]: string} = {};
   private itemplayers: {[filename: string]: string} = {};
 
   constructor(
@@ -33,6 +33,11 @@ export class BackendService {
     } else {
       return fn + ext;
     }
+  }
+
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  getUnitRestorePoint(unitname: string): string {
+    return this.restorePoints[unitname];
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
@@ -217,49 +222,44 @@ export class BackendService {
   }
 
   // 888888888888888888888888888888888888888888888888888888888888888888
-  // 888888888888888888888888888888888888888888888888888888888888888888
-  setUnitResponses(sessiontoken: string, unit: string, unitdata: string): Observable<string | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    if ((sessiontoken + unit + JSON.stringify(unitdata)) === this.lastUnitResponses) {
-      return new Observable(null);
-    } else {
-      this.lastUnitResponses = sessiontoken + unit + JSON.stringify(unitdata);
-      // todo: store the response for evaluation
-      return this.http
-      .post<string>(this.serverUrl + 'setUnitResponses.php', {st: sessiontoken, u: unit, responses: unitdata}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-    }
-  }
-
-  // 888888888888888888888888888888888888888888888888888888888888888888
-  setUnitRestorePoint(sessiontoken: string, unit: string, unitdata: string): Observable<string | ServerError> {
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  setUnitResponses(auth: Authorisation, unit: string, unitdata: string): Observable<boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-    .post<string>(this.serverUrl + 'setUnitRestorePoint.php', {st: sessiontoken, u: unit, restorepoint: unitdata}, httpOptions)
+    .post<boolean>(this.serverUrl + 'setUnitResponse.php', {au: auth.toAuthString(), u: unit, d: JSON.stringify(unitdata)}, httpOptions)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  // 888888888888888888888888888888888888888888888888888888888888888888
-  setUnitLog(sessiontoken: string, unit: string, unitdata: {}): Observable<string | ServerError> {
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  setUnitRestorePoint(auth: Authorisation, unit: string, unitdata: string): Observable<boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    this.restorePoints[unit] = unitdata;
+    return this.http
+    .post<boolean>(this.serverUrl + 'setUnitRestorePoint.php', {au: auth.toAuthString(), u: unit, d: JSON.stringify(unitdata)}, httpOptions)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  setUnitLog(auth: Authorisation, unit: string, unitdata: string[]): Observable<boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-    .post<string>(this.serverUrl + 'setUnitLog.php', {st: sessiontoken, u: unit, log: unitdata}, httpOptions)
+    .post<boolean>(this.serverUrl + 'setUnitLog.php', {au: auth.toAuthString(), u: unit, d: unitdata}, httpOptions)
       .pipe(
         catchError(this.handleError)
       );

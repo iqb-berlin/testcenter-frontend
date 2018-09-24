@@ -242,6 +242,9 @@ export class UnitDef {
             return of(false);
           } else {
             const myUnitData = myData as UnitData;
+            if (myUnitData.restorepoint.length > 0) {
+              this.restorePoint = JSON.parse(myUnitData.restorepoint);
+            }
             const oParser = new DOMParser();
             const oDOM = oParser.parseFromString(myUnitData.xml, 'text/xml');
 

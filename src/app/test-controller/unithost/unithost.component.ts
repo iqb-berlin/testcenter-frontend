@@ -1,3 +1,4 @@
+import { debounceTime, bufferTime } from 'rxjs/operators';
 import { UnitDef, TestControllerService } from './../test-controller.service';
 import { Subscriber, Subscription, BehaviorSubject } from 'rxjs';
 import { BackendService } from './../backend.service';
@@ -21,20 +22,22 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription = null;
   public currentValidPages: string[] = [];
   private myUnitNumber = -1;
+  private myUnitName = '';
 
   // :::::::::::::::::::::
   private postMessageSubscription: Subscription = null;
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
   private pendingUnitDefinition$ = new BehaviorSubject<string>('');
+  private pendingRestorePoint$ = new BehaviorSubject<string>('');
   public itemplayerCurrentPage$ = new BehaviorSubject<string>('');
   public itemplayerValidPages$ = new BehaviorSubject<string[]>([]);
 
 
-    // changed by itemplayer via postMessage, observed here to save (see below)
-    // public restorePoint$ = new BehaviorSubject<string>('');
-    // public response$ = new BehaviorSubject<string>('');
-    // public log$ = new BehaviorSubject<string>('');
+  // changed by itemplayer via postMessage, observed here to save (see below)
+  public restorePoint$ = new BehaviorSubject<string>('');
+  public response$ = new BehaviorSubject<string>('');
+  public log$ = new BehaviorSubject<string>('');
 
   constructor(
     private tcs: TestControllerService,
@@ -59,17 +62,23 @@ export class UnithostComponent implements OnInit, OnDestroy {
             const pendingSpec = this.pendingUnitDefinition$.getValue();
             if (pendingSpec.length > 0) {
               hasData = true;
-              console.log('has.');
               this.pendingUnitDefinition$.next('');
             }
 
             if (hasData) {
+              this.log$.next('ready');
+              const pendingRespp = this.pendingRestorePoint$.getValue();
+              if (pendingRespp.length > 0) {
+                this.pendingRestorePoint$.next('');
+              }
+
               this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
               this.postMessageTarget = m.source;
               this.postMessageTarget.postMessage({
                 type: 'OpenCBA.ToItemPlayer.DataTransfer',
                 sessionId: this.itemplayerSessionId,
-                unitDefinition: pendingSpec
+                unitDefinition: pendingSpec,
+                restorePoint: pendingRespp
               }, '*');
             }
             break;
@@ -104,7 +113,20 @@ export class UnithostComponent implements OnInit, OnDestroy {
               this.itemplayerCurrentPage$.next(currentPageChanged);
             }
 
-            // DATA!
+            const restorePoint = msgData['restorePoint'];
+            if (restorePoint !== undefined) {
+              this.restorePoint$.next(restorePoint);
+            }
+            const response = msgData['response'];
+            if (response !== undefined) {
+              console.log('got resp ' + response);
+              this.response$.next(response);
+            }
+            // const logEntries = msgData['logEntries'] as string[];
+            // if ((logEntries !== undefined) && (logEntries.length > 0)) {
+            //   console.log(logEntries);
+            //   logEntries.forEach(log => this.log$.next(log));
+            // }
             break;
 
           // // // // // // //
@@ -114,17 +136,44 @@ export class UnithostComponent implements OnInit, OnDestroy {
         }
       }
     });
-    // this.restorePoint$.pipe(
-    //   debounceTime(1000)
-    // ).subscribe(data => this.bs.setUnitRestorePoint(this.lds.personToken$.getValue(), this._currentUnitId, data));
 
-    // this.response$.pipe(
-    //   debounceTime(1000)
-    // ).subscribe(data => this.bs.setUnitResponses(this.lds.personToken$.getValue(), this._currentUnitId, data));
+    this.restorePoint$.pipe(
+      debounceTime(300)).subscribe(data => {
+      const b = this.tcs.booklet$.getValue();
+      if (b !== null) {
+        const u = b.getUnitAt(this.myUnitNumber);
+        if (u !== null) {
+          u.restorePoint = data;
+          console.log('++++' + u.restorePoint);
+        } else {
+          console.log('u null');
+        }
+       } else {
+         console.log('b null');
+       }
 
-    // this.log$.pipe(
-    //   bufferTime(1000)
-    // ).subscribe(data => this.bs.setUnitLog(this.lds.personToken$.getValue(), this._currentUnitId, data));
+      this.bs.setUnitRestorePoint(this.tcs.authorisation$.getValue(), this.myUnitName, data)
+        .subscribe(ok => console.log('restP: ' + ok));
+    });
+
+    this.response$.pipe(
+      debounceTime(300)
+    ).subscribe(data => this.bs.setUnitResponses(this.tcs.authorisation$.getValue(), this.myUnitName, data)
+        .subscribe(d => console.log(d)));
+
+    this.log$.pipe(
+      bufferTime(500)
+    ).subscribe((data: string[]) => {
+      const myLogs = [];
+      data.forEach(lg => {
+        if (lg.length > 0) {
+          myLogs.push(JSON.stringify(lg));
+        }
+      });
+      if (myLogs.length > 0) {
+        this.bs.setUnitLog(this.tcs.authorisation$.getValue(), this.myUnitName, myLogs).subscribe(lg => console.log(lg));
+      }
+    });
   }
 
   ngOnInit() {
@@ -150,6 +199,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if ((currentUnitId >= 0) && (this.myUnitNumber = currentUnitId) && (booklet !== null)) {
       const currentUnit = booklet.getUnitAt(currentUnitId);
       this.tcs.pageTitle$.next(currentUnit.label);
+      this.myUnitName = currentUnit.id;
 
       this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
       this.iFrameItemplayer.setAttribute('srcdoc', this.bs.getItemplayer(currentUnit.unitDefinitionType));
@@ -159,6 +209,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.iFrameItemplayer.setAttribute('height', String(sideNavElement.clientHeight - 5));
 
       this.pendingUnitDefinition$.next(currentUnit.unitDefinition);
+      const restorePoint = this.bs.getUnitRestorePoint(this.myUnitName);
+      console.log(restorePoint);
+      if ((restorePoint === null) || (restorePoint === undefined)) {
+        this.pendingRestorePoint$.next(currentUnit.restorePoint);
+      } else {
+        this.pendingRestorePoint$.next(restorePoint);
+      }
       // this.tss.pendingItemResources$.next(newUnit.getResourcesAsDictionary());
       // this.tss.pendingItemRestorePoint$.next(newUnit.restorePoint);
 
