@@ -254,9 +254,9 @@ export class StartComponent implements OnInit {
               const startData = startDataUntyped as PersonTokenAndBookletId;
 
               if (startData.b > 0) {
-                this.lds.bookletDbId$.next(startData.b);
                 this.lds.personToken$.next(startData.pt);
                 this.lds.bookletLabel$.next(b.label);
+                this.lds.bookletDbId$.next(startData.b); // as last to trigger auth with success!
                 // ************************************************
 
                 // by setting bookletDbId$ the test-controller will load the booklet

@@ -8,6 +8,10 @@
 .navButtonsContainer {
   position: fixed;
   z-index: 100;
-  top:2px;
-  right: 60px;
+  top: 8px;
+  right: 70px;
+}
+
+.mat-fab[disabled], .mat-mini-fab[disabled] {
+  background-color: grey;
 }

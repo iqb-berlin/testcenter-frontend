@@ -3,6 +3,7 @@ import { HttpClient, HttpParams, HttpHeaders, HttpEvent, HttpErrorResponse } fro
 import { ResponseContentType } from '@angular/http';
 import { BehaviorSubject ,  Observable, of } from 'rxjs';
 import { catchError, map, tap, switchMap } from 'rxjs/operators';
+import { Authorisation } from '../logindata.service';
 
 
 @Injectable({
@@ -111,15 +112,12 @@ export class BackendService {
       return this.getUnitResourceTxt(auth, unitDefinitionType)
           .pipe(
             switchMap(myData => {
-              console.log('inside switchMap');
-
               if (myData instanceof ServerError) {
                 return of(false);
               } else {
                 const itemplayerData = myData as string;
                 if (itemplayerData.length > 0) {
                   this.itemplayers[unitDefinitionType] = itemplayerData;
-                  console.log('inside itemplayer load');
                   return of(true);
                 } else {
                   return of(false);
@@ -285,7 +283,6 @@ export class BackendService {
   private handleErrorSimple(errorObj: HttpErrorResponse): Observable<boolean> {
     const myreturn = new ServerError(errorObj.status, 'Fehler bei Datenübertragung');
 
-    console.log('handleErrorSimple: ' + errorObj);
     return of(false);
   }
 }
@@ -317,35 +314,4 @@ export interface UnitData {
 export interface ServerError {
   code: number;
   label: string;
-}
-
-// eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-export class Authorisation {
-  readonly personToken: string;
-  readonly bookletId: number;
-
-  static fromPersonTokenAndBookletId(personToken: string, bookletId: number): Authorisation {
-    return new Authorisation(personToken + '##' + bookletId.toString());
-  }
-
-  constructor(authString: string) {
-    if ((typeof authString !== 'string') || (authString.length === 0)) {
-      this.personToken = '';
-      this.bookletId = 0;
-    } else {
-      const retSplits = authString.split('##');
-      this.personToken = retSplits[0];
-
-      if (retSplits.length > 1) {
-        this.bookletId = +retSplits[1];
-      } else {
-        this.bookletId = 0;
-      }
-    }
-  }
-
-  toAuthString(): string {
-    return this.personToken + '##' + this.bookletId.toString();
-  }
-
 }

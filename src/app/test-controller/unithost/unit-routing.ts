@@ -17,15 +17,15 @@ export class UnitActivateGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
 
-    const targetUnitSequenceId = next.params['u'] as number;
+    const targetUnitSequenceId: number = +next.params['u'];
     const currentBooklet = this.tcs.booklet$.getValue();
+
     if (currentBooklet === null) {
       console.log('booklet null');
     } else if ((targetUnitSequenceId < 0) || (currentBooklet.units.length < targetUnitSequenceId - 1)) {
       console.log('unit# out of range');
     } else {
       const newUnit = currentBooklet.getUnitAt(targetUnitSequenceId);
-      console.log('inside canActivate: ' + newUnit.label + '; ' + newUnit.unitDefinitionType);
       if (newUnit.locked) {
         console.log('unit is locked');
       } else if (!this.bs.isItemplayerReady(newUnit.unitDefinitionType)) {
@@ -34,6 +34,7 @@ export class UnitActivateGuard implements CanActivate {
         this.tcs.setCurrentUnit(targetUnitSequenceId);
       }
     }
+
     return true;
   }
 }

@@ -24,8 +24,10 @@ export class TcNaviButtonsComponent {
         this.pageNextEnabled = (pagePos >= 0) && (pagePos < validPages.length - 1);
         this.pagePrevEnabled = (pagePos > 0) && (validPages.length > 1);
       });
-      this.tcs.nextUnit$.subscribe(u => this.unitNextEnabled = u.length > 0);
-      this.tcs.prevUnit$.subscribe(u => this.unitPrevEnabled = u.length > 0);
+      this.tcs.nextUnit$.subscribe(u => {
+        this.unitNextEnabled = u >= 0;
+      });
+      this.tcs.prevUnit$.subscribe(u => this.unitPrevEnabled = u >= 0);
     }
 
   // *******************************************************************************************************

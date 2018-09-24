@@ -56,7 +56,7 @@ export class TcMenuButtonsComponent implements OnInit {
           const targetSelection = (<FormGroup>result).get('target').value;
           if (targetSelection === 'u') {
             this.bs.saveUnitReview(
-                this.tcs.authorisation$.getValue(),
+                this.lds.authorisation$.getValue(),
                 currentUnitId,
                 (<FormGroup>result).get('priority').value,
                 dialogRef.componentInstance.getCategories(),
@@ -76,7 +76,7 @@ export class TcMenuButtonsComponent implements OnInit {
               });
           } else {
             this.bs.saveBookletReview(
-              this.tcs.authorisation$.getValue(),
+              this.lds.authorisation$.getValue(),
               (<FormGroup>result).get('priority').value,
               dialogRef.componentInstance.getCategories(),
               (<FormGroup>result).get('entry').value

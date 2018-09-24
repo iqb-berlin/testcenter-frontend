@@ -1,7 +1,7 @@
 import { debounceTime, bufferTime } from 'rxjs/operators';
 import { UnitDef, TestControllerService } from './../test-controller.service';
 import { Subscriber, Subscription, BehaviorSubject } from 'rxjs';
-import { BackendService } from './../backend.service';
+import { BackendService, ServerError } from './../backend.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
@@ -30,9 +30,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private postMessageTarget: Window = null;
   private pendingUnitDefinition$ = new BehaviorSubject<string>('');
   private pendingRestorePoint$ = new BehaviorSubject<string>('');
-  public itemplayerCurrentPage$ = new BehaviorSubject<string>('');
-  public itemplayerValidPages$ = new BehaviorSubject<string[]>([]);
-
 
   // changed by itemplayer via postMessage, observed here to save (see below)
   public restorePoint$ = new BehaviorSubject<string>('');
@@ -49,7 +46,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.postMessageSubscription = this.lds.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData['type'];
-      console.log(msgData);
 
       if ((msgType !== undefined) && (msgType !== null)) {
         switch (msgType) {
@@ -87,15 +83,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
           case 'OpenCBA.FromItemPlayer.StartedNotification':
             const validPages = msgData['validPages'];
             if ((validPages instanceof Array) && (validPages.length > 1)) {
-              this.itemplayerValidPages$.next(validPages);
+              this.tcs.itemplayerValidPages$.next(validPages);
               let currentPage = msgData['currentPage'];
               if (currentPage  === undefined) {
                 currentPage = validPages[0];
               }
-              this.itemplayerCurrentPage$.next(currentPage);
+              this.tcs.itemplayerCurrentPage$.next(currentPage);
             } else {
-              this.itemplayerValidPages$.next([]);
-              this.itemplayerCurrentPage$.next('');
+              this.tcs.itemplayerValidPages$.next([]);
+              this.tcs.itemplayerCurrentPage$.next('');
             }
             break;
 
@@ -104,13 +100,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
             const validPagesChanged = msgData['validPages'];
             let currentPageChanged = msgData['currentPage'];
             if ((validPagesChanged instanceof Array)) {
-              this.itemplayerValidPages$.next(validPagesChanged);
+              this.tcs.itemplayerValidPages$.next(validPagesChanged);
               if (currentPageChanged  === undefined) {
                 currentPageChanged = validPagesChanged[0];
               }
             }
-            if (currentPageChanged  !== undefined) {
-              this.itemplayerCurrentPage$.next(currentPageChanged);
+            if (currentPageChanged !== undefined) {
+              this.tcs.itemplayerCurrentPage$.next(currentPageChanged);
             }
 
             const restorePoint = msgData['restorePoint'];
@@ -144,22 +140,29 @@ export class UnithostComponent implements OnInit, OnDestroy {
         const u = b.getUnitAt(this.myUnitNumber);
         if (u !== null) {
           u.restorePoint = data;
-          console.log('++++' + u.restorePoint);
-        } else {
-          console.log('u null');
         }
-       } else {
-         console.log('b null');
-       }
+      }
 
-      this.bs.setUnitRestorePoint(this.tcs.authorisation$.getValue(), this.myUnitName, data)
-        .subscribe(ok => console.log('restP: ' + ok));
+      this.bs.setUnitRestorePoint(this.lds.authorisation$.getValue(), this.myUnitName, data)
+        .subscribe(d => {
+          if (d === false) {
+            console.log('setUnitRestorePoint: false');
+          } else if (d instanceof ServerError) {
+            console.log('setUnitRestorePoint: ServerError');
+          }
+        });
     });
 
     this.response$.pipe(
       debounceTime(300)
-    ).subscribe(data => this.bs.setUnitResponses(this.tcs.authorisation$.getValue(), this.myUnitName, data)
-        .subscribe(d => console.log(d)));
+    ).subscribe(data => this.bs.setUnitResponses(this.lds.authorisation$.getValue(), this.myUnitName, data)
+        .subscribe(d => {
+          if (d === false) {
+            console.log('setUnitResponses: false');
+          } else if (d instanceof ServerError) {
+            console.log('setUnitResponses: ServerError');
+          }
+        }));
 
     this.log$.pipe(
       bufferTime(500)
@@ -171,7 +174,23 @@ export class UnithostComponent implements OnInit, OnDestroy {
         }
       });
       if (myLogs.length > 0) {
-        this.bs.setUnitLog(this.tcs.authorisation$.getValue(), this.myUnitName, myLogs).subscribe(lg => console.log(lg));
+        this.bs.setUnitLog(this.lds.authorisation$.getValue(), this.myUnitName, myLogs).subscribe(d => {
+          if (d === false) {
+            console.log('setUnitLog: false');
+          } else if (d instanceof ServerError) {
+            console.log('setUnitLog: ServerError');
+          }
+        });
+      }
+    });
+
+    this.tcs.itemplayerPageRequest$.subscribe(newUnitPage => {
+      if ((this.postMessageTarget !== null) && (newUnitPage.length > 0)) {
+        this.postMessageTarget.postMessage({
+          type: 'OpenCBA.ToItemPlayer.PageNavigationRequest',
+          sessionId: this.itemplayerSessionId,
+          newPage: newUnitPage
+        }, '*');
       }
     });
   }
@@ -182,11 +201,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.iFrameItemplayer = null;
 
     this.routingSubscription = this.route.params.subscribe(params => {
-      this.myUnitNumber = params['u'];
+      this.myUnitNumber = +params['u'];
       this.loadItemplayer();
     });
 
-    this.tcs.currentUnitPos$.subscribe(cu => this.loadItemplayer());
+    // this.tcs.currentUnitPos$.subscribe(cu => this.loadItemplayer());
   }
 
   loadItemplayer() {
@@ -195,10 +214,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     const currentUnitId = this.tcs.currentUnitPos$.getValue();
     const booklet = this.tcs.booklet$.getValue();
-    console.log(currentUnitId);
-    if ((currentUnitId >= 0) && (this.myUnitNumber = currentUnitId) && (booklet !== null)) {
+    if ((currentUnitId >= 0) && (this.myUnitNumber === currentUnitId) && (booklet !== null)) {
+      console.log('load Itemplayer - currentUnitId: ' + currentUnitId);
       const currentUnit = booklet.getUnitAt(currentUnitId);
-      this.tcs.pageTitle$.next(currentUnit.label);
+      this.tcs.pageTitle$.next((currentUnitId + 1).toString() + '. ' + currentUnit.label);
       this.myUnitName = currentUnit.id;
 
       this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
@@ -210,7 +229,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
       this.pendingUnitDefinition$.next(currentUnit.unitDefinition);
       const restorePoint = this.bs.getUnitRestorePoint(this.myUnitName);
-      console.log(restorePoint);
+
       if ((restorePoint === null) || (restorePoint === undefined)) {
         this.pendingRestorePoint$.next(currentUnit.restorePoint);
       } else {

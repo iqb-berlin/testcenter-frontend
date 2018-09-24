@@ -15,6 +15,7 @@ export class LogindataService {
   // only these two are stored in localStorage
   public bookletDbId$ = new BehaviorSubject<number>(+localStorage.getItem('bi'));
   public personToken$ = new BehaviorSubject<string>(localStorage.getItem('pt'));
+  public authorisation$ = new BehaviorSubject<Authorisation>(null);
 
   // for start.component.ts, but info also for test-controller
   public loginName$ = new BehaviorSubject<string>('');
@@ -36,7 +37,16 @@ export class LogindataService {
     private bs: BackendService
   ) {
     this.personToken$.subscribe((t: string) => localStorage.setItem('pt', t));
-    this.bookletDbId$.subscribe((id: number) => localStorage.setItem('bi', id.toString()));
+    this.bookletDbId$.subscribe((id: number) => {
+      localStorage.setItem('bi', id.toString());
+      const pTok = this.personToken$.getValue();
+      const auth = this.authorisation$.getValue();
+      if ((pTok.length > 0) && (id > 0)) {
+        this.authorisation$.next(Authorisation.fromPersonTokenAndBookletId(pTok, id));
+      } else if (auth !== null) {
+        this.authorisation$.next(null);
+      }
+    });
 
     merge(
       this.personCode$,
@@ -119,5 +129,35 @@ export class LogindataService {
         this.personToken$.next('');
       }
     }
+  }
+}
+
+// eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+export class Authorisation {
+  readonly personToken: string;
+  readonly bookletId: number;
+
+  static fromPersonTokenAndBookletId(personToken: string, bookletId: number): Authorisation {
+    return new Authorisation(personToken + '##' + bookletId.toString());
+  }
+
+  constructor(authString: string) {
+    if ((typeof authString !== 'string') || (authString.length === 0)) {
+      this.personToken = '';
+      this.bookletId = 0;
+    } else {
+      const retSplits = authString.split('##');
+      this.personToken = retSplits[0];
+
+      if (retSplits.length > 1) {
+        this.bookletId = +retSplits[1];
+      } else {
+        this.bookletId = 0;
+      }
+    }
+  }
+
+  toAuthString(): string {
+    return this.personToken + '##' + this.bookletId.toString();
   }
 }

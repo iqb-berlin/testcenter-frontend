@@ -1,6 +1,5 @@
 import { Router } from '@angular/router';
-import { Authorisation } from './backend.service';
-import { LogindataService } from './../logindata.service';
+import { LogindataService, Authorisation } from './../logindata.service';
 import { BehaviorSubject, of, Observable, forkJoin, merge } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { debounceTime, bufferTime, switchMap, map } from 'rxjs/operators';
@@ -13,7 +12,6 @@ export class TestControllerService {
   // observed only by app.components for the page header
   public pageTitle$ = new BehaviorSubject<string>('Lade Seite...');
 
-  public authorisation$ = new BehaviorSubject<Authorisation>(null);
   public booklet$ = new BehaviorSubject<BookletDef>(null);
   public currentUnitPos$ = new BehaviorSubject<number>(-1);
 
@@ -22,9 +20,9 @@ export class TestControllerService {
   public showNaviButtons$ = new BehaviorSubject<boolean>(false);
   public itemplayerValidPages$ = new BehaviorSubject<string[]>([]);
   public itemplayerCurrentPage$ = new BehaviorSubject<string>('');
-  public nextUnit$ = new BehaviorSubject<string>('');
-  public prevUnit$ = new BehaviorSubject<string>('');
-  public unitRequest$ = new BehaviorSubject<string>('');
+  public nextUnit$ = new BehaviorSubject<number>(-1);
+  public prevUnit$ = new BehaviorSubject<number>(-1);
+  public unitRequest$ = new BehaviorSubject<number>(-1);
   public canLeaveTest$ = new BehaviorSubject<boolean>(false);
   public itemplayerPageRequest$ = new BehaviorSubject<string>('');
 
@@ -49,15 +47,6 @@ export class TestControllerService {
     private router: Router,
     private lds: LogindataService
   ) {
-    this.lds.bookletDbId$.subscribe(b => {
-      const pt = this.lds.personToken$.getValue();
-      if ((pt.length > 0) && (b > 0)) {
-        this.authorisation$.next(Authorisation.fromPersonTokenAndBookletId(pt, b));
-      } else {
-        this.authorisation$.next(null);
-      }
-    });
-
     merge(
       this.lds.loginMode$,
       this.lds.bookletDbId$
@@ -68,6 +57,30 @@ export class TestControllerService {
       } else {
         this.canReview$.next(false);
       }
+    });
+
+    this.currentUnitPos$.subscribe((p: number) => {
+      const b = this.booklet$.getValue();
+      if (b === null) {
+        this.prevUnit$.next(-1);
+        this.nextUnit$.next(-1);
+      } else {
+        if (p > 0) {
+          this.prevUnit$.next(p - 1);
+        } else {
+          this.prevUnit$.next(-1);
+        }
+        const uCount = b.units.length;
+        if (p < (uCount - 1)) {
+          this.nextUnit$.next(p + 1);
+        } else {
+          this.nextUnit$.next(-1);
+        }
+      }
+    });
+
+    this.unitRequest$.subscribe(p => {
+      this.goToUnitByPosition(p);
     });
   }
 
@@ -85,16 +98,20 @@ export class TestControllerService {
     return null;
   }
 
-  goToUnitByPosition(pos) {
+  goToUnitByPosition(pos: number) {
     const myBooklet = this.booklet$.getValue();
     if (myBooklet !== null) {
-      this.router.navigateByUrl('/t/u/' + pos);
+      const unitCount = myBooklet.units.length;
+      if ((pos >= 0 ) && (pos < unitCount)) {
+        this.setCurrentUnit(pos);
+        this.router.navigateByUrl('/t/u/' + pos.toString());
+      }
     }
   }
 
   setCurrentUnit(targetUnitSequenceId: number) {
     const currentBooklet = this.booklet$.getValue();
-    if ((targetUnitSequenceId >= 0) && (currentBooklet !== null) && (currentBooklet.units.length >= targetUnitSequenceId - 1)) {
+    if ((targetUnitSequenceId >= 0) && (currentBooklet !== null) && (targetUnitSequenceId < currentBooklet.units.length)) {
       this.currentUnitPos$.next(targetUnitSequenceId);
     }
   }
@@ -165,6 +182,16 @@ export class BookletDef {
     } else {
       return null;
     }
+  }
+
+  unlockedUnitCount(): number {
+    let myCount = 0;
+    for (let i = 0; i < this.units.length; i++) {
+      if (!this.units[i].locked) {
+        myCount += 1;
+      }
+    }
+    return myCount;
   }
 }
 

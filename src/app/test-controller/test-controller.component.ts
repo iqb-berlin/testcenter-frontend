@@ -1,4 +1,4 @@
-import { BackendService, Authorisation, ServerError, BookletData } from './backend.service';
+import { BackendService, ServerError, BookletData } from './backend.service';
 import { LogindataService } from './../logindata.service';
 import { TestControllerService, UnitDef, BookletDef } from './test-controller.service';
 import { Component, OnInit } from '@angular/core';
@@ -32,36 +32,40 @@ export class TestControllerComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.tcs.authorisation$.subscribe(authori => {
-      if (authori == null) {
-        this.resetBookletData();
-      } else {
-        this.loadBooklet(authori);
-      }
+    this.loadBooklet();
+    this.lds.authorisation$.subscribe(authori => {
+      this.loadBooklet();
     });
   }
 
-  private loadBooklet(auth: Authorisation) {
-    this.dataLoading = true;
-    this.bs.getBookletData(auth).subscribe(myData => {
-      if (myData instanceof ServerError) {
-        const e = myData as ServerError;
-        this.lds.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
-        this.tcs.booklet$.next(null);
-        this.tcs.currentUnitPos$.next(-1);
-      } else {
-        this.lds.globalErrorMsg$.next('');
-        const myBookletData = myData as BookletData;
-        const myBookletDef = new BookletDef(myBookletData);
-        myBookletDef.loadUnits(this.bs, auth).subscribe(okList => {
-          console.log('inside loadUnits');
-          this.dataLoading = false;
-          this.tcs.booklet$.next(myBookletDef);
+  private loadBooklet() {
+    const auth = this.lds.authorisation$.getValue();
+    if (auth == null) {
+      console.log('load booklet (null)');
+      this.resetBookletData();
+    } else {
+      console.log('load booklet');
+      this.dataLoading = true;
+      this.bs.getBookletData(auth).subscribe(myData => {
+        if (myData instanceof ServerError) {
+          const e = myData as ServerError;
+          this.lds.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
+          this.tcs.booklet$.next(null);
           this.tcs.currentUnitPos$.next(-1);
-          // this.tcs.goToUnitByPosition(myBookletData.u);
-        });
-      }
-    });
+        } else {
+          this.lds.globalErrorMsg$.next('');
+          const myBookletData = myData as BookletData;
+          const myBookletDef = new BookletDef(myBookletData);
+          myBookletDef.loadUnits(this.bs, auth).subscribe(okList => {
+            this.dataLoading = false;
+            this.tcs.booklet$.next(myBookletDef);
+            this.tcs.showNaviButtons$.next(myBookletDef.unlockedUnitCount() > 1);
+            this.tcs.currentUnitPos$.next(-1);
+            this.tcs.goToUnitByPosition(myBookletData.u);
+          });
+        }
+      });
+    }
   }
 
   private resetBookletData() {
@@ -70,9 +74,9 @@ export class TestControllerComponent implements OnInit {
     this.tcs.showNaviButtons$.next(false);
     this.tcs.itemplayerValidPages$.next([]);
     this.tcs.itemplayerCurrentPage$.next('');
-    this.tcs.nextUnit$.next('');
-    this.tcs.prevUnit$.next('');
-    this.tcs.unitRequest$.next('');
+    this.tcs.nextUnit$.next(-1);
+    this.tcs.prevUnit$.next(-1);
+    this.tcs.unitRequest$.next(-1);
     this.tcs.canLeaveTest$.next(false);
     this.tcs.itemplayerPageRequest$.next('');
   }
@@ -105,7 +109,6 @@ export class TestControllerComponent implements OnInit {
   }
 
   sideNaviButtonClick(targetId: number) {
-    console.log(targetId);
     this.tcs.goToUnitByPosition(targetId);
   }
 }
