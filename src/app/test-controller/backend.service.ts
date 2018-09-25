@@ -277,6 +277,7 @@ export class BackendService {
       myreturn.label = 'Fehler: ' + errorObj.message;
     }
 
+<<<<<<< HEAD
     return of(myreturn);
   }
 
@@ -296,6 +297,9 @@ export class ServerError {
   constructor(code: number, label: string) {
     this.code = code;
     this.label = label;
+=======
+    return throwError(myreturn.label);
+>>>>>>> 0797e3868c4f5938d1693a6439c48160aa934694
   }
 }
 
