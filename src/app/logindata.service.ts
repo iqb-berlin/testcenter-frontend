@@ -13,8 +13,8 @@ export class LogindataService {
 
   // key for test-controller
   // only these two are stored in localStorage
-  public bookletDbId$ = new BehaviorSubject<number>(+localStorage.getItem('bi'));
-  public personToken$ = new BehaviorSubject<string>(localStorage.getItem('pt'));
+  public bookletDbId$ = new BehaviorSubject<number>(0);
+  public personToken$ = new BehaviorSubject<string>('');
   public authorisation$ = new BehaviorSubject<Authorisation>(null);
 
   // for start.component.ts, but info also for test-controller
@@ -36,6 +36,15 @@ export class LogindataService {
   constructor(
     private bs: BackendService
   ) {
+    const bookletDbId = localStorage.getItem('bi');
+    if (localStorage.getItem('bi') !== null) {
+      this.bookletDbId$.next(+bookletDbId);
+    }
+    const personToken = localStorage.getItem('pt');
+    if (localStorage.getItem('pt') !== null) {
+      this.personToken$.next(personToken);
+    }
+
     this.personToken$.subscribe((t: string) => localStorage.setItem('pt', t));
     this.bookletDbId$.subscribe((id: number) => {
       localStorage.setItem('bi', id.toString());

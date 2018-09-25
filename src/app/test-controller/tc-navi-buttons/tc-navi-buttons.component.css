@@ -12,6 +12,10 @@
   right: 70px;
 }
 
+.mat-fab {
+  margin-right: 4px
+}
+
 .mat-fab[disabled], .mat-mini-fab[disabled] {
   background-color: grey;
 }
