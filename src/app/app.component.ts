@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { FormGroup } from '@angular/forms';
 
-import { LoginStatusResponseData } from './admin/backend/backend.service';
+import { LoginStatusResponseData } from './admin/backend.service';
 import { MainDatastoreService } from './admin';
 import { IqbCommonModule, ConfirmDialogComponent, ConfirmDialogData } from './iqb-common';
 import { AboutDialogComponent } from './about-dialog/about-dialog.component';

@@ -1,5 +1,5 @@
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
-import { BackendService } from './backend/backend.service';
+import { BackendService } from './backend.service';
 import { IqbFilesModule } from '../iqb-files';
 import { IqbCommonModule } from '../iqb-common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -48,7 +48,7 @@ import {MatGridListModule} from '@angular/material/grid-list';
     MatSnackBarModule,
     MatGridListModule,
     IqbCommonModule,
-    BrowserAnimationsModule 
+    BrowserAnimationsModule
   ],
   exports: [
     AdminComponent

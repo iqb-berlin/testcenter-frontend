@@ -6,11 +6,14 @@ import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class BackendService {
+  public get serverUrl():string {
+    return this._serverUrl;
+  }
 
   constructor(
-    @Inject('SERVER_URL') private serverUrl: string,
+    @Inject('SERVER_URL') private _serverUrl: string,
     private http: HttpClient) {
-      this.serverUrl = this.serverUrl + 'admin/';
+      this._serverUrl = this._serverUrl + 'admin/php_admin/';
   }
 
   private errorHandler(error: Error | any): Observable<any> {
@@ -25,7 +28,7 @@ export class BackendService {
       })
     };
     return this.http
-      .post<LoginStatusResponseData>(this.serverUrl + 'loginAdmin.php', {n: name, p: password}, httpOptions)
+      .post<LoginStatusResponseData>(this._serverUrl + 'loginAdmin.php', {n: name, p: password}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
@@ -39,7 +42,7 @@ export class BackendService {
       })
     };
     return this.http
-      .post<boolean>(this.serverUrl + 'logoutAdmin.php', {at: token}, httpOptions)
+      .post<boolean>(this._serverUrl + 'logoutAdmin.php', {at: token}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
@@ -53,7 +56,7 @@ export class BackendService {
       })
     };
     return this.http
-      .post<LoginStatusResponseData>(this.serverUrl + 'getStatusAdmin.php', {at: token}, httpOptions)
+      .post<LoginStatusResponseData>(this._serverUrl + 'getStatusAdmin.php', {at: token}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
@@ -69,7 +72,7 @@ export class BackendService {
       })
     };
     return this.http
-      .post<GetFileResponseData[]>(this.serverUrl + 'getFile.php', {
+      .post<GetFileResponseData[]>(this._serverUrl + 'getFile.php', {
             at: token,
             ws: workspaceId,
             ft: filetype,
@@ -89,7 +92,7 @@ export class BackendService {
       })
     };
     return this.http
-      .post<GetFileResponseData[]>(this.serverUrl + 'getFileList.php', {at: token, ws: workspaceId}, httpOptions)
+      .post<GetFileResponseData[]>(this._serverUrl + 'getFileList.php', {at: token, ws: workspaceId}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
@@ -104,7 +107,7 @@ export class BackendService {
       })
     };
     return this.http
-      .post<string>(this.serverUrl + 'deleteFiles.php', {at: token, ws: workspaceId, f: filesToDelete}, httpOptions)
+      .post<string>(this._serverUrl + 'deleteFiles.php', {at: token, ws: workspaceId, f: filesToDelete}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
@@ -118,7 +121,7 @@ export class BackendService {
       })
     };
     return this.http
-      .post<CheckWorkspaceResponseData>(this.serverUrl + 'checkWorkspace.php', {at: token, ws: workspaceId}, httpOptions)
+      .post<CheckWorkspaceResponseData>(this._serverUrl + 'checkWorkspace.php', {at: token, ws: workspaceId}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
@@ -133,19 +136,19 @@ export class BackendService {
       })
     };
     return this.http
-      .post<GroupResponse[]>(this.serverUrl + 'getTestStats.php', {at: adminToken, ws: workspaceId, rso: responseOnly}, httpOptions);
+      .post<GroupResponse[]>(this._serverUrl + 'getTestStats.php', {at: adminToken, ws: workspaceId, rso: responseOnly}, httpOptions);
   }
 
   downloadCSVResponses(adminToken: string, workspaceId: number, groups: GroupResponse[]): Observable<string>{
     const customHeaders = new HttpHeaders().set('Content-Type', 'application/json');
     const httpOptions = {headers: customHeaders, responseType: 'text' as 'json'};
-      
+
     return this.http
-      .post<string>(this.serverUrl + 'getCSVResponses.php', {at: adminToken, ws: workspaceId, groups: groups }, httpOptions);
+      .post<string>(this._serverUrl + 'getCSVResponses.php', {at: adminToken, ws: workspaceId, groups: groups }, httpOptions);
   }
 
   downloadCSVResponses2(adminToken: string, workspaceId: number, groups: GroupResponse[]): void{
-    let url = this.serverUrl;
+    let url = this._serverUrl;
     url += 'getCSVResponses.php?';
     url += 'at=';
     url += adminToken;

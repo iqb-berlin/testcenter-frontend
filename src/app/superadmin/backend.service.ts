@@ -12,7 +12,7 @@ export class BackendService {
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
-      this.serverUrl = this.serverUrl + 'superadmin/';
+      this.serverUrl = this.serverUrl + 'admin/php_superadmin/';
     }
 
   private errorHandler(error: Error | any): Observable<any> {

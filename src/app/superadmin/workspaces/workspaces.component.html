@@ -35,7 +35,7 @@
 
       <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.label}} </mat-cell>
+        <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
       </ng-container>
 
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -70,7 +70,7 @@
       </ng-container>
 
       <ng-container matColumnDef="name">
-        <mat-cell *matCellDef="let row"> {{row.label}} </mat-cell>
+        <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
       </ng-container>
 
       <mat-row *matRowDef="let row; columns: displayedUserColumns;"></mat-row>

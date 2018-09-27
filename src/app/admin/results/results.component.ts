@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { BackendService, GroupResponse } from './../backend/backend.service';
+import { BackendService, GroupResponse } from './../backend.service';
 import { MainDatastoreService } from './../maindatastore.service';
 import { MatSnackBar, MatSort, MatTableDataSource } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
-import { saveAs } from 'file-saver';
+// import { saveAs } from 'file-saver';
 
 
 @Component({
@@ -31,7 +31,7 @@ export class ResultsComponent implements OnInit {
   ngOnInit() {
     this.mds.adminToken$.subscribe(at => this.updateStats());
     this.mds.workspaceId$.subscribe(ws => this.updateStats());
-    console.log(saveAs);
+    // console.log(saveAs);
   }
 
   updateStats() {
@@ -40,7 +40,7 @@ export class ResultsComponent implements OnInit {
         this.groupStats = new MatTableDataSource<GroupResponse>(responseData);
         this.groupStats.sort = this.sort;
       }
-    ) 
+    )
   }
 
   isAllSelected() {
@@ -57,8 +57,8 @@ export class ResultsComponent implements OnInit {
 
   downloadOnClick() {
     // let observableDlResponse = this.bs.downloadCSVResponses(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue(), this.tableselectionCheckbox.selected);
-    
-    
+
+
     // observableDlResponse.subscribe(
     //   (responseData: string) => {
     //     let savedFileContent = responseData;
@@ -66,7 +66,7 @@ export class ResultsComponent implements OnInit {
     //     // this.groupStats = new MatTableDataSource<GroupResponse>(responseData);
     //     // this.groupStats.sort = this.sort;
 
-    //     // 
+    //     //
     //     const saveFile = new File([savedFileContent], 'responses.csv', { type: 'text/plain;charset=utf-8' });
     //     saveAs(saveFile);
     //   }
@@ -79,7 +79,7 @@ export class ResultsComponent implements OnInit {
     });
 
     this.bs.downloadCSVResponses2(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue(), processedSelection);
-  
+
   }
 
 }

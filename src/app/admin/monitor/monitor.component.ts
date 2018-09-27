@@ -1,4 +1,4 @@
-import { BackendService, GroupResponse } from './../backend/backend.service';
+import { BackendService, GroupResponse } from './../backend.service';
 import { MainDatastoreService } from './../maindatastore.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSnackBar, MatSort, MatTableDataSource } from '@angular/material';

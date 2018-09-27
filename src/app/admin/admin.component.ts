@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { MatTabsModule, MatSelectModule, MatFormFieldModule } from '@angular/material';
 import { MainDatastoreService } from './maindatastore.service';
-import { WorkspaceData } from './backend/backend.service';
+import { WorkspaceData } from './backend.service';
 
 
 @Component({

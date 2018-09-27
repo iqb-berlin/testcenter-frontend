@@ -5,7 +5,7 @@ import { DataSource } from '@angular/cdk/collections';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material';
-import { BackendService, GetFileResponseData, CheckWorkspaceResponseData, ServerError } from '../backend/backend.service';
+import { BackendService, GetFileResponseData, CheckWorkspaceResponseData, ServerError } from '../backend.service';
 import { Input, Output, EventEmitter, Component, OnInit, Inject, ElementRef } from '@angular/core';
 import { NgModule, ViewChild } from '@angular/core';
 import { MatSort, MatDialog } from '@angular/material';
@@ -20,7 +20,7 @@ import { IqbFilesUploadQueueComponent, IqbFilesUploadInputForDirective } from '.
 export class MyfilesComponent implements OnInit {
   public serverfiles: MatTableDataSource<GetFileResponseData>;
   public displayedColumns = ['checked', 'filename', 'typelabel', 'filesize', 'filedatetime'];
-  public uploadUrl = 'uploadFile.php';
+  public uploadUrl = '';
   public fileNameAlias = 'fileforvo';
   public dataLoading = false;
 
@@ -47,7 +47,7 @@ export class MyfilesComponent implements OnInit {
     this.mds.isAdmin$.subscribe(i => {
       this.isAdmin = i;
     });
-    this.uploadUrl = this.serverUrl + 'admin/uploadFile.php';
+    this.uploadUrl = this.serverUrl + 'admin/php_admin/uploadFile.php';
   }
 
   ngOnInit() {
@@ -158,7 +158,7 @@ export class MyfilesComponent implements OnInit {
   // ***********************************************************************************
   getDownloadRef(element: GetFileResponseData): string {
     return this.serverUrl
-        + 'getFile.php?at=' + this.mds.adminToken$.getValue()
+        + 'admin/php_admin/getFile.php?at=' + this.mds.adminToken$.getValue()
         + '&ws=' + this.mds.workspaceId$.getValue()
         + '&t=' + element.type
         + '&fn=' + element.filename;

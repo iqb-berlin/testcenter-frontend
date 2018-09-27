@@ -70,7 +70,7 @@
       </ng-container>
 
       <ng-container matColumnDef="label">
-        <mat-cell *matCellDef="let row"> {{row.label}} </mat-cell>
+        <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
       </ng-container>
 
       <mat-row *matRowDef="let row; columns: displayedWorkspaceColumns;"></mat-row>

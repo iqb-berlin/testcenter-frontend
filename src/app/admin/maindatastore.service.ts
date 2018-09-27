@@ -8,7 +8,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { IqbCommonModule, ConfirmDialogComponent, ConfirmDialogData } from '../iqb-common';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
-import { BackendService, LoginStatusResponseData, WorkspaceData, ServerError } from './backend/backend.service';
+import { BackendService, LoginStatusResponseData, WorkspaceData, ServerError } from './backend.service';
 
 @Injectable({
   providedIn: 'root'
