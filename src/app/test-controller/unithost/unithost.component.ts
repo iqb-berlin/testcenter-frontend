@@ -1,7 +1,9 @@
-import { debounceTime, bufferTime } from 'rxjs/operators';
+import { Authorisation } from './../../logindata.service';
+import { debounceTime, bufferTime, switchMap } from 'rxjs/operators';
 import { UnitDef, TestControllerService } from './../test-controller.service';
-import { Subscriber, Subscription, BehaviorSubject } from 'rxjs';
-import { BackendService, ServerError } from './../backend.service';
+import { Subscriber, Subscription, BehaviorSubject, Observable, of } from 'rxjs';
+import { BackendService } from './../backend.service';
+import { ServerError } from './../../backend.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
@@ -35,6 +37,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
   public restorePoint$ = new BehaviorSubject<string>('');
   public response$ = new BehaviorSubject<string>('');
   public log$ = new BehaviorSubject<string>('');
+
+  // buffering restorePoints
+  private lastBookletState = '';
+  private lastUnitResponses = '';
+  private restorePoints: {[unitname: string]: string} = {};
 
   constructor(
     private tcs: TestControllerService,
@@ -143,6 +150,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         }
       }
 
+      this.restorePoints[this.myUnitName] = data;
       this.bs.setUnitRestorePoint(this.lds.authorisation$.getValue(), this.myUnitName, data)
         .subscribe(d => {
           if (d === false) {
@@ -205,7 +213,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.loadItemplayer();
     });
 
-    // this.tcs.currentUnitPos$.subscribe(cu => this.loadItemplayer());
+    this.lds.authorisation$.subscribe(auth => {
+      this.restorePoints = {};
+    });
+
+    this.tcs.currentUnitPos$.subscribe(up => {
+      if (up >= 0) {
+        this.loadItemplayer();
+      }
+    });
   }
 
   loadItemplayer() {
@@ -214,6 +230,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     const currentUnitId = this.tcs.currentUnitPos$.getValue();
     const booklet = this.tcs.booklet$.getValue();
+    console.log('load Itemplayer 1st');
     if ((currentUnitId >= 0) && (this.myUnitNumber === currentUnitId) && (booklet !== null)) {
       console.log('load Itemplayer - currentUnitId: ' + currentUnitId);
       const currentUnit = booklet.getUnitAt(currentUnitId);
@@ -221,14 +238,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.myUnitName = currentUnit.id;
 
       this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-      this.iFrameItemplayer.setAttribute('srcdoc', this.bs.getItemplayer(currentUnit.unitDefinitionType));
+      this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getItemplayer(currentUnit.unitDefinitionType));
       this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
       this.iFrameItemplayer.setAttribute('class', 'unitHost');
       const sideNavElement = document.getElementsByName('sideNav')[0];
       this.iFrameItemplayer.setAttribute('height', String(sideNavElement.clientHeight - 5));
 
       this.pendingUnitDefinition$.next(currentUnit.unitDefinition);
-      const restorePoint = this.bs.getUnitRestorePoint(this.myUnitName);
+      const restorePoint = this.restorePoints[this.myUnitName];
 
       if ((restorePoint === null) || (restorePoint === undefined)) {
         this.pendingRestorePoint$.next(currentUnit.restorePoint);

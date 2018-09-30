@@ -16,12 +16,14 @@ import { BackendService } from './backend.service';
 import { StartComponent } from './start/start.component';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { ErrormsgComponent } from './errormsg/errormsg.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     StartComponent,
-    AboutComponent
+    AboutComponent,
+    ErrormsgComponent
   ],
   imports: [
     BrowserModule,

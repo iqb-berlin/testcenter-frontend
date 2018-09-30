@@ -27,7 +27,6 @@ export class StartComponent implements OnInit {
 
   private testtakerloginform: FormGroup;
   private codeinputform: FormGroup;
-  private errorMsg = '';
   private testEndButtonText = 'Test beenden';
 
   // ??
@@ -79,8 +78,6 @@ export class StartComponent implements OnInit {
       }
     });
 
-    this.lds.globalErrorMsg$.subscribe(m => this.errorMsg = m);
-
     this.testtakerloginform = this.fb.group({
       testname: this.fb.control(this.lds.loginName$.getValue(), [Validators.required, Validators.minLength(3)]),
       testpw: this.fb.control('', [Validators.required, Validators.minLength(3)])
@@ -106,14 +103,14 @@ export class StartComponent implements OnInit {
       loginTokenUntyped => {
         if (loginTokenUntyped instanceof ServerError) {
           const e = loginTokenUntyped as ServerError;
-          this.lds.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
+          this.lds.globalErrorMsg$.next(e);
           // no change in other data
         } else {
           this.validCodes = [];
           this.bookletlist = [];
           this.lds.personToken$.next('');
           this.lds.personCode$.next('');
-          this.lds.globalErrorMsg$.next('');
+          this.lds.globalErrorMsg$.next(null);
           this.lds.workspaceName$.next('');
           this.lds.bookletsByCode$.next(null);
           this.lds.bookletData$.next([]);
@@ -129,10 +126,11 @@ export class StartComponent implements OnInit {
             loginDataUntyped => {
               if (loginDataUntyped instanceof ServerError) {
                 const e = loginDataUntyped as ServerError;
-                this.lds.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
+                this.lds.globalErrorMsg$.next(e);
                 this.lds.loginToken$.next('');
               } else {
                 const loginData = loginDataUntyped as LoginData;
+                this.lds.globalErrorMsg$.next(null);
                 this.lds.personToken$.next('');
                 this.lds.bookletsByCode$.next(loginData.booklets);
                 this.lds.bookletData$.next([]);
@@ -226,12 +224,14 @@ export class StartComponent implements OnInit {
           bookletIdUntyped => {
             if (bookletIdUntyped instanceof ServerError) {
               const e = bookletIdUntyped as ServerError;
-              this.lds.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
+              this.lds.globalErrorMsg$.next(e);
             } else {
               const bookletId = bookletIdUntyped as number;
+              this.lds.globalErrorMsg$.next(null);
               if (bookletId > 0) {
                 this.lds.bookletDbId$.next(bookletId);
                 this.lds.bookletLabel$.next(b.label);
+                this.lds.globalErrorMsg$.next(null);
                 // ************************************************
 
                 // by setting bookletDbId$ the test-controller will load the booklet
@@ -239,7 +239,7 @@ export class StartComponent implements OnInit {
 
                 // ************************************************
               } else {
-                this.lds.globalErrorMsg$.next('ungültige Anmeldung');
+                this.lds.globalErrorMsg$.next(new ServerError(401, 'ungültige Anmeldung', 'start.component'));
               }
             }
           }
@@ -249,12 +249,13 @@ export class StartComponent implements OnInit {
           startDataUntyped => {
             if (startDataUntyped instanceof ServerError) {
               const e = startDataUntyped as ServerError;
-              this.lds.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
+              this.lds.globalErrorMsg$.next(e);
             } else {
               const startData = startDataUntyped as PersonTokenAndBookletId;
 
               if (startData.b > 0) {
                 this.lds.personToken$.next(startData.pt);
+                this.lds.globalErrorMsg$.next(null);
                 this.lds.bookletLabel$.next(b.label);
                 this.lds.bookletDbId$.next(startData.b); // as last to trigger auth with success!
                 // ************************************************
@@ -264,14 +265,14 @@ export class StartComponent implements OnInit {
 
                 // ************************************************
               } else {
-                this.lds.globalErrorMsg$.next('ungültige Anmeldung');
+                this.lds.globalErrorMsg$.next(new ServerError(401, 'ungültige Anmeldung', 'start.component'));
               }
             }
           }
         );
-          }
+      }
     } else {
-      this.lds.globalErrorMsg$.next('ungültige Anmeldung');
+      this.lds.globalErrorMsg$.next(new ServerError(401, 'ungültige Anmeldung', 'start.component'));
     }
   }
 
@@ -298,9 +299,10 @@ export class StartComponent implements OnInit {
         finOkUntyped => {
           if (finOkUntyped instanceof ServerError) {
             const e = finOkUntyped as ServerError;
-            this.lds.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
+            this.lds.globalErrorMsg$.next(e);
           } else {
             const finOK = finOkUntyped as boolean;
+            this.lds.globalErrorMsg$.next(null);
             if (finOK) {
               this.showLoginForm = false;
               this.showCodeForm = false;
@@ -354,7 +356,7 @@ export class StartButtonData {
     bs.getBookletStatusByNameAndLoginToken(loginToken, code, this.id, this.label).subscribe(respDataUntyped => {
       if (respDataUntyped instanceof ServerError) {
         const e = respDataUntyped as ServerError;
-        this.statustxt = e.code.toString() + ': ' + e.label;
+        this.statustxt = e.code.toString() + ': ' + e.labelNice;
       } else {
         const respData = respDataUntyped as BookletStatus;
         this.statustxt = respData.statusLabel;
@@ -369,7 +371,7 @@ export class StartButtonData {
     bs.getBookletStatusByNameAndPersonToken(personToken, this.id).subscribe(respDataUntyped => {
       if (respDataUntyped instanceof ServerError) {
         const e = respDataUntyped as ServerError;
-        this.statustxt = e.code.toString() + ': ' + e.label;
+        this.statustxt = e.code.toString() + ': ' + e.labelNice;
       } else {
         const respData = respDataUntyped as BookletStatus;
         this.statustxt = respData.statusLabel;

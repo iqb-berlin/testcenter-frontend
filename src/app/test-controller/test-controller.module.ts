@@ -15,6 +15,7 @@ import { TcNaviButtonsComponent } from './tc-navi-buttons/tc-navi-buttons.compon
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReviewDialogComponent } from './tc-menu-buttons/review-dialog.component';
 import { ReactiveFormsModule } from '../../../node_modules/@angular/forms';
+import { TcSidenaviButtonComponent } from './tc-sidenavi-button/tc-sidenavi-button.component';
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import { ReactiveFormsModule } from '../../../node_modules/@angular/forms';
     ResizeIFrameChildDirective,
     TcMenuButtonsComponent,
     TcNaviButtonsComponent,
-    ReviewDialogComponent
+    ReviewDialogComponent,
+    TcSidenaviButtonComponent
   ],
   entryComponents: [
     ReviewDialogComponent

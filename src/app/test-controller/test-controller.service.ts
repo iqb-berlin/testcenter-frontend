@@ -3,7 +3,8 @@ import { LogindataService, Authorisation } from './../logindata.service';
 import { BehaviorSubject, of, Observable, forkJoin, merge } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { debounceTime, bufferTime, switchMap, map } from 'rxjs/operators';
-import { BackendService, BookletData, ServerError, UnitData } from './backend.service';
+import { BackendService, BookletData, UnitData } from './backend.service';
+import { ServerError} from './../backend.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +28,10 @@ export class TestControllerService {
   public itemplayerPageRequest$ = new BehaviorSubject<string>('');
 
   // ))))))))))))))))))))))))))))))))))))))))))))))))
+  // buffering itemplayers
+
+  private itemplayers: {[filename: string]: string} = {};
+
 
 
   // public unitname$ = new BehaviorSubject<string>('-');
@@ -84,6 +89,7 @@ export class TestControllerService {
     });
   }
 
+  // 66666666666666666666666666666666666666666666666666666666666666666666666666
   getUnitForPlayer(unitId): UnitDef {
     const myBooklet = this.booklet$.getValue();
     if (myBooklet === null) {
@@ -98,12 +104,65 @@ export class TestControllerService {
     return null;
   }
 
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  loadItemplayerOk(auth: Authorisation, unitDefinitionType: string): Observable<boolean> {
+    unitDefinitionType = this.normaliseFileName(unitDefinitionType, 'html');
+    if (this.itemplayers.hasOwnProperty(unitDefinitionType)) {
+      return of(true);
+    } else {
+      // to avoid multiple calls before returning:
+      this.itemplayers[unitDefinitionType] = null;
+      return this.bs.getUnitResourceTxt(auth, unitDefinitionType)
+          .pipe(
+            switchMap(myData => {
+              if (myData instanceof ServerError) {
+                return of(false);
+              } else {
+                const itemplayerData = myData as string;
+                if (itemplayerData.length > 0) {
+                  this.itemplayers[unitDefinitionType] = itemplayerData;
+                  return of(true);
+                } else {
+                  return of(false);
+                }
+              }
+            }));
+    }
+  }
+
+  // uppercase and add extension if not part
+  private normaliseFileName(fn: string, ext: string): string {
+    fn = fn.toUpperCase();
+    ext = ext.toUpperCase();
+    if (ext.slice(0, 1) !== '.') {
+      ext = '.' + ext;
+    }
+
+    if (fn.slice(-(ext.length)) === ext) {
+      return fn;
+    } else {
+      return fn + ext;
+    }
+  }
+
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  getItemplayer(unitDefinitionType: string): string {
+    unitDefinitionType = this.normaliseFileName(unitDefinitionType, 'html');
+    if ((unitDefinitionType.length > 0) && this.itemplayers.hasOwnProperty(unitDefinitionType)) {
+      return this.itemplayers[unitDefinitionType];
+    } else {
+      return '';
+    }
+  }
+
+
   goToUnitByPosition(pos: number) {
     const myBooklet = this.booklet$.getValue();
     if (myBooklet !== null) {
       const unitCount = myBooklet.units.length;
       if ((pos >= 0 ) && (pos < unitCount)) {
         this.setCurrentUnit(pos);
+        this.bs.setBookletStatus(this.lds.authorisation$.getValue(), {u: pos}).subscribe();
         this.router.navigateByUrl('/t/u/' + pos.toString());
       }
     }
@@ -168,10 +227,10 @@ export class BookletDef {
     }
   }
 
-  loadUnits(bs: BackendService, auth: Authorisation): Observable<boolean[]> {
+  loadUnits(bs: BackendService, tcs: TestControllerService, auth: Authorisation): Observable<boolean[]> {
     const myUnitLoadings = [];
     for (let i = 0; i < this.units.length; i++) {
-      myUnitLoadings.push(this.units[i].loadOk(bs, auth));
+      myUnitLoadings.push(this.units[i].loadOk(bs, tcs, auth));
     }
     return forkJoin(myUnitLoadings);
   }
@@ -259,13 +318,13 @@ export class UnitDef {
     return myResources;
   }
 
-  loadOk(bs: BackendService, auth: Authorisation): Observable<boolean> {
+  loadOk(bs: BackendService, tcs: TestControllerService, auth: Authorisation): Observable<boolean> {
     return bs.getUnitData(auth, this.id)
       .pipe(
         switchMap(myData => {
           if (myData instanceof ServerError) {
             const e = myData as ServerError;
-            this.label = e.code.toString() + ': ' + e.label;
+            this.label = e.code.toString() + ': ' + e.labelNice;
             return of(false);
           } else {
             const myUnitData = myData as UnitData;
@@ -283,8 +342,8 @@ export class UnitDef {
                 this.unitDefinition = defElement.textContent;
                 this.unitDefinitionType = defElement.getAttribute('type');
 
-                return bs.loadItemplayerOk(auth, this.unitDefinitionType).pipe(
-                  map(ok => this.locked = !ok));
+                return tcs.loadItemplayerOk(auth, this.unitDefinitionType).pipe(
+                  switchMap(ok => of(this.locked = !ok)));
                 // ________________________
                 // const resourcesElements = oDOM.documentElement.getElementsByTagName('Resources');
                 // if (resourcesElements.length > 0) {

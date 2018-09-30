@@ -95,7 +95,7 @@
       <button mat-raised-button color="foreground" *ngIf="validCodes.length > 1" (click)="changeCode()">Personen-Code ändern</button>
       <p *ngIf="!showLoginForm || validCodes.length > 1">&nbsp;</p>
       <button mat-raised-button color="foreground" [routerLink]="['/about']">Impressum/Datenschutz</button>
-      <p> {{ errorMsg }}</p>
+      <app-errormsg></app-errormsg>
     </div>
   </div>
 </div>

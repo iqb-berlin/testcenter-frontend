@@ -1,5 +1,6 @@
 import { FormGroup } from '@angular/forms';
-import { BackendService, ServerError } from './../backend.service';
+import { BackendService } from './../backend.service';
+import { ServerError } from './../../backend.service';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { Component, OnInit } from '@angular/core';
 import { TestControllerService } from '../test-controller.service';
@@ -64,7 +65,7 @@ export class TcMenuButtonsComponent implements OnInit {
               ).subscribe(myData => {
                 if (myData instanceof ServerError) {
                   const e = myData as ServerError;
-                  this.snackBar.open('Konnte Kommentar nicht speichern (' + e.code.toString() + ': ' + e.label, '', {duration: 3000});
+                  this.snackBar.open('Konnte Kommentar nicht speichern (' + e.code.toString() + ': ' + e.labelNice, '', {duration: 3000});
                 } else {
                   const ok = myData as boolean;
                   if (ok) {
@@ -83,7 +84,7 @@ export class TcMenuButtonsComponent implements OnInit {
             ).subscribe(myData => {
               if (myData instanceof ServerError) {
                 const e = myData as ServerError;
-                this.snackBar.open('Konnte Kommentar nicht speichern (' + e.code.toString() + ': ' + e.label, '', {duration: 3000});
+                this.snackBar.open('Konnte Kommentar nicht speichern (' + e.code.toString() + ': ' + e.labelNice, '', {duration: 3000});
               } else {
                 const ok = myData as boolean;
                 if (ok) {

@@ -24,7 +24,7 @@ export class LogindataService {
   public groupName$ = new BehaviorSubject<string>('');
   public personCode$ = new BehaviorSubject<string>('');
   public bookletLabel$ = new BehaviorSubject<string>('');
-  public globalErrorMsg$ = new BehaviorSubject<string>('');
+  public globalErrorMsg$ = new BehaviorSubject<ServerError>(null);
   public bookletsByCode$ = new BehaviorSubject<BookletDataListByCode>(null);
   public bookletData$ = new BehaviorSubject<BookletData[]>([]);
   public loginToken$ = new BehaviorSubject<string>('');
@@ -102,12 +102,12 @@ export class LogindataService {
         this.bs.getLoginDataByPersonToken(pt).subscribe(loginDataUntyped => {
           if (loginDataUntyped instanceof ServerError) {
             const e = loginDataUntyped as ServerError;
-            this.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
+            this.globalErrorMsg$.next(e);
             this.bookletDbId$.next(0);
             this.personToken$.next('');
           } else {
             const loginData = loginDataUntyped as LoginData;
-            this.globalErrorMsg$.next('');
+            this.globalErrorMsg$.next(null);
             this.groupName$.next(loginData.groupname);
             this.workspaceName$.next(loginData.workspaceName);
             this.personCode$.next(loginData.code);
@@ -120,11 +120,11 @@ export class LogindataService {
             this.bs.getBookletStatusByDbId(pt, b).subscribe(bookletStatusUntyped => {
               if (bookletStatusUntyped instanceof ServerError) {
                 const e = bookletStatusUntyped as ServerError;
-                this.globalErrorMsg$.next(e.code.toString() + ': ' + e.label);
+                this.globalErrorMsg$.next(e);
                 this.bookletDbId$.next(0);
               } else {
                 const bookletStatus = bookletStatusUntyped as BookletStatus;
-                this.globalErrorMsg$.next('');
+                this.globalErrorMsg$.next(null);
                 if (bookletStatus.canStart) {
                   this.bookletLabel$.next(bookletStatus.label);
                 } else {

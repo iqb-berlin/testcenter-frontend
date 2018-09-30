@@ -1,6 +1,6 @@
 import { UnitDef, TestControllerService } from './../test-controller.service';
 import { switchMap, map } from 'rxjs/operators';
-import { BackendService, ServerError } from './../backend.service';
+import { BackendService } from './../backend.service';
 import { UnithostComponent } from './unithost.component';
 import { Injectable, Component } from '@angular/core';
 import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot, Resolve } from '@angular/router';
@@ -28,8 +28,8 @@ export class UnitActivateGuard implements CanActivate {
       const newUnit = currentBooklet.getUnitAt(targetUnitSequenceId);
       if (newUnit.locked) {
         console.log('unit is locked');
-      } else if (!this.bs.isItemplayerReady(newUnit.unitDefinitionType)) {
-        console.log('itemplayer for unit not available');
+      // } else if (!this.bs.isItemplayerReady(newUnit.unitDefinitionType)) {
+      //   console.log('itemplayer for unit not available');
       } else {
         this.tcs.setCurrentUnit(targetUnitSequenceId);
       }
@@ -38,6 +38,13 @@ export class UnitActivateGuard implements CanActivate {
     return true;
   }
 }
+
+  // // 7777777777777777777777777777777777777777777777777777777777777777777777
+  // isItemplayerReady(unitDefinitionType: string): boolean {
+  //   unitDefinitionType = this.normaliseFileName(unitDefinitionType, 'html');
+  //   return (unitDefinitionType.length > 0) && this.itemplayers.hasOwnProperty(unitDefinitionType);
+  // }
+
 
 @Injectable()
 export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {

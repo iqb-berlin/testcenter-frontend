@@ -5,10 +5,7 @@
 <div class="page-body" fxLayout="row" iqbResizeIFrameChild>
   <div class="tcSidenav" name="sideNav" fxFlex="110px" fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="5px">
     <p>Aufgaben</p>
-    <button mat-raised-button (click)="sideNaviButtonClick(u.sequenceId)"
-      [disabled]="u.locked" *ngFor="let u of allUnits">
-      {{ u.sequenceId + 1 }}
-    </button>
+    <tc-sidenavi-button *ngFor="let u of allUnits" [unitData]="u"></tc-sidenavi-button>
   </div>
   <div fxFlex>
     <router-outlet></router-outlet>

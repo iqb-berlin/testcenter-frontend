@@ -24,7 +24,7 @@ export class BackendService {
     return this.http
       .post<string>(this.serverUrl + 'testlogin.php', {n: name, p: password}, httpOptions)
         .pipe(
-          catchError(this.handleError)
+          catchError(ErrorHandler.handle)
         );
   }
 
@@ -39,7 +39,7 @@ export class BackendService {
     return this.http
       .post<LoginData>(this.serverUrl + 'getLoginDataByLoginToken.php', {lt: logintoken}, httpOptions)
         .pipe(
-          catchError(this.handleError)
+          catchError(ErrorHandler.handle)
         );
   }
 
@@ -53,7 +53,7 @@ export class BackendService {
     return this.http
       .post<LoginData>(this.serverUrl + 'getLoginDataByPersonToken.php', {pt: persontoken}, httpOptions)
         .pipe(
-          catchError(this.handleError)
+          catchError(ErrorHandler.handle)
         );
   }
 
@@ -68,7 +68,7 @@ export class BackendService {
       .post<BookletStatus>(this.serverUrl + 'getBookletStatusByNameAndPersonToken.php', {
         pt: persontoken, b: bookletname}, httpOptions)
         .pipe(
-          catchError(this.handleError)
+          catchError(ErrorHandler.handle)
         );
   }
 
@@ -84,7 +84,7 @@ export class BackendService {
       .post<BookletStatus>(this.serverUrl + 'getBookletStatusByNameAndLoginToken.php', {
         lt: logintoken, b: bookletid, c: code, bl: bookletlabel}, httpOptions)
         .pipe(
-          catchError(this.handleError)
+          catchError(ErrorHandler.handle)
         );
   }
 
@@ -99,7 +99,7 @@ export class BackendService {
       .post<BookletStatus>(this.serverUrl + 'getBookletStatusByDbId.php', {
         pt: persontoken, b: bookletid}, httpOptions)
         .pipe(
-          catchError(this.handleError)
+          catchError(ErrorHandler.handle)
         );
   }
 
@@ -114,7 +114,7 @@ export class BackendService {
       .post<PersonTokenAndBookletId>(this.serverUrl +
             'startBookletByLoginToken.php', {lt: logintoken, c: code, b: bookletFilename}, httpOptions)
         .pipe(
-          catchError(this.handleError)
+          catchError(ErrorHandler.handle)
         );
   }
 
@@ -129,7 +129,7 @@ export class BackendService {
     return this.http
       .post<number>(this.serverUrl + 'startBookletByPersonToken.php', {pt: persontoken, b: bookletFilename}, httpOptions)
         .pipe(
-          catchError(this.handleError)
+          catchError(ErrorHandler.handle)
         );
   }
 
@@ -143,23 +143,25 @@ export class BackendService {
     return this.http
       .post<boolean>(this.serverUrl + 'endBooklet.php', {pt: persontoken, b: bookletDbId}, httpOptions)
         .pipe(
-          catchError(this.handleError)
+          catchError(ErrorHandler.handle)
         );
   }
 
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+}
 
-  private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
-    const myreturn = new ServerError(errorObj.status, 'Fehler bei Datenübertragung');
-
-    if (errorObj.status === 401) {
-      myreturn.label = 'Fehler: Zugriff verweigert - bitte (neu) anmelden!';
-    } else if (errorObj.status === 503) {
-      myreturn.label = 'Fehler: Server meldet Datenbankproblem.';
-    } else if (errorObj.error instanceof ErrorEvent) {
-      myreturn.label = 'Fehler: ' + (<ErrorEvent>errorObj.error).message;
+export class ErrorHandler {
+  public static handle(errorObj: HttpErrorResponse): Observable<ServerError> {
+    let myreturn: ServerError = null;
+    if (errorObj.error instanceof ErrorEvent) {
+      myreturn = new ServerError(500, 'Verbindungsproblem', (<ErrorEvent>errorObj.error).message);
     } else {
-      myreturn.label = 'Fehler: ' + errorObj.message;
+      myreturn = new ServerError(errorObj.status, 'Verbindungsproblem', errorObj.message);
+      if (errorObj.status === 401) {
+        myreturn.labelNice = 'Zugriff verweigert - bitte (neu) anmelden!';
+      } else if (errorObj.status === 503) {
+        myreturn.labelNice = 'Achtung: Server meldet Datenbankproblem.';
+      }
     }
 
     return of(myreturn);
@@ -172,10 +174,12 @@ export class BackendService {
 // class instead of interface to be able to use instanceof to check type
 export class ServerError {
   public code: number;
-  public label: string;
-  constructor(code: number, label: string) {
+  public labelNice: string;
+  public labelSystem: string;
+  constructor(code: number, labelNice: string, labelSystem) {
     this.code = code;
-    this.label = label;
+    this.labelNice = labelNice;
+    this.labelSystem = labelSystem;
   }
 }
 
