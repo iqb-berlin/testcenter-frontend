@@ -336,22 +336,42 @@ export class UnitDef {
 
             if (oDOM.documentElement.nodeName === 'Unit') {
               // ________________________
+              let definitionRef = '';
               const defElements = oDOM.documentElement.getElementsByTagName('Definition');
+
               if (defElements.length > 0) {
                 const defElement = defElements[0];
                 this.unitDefinition = defElement.textContent;
                 this.unitDefinitionType = defElement.getAttribute('type');
+              } else {
+                const defRefElements = oDOM.documentElement.getElementsByTagName('DefinitionRef');
+
+                if (defRefElements.length > 0) {
+                  const defRefElement = defRefElements[0];
+                  definitionRef = defRefElement.textContent;
+                  this.unitDefinition = '';
+                  this.unitDefinitionType = defRefElement.getAttribute('type');
+                }
+              }
+              if (this.unitDefinitionType.length > 0) {
 
                 return tcs.loadItemplayerOk(auth, this.unitDefinitionType).pipe(
-                  switchMap(ok => of(this.locked = !ok)));
-                // ________________________
-                // const resourcesElements = oDOM.documentElement.getElementsByTagName('Resources');
-                // if (resourcesElements.length > 0) {
-                  // const resourcesElement = resourcesElements[0];
-                  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                  //
-                  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                // }
+                  switchMap(ok => {
+                    if (ok && definitionRef.length > 0) {
+                      return bs.getUnitResourceTxt(auth, definitionRef).pipe(
+                        switchMap(def => {
+                          if (def instanceof ServerError) {
+                            return of(false);
+                          } else {
+                            this.unitDefinition = def as string;
+                            this.locked = false;
+                            return of(true);
+                          }
+                        }));
+                    } else {
+                      return of(this.locked = !ok);
+                    }
+                  }));
               } else {
                 this.label = 'unitdef not found';
                 return of(false); // Def-Element required
