@@ -161,8 +161,6 @@ export class TestControllerService {
     if (myBooklet !== null) {
       const unitCount = myBooklet.units.length;
       if ((pos >= 0 ) && (pos < unitCount)) {
-        this.setCurrentUnit(pos);
-        this.bs.setBookletStatus(this.lds.authorisation$.getValue(), {u: pos}).subscribe();
         this.router.navigateByUrl('/t/u/' + pos.toString());
       }
     }
@@ -172,6 +170,7 @@ export class TestControllerService {
     const currentBooklet = this.booklet$.getValue();
     if ((targetUnitSequenceId >= 0) && (currentBooklet !== null) && (targetUnitSequenceId < currentBooklet.units.length)) {
       this.currentUnitPos$.next(targetUnitSequenceId);
+      this.bs.setBookletStatus(this.lds.authorisation$.getValue(), {u: targetUnitSequenceId}).subscribe();
     }
   }
 }

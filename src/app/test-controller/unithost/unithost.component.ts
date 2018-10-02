@@ -23,6 +23,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private iFrameItemplayer: HTMLIFrameElement;
   private routingSubscription: Subscription = null;
   public currentValidPages: string[] = [];
+  public leaveWarning = false;
+  public leaveWarningText = 'Du hast den Hörtext noch nicht vollständig gehört. Nach dem ' +
+          'Verlassen der Aufgabe wird der Hörtext nicht noch einmal gestartet. Trotzdem die Aufgabe verlassen?';
+
   private myUnitNumber = -1;
   private myUnitName = '';
 
@@ -100,6 +104,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
               this.tcs.itemplayerValidPages$.next([]);
               this.tcs.itemplayerCurrentPage$.next('');
             }
+
+            const canLeave = msgData['canLeave'];
+            if (canLeave !== undefined) {
+              if (canLeave as string === 'warning') {
+                this.leaveWarning = true;
+              }
+            }
             break;
 
           // // // // // // //
@@ -125,6 +136,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
               console.log('got resp ' + response);
               this.response$.next(response);
             }
+            const canLeaveChanged = msgData['canLeave'];
+            if (canLeaveChanged !== undefined) {
+              this.leaveWarning = (canLeaveChanged as string === 'warning');
+            }
+
             // const logEntries = msgData['logEntries'] as string[];
             // if ((logEntries !== undefined) && (logEntries.length > 0)) {
             //   console.log(logEntries);
@@ -207,6 +223,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
 
     this.iFrameItemplayer = null;
+    this.leaveWarning = false;
 
     this.routingSubscription = this.route.params.subscribe(params => {
       this.myUnitNumber = +params['u'];
@@ -234,7 +251,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if ((currentUnitId >= 0) && (this.myUnitNumber === currentUnitId) && (booklet !== null)) {
       console.log('load Itemplayer - currentUnitId: ' + currentUnitId);
       const currentUnit = booklet.getUnitAt(currentUnitId);
-      this.tcs.pageTitle$.next((currentUnitId + 1).toString() + '. ' + currentUnit.label);
+      this.tcs.pageTitle$.next(currentUnit.label); // (currentUnitId + 1).toString() + '. '
       this.myUnitName = currentUnit.id;
 
       this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
@@ -246,6 +263,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
       this.pendingUnitDefinition$.next(currentUnit.unitDefinition);
       const restorePoint = this.restorePoints[this.myUnitName];
+      this.leaveWarning = false;
 
       if ((restorePoint === null) || (restorePoint === undefined)) {
         this.pendingRestorePoint$.next(currentUnit.restorePoint);

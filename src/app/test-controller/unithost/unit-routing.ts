@@ -1,3 +1,5 @@
+import { ConfirmDialogComponent, ConfirmDialogData } from './../../iqb-common/confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material';
 import { UnitDef, TestControllerService } from './../test-controller.service';
 import { switchMap, map } from 'rxjs/operators';
 import { BackendService } from './../backend.service';
@@ -20,44 +22,72 @@ export class UnitActivateGuard implements CanActivate {
     const targetUnitSequenceId: number = +next.params['u'];
     const currentBooklet = this.tcs.booklet$.getValue();
 
+    let myreturn = false;
     if (currentBooklet === null) {
-      console.log('booklet null');
+      console.log('unit canActivate: true (booklet null)');
+      myreturn = true;
     } else if ((targetUnitSequenceId < 0) || (currentBooklet.units.length < targetUnitSequenceId - 1)) {
-      console.log('unit# out of range');
+      console.log('unit canActivate: false (unit# out of range)');
+      myreturn = false;
     } else {
       const newUnit = currentBooklet.getUnitAt(targetUnitSequenceId);
       if (newUnit.locked) {
-        console.log('unit is locked');
+        myreturn = false;
+        console.log('unit canActivate: false (unit is locked)');
       // } else if (!this.bs.isItemplayerReady(newUnit.unitDefinitionType)) {
       //   console.log('itemplayer for unit not available');
       } else {
         this.tcs.setCurrentUnit(targetUnitSequenceId);
+        myreturn = true;
       }
     }
 
-    return true;
+    return myreturn;
   }
 }
 
-  // // 7777777777777777777777777777777777777777777777777777777777777777777777
-  // isItemplayerReady(unitDefinitionType: string): boolean {
-  //   unitDefinitionType = this.normaliseFileName(unitDefinitionType, 'html');
-  //   return (unitDefinitionType.length > 0) && this.itemplayers.hasOwnProperty(unitDefinitionType);
-  // }
-
-
+// 777777777777777777777777777777777777777777777777777777777777777777777777777777777
 @Injectable()
 export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   constructor(
     private tcs: TestControllerService,
-    private bs: BackendService
+    public confirmDialog: MatDialog,
   ) {}
 
   canDeactivate(
     component: UnithostComponent,
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-    console.log('left unit');
+
+    const currentBooklet = this.tcs.booklet$.getValue();
+    if (currentBooklet !== null) {
+      const currentUnitPos = this.tcs.currentUnitPos$.getValue();
+      const currentUnit = currentBooklet.getUnitAt(currentUnitPos);
+      if (currentUnit !== null) {
+        if (component.leaveWarning) {
+
+          const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
+            width: '500px',
+            height: '300px',
+            data:  <ConfirmDialogData>{
+              title: 'Aufgabe verlassen?',
+              content: component.leaveWarningText,
+              confirmbuttonlabel: 'Weiter blättern',
+              confirmbuttonreturn: true
+            }
+          });
+          return dialogRef.afterClosed().pipe(
+            switchMap(result => {
+                if (result === false) {
+                  return of(false);
+                } else {
+                  return of(true);
+                }
+              }
+          ));
+        }
+      }
+    }
     return true;
   }
 }

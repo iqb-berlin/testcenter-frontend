@@ -66,7 +66,7 @@ export class TestControllerComponent implements OnInit {
               this.dataLoading = false;
               this.tcs.booklet$.next(myBookletDef);
               this.tcs.showNaviButtons$.next(myBookletDef.unlockedUnitCount() > 1);
-              this.tcs.currentUnitPos$.next(-1);
+              this.tcs.currentUnitPos$.next(myBookletData.u);
               this.tcs.goToUnitByPosition(myBookletData.u);
             });
           }
