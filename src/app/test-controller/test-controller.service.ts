@@ -194,6 +194,51 @@ export class BookletDef {
   units: UnitDef[];
   navibar: string;
 
+  private addUnits(node: Element, startLockKey: string, startLockPrompt: string) {
+    const childElements = node.children;
+    if (childElements.length > 0) {
+      let restrictionElement: Element = null;
+      for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
+        if (childElements[childIndex].nodeName === 'Restrictions') {
+          restrictionElement = childElements[childIndex];
+          break;
+        }
+      }
+      if (restrictionElement !== null) {
+        const restrictionElements = restrictionElement.children;
+        for (let childIndex = 0; childIndex < restrictionElements.length; childIndex++) {
+          if (restrictionElements[childIndex].nodeName === 'StartLock') {
+            const restrictionParameter = restrictionElements[childIndex].getAttribute('parameter');
+            if ((typeof restrictionParameter !== 'undefined') && (restrictionParameter !== null)) {
+              startLockKey = restrictionParameter.toUpperCase();
+              startLockPrompt = restrictionElements[childIndex].textContent;
+              break;
+            }
+          }
+        }
+      }
+
+      for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
+        if (childElements[childIndex].nodeName === 'Unit') {
+          const newUnit = new UnitDef(childElements[childIndex].getAttribute('id'),
+                childElements[childIndex].getAttribute('label'));
+          const shortLabel = childElements[childIndex].getAttribute('labelshort');
+          if ((typeof shortLabel !== 'undefined') && (shortLabel !== null)) {
+            newUnit.shortlabel = shortLabel;
+          }
+          if (startLockKey.length > 0) {
+            newUnit.startLockKey = startLockKey;
+            newUnit.startLockPrompt = startLockPrompt;
+          }
+          newUnit.sequenceId = this.units.length;
+          this.units.push(newUnit);
+        } else if (childElements[childIndex].nodeName === 'Testlet') {
+          this.addUnits(childElements[childIndex], startLockKey, startLockPrompt);
+        }
+      }
+    }
+  }
+
   constructor(bdata: BookletData) {
     const oParser = new DOMParser();
     const oDOM = oParser.parseFromString(bdata.xml, 'text/xml');
@@ -216,12 +261,7 @@ export class BookletDef {
       // ________________________
       const unitsElements = oDOM.documentElement.getElementsByTagName('Units');
       if (unitsElements.length > 0) {
-        const unitsElement = unitsElements[0];
-        const unitList = unitsElement.getElementsByTagName('Unit');
-        for (let i = 0; i < unitList.length; i++) {
-          this.units[i] = new UnitDef(unitList[i].getAttribute('id'), unitList[i].getAttribute('label'));
-          this.units[i].sequenceId = i;
-        }
+        this.addUnits(unitsElements[0], '', '');
       }
     }
   }
@@ -239,6 +279,14 @@ export class BookletDef {
       return this.units[pos];
     } else {
       return null;
+    }
+  }
+
+  forgetStartLock(key: string) {
+    for (let i = 0; i < this.units.length; i++) {
+      if (this.units[i].startLockKey === key) {
+        this.units[i].startLockKey = '';
+      }
     }
   }
 
@@ -293,20 +341,27 @@ export class UnitDef {
   id: string;
   locked: boolean;
   label: string;
+  shortlabel: string;
   resources: ResourceData[];
   restorePoint: string;
   unitDefinition: string;
   unitDefinitionType: string;
+  startLockKey: string;
+  startLockPrompt: string;
 
   constructor(unit_id: string, unit_label: string) {
     this.id = unit_id;
     this.label = unit_label;
+    const labelSplits = unit_label.split(' ');
+    this.shortlabel = labelSplits[0];
     this.resources = [];
     this.restorePoint = '';
     this.unitDefinition = '';
     this.unitDefinitionType = '';
     this.locked = true;
     this.sequenceId = 0;
+    this.startLockKey = '';
+    this.startLockPrompt = '';
   }
 
   getResourcesAsDictionary(): {[resourceID: string]: string} {

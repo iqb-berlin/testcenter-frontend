@@ -1,0 +1,16 @@
+<form [formGroup]="startkeyform">
+  <h1 mat-dialog-title>Freigabewort</h1>
+
+  <mat-dialog-content fxLayout="column">
+    <p>{{ data.prompt }}</p>
+    <mat-form-field>
+      <input matInput formControlName="key" placeholder="Freigabewort" [value]="data.keyPreset">
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" type="submit" [mat-dialog-close]="startkeyform">Weiter</button>
+    <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
+  </mat-dialog-actions>
+
+</form>

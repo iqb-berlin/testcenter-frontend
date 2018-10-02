@@ -16,6 +16,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReviewDialogComponent } from './tc-menu-buttons/review-dialog.component';
 import { ReactiveFormsModule } from '../../../node_modules/@angular/forms';
 import { TcSidenaviButtonComponent } from './tc-sidenavi-button/tc-sidenavi-button.component';
+import { StartLockInputComponent } from './start-lock-input/start-lock-input.component';
 
 
 @NgModule({
@@ -43,10 +44,12 @@ import { TcSidenaviButtonComponent } from './tc-sidenavi-button/tc-sidenavi-butt
     TcMenuButtonsComponent,
     TcNaviButtonsComponent,
     ReviewDialogComponent,
-    TcSidenaviButtonComponent
+    TcSidenaviButtonComponent,
+    StartLockInputComponent
   ],
   entryComponents: [
-    ReviewDialogComponent
+    ReviewDialogComponent,
+    StartLockInputComponent
   ],
   providers: [
     unitRoutingProviders

@@ -1,3 +1,5 @@
+import { FormGroup } from '@angular/forms';
+import { StartLockInputComponent } from './../start-lock-input/start-lock-input.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from './../../iqb-common/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material';
 import { UnitDef, TestControllerService } from './../test-controller.service';
@@ -12,7 +14,7 @@ import { Observable, of } from 'rxjs';
 export class UnitActivateGuard implements CanActivate {
   constructor(
     private tcs: TestControllerService,
-    private bs: BackendService
+    public startLockDialog: MatDialog
   ) {}
 
   canActivate(
@@ -36,6 +38,32 @@ export class UnitActivateGuard implements CanActivate {
         console.log('unit canActivate: false (unit is locked)');
       // } else if (!this.bs.isItemplayerReady(newUnit.unitDefinitionType)) {
       //   console.log('itemplayer for unit not available');
+      } else if (newUnit.startLockKey.length > 0) {
+        console.log('##############' + newUnit.startLockPrompt);
+        const dialogRef = this.startLockDialog.open(StartLockInputComponent, {
+          width: '500px',
+          height: '300px',
+          data: {
+            prompt: newUnit.startLockPrompt,
+            keyPreset: ''
+          }
+        });
+        return dialogRef.afterClosed().pipe(
+          switchMap(result => {
+              if (result === false) {
+                return of(false);
+              } else {
+                const key = (<FormGroup>result).get('key').value.toUpperCase();
+                if (key === newUnit.startLockKey) {
+                  this.tcs.setCurrentUnit(targetUnitSequenceId);
+                  currentBooklet.forgetStartLock(key);
+                  return of(true);
+                } else {
+                  return of(false);
+                }
+              }
+            }
+        ));
       } else {
         this.tcs.setCurrentUnit(targetUnitSequenceId);
         myreturn = true;
@@ -51,7 +79,7 @@ export class UnitActivateGuard implements CanActivate {
 export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   constructor(
     private tcs: TestControllerService,
-    public confirmDialog: MatDialog,
+    public confirmDialog: MatDialog
   ) {}
 
   canDeactivate(
