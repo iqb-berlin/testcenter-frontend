@@ -1,6 +1,6 @@
 import { Authorisation } from './../../logindata.service';
 import { debounceTime, bufferTime, switchMap } from 'rxjs/operators';
-import { UnitDef, TestControllerService } from './../test-controller.service';
+import { UnitDef, TestControllerService, UnitMsgData } from './../test-controller.service';
 import { Subscriber, Subscription, BehaviorSubject, Observable, of } from 'rxjs';
 import { BackendService } from './../backend.service';
 import { ServerError } from './../../backend.service';
@@ -38,9 +38,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private pendingRestorePoint$ = new BehaviorSubject<string>('');
 
   // changed by itemplayer via postMessage, observed here to save (see below)
-  public restorePoint$ = new BehaviorSubject<string>('');
-  public response$ = new BehaviorSubject<string>('');
-  public log$ = new BehaviorSubject<string>('');
+  public restorePoint$ = new BehaviorSubject<UnitMsgData>(null);
+  public response$ = new BehaviorSubject<UnitMsgData>(null);
+  public log$ = new BehaviorSubject<UnitMsgData>(null);
 
   // buffering restorePoints
   private lastBookletState = '';
@@ -73,13 +73,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
             }
 
             if (hasData) {
-              this.log$.next('ready');
               const pendingRespp = this.pendingRestorePoint$.getValue();
               if (pendingRespp.length > 0) {
                 this.pendingRestorePoint$.next('');
               }
 
               this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+              this.log$.next({'unitName': this.myUnitName, 'msg': 'start'});
               this.postMessageTarget = m.source;
               this.postMessageTarget.postMessage({
                 type: 'OpenCBA.ToItemPlayer.DataTransfer',
@@ -127,14 +127,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
               this.tcs.itemplayerCurrentPage$.next(currentPageChanged);
             }
 
-            const restorePoint = msgData['restorePoint'];
+            const restorePoint = msgData['restorePoint'] as string;
             if (restorePoint !== undefined) {
-              this.restorePoint$.next(restorePoint);
+              this.restorePoint$.next({'unitName': this.myUnitName, 'msg': restorePoint});
             }
-            const response = msgData['response'];
+            const response = msgData['response'] as string;
             if (response !== undefined) {
-              console.log('got resp ' + response);
-              this.response$.next(response);
+              this.response$.next({'unitName': this.myUnitName, 'msg': response});
             }
             const canLeaveChanged = msgData['canLeave'];
             if (canLeaveChanged !== undefined) {
@@ -162,12 +161,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
       if (b !== null) {
         const u = b.getUnitAt(this.myUnitNumber);
         if (u !== null) {
-          u.restorePoint = data;
+          u.restorePoint = data.msg;
         }
       }
 
-      this.restorePoints[this.myUnitName] = data;
-      this.bs.setUnitRestorePoint(this.lds.authorisation$.getValue(), this.myUnitName, data)
+      this.restorePoints[data.unitName] = data.msg;
+      this.bs.setUnitRestorePoint(this.lds.authorisation$.getValue(), data.unitName, data.msg)
         .subscribe(d => {
           if (d === false) {
             console.log('setUnitRestorePoint: false');
@@ -179,7 +178,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     this.response$.pipe(
       debounceTime(300)
-    ).subscribe(data => this.bs.setUnitResponses(this.lds.authorisation$.getValue(), this.myUnitName, data)
+    ).subscribe(data => this.bs.setUnitResponses(this.lds.authorisation$.getValue(), data.unitName, data.msg)
         .subscribe(d => {
           if (d === false) {
             console.log('setUnitResponses: false');
@@ -190,21 +189,20 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     this.log$.pipe(
       bufferTime(500)
-    ).subscribe((data: string[]) => {
-      const myLogs = [];
+    ).subscribe((data: UnitMsgData[]) => {
+      const myLogs = {};
       data.forEach(lg => {
-        if (lg.length > 0) {
-          myLogs.push(JSON.stringify(lg));
+        if (lg.msg.length > 0) {
+          if (typeof myLogs[lg.unitName] === 'undefined') {
+            myLogs[lg.unitName] = [];
+          }
+          myLogs[lg.unitName].push(JSON.stringify(lg.msg));
         }
       });
-      if (myLogs.length > 0) {
-        this.bs.setUnitLog(this.lds.authorisation$.getValue(), this.myUnitName, myLogs).subscribe(d => {
-          if (d === false) {
-            console.log('setUnitLog: false');
-          } else if (d instanceof ServerError) {
-            console.log('setUnitLog: ServerError');
-          }
-        });
+      for (const unitName in myLogs) {
+        if (myLogs[unitName].length > 0) {
+          this.bs.setUnitLog(this.lds.authorisation$.getValue(), unitName, myLogs[unitName]).subscribe();
+        }
       }
     });
 

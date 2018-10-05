@@ -439,3 +439,7 @@ export class UnitDef {
   }
 }
 
+export interface UnitMsgData {
+  unitName: string;
+  msg: string;
+}
