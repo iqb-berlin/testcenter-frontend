@@ -76,11 +76,25 @@ export class ResultsComponent implements OnInit {
           const columnDelimiter = ';';
           const lineDelimiter = '\n';
           let myCsvData = 'groupname' + columnDelimiter + 'loginname' + columnDelimiter + 'code' + columnDelimiter +
-              'bookletname' + columnDelimiter + 'unitname' + columnDelimiter + 'responses' + lineDelimiter;
+              'bookletname' + columnDelimiter + 'unitname' + columnDelimiter + 'responses' + columnDelimiter +
+              'restorePoint' + columnDelimiter + 'responseType' + lineDelimiter;
           responseData.forEach((resp: UnitResponse) => {
+            myCsvData += '"' + resp.groupname + '"' + columnDelimiter + '"' + resp.loginname + '"' + columnDelimiter + '"' + resp.code + '"' + columnDelimiter +
+                '"' + resp.bookletname + '"' + columnDelimiter + '"' + resp.unitname + '"' + columnDelimiter;
             if ((resp.responses !== null) && (resp.responses.length > 0)) {
-             myCsvData += '"' + resp.groupname + '"' + columnDelimiter + '"' + resp.loginname + '"' + columnDelimiter + '"' + resp.code + '"' + columnDelimiter +
-              '"' + resp.bookletname + '"' + columnDelimiter + '"' + resp.unitname + '"' + columnDelimiter + resp.responses.replace(/\\"/g, '""') + lineDelimiter;
+              myCsvData += resp.responses.replace(/\\"/g, '""') + columnDelimiter;
+            } else {
+              myCsvData += columnDelimiter;
+            }
+            if ((resp.restorepoint !== null) && (resp.restorepoint.length > 0)) {
+              myCsvData += resp.restorepoint.replace(/\\"/g, '""') + columnDelimiter;
+            } else {
+              myCsvData += columnDelimiter;
+            }
+            if ((resp.responsetype !== null) && (resp.responsetype.length > 0)) {
+              myCsvData += '"' + resp.responsetype + '"' + lineDelimiter;
+            } else {
+              myCsvData += lineDelimiter;
             }
           });
           var blob = new Blob([myCsvData], {type: "text/csv;charset=utf-8"});

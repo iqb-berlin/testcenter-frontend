@@ -289,6 +289,8 @@ export interface UnitResponse {
   bookletname: string;
   unitname: string;
   responses: string;
+  restorepoint:  string;
+  responsetype: string;
 }
 
 export interface MonitorData {
