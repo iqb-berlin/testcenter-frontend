@@ -1,56 +1,64 @@
+<div class="columnhost" fxLayout="column">
+  <div class="spinner-container" *ngIf="dataLoading">
+    <mat-spinner></mat-spinner>
+  </div>
+  <div fxLayout="row" fxLayoutGap="10px">
+    <button mat-raised-button (click)="downloadResponsesCSV()" [disabled]="!tableselectionCheckbox.hasValue()"
+        matTooltip="Download markierte Gruppen als CSV für Excel" matTooltipPosition="above">
+      <mat-icon>cloud_download</mat-icon>Antworten
+    </button>
+    <button mat-raised-button (click)="downloadLogsCSV()" [disabled]="!tableselectionCheckbox.hasValue()"
+        matTooltip="Download markierte Gruppen als CSV für Excel" matTooltipPosition="above">
+      <mat-icon>cloud_download</mat-icon>Logs
+    </button>
+    <button mat-raised-button (click)="downloadReviewsCSV()" [disabled]="!tableselectionCheckbox.hasValue()"
+        matTooltip="Download markierte Gruppen als CSV für Excel" matTooltipPosition="above">
+      <mat-icon>cloud_download</mat-icon>Kommentare
+    </button>
+  </div>
 
-<table mat-table [dataSource]="groupStats" matSort  class="mat-elevation-z8">
-  
-  <ng-container matColumnDef="selectCheckbox">
-    <mat-header-cell *matHeaderCellDef fxFlex="70px">
-      <mat-checkbox (change)="$event ? masterToggle() : null"
-                    [checked]="tableselectionCheckbox.hasValue() && isAllSelected()"
-                    [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()">
-      </mat-checkbox>
-    </mat-header-cell>
-    <mat-cell *matCellDef="let row" fxFlex="70px">
-      <mat-checkbox (click)="$event.stopPropagation()"
-                    (change)="$event ? tableselectionCheckbox.toggle(row) : null"
-                    [checked]="tableselectionCheckbox.isSelected(row)">
-      </mat-checkbox>
-    </mat-cell>
-  </ng-container>
-  
-  <ng-container matColumnDef="name">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Group Name</th>
-    <td mat-cell *matCellDef="let element">{{element.name}}</td>
-  </ng-container>
+  <mat-table [dataSource]="resultDataSource" matSort>
+    <ng-container matColumnDef="selectCheckbox">
+      <mat-header-cell *matHeaderCellDef fxFlex="70px">
+        <mat-checkbox (change)="$event ? masterToggle() : null"
+                      [checked]="tableselectionCheckbox.hasValue() && isAllSelected()"
+                      [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()">
+        </mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" fxFlex="70px">
+        <mat-checkbox (click)="$event.stopPropagation()"
+                      (change)="$event ? tableselectionCheckbox.toggle(row) : null"
+                      [checked]="tableselectionCheckbox.isSelected(row)">
+        </mat-checkbox>
+      </mat-cell>
+    </ng-container>
 
-  <ng-container matColumnDef="testsTotal">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Number of tests from XML</th>
-    <td mat-cell *matCellDef="let element">{{element.testsTotal}} </td>
-  </ng-container>
+    <ng-container matColumnDef="groupname">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxFlex="300px">Login-Gruppe</mat-header-cell>
+      <mat-cell *matCellDef="let element" fxFlex="300px">{{element.groupname}}</mat-cell>
+    </ng-container>
 
-  <ng-container matColumnDef="testsStarted">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Booklets started / Number of test takers</th>
-    <td mat-cell *matCellDef="let element"> {{element.testsStarted}} </td>
-  </ng-container>
+    <ng-container matColumnDef="bookletsStarted">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Testhefte gestartet</mat-header-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center"> {{element.bookletsStarted}} </mat-cell>
+    </ng-container>
 
-  <ng-container matColumnDef="responsesGiven">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Responses / Total responses planned </th>
-    <td mat-cell *matCellDef="let element"> {{element.responsesGiven}} </td>
-  </ng-container>
+    <ng-container matColumnDef="num_units_min">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Aufgaben min</mat-header-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.num_units_min}} </mat-cell>
+    </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
-<!-- <p>number of selected rows: {{  tableselectionCheckbox.selected.length }}</p> -->
+    <ng-container matColumnDef="num_units_max">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Aufgaben max</mat-header-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.num_units_max}} </mat-cell>
+    </ng-container>
 
-<button mat-button [disabled]="tableselectionCheckbox.selected.length === 0" (click)= "downloadOnClick()">Save Data to CSV</button>
+    <ng-container matColumnDef="num_units_mean">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Aufgaben Mittelwert</mat-header-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.num_units_mean | number:'1.1-1'}} </mat-cell>
+    </ng-container>
 
-
-
-
-
-
-
-
-
-
-
-
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+</div>

@@ -127,41 +127,87 @@ export class BackendService {
         );
   }
 
-/*******************************/
-
-  showStats(adminToken: string, workspaceId: number, responseOnly: boolean): Observable<GroupResponse[]>{
+  /*******************************/
+  getBookletsStarted(adminToken: string, workspaceId: number, groups: string[]): Observable<BookletsStarted[]>{
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<GroupResponse[]>(this._serverUrl + 'getTestStats.php', {at: adminToken, ws: workspaceId, rso: responseOnly}, httpOptions);
+      .post<BookletsStarted[]>(this._serverUrl + 'getBookletsStarted.php', {at: adminToken, ws: workspaceId, g: groups}, httpOptions);
   }
 
-  downloadCSVResponses(adminToken: string, workspaceId: number, groups: GroupResponse[]): Observable<string>{
-    const customHeaders = new HttpHeaders().set('Content-Type', 'application/json');
-    const httpOptions = {headers: customHeaders, responseType: 'text' as 'json'};
-
+  /*******************************/
+  lockBooklets(adminToken: string, workspaceId: number, groups: string[]): Observable<boolean>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
     return this.http
-      .post<string>(this._serverUrl + 'getCSVResponses.php', {at: adminToken, ws: workspaceId, groups: groups }, httpOptions);
+      .post<boolean>(this._serverUrl + 'lockBooklets.php', {at: adminToken, ws: workspaceId, g: groups}, httpOptions);
   }
 
-  downloadCSVResponses2(adminToken: string, workspaceId: number, groups: GroupResponse[]): void{
-    let url = this._serverUrl;
-    url += 'getCSVResponses.php?';
-    url += 'at=';
-    url += adminToken;
-    url += '&ws=';
-    url += workspaceId;
-    groups.forEach(group => {
-      url += '&groups[]=';
-      url += group;
-    });
-    window.open(url);
+  unlockBooklets(adminToken: string, workspaceId: number, groups: string[]): Observable<boolean>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<boolean>(this._serverUrl + 'unlockBooklets.php', {at: adminToken, ws: workspaceId, g: groups}, httpOptions);
   }
 
+  getMonitorData(adminToken: string, workspaceId: number): Observable<MonitorData[]>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<MonitorData[]>(this._serverUrl + 'getMonitorData.php', {at: adminToken, ws: workspaceId}, httpOptions);
+  }
 
+  getResultData(adminToken: string, workspaceId: number): Observable<ResultData[]>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<ResultData[]>(this._serverUrl + 'getResultData.php', {at: adminToken, ws: workspaceId}, httpOptions);
+  }
+
+  getResponses(adminToken: string, workspaceId: number, groups: string[]): Observable<UnitResponse[]>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<UnitResponse[]>(this._serverUrl + 'getResponses.php', {at: adminToken, ws: workspaceId, g: groups}, httpOptions);
+  }
+
+  getLogs(adminToken: string, workspaceId: number, groups: string[]): Observable<LogData[]>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<LogData[]>(this._serverUrl + 'getLogs.php', {at: adminToken, ws: workspaceId, g: groups}, httpOptions);
+  }
+
+  getReviews(adminToken: string, workspaceId: number, groups: string[]): Observable<ReviewData[]>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<ReviewData[]>(this._serverUrl + 'getReviews.php', {at: adminToken, ws: workspaceId, g: groups}, httpOptions);
+  }
 
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
@@ -221,10 +267,65 @@ export interface CheckWorkspaceResponseData {
 }
 
 
-
 export interface GroupResponse {
   name: string;
   testsTotal: number;
   testsStarted: number;
   responsesGiven: number;
+}
+
+export interface BookletsStarted {
+  groupname: string;
+  loginname: string;
+  code: string;
+  bookletname: string;
+  locked: boolean;
+}
+
+export interface UnitResponse {
+  groupname: string;
+  loginname: string;
+  code: string;
+  bookletname: string;
+  unitname: string;
+  responses: string;
+}
+
+export interface MonitorData {
+  groupname: string;
+  loginsPrepared: number;
+  personsPrepared: number;
+  bookletsPrepared: number;
+  bookletsStarted: number;
+  bookletsLocked: number;
+}
+
+export interface ResultData {
+  groupname: string;
+  bookletsStarted: number;
+  num_units_min: number;
+  num_units_max: number;
+  num_units_mean: number;
+}
+
+export interface LogData {
+  groupname: string;
+  loginname: string;
+  code: string;
+  bookletname: string;
+  unitname: string;
+  logtime: Date;
+  logentry: string;
+}
+
+export interface ReviewData {
+  groupname: string;
+  loginname: string;
+  code: string;
+  bookletname: string;
+  unitname: string;
+  priority: number;
+  categories: string;
+  reviewtime: Date;
+  entry: string;
 }

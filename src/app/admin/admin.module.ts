@@ -1,3 +1,4 @@
+import { FlexLayoutModule } from '@angular/flex-layout';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { BackendService } from './backend.service';
 import { IqbFilesModule } from '../iqb-files';
@@ -48,7 +49,8 @@ import {MatGridListModule} from '@angular/material/grid-list';
     MatSnackBarModule,
     MatGridListModule,
     IqbCommonModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FlexLayoutModule
   ],
   exports: [
     AdminComponent
