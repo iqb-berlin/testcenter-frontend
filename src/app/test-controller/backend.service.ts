@@ -155,14 +155,15 @@ export class BackendService {
 
   // 888888888888888888888888888888888888888888888888888888888888888888
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  setUnitResponses(auth: Authorisation, unit: string, unitdata: string): Observable<boolean | ServerError> {
+  setUnitResponses(auth: Authorisation, unit: string, unitdata: string, responseType: string): Observable<boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-    .post<boolean>(this.serverUrl + 'setUnitResponse.php', {au: auth.toAuthString(), u: unit, d: JSON.stringify(unitdata)}, httpOptions)
+    .post<boolean>(this.serverUrl + 'setUnitResponse.php',
+            {au: auth.toAuthString(), u: unit, d: JSON.stringify(unitdata), rt: responseType}, httpOptions)
       .pipe(
         catchError(ErrorHandler.handle)
       );

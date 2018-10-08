@@ -1,6 +1,6 @@
 import { Authorisation } from './../../logindata.service';
 import { debounceTime, bufferTime, switchMap } from 'rxjs/operators';
-import { UnitDef, TestControllerService, UnitMsgData } from './../test-controller.service';
+import { UnitDef, TestControllerService, UnitLogData, UnitResponseData, UnitRestorePointData } from './../test-controller.service';
 import { Subscriber, Subscription, BehaviorSubject, Observable, of } from 'rxjs';
 import { BackendService } from './../backend.service';
 import { ServerError } from './../../backend.service';
@@ -38,9 +38,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private pendingRestorePoint$ = new BehaviorSubject<string>('');
 
   // changed by itemplayer via postMessage, observed here to save (see below)
-  public restorePoint$ = new BehaviorSubject<UnitMsgData>(null);
-  public response$ = new BehaviorSubject<UnitMsgData>(null);
-  public log$ = new BehaviorSubject<UnitMsgData>(null);
+  public restorePoint$ = new BehaviorSubject<UnitRestorePointData>(null);
+  public response$ = new BehaviorSubject<UnitResponseData>(null);
+  public log$ = new BehaviorSubject<UnitLogData>(null);
 
   // buffering restorePoints
   private lastBookletState = '';
@@ -54,6 +54,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     private location: Location,
     private route: ActivatedRoute
   ) {
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.postMessageSubscription = this.lds.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData['type'];
@@ -79,7 +80,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
               }
 
               this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
-              this.log$.next({'unitName': this.myUnitName, 'msg': 'start'});
+              this.log$.next({'unitName': this.myUnitName, 'logEntry': 'start'});
               this.postMessageTarget = m.source;
               this.postMessageTarget.postMessage({
                 type: 'OpenCBA.ToItemPlayer.DataTransfer',
@@ -129,21 +130,23 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
             const restorePoint = msgData['restorePoint'] as string;
             if (restorePoint !== undefined) {
-              this.restorePoint$.next({'unitName': this.myUnitName, 'msg': restorePoint});
+              this.restorePoint$.next({'unitName': this.myUnitName, 'restorePoint': restorePoint});
             }
             const response = msgData['response'] as string;
             if (response !== undefined) {
-              this.response$.next({'unitName': this.myUnitName, 'msg': response});
+              this.response$.next({'unitName': this.myUnitName, 'response': response, 'responseType': msgData['responseType']});
             }
             const canLeaveChanged = msgData['canLeave'];
             if (canLeaveChanged !== undefined) {
               this.leaveWarning = (canLeaveChanged as string === 'warning');
             }
 
+
             // const logEntries = msgData['logEntries'] as string[];
             // if ((logEntries !== undefined) && (logEntries.length > 0)) {
-            //   console.log(logEntries);
-            //   logEntries.forEach(log => this.log$.next(log));
+            //   logEntries.forEach(log => {
+            //     this.log$.next({'unitName': this.myUnitName, 'msg': log});
+            //   });
             // }
             break;
 
@@ -155,57 +158,59 @@ export class UnithostComponent implements OnInit, OnDestroy {
       }
     });
 
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.restorePoint$.pipe(
       debounceTime(300)).subscribe(data => {
-      const b = this.tcs.booklet$.getValue();
-      if (b !== null) {
-        const u = b.getUnitAt(this.myUnitNumber);
-        if (u !== null) {
-          u.restorePoint = data.msg;
-        }
-      }
-
-      this.restorePoints[data.unitName] = data.msg;
-      this.bs.setUnitRestorePoint(this.lds.authorisation$.getValue(), data.unitName, data.msg)
-        .subscribe(d => {
-          if (d === false) {
-            console.log('setUnitRestorePoint: false');
-          } else if (d instanceof ServerError) {
-            console.log('setUnitRestorePoint: ServerError');
+        if (data !== null) {
+          const b = this.tcs.booklet$.getValue();
+          if (b !== null) {
+            const u = b.getUnitAt(this.myUnitNumber);
+            if (u !== null) {
+              u.restorePoint = data.restorePoint;
+            }
           }
-        });
+
+          this.restorePoints[data.unitName] = data.restorePoint;
+          this.bs.setUnitRestorePoint(this.lds.authorisation$.getValue(), data.unitName, data.restorePoint)
+            .subscribe();
+        }
     });
 
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.response$.pipe(
       debounceTime(300)
-    ).subscribe(data => this.bs.setUnitResponses(this.lds.authorisation$.getValue(), data.unitName, data.msg)
-        .subscribe(d => {
-          if (d === false) {
-            console.log('setUnitResponses: false');
-          } else if (d instanceof ServerError) {
-            console.log('setUnitResponses: ServerError');
-          }
-        }));
+    ).subscribe(data => {
+        if (data !== null) {
+          this.bs.setUnitResponses(this.lds.authorisation$.getValue(), data.unitName, data.response, data.responseType)
+          .subscribe();
+      }
+    });
 
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.log$.pipe(
       bufferTime(500)
-    ).subscribe((data: UnitMsgData[]) => {
-      const myLogs = {};
-      data.forEach(lg => {
-        if (lg.msg.length > 0) {
-          if (typeof myLogs[lg.unitName] === 'undefined') {
-            myLogs[lg.unitName] = [];
+    ).subscribe((data: UnitLogData[]) => {
+      if (data.length > 0) {
+        const myLogs = {};
+        data.forEach(lg => {
+          if (lg !== null) {
+            if (lg.logEntry.length > 0) {
+              if (typeof myLogs[lg.unitName] === 'undefined') {
+                myLogs[lg.unitName] = [];
+              }
+              myLogs[lg.unitName].push(JSON.stringify(lg.logEntry));
+            }
           }
-          myLogs[lg.unitName].push(JSON.stringify(lg.msg));
-        }
-      });
-      for (const unitName in myLogs) {
-        if (myLogs[unitName].length > 0) {
-          this.bs.setUnitLog(this.lds.authorisation$.getValue(), unitName, myLogs[unitName]).subscribe();
+        });
+        for (const unitName in myLogs) {
+          if (myLogs[unitName].length > 0) {
+            this.bs.setUnitLog(this.lds.authorisation$.getValue(), unitName, myLogs[unitName]).subscribe();
+          }
         }
       }
     });
 
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.tcs.itemplayerPageRequest$.subscribe(newUnitPage => {
       if ((this.postMessageTarget !== null) && (newUnitPage.length > 0)) {
         this.postMessageTarget.postMessage({
@@ -217,6 +222,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     });
   }
 
+  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   ngOnInit() {
     this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
 
@@ -239,15 +245,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
     });
   }
 
+  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   loadItemplayer() {
     while (this.iFrameHostElement.hasChildNodes()) {
       this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
     }
     const currentUnitId = this.tcs.currentUnitPos$.getValue();
     const booklet = this.tcs.booklet$.getValue();
-    console.log('load Itemplayer 1st');
     if ((currentUnitId >= 0) && (this.myUnitNumber === currentUnitId) && (booklet !== null)) {
-      console.log('load Itemplayer - currentUnitId: ' + currentUnitId);
       const currentUnit = booklet.getUnitAt(currentUnitId);
       this.tcs.pageTitle$.next(currentUnit.label); // (currentUnitId + 1).toString() + '. '
       this.myUnitName = currentUnit.id;
@@ -274,7 +279,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.iFrameHostElement.appendChild(this.iFrameItemplayer);    }
   }
 
-  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   ngOnDestroy() {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();

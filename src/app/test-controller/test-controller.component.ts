@@ -45,12 +45,9 @@ export class TestControllerComponent implements OnInit {
       this.resetBookletData();
       this.myLastAuthString = '';
     } else {
-      if (this.myLastAuthString === auth.toAuthString()) {
-        console.log('not doubling');
-      } else {
+      if (this.myLastAuthString !== auth.toAuthString()) {
         this.myLastAuthString = auth.toAuthString();
 
-        console.log('load booklet ' + auth.toAuthString() + ' ' + s);
         this.dataLoading = true;
         this.bs.getBookletData(auth).subscribe(myData => {
           if (myData instanceof ServerError) {

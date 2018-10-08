@@ -439,7 +439,21 @@ export class UnitDef {
   }
 }
 
-export interface UnitMsgData {
+export interface UnitLogData {
   unitName: string;
-  msg: string;
+  logEntry: string;
+}
+export interface UnitResponseData {
+  unitName: string;
+  response: string;
+  responseType: string;
+}
+export interface UnitRestorePointData {
+  unitName: string;
+  restorePoint: string;
+}
+
+export interface StartLockData {
+  prompt: string;
+  keyPreset: string;
 }

@@ -1,7 +1,8 @@
+import { LogindataService } from './../../logindata.service';
 import { FormGroup } from '@angular/forms';
 import { StartLockInputComponent } from './../start-lock-input/start-lock-input.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from './../../iqb-common/confirm-dialog/confirm-dialog.component';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatSnackBar } from '@angular/material';
 import { UnitDef, TestControllerService } from './../test-controller.service';
 import { switchMap, map } from 'rxjs/operators';
 import { BackendService } from './../backend.service';
@@ -13,8 +14,10 @@ import { Observable, of } from 'rxjs';
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
   constructor(
+    private lds: LogindataService,
     private tcs: TestControllerService,
-    public startLockDialog: MatDialog
+    public startLockDialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   canActivate(
@@ -39,13 +42,12 @@ export class UnitActivateGuard implements CanActivate {
       // } else if (!this.bs.isItemplayerReady(newUnit.unitDefinitionType)) {
       //   console.log('itemplayer for unit not available');
       } else if (newUnit.startLockKey.length > 0) {
-        console.log('##############' + newUnit.startLockPrompt);
         const dialogRef = this.startLockDialog.open(StartLockInputComponent, {
           width: '500px',
           height: '300px',
           data: {
             prompt: newUnit.startLockPrompt,
-            keyPreset: ''
+            keyPreset: this.lds.loginMode$.getValue() === 'review' ? newUnit.startLockKey : ''
           }
         });
         return dialogRef.afterClosed().pipe(
@@ -59,6 +61,7 @@ export class UnitActivateGuard implements CanActivate {
                   currentBooklet.forgetStartLock(key);
                   return of(true);
                 } else {
+                  this.snackBar.open('Die Eingabe war nicht korrekt.', 'Freigabewort', {duration: 3000});
                   return of(false);
                 }
               }
@@ -100,7 +103,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
             data:  <ConfirmDialogData>{
               title: 'Aufgabe verlassen?',
               content: component.leaveWarningText,
-              confirmbuttonlabel: 'Weiter blättern',
+              confirmbuttonlabel: 'Weiterblättern',
               confirmbuttonreturn: true
             }
           });
