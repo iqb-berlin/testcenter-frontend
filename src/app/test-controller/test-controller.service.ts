@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { LogindataService, Authorisation } from './../logindata.service';
-import { BehaviorSubject, of, Observable, forkJoin, merge } from 'rxjs';
+import { BehaviorSubject, of, Observable, forkJoin } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { debounceTime, bufferTime, switchMap, map } from 'rxjs/operators';
 import { BackendService, BookletData, UnitData } from './backend.service';
@@ -17,7 +17,6 @@ export class TestControllerService {
   public currentUnitPos$ = new BehaviorSubject<number>(-1);
 
   // for Navi-Buttons:
-  public canReview$ = new BehaviorSubject<boolean>(false);
   public showNaviButtons$ = new BehaviorSubject<boolean>(false);
   public itemplayerValidPages$ = new BehaviorSubject<string[]>([]);
   public itemplayerCurrentPage$ = new BehaviorSubject<string>('');
@@ -52,18 +51,6 @@ export class TestControllerService {
     private router: Router,
     private lds: LogindataService
   ) {
-    merge(
-      this.lds.loginMode$,
-      this.lds.bookletDbId$
-    ).subscribe(k => {
-      const mode = this.lds.loginMode$.getValue();
-      if ((mode === 'trial') || (mode === 'review')) {
-        this.canReview$.next(this.lds.bookletDbId$.getValue() > 0);
-      } else {
-        this.canReview$.next(false);
-      }
-    });
-
     this.currentUnitPos$.subscribe((p: number) => {
       const b = this.booklet$.getValue();
       if (b === null) {

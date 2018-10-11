@@ -5,7 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule,
+import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule, MatCardModule,
   MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule } from '@angular/material';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -37,6 +37,7 @@ import { ErrormsgComponent } from './errormsg/errormsg.component';
     MatTooltipModule,
     MatDialogModule,
     MatTabsModule,
+    MatCardModule,
     FlexLayoutModule,
     ReactiveFormsModule,
     HttpClientModule,

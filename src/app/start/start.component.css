@@ -11,3 +11,7 @@ p.booklet_status {
   height: 24px;
   margin-bottom: 18px;
 }
+
+.status {
+  background-color: grey;
+}

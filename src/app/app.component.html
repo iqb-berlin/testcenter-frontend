@@ -5,21 +5,7 @@
   <span>{{ title }}</span>
   <span class="itp-fill-remaining-space"></span>
 
-  <button mat-icon-button [matMenuTriggerFor]="menu">
-    <i class="material-icons">menu</i>
-  </button>
-
-  <mat-menu #menu="matMenu">
-    <button mat-menu-item [routerLink]="['/about']">
-      <mat-icon>info</mat-icon>
-      <span>Programm-Info</span>
-    </button>
-    <button mat-menu-item [routerLink]="['/']">
-      <mat-icon>home</mat-icon>
-      <span>Anmeldeseite</span>
-    </button>
-    <tc-menu-buttons></tc-menu-buttons>
-</mat-menu>
+  <tc-menu-buttons></tc-menu-buttons>
 </mat-toolbar>
 
 <router-outlet></router-outlet>

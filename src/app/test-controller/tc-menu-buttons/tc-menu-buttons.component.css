@@ -1,11 +1,14 @@
-button.mat-menu-item {
+/* button.mat-menu-item {
   margin: 0px;
 }
 
 button {
   margin: 5px;
-}
+} */
 
 .material-icons {
-  font-size: 1.6rem;
+  font-size: 2.0rem;
+}
+.mat-button {
+  text-align: right;
 }

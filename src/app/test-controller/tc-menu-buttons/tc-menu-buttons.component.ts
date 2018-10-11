@@ -1,3 +1,4 @@
+import { merge } from 'rxjs';
 import { FormGroup } from '@angular/forms';
 import { BackendService } from './../backend.service';
 import { ServerError } from './../../backend.service';
@@ -21,12 +22,23 @@ export class TcMenuButtonsComponent implements OnInit {
     private bs: BackendService,
     private lds: LogindataService,
     private snackBar: MatSnackBar
-  ) { }
+  ) {
+
+  }
 
   ngOnInit() {
-    this.tcs.canReview$.subscribe(is => {
-        this.showReviewMenuEntry = is;
-      });
+    merge(
+      this.lds.loginMode$,
+      this.lds.bookletDbId$,
+      this.tcs.currentUnitPos$
+    ).subscribe(k => {
+      const mode = this.lds.loginMode$.getValue();
+      if ((mode === 'trial') || (mode === 'review')) {
+        this.showReviewMenuEntry = this.lds.bookletDbId$.getValue() > 0;
+      } else {
+        this.showReviewMenuEntry = false;
+      }
+    });
   }
 
   showReviewDialog() {
