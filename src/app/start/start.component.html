@@ -1,9 +1,12 @@
 <div class="page-body">
-  <div fxLayout="row" fxLayoutAlign="center stretch" fxLayoutGap="30px" style="padding: 30px;">
+    <div class="spinner-container" *ngIf="dataLoading">
+      <mat-spinner></mat-spinner>
+    </div>
+    <div fxLayout="row wrap" fxLayoutAlign="center stretch" style="padding: 30px;">
 
 
     <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
-    <mat-card fxFlex="350px" fxLayout="column" *ngIf="showLoginForm">
+    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showLoginForm">
       <!-- - - - - - - - - - - - - - - - - -->
       <mat-card-title>Anmelden</mat-card-title>
       <mat-card-content>
@@ -22,7 +25,7 @@
     </mat-card>
 
     <!-- - - - - - - - - - - - - - - - - -->
-    <mat-card fxFlex="350px" fxLayout="column" *ngIf="showCodeForm">
+    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showCodeForm">
       <mat-card-title>Anmelden</mat-card-title>
       <mat-card-content>
         <form [formGroup]="codeinputform" (ngSubmit)="codeinput()" *ngIf="" fxLayout="column">
@@ -33,40 +36,47 @@
       </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button type="submit" [disabled]="codeinputform.invalid" color="primary">Weiter</button>
-      </mat-card-actions>
+        <button mat-raised-button color="foreground" (click)="changeLogin()">Test-Anmeldung ändern</button>
+    </mat-card-actions>
     </mat-card>
 
     <!-- - - - - - - - - - - - - - - - - -->
-    <mat-card fxFlex="350px" fxLayout="column" *ngIf="showBookletButtons">
+    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showBookletButtons">
       <mat-card-title>Bitte wählen</mat-card-title>
       <mat-card-content>
         <div fxLayout="row" fxLayoutGap="10px" fxLayout="column">
           <p *ngIf="bookletlist.length === 0">
             Für diese Anmeldung wurde kein Test gefunden.
           </p>
-          <button mat-raised-button class="bookletselectbutton" (click)="buttonStartTest(b)"
+          <button mat-raised-button color="primary" (click)="buttonStartTest(b)"
             [disabled]="!b.isEnabled" *ngFor="let b of bookletlist">
               <p class="booklet_title">{{b.label}}</p>
               <p class="booklet_status">{{b.statustxt}}</p>
           </button>
         </div>
       </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="foreground" (click)="changeLogin()">Test-Anmeldung ändern</button>
+        <button mat-raised-button color="foreground" *ngIf="validCodes.length > 1" (click)="changeCode()">Personen-Code ändern</button>
+      </mat-card-actions>
     </mat-card>
 
     <!-- - - - - - - - - - - - - - - - - -->
-    <mat-card fxFlex="350px" fxLayout="column" *ngIf="showTestRunningButtons">
-      <mat-card-title>Bitte Testheft wählen</mat-card-title>
+    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showTestRunningButtons">
+      <mat-card-title>Ein Testheft ist gestartet</mat-card-title>
       <mat-card-content>
         <div fxLayout="column" fxLayoutGap="20px">
           <button mat-raised-button color="primary" [routerLink]="['/t']">Zum Test zurückkehren</button>
           <button mat-raised-button color="primary" (click)="buttonEndTest()">{{ testEndButtonText }}</button>
+          <button mat-raised-button color="foreground" (click)="changeLogin()">Test-Anmeldung ändern</button>
+          <button mat-raised-button color="foreground" *ngIf="validCodes.length > 1" (click)="changeCode()">Personen-Code ändern</button>
         </div>
       </mat-card-content>
     </mat-card>
 
     <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
     <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
-    <mat-card fxFlex="30%" fxLayout="column" class="status">
+    <mat-card fxFlex="0 2 400px" fxLayout="column" class="status">
       <mat-card-title>IQB-Testcenter</mat-card-title>
 
       <!-- - - - - - - - - - - - - - - - - -->
@@ -114,9 +124,6 @@
 
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button color="foreground" *ngIf="!showLoginForm" (click)="changeLogin()">Test-Anmeldung ändern</button>
-        <button mat-raised-button color="foreground" *ngIf="validCodes.length > 1" (click)="changeCode()">Personen-Code ändern</button>
-        <p *ngIf="!showLoginForm || validCodes.length > 1">&nbsp;</p>
         <button mat-raised-button color="foreground" [routerLink]="['/about']">Impressum/Datenschutz</button>
       </mat-card-actions>
     </mat-card>

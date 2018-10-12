@@ -13,6 +13,8 @@ import { FormGroup, FormBuilder, FormArray, FormControl, Validators, ReactiveFor
   styleUrls: ['./start.component.css']
 })
 export class StartComponent implements OnInit {
+  private dataLoading = false;
+
   // for template
   private showLoginForm = true;
   private loginStatusText = ['nicht angemeldet'];
@@ -99,11 +101,13 @@ export class StartComponent implements OnInit {
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   testtakerlogin() {
+    this.dataLoading = true;
     this.bs.login(this.testtakerloginform.get('testname').value, this.testtakerloginform.get('testpw').value).subscribe(
       loginTokenUntyped => {
         if (loginTokenUntyped instanceof ServerError) {
           const e = loginTokenUntyped as ServerError;
           this.lds.globalErrorMsg$.next(e);
+          this.dataLoading = false;
           // no change in other data
         } else {
           this.validCodes = [];
@@ -152,6 +156,7 @@ export class StartComponent implements OnInit {
                   this.bookletlist = this.getStartButtonData();
                 }
               }
+              this.dataLoading = false;
             });
           }
       }

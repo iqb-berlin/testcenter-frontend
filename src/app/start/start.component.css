@@ -1,5 +1,5 @@
 p.booklet_title {
-  font-size: 10pt;
+  font-size: 16pt;
   margin-bottom: 0px;
   height: 24px;
 }
@@ -12,6 +12,9 @@ p.booklet_status {
   margin-bottom: 18px;
 }
 
+.mat-card {
+  margin: 10px;
+}
 .status {
-  background-color: grey;
+  background-color: lightgrey;
 }

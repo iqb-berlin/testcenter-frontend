@@ -15,6 +15,6 @@ export class AboutComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.lds.pageTitle$.next('IQB-Testcenter - Impressum/Datenschutz');
+    this.lds.pageTitle$.next('');
   }
 }
