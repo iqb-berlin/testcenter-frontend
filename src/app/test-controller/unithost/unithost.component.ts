@@ -171,8 +171,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
           }
 
           this.restorePoints[data.unitName] = data.restorePoint;
-          this.bs.setUnitRestorePoint(this.lds.authorisation$.getValue(), data.unitName, data.restorePoint)
+          if (this.lds.loginMode$.getValue() !== 'review') {
+            this.bs.setUnitRestorePoint(this.lds.authorisation$.getValue(), data.unitName, data.restorePoint)
             .subscribe();
+          }
         }
     });
 
@@ -180,7 +182,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.response$.pipe(
       debounceTime(300)
     ).subscribe(data => {
-        if (data !== null) {
+        if ((data !== null) && (this.lds.loginMode$.getValue() !== 'review')) {
           this.bs.setUnitResponses(this.lds.authorisation$.getValue(), data.unitName, data.response, data.responseType)
           .subscribe();
       }

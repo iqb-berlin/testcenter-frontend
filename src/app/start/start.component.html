@@ -8,36 +8,36 @@
     <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
     <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showLoginForm">
       <!-- - - - - - - - - - - - - - - - - -->
-      <mat-card-title>Anmelden</mat-card-title>
-      <mat-card-content>
-        <form [formGroup]="testtakerloginform" (ngSubmit)="testtakerlogin()" fxLayout="column">
+      <form [formGroup]="testtakerloginform" (ngSubmit)="testtakerlogin()">
+        <mat-card-title>Anmelden</mat-card-title>
+        <mat-card-content>
           <mat-form-field class="full-width">
             <input matInput formControlName="testname" placeholder="Anmeldename" (keyup.enter)="pw.focus()">
           </mat-form-field>
           <mat-form-field class="full-width">
             <input matInput #pw type="password" formControlName="testpw" placeholder="Kennwort" (keyup.enter)="testtakerlogin()">
           </mat-form-field>
-        </form>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-raised-button type="submit" [disabled]="testtakerloginform.invalid" color="primary">Weiter</button>
-      </mat-card-actions>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button type="submit" [disabled]="testtakerloginform.invalid" color="primary">Weiter</button>
+        </mat-card-actions>
+      </form>
     </mat-card>
 
     <!-- - - - - - - - - - - - - - - - - -->
-    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showCodeForm">
-      <mat-card-title>Anmelden</mat-card-title>
-      <mat-card-content>
-        <form [formGroup]="codeinputform" (ngSubmit)="codeinput()" *ngIf="" fxLayout="column">
+    <mat-card fxFlex="0 0 400px" *ngIf="showCodeForm">
+      <form [formGroup]="codeinputform" (ngSubmit)="codeinput()" *ngIf="">
+        <mat-card-title>Anmelden</mat-card-title>
+        <mat-card-content>
           <mat-form-field class="full-width">
             <input matInput formControlName="code" placeholder="Personen-Code"(keyup.enter)="codeinput()">
           </mat-form-field>
-        </form>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-raised-button type="submit" [disabled]="codeinputform.invalid" color="primary">Weiter</button>
-        <button mat-raised-button color="foreground" (click)="changeLogin()">Test-Anmeldung ändern</button>
-    </mat-card-actions>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button type="submit" [disabled]="codeinputform.invalid" color="primary">Weiter</button>
+          <button mat-raised-button color="foreground" (click)="changeLogin()">Test-Anmeldung ändern</button>
+        </mat-card-actions>
+      </form>
     </mat-card>
 
     <!-- - - - - - - - - - - - - - - - - -->
