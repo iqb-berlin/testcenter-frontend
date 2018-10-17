@@ -3,14 +3,6 @@
 
     <p class="communication-error-message" *ngIf="!isAdmin">{{ notLoggedInMessage }}</p>
 
-    <mat-form-field *ngIf="isAdmin" style="width:300px;">
-      <mat-select placeholder="Arbeitsbereich" [formControl]="wsSelector">
-        <mat-option *ngFor="let ws of myWorkspaces" [value]="ws.id">
-            {{ws.name}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
     <nav mat-tab-nav-bar *ngIf="isAdmin">
       <a mat-tab-link
           *ngFor="let link of navLinks"

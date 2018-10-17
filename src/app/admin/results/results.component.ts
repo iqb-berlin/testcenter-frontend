@@ -1,7 +1,8 @@
+import { ConfirmDialogComponent, ConfirmDialogData } from './../../iqb-common/confirm-dialog/confirm-dialog.component';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { BackendService, UnitResponse, ResultData, ReviewData, LogData } from './../backend.service';
 import { MainDatastoreService } from './../maindatastore.service';
-import { MatSnackBar, MatSort, MatTableDataSource } from '@angular/material';
+import { MatSnackBar, MatSort, MatTableDataSource, MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 
@@ -23,6 +24,7 @@ export class ResultsComponent implements OnInit {
   constructor(
     private bs: BackendService,
     private mds: MainDatastoreService,
+    private deleteConfirmDialog: MatDialog,
     public snackBar: MatSnackBar
   ) {
     this.mds.isAdmin$.subscribe(
@@ -205,6 +207,45 @@ export class ResultsComponent implements OnInit {
         this.tableselectionCheckbox.clear();
         this.dataLoading = false;
       })
+    }
+  }
+
+  deleteData() {
+    if (this.tableselectionCheckbox.selected.length > 0) {
+      const selectedGroups: string[] = [];
+      this.tableselectionCheckbox.selected.forEach(element => {
+        selectedGroups.push(element.groupname);
+      });
+
+      let prompt = 'Es werden alle Antwort- und Logdaten in der Datenbank für diese ';
+      if (selectedGroups.length > 1) {
+        prompt = prompt + selectedGroups.length + ' Gruppen ';
+      } else {
+        prompt = prompt + ' Gruppe "' + selectedGroups[0] + '" ';
+      }
+
+      const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
+        width: '400px',
+        data: <ConfirmDialogData>{
+          title: 'Löschen von Gruppendaten',
+          content: prompt + 'gelöscht. Fortsetzen?',
+          confirmbuttonlabel: 'Gruppendaten löschen'
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result !== false) {
+          // =========================================================
+          this.dataLoading = true;
+          this.bs.deleteData(
+                this.mds.adminToken$.getValue(),
+                this.mds.workspaceId$.getValue(),
+                selectedGroups).subscribe((deleteOk: boolean) => {
+                  this.tableselectionCheckbox.clear();
+                  this.dataLoading = false;
+                });
+          }
+        });
     }
   }
 }

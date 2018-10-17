@@ -1,27 +1,72 @@
 <div class="page-body">
-  <div class="intro-main">
-    <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
-    betreibt auf diesen Seiten eine Pilotanwendung für computerbasiertes Testen. Diese Web-Anwendung wurde
-  entwickelt, um die Inhalte der Tests zu verwalten.</p>
-    <p>Um sich für die Verwaltung der Testinhalte anzumelden, geben Sie bitte den entsprechenden Namen und das Kennwort ein.
-      Sie können über das Seitenmenü oben rechts ggf. weitere Funktionen aufrufen.</p>
-    <p *ngIf="isLoggedIn">Derzeit sind Sie am System als Adminstrator/in angemeldet. Über das Menü oben rechts oder <a [routerLink]="['/admin/myfiles']">diesen Link</a> gelangen Sie zur Startseite der Test-Verwaltung.</p>
-    <p>Bei Fragen zu diesem System wenden Sie sich bitte an <a href="mailto:mechtel@iqb.hu-berlin.de?subject=Zum%20OpenCBA-Testsystem">Martin Mechtel</a>.</p>
+  <div class="spinner-container" *ngIf="dataLoading">
+    <mat-spinner></mat-spinner>
   </div>
+  <div fxLayout="row wrap" fxLayoutAlign="center stretch" style="padding: 30px;">
 
 
-  <form [formGroup]="adminloginform" (ngSubmit)="login()">
-    <mat-form-field class="full-width">
-      <input matInput formControlName="testname" placeholder="Benutzername">
-    </mat-form-field>
-    <mat-form-field class="full-width">
-      <input matInput type="password" formControlName="testpw" placeholder="Kennwort" (keyup.enter)="login()">
-    </mat-form-field>
-    <button mat-raised-button type="submit" [disabled]="adminloginform.invalid">Anmeldung</button>
-  </form>
+    <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="!isLoggedIn">
+      <!-- - - - - - - - - - - - - - - - - -->
+      <form [formGroup]="adminloginform" (ngSubmit)="login()">
+        <mat-card-title>Anmelden</mat-card-title>
+        <mat-card-content>
+          <mat-form-field class="full-width">
+            <input matInput formControlName="testname" placeholder="Anmeldename" (keyup.enter)="pw.focus()">
+          </mat-form-field>
+          <mat-form-field class="full-width">
+            <input matInput #pw type="password" formControlName="testpw" placeholder="Kennwort" (keyup.enter)="login()">
+          </mat-form-field>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button type="submit" [disabled]="adminloginform.invalid" color="primary">Weiter</button>
+        </mat-card-actions>
+      </form>
+    </mat-card>
 
-  <div *ngIf="isError" class="intro-main">
-      <p>{{ errorMessage }}</p>
+    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="isLoggedIn">
+      <mat-card-title>Studie wählen</mat-card-title>
+      <mat-card-content>
+        <div fxLayout="row" fxLayoutGap="10px" fxLayout="column">
+          <p *ngIf="workspaceList.length === 0">
+            Für diese Anmeldung wurden keine Studien gefunden.
+          </p>
+          <button mat-raised-button color="primary" (click)="buttonGotoWorkspace(ws)"
+            *ngFor="let ws of workspaceList">
+              {{ws.name}}
+          </button>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="foreground" *ngIf="isSuperadmin" [routerLink]="['/superadmin']">Nutzer/Arbeitsbereiche</button>
+        <button mat-raised-button color="foreground" (click)="changeLogin()">Anmeldung ändern</button>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+    <mat-card fxFlex="0 2 400px" fxLayout="column" class="status">
+      <mat-card-title>IQB-Testcenter Verwaltung</mat-card-title>
+
+      <!-- - - - - - - - - - - - - - - - - -->
+      <mat-card-content>
+        <div *ngIf="!isLoggedIn">
+          <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
+            betreibt auf diesen Seiten eine Pilotanwendung für das computerbasierte Leistungstesten von
+            Schülerinnen und Schülern. Dies ist die Web-Anwendung zur Verwaltung der Testinhalte und -ergebnisse.
+            Der Zugang ist nur möglich, wenn Sie vom IQB
+            Zugangsdaten erhalten haben. Es sind keine weiteren Seiten öffentlich verfügbar.</p>
+        </div>
+        <div *ngIf="isLoggedIn">
+          <ul>
+            <li>angemeldet als: {{ loginName }}</li>
+            <li *ngIf="isSuperadmin">Superkräfte, d. h. zum Ändern von Nutzerrechten und Arbeitsbereichen berechtigt</li>
+          </ul>
+        </div>
+        <p>{{ errorMessage }}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="foreground" [routerLink]="['/about']">Impressum/Datenschutz</button>
+      </mat-card-actions>
+    </mat-card>
   </div>
-
 </div>

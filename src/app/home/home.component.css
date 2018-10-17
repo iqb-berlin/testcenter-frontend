@@ -1,14 +1,6 @@
-div.intro-main {
-  margin: 40px;
+.mat-card {
+  margin: 10px;
 }
-
-form {
-  margin: 40px;
-  min-width: 150px;
-  max-width: 500px;
+.status {
+  background-color: lightgrey;
 }
-
-.full-width {
-  width: 100%;
-}
-

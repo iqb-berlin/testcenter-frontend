@@ -1,3 +1,4 @@
+import { AboutComponent } from './about/about.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
@@ -6,12 +7,11 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule,
-  MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule, MatCardModule } from '@angular/material';
+  MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule, MatCardModule, MatProgressSpinnerModule } from '@angular/material';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 import { IqbCommonModule } from './iqb-common';
 import { AdminModule } from './admin';
 import { HomeComponent } from './home/home.component';
@@ -24,7 +24,7 @@ import { FlexLayoutModule } from "@angular/flex-layout";
   declarations: [
     AppComponent,
     HomeComponent,
-    AboutDialogComponent
+    AboutComponent
   ],
   imports: [
     BrowserModule,
@@ -46,10 +46,9 @@ import { FlexLayoutModule } from "@angular/flex-layout";
     SuperadminModule,
     AppRoutingModule,
     IqbCommonModule,
-    MatCardModule
-  ],
-  entryComponents: [
-    AboutDialogComponent,
+    MatCardModule,
+    MatProgressSpinnerModule,
+    FlexLayoutModule
   ],
   providers: [
     {

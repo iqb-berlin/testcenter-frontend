@@ -1,5 +1,4 @@
 import { Observable, BehaviorSubject } from 'rxjs';
-import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { MatTabsModule, MatSelectModule, MatFormFieldModule } from '@angular/material';
 import { MainDatastoreService } from './maindatastore.service';
@@ -18,19 +17,13 @@ export class AdminComponent implements OnInit {
   ];
 
   private isAdmin = false;
-  private myWorkspaces: WorkspaceData[];
   private notLoggedInMessage = '';
-
-  private wsSelector = new FormControl();
 
   // CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
   constructor(
     private mds: MainDatastoreService
   ) {
     this.mds.isAdmin$.subscribe(is => this.isAdmin = is);
-    this.mds.workspaceList$.subscribe(wsL => {
-      this.myWorkspaces = wsL;
-    });
     this.mds.notLoggedInMessage$.subscribe(msg => {
       if ((msg === null) || (msg.length === 0)) {
         this.notLoggedInMessage = 'Bitte anmelden!';
@@ -43,14 +36,22 @@ export class AdminComponent implements OnInit {
   // CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
   ngOnInit() {
     this.mds.workspaceId$.subscribe(id => {
-      this.wsSelector.setValue(id, {emitEvent: false});
-    });
-
-    this.wsSelector.valueChanges
-      .subscribe(wsId => {
-        this.mds.updateWorkspaceId(wsId);
-    });
-
-    this.mds.updatePageTitle('Testverwaltung');
+      console.log('enter ' + id);
+      if (id >= 0) {
+        const workspaceList = this.mds.workspaceList$.getValue();
+        if (workspaceList.length > 0) {
+          for (let i = 0; i < workspaceList.length; i++) {
+            console.log('check: ' + workspaceList[i].id);
+            if (workspaceList[i].id == id) {
+              console.log('got');
+              this.mds.updatePageTitle('IQB-Testcenter Verwaltung: ' + workspaceList[i].name);
+              break;
+            }
+          }
+        }
+      } else {
+        this.mds.updatePageTitle('IQB-Testcenter Verwaltung...');
+      }
+    })
   }
 }

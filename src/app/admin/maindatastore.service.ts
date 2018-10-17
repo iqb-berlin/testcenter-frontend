@@ -7,7 +7,6 @@ import { MatDialog, MatDialogRef } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { IqbCommonModule, ConfirmDialogComponent, ConfirmDialogData } from '../iqb-common';
-import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { BackendService, LoginStatusResponseData, WorkspaceData, ServerError } from './backend.service';
 
 @Injectable({
@@ -23,20 +22,6 @@ export class MainDatastoreService {
   public notLoggedInMessage$ = new BehaviorSubject<string>('');
   public adminToken$ = new BehaviorSubject<string>('');
   public isSuperadmin$ = new BehaviorSubject<boolean>(false);
-
-
-  get myWorkspaceName(): string {
-    const wsId = this.workspaceId$.getValue();
-    const workspaceList = this.workspaceList$.getValue();
-    if (workspaceList.length > 0) {
-      for (let i = 0; i < workspaceList.length; i++) {
-        if (workspaceList[i]['id'] === wsId) {
-          return workspaceList[i]['name'];
-        }
-      }
-    }
-    return '';
-  }
 
   // .................................................................................
   private _lastloginname = '';
@@ -60,30 +45,6 @@ export class MainDatastoreService {
           this.updateAdminStatus('', '', [], false, err.label);
       });
     }
-
-    const wsId = localStorage.getItem('ws');
-    if (wsId !== null) {
-      this.workspaceId$.next(+wsId);
-    }
-
-  }
-
-  // *******************************************************************************************************
-  login_dialog() {
-    const dialogRef = this.loginDialog.open(LoginDialogComponent, {
-      width: '600px',
-      data: {
-        lastloginname: this._lastloginname
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (typeof result !== 'undefined') {
-        if (result !== false) {
-          this.login((<FormGroup>result).get('name').value, (<FormGroup>result).get('pw').value);
-        }
-      }
-    });
   }
 
   // *******************************************************************************************************
@@ -91,12 +52,12 @@ export class MainDatastoreService {
     this.bs.login(name, password).subscribe(
       (admindata: LoginStatusResponseData) => {
         this.updateAdminStatus(admindata.admintoken, admindata.name, admindata.workspaces,admindata.is_superadmin, '');
-        this.route.url.subscribe(segments => {
-          const segmentsStr = segments.join('');
-          if (segmentsStr.indexOf('/admin') < 0) {
-            this.router.navigateByUrl('/admin');
-          }
-        });
+        // this.route.url.subscribe(segments => {
+        //   const segmentsStr = segments.join('');
+        //   if (segmentsStr.indexOf('/admin') < 0) {
+        //     this.router.navigateByUrl('/admin');
+        //   }
+        // });
       }, (err: ServerError) => {
         this.updateAdminStatus('', '', [], false, err.label);
       }
@@ -119,14 +80,10 @@ export class MainDatastoreService {
         this.bs.logout(this.adminToken$.getValue()).subscribe(
           logoutresponse => {
             this.updateAdminStatus('', '', [], false, '');
-            this.route.url.subscribe(segments => {
-              const segmentsStr = segments.join('');
-              if (segmentsStr.indexOf('/admin') >= 0) {
-                this.router.navigateByUrl('/');
-              }
-            });
+            this.router.navigateByUrl('/');
           }, (err: ServerError) => {
             this.updateAdminStatus('', '', [], false, err.label);
+            this.router.navigateByUrl('/');
           }
         );
       }
@@ -155,22 +112,41 @@ export class MainDatastoreService {
       this.isAdmin$.next(true);
       localStorage.setItem('at', token);
       this.adminToken$.next(token);
+      if (workspaces.length > 0) {
+        workspaces.sort((ws1, ws2) => {
+          if (ws1.name > ws2.name) {
+            return 1
+          } else if (ws1.name < ws2.name) {
+            return -1
+          } else {
+            return 0;
+          }
+        })
+      }
       this.workspaceList$.next(workspaces);
       this.loginName$.next(name);
       this.isSuperadmin$.next(is_superadmin);
       this.notLoggedInMessage$.next('');
 
       // set valid workspace-id
-      const wsId = this.workspaceId$.getValue();
-      if (workspaces.length > 0) {
-        let newWsId = workspaces[0]['id'];
-        for (let i = 0; i < workspaces.length; i++) {
-          if (workspaces[i]['id'] === wsId) {
-            newWsId = wsId;
-            break;
+
+      const wsIdStr = localStorage.getItem('ws');
+      let wsId = -1;
+      if (wsIdStr !== null) {
+        wsId = +wsIdStr;
+        if (workspaces.length > 0) {
+          let newWsId = workspaces[0]['id'];
+          for (let i = 0; i < workspaces.length; i++) {
+            // id comes as string
+            if (+workspaces[i]['id'] === wsId) {
+              newWsId = wsId;
+              break;
+            }
           }
+          this.updateWorkspaceId(newWsId);
+        } else {
+          this.updateWorkspaceId(-1);
         }
-        this.updateWorkspaceId(newWsId);
       } else {
         this.updateWorkspaceId(-1);
       }

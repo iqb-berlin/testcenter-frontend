@@ -1,40 +1,13 @@
-<mat-toolbar color="primary">
+<mat-toolbar>
   <a [routerLink]="['/']">
     <img class="logo" src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
   </a>
   <span>{{ title }}</span>
-  <span class="itc-fill-remaining-space"></span>
+  <span class="itp-fill-remaining-space"></span>
 
-  <button mat-icon-button [matMenuTriggerFor]="menu">
-    <i class="material-icons">menu</i>
+  <button mat-icon-button *ngIf="isLoggedIn" (click)="logout()">
+    <mat-icon>exit_to_app</mat-icon>
   </button>
-
-  <mat-menu #menu="matMenu">
-    <button mat-menu-item (click)="showAboutDialog()">
-      <mat-icon>info</mat-icon>
-      <span>Programm-Info</span>
-    </button>
-    <button mat-menu-item [routerLink]="['/']">
-      <mat-icon>home</mat-icon>
-      <span>Anmeldeseite</span>
-    </button>
-    <button mat-menu-item *ngIf="isLoggedIn" [routerLink]="['/admin/myfiles']">
-      <mat-icon>settings</mat-icon>
-      <span>Testverwaltung</span>
-    </button>
-    <button mat-menu-item *ngIf="isSuperadmin" [routerLink]="['/superadmin/users']">
-      <mat-icon>settings</mat-icon>
-      <span>Nutzer/Arbeitsbereiche</span>
-    </button>
-    <button mat-menu-item *ngIf="isLoggedIn" (click)="logout()">
-      <mat-icon>exit_to_app</mat-icon>
-      <span>Logout</span>
-    </button>
-    <button mat-menu-item *ngIf="!isLoggedIn" (click)="login()">
-      <mat-icon>input</mat-icon>
-      <span>Login</span>
-    </button>
-  </mat-menu>
 </mat-toolbar>
 
 <router-outlet></router-outlet>

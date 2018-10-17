@@ -209,6 +209,16 @@ export class BackendService {
       .post<ReviewData[]>(this._serverUrl + 'getReviews.php', {at: adminToken, ws: workspaceId, g: groups}, httpOptions);
   }
 
+  deleteData(adminToken: string, workspaceId: number, groups: string[]): Observable<boolean>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<boolean>(this._serverUrl + 'deleteData.php', {at: adminToken, ws: workspaceId, g: groups}, httpOptions);
+  }
+
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
     const myreturn: ServerError = {

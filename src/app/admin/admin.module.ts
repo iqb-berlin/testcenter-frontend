@@ -1,5 +1,4 @@
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { BackendService } from './backend.service';
 import { IqbFilesModule } from '../iqb-files';
 import { IqbCommonModule } from '../iqb-common';
@@ -49,6 +48,8 @@ import {MatGridListModule} from '@angular/material/grid-list';
     MatSnackBarModule,
     MatGridListModule,
     IqbCommonModule,
+    FlexLayoutModule,
+    MatCardModule,
     BrowserAnimationsModule,
     FlexLayoutModule
   ],
@@ -58,7 +59,6 @@ import {MatGridListModule} from '@angular/material/grid-list';
   declarations: [
     AdminComponent,
     MyfilesComponent,
-    LoginDialogComponent,
     ResultsComponent,
     MonitorComponent
   ],
@@ -66,9 +66,6 @@ import {MatGridListModule} from '@angular/material/grid-list';
     BackendService,
     MainDatastoreService
   ],
-  entryComponents: [
-    LoginDialogComponent
-  ]
 })
 
 export class AdminModule { }

@@ -1,3 +1,4 @@
+import { WorkspaceData } from './../admin/backend.service';
 import { MainDatastoreService } from './../admin/maindatastore.service';
 import { Router } from '@angular/router';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
@@ -11,16 +12,19 @@ import { FormGroup, FormBuilder, FormArray, FormControl, Validators } from '@ang
 })
 export class HomeComponent implements OnInit {
   adminloginform: FormGroup;
-  public isLoggedIn = false;
+  isLoggedIn = false;
+  isSuperadmin = false;
+  loginName = '';
   isError = false;
   errorMessage = '';
+  workspaceList: WorkspaceData[] = [];
 
   constructor(private fb: FormBuilder,
     private mds: MainDatastoreService,
     private router: Router) { }
 
   ngOnInit() {
-    this.mds.pageTitle$.next('IQB-Testcenter-Verwaltung - Willkommen!');
+    this.mds.pageTitle$.next('');
     this.mds.isAdmin$.subscribe(
       is => this.isLoggedIn = is);
 
@@ -28,12 +32,27 @@ export class HomeComponent implements OnInit {
       testname: this.fb.control('', [Validators.required, Validators.minLength(3)]),
       testpw: this.fb.control('', [Validators.required, Validators.minLength(3)])
     });
+
+    this.mds.workspaceList$.subscribe(list => this.workspaceList = list);
+    this.mds.isSuperadmin$.subscribe(is => this.isSuperadmin = is);
+    this.mds.loginName$.subscribe(n => this.loginName = n);
   }
 
   login() {
     this.isError = false;
     this.errorMessage = '';
 
-    this.mds.login(this.adminloginform.get('testname').value, this.adminloginform.get('testpw').value);
+    if (this.adminloginform.valid) {
+      this.mds.login(this.adminloginform.get('testname').value, this.adminloginform.get('testpw').value);
+    }
+  }
+
+  buttonGotoWorkspace(ws: WorkspaceData) {
+    this.mds.updateWorkspaceId(ws.id);
+    this.router.navigateByUrl('/admin');
+  }
+
+  changeLogin() {
+    this.mds.logout();
   }
 }

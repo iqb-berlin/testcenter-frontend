@@ -1,3 +1,4 @@
+import { AboutComponent } from './about/about.component';
 import { SuperadminComponent } from './superadmin/superadmin.component';
 import { HomeComponent } from './home/home.component';
 import { NgModule } from '@angular/core';
@@ -9,6 +10,7 @@ const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
   {path: 'home', component: HomeComponent},
   {path: 'admin', component: AdminComponent},
+  {path: 'about', component: AboutComponent},
   {path: 'superadmin', component: SuperadminComponent}
 ];
 

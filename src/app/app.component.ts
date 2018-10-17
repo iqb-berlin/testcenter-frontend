@@ -7,12 +7,11 @@ import { FormGroup } from '@angular/forms';
 import { LoginStatusResponseData } from './admin/backend.service';
 import { MainDatastoreService } from './admin';
 import { IqbCommonModule, ConfirmDialogComponent, ConfirmDialogData } from './iqb-common';
-import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.scss']
 })
 
 
@@ -38,21 +37,6 @@ export class AppComponent implements OnInit {
 
   }
 
-  // *******************************************************************************************************
-  showAboutDialog() {
-    const dialogRef = this.aboutDialog.open(AboutDialogComponent, {
-      width: '500px',
-      data: {
-        status: this.mds.isAdmin$.getValue() ? ('angemeldet als ' + this.mds.loginName$.getValue()) : 'nicht angemeldet',
-        workspace: this.mds.isAdmin$.getValue() ? this.mds.myWorkspaceName : '-'
-      }
-    });
-  }
-
-  // *******************************************************************************************************
-  login() {
-    this.mds.login_dialog();
-  }
 
   // *******************************************************************************************************
   logout() {
