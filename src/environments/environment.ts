@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  testcenterUrl: 'https://www.iqb-testcenter.de/',
+  testcenterUrl: 'https://ocba.iqb.hu-berlin.de/',
   appName: 'IQB-Testcenter',
   appPublisher: 'IQB - Institut zur Qualitätsentwicklung im Bildungswesen',
   appVersion: '0 (dev)'
