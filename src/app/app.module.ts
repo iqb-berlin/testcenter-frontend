@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { BackendService } from './backend.service';
 
 import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule,
   MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule, MatCardModule, MatProgressSpinnerModule } from '@angular/material';
@@ -54,7 +55,8 @@ import { FlexLayoutModule } from "@angular/flex-layout";
     {
       provide: LocationStrategy,
       useClass: HashLocationStrategy
-    }
+    },
+    BackendService
   ],
   bootstrap: [AppComponent]
 })
