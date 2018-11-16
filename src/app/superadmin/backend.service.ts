@@ -101,6 +101,16 @@ export class BackendService {
         );
   }
 
+  setAboutText(token: string): Observable<string | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/text'
+      })
+    };
+    return this.http
+    .post<string>(this.serverUrl + 'setAboutText.php', {t: token}, httpOptions).pipe(catchError(this.handleError));
+  }
+
   // *******************************************************************
   // *******************************************************************
   addWorkspace(token: string, name: string): Observable<Boolean | ServerError> {

@@ -9,7 +9,8 @@ import { Component, OnInit } from '@angular/core';
 export class SuperadminComponent implements OnInit {
   public navLinks = [
     {path: 'users', label: 'Users'},
-    {path: 'workspaces', label: 'Arbeitsbereiche'}
+    {path: 'workspaces', label: 'Arbeitsbereiche'},
+    {path: 'setAboutText', label: 'AboutText'}
   ];
 
 
