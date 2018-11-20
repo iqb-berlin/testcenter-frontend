@@ -101,14 +101,14 @@ export class BackendService {
         );
   }
 
-  setAboutText(token: string): Observable<string | ServerError> {
+  setAboutText(token: string, text: string): Observable<string | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/text'
       })
     };
     return this.http
-    .post<string>(this.serverUrl + 'setAboutText.php', {t: token}, httpOptions).pipe(catchError(this.handleError));
+    .post<string>(this.serverUrl + 'setAboutText.php', {t: token, text: text}, httpOptions).pipe(catchError(this.handleError));
   }
 
   // *******************************************************************

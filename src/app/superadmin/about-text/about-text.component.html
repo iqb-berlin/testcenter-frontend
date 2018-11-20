@@ -1,14 +1,9 @@
-
-<div fxLayout="row">
-  <button mat-raised-button (click)="setAboutText()" matTooltip="Setieren Sie den Text" matTooltipPosition="above">
-      <mat-icon>save</mat-icon>
+<form [formGroup]="aboutTextForm" (ngSubmit)="setAboutText()">
+  <div fxLayout="row">
+    <button mat-raised-button type="submit">
+        <mat-icon>save</mat-icon>
     </button>
-  <button mat-raised-button (click)="edit=''" matTooltip="Loschen Sie den Text" matTooltipPosition="above">
-    <mat-icon>delete</mat-icon>
-  </button>
-</div>
-<br>
-<textarea name= "myTextArea" cols="90" rows="20" >{{ myAboutText}}  </textarea>
-<div ></div>
-
-
+  </div>
+  <br>
+  <textarea matInput formControlName="myTextArea" cols="90" rows="20" placeholder="Enter text here..."></textarea>
+</form>
