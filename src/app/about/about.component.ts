@@ -20,4 +20,6 @@ export class AboutComponent implements OnInit {
     this.mds.pageTitle$.next('');
     this.bs.getAboutText().subscribe(t => this.myAboutText = t as string);
   }
+
+  
 }
