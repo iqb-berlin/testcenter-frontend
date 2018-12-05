@@ -11,6 +11,9 @@ import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
 import { MainDatastoreService } from './../../admin/maindatastore.service';
 import { BackendService as BackendServiceReadOnly } from './../../backend.service';
 import { BackendService as BackendServiceSuperAdmin } from './../backend.service';
+import * as Quill from'quill';
+
+
 
 @Component({
   selector: 'itc-about-text',
@@ -20,6 +23,7 @@ import { BackendService as BackendServiceSuperAdmin } from './../backend.service
 export class AboutTextComponent implements OnInit {
   aboutTextForm: FormGroup;
   public dataLoading = false;
+  aboutText: string;
 
   constructor(
     private mds: MainDatastoreService,
@@ -35,6 +39,18 @@ export class AboutTextComponent implements OnInit {
     });
     this.mds.pageTitle$.next('');
     this.bsRO.getAboutText().subscribe(t => this.aboutTextForm.get('myTextArea').setValue(t as string));
+    
+    var quill = new quill('#editor-container', {
+      modules: {
+        toolbar: [
+          [{ header: [1, 2, false] }],
+          ['bold', 'italic', 'underline'],
+          ['image', 'code-block']
+        ]
+      },
+      placeholder: 'Compose an epic...',
+      theme: 'snow'  // or 'bubble'
+    });
   }
 
   setAboutText() {
@@ -48,5 +64,7 @@ export class AboutTextComponent implements OnInit {
       this.dataLoading = false;
     });
   }
+
+
 
 }
