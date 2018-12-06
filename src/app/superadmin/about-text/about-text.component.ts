@@ -11,7 +11,7 @@ import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
 import { MainDatastoreService } from './../../admin/maindatastore.service';
 import { BackendService as BackendServiceReadOnly } from './../../backend.service';
 import { BackendService as BackendServiceSuperAdmin } from './../backend.service';
-import * as Quill from'quill';
+// import * as Quill from 'quill';
 
 
 
@@ -39,18 +39,6 @@ export class AboutTextComponent implements OnInit {
     });
     this.mds.pageTitle$.next('');
     this.bsRO.getAboutText().subscribe(t => this.aboutTextForm.get('myTextArea').setValue(t as string));
-    
-    var quill = new quill('#editor-container', {
-      modules: {
-        toolbar: [
-          [{ header: [1, 2, false] }],
-          ['bold', 'italic', 'underline'],
-          ['image', 'code-block']
-        ]
-      },
-      placeholder: 'Compose an epic...',
-      theme: 'snow'  // or 'bubble'
-    });
   }
 
   setAboutText() {
