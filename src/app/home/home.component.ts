@@ -21,6 +21,7 @@ export class HomeComponent implements OnInit {
   errorMessage = '';
   workspaceList: WorkspaceData[] = [];
   deviceInfo = null;
+  screenSize: any;
 
   constructor(private fb: FormBuilder,
     private mds: MainDatastoreService,
@@ -62,10 +63,11 @@ export class HomeComponent implements OnInit {
 
   sysInfo() {
     this.deviceInfo = this.deviceService.getDeviceInfo();
-    const isDesktopDevice = this.deviceService.isDesktop();
+    this.screenSize = "screen size: " + (window.screen.width) + "px" + (window.screen.height) + "px";
   }
   
   removeSysInfo() {
     this.deviceInfo = "";
+    this.screenSize = "";
   }
 }

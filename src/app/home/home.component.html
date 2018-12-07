@@ -74,7 +74,7 @@
         <button  mat-raised-button color="foreground" (click)="sysInfo()">Get device info</button>
         <button mat-raised-button (click)="removeSysInfo()">Hide device info</button>
       </div>
-      <br>
+      <div>{{ screenSize }} </div>  
       <div *ngFor="let item of deviceInfo | keyvalue">
           {{item.key}}:{{item.value}}
       </div>
