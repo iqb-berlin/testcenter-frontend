@@ -68,5 +68,16 @@
         <button mat-raised-button color="foreground" [routerLink]="['/about']">Impressum/Datenschutz</button>
       </mat-card-actions>
     </mat-card>
+
+    <mat-card fxFlex="2 2 20em" fxLayout="column">
+      <div class="sysInfo">
+        <button  mat-raised-button color="foreground" (click)="sysInfo()">Get device info</button>
+        <button mat-raised-button (click)="removeSysInfo()">Hide device info</button>
+      </div>
+      <br>
+      <div *ngFor="let item of deviceInfo | keyvalue">
+          {{item.key}}:{{item.value}}
+      </div>
+    </mat-card>
   </div>
 </div>

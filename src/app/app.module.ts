@@ -19,6 +19,7 @@ import { HomeComponent } from './home/home.component';
 import { SuperadminModule } from './superadmin';
 import { FlexLayoutModule } from "@angular/flex-layout";
 
+import { DeviceDetectorModule } from 'ngx-device-detector';
 
 
 
@@ -50,7 +51,8 @@ import { FlexLayoutModule } from "@angular/flex-layout";
     IqbCommonModule,
     MatCardModule,
     MatProgressSpinnerModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    DeviceDetectorModule.forRoot()
   ],
   providers: [
     {

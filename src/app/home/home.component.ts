@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, FormControl, Validators } from '@angular/forms';
 
+import { DeviceDetectorService } from 'ngx-device-detector';
+
 
 
 @Component({
@@ -18,10 +20,12 @@ export class HomeComponent implements OnInit {
   isError = false;
   errorMessage = '';
   workspaceList: WorkspaceData[] = [];
+  deviceInfo = null;
 
   constructor(private fb: FormBuilder,
     private mds: MainDatastoreService,
-    private router: Router) { }
+    private router: Router,
+    private deviceService: DeviceDetectorService) { }
 
   ngOnInit() {
     this.mds.pageTitle$.next('');
@@ -54,5 +58,14 @@ export class HomeComponent implements OnInit {
 
   changeLogin() {
     this.mds.logout();
+  }
+
+  sysInfo() {
+    this.deviceInfo = this.deviceService.getDeviceInfo();
+    const isDesktopDevice = this.deviceService.isDesktop();
+  }
+  
+  removeSysInfo() {
+    this.deviceInfo = "";
   }
 }
