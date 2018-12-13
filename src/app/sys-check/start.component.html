@@ -1,0 +1,31 @@
+<div class="spinner-container" *ngIf="dataLoading">
+  <mat-spinner></mat-spinner>
+</div>
+<div class="page-body">
+  <div fxLayout="row" fxLayoutAlign="center start">
+    <mat-card fxFlex="0 2 500px">
+      <mat-card-title>Starten</mat-card-title>
+      <mat-card-content>
+        <p>Hier können Sie ermitteln, ob das Computersystem, das Sie gerade benutzen, für
+          die hier vorgesehenen Testungen geeignet ist. Sie erhalten hierzu einen detaillierten Bericht,
+          den Sie speichern oder drucken können.</p>
+        <p *ngIf="checkConfigList.length === 0">
+          Bitte warten... Konfiguration wird geladen
+        </p>
+        <p *ngIf="checkConfigList.length > 1">
+          Bitte wählen Sie einen Check aus!
+        </p>
+        <p *ngIf="checkConfigList.length === 1">
+          Bitte klicken Sie auf den Schalter, um den Check zu starten!
+        </p>
+        <div fxLayout="row" fxLayoutGap="10px" fxLayout="column">
+          <button mat-raised-button color="primary" (click)="buttonStartCheck(c)"
+            *ngFor="let c of checkConfigList">
+              <p class="check_title">{{c.label}}</p>
+              <p class="check_descr">{{c.description}}</p>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -1,3 +1,4 @@
+import { StartComponent as CheckStartComponent } from './sys-check/start.component';
 import { TestControllerComponent } from './test-controller';
 import { AboutComponent } from './about/about.component';
 import { StartComponent } from './start/start.component';
@@ -9,6 +10,7 @@ const routes: Routes = [
   {path: '', component: StartComponent, pathMatch: 'full'},
   {path: 'start', component: StartComponent},
   {path: 'about', component: AboutComponent},
+  {path: 'check', component: CheckStartComponent},
   {path: 't', component: TestControllerComponent}
 ];
 

@@ -2,8 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { LogindataService } from '../logindata.service';
 
 @Component({
-  templateUrl: './about.component.html',
-  styleUrls: ['./about.component.css']
+  templateUrl: './about.component.html'
 })
 export class AboutComponent implements OnInit {
 

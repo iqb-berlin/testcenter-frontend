@@ -1,3 +1,4 @@
+import { SysCheckModule } from './sys-check/sys-check.module';
 import { AboutComponent } from './about/about.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
@@ -18,6 +19,7 @@ import { StartComponent } from './start/start.component';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ErrormsgComponent } from './errormsg/errormsg.component';
+
 
 @NgModule({
   declarations: [
@@ -45,7 +47,8 @@ import { ErrormsgComponent } from './errormsg/errormsg.component';
     HttpClientModule,
     TestControllerModule,
     AppRoutingModule,
-    IqbCommonModule
+    IqbCommonModule,
+    SysCheckModule
   ],
   providers: [
     BackendService,

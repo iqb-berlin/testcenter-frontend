@@ -37,7 +37,7 @@ export class AppComponent implements OnInit {
     window.addEventListener('message', (event: MessageEvent) => {
       const msgData = event.data;
       const msgType = msgData['type'];
-      if ((msgType !== undefined) || (msgType !== null)) {
+      if ((msgType !== undefined) && (msgType !== null)) {
         if (msgType.substr(0, 7) === 'OpenCBA') {
           this.lds.postMessage$.next(event);
         }
