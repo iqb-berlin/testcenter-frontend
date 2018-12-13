@@ -19,10 +19,6 @@ import { HomeComponent } from './home/home.component';
 import { SuperadminModule } from './superadmin';
 import { FlexLayoutModule } from "@angular/flex-layout";
 
-import { DeviceDetectorModule } from 'ngx-device-detector';
-
-
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -51,8 +47,7 @@ import { DeviceDetectorModule } from 'ngx-device-detector';
     IqbCommonModule,
     MatCardModule,
     MatProgressSpinnerModule,
-    FlexLayoutModule,
-    DeviceDetectorModule.forRoot()
+    FlexLayoutModule
   ],
   providers: [
     {
