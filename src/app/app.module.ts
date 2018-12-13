@@ -18,13 +18,15 @@ import { StartComponent } from './start/start.component';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ErrormsgComponent } from './errormsg/errormsg.component';
+import { SyscheckComponent } from './syscheck/syscheck.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     StartComponent,
     AboutComponent,
-    ErrormsgComponent
+    ErrormsgComponent,
+    SyscheckComponent
   ],
   imports: [
     BrowserModule,

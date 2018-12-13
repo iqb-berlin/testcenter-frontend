@@ -1,0 +1,17 @@
+<mat-card>
+  <button mat-raised-button (click)="osInfo()">Press for screen size</button>
+  <div>{{ screenSize }} </div> 
+  <button mat-raised-button (click)="removeSysInfo()">Hide info</button>
+</mat-card>
+
+
+<!-- <mat-card fxFlex="0 4 400px" fxLayout="column">
+  <div class="sysInfo">
+    <button  mat-raised-button color="foreground" (click)="sysInfo()">Get device info</button>
+    <button mat-raised-button (click)="removeSysInfo()">Hide device info</button>
+  </div>
+  <div>{{ screenSize }} </div>  
+  <div *ngFor="let item of deviceInfo | keyvalue">
+      {{item.key}}:{{item.value}}
+  </div>
+</mat-card> -->
