@@ -8,8 +8,22 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class BackendService {
+  public basicTestConfig: CheckConfig =
+    {
+      id: 'Basistest',
+      label: 'Basistest',
+      description: 'Es wird nur ein Bericht zu grundlegenden Systemeigenschaften und zur Netzverbindung gegeben.'
+    };
+  public basicTestConfigData: CheckConfigData =
+    {
+      id: 'Basistest',
+      label: 'Basistest',
+      formdef: [],
+      unit: '',
+      email: false
+    };
 
-  constructor(
+    constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
       this.serverUrl = this.serverUrl + 'php_tc/';
@@ -59,5 +73,14 @@ export interface CheckConfig {
 export interface CheckConfigData {
   id: string;
   label: string;
-  email: string;
+  formdef: FormDefEntry[];
+  unit: string;
+  email: boolean;
+}
+
+export interface FormDefEntry {
+  id: string;
+  type: string;
+  prompt: string;
+  options: string[];
 }

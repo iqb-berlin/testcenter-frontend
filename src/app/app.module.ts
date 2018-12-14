@@ -1,4 +1,3 @@
-import { SysCheckModule } from './sys-check/sys-check.module';
 import { AboutComponent } from './about/about.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
@@ -47,8 +46,7 @@ import { ErrormsgComponent } from './errormsg/errormsg.component';
     HttpClientModule,
     TestControllerModule,
     AppRoutingModule,
-    IqbCommonModule,
-    SysCheckModule
+    IqbCommonModule
   ],
   providers: [
     BackendService,

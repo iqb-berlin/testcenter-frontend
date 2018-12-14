@@ -6,10 +6,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./network-check.component.css']
 })
 export class NetworkCheckComponent implements OnInit {
+  dataLoading = false;
 
   constructor() { }
 
   ngOnInit() {
+    this.dataLoading = true;
   }
 
 }

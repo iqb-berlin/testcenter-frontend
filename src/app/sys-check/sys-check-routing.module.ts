@@ -5,11 +5,15 @@ import { StartComponent } from './start.component';
 
 const routes: Routes = [
   {
-    path: 'check',
+    path: '',
+    redirectTo: 'start'
+  },
+  {
+    path: 'start',
     component: StartComponent
   },
   {
-    path: 'checkrun/:c',
+    path: 'run/:c',
     component: RunComponent
   }];
 

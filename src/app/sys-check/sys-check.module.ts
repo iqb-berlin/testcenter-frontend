@@ -1,3 +1,5 @@
+import { SyscheckDataService } from './syscheck-data.service';
+import { BackendService } from './backend.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -21,7 +23,8 @@ import { ReportComponent } from './report/report.component';
     FlexLayoutModule,
     SysCheckRoutingModule,
     MatProgressSpinnerModule,
-    MatStepperModule
+    MatStepperModule,
+    MatButtonModule
   ],
   declarations: [
     StartComponent,
@@ -33,6 +36,10 @@ import { ReportComponent } from './report/report.component';
     ReportComponent],
   exports: [
     StartComponent
+  ],
+  providers: [
+    BackendService,
+    SyscheckDataService
   ]
 })
 export class SysCheckModule { }

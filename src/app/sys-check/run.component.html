@@ -5,42 +5,58 @@
   <div class="sheetofpaper">
       <mat-horizontal-stepper labelPosition="bottom" #stepper>
         <mat-step>
-          <ng-template matStepLabel>Env</ng-template>
+          <ng-template matStepLabel>Computer</ng-template>
           <iqb-environment-check></iqb-environment-check>
           <div>
-              <button mat-button matStepperNext>Next</button>
+              <button mat-mini-fab matStepperNext>
+                <i class="material-icons">chevron_right</i>
+              </button>
           </div>
         </mat-step>
-        <mat-step>
-          <ng-template matStepLabel>Network</ng-template>
+        <mat-step #stepNetwork>
+          <ng-template matStepLabel>Netzwerk</ng-template>
           <iqb-network-check></iqb-network-check>
           <div>
-              <button mat-button matStepperPrevious>Back</button>
-              <button mat-button matStepperNext>Next</button>
+              <button mat-mini-fab matStepperPrevious>
+                <i class="material-icons">chevron_left</i>
+              </button>
+              <button mat-mini-fab matStepperNext>
+                <i class="material-icons">chevron_right</i>
+              </button>
           </div>
         </mat-step>
         <mat-step *ngIf="unitcheckAvailable">
-          <ng-template matStepLabel>Units</ng-template>
+          <ng-template matStepLabel>Aufgabe</ng-template>
           <iqb-unit-check></iqb-unit-check>
           <div>
-              <button mat-button matStepperPrevious>Back</button>
-              <button mat-button matStepperNext>Next</button>
-          </div>
+              <button mat-mini-fab matStepperPrevious>
+                <i class="material-icons">chevron_left</i>
+              </button>
+              <button mat-mini-fab matStepperNext>
+                <i class="material-icons">chevron_right</i>
+              </button>
+            </div>
         </mat-step>
         <mat-step *ngIf="questionnaireAvailable">
-          <ng-template matStepLabel>Questionnaire</ng-template>
+          <ng-template matStepLabel>Fragen</ng-template>
           <iqb-questionnaire></iqb-questionnaire>
           <div>
-              <button mat-button matStepperPrevious>Back</button>
-              <button mat-button matStepperNext>Next</button>
-          </div>
+              <button mat-mini-fab matStepperPrevious>
+                <i class="material-icons">chevron_left</i>
+              </button>
+              <button mat-mini-fab matStepperNext>
+                <i class="material-icons">chevron_right</i>
+              </button>
+            </div>
         </mat-step>
         <mat-step>
-          <ng-template matStepLabel>Report</ng-template>
+          <ng-template matStepLabel>Bericht</ng-template>
           <iqb-report></iqb-report>
           <div>
-              <button mat-button matStepperPrevious>Back</button>
-          </div>
+              <button mat-mini-fab matStepperPrevious>
+                <i class="material-icons">chevron_left</i>
+              </button>
+            </div>
         </mat-step>
       </mat-horizontal-stepper>
   </div>

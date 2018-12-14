@@ -15,7 +15,7 @@ export class ReportComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.ds.reportEnabled$.subscribe(is => this.reportEnabled = is);
+    this.ds.reportEnabled$.subscribe(is => this.reportEnabled = is);
   }
 
 }

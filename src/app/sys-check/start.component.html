@@ -21,8 +21,10 @@
         <div fxLayout="row" fxLayoutGap="10px" fxLayout="column">
           <button mat-raised-button color="primary" (click)="buttonStartCheck(c)"
             *ngFor="let c of checkConfigList">
+            <div fxLayout="column">
               <p class="check_title">{{c.label}}</p>
               <p class="check_descr">{{c.description}}</p>
+            </div>
           </button>
         </div>
       </mat-card-content>

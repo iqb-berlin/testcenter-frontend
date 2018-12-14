@@ -6,10 +6,9 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   templateUrl: './start.component.html',
-  styles: ['p.check_title { font-size: 16pt; margin-bottom: 0px; height: 24px}',
-    'p.check_descr { font-size: 9pt; margin-top: 0px; color: darkblue; height: 24px; margin-bottom: 18px}',
-    '.mat-card { margin: 10px }']
+  styleUrls: ['./start.component.css']
 })
+
 export class StartComponent implements OnInit {
   checkConfigList: CheckConfig[] = [];
   private dataLoading = false;
@@ -23,19 +22,13 @@ export class StartComponent implements OnInit {
     this.dataLoading = true;
     this.bs.getCheckConfigs().subscribe(myConfigs => {
       this.checkConfigList = myConfigs;
-      this.checkConfigList.push(
-        {
-          id: 'Basistest',
-          label: 'Basistest',
-          description: 'Es wird nur ein Bericht zu grundlegenden Systemeigenschaften und zur Netzverbindung gegeben.'
-        }
-      );
+      this.checkConfigList.push(this.bs.basicTestConfig);
       this.dataLoading = false;
     });
   }
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   buttonStartCheck(c: CheckConfig) {
-    this.router.navigate(['../checkrun/' + c.id], {relativeTo: this.route});
+    this.router.navigate(['../run/' + c.id], {relativeTo: this.route});
   }
 }

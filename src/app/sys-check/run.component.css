@@ -1,0 +1,7 @@
+.mat-mini-fab {
+  margin-right: 4px
+}
+
+.mat-mini-fab[disabled] {
+  background-color: grey;
+}
