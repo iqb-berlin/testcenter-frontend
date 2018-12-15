@@ -64,6 +64,23 @@ export class BackendService {
       );
   }
 
+    // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+    public getUnitData (syscheckId: string, unitId: string): Observable<UnitData> {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type':  'application/json'
+        })
+      };
+      return this.http
+        .post<UnitData>(this.serverUrl + 'getUnitData.php', {c: syscheckId, u: unitId}, httpOptions)
+          .pipe(
+            catchError(problem_data => {
+              const myreturn: UnitData = null;
+              return of(myreturn);
+            })
+          );
+    }
+
   // 7777777777777777777777777777777777777777777777777777777777777777777777
   // Network check functions
   benchmarkDownloadRequest (requestedDownloadSize: number,
@@ -160,7 +177,6 @@ export class BackendService {
 // end of network check functions
 // 7777777777777777777777777777777777777777777777777777777777777777777777
 
-
 } // end of backend service
 
 export interface CheckConfig {
@@ -186,3 +202,11 @@ export interface FormDefEntry {
 
 export type RequestBenchmarkerFunction = (requestSize: number, timeout: number, callback: RequestBenchmarkerFunctionCallback) => void;
 export type RequestBenchmarkerFunctionCallback = (testResult: NetworkRequestTestResult) => void;
+
+export interface UnitData {
+  id: number;
+  key: string;
+  label: string;
+  def: string;
+  player: string;
+}

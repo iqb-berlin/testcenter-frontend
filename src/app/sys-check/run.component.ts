@@ -5,6 +5,7 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CheckConfigData, BackendService } from './backend.service';
 import { MatStepper, MatStep } from '../../../node_modules/@angular/material';
+import { UnitCheckComponent } from './unit-check/unit-check.component';
 
 
 @Component({
@@ -15,7 +16,10 @@ import { MatStepper, MatStep } from '../../../node_modules/@angular/material';
 export class RunComponent implements OnInit {
   @ViewChild('stepper') stepper: MatStepper;
   @ViewChild('stepNetwork') stepNetwork: MatStep;
-  @ViewChild('networkCheck') networkCheck: NetworkCheckComponent;
+  @ViewChild('stepUnit') stepUnit: MatStep;
+  @ViewChild('compNetwork') compNetwork: NetworkCheckComponent;
+  @ViewChild('compUnit') compUnit: UnitCheckComponent;
+
   paramId: string;
 
   unitcheckAvailable = false;
@@ -57,8 +61,17 @@ export class RunComponent implements OnInit {
   }
 
   stepperSelectionChanged(e) {
-    if ((e.selectedIndex === 1) && !this.stepNetwork.completed) {
-      this.networkCheck.startCheck();
+    if (e.selectedStep === this.stepUnit) {
+      if (!this.stepUnit.completed) {
+        const cd = this.ds.checkConfig$.getValue();
+        this.compUnit.loadUnit(cd.id, cd.unit);
+        this.stepUnit.completed = true;
+      }
+    } else if (e.selectedStep === this.stepNetwork) {
+      if (!this.stepNetwork.completed) {
+        this.compNetwork.startCheck();
+      }
     }
+
   }
 }
