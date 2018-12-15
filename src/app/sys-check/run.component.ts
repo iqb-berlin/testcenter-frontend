@@ -1,3 +1,4 @@
+import { NetworkCheckComponent } from './network-check/network-check.component';
 import { SyscheckDataService } from './syscheck-data.service';
 import { BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, ParamMap } from '@angular/router';
@@ -14,6 +15,7 @@ import { MatStepper, MatStep } from '../../../node_modules/@angular/material';
 export class RunComponent implements OnInit {
   @ViewChild('stepper') stepper: MatStepper;
   @ViewChild('stepNetwork') stepNetwork: MatStep;
+  @ViewChild('networkCheck') networkCheck: NetworkCheckComponent;
   paramId: string;
 
   unitcheckAvailable = false;
@@ -30,7 +32,9 @@ export class RunComponent implements OnInit {
     this.ds.unitcheckAvailable$.subscribe(is => this.unitcheckAvailable = is);
     this.ds.questionnaireAvailable$.subscribe(is => this.questionnaireAvailable = is);
     this.ds.networkData$.subscribe(nd => {
-      this.stepNetwork.completed = nd !== null;
+      if (nd !== null) {
+        this.stepNetwork.completed = true;
+      }
     });
 
     this.stepper.linear = true;
@@ -50,5 +54,11 @@ export class RunComponent implements OnInit {
         );
       }
     });
+  }
+
+  stepperSelectionChanged(e) {
+    if ((e.selectedIndex === 1) && !this.stepNetwork.completed) {
+      this.networkCheck.startCheck();
+    }
   }
 }
