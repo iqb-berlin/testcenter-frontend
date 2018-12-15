@@ -41,6 +41,8 @@ export interface EnvironmentData {
 }
 
 export interface NetworkData {
-  speedindicator: number;
+  uploadTest: number;
+  downloadTest: number;
+  pingTest: number;
 }
 
