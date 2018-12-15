@@ -69,8 +69,8 @@ export class RunComponent implements OnInit {
       }
     } else if (e.selectedStep === this.stepNetwork) {
       if (!this.stepNetwork.completed) {
-        // this.compNetwork.startCheck();
-        this.stepNetwork.completed = true;
+        this.compNetwork.startCheck();
+        // this.stepNetwork.completed = true;
       }
     }
 
