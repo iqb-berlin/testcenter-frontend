@@ -46,3 +46,8 @@ export interface NetworkData {
   pingTest: number;
 }
 
+export interface NetworkRequestTestResult {
+  'type': 'downloadTest' | 'uploadTest';
+  'size': number;
+  'duration': number;
+}
