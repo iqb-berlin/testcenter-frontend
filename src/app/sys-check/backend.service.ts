@@ -62,7 +62,25 @@ export class BackendService {
         })
       );
   }
+
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  public getUnitData (syscheckId: string, unitId: string): Observable<UnitData> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<UnitData>(this.serverUrl + 'getUnitData.php', {c: syscheckId, u: unitId}, httpOptions)
+        .pipe(
+          catchError(problem_data => {
+            const myreturn: UnitData = null;
+            return of(myreturn);
+          })
+        );
+  }
 }
+
 
 export interface CheckConfig {
   id: string;
@@ -83,4 +101,12 @@ export interface FormDefEntry {
   type: string;
   prompt: string;
   options: string[];
+}
+
+export interface UnitData {
+  id: number;
+  key: string;
+  label: string;
+  def: string;
+  player: string;
 }

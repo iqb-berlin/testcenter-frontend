@@ -15,7 +15,7 @@
       </mat-step>
       <mat-step #stepNetwork>
         <ng-template matStepLabel>Netzwerk</ng-template>
-        <iqb-network-check #networkCheck></iqb-network-check>
+        <iqb-network-check #compNetwork></iqb-network-check>
         <div>
             <button mat-mini-fab matStepperPrevious>
               <i class="material-icons">chevron_left</i>
@@ -25,9 +25,9 @@
             </button>
         </div>
       </mat-step>
-      <mat-step *ngIf="unitcheckAvailable">
+      <mat-step *ngIf="unitcheckAvailable" #stepUnit>
         <ng-template matStepLabel>Aufgabe</ng-template>
-        <iqb-unit-check></iqb-unit-check>
+        <iqb-unit-check #compUnit></iqb-unit-check>
         <div>
             <button mat-mini-fab matStepperPrevious>
               <i class="material-icons">chevron_left</i>

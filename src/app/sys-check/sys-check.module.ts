@@ -1,3 +1,4 @@
+import { ResizeIFrameChildDirective } from './unit-check/resize-IFrameChild/resize-IFrameChild.directive';
 import { SyscheckDataService } from './syscheck-data.service';
 import { BackendService } from './backend.service';
 import { NgModule } from '@angular/core';
@@ -33,6 +34,7 @@ import { ReportComponent } from './report/report.component';
     NetworkCheckComponent,
     UnitCheckComponent,
     QuestionnaireComponent,
+    ResizeIFrameChildDirective,
     ReportComponent],
   exports: [
     StartComponent
