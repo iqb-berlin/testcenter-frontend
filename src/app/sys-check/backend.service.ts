@@ -23,7 +23,7 @@ export class BackendService {
       email: false
     };
 
-    constructor(
+  constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
       this.serverUrl = this.serverUrl + 'php_tc/';
@@ -64,14 +64,14 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public getUnitData (syscheckId: string, unitId: string): Observable<UnitData> {
+  public getUnitData (unitId: string): Observable<UnitData> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<UnitData>(this.serverUrl + 'getUnitData.php', {c: syscheckId, u: unitId}, httpOptions)
+      .post<UnitData>(this.serverUrl + 'getSysCheckUnitData.php', {u: unitId}, httpOptions)
         .pipe(
           catchError(problem_data => {
             const myreturn: UnitData = null;

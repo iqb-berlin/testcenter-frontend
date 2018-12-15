@@ -1,7 +1,7 @@
 import { LogindataService } from './../../logindata.service';
 import { BackendService, UnitData } from './../backend.service';
 import { SyscheckDataService } from './../syscheck-data.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 import { Subscription, BehaviorSubject } from 'rxjs';
 
@@ -17,9 +17,9 @@ import { Subscription, BehaviorSubject } from 'rxjs';
   styleUrls: ['./unit-check.component.css']
 })
 export class UnitCheckComponent implements OnInit, OnDestroy {
+  @ViewChild('iFrameHost') iFrameHostElement: HTMLElement;
   unitcheckEnabled = false;
 
-  private iFrameHostElement: HTMLElement;
   private iFrameItemplayer: HTMLIFrameElement;
   private postMessageSubscription: Subscription = null;
   private itemplayerSessionId = '';
@@ -117,16 +117,14 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
-
     this.iFrameItemplayer = null;
   }
 
   // // // // // // // // // // // // // // // // // // // // // // // //
-  public loadUnit(syscheckId: string, unitId: string) {
+  public loadUnit(unitId: string) {
     this.dataLoading = true;
 
-    this.bs.getUnitData(syscheckId, unitId).subscribe((data: UnitData) => {
+    this.bs.getUnitData(unitId).subscribe((data: UnitData) => {
       // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
       while (this.iFrameHostElement.hasChildNodes()) {
         this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);

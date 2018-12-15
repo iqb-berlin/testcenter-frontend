@@ -64,12 +64,13 @@ export class RunComponent implements OnInit {
     if (e.selectedStep === this.stepUnit) {
       if (!this.stepUnit.completed) {
         const cd = this.ds.checkConfig$.getValue();
-        this.compUnit.loadUnit(cd.id, cd.unit);
+        this.compUnit.loadUnit(cd.unit);
         this.stepUnit.completed = true;
       }
     } else if (e.selectedStep === this.stepNetwork) {
       if (!this.stepNetwork.completed) {
-        this.compNetwork.startCheck();
+        // this.compNetwork.startCheck();
+        this.stepNetwork.completed = true;
       }
     }
 
