@@ -1,5 +1,6 @@
-import { SyscheckDataService, NetworkData } from './../syscheck-data.service';
+import { SyscheckDataService, NetworkData, NetworkRequestTestResult } from './../syscheck-data.service';
 import { Component, OnInit } from '@angular/core';
+import { BackendService, RequestBenchmarkerFunction, RequestBenchmarkerFunctionCallback} from '../backend.service';
 
 @Component({
   selector: 'iqb-network-check',
@@ -9,14 +10,15 @@ import { Component, OnInit } from '@angular/core';
 export class NetworkCheckComponent implements OnInit {
   status = '';
   testDone = false;
-  averageSpeed = {
+  averageSpeed: NetworkData = {
     uploadTest: -1,
     downloadTest: -1,
     pingTest: -1
   };
 
   constructor(
-    private ds: SyscheckDataService
+    private ds: SyscheckDataService,
+    private bs: BackendService
   ) { }
 
   ngOnInit() {
@@ -24,12 +26,6 @@ export class NetworkCheckComponent implements OnInit {
   }
 
   public startCheck() {
-    const nwd: NetworkData = {
-      uploadTest: -1,
-      downloadTest: -1,
-      pingTest: -1
-    };
-
     console.log('started');
 
     this.networkCheck() ;
@@ -39,7 +35,7 @@ export class NetworkCheckComponent implements OnInit {
 
     this.testDone = false;
 
-    const testResults = [];
+    const testResults: Array<NetworkRequestTestResult> = [];
 
     let currentSize = 1024;
     let currentSizeIteration = 0;
@@ -51,99 +47,9 @@ export class NetworkCheckComponent implements OnInit {
         this.status = newStatus;
     };
 
-    const benchmarkUploadRequest = (requestedUploadSize, timeout, callback) => {
-        // uses https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/timeout
-        // and https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send
-
-        updateStatus(`Uploadgeschwindigkeit wird getestet (${currentSize} bytes).`);
-
-        let startingTime;
-
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'https://ocba.iqb.hu-berlin.de/networkTest/uploadTest.php', true);
-
-        xhr.timeout = timeout;
-
-        // Send the proper header information along with the request
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-        xhr.onreadystatechange = function() { // Call a function when the state changes.
-            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                // Request finished. Do processing here.
-                const currentTime = new Date().getTime();
-                testResults.push({
-                    'type': 'uploadTest',
-                    'size': requestedUploadSize,
-                    'duration': currentTime - startingTime
-                });
-
-                currentSizePassed++;
-                callback();
-            }
-        };
-
-        xhr.ontimeout = function (e) {
-            // XMLHttpRequest timed out. Do something here.
-            testResults.push({
-                'type': 'uploadTest',
-                'size': requestedUploadSize,
-                'duration': -1 * xhr.timeout
-            });
-            callback();
-        };
-
-        let uploadedContent = '';
-        for (let i = 1; i <= requestedUploadSize; i++)  {
-          uploadedContent += String(Math.floor(Math.random() * 10));
-        }
-        startingTime = new Date().getTime();
-        xhr.send('package=' + uploadedContent);
-    };
-
-
-    // test download speeds
-    const benchmarkDownloadRequest = (requestedDownloadSize, timeout, callback) => {
-        // uses https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/timeout
-
-        updateStatus(`Downloadgeschwindigkeit wird getestet (${currentSize} bytes).`);
-
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://ocba.iqb.hu-berlin.de/networkTest/downloadTest.php?size=' +
-                         requestedDownloadSize + '&uid=' + (new Date().getTime()), true);
-
-        xhr.timeout = timeout;
-
-        let startingTime;
-
-        xhr.onload = function () {
-            // Request finished. Do processing here.
-            const currentTime = new Date().getTime();
-            testResults.push({
-                'type': 'downloadTest',
-                'size': requestedDownloadSize,
-                'duration': currentTime - startingTime
-            });
-
-            currentSizePassed++;
-            callback();
-        };
-
-        xhr.ontimeout = function (e) {
-            // XMLHttpRequest timed out. Do something here.
-            testResults.push({
-                'type': 'downloadTest',
-                'size': requestedDownloadSize,
-                'duration': -1 * xhr.timeout
-            });
-            callback();
-        };
-
-        startingTime = new Date().getTime();
-
-        xhr.send(null);
-    };
-
-    const nextStepOfConnectionTest = (requestBenchmarkerFunction, callback) => {
+    const nextStepOfConnectionTest = (whatIsBeingTested: 'download' | 'upload',
+                                      requestBenchmarkerFunction: RequestBenchmarkerFunction,
+                                      callback: Function) => {
         currentSizeIteration++;
         let shouldContinue = true;
 
@@ -189,9 +95,22 @@ export class NetworkCheckComponent implements OnInit {
         if (shouldContinue) {
             const timeout = currentSizeIteration * 3000; // 3000 (1st iteration), 6000 (2nd iteration), 9000 (3rd iteration)
 
-            requestBenchmarkerFunction(currentSize, timeout, () => {
-                // then
-                nextStepOfConnectionTest(requestBenchmarkerFunction, callback);
+            if (whatIsBeingTested === 'download') {
+                updateStatus(`Downloadgeschwindigkeit wird getestet... (Testgröße: ${currentSize} bytes; Test: ${currentSizeIteration}/3)`);
+            }
+            if (whatIsBeingTested === 'upload') {
+                updateStatus(`Uploadgeschwindigkeit wird getestet... (Testgröße: ${currentSize} bytes; Test: ${currentSizeIteration}/3)`);
+            }
+
+            requestBenchmarkerFunction(currentSize, timeout, (testResult: NetworkRequestTestResult) => {
+                // after the test is done
+
+                testResults.push(testResult);
+                if (testResult.duration >= 0) {
+                    currentSizePassed++;
+                }
+
+                nextStepOfConnectionTest(whatIsBeingTested, requestBenchmarkerFunction, callback);
             });
         } else {
             currentSize = 1024;
@@ -202,11 +121,14 @@ export class NetworkCheckComponent implements OnInit {
         }
     };
 
-    updateStatus('Tests werden gestartet..');
-
-    nextStepOfConnectionTest(benchmarkDownloadRequest, () => {
+    nextStepOfConnectionTest('download', (requestSize: number, timeout: number, callback: RequestBenchmarkerFunctionCallback) => {
+        this.bs.benchmarkDownloadRequest(requestSize, timeout, callback);
+    }, () => {
         // then
-        nextStepOfConnectionTest(benchmarkUploadRequest, () => {
+
+        nextStepOfConnectionTest('upload', (requestSize: number, timeout: number, callback: RequestBenchmarkerFunctionCallback) => {
+            this.bs.benchmarkUploadRequest(requestSize, timeout, callback);
+        }, () => {
              // then
             // console.log('done');
 
@@ -214,10 +136,15 @@ export class NetworkCheckComponent implements OnInit {
             // console.log(testResults);
             // console.log(averageSpeed);
 
-            updateStatus(`Done.`);
+            updateStatus(`Die folgenden Netzwerkeigenschaften wurden festgestellt:`);
             this.testDone = true;
 
-            this.ds.networkData$.next(this.averageSpeed);
+            this.ds.networkData$.next({
+                'uploadTest': this.averageSpeed.uploadTest,
+                'downloadTest': this.averageSpeed.downloadTest,
+                'pingTest': this.averageSpeed.pingTest
+            });
+
         });
     });
   }
