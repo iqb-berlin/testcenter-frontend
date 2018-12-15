@@ -1,7 +1,25 @@
+<!--
 <div class="spinner-container" *ngIf="dataLoading">
-  <mat-spinner></mat-spinner>
 </div>
-<p>
-  network-check works!
-</p>
-<button mat-raised-button (click)="startCheck()" *ngIf="!firstCall">Netz erneut prüfen</button>
+-->
+
+<p>{{this.status}}</p>
+
+<div *ngIf="!testDone">
+  <p>
+    <mat-spinner></mat-spinner>
+  </p>
+</div>
+
+<div *ngIf="testDone">
+  <p>
+    Downloadgeschwindigkeit: {{averageSpeed.downloadTest | number}} bytes pro Sekunde<br>
+    Uploadgeschwindigkeit: {{averageSpeed.uploadTest | number}} bytes pro Sekunde<br >
+    Ping: {{averageSpeed.pingTest | number}} ms
+  </p>
+
+  <p>
+      <button mat-raised-button (click)="startCheck()" *ngIf="testDone">Netz erneut prüfen</button>
+  </p>
+
+</div>
