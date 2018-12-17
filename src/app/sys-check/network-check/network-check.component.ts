@@ -39,6 +39,12 @@ export class NetworkCheckComponent implements OnInit {
 
     const testResults: Array<NetworkRequestTestResult> = [];
 
+    this.averageSpeed = {
+        uploadTest: -1,
+        downloadTest: -1,
+        pingTest: -1
+      };
+
     let currentSize = 1024;
     let currentSizeIteration = 0;
     let currentSizePassed = 0;
