@@ -1,6 +1,9 @@
-<p>
-  environment-check works!
-</p>
-<p>
-  <button (click)="goto()">jojo</button>
-</p>
+
+<mat-card fxFlex="0 2 400px" fxLayout="column">
+  <!-- <button (click)="goto()">Go To</button> -->
+  <!-- <button mat-raised-button (click)="osInfo()">Press for screen size</button> -->
+  <div>{{ screenSize }} </div> 
+  <br>
+  <div>{{ result[0]  }} {{ result[1] }}</div> 
+  <!-- <button mat-raised-button (click)="removeSysInfo()">Hide info</button> -->
+</mat-card>
