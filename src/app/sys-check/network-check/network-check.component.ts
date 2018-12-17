@@ -1,4 +1,4 @@
-import { SyscheckDataService, NetworkRequestTestResult, NetworkRating, ReportEntry } from './../syscheck-data.service';
+import { SyscheckDataService, NetworkRequestTestResult, ReportEntry } from './../syscheck-data.service';
 import { Component, OnInit } from '@angular/core';
 import { BackendService, RequestBenchmarkerFunction, RequestBenchmarkerFunctionCallback} from '../backend.service';
 
@@ -144,7 +144,7 @@ export class NetworkCheckComponent implements OnInit {
             // console.log(testResults);
             // console.log(averageSpeed);
 
-            this.networkRating = this.ds.calculateNetworkRating(this.averageSpeed);
+            this.networkRating = this.calculateNetworkRating(this.averageSpeed);
 
             updateStatus(`Die folgenden Netzwerkeigenschaften wurden festgestellt:`);
             this.testDone = true;
@@ -158,6 +158,33 @@ export class NetworkCheckComponent implements OnInit {
     });
   }
 
+  public calculateNetworkRating(nd: NetworkData): NetworkRating {
+
+    /*
+
+    <1MB download und <0.5 MB upload ---> insufficient (~ < 8Mb download; ~ < 4Mb upload)
+    1-10 MB download; 0.5 - 5 MB upload ---> ok (8-80 Mb download; 4-40 Mb upload)
+    > 10 MB download; > 0.5 MB upload; ----> good (> 80 Mb download; > 40 Mb upload;)
+
+    */
+
+    // assumes that this.ds.checkConfig$ is already set;
+
+    const testConfig = this.ds.checkConfig$.getValue();
+    console.log('Test configuration used to calculate network compatibility with the Test Center:');
+    console.log(testConfig);
+
+    if ((nd.downloadTest < testConfig.downloadMinimum) || (nd.uploadTest < testConfig.uploadMinimum)) {
+        return 'insufficient';
+    } else {
+        if ((nd.downloadTest < testConfig.downloadGood) || (nd.uploadTest < testConfig.uploadGood)) {
+          return 'ok';
+        } else {
+          return 'good';
+        }
+    }
+  }
+
 }
 
 export interface AverageSpeed {
@@ -165,3 +192,13 @@ export interface AverageSpeed {
   downloadTest: number;
   pingTest: number;
 }
+
+
+export interface NetworkData {
+    uploadTest: number;
+    downloadTest: number;
+    pingTest: number;
+  }
+
+  export type NetworkRating = 'N/A' | 'insufficient' | 'ok' | 'good';
+
