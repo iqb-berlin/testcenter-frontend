@@ -1,6 +1,7 @@
 import { CheckConfigData } from './backend.service';
 import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { e } from '@angular/core/src/render3';
 
 @Injectable({
   providedIn: 'root'
@@ -55,11 +56,37 @@ export class SyscheckDataService {
     }
   }
 
-}
+  public calculateEnvironmentRating(ed: EnvironmentData): EnvironmentRating  {
+    let ratings: EnvironmentRating = {
+      OSRating: 'N/A',
+      ResolutionRating: 'N/A',
+      BrowserRating: 'N/A'
+    };
 
-export interface EnvironmentData {
-  osName: string;
-  osVersion: string;
+    if(ed.osName === "Windows 7" || ed.osName === "Windows 10" || ed.osName === "Windows 8" || ed.osName === "Mac/iOS") {
+      ratings.OSRating = 'Good';
+    } else if (ed.osName === "Windows Vista" || ed.osName === "Linux" || ed.osName === "UNIX") {
+      ratings.OSRating = 'Possibly compatible';
+    } else {
+      ratings.OSRating = 'Not compatible';
+    }
+
+    if(ed.browserName.indexOf("Chrome") || ed.browserName.indexOf("Mozilla"))
+      if(parseInt(ed.browserVersion) >= 60) {
+        ratings.BrowserRating = 'Good'
+      }
+      else {
+      ratings.BrowserRating = 'Not compatible'
+    }
+
+    if(ed.resolution.width >= 1024 && ed.resolution.height >= 768) {
+      ratings.ResolutionRating = 'Good'
+    } else {
+      ratings.ResolutionRating =  'Not compatible'
+    }
+    return ratings;
+  }
+
 }
 
 export interface NetworkData {
@@ -75,3 +102,21 @@ export interface NetworkRequestTestResult {
 }
 
 export type NetworkRating = 'N/A' | 'insufficient' | 'ok' | 'good';
+
+export interface EnvironmentData {
+  osName: string;
+  // osVersion: string;
+  browserName: string;
+  browserVersion: string;
+  resolution: {
+    height: number;
+    width: number;
+  };
+}
+
+export interface EnvironmentRating {
+  OSRating: 'N/A' | 'Good'| 'Not compatible' | 'Possibly compatible';
+  ResolutionRating: 'N/A' | 'Good'| 'Not compatible' | 'Possibly compatible';
+  BrowserRating: 'N/A' | 'Good'| 'Not compatible' | 'Possibly compatible';
+}
+

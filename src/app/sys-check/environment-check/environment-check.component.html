@@ -1,9 +1,61 @@
-
-<mat-card fxFlex="0 2 400px" fxLayout="column">
+<br>
+<mat-card>
   <!-- <button (click)="goto()">Go To</button> -->
   <!-- <button mat-raised-button (click)="osInfo()">Press for screen size</button> -->
-  <div>{{ screenSize }} </div> 
-  <br>
-  <div>{{ result[0]  }} {{ result[1] }}</div> 
   <!-- <button mat-raised-button (click)="removeSysInfo()">Hide info</button> -->
+  <mat-list>
+    <mat-list-item *ngIf="discoveredEnvRating.OSRating === 'Good'">OS is <span style="color: darkgreen; font-weight: bold;"> &nbsp; {{discoveredEnvRating.OSRating }} </span> <i class="material-icons networkCheck_inlineIcon">check</i> ({{ osName }}) </mat-list-item>
+    <mat-divider></mat-divider>
+    <mat-list-item *ngIf="discoveredEnvRating.OSRating === 'N/A'">OS is <span style="color: orange; font-weight: bold;"> &nbsp; {{discoveredEnvRating.OSRating }} </span> <i class="material-icons networkCheck_inlineIcon">warning</i> ({{ osName }}) </mat-list-item>
+    <mat-divider></mat-divider>
+    <mat-list-item *ngIf="discoveredEnvRating.OSRating === 'Not compatible'">OS is <span style="color: red; font-weight: bold;"> &nbsp; {{discoveredEnvRating.OSRating }}  </span> <i class="material-icons networkCheck_inlineIcon">error</i> ({{ osName }}) </mat-list-item>
+    <mat-divider></mat-divider>
+
+    <mat-list-item *ngIf="discoveredEnvRating.ResolutionRating === 'Good'">Resolution is <span style="color: darkgreen; font-weight: bold;"> &nbsp; {{discoveredEnvRating.ResolutionRating}} </span> <i class="material-icons networkCheck_inlineIcon">check</i> ({{ screenSize }})</mat-list-item>
+    <mat-divider></mat-divider>
+    <mat-list-item *ngIf="discoveredEnvRating.ResolutionRating === 'N/A'">Resolution is <span style="color: orange; font-weight: bold;"> &nbsp; {{discoveredEnvRating.ResolutionRating}} </span> <i class="material-icons networkCheck_inlineIcon">warning</i> ({{ screenSize }})</mat-list-item>
+    <mat-divider></mat-divider>
+    <mat-list-item *ngIf="discoveredEnvRating.ResolutionRating === 'Not compatible'">Resolution is <span style="color: red; font-weight: bold;"> &nbsp; {{discoveredEnvRating.ResolutionRating}} </span> <i class="material-icons networkCheck_inlineIcon">error</i> ({{ screenSize }})</mat-list-item>
+    <mat-divider></mat-divider>
+     
+    <mat-list-item *ngIf="discoveredEnvRating.BrowserRating === 'Good'">Browser is <span style="color: darkgreen; font-weight: bold;">  &nbsp;{{discoveredEnvRating.BrowserRating}}  </span> <i class="material-icons networkCheck_inlineIcon">check</i>({{ result[0]  }} {{ result[1] }})</mat-list-item>
+    <mat-list-item *ngIf="discoveredEnvRating.BrowserRating === 'N/A'">Browser is <span style="color: orange; font-weight: bold;">  &nbsp;{{discoveredEnvRating.BrowserRating}}  </span> <i class="material-icons networkCheck_inlineIcon">warning</i>({{ result[0]  }} {{ result[1] }})</mat-list-item>
+    <mat-list-item *ngIf="discoveredEnvRating.BrowserRating === 'Not compatible'">Browser is <span style="color: red; font-weight: bold;">  &nbsp;{{discoveredEnvRating.BrowserRating}}  </span> <i class="material-icons networkCheck_inlineIcon">error</i>({{ result[0]  }} {{ result[1] }})</mat-list-item>
+  </mat-list>
+
 </mat-card>
+<br>
+
+
+
+
+
+
+
+ 
+
+
+
+<!-- <p *ngIf="discoveredEnvRating.ResolutionRating === 'Not compatible'">
+    Ihre Verbindung zum Testserver ist: <span style="color: red; font-weight: bold;">unzureichend <i class="material-icons networkCheck_inlineIcon">error</i></span>
+  </p>
+
+  <p *ngIf="networkRating === 'slow'">
+    Ihre Verbindung zum Testserver ist: <span style="color: orange; font-weight: bold;">langsam <i class="material-icons networkCheck_inlineIcon">warning</i></span>
+  </p>
+
+  <p *ngIf="networkRating === 'ok'">
+    Ihre Verbindung zum Testserver ist: <span style="color: green; font-weight: bold;">ok <i class="material-icons networkCheck_inlineIcon">check</i></span>
+  </p>
+
+  <p *ngIf="networkRating === 'fast'">
+    Ihre Verbindung zum Testserver ist: <span style="color: green; font-weight: bold;">schnell <i class="material-icons networkCheck_inlineIcon">check</i></span>
+  </p>
+
+  <p *ngIf="networkRating === 'very fast'">
+    Ihre Verbindung zum Testserver ist: <span style="color: darkgreen; font-weight: bold;">sehr schnell <i class="material-icons networkCheck_inlineIcon">check</i></span>
+  </p>
+
+  <p *ngIf="networkRating === 'wow'">
+    Ihre Verbindung zum Testserver ist: <span style="color: darkgreen; font-weight: bold;">sehr schnell (wow!) <i class="material-icons networkCheck_inlineIcon">check</i></span>
+  </p> -->

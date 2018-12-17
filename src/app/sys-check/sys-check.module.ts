@@ -11,6 +11,9 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule, MatCardModule, MatStepperModule,
   MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule,
   MatTabsModule, MatProgressSpinnerModule } from '@angular/material';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatListModule} from '@angular/material/list';
+
 import { EnvironmentCheckComponent } from './environment-check/environment-check.component';
 import { NetworkCheckComponent } from './network-check/network-check.component';
 import { UnitCheckComponent } from './unit-check/unit-check.component';
@@ -25,7 +28,9 @@ import { ReportComponent } from './report/report.component';
     SysCheckRoutingModule,
     MatProgressSpinnerModule,
     MatStepperModule,
-    MatButtonModule
+    MatButtonModule,
+    MatDividerModule,
+    MatListModule
   ],
   declarations: [
     StartComponent,
