@@ -89,4 +89,4 @@ export interface NetworkRequestTestResult {
   'duration': number;
 }
 
-export type NetworkRating = 'N/A' | 'insufficient' | 'very slow' | 'slow' | 'ok' | 'fast' | 'very fast' | 'wow';
+export type NetworkRating = 'N/A' | 'insufficient' | 'slow' | 'ok' | 'fast' | 'very fast' | 'wow';
