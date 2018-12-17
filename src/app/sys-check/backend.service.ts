@@ -3,7 +3,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { NetworkData, NetworkRequestTestResult } from './syscheck-data.service';
+import { NetworkRequestTestResult } from './syscheck-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +21,13 @@ export class BackendService {
       label: 'Basistest',
       formdef: [],
       unit: '',
-      email: false
+      email: false,
+      downloadMinimum: 100,
+      downloadGood: 100,
+      uploadMinimum: 100,
+      uploadGood: 100,
+      pingMinimum: 100,
+      pingGood: 100
     };
 
   constructor(
@@ -191,6 +197,12 @@ export interface CheckConfigData {
   formdef: FormDefEntry[];
   unit: string;
   email: boolean;
+  uploadMinimum: number;
+  uploadGood: number;
+  downloadMinimum: number;
+  downloadGood: number;
+  pingMinimum: number;
+  pingGood: number;
 }
 
 export interface FormDefEntry {

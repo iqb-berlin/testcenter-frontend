@@ -1,4 +1,4 @@
-import { SyscheckDataService, NetworkData, NetworkRequestTestResult } from './../syscheck-data.service';
+import { SyscheckDataService, NetworkRequestTestResult } from './../syscheck-data.service';
 import { Component, OnInit } from '@angular/core';
 import { BackendService, RequestBenchmarkerFunction, RequestBenchmarkerFunctionCallback} from '../backend.service';
 
@@ -10,7 +10,7 @@ import { BackendService, RequestBenchmarkerFunction, RequestBenchmarkerFunctionC
 export class NetworkCheckComponent implements OnInit {
   status = '';
   testDone = false;
-  averageSpeed: NetworkData = {
+  averageSpeed: AverageSpeed = {
     uploadTest: -1,
     downloadTest: -1,
     pingTest: -1
@@ -139,14 +139,20 @@ export class NetworkCheckComponent implements OnInit {
             updateStatus(`Die folgenden Netzwerkeigenschaften wurden festgestellt:`);
             this.testDone = true;
 
-            this.ds.networkData$.next({
-                'uploadTest': this.averageSpeed.uploadTest,
-                'downloadTest': this.averageSpeed.downloadTest,
-                'pingTest': this.averageSpeed.pingTest
-            });
+            // this.ds.networkData$.next({
+               //  'uploadTest': this.averageSpeed.uploadTest,
+//                 'downloadTest': this.averageSpeed.downloadTest,
+   //              'pingTest': this.averageSpeed.pingTest
+      //       });
 
         });
     });
   }
 
+}
+
+export interface AverageSpeed {
+  uploadTest: number;
+  downloadTest: number;
+  pingTest: number;
 }

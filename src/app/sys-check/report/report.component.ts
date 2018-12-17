@@ -1,3 +1,4 @@
+import { merge } from 'rxjs';
 import { SyscheckDataService } from './../syscheck-data.service';
 import { Component, OnInit } from '@angular/core';
 
@@ -15,7 +16,17 @@ export class ReportComponent implements OnInit {
   }
 
   ngOnInit() {
+    merge(
+      this.ds.environmentData$,
+      this.ds.networkData$,
+      this.ds.questionnaireData$).subscribe(t => {
+        this.updateReport();
+      });
+
     this.ds.reportEnabled$.subscribe(is => this.reportEnabled = is);
   }
 
+  updateReport() {
+
+  }
 }

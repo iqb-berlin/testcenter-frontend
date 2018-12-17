@@ -7,8 +7,9 @@ import { Injectable } from '@angular/core';
 })
 export class SyscheckDataService {
   public checkConfig$ = new BehaviorSubject<CheckConfigData>(null);
-  public environmentData$ = new BehaviorSubject<EnvironmentData>(null);
-  public networkData$ = new BehaviorSubject<NetworkData>(null);
+  public environmentData$ = new BehaviorSubject<ReportEntry[]>([]);
+  public networkData$ = new BehaviorSubject<ReportEntry[]>([]);
+  public questionnaireData$ = new BehaviorSubject<ReportEntry[]>([]);
 
   public unitcheckAvailable$ = new BehaviorSubject<boolean>(false);
   public questionnaireAvailable$ = new BehaviorSubject<boolean>(false);
@@ -35,15 +36,9 @@ export class SyscheckDataService {
   }
 }
 
-export interface EnvironmentData {
-  osName: string;
-  osVersion: string;
-}
-
-export interface NetworkData {
-  uploadTest: number;
-  downloadTest: number;
-  pingTest: number;
+export interface ReportEntry {
+  label: string;
+  value: string;
 }
 
 export interface NetworkRequestTestResult {

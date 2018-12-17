@@ -1,3 +1,23 @@
-<p>
-  questionnaire works!
-</p>
+<div class="spinner-container" *ngIf="dataLoading">
+  <mat-spinner></mat-spinner>
+</div>
+<div class="step-body" #questionnaireBody>
+  <div [formGroup]="form">
+    <p *ngFor="let f of formdef">
+      <label>{{f.prompt}}</label>
+
+      <div [ngSwitch]="f.type">
+
+        <input *ngSwitchCase="'text'" [formControlName]="f.id"
+                [id]="f.id" [type]="t.type">
+
+        <select [id]="f.id" *ngSwitchCase="'singleselectlist'" [formControlName]="f.id">
+          <option *ngFor="let opt of f.options">{{opt}}</option>
+        </select>
+
+      </div>
+
+      <div class="errorMessage" *ngIf="!isValid">{{f.prompt}} is required</div>
+    </p>
+  </div>
+</div>

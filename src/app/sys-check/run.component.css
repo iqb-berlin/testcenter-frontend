@@ -5,3 +5,13 @@
 .mat-mini-fab[disabled] {
   background-color: grey;
 }
+
+.fullheight {
+  min-height: 90%;
+}
+
+.navi_buttons {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+}

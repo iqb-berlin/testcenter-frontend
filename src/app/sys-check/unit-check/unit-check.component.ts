@@ -1,7 +1,7 @@
 import { LogindataService } from './../../logindata.service';
 import { BackendService, UnitData } from './../backend.service';
 import { SyscheckDataService } from './../syscheck-data.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 import { Subscription, BehaviorSubject } from 'rxjs';
 
@@ -17,7 +17,7 @@ import { Subscription, BehaviorSubject } from 'rxjs';
   styleUrls: ['./unit-check.component.css']
 })
 export class UnitCheckComponent implements OnInit, OnDestroy {
-  @ViewChild('iFrameHost') iFrameHostElement: HTMLElement;
+  @ViewChild('iFrameHost') iFrameHostElement: ElementRef;
   unitcheckEnabled = false;
 
   private iFrameItemplayer: HTMLIFrameElement;
@@ -126,19 +126,19 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
 
     this.bs.getUnitData(unitId).subscribe((data: UnitData) => {
       // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-      while (this.iFrameHostElement.hasChildNodes()) {
-        this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
+      while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
+        this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
       }
 
       this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
       this.iFrameItemplayer.setAttribute('srcdoc', data.player);
       this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
       this.iFrameItemplayer.setAttribute('class', 'unitHost');
-      this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
+      this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.nativeElement.clientHeight));
 
       this.pendingItemDefinition$.next(data.def);
 
-      this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+      this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
       this.dataLoading = false;
     });
   }

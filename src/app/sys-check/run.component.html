@@ -7,7 +7,7 @@
       <mat-step>
         <ng-template matStepLabel>Computer</ng-template>
         <iqb-environment-check></iqb-environment-check>
-        <div>
+        <div class="navi_buttons">
             <button mat-mini-fab matStepperNext>
               <i class="material-icons">chevron_right</i>
             </button>
@@ -16,7 +16,7 @@
       <mat-step #stepNetwork>
         <ng-template matStepLabel>Netzwerk</ng-template>
         <iqb-network-check #compNetwork></iqb-network-check>
-        <div>
+        <div class="navi_buttons">
             <button mat-mini-fab matStepperPrevious>
               <i class="material-icons">chevron_left</i>
             </button>
@@ -28,7 +28,7 @@
       <mat-step *ngIf="unitcheckAvailable" #stepUnit>
         <ng-template matStepLabel>Aufgabe</ng-template>
         <iqb-unit-check #compUnit></iqb-unit-check>
-        <div>
+        <div class="navi_buttons">
             <button mat-mini-fab matStepperPrevious>
               <i class="material-icons">chevron_left</i>
             </button>
@@ -40,7 +40,7 @@
       <mat-step *ngIf="questionnaireAvailable">
         <ng-template matStepLabel>Fragen</ng-template>
         <iqb-questionnaire></iqb-questionnaire>
-        <div>
+        <div class="navi_buttons">
             <button mat-mini-fab matStepperPrevious>
               <i class="material-icons">chevron_left</i>
             </button>
@@ -52,11 +52,11 @@
       <mat-step>
         <ng-template matStepLabel>Bericht</ng-template>
         <iqb-report></iqb-report>
-        <div>
-            <button mat-mini-fab matStepperPrevious>
-              <i class="material-icons">chevron_left</i>
-            </button>
-          </div>
+        <div class="navi_buttons">
+          <button mat-mini-fab matStepperPrevious>
+            <i class="material-icons">chevron_left</i>
+          </button>
+        </div>
       </mat-step>
     </mat-horizontal-stepper>
   </div>

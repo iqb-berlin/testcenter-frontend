@@ -23,10 +23,15 @@
 }
 
 .sheetofpaper {
-  flex:  10 0 900px;
+  display: block;
+  position: absolute;
   box-shadow: 5px 10px 20px black;
   background-color: white;
-  min-height: 90%;
+  min-height: auto;
+  bottom:0;
+  top:0;
+  left:0;
+  right:0;
   margin: 15px;
   padding: 5px;
 }
