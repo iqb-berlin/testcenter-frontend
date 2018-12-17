@@ -38,35 +38,20 @@ export class SyscheckDataService {
 
     /*
 
-    <100 KB download und <50KB upload ---> insufficient (~ < 1Mb download; ~ < 512Kb upload)
-    100 KB - 200 KB download; 50KB - 100 KB upload; ---> slow (~ 1-2Mb download; ~ 0.5-1 Mb upload)
-    200 KB - 1MB download; 100KB - 1MB upload ---> ok (~ 2-8Mb download; <  1-8Mb upload)
-    1MB download - 10MB download; 1 MB upload - 10MB upload; ---> fast (~ 8-80Mb download; ~ 8-80Mb upload)
-    10MB - 100MB download; 10MB to 100MB upload; ---> very fast (~ 80-800 Mb download; ~80-800Mb upload)
-    100MB+ download; 100MB+ upload; ----> wow (> 800 Mb download; > 800 Mb upload)
+    <1MB download und <0.5 MB upload ---> insufficient (~ < 8Mb download; ~ < 4Mb upload)
+    1-10 MB download; 0.5 - 5 MB upload ---> ok (8-80 Mb download; 4-40 Mb upload)
+    > 10 MB download; > 0.5 MB upload; ----> good (> 80 Mb download; > 40 Mb upload;)
 
     */
 
-    if ((nd.downloadTest < 1024 * 100) || (nd.uploadTest < 1024 * 50)) {
+    if ((nd.downloadTest < 1024 * 1024) || (nd.uploadTest < 1024 * 512)) {
         return 'insufficient';
     } else {
-      if ((nd.downloadTest < 1024 * 200) || (nd.uploadTest < 1024 * 100)) {
-        return 'slow';
-      } else {
-        if ((nd.downloadTest < 1024 * 1024) || (nd.uploadTest < 1024 * 1024)) {
-            return 'ok';
+        if ((nd.downloadTest < 1024 * 1024 * 10) || (nd.uploadTest < 1024 * 1024 * 5)) {
+          return 'ok';
         } else {
-            if ((nd.downloadTest < 1024 * 1024 * 10) || (nd.uploadTest < 1024 * 1024 * 10)) {
-                return 'fast';
-            } else {
-                if ((nd.downloadTest < 1024 * 1024 * 100) || (nd.uploadTest < 1024 * 1024 * 100)) {
-                    return 'very fast';
-                } else {
-                    return 'wow';
-                }
-            }
+          return 'good';
         }
-      }
     }
   }
 
@@ -89,4 +74,4 @@ export interface NetworkRequestTestResult {
   'duration': number;
 }
 
-export type NetworkRating = 'N/A' | 'insufficient' | 'slow' | 'ok' | 'fast' | 'very fast' | 'wow';
+export type NetworkRating = 'N/A' | 'insufficient' | 'ok' | 'good';

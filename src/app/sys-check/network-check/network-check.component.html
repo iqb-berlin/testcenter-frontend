@@ -23,25 +23,14 @@
     Ihre Verbindung zum Testserver ist: <span style="color: red; font-weight: bold;">unzureichend <i class="material-icons networkCheck_inlineIcon">error</i></span>
   </p>
 
-  <p *ngIf="networkRating === 'slow'">
-    Ihre Verbindung zum Testserver ist: <span style="color: orange; font-weight: bold;">langsam <i class="material-icons networkCheck_inlineIcon">warning</i></span>
-  </p>
-
   <p *ngIf="networkRating === 'ok'">
-    Ihre Verbindung zum Testserver ist: <span style="color: green; font-weight: bold;">ok <i class="material-icons networkCheck_inlineIcon">check</i></span>
+    Ihre Verbindung zum Testserver ist: <span style="color: orange; font-weight: bold;">ok <i class="material-icons networkCheck_inlineIcon">warning</i></span>
   </p>
 
-  <p *ngIf="networkRating === 'fast'">
-    Ihre Verbindung zum Testserver ist: <span style="color: green; font-weight: bold;">schnell <i class="material-icons networkCheck_inlineIcon">check</i></span>
+  <p *ngIf="networkRating === 'good'">
+    Ihre Verbindung zum Testserver ist: <span style="color: green; font-weight: bold;">gut <i class="material-icons networkCheck_inlineIcon">check</i></span>
   </p>
 
-  <p *ngIf="networkRating === 'very fast'">
-    Ihre Verbindung zum Testserver ist: <span style="color: darkgreen; font-weight: bold;">sehr schnell <i class="material-icons networkCheck_inlineIcon">check</i></span>
-  </p>
-
-  <p *ngIf="networkRating === 'wow'">
-    Ihre Verbindung zum Testserver ist: <span style="color: darkgreen; font-weight: bold;">sehr schnell (wow!) <i class="material-icons networkCheck_inlineIcon">check</i></span>
-  </p>
   <!-- end of network rating in simpler terms -->
 
   <p>
