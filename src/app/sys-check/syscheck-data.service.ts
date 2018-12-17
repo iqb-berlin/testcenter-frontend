@@ -56,38 +56,6 @@ export class SyscheckDataService {
         }
     }
   }
-
-  public calculateEnvironmentRating(ed: EnvironmentData): EnvironmentRating  {
-    let ratings: EnvironmentRating = {
-      OSRating: 'N/A',
-      ResolutionRating: 'N/A',
-      BrowserRating: 'N/A'
-    };
-
-    if(ed.osName === "Windows 7" || ed.osName === "Windows 10" || ed.osName === "Windows 8" || ed.osName === "Mac/iOS") {
-      ratings.OSRating = 'Good';
-    } else if (ed.osName === "Windows Vista" || ed.osName === "Linux" || ed.osName === "UNIX") {
-      ratings.OSRating = 'Possibly compatible';
-    } else {
-      ratings.OSRating = 'Not compatible';
-    }
-
-    if(ed.browserName.indexOf("Chrome") || ed.browserName.indexOf("Mozilla"))
-      if(parseInt(ed.browserVersion) >= 60) {
-        ratings.BrowserRating = 'Good'
-      }
-      else {
-      ratings.BrowserRating = 'Not compatible'
-    }
-
-    if(ed.resolution.width >= 1024 && ed.resolution.height >= 768) {
-      ratings.ResolutionRating = 'Good'
-    } else {
-      ratings.ResolutionRating =  'Not compatible'
-    }
-    return ratings;
-  }
-
 }
 
 export interface NetworkData {

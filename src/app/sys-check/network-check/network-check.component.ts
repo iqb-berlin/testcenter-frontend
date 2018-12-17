@@ -1,4 +1,4 @@
-import { SyscheckDataService, NetworkRequestTestResult, ReportEntry } from './../syscheck-data.service';
+import { SyscheckDataService, NetworkRequestTestResult, NetworkRating, ReportEntry } from './../syscheck-data.service';
 import { Component, OnInit } from '@angular/core';
 import { BackendService, RequestBenchmarkerFunction, RequestBenchmarkerFunctionCallback} from '../backend.service';
 
@@ -164,21 +164,4 @@ export interface AverageSpeed {
   uploadTest: number;
   downloadTest: number;
   pingTest: number;
-}
-
-export interface EnvironmentData {
-  osName: string;
-  // osVersion: string;
-  browserName: string;
-  browserVersion: string;
-  resolution: {
-    height: number;
-    width: number;
-  };
-}
-
-export interface EnvironmentRating {
-  OSRating: 'N/A' | 'Good'| 'Not compatible' | 'Possibly compatible';
-  ResolutionRating: 'N/A' | 'Good'| 'Not compatible' | 'Possibly compatible';
-  BrowserRating: 'N/A' | 'Good'| 'Not compatible' | 'Possibly compatible';
 }

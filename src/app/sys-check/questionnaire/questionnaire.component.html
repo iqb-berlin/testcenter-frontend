@@ -2,8 +2,8 @@
   <mat-spinner></mat-spinner>
 </div>
 <div class="step-body" #questionnaireBody>
-  <div [formGroup]="form">
-    <p *ngFor="let f of formdef">
+<!--  <div [formGroup]="form">
+    <div *ngFor="let f of formdef">
       <label>{{f.prompt}}</label>
 
       <div [ngSwitch]="f.type">
@@ -18,6 +18,6 @@
       </div>
 
       <div class="errorMessage" *ngIf="!isValid">{{f.prompt}} is required</div>
-    </p>
-  </div>
+    </div>
+  </div>-->
 </div>
