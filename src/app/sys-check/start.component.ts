@@ -1,3 +1,4 @@
+import { SyscheckDataService } from './syscheck-data.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BackendService, CheckConfig } from './backend.service';
 import { Component, OnInit } from '@angular/core';
@@ -15,6 +16,7 @@ export class StartComponent implements OnInit {
 
   constructor(
     private bs: BackendService,
+    private ds: SyscheckDataService,
     private route: ActivatedRoute,
     private router: Router) { }
 
@@ -24,6 +26,7 @@ export class StartComponent implements OnInit {
       this.checkConfigList = myConfigs;
       this.checkConfigList.push(this.bs.basicTestConfig);
       this.dataLoading = false;
+      this.ds.setPageTitle();
     });
   }
 

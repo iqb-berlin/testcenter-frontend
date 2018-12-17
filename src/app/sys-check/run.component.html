@@ -4,9 +4,9 @@
 <div class="page-body">
   <div class="sheetofpaper">
     <mat-horizontal-stepper labelPosition="bottom" #stepper (selectionChange)="stepperSelectionChanged($event)">
-      <mat-step>
+      <mat-step #stepEnv>
         <ng-template matStepLabel>Computer</ng-template>
-        <iqb-environment-check></iqb-environment-check>
+        <iqb-environment-check #compEnv></iqb-environment-check>
         <div class="navi_buttons">
             <button mat-mini-fab matStepperNext>
               <i class="material-icons">chevron_right</i>
@@ -56,6 +56,7 @@
           <button mat-mini-fab matStepperPrevious>
             <i class="material-icons">chevron_left</i>
           </button>
+          <button mat-raised-button>Als E-Mail verschicken</button>
         </div>
       </mat-step>
     </mat-horizontal-stepper>

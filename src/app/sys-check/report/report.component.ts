@@ -18,8 +18,11 @@ export class ReportComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.ds.environmentData$.subscribe(rd => this.environmentData = rd);
-    this.ds.networkData$.subscribe(rd => this.networkData = rd);
+    // this.ds.environmentData$.subscribe(rd => ); too early!
+    this.ds.networkData$.subscribe(rd => {
+      this.networkData = rd;
+      this.environmentData = this.ds.environmentData$.getValue();
+    });
     this.ds.questionnaireData$.subscribe(rd => this.questionnaireData = rd);
 
     this.ds.reportEnabled$.subscribe(is => this.reportEnabled = is);

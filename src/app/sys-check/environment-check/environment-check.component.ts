@@ -40,6 +40,10 @@ export class EnvironmentCheckComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.startCheck();
+  }
+
+  startCheck() {
     this.deviceInfo = window.navigator.userAgent;
     // tslint:disable-next-line:max-line-length
     this.regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/;
@@ -64,12 +68,16 @@ export class EnvironmentCheckComponent implements OnInit {
 
     this.discoveredEnvRating = this.calculateEnvironmentRating(this.discoveredEnvData);
 
-    // dummy: transform to label-value-pairs!
     const myReport: ReportEntry[] = [];
-    myReport.push({'label': 'lalala', 'value': 'sososo'});
+    myReport.push({'label': 'Betriebssystem', 'value': this.discoveredEnvData.osName});
+    myReport.push({'label': 'Bewertung', 'value': this.discoveredEnvRating.OSRating});
+    myReport.push({'label': 'Browser', 'value': this.discoveredEnvData.browserName + ' Version ' + this.discoveredEnvData.browserVersion});
+    myReport.push({'label': 'Bewertung', 'value': this.discoveredEnvRating.BrowserRating});
+    myReport.push({'label': 'Bildschirm', 'value':
+        this.discoveredEnvData.resolution.width.toString() + ' x ' + this.discoveredEnvData.resolution.height.toString()});
+    myReport.push({'label': 'Bewertung', 'value': this.discoveredEnvRating.ResolutionRating});
 
     this.ds.environmentData$.next(myReport);
-
   }
 
   getOSVersion() {
@@ -103,10 +111,6 @@ export class EnvironmentCheckComponent implements OnInit {
       this.osName = 'Linux';
     }
     return this.osName;
-  }
-
-  goto() {
-    this.ds.questionnaireAvailable$.next(true);
   }
 
   // // // //

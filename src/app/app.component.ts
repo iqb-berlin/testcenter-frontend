@@ -1,3 +1,4 @@
+import { SyscheckDataService } from './sys-check/syscheck-data.service';
 import { TestControllerService } from './test-controller';
 import { LogindataService } from './logindata.service';
 import { merge } from 'rxjs';
@@ -19,11 +20,13 @@ export class AppComponent implements OnInit {
   constructor (
     private lds: LogindataService,
     private tcs: TestControllerService,
+    private ccs: SyscheckDataService,
     private router: Router) { }
 
   ngOnInit() {
 
     merge(
+      this.ccs.pageTitle$,
       this.lds.pageTitle$,
       this.tcs.pageTitle$).subscribe(t => {
         this.title = t;

@@ -7,6 +7,8 @@ import { e } from '@angular/core/src/render3';
   providedIn: 'root'
 })
 export class SyscheckDataService {
+  public pageTitle$ = new BehaviorSubject<string>('IQB-Testcenter - System-Check');
+
   public checkConfig$ = new BehaviorSubject<CheckConfigData>(null);
   public environmentData$ = new BehaviorSubject<ReportEntry[]>([]);
   public networkData$ = new BehaviorSubject<ReportEntry[]>([]);
@@ -22,8 +24,8 @@ export class SyscheckDataService {
 
   constructor() {
     this.checkConfig$.subscribe(cDef => {
-      this.environmentData$.next([]);
       this.networkData$.next([]);
+      this.questionnaireData$.next([]);
       if (cDef === null) {
         this.reportWithEmail$.next(false);
         this.unitcheckAvailable$.next(false);
@@ -35,13 +37,10 @@ export class SyscheckDataService {
       }
     });
   }
-}
 
-
-export interface NetworkRequestTestResult {
-  'type': 'downloadTest' | 'uploadTest';
-  'size': number;
-  'duration': number;
+  setPageTitle() {
+    this.pageTitle$.next('IQB-Testcenter - System-Check');
+  }
 }
 
 export interface ReportEntry {

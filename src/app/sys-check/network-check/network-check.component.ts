@@ -1,6 +1,7 @@
-import { SyscheckDataService, NetworkRequestTestResult, ReportEntry } from './../syscheck-data.service';
+import { SyscheckDataService, ReportEntry } from './../syscheck-data.service';
 import { Component, OnInit } from '@angular/core';
-import { BackendService, RequestBenchmarkerFunction, RequestBenchmarkerFunctionCallback} from '../backend.service';
+import { BackendService, NetworkRequestTestResult, RequestBenchmarkerFunction,
+      RequestBenchmarkerFunctionCallback} from '../backend.service';
 
 @Component({
   selector: 'iqb-network-check',
@@ -151,7 +152,10 @@ export class NetworkCheckComponent implements OnInit {
 
             // send data for reporting
             const myReport: ReportEntry[] = [];
-            myReport.push({'label': 'lalala', 'value': 'sososo'});
+            myReport.push({'label': 'download', 'value': this.averageSpeed.downloadTest.toLocaleString()});
+            myReport.push({'label': 'upload', 'value': this.averageSpeed.uploadTest.toLocaleString()});
+            myReport.push({'label': 'ping', 'value': this.averageSpeed.pingTest.toLocaleString()});
+            myReport.push({'label': 'Bewertung', 'value': this.networkRating});
             this.ds.networkData$.next(myReport);
 
         });

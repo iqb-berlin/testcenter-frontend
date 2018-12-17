@@ -3,7 +3,6 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { NetworkRequestTestResult } from './syscheck-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -228,4 +227,10 @@ export interface UnitData {
   label: string;
   def: string;
   player: string;
+}
+
+export interface NetworkRequestTestResult {
+  'type': 'downloadTest' | 'uploadTest';
+  'size': number;
+  'duration': number;
 }

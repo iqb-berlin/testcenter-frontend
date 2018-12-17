@@ -6,6 +6,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CheckConfigData, BackendService } from './backend.service';
 import { MatStepper, MatStep } from '../../../node_modules/@angular/material';
 import { UnitCheckComponent } from './unit-check/unit-check.component';
+import { EnvironmentCheckComponent } from './environment-check/environment-check.component';
 
 
 @Component({
@@ -15,15 +16,19 @@ import { UnitCheckComponent } from './unit-check/unit-check.component';
 })
 export class RunComponent implements OnInit {
   @ViewChild('stepper') stepper: MatStepper;
+  @ViewChild('stepEnv') stepEnv: MatStep;
+  @ViewChild('compEnv') compEnv: EnvironmentCheckComponent;
   @ViewChild('stepNetwork') stepNetwork: MatStep;
-  @ViewChild('stepUnit') stepUnit: MatStep;
   @ViewChild('compNetwork') compNetwork: NetworkCheckComponent;
+  @ViewChild('stepUnit') stepUnit: MatStep;
   @ViewChild('compUnit') compUnit: UnitCheckComponent;
 
   paramId: string;
 
   unitcheckAvailable = false;
   questionnaireAvailable = false;
+  emailEnabled = false;
+
 
   constructor(
     private bs: BackendService,
@@ -49,6 +54,25 @@ export class RunComponent implements OnInit {
       } else {
         this.bs.getCheckConfigData(this.paramId).subscribe(
           scData => {
+            if (typeof scData.downloadGood === 'undefined') {
+              scData.downloadGood = this.bs.basicTestConfigData.downloadGood;
+            }
+            if (typeof scData.downloadMinimum === 'undefined') {
+              scData.downloadMinimum = this.bs.basicTestConfigData.downloadMinimum;
+            }
+            if (typeof scData.uploadGood === 'undefined') {
+              scData.uploadGood = this.bs.basicTestConfigData.uploadGood;
+            }
+            if (typeof scData.uploadMinimum === 'undefined') {
+              scData.uploadMinimum = this.bs.basicTestConfigData.uploadMinimum;
+            }
+            if (typeof scData.pingGood === 'undefined') {
+              scData.pingGood = this.bs.basicTestConfigData.pingGood;
+            }
+            if (typeof scData.pingMinimum === 'undefined') {
+              scData.pingMinimum = this.bs.basicTestConfigData.pingMinimum;
+            }
+
             this.ds.checkConfig$.next(scData);
             this.stepper.selectedIndex = 0;
             this.stepNetwork.completed = false;
@@ -59,6 +83,8 @@ export class RunComponent implements OnInit {
   }
 
   stepperSelectionChanged(e) {
+    this.ds.setPageTitle();
+
     if (e.selectedStep === this.stepUnit) {
       if (!this.stepUnit.completed) {
         const cd = this.ds.checkConfig$.getValue();
@@ -70,6 +96,8 @@ export class RunComponent implements OnInit {
         this.compNetwork.startCheck();
         this.stepNetwork.completed = true;
       }
+    } else if (e.selectedStep === this.stepEnv) {
+        this.compEnv.startCheck();
     }
 
   }
