@@ -131,6 +131,8 @@ export class BackendService {
     // uses https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/timeout
     // and https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send
 
+    const base64Characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz0123456789+/';
+
     let startingTime;
     const xhr = new XMLHttpRequest();
     xhr.open('POST', this.serverUrl + 'doSysCheckUploadTest.php', true);
@@ -167,7 +169,12 @@ export class BackendService {
 
     let uploadedContent = '';
     for (let i = 1; i <= requestedUploadSize; i++)  {
-      uploadedContent += String(Math.floor(Math.random() * 10));
+      let randomCharacterID = Math.floor(Math.random() * 63);
+      if (randomCharacterID > base64Characters.length - 1) {
+        // failsafe, in case the random number generator is a bit imprecisely programmed and gives too big of a number back
+        randomCharacterID = base64Characters.length - 1;
+      }
+      uploadedContent += base64Characters[randomCharacterID];
     }
     startingTime = new Date().getTime();
     xhr.send('package=' + uploadedContent);

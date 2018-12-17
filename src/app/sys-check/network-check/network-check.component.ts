@@ -95,7 +95,7 @@ export class NetworkCheckComponent implements OnInit {
         }
 
         if (shouldContinue) {
-            const timeout = currentSizeIteration * 3000; // 3000 (1st iteration), 6000 (2nd iteration), 9000 (3rd iteration)
+            const timeout = 1000 + (currentSizeIteration - 1) * 2000; // 1000 (1st iteration), 3000 (2nd iteration), 5000 (3rd iteration)
 
             if (whatIsBeingTested === 'download') {
                 updateStatus(`Downloadgeschwindigkeit wird getestet... (Testgröße: ${currentSize} bytes; Test: ${currentSizeIteration}/3)`);
