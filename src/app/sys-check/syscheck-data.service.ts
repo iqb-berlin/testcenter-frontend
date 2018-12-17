@@ -35,42 +35,14 @@ export class SyscheckDataService {
       }
     });
   }
-
-  public calculateNetworkRating(nd: NetworkData): NetworkRating {
-
-    /*
-
-    <1MB download und <0.5 MB upload ---> insufficient (~ < 8Mb download; ~ < 4Mb upload)
-    1-10 MB download; 0.5 - 5 MB upload ---> ok (8-80 Mb download; 4-40 Mb upload)
-    > 10 MB download; > 0.5 MB upload; ----> good (> 80 Mb download; > 40 Mb upload;)
-
-    */
-
-    if ((nd.downloadTest < 1024 * 1024) || (nd.uploadTest < 1024 * 512)) {
-        return 'insufficient';
-    } else {
-        if ((nd.downloadTest < 1024 * 1024 * 10) || (nd.uploadTest < 1024 * 1024 * 5)) {
-          return 'ok';
-        } else {
-          return 'good';
-        }
-    }
-  }
 }
 
-export interface NetworkData {
-  uploadTest: number;
-  downloadTest: number;
-  pingTest: number;
-}
 
 export interface NetworkRequestTestResult {
   'type': 'downloadTest' | 'uploadTest';
   'size': number;
   'duration': number;
 }
-
-export type NetworkRating = 'N/A' | 'insufficient' | 'ok' | 'good';
 
 export interface ReportEntry {
   label: string;

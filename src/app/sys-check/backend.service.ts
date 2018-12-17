@@ -22,12 +22,12 @@ export class BackendService {
       formdef: [],
       unit: '',
       email: false,
-      downloadMinimum: 100,
-      downloadGood: 100,
-      uploadMinimum: 100,
-      uploadGood: 100,
-      pingMinimum: 100,
-      pingGood: 100
+      downloadMinimum: 1024 * 1024,
+      downloadGood: 1024 * 1024 * 10,
+      uploadMinimum: 1024 * 512,
+      uploadGood: 1024 * 1024 * 5,
+      pingMinimum: 5000,
+      pingGood: 1000
     };
 
   constructor(
