@@ -6,20 +6,25 @@
   <mat-list>
     <mat-list-item *ngIf="discoveredEnvRating.OSRating === 'Good'">OS is <span style="color: darkgreen; font-weight: bold;"> &nbsp; {{discoveredEnvRating.OSRating }} </span> <i class="material-icons networkCheck_inlineIcon">check</i> ({{ osName }}) </mat-list-item>
     <mat-divider></mat-divider>
-    <mat-list-item *ngIf="discoveredEnvRating.OSRating === 'N/A'">OS is <span style="color: orange; font-weight: bold;"> &nbsp; {{discoveredEnvRating.OSRating }} </span> <i class="material-icons networkCheck_inlineIcon">warning</i> ({{ osName }}) </mat-list-item>
+    <mat-list-item *ngIf="discoveredEnvRating.OSRating === 'N/A'">OS is <span style="color: darkgrey; font-weight: bold;"> &nbsp; {{discoveredEnvRating.OSRating }} </span> <i class="material-icons networkCheck_inlineIcon">warning</i> ({{ osName }}) </mat-list-item>
+    <mat-divider></mat-divider>
+    <mat-list-item *ngIf="discoveredEnvRating.OSRating === 'Possibly compatible'">OS is <span style="color: orange; font-weight: bold;"> &nbsp; {{discoveredEnvRating.OSRating }}  </span> <i class="material-icons networkCheck_inlineIcon">warning</i> ({{ osName }}) </mat-list-item>
     <mat-divider></mat-divider>
     <mat-list-item *ngIf="discoveredEnvRating.OSRating === 'Not compatible'">OS is <span style="color: red; font-weight: bold;"> &nbsp; {{discoveredEnvRating.OSRating }}  </span> <i class="material-icons networkCheck_inlineIcon">error</i> ({{ osName }}) </mat-list-item>
     <mat-divider></mat-divider>
 
     <mat-list-item *ngIf="discoveredEnvRating.ResolutionRating === 'Good'">Resolution is <span style="color: darkgreen; font-weight: bold;"> &nbsp; {{discoveredEnvRating.ResolutionRating}} </span> <i class="material-icons networkCheck_inlineIcon">check</i> ({{ screenSize }})</mat-list-item>
     <mat-divider></mat-divider>
-    <mat-list-item *ngIf="discoveredEnvRating.ResolutionRating === 'N/A'">Resolution is <span style="color: orange; font-weight: bold;"> &nbsp; {{discoveredEnvRating.ResolutionRating}} </span> <i class="material-icons networkCheck_inlineIcon">warning</i> ({{ screenSize }})</mat-list-item>
+    <mat-list-item *ngIf="discoveredEnvRating.ResolutionRating === 'N/A'">Resolution is <span style="color: darkgrey; font-weight: bold;"> &nbsp; {{discoveredEnvRating.ResolutionRating}} </span> <i class="material-icons networkCheck_inlineIcon">warning</i> ({{ screenSize }})</mat-list-item>
+    <mat-divider></mat-divider>
+    <mat-list-item *ngIf="discoveredEnvRating.ResolutionRating === 'Possibly compatible'">Resolution is <span style="color: orange; font-weight: bold;"> &nbsp; {{discoveredEnvRating.ResolutionRating}} </span> <i class="material-icons networkCheck_inlineIcon">warning</i> ({{ screenSize }})</mat-list-item>
     <mat-divider></mat-divider>
     <mat-list-item *ngIf="discoveredEnvRating.ResolutionRating === 'Not compatible'">Resolution is <span style="color: red; font-weight: bold;"> &nbsp; {{discoveredEnvRating.ResolutionRating}} </span> <i class="material-icons networkCheck_inlineIcon">error</i> ({{ screenSize }})</mat-list-item>
     <mat-divider></mat-divider>
      
     <mat-list-item *ngIf="discoveredEnvRating.BrowserRating === 'Good'">Browser is <span style="color: darkgreen; font-weight: bold;">  &nbsp;{{discoveredEnvRating.BrowserRating}}  </span> <i class="material-icons networkCheck_inlineIcon">check</i>({{ result[0]  }} {{ result[1] }})</mat-list-item>
-    <mat-list-item *ngIf="discoveredEnvRating.BrowserRating === 'N/A'">Browser is <span style="color: orange; font-weight: bold;">  &nbsp;{{discoveredEnvRating.BrowserRating}}  </span> <i class="material-icons networkCheck_inlineIcon">warning</i>({{ result[0]  }} {{ result[1] }})</mat-list-item>
+    <mat-list-item *ngIf="discoveredEnvRating.BrowserRating === 'N/A'">Browser is <span style="color: darkgrey; font-weight: bold;">  &nbsp;{{discoveredEnvRating.BrowserRating}}  </span> <i class="material-icons networkCheck_inlineIcon">warning</i>({{ result[0]  }} {{ result[1] }})</mat-list-item>
+    <mat-list-item *ngIf="discoveredEnvRating.BrowserRating === 'Possibly compatible'">Browser is <span style="color: orange; font-weight: bold;">  &nbsp;{{discoveredEnvRating.BrowserRating}}  </span> <i class="material-icons networkCheck_inlineIcon">warning</i>({{ result[0]  }} {{ result[1] }})</mat-list-item>
     <mat-list-item *ngIf="discoveredEnvRating.BrowserRating === 'Not compatible'">Browser is <span style="color: red; font-weight: bold;">  &nbsp;{{discoveredEnvRating.BrowserRating}}  </span> <i class="material-icons networkCheck_inlineIcon">error</i>({{ result[0]  }} {{ result[1] }})</mat-list-item>
   </mat-list>
 
