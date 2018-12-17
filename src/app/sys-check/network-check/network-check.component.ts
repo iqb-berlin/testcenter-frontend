@@ -15,6 +15,7 @@ export class NetworkCheckComponent implements OnInit {
     downloadTest: -1,
     pingTest: -1
   };
+  networkRating: NetworkRating = 'N/A';
 
   constructor(
     private ds: SyscheckDataService,
@@ -31,11 +32,18 @@ export class NetworkCheckComponent implements OnInit {
     this.networkCheck() ;
   }
 
+
   public networkCheck() {
 
     this.testDone = false;
 
     const testResults: Array<NetworkRequestTestResult> = [];
+
+    this.averageSpeed = {
+        uploadTest: -1,
+        downloadTest: -1,
+        pingTest: -1
+      };
 
     let currentSize = 1024;
     let currentSizeIteration = 0;
@@ -93,7 +101,7 @@ export class NetworkCheckComponent implements OnInit {
         }
 
         if (shouldContinue) {
-            const timeout = currentSizeIteration * 3000; // 3000 (1st iteration), 6000 (2nd iteration), 9000 (3rd iteration)
+            const timeout = 1000 + (currentSizeIteration - 1) * 2000; // 1000 (1st iteration), 3000 (2nd iteration), 5000 (3rd iteration)
 
             if (whatIsBeingTested === 'download') {
                 updateStatus(`Downloadgeschwindigkeit wird getestet... (Testgröße: ${currentSize} bytes; Test: ${currentSizeIteration}/3)`);
@@ -136,6 +144,8 @@ export class NetworkCheckComponent implements OnInit {
             // console.log(testResults);
             // console.log(averageSpeed);
 
+            this.networkRating = this.ds.calculateNetworkRating(this.averageSpeed);
+
             updateStatus(`Die folgenden Netzwerkeigenschaften wurden festgestellt:`);
             this.testDone = true;
 
@@ -154,4 +164,21 @@ export interface AverageSpeed {
   uploadTest: number;
   downloadTest: number;
   pingTest: number;
+}
+
+export interface EnvironmentData {
+  osName: string;
+  // osVersion: string;
+  browserName: string;
+  browserVersion: string;
+  resolution: {
+    height: number;
+    width: number;
+  };
+}
+
+export interface EnvironmentRating {
+  OSRating: 'N/A' | 'Good'| 'Not compatible' | 'Possibly compatible';
+  ResolutionRating: 'N/A' | 'Good'| 'Not compatible' | 'Possibly compatible';
+  BrowserRating: 'N/A' | 'Good'| 'Not compatible' | 'Possibly compatible';
 }

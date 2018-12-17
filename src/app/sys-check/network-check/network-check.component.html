@@ -18,6 +18,21 @@
     Ping: {{averageSpeed.pingTest | number}} ms
   </p>
 
+  <!-- network rating in simpler terms -->
+  <p *ngIf="networkRating === 'insufficient'">
+    Ihre Verbindung zum Testserver ist: <span style="color: red; font-weight: bold;">unzureichend <i class="material-icons networkCheck_inlineIcon">error</i></span>
+  </p>
+
+  <p *ngIf="networkRating === 'ok'">
+    Ihre Verbindung zum Testserver ist: <span style="color: orange; font-weight: bold;">ok <i class="material-icons networkCheck_inlineIcon">warning</i></span>
+  </p>
+
+  <p *ngIf="networkRating === 'good'">
+    Ihre Verbindung zum Testserver ist: <span style="color: green; font-weight: bold;">gut <i class="material-icons networkCheck_inlineIcon">check</i></span>
+  </p>
+
+  <!-- end of network rating in simpler terms -->
+
   <p>
       <button mat-raised-button (click)="startCheck()" *ngIf="testDone">Netz erneut prüfen</button>
   </p>

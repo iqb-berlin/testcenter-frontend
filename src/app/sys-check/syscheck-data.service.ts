@@ -1,6 +1,7 @@
 import { CheckConfigData } from './backend.service';
 import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { e } from '@angular/core/src/render3';
 
 @Injectable({
   providedIn: 'root'
@@ -34,11 +35,65 @@ export class SyscheckDataService {
       }
     });
   }
+
+  public calculateNetworkRating(nd: NetworkData): NetworkRating {
+
+    /*
+
+    <1MB download und <0.5 MB upload ---> insufficient (~ < 8Mb download; ~ < 4Mb upload)
+    1-10 MB download; 0.5 - 5 MB upload ---> ok (8-80 Mb download; 4-40 Mb upload)
+    > 10 MB download; > 0.5 MB upload; ----> good (> 80 Mb download; > 40 Mb upload;)
+
+    */
+
+    if ((nd.downloadTest < 1024 * 1024) || (nd.uploadTest < 1024 * 512)) {
+        return 'insufficient';
+    } else {
+        if ((nd.downloadTest < 1024 * 1024 * 10) || (nd.uploadTest < 1024 * 1024 * 5)) {
+          return 'ok';
+        } else {
+          return 'good';
+        }
+    }
+  }
+
+  public calculateEnvironmentRating(ed: EnvironmentData): EnvironmentRating  {
+    let ratings: EnvironmentRating = {
+      OSRating: 'N/A',
+      ResolutionRating: 'N/A',
+      BrowserRating: 'N/A'
+    };
+
+    if(ed.osName === "Windows 7" || ed.osName === "Windows 10" || ed.osName === "Windows 8" || ed.osName === "Mac/iOS") {
+      ratings.OSRating = 'Good';
+    } else if (ed.osName === "Windows Vista" || ed.osName === "Linux" || ed.osName === "UNIX") {
+      ratings.OSRating = 'Possibly compatible';
+    } else {
+      ratings.OSRating = 'Not compatible';
+    }
+
+    if(ed.browserName.indexOf("Chrome") || ed.browserName.indexOf("Mozilla"))
+      if(parseInt(ed.browserVersion) >= 60) {
+        ratings.BrowserRating = 'Good'
+      }
+      else {
+      ratings.BrowserRating = 'Not compatible'
+    }
+
+    if(ed.resolution.width >= 1024 && ed.resolution.height >= 768) {
+      ratings.ResolutionRating = 'Good'
+    } else {
+      ratings.ResolutionRating =  'Not compatible'
+    }
+    return ratings;
+  }
+
 }
 
-export interface ReportEntry {
-  label: string;
-  value: string;
+export interface NetworkData {
+  uploadTest: number;
+  downloadTest: number;
+  pingTest: number;
 }
 
 export interface NetworkRequestTestResult {
@@ -46,3 +101,11 @@ export interface NetworkRequestTestResult {
   'size': number;
   'duration': number;
 }
+
+export type NetworkRating = 'N/A' | 'insufficient' | 'ok' | 'good';
+
+export interface ReportEntry {
+  label: string;
+  value: string;
+}
+
