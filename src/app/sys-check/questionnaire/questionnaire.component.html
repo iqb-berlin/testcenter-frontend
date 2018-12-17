@@ -2,22 +2,18 @@
   <mat-spinner></mat-spinner>
 </div>
 <div class="step-body" #questionnaireBody>
-<!--  <div [formGroup]="form">
-    <div *ngFor="let f of formdef">
+  <div [formGroup]="form" class="formList" fxLayout="column">
+    <div *ngFor="let f of formdef" fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="left top" class="formEntry">
       <label>{{f.prompt}}</label>
 
-      <div [ngSwitch]="f.type">
-
-        <input *ngSwitchCase="'text'" [formControlName]="f.id"
-                [id]="f.id" [type]="t.type">
-
-        <select [id]="f.id" *ngSwitchCase="'singleselectlist'" [formControlName]="f.id">
-          <option *ngFor="let opt of f.options">{{opt}}</option>
-        </select>
-
-      </div>
-
-      <div class="errorMessage" *ngIf="!isValid">{{f.prompt}} is required</div>
+      <mat-form-field class="field" [ngSwitch]="f.type" *ngIf="f.type !== 'header'">
+        <input matInput *ngSwitchCase="'string'" [formControlName]="f.id">
+        <mat-select [id]="f.id" *ngSwitchCase="'select'" [formControlName]="f.id">
+          <mat-option *ngFor="let opt of f.options" [value]="opt">
+            {{opt}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
-  </div>-->
+  </div>
 </div>

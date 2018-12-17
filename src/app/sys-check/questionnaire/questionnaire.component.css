@@ -12,3 +12,16 @@
   left: 15px;
   right: 15px;
 }
+
+.formList {
+  margin: 30px;
+  max-width: 800px;
+}
+
+.formEntry {
+  margin: 10px 0 0 0;
+}
+
+.field {
+  width: 200px;
+}

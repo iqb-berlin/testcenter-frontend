@@ -2,6 +2,10 @@
   <mat-spinner></mat-spinner>
 </div>
 <div class="step-body">
-  <p>report works not.</p>
-
+  <h2>Computer-Info</h2>
+  <p *ngFor="let rd of environmentData">{{ rd.label }}: {{ rd.value }}</p>
+  <h2>Netzwerk-Info</h2>
+  <p *ngFor="let rd of networkData">{{ rd.label }}: {{ rd.value }}</p>
+  <h2>Fragen</h2>
+  <p *ngFor="let rd of questionnaireData">{{ rd.label }}: {{ rd.value }}</p>
 </div>

@@ -11,10 +11,10 @@
       <form [formGroup]="testtakerloginform" (ngSubmit)="testtakerlogin()">
         <mat-card-title>Anmelden</mat-card-title>
         <mat-card-content>
-          <mat-form-field class="full-width">
+          <mat-form-field>
             <input matInput formControlName="testname" placeholder="Anmeldename" (keyup.enter)="pw.focus()">
           </mat-form-field>
-          <mat-form-field class="full-width">
+          <mat-form-field>
             <input matInput #pw type="password" formControlName="testpw" placeholder="Kennwort" (keyup.enter)="testtakerlogin()">
           </mat-form-field>
         </mat-card-content>
@@ -29,7 +29,7 @@
       <form [formGroup]="codeinputform" (ngSubmit)="codeinput()">
         <mat-card-title>Anmelden</mat-card-title>
         <mat-card-content>
-          <mat-form-field class="full-width">
+          <mat-form-field>
             <input matInput formControlName="code" placeholder="Personen-Code"(keyup.enter)="codeinput()">
           </mat-form-field>
         </mat-card-content>

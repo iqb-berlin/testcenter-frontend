@@ -9,10 +9,11 @@ import { StartComponent } from './start.component';
 import { RunComponent } from './run.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule, MatCardModule, MatStepperModule,
-  MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule,
+  MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule,
   MatTabsModule, MatProgressSpinnerModule } from '@angular/material';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { EnvironmentCheckComponent } from './environment-check/environment-check.component';
 import { NetworkCheckComponent } from './network-check/network-check.component';
@@ -25,12 +26,17 @@ import { ReportComponent } from './report/report.component';
     CommonModule,
     MatCardModule,
     FlexLayoutModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
     SysCheckRoutingModule,
     MatProgressSpinnerModule,
     MatStepperModule,
     MatButtonModule,
     MatDividerModule,
-    MatListModule
+    MatListModule,
+    MatSelectModule,
+    ReactiveFormsModule
   ],
   declarations: [
     StartComponent,
