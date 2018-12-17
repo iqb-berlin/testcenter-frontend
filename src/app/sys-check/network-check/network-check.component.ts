@@ -1,4 +1,4 @@
-import { SyscheckDataService, NetworkRequestTestResult } from './../syscheck-data.service';
+import { SyscheckDataService, NetworkRequestTestResult, ReportEntry } from './../syscheck-data.service';
 import { Component, OnInit } from '@angular/core';
 import { BackendService, RequestBenchmarkerFunction, RequestBenchmarkerFunctionCallback} from '../backend.service';
 
@@ -139,11 +139,10 @@ export class NetworkCheckComponent implements OnInit {
             updateStatus(`Die folgenden Netzwerkeigenschaften wurden festgestellt:`);
             this.testDone = true;
 
-            // this.ds.networkData$.next({
-               //  'uploadTest': this.averageSpeed.uploadTest,
-//                 'downloadTest': this.averageSpeed.downloadTest,
-   //              'pingTest': this.averageSpeed.pingTest
-      //       });
+            // send data for reporting
+            const myReport: ReportEntry[] = [];
+            myReport.push({'label': 'lalala', 'value': 'sososo'});
+            this.ds.networkData$.next(myReport);
 
         });
     });

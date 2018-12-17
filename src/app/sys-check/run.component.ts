@@ -36,9 +36,7 @@ export class RunComponent implements OnInit {
     this.ds.unitcheckAvailable$.subscribe(is => this.unitcheckAvailable = is);
     this.ds.questionnaireAvailable$.subscribe(is => this.questionnaireAvailable = is);
     this.ds.networkData$.subscribe(nd => {
-      if (nd !== null) {
-        this.stepNetwork.completed = true;
-      }
+      this.stepNetwork.completed = nd.length > 0;
     });
 
     this.stepper.linear = true;

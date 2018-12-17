@@ -21,8 +21,8 @@ export class SyscheckDataService {
 
   constructor() {
     this.checkConfig$.subscribe(cDef => {
-      this.environmentData$.next(null);
-      this.networkData$.next(null);
+      this.environmentData$.next([]);
+      this.networkData$.next([]);
       if (cDef === null) {
         this.reportWithEmail$.next(false);
         this.unitcheckAvailable$.next(false);
