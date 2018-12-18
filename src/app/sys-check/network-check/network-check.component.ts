@@ -16,7 +16,12 @@ export class NetworkCheckComponent implements OnInit {
     downloadTest: -1,
     pingTest: -1
   };
-  networkRating: NetworkRating = 'N/A';
+  networkRating: NetworkRating = {
+    downloadRating: 'N/A',
+    uploadRating: 'N/A',
+    pingRating: 'N/A',
+    overallRating: 'N/A'
+};
 
   constructor(
     private ds: SyscheckDataService,
@@ -144,10 +149,18 @@ export class NetworkCheckComponent implements OnInit {
 
             // send data for reporting
             const myReport: ReportEntry[] = [];
-            myReport.push({'label': 'download', 'value': this.averageSpeed.downloadTest.toLocaleString()});
-            myReport.push({'label': 'upload', 'value': this.averageSpeed.uploadTest.toLocaleString()});
-            myReport.push({'label': 'ping', 'value': this.averageSpeed.pingTest.toLocaleString()});
-            myReport.push({'label': 'Bewertung', 'value': this.networkRating});
+    
+            myReport.push({'label': 'Downloadgeschwindigkeit', 'value': this.averageSpeed.downloadTest.toLocaleString()});
+            myReport.push({'label': 'Downloadbewertung', 'value': this.networkRating.downloadRating});
+
+            myReport.push({'label': 'Uploadgeschwindigkeit', 'value': this.averageSpeed.uploadTest.toLocaleString()});
+            myReport.push({'label': 'Uploadbewertung', 'value': this.networkRating.uploadRating});
+
+            myReport.push({'label': 'Ping', 'value': this.averageSpeed.pingTest.toLocaleString()});
+            myReport.push({'label': 'Ping-Bewertung', 'value': this.networkRating.pingRating});
+    
+            myReport.push({'label': 'Allgemeine Bewertung der Verbindung zum Server', 'value': this.networkRating.overallRating});
+    
             this.ds.networkData$.next(myReport);
 
         });
@@ -155,32 +168,64 @@ export class NetworkCheckComponent implements OnInit {
   }
 
   public calculateNetworkRating(nd: NetworkData): NetworkRating {
+        // assumes that this.ds.checkConfig$ is already set;
 
-    /*
+        const testConfig = this.ds.checkConfig$.getValue();
+        // console.log('Test configuration used to calculate network compatibility with the Test Center:');
+        // console.log(testConfig);
 
-    <1MB download und <0.5 MB upload ---> insufficient (~ < 8Mb download; ~ < 4Mb upload)
-    1-10 MB download; 0.5 - 5 MB upload ---> ok (8-80 Mb download; 4-40 Mb upload)
-    > 10 MB download; > 0.5 MB upload; ----> good (> 80 Mb download; > 40 Mb upload;)
-
-    */
-
-    // assumes that this.ds.checkConfig$ is already set;
-
-    const testConfig = this.ds.checkConfig$.getValue();
-    console.log('Test configuration used to calculate network compatibility with the Test Center:');
-    console.log(testConfig);
-
-    if ((nd.downloadTest < testConfig.downloadMinimum) || (nd.uploadTest < testConfig.uploadMinimum)) {
-        return 'insufficient';
-    } else {
-        if ((nd.downloadTest < testConfig.downloadGood) || (nd.uploadTest < testConfig.uploadGood)) {
-          return 'ok';
-        } else {
-          return 'good';
+        const awardedNetworkRating: NetworkRating = {
+            downloadRating: 'N/A',
+            uploadRating: 'N/A',
+            pingRating: 'N/A',
+            overallRating: 'N/A'
         }
-    }
-  }
 
+        // the ratings are calculated individually, by a "how low can you go" approach
+
+        awardedNetworkRating.downloadRating = 'good';
+        if (nd.downloadTest < testConfig.downloadGood) {
+            awardedNetworkRating.downloadRating = 'ok';
+        }
+        if (nd.downloadTest < testConfig.downloadMinimum) {
+            awardedNetworkRating.downloadRating = 'insufficient';
+        }
+
+        awardedNetworkRating.uploadRating = 'good';
+        if (nd.uploadTest < testConfig.downloadGood) { 
+            awardedNetworkRating.uploadRating = 'ok';
+        }
+        if (nd.uploadTest < testConfig.downloadMinimum) { 
+            awardedNetworkRating.uploadRating = 'insufficient';
+        }
+
+        awardedNetworkRating.pingRating = 'good';
+        if (nd.pingTest > testConfig.downloadGood) {
+            awardedNetworkRating.pingRating = 'ok';
+        }
+        if (nd.pingTest > testConfig.downloadMinimum) { 
+            awardedNetworkRating.pingRating = 'insufficient';
+        }
+
+        awardedNetworkRating.overallRating = 'good';
+        if (awardedNetworkRating.downloadRating === 'ok' || 
+            awardedNetworkRating.uploadRating === 'ok' ||
+            awardedNetworkRating.pingRating === 'ok') {
+
+            // if at least one rating is lower than good, then the overall network rating is also lower than good
+            awardedNetworkRating.overallRating = 'ok';
+        }
+
+        if (awardedNetworkRating.downloadRating === 'insufficient' || 
+            awardedNetworkRating.uploadRating === 'insufficient' ||
+            awardedNetworkRating.pingRating === 'insufficient') {
+
+            // if at least one rating is lower than good, then the overall rating is also lower than good
+            awardedNetworkRating.overallRating = 'insufficient';
+        }
+
+        return awardedNetworkRating;
+    }
 }
 
 export interface AverageSpeed {
@@ -196,5 +241,12 @@ export interface NetworkData {
     pingTest: number;
   }
 
-  export type NetworkRating = 'N/A' | 'insufficient' | 'ok' | 'good';
+  export type TechCheckRating = 'N/A' | 'insufficient' | 'ok' | 'good';
+
+  export interface NetworkRating {
+    uploadRating: TechCheckRating;
+    downloadRating: TechCheckRating;
+    pingRating: TechCheckRating;
+    overallRating: TechCheckRating;
+ } 
 
