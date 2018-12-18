@@ -7,7 +7,7 @@
   </div>
 
   <div *ngIf="testDone">
-    <p [ngSwitch]="networkRating">Ihre Verbindung zum Testserver ist
+    <p [ngSwitch]="networkRating.overallRating">Ihre Verbindung zum Testserver ist
       <span *ngSwitchCase="'insufficient'" style="color: red; font-weight: bold;">unzureichend <i class="material-icons">error</i></span>
       <span *ngSwitchCase="'ok'" style="color: orange; font-weight: bold;">vorauss. ausreichend (bes. Vorsichtsmaßnahmen treffen!) <i class="material-icons">warning</i></span>
       <span *ngSwitchCase="'good'" style="color: green; font-weight: bold;">gut <i class="material-icons">check</i></span>

@@ -244,9 +244,9 @@ export interface NetworkData {
   export type TechCheckRating = 'N/A' | 'insufficient' | 'ok' | 'good';
 
   export interface NetworkRating {
-    uploadRating: TechCheckRating
-    downloadRating: TechCheckRating
-    pingRating: TechCheckRating
-    overallRating: TechCheckRating
+    uploadRating: TechCheckRating;
+    downloadRating: TechCheckRating;
+    pingRating: TechCheckRating;
+    overallRating: TechCheckRating;
  } 
 
