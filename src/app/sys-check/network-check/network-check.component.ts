@@ -149,7 +149,7 @@ export class NetworkCheckComponent implements OnInit {
 
             // send data for reporting
             const myReport: ReportEntry[] = [];
-    
+
             myReport.push({'label': 'Downloadgeschwindigkeit', 'value': this.averageSpeed.downloadTest.toLocaleString()});
             myReport.push({'label': 'Downloadbewertung', 'value': this.networkRating.downloadRating});
 
@@ -158,9 +158,9 @@ export class NetworkCheckComponent implements OnInit {
 
             myReport.push({'label': 'Ping', 'value': this.averageSpeed.pingTest.toLocaleString()});
             myReport.push({'label': 'Ping-Bewertung', 'value': this.networkRating.pingRating});
-    
+
             myReport.push({'label': 'Allgemeine Bewertung der Verbindung zum Server', 'value': this.networkRating.overallRating});
-    
+
             this.ds.networkData$.next(myReport);
 
         });
@@ -179,7 +179,7 @@ export class NetworkCheckComponent implements OnInit {
             uploadRating: 'N/A',
             pingRating: 'N/A',
             overallRating: 'N/A'
-        }
+        };
 
         // the ratings are calculated individually, by a "how low can you go" approach
 
@@ -192,10 +192,10 @@ export class NetworkCheckComponent implements OnInit {
         }
 
         awardedNetworkRating.uploadRating = 'good';
-        if (nd.uploadTest < testConfig.downloadGood) { 
+        if (nd.uploadTest < testConfig.downloadGood) {
             awardedNetworkRating.uploadRating = 'ok';
         }
-        if (nd.uploadTest < testConfig.downloadMinimum) { 
+        if (nd.uploadTest < testConfig.downloadMinimum) {
             awardedNetworkRating.uploadRating = 'insufficient';
         }
 
@@ -203,12 +203,12 @@ export class NetworkCheckComponent implements OnInit {
         if (nd.pingTest > testConfig.downloadGood) {
             awardedNetworkRating.pingRating = 'ok';
         }
-        if (nd.pingTest > testConfig.downloadMinimum) { 
+        if (nd.pingTest > testConfig.downloadMinimum) {
             awardedNetworkRating.pingRating = 'insufficient';
         }
 
         awardedNetworkRating.overallRating = 'good';
-        if (awardedNetworkRating.downloadRating === 'ok' || 
+        if (awardedNetworkRating.downloadRating === 'ok' ||
             awardedNetworkRating.uploadRating === 'ok' ||
             awardedNetworkRating.pingRating === 'ok') {
 
@@ -216,7 +216,7 @@ export class NetworkCheckComponent implements OnInit {
             awardedNetworkRating.overallRating = 'ok';
         }
 
-        if (awardedNetworkRating.downloadRating === 'insufficient' || 
+        if (awardedNetworkRating.downloadRating === 'insufficient' ||
             awardedNetworkRating.uploadRating === 'insufficient' ||
             awardedNetworkRating.pingRating === 'insufficient') {
 
@@ -248,5 +248,5 @@ export interface NetworkData {
     downloadRating: TechCheckRating;
     pingRating: TechCheckRating;
     overallRating: TechCheckRating;
- } 
+ }
 
