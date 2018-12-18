@@ -20,7 +20,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   @ViewChild('iFrameHost') iFrameHostElement: ElementRef;
   unitcheckEnabled = false;
 
-  private iFrameItemplayer: HTMLIFrameElement;
+  private iFrameItemplayer: HTMLIFrameElement = null;
   private postMessageSubscription: Subscription = null;
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
@@ -37,6 +37,9 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     private bs: BackendService,
     private lds: LogindataService
   ) {
+  }
+
+  ngOnInit() {
     this.itemplayerPageRequest$.subscribe((newPage: string) => {
       if (newPage.length > 0) {
         this.postMessageTarget.postMessage({
@@ -114,10 +117,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
         }
       }
     });
-  }
-
-  ngOnInit() {
-    this.iFrameItemplayer = null;
   }
 
   // // // // // // // // // // // // // // // // // // // // // // // //
