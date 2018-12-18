@@ -1,40 +1,42 @@
-<!--
-<div class="spinner-container" *ngIf="dataLoading">
-</div>
--->
-
-<p>{{this.status}}</p>
-
-<div *ngIf="!testDone">
-  <p>
+<div  class="spinner-container" *ngIf="!testDone">
     <mat-spinner></mat-spinner>
-  </p>
 </div>
+<div class="step-body">
+  <div *ngIf="!testDone">
+    <p>{{this.status}}</p>
+  </div>
 
-<div *ngIf="testDone">
-  <p>
-    Downloadgeschwindigkeit: {{averageSpeed.downloadTest | number}} bytes pro Sekunde<br>
-    Uploadgeschwindigkeit: {{averageSpeed.uploadTest | number}} bytes pro Sekunde<br >
-    Ping: {{averageSpeed.pingTest | number}} ms
-  </p>
+  <div *ngIf="testDone">
+    <p [ngSwitch]="networkRating">Ihre Verbindung zum Testserver ist
+      <span *ngSwitchCase="'insufficient'" style="color: red; font-weight: bold;">unzureichend <i class="material-icons">error</i></span>
+      <span *ngSwitchCase="'ok'" style="color: orange; font-weight: bold;">vorauss. ausreichend (bes. Vorsichtsmaßnahmen treffen!) <i class="material-icons">warning</i></span>
+      <span *ngSwitchCase="'good'" style="color: green; font-weight: bold;">gut <i class="material-icons">check</i></span>
+      &nbsp;<button mat-raised-button (click)="startCheck()">Netz erneut prüfen</button>
+    </p>
+  </div>
 
-  <!-- network rating in simpler terms -->
-  <p *ngIf="networkRating === 'insufficient'">
-    Ihre Verbindung zum Testserver ist: <span style="color: red; font-weight: bold;">unzureichend <i class="material-icons networkCheck_inlineIcon">error</i></span>
-  </p>
 
-  <p *ngIf="networkRating === 'ok'">
-    Ihre Verbindung zum Testserver ist: <span style="color: orange; font-weight: bold;">ok, aber vorsichtig <i class="material-icons networkCheck_inlineIcon">warning</i></span>
-  </p>
+  <mat-card>
+    <mat-card-title>Geschwindigkeit Download</mat-card-title>
+    <mat-card-content>
+      <p *ngIf="averageSpeed.downloadTest >= 0">{{ averageSpeed.downloadTest | number }} bytes pro Sekunde</p>
+      <p *ngIf="averageSpeed.downloadTest < 0">bitte warten</p>
+    </mat-card-content>
+  </mat-card>
 
-  <p *ngIf="networkRating === 'good'">
-    Ihre Verbindung zum Testserver ist: <span style="color: green; font-weight: bold;">gut <i class="material-icons networkCheck_inlineIcon">check</i></span>
-  </p>
+  <mat-card>
+    <mat-card-title>Geschwindigkeit Upload</mat-card-title>
+    <mat-card-content>
+      <p *ngIf="averageSpeed.uploadTest >= 0">{{ averageSpeed.uploadTest | number }} bytes pro Sekunde</p>
+      <p *ngIf="averageSpeed.uploadTest < 0">bitte warten</p>
+    </mat-card-content>
+  </mat-card>
 
-  <!-- end of network rating in simpler terms -->
-
-  <p>
-      <button mat-raised-button (click)="startCheck()" *ngIf="testDone">Netz erneut prüfen</button>
-  </p>
-
+  <mat-card>
+    <mat-card-title>Ping</mat-card-title>
+    <mat-card-content>
+      <p *ngIf="averageSpeed.pingTest >= 0">{{ averageSpeed.pingTest | number }} ms</p>
+      <p *ngIf="averageSpeed.pingTest < 0">bitte warten</p>
+    </mat-card-content>
+  </mat-card>
 </div>

@@ -11,6 +11,5 @@
   display: block;
   left: 15px;
   right: 15px;
-  overflow-y: auto;
-  overflow-x: scroll;
+  overflow: auto;
 }

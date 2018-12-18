@@ -10,7 +10,7 @@ import { RunComponent } from './run.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule, MatCardModule, MatStepperModule,
   MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-  MatTabsModule, MatProgressSpinnerModule } from '@angular/material';
+  MatTabsModule, MatProgressSpinnerModule, MatSnackBarModule } from '@angular/material';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -20,6 +20,7 @@ import { NetworkCheckComponent } from './network-check/network-check.component';
 import { UnitCheckComponent } from './unit-check/unit-check.component';
 import { QuestionnaireComponent } from './questionnaire/questionnaire.component';
 import { ReportComponent } from './report/report.component';
+import { EmailComponent } from './report/email/email.component';
 
 @NgModule({
   imports: [
@@ -36,6 +37,8 @@ import { ReportComponent } from './report/report.component';
     MatDividerModule,
     MatListModule,
     MatSelectModule,
+    MatSnackBarModule,
+    MatDialogModule,
     ReactiveFormsModule
   ],
   declarations: [
@@ -46,9 +49,13 @@ import { ReportComponent } from './report/report.component';
     UnitCheckComponent,
     QuestionnaireComponent,
     ResizeIFrameChildDirective,
-    ReportComponent],
+    ReportComponent,
+    EmailComponent],
   exports: [
     StartComponent
+  ],
+  entryComponents: [
+    EmailComponent
   ],
   providers: [
     BackendService,

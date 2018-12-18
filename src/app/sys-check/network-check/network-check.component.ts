@@ -28,14 +28,6 @@ export class NetworkCheckComponent implements OnInit {
   }
 
   public startCheck() {
-    console.log('started');
-
-    this.networkCheck() ;
-  }
-
-
-  public networkCheck() {
-
     this.testDone = false;
 
     const testResults: Array<NetworkRequestTestResult> = [];

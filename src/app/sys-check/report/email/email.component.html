@@ -1,0 +1,19 @@
+<form [formGroup]="emailreportform">
+  <h1 mat-dialog-title>Bericht senden</h1>
+
+  <mat-dialog-content fxLayout="column">
+    <p>Der Bericht wird an eine vorbereitete E-Mail-Adresse geschickt, die Sie aus Sicherheitsgründen
+      nicht ändern können. Um den Bericht einem bestimmten Projekt oder einer Studie zuordnen zu können,
+      geben Sie bitte einen kurzen Text ein, der dann als Betreff für die E-Mail verwendet wird!
+    </p>
+    <mat-form-field>
+      <input matInput formControlName="subject" placeholder="Betreff">
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" type="submit"
+        [disabled]="emailreportform.invalid" [mat-dialog-close]="emailreportform">Senden</button>
+    <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
+  </mat-dialog-actions>
+</form>

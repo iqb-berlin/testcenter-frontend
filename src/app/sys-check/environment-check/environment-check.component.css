@@ -1,0 +1,23 @@
+mat-card-content {
+  margin-left: 30px;
+}
+
+.material-icons {
+  position: relative;
+  top: 6px;
+}
+
+.step-body {
+  position: absolute;
+  width: auto;
+  top: 70px;
+  bottom: 15px;
+  padding: 0px;
+  margin-bottom: 20px;
+  height: auto;
+  background-color: white;
+  display: block;
+  left: 15px;
+  right: 15px;
+  overflow: auto;
+}

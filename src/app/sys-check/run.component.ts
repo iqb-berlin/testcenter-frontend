@@ -1,3 +1,4 @@
+import { EmailComponent } from './report/email/email.component';
 import { NetworkCheckComponent } from './network-check/network-check.component';
 import { SyscheckDataService } from './syscheck-data.service';
 import { BehaviorSubject } from 'rxjs';
@@ -7,6 +8,7 @@ import { CheckConfigData, BackendService } from './backend.service';
 import { MatStepper, MatStep } from '../../../node_modules/@angular/material';
 import { UnitCheckComponent } from './unit-check/unit-check.component';
 import { EnvironmentCheckComponent } from './environment-check/environment-check.component';
+import { MatDialog, MatSnackBar } from '@angular/material';
 
 
 @Component({
@@ -24,7 +26,6 @@ export class RunComponent implements OnInit {
   @ViewChild('compUnit') compUnit: UnitCheckComponent;
 
   paramId: string;
-
   unitcheckAvailable = false;
   questionnaireAvailable = false;
   emailEnabled = false;
@@ -33,7 +34,9 @@ export class RunComponent implements OnInit {
   constructor(
     private bs: BackendService,
     private ds: SyscheckDataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private emailDialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {
   }
 
@@ -100,5 +103,18 @@ export class RunComponent implements OnInit {
         this.compEnv.startCheck();
     }
 
+  }
+
+  reportEmail() {
+    const dialogRef = this.emailDialog.open(EmailComponent, {
+      width: '500px',
+      height: '500px',
+      data: 'jojo'
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== false) {
+        this.snackBar.open('E-Mail versendet.', '', {duration: 3000});
+      }
+    });
   }
 }
