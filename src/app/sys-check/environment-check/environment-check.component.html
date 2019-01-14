@@ -3,38 +3,20 @@
     <mat-card-title>Betriebssystem</mat-card-title>
     <mat-card-content>
       <p>{{ osName }}</p>
-      <p [ngSwitch]="discoveredEnvRating.OSRating">
-        <span *ngSwitchCase="'Good'" style="color: darkgreen; font-weight: bold;">gut <i class="material-icons">check</i></span>
-        <span *ngSwitchCase="'N/A'" style="color: darkgrey; font-weight: bold;">konnte nicht ermittelt werden <i class="material-icons">warning</i></span>
-        <span *ngSwitchCase="'Possibly compatible'" style="color: orange; font-weight: bold;">ausreichend <i class="material-icons">warning</i></span>
-        <span *ngSwitchCase="'Not compatible'" style="color: red; font-weight: bold;">nicht ausreichend <i class="material-icons">error</i></span>
-      </p>
     </mat-card-content>
   </mat-card>
 
   <mat-card>
     <mat-card-title>Bildschirm-Auflösung</mat-card-title>
     <mat-card-content>
-      <p>{{ discoveredEnvData.resolution.width }} x {{ discoveredEnvData.resolution.height }} px</p>
-      <p [ngSwitch]="discoveredEnvRating.ResolutionRating">
-        <span *ngSwitchCase="'Good'" style="color: darkgreen; font-weight: bold;">gut <i class="material-icons">check</i></span>
-        <span *ngSwitchCase="'N/A'" style="color: darkgrey; font-weight: bold;">konnte nicht ermittelt werden <i class="material-icons">warning</i></span>
-        <span *ngSwitchCase="'Possibly compatible'" style="color: orange; font-weight: bold;">ausreichend <i class="material-icons">warning</i></span>
-        <span *ngSwitchCase="'Not compatible'" style="color: red; font-weight: bold;">nicht ausreichend <i class="material-icons">error</i></span>
-      </p>
+      <p>{{ screenSizeText }} px</p>
     </mat-card-content>
   </mat-card>
 
   <mat-card>
     <mat-card-title>Browser</mat-card-title>
     <mat-card-content>
-      <p>{{ result[0]  }} {{ result[1] }}</p>
-      <p [ngSwitch]="discoveredEnvRating.BrowserRating">
-        <span *ngSwitchCase="'Good'" style="color: darkgreen; font-weight: bold;">gut <i class="material-icons">check</i></span>
-        <span *ngSwitchCase="'N/A'" style="color: darkgrey; font-weight: bold;">konnte nicht ermittelt werden <i class="material-icons">warning</i></span>
-        <span *ngSwitchCase="'Possibly compatible'" style="color: orange; font-weight: bold;">ausreichend <i class="material-icons">warning</i></span>
-        <span *ngSwitchCase="'Not compatible'" style="color: red; font-weight: bold;">nicht ausreichend <i class="material-icons">error</i></span>
-      </p>
+      <p>{{ browserVersion }}</p>
     </mat-card-content>
   </mat-card>
 </div>

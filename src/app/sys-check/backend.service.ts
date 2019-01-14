@@ -20,7 +20,7 @@ export class BackendService {
       label: 'Basistest',
       formdef: [],
       unit: '',
-      email: false,
+      saveEnabled: false,
       downloadMinimum: 1024 * 1024,
       downloadGood: 1024 * 1024 * 10,
       uploadMinimum: 1024 * 512,
@@ -202,7 +202,7 @@ export interface CheckConfigData {
   label: string;
   formdef: FormDefEntry[];
   unit: string;
-  email: boolean;
+  saveEnabled: boolean;
   uploadMinimum: number;
   uploadGood: number;
   downloadMinimum: number;

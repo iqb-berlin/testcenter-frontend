@@ -1,20 +1,19 @@
+import { SaveReportComponent } from './save-report.component';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EmailComponent } from './email.component';
-
 describe('EmailComponent', () => {
-  let component: EmailComponent;
-  let fixture: ComponentFixture<EmailComponent>;
+  let component: SaveReportComponent;
+  let fixture: ComponentFixture<SaveReportComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EmailComponent ]
+      declarations: [ SaveReportComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EmailComponent);
+    fixture = TestBed.createComponent(SaveReportComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -20,7 +20,7 @@ import { NetworkCheckComponent } from './network-check/network-check.component';
 import { UnitCheckComponent } from './unit-check/unit-check.component';
 import { QuestionnaireComponent } from './questionnaire/questionnaire.component';
 import { ReportComponent } from './report/report.component';
-import { EmailComponent } from './report/email/email.component';
+import { SaveReportComponent } from './report/save-report/save-report.component';
 
 @NgModule({
   imports: [
@@ -50,12 +50,12 @@ import { EmailComponent } from './report/email/email.component';
     QuestionnaireComponent,
     ResizeIFrameChildDirective,
     ReportComponent,
-    EmailComponent],
+    SaveReportComponent],
   exports: [
     StartComponent
   ],
   entryComponents: [
-    EmailComponent
+    SaveReportComponent
   ],
   providers: [
     BackendService,

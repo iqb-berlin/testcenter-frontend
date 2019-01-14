@@ -1,4 +1,4 @@
-import { EmailComponent } from './report/email/email.component';
+import { SaveReportComponent } from './report/save-report/save-report.component';
 import { NetworkCheckComponent } from './network-check/network-check.component';
 import { SyscheckDataService } from './syscheck-data.service';
 import { BehaviorSubject } from 'rxjs';
@@ -35,7 +35,7 @@ export class RunComponent implements OnInit {
     private bs: BackendService,
     private ds: SyscheckDataService,
     private route: ActivatedRoute,
-    private emailDialog: MatDialog,
+    private saveDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
   }
@@ -96,24 +96,22 @@ export class RunComponent implements OnInit {
       }
     } else if (e.selectedStep === this.stepNetwork) {
       if (!this.stepNetwork.completed) {
-        this.compNetwork.startCheck();
+        // this.compNetwork.startCheck();
         this.stepNetwork.completed = true;
       }
-    } else if (e.selectedStep === this.stepEnv) {
-        this.compEnv.startCheck();
     }
 
   }
 
-  reportEmail() {
-    const dialogRef = this.emailDialog.open(EmailComponent, {
+  saveReport() {
+    const dialogRef = this.saveDialog.open(SaveReportComponent, {
       width: '500px',
-      height: '500px',
+      height: '600px',
       data: 'jojo'
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result !== false) {
-        this.snackBar.open('E-Mail versendet.', '', {duration: 3000});
+        this.snackBar.open('Bericht gespeichert.', '', {duration: 3000});
       }
     });
   }

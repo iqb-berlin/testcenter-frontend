@@ -31,7 +31,7 @@ export class SyscheckDataService {
         this.unitcheckAvailable$.next(false);
         this.questionnaireAvailable$.next(false);
       } else {
-        this.reportWithEmail$.next(cDef.email);
+        this.reportWithEmail$.next(cDef.saveEnabled);
         this.unitcheckAvailable$.next(cDef.unit.length > 0);
         this.questionnaireAvailable$.next(cDef.formdef.length > 0);
       }
