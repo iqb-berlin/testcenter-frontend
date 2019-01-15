@@ -91,7 +91,7 @@ export class RunComponent implements OnInit {
     if (e.selectedStep === this.stepUnit) {
       if (!this.stepUnit.completed) {
         const cd = this.ds.checkConfig$.getValue();
-        this.compUnit.loadUnit(cd.unit);
+        this.compUnit.loadUnit(cd.id);
         this.stepUnit.completed = true;
       }
     } else if (e.selectedStep === this.stepNetwork) {

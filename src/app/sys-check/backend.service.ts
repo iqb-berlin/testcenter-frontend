@@ -18,9 +18,9 @@ export class BackendService {
     {
       id: 'Basistest',
       label: 'Basistest',
-      formdef: [],
-      unit: '',
-      saveEnabled: false,
+      questions: [],
+      hasunit: false,
+      cansave: false,
       downloadMinimum: 1024 * 1024,
       downloadGood: 1024 * 1024 * 10,
       uploadMinimum: 1024 * 512,
@@ -70,14 +70,14 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public getUnitData (unitId: string): Observable<UnitData> {
+  public getUnitData (configId: string): Observable<UnitData> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<UnitData>(this.serverUrl + 'getSysCheckUnitData.php', {u: unitId}, httpOptions)
+      .post<UnitData>(this.serverUrl + 'getSysCheckUnitData.php', {c: configId}, httpOptions)
         .pipe(
           catchError(problem_data => {
             const myreturn: UnitData = null;
@@ -200,9 +200,9 @@ export interface CheckConfig {
 export interface CheckConfigData {
   id: string;
   label: string;
-  formdef: FormDefEntry[];
-  unit: string;
-  saveEnabled: boolean;
+  questions: FormDefEntry[];
+  hasunit: boolean;
+  cansave: boolean;
   uploadMinimum: number;
   uploadGood: number;
   downloadMinimum: number;
@@ -215,6 +215,7 @@ export interface FormDefEntry {
   id: string;
   type: string;
   prompt: string;
+  value: string;
   options: string[];
 }
 
@@ -222,7 +223,6 @@ export type RequestBenchmarkerFunction = (requestSize: number, timeout: number, 
 export type RequestBenchmarkerFunctionCallback = (testResult: NetworkRequestTestResult) => void;
 
 export interface UnitData {
-  id: number;
   key: string;
   label: string;
   def: string;

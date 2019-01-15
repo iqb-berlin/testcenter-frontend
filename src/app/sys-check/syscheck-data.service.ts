@@ -20,20 +20,20 @@ export class SyscheckDataService {
   public unitcheckEnabled$ = new BehaviorSubject<boolean>(false);
   public questionnaireEnabled$ = new BehaviorSubject<boolean>(false);
   public reportEnabled$ = new BehaviorSubject<boolean>(false);
-  public reportWithEmail$ = new BehaviorSubject<boolean>(false);
+  public saveReport$ = new BehaviorSubject<boolean>(false);
 
   constructor() {
     this.checkConfig$.subscribe(cDef => {
       this.networkData$.next([]);
       this.questionnaireData$.next([]);
       if (cDef === null) {
-        this.reportWithEmail$.next(false);
+        this.saveReport$.next(false);
         this.unitcheckAvailable$.next(false);
         this.questionnaireAvailable$.next(false);
       } else {
-        this.reportWithEmail$.next(cDef.saveEnabled);
-        this.unitcheckAvailable$.next(cDef.unit.length > 0);
-        this.questionnaireAvailable$.next(cDef.formdef.length > 0);
+        this.saveReport$.next(cDef.cansave);
+        this.unitcheckAvailable$.next(cDef.hasunit);
+        this.questionnaireAvailable$.next(cDef.questions.length > 0);
       }
     });
   }

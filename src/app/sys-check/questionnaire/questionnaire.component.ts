@@ -11,7 +11,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 export class QuestionnaireComponent implements OnInit {
   @ViewChild('questionnaireBody') questionnaireBody: ElementRef;
   questionnaireEnabled = false;
-  formdef: FormDefEntry[] = [];
+  questions: FormDefEntry[] = [];
   form: FormGroup;
 
   constructor(
@@ -23,18 +23,21 @@ export class QuestionnaireComponent implements OnInit {
     this.ds.questionnaireEnabled$.subscribe(is => this.questionnaireEnabled = is);
     this.ds.checkConfig$.subscribe(cc => {
       if (cc === null) {
-        this.formdef = [];
+        this.questions = [];
       } else {
-        this.formdef = cc.formdef;
+        this.questions = cc.questions;
         const group: any = {};
 
-        this.formdef.forEach(question => {
+        this.questions.forEach(question => {
+          if (question.value.length > 0) {
+            question.options = question.value.split('#');
+          }
           group[question.id] = new FormControl('');
         });
         this.form = new FormGroup(group);
         this.form.valueChanges.subscribe(f => {
           const myReportEntries: ReportEntry[] = [];
-          this.formdef.forEach(element => {
+          this.questions.forEach(element => {
             const myValue = this.form.controls[element.id].value;
             myReportEntries.push({'label': element.prompt, 'value': myValue});
           });

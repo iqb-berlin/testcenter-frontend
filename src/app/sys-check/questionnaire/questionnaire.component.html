@@ -3,13 +3,13 @@
 </div>
 <div class="step-body" #questionnaireBody>
   <div [formGroup]="form" class="formList" fxLayout="column">
-    <div *ngFor="let f of formdef" fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="left top" class="formEntry">
-      <label>{{f.prompt}}</label>
+    <div *ngFor="let q of questions" fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="left top" class="formEntry">
+      <label>{{q.prompt}}</label>
 
-      <mat-form-field class="field" [ngSwitch]="f.type" *ngIf="f.type !== 'header'">
-        <input matInput *ngSwitchCase="'string'" [formControlName]="f.id">
-        <mat-select [id]="f.id" *ngSwitchCase="'select'" [formControlName]="f.id">
-          <mat-option *ngFor="let opt of f.options" [value]="opt">
+      <mat-form-field class="field" [ngSwitch]="q.type" *ngIf="q.type !== 'header'">
+        <input matInput *ngSwitchCase="'string'" [formControlName]="q.id">
+        <mat-select [id]="q.id" *ngSwitchCase="'select'" [formControlName]="q.id">
+          <mat-option *ngFor="let opt of q.options" [value]="opt">
             {{opt}}
           </mat-option>
         </mat-select>
