@@ -56,7 +56,7 @@
           <button mat-mini-fab matStepperPrevious>
             <i class="material-icons">chevron_left</i>
           </button>
-          <button mat-raised-button (click)="saveReport()">Bericht senden</button>
+          <button *ngIf="saveEnabled" mat-raised-button (click)="saveReport()">Bericht senden</button>
         </div>
       </mat-step>
     </mat-horizontal-stepper>

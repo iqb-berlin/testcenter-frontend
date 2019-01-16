@@ -38,8 +38,12 @@ export class QuestionnaireComponent implements OnInit {
         this.form.valueChanges.subscribe(f => {
           const myReportEntries: ReportEntry[] = [];
           this.questions.forEach(element => {
-            const myValue = this.form.controls[element.id].value;
-            myReportEntries.push({'label': element.prompt, 'value': myValue});
+            if (element.type === 'header') {
+              myReportEntries.push({'label': element.value, 'value': ''});
+            } else {
+              const myValue = this.form.controls[element.id].value;
+              myReportEntries.push({'label': element.prompt, 'value': myValue});
+            }
           });
           this.ds.questionnaireData$.next(myReportEntries);
         });

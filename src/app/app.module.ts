@@ -7,7 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule, MatCardModule,
   MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule,
-  MatTabsModule, MatProgressSpinnerModule } from '@angular/material';
+  MatTabsModule, MatProgressSpinnerModule, MatRadioModule } from '@angular/material';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -37,6 +37,8 @@ import { ErrormsgComponent } from './errormsg/errormsg.component';
     MatIconModule,
     MatInputModule,
     MatTooltipModule,
+    MatCheckboxModule,
+    MatRadioModule,
     MatDialogModule,
     MatTabsModule,
     MatProgressSpinnerModule,

@@ -11,6 +11,7 @@
   display: block;
   left: 15px;
   right: 15px;
+  overflow: auto;
 }
 
 .formList {
@@ -19,9 +20,6 @@
 }
 
 .formEntry {
-  margin: 10px 0 0 0;
+  margin: 5px 0 0 10px;
 }
 
-.field {
-  width: 200px;
-}

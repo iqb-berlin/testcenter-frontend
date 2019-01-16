@@ -28,7 +28,7 @@ export class RunComponent implements OnInit {
   paramId: string;
   unitcheckAvailable = false;
   questionnaireAvailable = false;
-  emailEnabled = false;
+  saveEnabled = false;
 
 
   constructor(
@@ -79,6 +79,7 @@ export class RunComponent implements OnInit {
             this.ds.checkConfig$.next(scData);
             this.stepper.selectedIndex = 0;
             this.stepNetwork.completed = false;
+            this.saveEnabled = scData.cansave;
           }
         );
       }

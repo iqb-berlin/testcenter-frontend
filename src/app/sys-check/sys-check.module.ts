@@ -1,3 +1,4 @@
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ResizeIFrameChildDirective } from './unit-check/resize-IFrameChild/resize-IFrameChild.directive';
 import { SyscheckDataService } from './syscheck-data.service';
 import { BackendService } from './backend.service';
@@ -10,7 +11,7 @@ import { RunComponent } from './run.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule, MatCardModule, MatStepperModule,
   MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-  MatTabsModule, MatProgressSpinnerModule, MatSnackBarModule } from '@angular/material';
+  MatTabsModule, MatProgressSpinnerModule, MatSnackBarModule, MatRadioModule } from '@angular/material';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -36,7 +37,9 @@ import { SaveReportComponent } from './report/save-report/save-report.component'
     MatButtonModule,
     MatDividerModule,
     MatListModule,
+    MatIconModule,
     MatSelectModule,
+    MatRadioModule,
     MatSnackBarModule,
     MatDialogModule,
     ReactiveFormsModule
