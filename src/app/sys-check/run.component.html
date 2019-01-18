@@ -1,63 +1,55 @@
 <div class="spinner-container" *ngIf="dataLoading">
   <mat-spinner></mat-spinner>
 </div>
+<tc-navi-buttons></tc-navi-buttons>
 <div class="page-body">
   <div class="sheetofpaper">
     <mat-horizontal-stepper labelPosition="bottom" #stepper (selectionChange)="stepperSelectionChanged($event)">
-      <mat-step #stepEnv>
+      <mat-step #stepEnv *ngIf="!questionsonlymode">
         <ng-template matStepLabel>Computer</ng-template>
         <iqb-environment-check #compEnv></iqb-environment-check>
-        <div class="navi_buttons">
-          <button mat-mini-fab matStepperNext>
-            <i class="material-icons">chevron_right</i>
-          </button>
-        </div>
+        <button mat-mini-fab matStepperNext class="navi_button_next">
+          <i class="material-icons">chevron_right</i>
+        </button>
       </mat-step>
-      <mat-step #stepNetwork>
+      <mat-step #stepNetwork *ngIf="!questionsonlymode">
         <ng-template matStepLabel>Netzwerk</ng-template>
-        <iqb-network-check #compNetwork></iqb-network-check>
-        <div class="navi_buttons">
-            <button mat-mini-fab matStepperPrevious>
-              <i class="material-icons">chevron_left</i>
-            </button>
-            <button mat-mini-fab matStepperNext>
-              <i class="material-icons">chevron_right</i>
-            </button>
-        </div>
+        <p *ngIf="skipnetwork">Review-Modus: Netzwerktest wird nicht durchgeführt.</p>
+        <iqb-network-check #compNetwork *ngIf="!skipnetwork"></iqb-network-check>
+        <button mat-mini-fab matStepperPrevious class="navi_button_prev">
+          <i class="material-icons">chevron_left</i>
+        </button>
+        <button mat-mini-fab matStepperNext class="navi_button_next">
+          <i class="material-icons">chevron_right</i>
+        </button>
       </mat-step>
       <mat-step *ngIf="unitcheckAvailable" #stepUnit>
         <ng-template matStepLabel>Aufgabe</ng-template>
         <iqb-unit-check #compUnit></iqb-unit-check>
-        <div class="navi_buttons">
-            <button mat-mini-fab matStepperPrevious>
-              <i class="material-icons">chevron_left</i>
-            </button>
-            <button mat-mini-fab matStepperNext>
-              <i class="material-icons">chevron_right</i>
-            </button>
-          </div>
+        <button mat-mini-fab matStepperPrevious class="navi_button_prev">
+          <i class="material-icons">chevron_left</i>
+        </button>
+        <button mat-mini-fab matStepperNext class="navi_button_next">
+          <i class="material-icons">chevron_right</i>
+        </button>
       </mat-step>
       <mat-step *ngIf="questionnaireAvailable">
         <ng-template matStepLabel>Fragen</ng-template>
         <iqb-questionnaire></iqb-questionnaire>
-        <div class="navi_buttons">
-            <button mat-mini-fab matStepperPrevious>
-              <i class="material-icons">chevron_left</i>
-            </button>
-            <button mat-mini-fab matStepperNext>
-              <i class="material-icons">chevron_right</i>
-            </button>
-          </div>
+        <button mat-mini-fab matStepperPrevious *ngIf="!questionsonlymode" class="navi_button_prev">
+          <i class="material-icons">chevron_left</i>
+        </button>
+        <button mat-mini-fab matStepperNext class="navi_button_next">
+          <i class="material-icons">chevron_right</i>
+        </button>
       </mat-step>
       <mat-step>
         <ng-template matStepLabel>Bericht</ng-template>
         <iqb-report></iqb-report>
-        <div class="navi_buttons">
-          <button mat-mini-fab matStepperPrevious>
-            <i class="material-icons">chevron_left</i>
-          </button>
-          <button *ngIf="saveEnabled" mat-raised-button (click)="saveReport()">Bericht senden</button>
-        </div>
+        <button mat-mini-fab matStepperPrevious class="navi_button_prev">
+          <i class="material-icons">chevron_left</i>
+        </button>
+        <button *ngIf="saveEnabled" mat-raised-button (click)="saveReport()" class="save_button">Bericht senden</button>
       </mat-step>
     </mat-horizontal-stepper>
   </div>

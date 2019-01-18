@@ -4,6 +4,7 @@ import { SyscheckDataService } from './../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 import { Subscription, BehaviorSubject } from 'rxjs';
+import { delay } from 'rxjs/operators';
 
 // import { BackendService, UnitPreviewData } from './backend.service';
 // import { DatastoreService } from './datastore.service';
@@ -25,9 +26,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
 
-  private itemplayerPageRequest$ = new BehaviorSubject<string>('');
-  private itemplayerCurrentPage$ = new BehaviorSubject<string>('');
-  private itemplayerValidPages$ = new BehaviorSubject<string[]>([]);
   private pendingItemDefinition$ = new BehaviorSubject(null);
 
   private dataLoading = false;
@@ -40,7 +38,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.itemplayerPageRequest$.subscribe((newPage: string) => {
+    this.ds.itemplayerPageRequest$.subscribe((newPage: string) => {
       if (newPage.length > 0) {
         this.postMessageTarget.postMessage({
           type: 'OpenCBA.ToItemPlayer.PageNavigationRequest',
@@ -81,17 +79,18 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
 
           // // // // // // //
           case 'OpenCBA.FromItemPlayer.StartedNotification':
+            this.iFrameItemplayer.setAttribute('height', String(Math.trunc(this.iFrameHostElement.nativeElement.clientHeight)));
             const validPages = msgData['validPages'];
             if ((validPages instanceof Array) && (validPages.length > 1)) {
-              this.itemplayerValidPages$.next(validPages);
+              this.ds.itemplayerValidPages$.next(validPages);
               let currentPage = msgData['currentPage'];
               if (currentPage  === undefined) {
                 currentPage = validPages[0];
               }
-              this.itemplayerCurrentPage$.next(currentPage);
+              this.ds.itemplayerCurrentPage$.next(currentPage);
             } else {
-              this.itemplayerValidPages$.next([]);
-              this.itemplayerCurrentPage$.next('');
+              this.ds.itemplayerValidPages$.next([]);
+              this.ds.itemplayerCurrentPage$.next('');
             }
             break;
 
@@ -100,13 +99,13 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
             const validPagesChanged = msgData['validPages'];
             let currentPageChanged = msgData['currentPage'];
             if ((validPagesChanged instanceof Array)) {
-              this.itemplayerValidPages$.next(validPagesChanged);
+              this.ds.itemplayerValidPages$.next(validPagesChanged);
               if (currentPageChanged  === undefined) {
                 currentPageChanged = validPagesChanged[0];
               }
             }
             if (currentPageChanged  !== undefined) {
-              this.itemplayerCurrentPage$.next(currentPageChanged);
+              this.ds.itemplayerCurrentPage$.next(currentPageChanged);
             }
             break;
 
@@ -120,20 +119,25 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   }
 
   // // // // // // // // // // // // // // // // // // // // // // // //
-  public loadUnit(unitId: string) {
+  public loadUnit(checkId: string) {
     this.dataLoading = true;
+    while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
+      this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
+    }
 
-    this.bs.getUnitData(unitId).subscribe((data: UnitData) => {
+    // sometimes, the stepper takes too much time to show the next step component - if the data come too early, the
+    // iframehost has still height of 0px, so no iframe content is shown; the delay of the data arrival ensures
+    // that iframehost is in full height when the iframe is filled up
+    this.bs.getUnitData(checkId).pipe(
+      delay(1000)
+    ).subscribe((data: UnitData) => {
       // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-      while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
-        this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
-      }
 
       this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
       this.iFrameItemplayer.setAttribute('srcdoc', data.player);
       this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
       this.iFrameItemplayer.setAttribute('class', 'unitHost');
-      this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.nativeElement.clientHeight));
+      this.iFrameItemplayer.setAttribute('height', '100');
 
       this.pendingItemDefinition$.next(data.def);
 

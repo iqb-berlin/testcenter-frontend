@@ -21,6 +21,9 @@ export class BackendService {
       questions: [],
       hasunit: false,
       cansave: false,
+      questionsonlymode: false,
+      ratings: [],
+      skipnetwork: false,
       downloadMinimum: 1024 * 1024,
       downloadGood: 1024 * 1024 * 10,
       uploadMinimum: 1024 * 512,
@@ -197,12 +200,22 @@ export interface CheckConfig {
   description: string;
 }
 
+export interface Rating {
+  type: string;
+  min: number;
+  good: number;
+  value: string;
+}
+
 export interface CheckConfigData {
   id: string;
   label: string;
   questions: FormDefEntry[];
   hasunit: boolean;
   cansave: boolean;
+  questionsonlymode: boolean;
+  ratings: Rating[];
+  skipnetwork: boolean;
   uploadMinimum: number;
   uploadGood: number;
   downloadMinimum: number;

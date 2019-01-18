@@ -22,6 +22,7 @@ import { UnitCheckComponent } from './unit-check/unit-check.component';
 import { QuestionnaireComponent } from './questionnaire/questionnaire.component';
 import { ReportComponent } from './report/report.component';
 import { SaveReportComponent } from './report/save-report/save-report.component';
+import { TcNaviButtonsComponent } from './unit-check/tc-navi-buttons/tc-navi-buttons.component';
 
 @NgModule({
   imports: [
@@ -53,7 +54,9 @@ import { SaveReportComponent } from './report/save-report/save-report.component'
     QuestionnaireComponent,
     ResizeIFrameChildDirective,
     ReportComponent,
-    SaveReportComponent],
+    SaveReportComponent,
+    TcNaviButtonsComponent
+  ],
   exports: [
     StartComponent
   ],

@@ -10,8 +10,18 @@
   min-height: 90%;
 }
 
-.navi_buttons {
+.navi_button_prev {
   position: absolute;
   bottom: 10px;
   left: 10px;
+}
+.navi_button_next {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+.save_button {
+  position: absolute;
+  bottom: 10px;
+  right: 70px;
 }

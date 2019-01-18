@@ -1,3 +1,4 @@
+import { element } from 'protractor';
 import { SaveReportComponent } from './report/save-report/save-report.component';
 import { NetworkCheckComponent } from './network-check/network-check.component';
 import { SyscheckDataService } from './syscheck-data.service';
@@ -19,7 +20,6 @@ import { MatDialog, MatSnackBar } from '@angular/material';
 export class RunComponent implements OnInit {
   @ViewChild('stepper') stepper: MatStepper;
   @ViewChild('stepEnv') stepEnv: MatStep;
-  @ViewChild('compEnv') compEnv: EnvironmentCheckComponent;
   @ViewChild('stepNetwork') stepNetwork: MatStep;
   @ViewChild('compNetwork') compNetwork: NetworkCheckComponent;
   @ViewChild('stepUnit') stepUnit: MatStep;
@@ -29,6 +29,8 @@ export class RunComponent implements OnInit {
   unitcheckAvailable = false;
   questionnaireAvailable = false;
   saveEnabled = false;
+  questionsonlymode = false;
+  skipnetwork = false;
 
 
   constructor(
@@ -41,10 +43,10 @@ export class RunComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.ds.unitcheckAvailable$.subscribe(is => this.unitcheckAvailable = is);
-    this.ds.questionnaireAvailable$.subscribe(is => this.questionnaireAvailable = is);
     this.ds.networkData$.subscribe(nd => {
-      this.stepNetwork.completed = nd.length > 0;
+      if (typeof this.stepNetwork !== 'undefined') {
+        this.stepNetwork.completed = nd.length > 0;
+      }
     });
 
     this.stepper.linear = true;
@@ -53,57 +55,85 @@ export class RunComponent implements OnInit {
       if (this.paramId === this.bs.basicTestConfig.id) {
         this.ds.checkConfig$.next(this.bs.basicTestConfigData);
         this.stepper.selectedIndex = 0;
-        this.stepNetwork.completed = false;
+        if (typeof this.stepNetwork !== 'undefined') {
+          this.stepNetwork.completed = false;
+        }
+        this.unitcheckAvailable = false;
+        this.questionnaireAvailable = false;
+        this.questionsonlymode = false;
+        this.skipnetwork = false;
       } else {
         this.bs.getCheckConfigData(this.paramId).subscribe(
           scData => {
-            if (typeof scData.downloadGood === 'undefined') {
-              scData.downloadGood = this.bs.basicTestConfigData.downloadGood;
-            }
-            if (typeof scData.downloadMinimum === 'undefined') {
-              scData.downloadMinimum = this.bs.basicTestConfigData.downloadMinimum;
-            }
-            if (typeof scData.uploadGood === 'undefined') {
-              scData.uploadGood = this.bs.basicTestConfigData.uploadGood;
-            }
-            if (typeof scData.uploadMinimum === 'undefined') {
-              scData.uploadMinimum = this.bs.basicTestConfigData.uploadMinimum;
-            }
-            if (typeof scData.pingGood === 'undefined') {
-              scData.pingGood = this.bs.basicTestConfigData.pingGood;
-            }
-            if (typeof scData.pingMinimum === 'undefined') {
-              scData.pingMinimum = this.bs.basicTestConfigData.pingMinimum;
+            scData.downloadGood = this.bs.basicTestConfigData.downloadGood;
+            scData.downloadMinimum = this.bs.basicTestConfigData.downloadMinimum;
+            scData.uploadGood = this.bs.basicTestConfigData.uploadGood;
+            scData.uploadMinimum = this.bs.basicTestConfigData.uploadMinimum;
+            scData.pingGood = this.bs.basicTestConfigData.pingGood;
+            scData.pingMinimum = this.bs.basicTestConfigData.pingMinimum;
+
+            if (typeof scData.ratings !== 'undefined') {
+              for (let i = 0; i < scData.ratings.length; i++) {
+                if (scData.ratings[i].type === 'download') {
+                  scData.downloadGood = scData.ratings[i].good;
+                  scData.downloadMinimum = scData.ratings[i].min;
+                } else if (scData.ratings[i].type === 'upload') {
+                  scData.uploadGood = scData.ratings[i].good;
+                  scData.uploadMinimum = scData.ratings[i].min;
+                } else if (scData.ratings[i].type === 'ping') {
+                  scData.pingGood = scData.ratings[i].good;
+                  scData.pingMinimum = scData.ratings[i].min;
+                }
+              }
             }
 
             this.ds.checkConfig$.next(scData);
             this.stepper.selectedIndex = 0;
-            this.stepNetwork.completed = false;
+            this.skipnetwork = scData.skipnetwork;
+            if (typeof this.stepNetwork !== 'undefined') {
+              this.stepNetwork.completed = this.skipnetwork;
+            }
             this.saveEnabled = scData.cansave;
+            this.questionsonlymode = scData.questionsonlymode;
+            if (this.questionsonlymode) {
+              // worst case: step is shown but no questions
+              this.questionnaireAvailable = true;
+              this.unitcheckAvailable = false;
+            } else {
+              this.questionnaireAvailable = scData.questions.length > 0;
+              this.unitcheckAvailable = scData.hasunit;
+            }
           }
         );
       }
     });
   }
 
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   stepperSelectionChanged(e) {
     this.ds.setPageTitle();
+    this.ds.showNaviButtons$.next(false);
 
     if (e.selectedStep === this.stepUnit) {
+      this.ds.showNaviButtons$.next(true);
       if (!this.stepUnit.completed) {
         const cd = this.ds.checkConfig$.getValue();
         this.compUnit.loadUnit(cd.id);
         this.stepUnit.completed = true;
       }
     } else if (e.selectedStep === this.stepNetwork) {
-      if (!this.stepNetwork.completed) {
-        // this.compNetwork.startCheck();
+      if (this.skipnetwork) {
         this.stepNetwork.completed = true;
+      } else {
+        if (!this.stepNetwork.completed) {
+          this.compNetwork.startCheck();
+        }
       }
     }
 
   }
 
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   saveReport() {
     const dialogRef = this.saveDialog.open(SaveReportComponent, {
       width: '500px',
