@@ -1,4 +1,4 @@
-import { CheckConfigData } from './backend.service';
+import { CheckConfigData, ReportEntry } from './backend.service';
 import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
 // import { e } from '@angular/core/src/render3';
@@ -36,9 +36,3 @@ export class SyscheckDataService {
     this.pageTitle$.next('IQB-Testcenter - System-Check');
   }
 }
-
-export interface ReportEntry {
-  label: string;
-  value: string;
-}
-

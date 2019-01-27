@@ -1,4 +1,5 @@
-import { SyscheckDataService, ReportEntry } from './../syscheck-data.service';
+import { ReportEntry } from './../backend.service';
+import { SyscheckDataService } from './../syscheck-data.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({

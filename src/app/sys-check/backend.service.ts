@@ -73,6 +73,24 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  public saveReport (cid: string, keyphrase: string, title: string,
+      envResults: ReportEntry[], networkResults: ReportEntry[], questionnaireResults: ReportEntry[]): Observable<Boolean> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<boolean>(this.serverUrl + 'saveSysCheckReport.php',
+          {c: cid, k: keyphrase, t: title, e: envResults, n: networkResults, q: questionnaireResults}, httpOptions)
+        .pipe(
+          catchError(problem_data => {
+            return of(false);
+          })
+        );
+  }
+
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
   public getUnitData (configId: string): Observable<UnitData> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -87,10 +105,13 @@ export class BackendService {
             return of(myreturn);
           })
         );
-    }
+  }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
   // Network check functions
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
   benchmarkDownloadRequest (requestedDownloadSize: number,
                             timeout: number,
                             callback: RequestBenchmarkerFunctionCallback): void {
@@ -246,4 +267,11 @@ export interface NetworkRequestTestResult {
   'type': 'downloadTest' | 'uploadTest';
   'size': number;
   'duration': number;
+}
+
+export interface ReportEntry {
+  id: string;
+  type: string;
+  label: string;
+  value: string;
 }

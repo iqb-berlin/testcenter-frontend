@@ -1,7 +1,6 @@
-import { ReportEntry } from './../syscheck-data.service';
+import { ReportEntry } from './../backend.service';
 import { Component, OnInit } from '@angular/core';
 import { SyscheckDataService } from '../syscheck-data.service';
-
 
 @Component({
   selector: 'iqb-environment-check',
@@ -11,7 +10,9 @@ import { SyscheckDataService } from '../syscheck-data.service';
 export class EnvironmentCheckComponent implements OnInit {
   screenSizeText = 'bitte warten';
   osName = 'bitte warten';
-  browserVersion = 'bitte warten';
+  browser = 'bitte warten';
+  browserVersion = '';
+  browserName = '';
 
 
   constructor(
@@ -30,7 +31,9 @@ export class EnvironmentCheckComponent implements OnInit {
     const helperRegex = /[^.]*/;
     const browserInfo = helperRegex.exec(deviceInfoSplits[0]);
     const browserInfoSplits = browserInfo[0].split('/');
-    this.browserVersion = browserInfoSplits[0] + ' Version ' + browserInfoSplits[1];
+    this.browserVersion = browserInfoSplits[1];
+    this.browserName = browserInfoSplits[0];
+    this.browser = this.browserName + ' Version ' + this.browserVersion;
 
 
     // os + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
@@ -69,9 +72,10 @@ export class EnvironmentCheckComponent implements OnInit {
 
 
     const myReport: ReportEntry[] = [];
-    myReport.push({'label': 'Betriebssystem', 'value': this.osName});
-    myReport.push({'label': 'Browser', 'value': this.browserVersion});
-    myReport.push({'label': 'Bildschirm', 'value': this.screenSizeText});
+    myReport.push({'id': '0', 'type': 'environment', 'label': 'Betriebssystem', 'value': this.osName});
+    myReport.push({'id': '0', 'type': 'environment', 'label': 'Browser Name', 'value': this.browserName});
+    myReport.push({'id': '0', 'type': 'environment', 'label': 'Browser Version', 'value': this.browserVersion});
+    myReport.push({'id': '0', 'type': 'environment', 'label': 'Bildschirm', 'value': this.screenSizeText});
 
     this.ds.environmentData$.next(myReport);
   }

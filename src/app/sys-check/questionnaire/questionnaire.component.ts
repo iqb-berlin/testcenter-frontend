@@ -1,6 +1,6 @@
 import { FormControl, FormGroup } from '@angular/forms';
-import { FormDefEntry } from './../backend.service';
-import { SyscheckDataService, ReportEntry } from './../syscheck-data.service';
+import { FormDefEntry, ReportEntry } from './../backend.service';
+import { SyscheckDataService } from './../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
@@ -39,10 +39,10 @@ export class QuestionnaireComponent implements OnInit {
           const myReportEntries: ReportEntry[] = [];
           this.questions.forEach(element => {
             if (element.type === 'header') {
-              myReportEntries.push({'label': element.value, 'value': ''});
+              myReportEntries.push({'id': element.id, 'type': element.type, 'label': element.value, 'value': ''});
             } else {
               const myValue = this.form.controls[element.id].value;
-              myReportEntries.push({'label': element.prompt, 'value': myValue});
+              myReportEntries.push({'id': element.id, 'type': element.type, 'label': element.prompt, 'value': myValue});
             }
           });
           this.ds.questionnaireData$.next(myReportEntries);

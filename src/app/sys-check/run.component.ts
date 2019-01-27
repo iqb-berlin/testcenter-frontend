@@ -5,7 +5,7 @@ import { SyscheckDataService } from './syscheck-data.service';
 import { BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CheckConfigData, BackendService } from './backend.service';
+import { CheckConfigData, BackendService, ReportEntry } from './backend.service';
 import { MatStepper, MatStep } from '../../../node_modules/@angular/material';
 import { UnitCheckComponent } from './unit-check/unit-check.component';
 import { EnvironmentCheckComponent } from './environment-check/environment-check.component';
@@ -142,7 +142,20 @@ export class RunComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result !== false) {
-        this.snackBar.open('Bericht gespeichert.', '', {duration: 3000});
+        const reportKey = result.get('key').value as string;
+        const reportTitle = result.get('title').value as string;
+        const cd = this.ds.checkConfig$.getValue();
+        this.bs.saveReport(cd.id, reportKey, reportTitle,
+          this.ds.environmentData$.getValue(),
+          this.ds.networkData$.getValue(),
+          this.ds.questionnaireData$.getValue()
+        ).subscribe((saveOK: boolean) => {
+          if (saveOK) {
+            this.snackBar.open('Bericht gespeichert.', '', {duration: 3000});
+          } else {
+            this.snackBar.open('Konnte Bericht nicht speichern.', '', {duration: 3000});
+          }
+        });
       }
     });
   }

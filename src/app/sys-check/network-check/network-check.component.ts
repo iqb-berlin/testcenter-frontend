@@ -1,7 +1,7 @@
-import { SyscheckDataService, ReportEntry } from './../syscheck-data.service';
+import { SyscheckDataService } from './../syscheck-data.service';
 import { Component, OnInit } from '@angular/core';
 import { BackendService, NetworkRequestTestResult, RequestBenchmarkerFunction,
-      RequestBenchmarkerFunctionCallback} from '../backend.service';
+      RequestBenchmarkerFunctionCallback, ReportEntry} from '../backend.service';
 
 @Component({
   selector: 'iqb-network-check',
@@ -150,16 +150,23 @@ export class NetworkCheckComponent implements OnInit {
             // send data for reporting
             const myReport: ReportEntry[] = [];
 
-            myReport.push({'label': 'Downloadgeschwindigkeit', 'value': this.averageSpeed.downloadTest.toLocaleString()});
-            myReport.push({'label': 'Downloadbewertung', 'value': this.networkRating.downloadRating});
+            myReport.push({'id': '0', 'type': 'network',
+              'label': 'Downloadgeschwindigkeit', 'value': this.averageSpeed.downloadTest.toLocaleString()});
+            myReport.push({'id': '0', 'type': 'network',
+              'label': 'Downloadbewertung', 'value': this.networkRating.downloadRating});
 
-            myReport.push({'label': 'Uploadgeschwindigkeit', 'value': this.averageSpeed.uploadTest.toLocaleString()});
-            myReport.push({'label': 'Uploadbewertung', 'value': this.networkRating.uploadRating});
+            myReport.push({'id': '0', 'type': 'network',
+              'label': 'Uploadgeschwindigkeit', 'value': this.averageSpeed.uploadTest.toLocaleString()});
+            myReport.push({'id': '0', 'type': 'network',
+              'label': 'Uploadbewertung', 'value': this.networkRating.uploadRating});
 
-            myReport.push({'label': 'Ping', 'value': this.averageSpeed.pingTest.toLocaleString()});
-            myReport.push({'label': 'Ping-Bewertung', 'value': this.networkRating.pingRating});
+            myReport.push({'id': '0', 'type': 'network',
+              'label': 'Ping', 'value': this.averageSpeed.pingTest.toLocaleString()});
+            myReport.push({'id': '0', 'type': 'network',
+              'label': 'Ping-Bewertung', 'value': this.networkRating.pingRating});
 
-            myReport.push({'label': 'Allgemeine Bewertung der Verbindung zum Server', 'value': this.networkRating.overallRating});
+            myReport.push({'id': '0', 'type': 'network',
+              'label': 'Allgemeine Bewertung der Verbindung zum Server', 'value': this.networkRating.overallRating});
 
             this.ds.networkData$.next(myReport);
 
