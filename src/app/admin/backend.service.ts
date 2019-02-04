@@ -219,6 +219,38 @@ export class BackendService {
       .post<boolean>(this._serverUrl + 'deleteData.php', {at: adminToken, ws: workspaceId, g: groups}, httpOptions);
   }
 
+  getSysCheckReportList(adminToken: string, workspaceId: number): Observable<SysCheckStatistics[]> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<SysCheckStatistics[]>(this._serverUrl + 'getSysCheckReportList.php', {at: adminToken, ws: workspaceId}, httpOptions);
+  }
+
+  getSysCheckReport(adminToken: string, workspaceId: number, reports: string[], columnDelimiter: string, quoteChar: string): Observable<string[]> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<string[]>(this._serverUrl + 'getSysCheckReport.php',
+        {at: adminToken, ws: workspaceId, r: reports, cd: columnDelimiter, q: quoteChar}, httpOptions);
+  }
+
+  deleteSysCheckReports(adminToken: string, workspaceId: number, reports: string[]): Observable<boolean> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<boolean>(this._serverUrl + 'deleteSysCheckReports.php',
+        {at: adminToken, ws: workspaceId, r: reports}, httpOptions);
+  }
+
   // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
     const myreturn: ServerError = {
@@ -340,4 +372,11 @@ export interface ReviewData {
   categories: string;
   reviewtime: Date;
   entry: string;
+}
+
+export interface SysCheckStatistics {
+  id: string;
+  label: string;
+  count: number;
+  details: string[];
 }

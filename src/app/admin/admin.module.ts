@@ -22,6 +22,7 @@ import { MatTableModule, MatTabsModule, MatButtonModule, MatIconModule, MatToolb
 import { MonitorComponent } from './monitor/monitor.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import {MatGridListModule} from '@angular/material/grid-list';
+import { SyscheckComponent } from './syscheck/syscheck.component';
 
 @NgModule({
   imports: [
@@ -60,7 +61,8 @@ import {MatGridListModule} from '@angular/material/grid-list';
     AdminComponent,
     MyfilesComponent,
     ResultsComponent,
-    MonitorComponent
+    MonitorComponent,
+    SyscheckComponent
   ],
   providers: [
     BackendService,

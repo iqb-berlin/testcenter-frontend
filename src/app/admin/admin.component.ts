@@ -12,6 +12,7 @@ import { WorkspaceData } from './backend.service';
 export class AdminComponent implements OnInit {
   public navLinks = [
     {path: 'myfiles', label: 'Dateien'},
+    {path: 'syscheck', label: 'System-Check Berichte'},
     {path: 'monitor', label: 'Monitor'},
     {path: 'results', label: 'Ergebnisse'}
   ];
