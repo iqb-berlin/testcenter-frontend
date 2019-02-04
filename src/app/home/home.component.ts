@@ -5,7 +5,6 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, FormControl, Validators } from '@angular/forms';
 
 
-
 @Component({
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']

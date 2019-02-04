@@ -20,6 +20,7 @@ import { NewuserComponent } from './users/newuser/newuser.component';
 import { NewpasswordComponent } from './users/newpassword/newpassword.component';
 import { NewworkspaceComponent } from './workspaces/newworkspace/newworkspace.component';
 import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace.component';
+import { AboutTextComponent } from './about-text/about-text.component';
 
 
 @NgModule({
@@ -58,7 +59,8 @@ import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace
     NewuserComponent,
     NewpasswordComponent,
     NewworkspaceComponent,
-    EditworkspaceComponent
+    EditworkspaceComponent,
+    AboutTextComponent
   ],
   providers: [
     BackendService,
