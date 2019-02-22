@@ -11,7 +11,6 @@ import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule, Ma
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { TestControllerModule } from './test-controller';
 import { IqbCommonModule } from './iqb-common';
 import { BackendService } from './backend.service';
 import { StartComponent } from './start/start.component';
@@ -46,7 +45,6 @@ import { ErrormsgComponent } from './errormsg/errormsg.component';
     FlexLayoutModule,
     ReactiveFormsModule,
     HttpClientModule,
-    TestControllerModule,
     AppRoutingModule,
     IqbCommonModule
   ],

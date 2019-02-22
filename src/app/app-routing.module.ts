@@ -10,7 +10,7 @@ const routes: Routes = [
   {path: 'start', component: StartComponent},
   {path: 'about', component: AboutComponent},
   {path: 'check', loadChildren: './sys-check/sys-check.module#SysCheckModule'},
-  {path: 't', component: TestControllerComponent}
+  {path: 't', loadChildren: './test-controller/test-controller.module#TestControllerModule'}
 ];
 
 @NgModule({

@@ -81,7 +81,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
               this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
               this.log$.next({'unitName': this.myUnitName, 'logEntry': 'start'});
-              this.postMessageTarget = m.source;
+              this.postMessageTarget = m.source as Window;
               this.postMessageTarget.postMessage({
                 type: 'OpenCBA.ToItemPlayer.DataTransfer',
                 sessionId: this.itemplayerSessionId,

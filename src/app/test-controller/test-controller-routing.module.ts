@@ -8,19 +8,15 @@ import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: 't',
-    component: TestControllerComponent,
-    children: [
-      {path: 'u/:u',
-        component: UnithostComponent,
-        canActivate: [UnitActivateGuard],
-         canDeactivate: [UnitDeactivateGuard]
+    path: 'u/:u',
+      component: UnithostComponent,
+      canActivate: [UnitActivateGuard],
+      canDeactivate: [UnitDeactivateGuard]
         // resolve: {
         //   unitData: UnitResolver
         // }
-      }
-    ]
-  }];
+  }
+];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
