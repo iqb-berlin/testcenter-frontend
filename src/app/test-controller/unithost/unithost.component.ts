@@ -171,7 +171,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
           this.restorePoints[data.unitName] = data.restorePoint;
           if (this.lds.loginMode$.getValue() !== 'review') {
-            this.bs.setUnitRestorePoint(this.lds.authorisation$.getValue(), data.unitName, data.restorePoint)
+            this.bs.setUnitRestorePoint(this.lds.personToken$.getValue(),
+                this.lds.bookletDbId$.getValue(), data.unitName, data.restorePoint)
             .subscribe();
           }
         }
@@ -182,7 +183,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
       debounceTime(300)
     ).subscribe(data => {
         if ((data !== null) && (this.lds.loginMode$.getValue() !== 'review')) {
-          this.bs.setUnitResponses(this.lds.authorisation$.getValue(), data.unitName, data.response, data.responseType)
+          this.bs.setUnitResponses(this.lds.personToken$.getValue(),
+              this.lds.bookletDbId$.getValue(), data.unitName, data.response, data.responseType)
           .subscribe();
       }
     });
@@ -205,7 +207,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         });
         for (const unitName in myLogs) {
           if (myLogs[unitName].length > 0) {
-            this.bs.setUnitLog(this.lds.authorisation$.getValue(), unitName, myLogs[unitName]).subscribe();
+            this.bs.setUnitLog(this.lds.personToken$.getValue(), this.lds.bookletDbId$.getValue(), unitName, myLogs[unitName]).subscribe();
           }
         }
       }
@@ -235,7 +237,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.loadItemplayer();
     });
 
-    this.lds.authorisation$.subscribe(auth => {
+    this.lds.bookletDbId$.subscribe(auth => {
       this.restorePoints = {};
     });
 

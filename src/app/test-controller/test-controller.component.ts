@@ -16,7 +16,7 @@ export class TestControllerComponent implements OnInit {
   private allUnits: UnitDef[] = [];
   private statusMsg = '';
   private dataLoading = false;
-  private myLastAuthString = ''; // to avoid double load
+  private myLastBooklet = 0; // to avoid double load
 
   constructor (
     private tcs: TestControllerService,
@@ -36,23 +36,24 @@ export class TestControllerComponent implements OnInit {
 
   ngOnInit() {
     this.loadBooklet('init');
-    this.lds.authorisation$.subscribe(authori => {
+    this.lds.bookletDbId$.subscribe(authori => {
       this.loadBooklet('subsc');
     });
   }
 
   private loadBooklet(s: string) {
-    const auth = this.lds.authorisation$.getValue();
-    console.log('Booklet: ' + s);
-    if (auth == null) {
+    const pToken = this.lds.personToken$.getValue();
+    const bookletDbId = this.lds.bookletDbId$.getValue();
+
+    if (bookletDbId === 0) {
       this.resetBookletData();
-      this.myLastAuthString = '';
+      this.myLastBooklet = 0;
     } else {
-      if (this.myLastAuthString !== auth.toAuthString()) {
-        this.myLastAuthString = auth.toAuthString();
+      if (this.myLastBooklet !== bookletDbId) {
+        this.myLastBooklet = bookletDbId;
 
         this.dataLoading = true;
-        this.bs.getBookletData(auth).subscribe(myData => {
+        this.bs.getBookletData(pToken, bookletDbId).subscribe(myData => {
           if (myData instanceof ServerError) {
             const e = myData as ServerError;
             this.lds.globalErrorMsg$.next(e);
@@ -62,7 +63,7 @@ export class TestControllerComponent implements OnInit {
             this.lds.globalErrorMsg$.next(null);
             const myBookletData = myData as BookletData;
             const myBookletDef = new BookletDef(myBookletData);
-            myBookletDef.loadUnits(this.bs, this.tcs, auth).subscribe(okList => {
+            myBookletDef.loadUnits(this.bs, this.tcs, pToken, bookletDbId).subscribe(okList => {
               this.dataLoading = false;
               this.tcs.booklet$.next(myBookletDef);
               this.tcs.showNaviButtons$.next(myBookletDef.unlockedUnitCount() > 1);

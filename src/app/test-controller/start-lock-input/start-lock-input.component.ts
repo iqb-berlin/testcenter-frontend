@@ -1,7 +1,8 @@
 import { MAT_DIALOG_DATA } from '@angular/material';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Component, OnInit, Inject } from '@angular/core';
-import { StartLockData } from '../test-controller.service';
+import { StartLockData } from '../test-controller.interfaces';
+
 
 @Component({
   templateUrl: './start-lock-input.component.html',

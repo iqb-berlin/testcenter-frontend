@@ -69,7 +69,8 @@ export class TcMenuButtonsComponent implements OnInit {
           const targetSelection = (<FormGroup>result).get('target').value;
           if (targetSelection === 'u') {
             this.bs.saveUnitReview(
-                this.lds.authorisation$.getValue(),
+                this.lds.personToken$.getValue(),
+                this.lds.bookletDbId$.getValue(),
                 currentUnitId,
                 (<FormGroup>result).get('priority').value,
                 dialogRef.componentInstance.getCategories(),
@@ -89,8 +90,9 @@ export class TcMenuButtonsComponent implements OnInit {
               });
           } else {
             this.bs.saveBookletReview(
-              this.lds.authorisation$.getValue(),
-              (<FormGroup>result).get('priority').value,
+              this.lds.personToken$.getValue(),
+              this.lds.bookletDbId$.getValue(),
+            (<FormGroup>result).get('priority').value,
               dialogRef.componentInstance.getCategories(),
               (<FormGroup>result).get('entry').value
             ).subscribe(myData => {

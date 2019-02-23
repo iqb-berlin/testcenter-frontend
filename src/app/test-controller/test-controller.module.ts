@@ -1,4 +1,4 @@
-export { TestControllerService, SessionDataToSend } from './test-controller.service';
+export { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';

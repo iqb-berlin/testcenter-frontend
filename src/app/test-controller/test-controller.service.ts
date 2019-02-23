@@ -93,14 +93,14 @@ export class TestControllerService {
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  loadItemplayerOk(auth: Authorisation, unitDefinitionType: string): Observable<boolean> {
+  loadItemplayerOk(pToken: string, bookletDbId: number, unitDefinitionType: string): Observable<boolean> {
     unitDefinitionType = this.normaliseFileName(unitDefinitionType, 'html');
     if (this.itemplayers.hasOwnProperty(unitDefinitionType)) {
       return of(true);
     } else {
       // to avoid multiple calls before returning:
       this.itemplayers[unitDefinitionType] = null;
-      return this.bs.getUnitResourceTxt(auth, unitDefinitionType)
+      return this.bs.getUnitResourceTxt(pToken, bookletDbId, unitDefinitionType)
           .pipe(
             switchMap(myData => {
               if (myData instanceof ServerError) {
@@ -158,7 +158,8 @@ export class TestControllerService {
     const currentBooklet = this.booklet$.getValue();
     if ((targetUnitSequenceId >= 0) && (currentBooklet !== null) && (targetUnitSequenceId < currentBooklet.units.length)) {
       this.currentUnitPos$.next(targetUnitSequenceId);
-      this.bs.setBookletStatus(this.lds.authorisation$.getValue(), {u: targetUnitSequenceId}).subscribe();
+
+      this.bs.setBookletStatus(this.lds.personToken$.getValue(), this.lds.bookletDbId$.getValue(), {u: targetUnitSequenceId}).subscribe();
     }
   }
 }

@@ -300,9 +300,10 @@ export class StartComponent implements OnInit {
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   buttonEndTest() {
-    const auth = this.lds.authorisation$.getValue();
-    if ((this.lds.loginMode$.getValue() === 'hot') && (auth !== null)) {
-      this.bs.endBooklet(auth.personToken, auth.bookletId).subscribe(
+    const pToken = this.lds.personToken$.getValue();
+    const bookletDbId = this.lds.bookletDbId$.getValue();
+    if ((this.lds.loginMode$.getValue() === 'hot') && (bookletDbId !== 0)) {
+      this.bs.endBooklet(pToken, bookletDbId).subscribe(
         finOkUntyped => {
           if (finOkUntyped instanceof ServerError) {
             const e = finOkUntyped as ServerError;

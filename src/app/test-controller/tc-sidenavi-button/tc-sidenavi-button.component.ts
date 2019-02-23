@@ -1,5 +1,6 @@
-import { UnitDef, TestControllerService } from './../test-controller.service';
+import { TestControllerService } from '../test-controller.service';
 import { Component, OnInit, Input } from '@angular/core';
+import { UnitDef } from '../test-controller.classes';
 
 @Component({
   selector: 'tc-sidenavi-button',

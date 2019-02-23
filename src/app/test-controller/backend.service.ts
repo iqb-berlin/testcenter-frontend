@@ -2,7 +2,6 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap, switchMap } from 'rxjs/operators';
-import { Authorisation } from '../authorisation.class';
 import { BookletData, UnitData } from './test-controller.interfaces';
 import { ServerError } from './test-controller.classes';
 
@@ -19,7 +18,7 @@ export class BackendService {
     }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  saveUnitReview(auth: Authorisation, unit: string, priority: number,
+  saveUnitReview(pToken: string, bookletDbId: number, unit: string, priority: number,
     categories: string, entry: string): Observable<boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -27,7 +26,7 @@ export class BackendService {
       })
     };
     return this.http
-    .post<boolean>(this.serverUrl + 'addUnitReview.php', {au: auth.toAuthString(), u: unit,
+    .post<boolean>(this.serverUrl + 'addUnitReview.php', {au: pToken + '##' + bookletDbId.toString(), u: unit,
         p: priority, c: categories, e: entry}, httpOptions)
       .pipe(
         catchError(this.handle)
@@ -35,14 +34,15 @@ export class BackendService {
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  saveBookletReview(auth: Authorisation, priority: number, categories: string, entry: string): Observable<boolean | ServerError> {
+  saveBookletReview(pToken: string, bookletDbId: number, priority: number,
+          categories: string, entry: string): Observable<boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-    .post<boolean>(this.serverUrl + 'addBookletReview.php', {au: auth.toAuthString(),
+    .post<boolean>(this.serverUrl + 'addBookletReview.php', {au: pToken + '##' + bookletDbId.toString(),
         p: priority, c: categories, e: entry}, httpOptions)
       .pipe(
         catchError(this.handle)
@@ -50,21 +50,21 @@ export class BackendService {
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  getBookletData(auth: Authorisation): Observable<BookletData | ServerError> {
+  getBookletData(pToken: string, bookletDbId: number): Observable<BookletData | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<BookletData>(this.serverUrl + 'getBookletData.php', {au: auth.toAuthString()}, httpOptions)
+      .post<BookletData>(this.serverUrl + 'getBookletData.php', {au: pToken + '##' + bookletDbId.toString()}, httpOptions)
         .pipe(
           catchError(this.handle)
         );
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  getUnitData(auth: Authorisation, unitid: string): Observable<UnitData | ServerError> {
+  getUnitData(pToken: string, bookletDbId: number, unitid: string): Observable<UnitData | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
@@ -72,14 +72,14 @@ export class BackendService {
     };
 
     return this.http
-    .post<UnitData>(this.serverUrl + 'getUnitData.php', {au: auth.toAuthString(), u: unitid}, httpOptions)
+    .post<UnitData>(this.serverUrl + 'getUnitData.php', {au: pToken + '##' + bookletDbId.toString(), u: unitid}, httpOptions)
       .pipe(
         catchError(this.handle)
       );
   }
 
   // 888888888888888888888888888888888888888888888888888888888888888888
-  setBookletStatus(auth: Authorisation, state: {}): Observable<string | ServerError> {
+  setBookletStatus(pToken: string, bookletDbId: number, state: {}): Observable<string | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
@@ -90,7 +90,7 @@ export class BackendService {
     // } else {
     //   this.lastBookletState = sessiontoken + JSON.stringify(state);
       return this.http
-      .post<string>(this.serverUrl + 'setBookletStatus.php', {au: auth.toAuthString(), state: state}, httpOptions)
+      .post<string>(this.serverUrl + 'setBookletStatus.php', {au: pToken + '##' + bookletDbId.toString(), state: state}, httpOptions)
         .pipe(
           catchError(this.handle)
         );
@@ -138,7 +138,7 @@ export class BackendService {
   }
 
   // 888888888888888888888888888888888888888888888888888888888888888888
-  getUnitResourceTxt(auth: Authorisation, resId: string): Observable<string | ServerError> {
+  getUnitResourceTxt(pToken: string, bookletDbId: number, resId: string): Observable<string | ServerError> {
     const myHttpOptions = {
           headers: new HttpHeaders({
             'Content-Type':  'application/json'
@@ -147,7 +147,7 @@ export class BackendService {
       };
 
       return this.http
-      .post<string>(this.serverUrl + 'getUnitResourceTxt.php', {au: auth.toAuthString(), r: resId}, myHttpOptions)
+      .post<string>(this.serverUrl + 'getUnitResourceTxt.php', {au: pToken + '##' + bookletDbId.toString(), r: resId}, myHttpOptions)
         .pipe(
           catchError(this.handle)
         );
@@ -155,7 +155,8 @@ export class BackendService {
 
   // 888888888888888888888888888888888888888888888888888888888888888888
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  setUnitResponses(auth: Authorisation, unit: string, unitdata: string, responseType: string): Observable<boolean | ServerError> {
+  setUnitResponses(pToken: string, bookletDbId: number, unit: string,
+        unitdata: string, responseType: string): Observable<boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
@@ -163,35 +164,36 @@ export class BackendService {
     };
     return this.http
     .post<boolean>(this.serverUrl + 'setUnitResponse.php',
-            {au: auth.toAuthString(), u: unit, d: JSON.stringify(unitdata), rt: responseType}, httpOptions)
+            {au: pToken + '##' + bookletDbId.toString(), u: unit, d: JSON.stringify(unitdata), rt: responseType}, httpOptions)
       .pipe(
         catchError(this.handle)
       );
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  setUnitRestorePoint(auth: Authorisation, unit: string, unitdata: string): Observable<boolean | ServerError> {
+  setUnitRestorePoint(pToken: string, bookletDbId: number, unit: string, unitdata: string): Observable<boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-    .post<boolean>(this.serverUrl + 'setUnitRestorePoint.php', {au: auth.toAuthString(), u: unit, d: JSON.stringify(unitdata)}, httpOptions)
+    .post<boolean>(this.serverUrl + 'setUnitRestorePoint.php',
+        {au: pToken + '##' + bookletDbId.toString(), u: unit, d: JSON.stringify(unitdata)}, httpOptions)
       .pipe(
         catchError(this.handle)
       );
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  setUnitLog(auth: Authorisation, unit: string, unitdata: string[]): Observable<boolean | ServerError> {
+  setUnitLog(pToken: string, bookletDbId: number, unit: string, unitdata: string[]): Observable<boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-    .post<boolean>(this.serverUrl + 'setUnitLog.php', {au: auth.toAuthString(), u: unit, d: unitdata}, httpOptions)
+    .post<boolean>(this.serverUrl + 'setUnitLog.php', {au: pToken + '##' + bookletDbId.toString(), u: unit, d: unitdata}, httpOptions)
       .pipe(
         catchError(this.handle)
       );

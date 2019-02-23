@@ -1,6 +1,5 @@
 import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
-import { Authorisation } from '../authorisation.class';
 import { Observable, of, BehaviorSubject, forkJoin } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { UnitData, BookletData } from './test-controller.interfaces';
@@ -56,8 +55,8 @@ export class UnitDef {
       return myResources;
     }
 
-    loadOk(bs: BackendService, tcs: TestControllerService, auth: Authorisation): Observable<boolean> {
-      return bs.getUnitData(auth, this.id)
+    loadOk(bs: BackendService, tcs: TestControllerService, pToken: string, bookletDbId: number): Observable<boolean> {
+      return bs.getUnitData(pToken, bookletDbId, this.id)
         .pipe(
           switchMap(myData => {
             if (myData instanceof ServerError) {
@@ -93,10 +92,10 @@ export class UnitDef {
                 }
                 if (this.unitDefinitionType.length > 0) {
 
-                  return tcs.loadItemplayerOk(auth, this.unitDefinitionType).pipe(
+                  return tcs.loadItemplayerOk(pToken, bookletDbId, this.unitDefinitionType).pipe(
                     switchMap(ok => {
                       if (ok && definitionRef.length > 0) {
-                        return bs.getUnitResourceTxt(auth, definitionRef).pipe(
+                        return bs.getUnitResourceTxt(pToken, bookletDbId, definitionRef).pipe(
                           switchMap(def => {
                             if (def instanceof ServerError) {
                               return of(false);
@@ -249,10 +248,10 @@ export class BookletDef {
       }
     }
 
-    loadUnits(bs: BackendService, tcs: TestControllerService, auth: Authorisation): Observable<boolean[]> {
+    loadUnits(bs: BackendService, tcs: TestControllerService, pToken: string, bookletDbId: number): Observable<boolean[]> {
       const myUnitLoadings = [];
       for (let i = 0; i < this.units.length; i++) {
-        myUnitLoadings.push(this.units[i].loadOk(bs, tcs, auth));
+        myUnitLoadings.push(this.units[i].loadOk(bs, tcs, pToken, bookletDbId));
       }
       return forkJoin(myUnitLoadings);
     }
