@@ -7,10 +7,6 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class LogindataService {
-
-  // observed only by app.components for the page header
-  public pageTitle$ = new BehaviorSubject<string>('IQB-Testcenter');
-
   // key for test-controller
   // only these two are stored in localStorage
   public bookletDbId$ = new BehaviorSubject<number>(0);

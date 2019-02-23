@@ -1,19 +1,13 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { LogindataService } from '../logindata.service';
+import { Component, Inject } from '@angular/core';
 
 @Component({
   templateUrl: './about.component.html'
 })
-export class AboutComponent implements OnInit {
+export class AboutComponent {
 
   constructor(
     @Inject('APP_NAME') private appName: string,
     @Inject('APP_PUBLISHER') private appPublisher: string,
-    @Inject('APP_VERSION') private appVersion: string,
-    private lds: LogindataService
+    @Inject('APP_VERSION') private appVersion: string
   ) { }
-
-  ngOnInit() {
-    this.lds.pageTitle$.next('');
-  }
 }

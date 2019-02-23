@@ -1,8 +1,11 @@
-<!-- <tc-menu-buttons></tc-menu-buttons> -->
-<tc-navi-buttons></tc-navi-buttons>
+<div class="logo">
+  <a [routerLink]="['/']">
+    <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
+  </a>
+</div>
 <div class="spinner-container" *ngIf="dataLoading">
   <mat-spinner></mat-spinner>
 </div>
-<div class="page-body">
+<div class="tc-body">
     <router-outlet></router-outlet>
 </div>

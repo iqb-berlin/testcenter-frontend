@@ -94,8 +94,6 @@ export class TestControllerComponent implements OnInit {
     if (cu >= 0) {
       this.statusMsg = '';
     } else {
-      // this.tcs.pageTitle$.next('IQB-Testcenter');
-
       if (this.allUnits.length === 0) {
         this.statusMsg = 'Es stehen keine Informationen über ein gewähltes Testheft zur Verfügung.';
       } else {

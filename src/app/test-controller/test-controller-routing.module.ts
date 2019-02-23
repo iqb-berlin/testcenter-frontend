@@ -9,16 +9,18 @@ import { Routes, RouterModule } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    component: TestControllerComponent
-  },
-  {
-    path: 'u/:u',
-      component: UnithostComponent,
-      canActivate: [UnitActivateGuard],
-      canDeactivate: [UnitDeactivateGuard]
-        // resolve: {
-        //   unitData: UnitResolver
-        // }
+    component: TestControllerComponent,
+    children: [
+      {
+        path: 'u/:u',
+          component: UnithostComponent,
+          canActivate: [UnitActivateGuard],
+          canDeactivate: [UnitDeactivateGuard]
+            // resolve: {
+            //   unitData: UnitResolver
+            // }
+      }
+    ]
   }
 ];
 

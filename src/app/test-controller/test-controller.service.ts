@@ -11,9 +11,6 @@ import { UnitDef, BookletDef } from './test-controller.classes';
   providedIn: 'root'
 })
 export class TestControllerService {
-  // observed only by app.components for the page header
-  public pageTitle$ = new BehaviorSubject<string>('Lade Seite...');
-
   public booklet$ = new BehaviorSubject<BookletDef>(null);
   public currentUnitPos$ = new BehaviorSubject<number>(-1);
 

@@ -15,11 +15,6 @@
   width: 100%;
   top: 70px;
   bottom: 0;
-  /* display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: flex-start;
-  justify-content: left; */
 }
 
 .sheetofpaper {
@@ -59,5 +54,23 @@ iframe.unitHost {
 p.unitMessage {
   margin: 50px;
   text-align: center;
+}
+
+.logo {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+}
+
+div.logo img {
+  width: 100px;
+}
+
+.pagetitle {
+  position: absolute;
+  left: 100px;
+  top: 18px;
+  font-size: 1.5em;
+  color: white;
 }
 

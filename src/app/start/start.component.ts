@@ -48,7 +48,6 @@ export class StartComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.lds.pageTitle$.next('');
     this.lds.loginStatusText$.subscribe(t => this.loginStatusText = t);
 
     this.lds.personToken$.subscribe(pt => {

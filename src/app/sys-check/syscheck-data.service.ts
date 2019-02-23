@@ -8,8 +8,6 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class SyscheckDataService {
-  public pageTitle$ = new BehaviorSubject<string>('IQB-Testcenter - System-Check');
-
   public checkConfig$ = new BehaviorSubject<CheckConfigData>(null);
   public environmentData$ = new BehaviorSubject<ReportEntry[]>([]);
   public networkData$ = new BehaviorSubject<ReportEntry[]>([]);
@@ -30,9 +28,5 @@ export class SyscheckDataService {
       this.networkData$.next([]);
       this.questionnaireData$.next([]);
     });
-  }
-
-  setPageTitle() {
-    this.pageTitle$.next('IQB-Testcenter - System-Check');
   }
 }

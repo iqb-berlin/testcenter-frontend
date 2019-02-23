@@ -1,3 +1,8 @@
+<div class="logo">
+  <a [routerLink]="['/']">
+    <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
+  </a>
+</div>
 <div class="page-body">
     <div class="spinner-container" *ngIf="dataLoading">
       <mat-spinner></mat-spinner>
@@ -125,7 +130,8 @@
       </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button color="foreground" [routerLink]="['/about']">Impressum/Datenschutz</button>
-        <button mat-raised-button color="foreground" [routerLink]="['/check']">System-Check</button>
+        <!-- if you like to activate system-check, the unit will not work anymore (navi-buttons) -->
+        <!-- <button mat-raised-button color="foreground" [routerLink]="['/check']">System-Check</button> -->
       </mat-card-actions>
     </mat-card>
   </div>

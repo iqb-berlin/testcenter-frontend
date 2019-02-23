@@ -31,6 +31,7 @@ export class RunComponent implements OnInit {
   saveEnabled = false;
   questionsonlymode = false;
   skipnetwork = false;
+  pagetitle = 'IQB-Testcenter: System-Check';
 
 
   constructor(

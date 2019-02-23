@@ -1,10 +1,4 @@
-import { SyscheckDataService } from './sys-check/syscheck-data.service';
-import { TestControllerService } from './test-controller';
 import { LogindataService } from './logindata.service';
-import { merge } from 'rxjs';
-
-// import { TestdataService } from './test-controller';
-import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -15,27 +9,12 @@ import { Component, OnInit } from '@angular/core';
 
 
 export class AppComponent implements OnInit {
-  public title = '';
 
   constructor (
-    private lds: LogindataService,
-    private tcs: TestControllerService,
-    private ccs: SyscheckDataService,
-    private router: Router) { }
+    private lds: LogindataService
+  ) { }
 
   ngOnInit() {
-
-    merge(
-      this.ccs.pageTitle$,
-      this.lds.pageTitle$,
-      this.tcs.pageTitle$).subscribe(t => {
-        this.title = t;
-      });
-
-    this.lds.pageTitle$.subscribe(t => {
-      this.title = t;
-    });
-
     // give a message to the central message broadcast
     window.addEventListener('message', (event: MessageEvent) => {
       const msgData = event.data;

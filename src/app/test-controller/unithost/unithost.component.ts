@@ -28,6 +28,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private myUnitNumber = -1;
   private myUnitName = '';
+  private unitTitle = '';
 
   // :::::::::::::::::::::
   private postMessageSubscription: Subscription = null;
@@ -257,7 +258,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     const booklet = this.tcs.booklet$.getValue();
     if ((currentUnitId >= 0) && (this.myUnitNumber === currentUnitId) && (booklet !== null)) {
       const currentUnit = booklet.getUnitAt(currentUnitId);
-      this.tcs.pageTitle$.next(currentUnit.label); // (currentUnitId + 1).toString() + '. '
+      this.unitTitle = currentUnit.label; // (currentUnitId + 1).toString() + '. '
       this.myUnitName = currentUnit.id;
 
       this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
