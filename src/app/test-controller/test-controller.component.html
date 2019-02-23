@@ -3,15 +3,6 @@
 <div class="spinner-container" *ngIf="dataLoading">
   <mat-spinner></mat-spinner>
 </div>
-<div class="page-body" fxLayout="row" iqbResizeIFrameChild>
-  <div class="tcSidenav" name="sideNav" fxFlex="1px" fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="5px">
-    <!-- <p>Aufgaben</p>
-    <tc-sidenavi-button *ngFor="let u of allUnits" [unitData]="u"></tc-sidenavi-button> -->
-  </div>
-  <div fxFlex>
+<div class="page-body">
     <router-outlet></router-outlet>
-    <!-- <div *ngIf="!showUnitComponent" class="statusMsg"> {{ statusMsg }}</div>
-    <div *ngIf="errorMsg.length > 0" class="errorMsg"> {{ errorMsg }}</div> -->
-
-  </div>
 </div>

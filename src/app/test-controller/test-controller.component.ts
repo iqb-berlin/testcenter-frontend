@@ -1,9 +1,11 @@
-import { ServerError } from './../backend.service';
-import { BackendService, BookletData } from './backend.service';
+import { ServerError } from '../start/backend.service';
+import { BackendService } from './backend.service';
 
 import { LogindataService } from './../logindata.service';
-import { TestControllerService, UnitDef, BookletDef } from './test-controller.service';
+import { TestControllerService } from './test-controller.service';
 import { Component, OnInit } from '@angular/core';
+import { UnitDef, BookletDef } from './test-controller.classes';
+import { BookletData } from './test-controller.interfaces';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -41,6 +43,7 @@ export class TestControllerComponent implements OnInit {
 
   private loadBooklet(s: string) {
     const auth = this.lds.authorisation$.getValue();
+    console.log('Booklet: ' + s);
     if (auth == null) {
       this.resetBookletData();
       this.myLastAuthString = '';

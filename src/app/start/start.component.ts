@@ -3,10 +3,11 @@ import { LogindataService } from './../logindata.service';
 import { MessageDialogComponent, MessageDialogData, MessageType } from './../iqb-common';
 import { MatDialog } from '@angular/material';
 import { BackendService, PersonTokenAndBookletId,
-  BookletDataListByCode, LoginData, BookletStatus, ServerError } from './../backend.service';
+  BookletDataListByCode, LoginData, BookletStatus, ServerError } from './backend.service';
 import { Router } from '@angular/router';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import { StartButtonData } from './start-button-data.class';
 
 @Component({
   templateUrl: './start.component.html',
@@ -331,60 +332,5 @@ export class StartComponent implements OnInit {
     this.lds.bookletDbId$.next(0);
     this.lds.bookletLabel$.next('');
     this.bookletlist = this.getStartButtonData();
-  }
-}
-
-
-// # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-// # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
-export class StartButtonData {
-  id: string;
-  label: string;
-  filename: string;
-  isEnabled: boolean;
-  statustxt: string;
-  lastUnit: number;
-
-  constructor(
-    id: string,
-    label: string,
-    filename: string
-  ) {
-    this.id = id;
-    this.label = label;
-    this.filename = filename;
-    this.isEnabled = false;
-    this.statustxt = 'Bitte warten';
-  }
-
-  public getBookletStatusByLoginToken(bs: BackendService, loginToken: string, code: string) {
-    bs.getBookletStatusByNameAndLoginToken(loginToken, code, this.id, this.label).subscribe(respDataUntyped => {
-      if (respDataUntyped instanceof ServerError) {
-        const e = respDataUntyped as ServerError;
-        this.statustxt = e.code.toString() + ': ' + e.labelNice;
-      } else {
-        const respData = respDataUntyped as BookletStatus;
-        this.statustxt = respData.statusLabel;
-        this.isEnabled = respData.canStart;
-        this.lastUnit = respData.lastUnit;
-        this.label = respData.label;
-      }
-    });
-  }
-
-  public getBookletStatusByPersonToken(bs: BackendService, personToken: string) {
-    bs.getBookletStatusByNameAndPersonToken(personToken, this.id).subscribe(respDataUntyped => {
-      if (respDataUntyped instanceof ServerError) {
-        const e = respDataUntyped as ServerError;
-        this.statustxt = e.code.toString() + ': ' + e.labelNice;
-      } else {
-        const respData = respDataUntyped as BookletStatus;
-        this.statustxt = respData.statusLabel;
-        this.isEnabled = respData.canStart;
-        this.lastUnit = respData.lastUnit;
-        this.label = respData.label;
-      }
-    });
   }
 }

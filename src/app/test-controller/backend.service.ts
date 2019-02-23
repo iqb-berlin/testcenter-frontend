@@ -1,10 +1,10 @@
-import { ServerError, ErrorHandler } from './../backend.service';
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
-import { ResponseContentType } from '@angular/http';
-import { BehaviorSubject ,  Observable, of } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
 import { catchError, map, tap, switchMap } from 'rxjs/operators';
-import { Authorisation } from '../logindata.service';
+import { Authorisation } from '../authorisation.class';
+import { BookletData, UnitData } from './test-controller.interfaces';
+import { ServerError } from './test-controller.classes';
 
 
 @Injectable({
@@ -30,7 +30,7 @@ export class BackendService {
     .post<boolean>(this.serverUrl + 'addUnitReview.php', {au: auth.toAuthString(), u: unit,
         p: priority, c: categories, e: entry}, httpOptions)
       .pipe(
-        catchError(ErrorHandler.handle)
+        catchError(this.handle)
       );
   }
 
@@ -45,7 +45,7 @@ export class BackendService {
     .post<boolean>(this.serverUrl + 'addBookletReview.php', {au: auth.toAuthString(),
         p: priority, c: categories, e: entry}, httpOptions)
       .pipe(
-        catchError(ErrorHandler.handle)
+        catchError(this.handle)
       );
   }
 
@@ -59,7 +59,7 @@ export class BackendService {
     return this.http
       .post<BookletData>(this.serverUrl + 'getBookletData.php', {au: auth.toAuthString()}, httpOptions)
         .pipe(
-          catchError(ErrorHandler.handle)
+          catchError(this.handle)
         );
   }
 
@@ -74,7 +74,7 @@ export class BackendService {
     return this.http
     .post<UnitData>(this.serverUrl + 'getUnitData.php', {au: auth.toAuthString(), u: unitid}, httpOptions)
       .pipe(
-        catchError(ErrorHandler.handle)
+        catchError(this.handle)
       );
   }
 
@@ -92,7 +92,7 @@ export class BackendService {
       return this.http
       .post<string>(this.serverUrl + 'setBookletStatus.php', {au: auth.toAuthString(), state: state}, httpOptions)
         .pipe(
-          catchError(ErrorHandler.handle)
+          catchError(this.handle)
         );
     // }
   }
@@ -117,7 +117,7 @@ export class BackendService {
           }
           return window.btoa(str64);
         }),
-        catchError(ErrorHandler.handle)
+        catchError(this.handle)
     );
   }
 
@@ -133,7 +133,7 @@ export class BackendService {
       return this.http
       .post<string>(this.serverUrl + 'getUnitResource64.php', {st: sessiontoken, r: resId}, myHttpOptions)
         .pipe(
-          catchError(ErrorHandler.handle)
+          catchError(this.handle)
         );
   }
 
@@ -149,7 +149,7 @@ export class BackendService {
       return this.http
       .post<string>(this.serverUrl + 'getUnitResourceTxt.php', {au: auth.toAuthString(), r: resId}, myHttpOptions)
         .pipe(
-          catchError(ErrorHandler.handle)
+          catchError(this.handle)
         );
   }
 
@@ -165,7 +165,7 @@ export class BackendService {
     .post<boolean>(this.serverUrl + 'setUnitResponse.php',
             {au: auth.toAuthString(), u: unit, d: JSON.stringify(unitdata), rt: responseType}, httpOptions)
       .pipe(
-        catchError(ErrorHandler.handle)
+        catchError(this.handle)
       );
   }
 
@@ -179,7 +179,7 @@ export class BackendService {
     return this.http
     .post<boolean>(this.serverUrl + 'setUnitRestorePoint.php', {au: auth.toAuthString(), u: unit, d: JSON.stringify(unitdata)}, httpOptions)
       .pipe(
-        catchError(ErrorHandler.handle)
+        catchError(this.handle)
       );
   }
 
@@ -193,21 +193,24 @@ export class BackendService {
     return this.http
     .post<boolean>(this.serverUrl + 'setUnitLog.php', {au: auth.toAuthString(), u: unit, d: unitdata}, httpOptions)
       .pipe(
-        catchError(ErrorHandler.handle)
+        catchError(this.handle)
       );
   }
-}
 
-// #############################################################################################
 
-export interface BookletData {
-  xml: string;
-  locked: boolean;
-  u: number;
-}
+  handle(errorObj: HttpErrorResponse): Observable<ServerError> {
+    let myreturn: ServerError = null;
+    if (errorObj.error instanceof ErrorEvent) {
+      myreturn = new ServerError(500, 'Verbindungsproblem', (<ErrorEvent>errorObj.error).message);
+    } else {
+      myreturn = new ServerError(errorObj.status, 'Verbindungsproblem', errorObj.message);
+      if (errorObj.status === 401) {
+        myreturn.labelNice = 'Zugriff verweigert - bitte (neu) anmelden!';
+      } else if (errorObj.status === 503) {
+        myreturn.labelNice = 'Achtung: Server meldet Datenbankproblem.';
+      }
+    }
 
-export interface UnitData {
-  xml: string;
-  restorepoint: string;
-  status: {};
+    return of(myreturn);
+  }
 }

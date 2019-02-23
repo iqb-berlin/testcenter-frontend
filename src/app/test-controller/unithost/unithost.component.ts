@@ -1,14 +1,13 @@
-import { Authorisation } from './../../logindata.service';
 import { debounceTime, bufferTime, switchMap } from 'rxjs/operators';
-import { UnitDef, TestControllerService, UnitLogData, UnitResponseData, UnitRestorePointData } from './../test-controller.service';
-import { Subscriber, Subscription, BehaviorSubject, Observable, of } from 'rxjs';
+import { TestControllerService } from './../test-controller.service';
+import { Subscription, BehaviorSubject } from 'rxjs';
 import { BackendService } from './../backend.service';
-import { ServerError } from './../../backend.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 import { Location } from '@angular/common';
 import { LogindataService } from '../../logindata.service';
+import { UnitRestorePointData, UnitResponseData, UnitLogData } from '../test-controller.interfaces';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -263,8 +262,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getItemplayer(currentUnit.unitDefinitionType));
       this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
       this.iFrameItemplayer.setAttribute('class', 'unitHost');
-      const sideNavElement = document.getElementsByName('sideNav')[0];
-      this.iFrameItemplayer.setAttribute('height', String(sideNavElement.clientHeight - 5));
+      this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
 
       this.pendingUnitDefinition$.next(currentUnit.unitDefinition);
       const restorePoint = this.restorePoints[this.myUnitName];

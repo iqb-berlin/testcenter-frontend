@@ -1,7 +1,7 @@
 import { merge } from 'rxjs';
 import { FormGroup } from '@angular/forms';
 import { BackendService } from './../backend.service';
-import { ServerError } from './../../backend.service';
+import { ServerError } from '../../start/backend.service';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { Component, OnInit } from '@angular/core';
 import { TestControllerService } from '../test-controller.service';

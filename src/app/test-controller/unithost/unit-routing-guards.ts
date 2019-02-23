@@ -1,15 +1,15 @@
-import { LogindataService } from './../../logindata.service';
+import { LogindataService } from '../../logindata.service';
 import { FormGroup } from '@angular/forms';
-import { StartLockInputComponent } from './../start-lock-input/start-lock-input.component';
-import { ConfirmDialogComponent, ConfirmDialogData } from './../../iqb-common/confirm-dialog/confirm-dialog.component';
+import { StartLockInputComponent } from '../start-lock-input/start-lock-input.component';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../iqb-common/confirm-dialog/confirm-dialog.component';
 import { MatDialog, MatSnackBar } from '@angular/material';
-import { UnitDef, TestControllerService } from './../test-controller.service';
-import { switchMap, map } from 'rxjs/operators';
-import { BackendService } from './../backend.service';
+import { TestControllerService } from '../test-controller.service';
+import { switchMap } from 'rxjs/operators';
 import { UnithostComponent } from './unithost.component';
-import { Injectable, Component } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot, Resolve } from '@angular/router';
 import { Observable, of } from 'rxjs';
+import { UnitDef } from '../test-controller.classes';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
@@ -142,4 +142,4 @@ export class UnitResolver implements Resolve<UnitDef> {
 }
 
 
-export const unitRoutingProviders = [UnitActivateGuard, UnitDeactivateGuard, UnitResolver];
+export const unitRoutingGuards = [UnitActivateGuard, UnitDeactivateGuard];

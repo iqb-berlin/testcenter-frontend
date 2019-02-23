@@ -9,7 +9,7 @@ import { MatProgressSpinnerModule, MatIconModule, MatMenuModule, MatTooltipModul
   MatDialogModule, MatSnackBarModule, MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatInputModule } from '@angular/material';
 import { TestControllerComponent } from './test-controller.component';
 import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameChild.directive';
-import { unitRoutingProviders } from './unithost/unit-routing';
+import { unitRoutingGuards } from './unithost/unit-routing-guards';
 import { TcMenuButtonsComponent } from './tc-menu-buttons/tc-menu-buttons.component';
 import { TcNaviButtonsComponent } from './tc-navi-buttons/tc-navi-buttons.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -52,7 +52,7 @@ import { StartLockInputComponent } from './start-lock-input/start-lock-input.com
     StartLockInputComponent
   ],
   providers: [
-    unitRoutingProviders
+    unitRoutingGuards
   ],
   exports: [
     TestControllerComponent,

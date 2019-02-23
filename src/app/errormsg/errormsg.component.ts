@@ -1,4 +1,4 @@
-import { ServerError } from './../backend.service';
+import { ServerError } from '../start/backend.service';
 import { LogindataService } from './../logindata.service';
 import { Component, OnInit } from '@angular/core';
 

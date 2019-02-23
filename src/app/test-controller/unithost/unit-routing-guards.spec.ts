@@ -1,6 +1,6 @@
 import { TestBed, async, inject } from '@angular/core/testing';
 
-import { UnitActivateGuard, UnitDeactivateGuard } from './unit-routing';
+import { UnitActivateGuard, UnitDeactivateGuard } from './unit-routing-guards';
 
 describe('UnitActivateGuard', () => {
   beforeEach(() => {
