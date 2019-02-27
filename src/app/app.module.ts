@@ -17,6 +17,7 @@ import { StartComponent } from './start/start.component';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ErrormsgComponent } from './errormsg/errormsg.component';
+import { httpInterceptorProviders } from './app.interceptor';
 
 
 @NgModule({
@@ -50,6 +51,7 @@ import { ErrormsgComponent } from './errormsg/errormsg.component';
   ],
   providers: [
     BackendService,
+    httpInterceptorProviders,
     {
       provide: LocationStrategy,
       useClass: HashLocationStrategy

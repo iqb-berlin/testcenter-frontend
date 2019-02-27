@@ -53,7 +53,8 @@ export class TestControllerComponent implements OnInit {
         this.myLastBooklet = bookletDbId;
 
         this.dataLoading = true;
-        this.bs.getBookletData(pToken, bookletDbId).subscribe(myData => {
+        this.bs.getBookletData().subscribe(myData => {
+          console.log(myData);
           if (myData instanceof ServerError) {
             const e = myData as ServerError;
             this.lds.globalErrorMsg$.next(e);

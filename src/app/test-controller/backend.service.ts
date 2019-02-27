@@ -10,13 +10,17 @@ import { ServerError } from './test-controller.classes';
   providedIn: 'root'
 })
 export class BackendService {
+  private serverSlimUrl = '';
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
       this.serverUrl = this.serverUrl + 'php_tc/';
+      this.serverSlimUrl = this.serverUrl + 'tc.php/';
     }
 
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  // send reviews
   // 7777777777777777777777777777777777777777777777777777777777777777777777
   saveUnitReview(pToken: string, bookletDbId: number, unit: string, priority: number,
     categories: string, entry: string): Observable<boolean | ServerError> {
@@ -33,7 +37,7 @@ export class BackendService {
       );
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  // ------------------------------
   saveBookletReview(pToken: string, bookletDbId: number, priority: number,
           categories: string, entry: string): Observable<boolean | ServerError> {
     const httpOptions = {
@@ -50,54 +54,25 @@ export class BackendService {
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  getBookletData(pToken: string, bookletDbId: number): Observable<BookletData | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<BookletData>(this.serverUrl + 'getBookletData.php', {au: pToken + '##' + bookletDbId.toString()}, httpOptions)
+  // get
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+
+  getBookletData(): Observable<BookletData | ServerError> {
+    return this.http.get<BookletData>(this.serverSlimUrl + 'bookletdata')
         .pipe(
           catchError(this.handle)
         );
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
-  getUnitData(pToken: string, bookletDbId: number, unitid: string): Observable<UnitData | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-
-    return this.http
-    .post<UnitData>(this.serverUrl + 'getUnitData.php', {au: pToken + '##' + bookletDbId.toString(), u: unitid}, httpOptions)
+  // ------------------------------
+  getUnitData(unitid: string): Observable<UnitData | ServerError> {
+    return this.http.get<UnitData>(this.serverSlimUrl + 'unitdata/' + unitid)
       .pipe(
         catchError(this.handle)
       );
   }
 
-  // 888888888888888888888888888888888888888888888888888888888888888888
-  setBookletStatus(pToken: string, bookletDbId: number, state: {}): Observable<string | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    // if ((sessiontoken + JSON.stringify(state)) === this.lastBookletState) {
-    //   return new Observable(null);
-    // } else {
-    //   this.lastBookletState = sessiontoken + JSON.stringify(state);
-      return this.http
-      .post<string>(this.serverUrl + 'setBookletStatus.php', {au: pToken + '##' + bookletDbId.toString(), state: state}, httpOptions)
-        .pipe(
-          catchError(this.handle)
-        );
-    // }
-  }
-
-  // 888888888888888888888888888888888888888888888888888888888888888888
+  // ------------------------------
   getUnitResource(sessiontoken: string, resId: string): Observable<string | ServerError> {
     const myHttpOptions = {
           headers: new HttpHeaders({
@@ -121,7 +96,7 @@ export class BackendService {
     );
   }
 
-  // 888888888888888888888888888888888888888888888888888888888888888888
+  // ------------------------------
   getUnitResource64(sessiontoken: string, resId: string): Observable<string | ServerError> {
     const myHttpOptions = {
           headers: new HttpHeaders({
@@ -137,7 +112,7 @@ export class BackendService {
         );
   }
 
-  // 888888888888888888888888888888888888888888888888888888888888888888
+  // ------------------------------
   getUnitResourceTxt(pToken: string, bookletDbId: number, resId: string): Observable<string | ServerError> {
     const myHttpOptions = {
           headers: new HttpHeaders({
@@ -153,8 +128,28 @@ export class BackendService {
         );
   }
 
-  // 888888888888888888888888888888888888888888888888888888888888888888
   // 7777777777777777777777777777777777777777777777777777777777777777777777
+  // send responses, status, logs
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  setBookletStatus(pToken: string, bookletDbId: number, state: {}): Observable<string | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    // if ((sessiontoken + JSON.stringify(state)) === this.lastBookletState) {
+    //   return new Observable(null);
+    // } else {
+    //   this.lastBookletState = sessiontoken + JSON.stringify(state);
+      return this.http
+      .post<string>(this.serverUrl + 'setBookletStatus.php', {au: pToken + '##' + bookletDbId.toString(), state: state}, httpOptions)
+        .pipe(
+          catchError(this.handle)
+        );
+    // }
+  }
+
+  // ------------------------------
   setUnitResponses(pToken: string, bookletDbId: number, unit: string,
         unitdata: string, responseType: string): Observable<boolean | ServerError> {
     const httpOptions = {
@@ -170,7 +165,7 @@ export class BackendService {
       );
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  // ------------------------------
   setUnitRestorePoint(pToken: string, bookletDbId: number, unit: string, unitdata: string): Observable<boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -185,7 +180,7 @@ export class BackendService {
       );
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  // ------------------------------
   setUnitLog(pToken: string, bookletDbId: number, unit: string, unitdata: string[]): Observable<boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -200,6 +195,7 @@ export class BackendService {
   }
 
 
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
   handle(errorObj: HttpErrorResponse): Observable<ServerError> {
     let myreturn: ServerError = null;
     if (errorObj.error instanceof ErrorEvent) {
@@ -208,7 +204,7 @@ export class BackendService {
       myreturn = new ServerError(errorObj.status, 'Verbindungsproblem', errorObj.message);
       if (errorObj.status === 401) {
         myreturn.labelNice = 'Zugriff verweigert - bitte (neu) anmelden!';
-      } else if (errorObj.status === 503) {
+      } else if (errorObj.status === 504) {
         myreturn.labelNice = 'Achtung: Server meldet Datenbankproblem.';
       }
     }

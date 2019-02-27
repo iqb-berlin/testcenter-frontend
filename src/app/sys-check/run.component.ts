@@ -112,7 +112,6 @@ export class RunComponent implements OnInit {
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   stepperSelectionChanged(e) {
-    this.ds.setPageTitle();
     this.ds.showNaviButtons$.next(false);
 
     if (e.selectedStep === this.stepUnit) {

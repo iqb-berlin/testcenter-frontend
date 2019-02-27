@@ -26,7 +26,6 @@ export class StartComponent implements OnInit {
       this.checkConfigList = myConfigs;
       this.checkConfigList.push(this.bs.basicTestConfig);
       this.dataLoading = false;
-      this.ds.setPageTitle();
     });
   }
 

@@ -56,9 +56,10 @@ export class UnitDef {
     }
 
     loadOk(bs: BackendService, tcs: TestControllerService, pToken: string, bookletDbId: number): Observable<boolean> {
-      return bs.getUnitData(pToken, bookletDbId, this.id)
+      return bs.getUnitData(this.id)
         .pipe(
           switchMap(myData => {
+            console.log(myData);
             if (myData instanceof ServerError) {
               const e = myData as ServerError;
               this.label = e.code.toString() + ': ' + e.labelNice;
