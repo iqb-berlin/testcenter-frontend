@@ -1,30 +1,29 @@
+import { MainDataService } from './maindata.service';
 import { Injectable } from '@angular/core';
-import { LogindataService } from './logindata.service';
 import { HttpInterceptor, HttpRequest,
   HttpHandler, HttpEvent, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(public lds: LogindataService) {}
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-/*    const personToken = this.lds.personToken$.getValue();
-    const bookletDbId = this.lds.bookletDbId$.getValue();
-    console.log('/////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\');
+  constructor(public mds: MainDataService) {}
 
-    if (personToken && (bookletDbId > 0)) {
-      console.log('/////////////////////////');
-      request = request.clone({
-        setHeaders: {
-          AuthToken: personToken + '##' + bookletDbId.toString()
-        }
-      });
-    } */
-    const authData = {
-      l: this.lds.loginToken$.getValue(),
-      p: this.lds.personToken$.getValue(),
-      b: this.lds.bookletDbId$.getValue()
-    };
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const loginData = this.mds.loginData$.getValue();
+    let authData = {};
+    if (loginData === null) {
+      authData = {
+        l: '',
+        p: '',
+        b: 0
+      };
+    } else {
+      authData = {
+        l: loginData.logintoken,
+        p: loginData.persontoken,
+        b: loginData.booklet
+      };
+    }
     const requestA = request.clone({
       setHeaders: {
         AuthToken: JSON.stringify(authData)
@@ -32,7 +31,6 @@ export class AuthInterceptor implements HttpInterceptor {
     });
 
     return next.handle(requestA);
-
   }
 }
 

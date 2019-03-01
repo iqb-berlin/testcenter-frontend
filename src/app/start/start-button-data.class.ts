@@ -1,4 +1,5 @@
-import { BackendService, ServerError, BookletStatus } from './backend.service';
+import { BackendService, ServerError } from '../backend.service';
+import { BookletStatus } from '../app.interfaces';
 
 export class StartButtonData {
     id: string;
@@ -21,7 +22,7 @@ export class StartButtonData {
     }
 
     public getBookletStatusByLoginToken(bs: BackendService, loginToken: string, code: string) {
-      bs.getBookletStatusByNameAndLoginToken(loginToken, code, this.id, this.label).subscribe(respDataUntyped => {
+      bs.getBookletStatus(code, this.id, this.label).subscribe(respDataUntyped => {
         if (respDataUntyped instanceof ServerError) {
           const e = respDataUntyped as ServerError;
           this.statustxt = e.code.toString() + ': ' + e.labelNice;
@@ -36,7 +37,7 @@ export class StartButtonData {
     }
 
     public getBookletStatusByPersonToken(bs: BackendService, personToken: string) {
-      bs.getBookletStatusByNameAndPersonToken(personToken, this.id).subscribe(respDataUntyped => {
+      bs.getBookletStatus('', this.id, '').subscribe(respDataUntyped => {
         if (respDataUntyped instanceof ServerError) {
           const e = respDataUntyped as ServerError;
           this.statustxt = e.code.toString() + ': ' + e.labelNice;

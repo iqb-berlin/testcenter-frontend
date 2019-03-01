@@ -59,7 +59,6 @@ export class UnitDef {
       return bs.getUnitData(this.id)
         .pipe(
           switchMap(myData => {
-            console.log(myData);
             if (myData instanceof ServerError) {
               const e = myData as ServerError;
               this.label = e.code.toString() + ': ' + e.labelNice;
@@ -96,7 +95,7 @@ export class UnitDef {
                   return tcs.loadItemplayerOk(pToken, bookletDbId, this.unitDefinitionType).pipe(
                     switchMap(ok => {
                       if (ok && definitionRef.length > 0) {
-                        return bs.getUnitResourceTxt(pToken, bookletDbId, definitionRef).pipe(
+                        return bs.getResource(definitionRef).pipe(
                           switchMap(def => {
                             if (def instanceof ServerError) {
                               return of(false);

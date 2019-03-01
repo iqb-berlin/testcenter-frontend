@@ -1,4 +1,3 @@
-import { LogindataService } from '../../logindata.service';
 import { FormGroup } from '@angular/forms';
 import { StartLockInputComponent } from '../start-lock-input/start-lock-input.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../iqb-common/confirm-dialog/confirm-dialog.component';
@@ -14,7 +13,6 @@ import { UnitDef } from '../test-controller.classes';
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
   constructor(
-    private lds: LogindataService,
     private tcs: TestControllerService,
     public startLockDialog: MatDialog,
     private snackBar: MatSnackBar
@@ -47,7 +45,7 @@ export class UnitActivateGuard implements CanActivate {
           height: '300px',
           data: {
             prompt: newUnit.startLockPrompt,
-            keyPreset: this.lds.loginMode$.getValue() === 'review' ? newUnit.startLockKey : ''
+            keyPreset: this.tcs.mode === 'review' ? newUnit.startLockKey : ''
           }
         });
         return dialogRef.afterClosed().pipe(

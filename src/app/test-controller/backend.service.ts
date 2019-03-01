@@ -73,59 +73,11 @@ export class BackendService {
   }
 
   // ------------------------------
-  getUnitResource(sessiontoken: string, resId: string): Observable<string | ServerError> {
-    const myHttpOptions = {
-          headers: new HttpHeaders({
-            'Content-Type':  'application/json'
-          }),
-          responseType: 'arraybuffer' as 'json'
-      };
-
-    return this.http
-    .post<ArrayBuffer>(this.serverUrl + 'getUnitResource.php', {st: sessiontoken, r: resId}, myHttpOptions)
+  getResource(resId: string): Observable<string | ServerError> {
+    return this.http.get<string>(this.serverSlimUrl + 'resource/' + resId)
       .pipe(
-        map((r: ArrayBuffer) => {
-          let str64 = '';
-          const alen = r.byteLength;
-          for (let i = 0; i < alen; i++) {
-            str64 += String.fromCharCode(r[i]);
-          }
-          return window.btoa(str64);
-        }),
         catchError(this.handle)
-    );
-  }
-
-  // ------------------------------
-  getUnitResource64(sessiontoken: string, resId: string): Observable<string | ServerError> {
-    const myHttpOptions = {
-          headers: new HttpHeaders({
-            'Content-Type':  'application/json'
-          }),
-          responseType: 'text' as 'json'
-      };
-
-      return this.http
-      .post<string>(this.serverUrl + 'getUnitResource64.php', {st: sessiontoken, r: resId}, myHttpOptions)
-        .pipe(
-          catchError(this.handle)
-        );
-  }
-
-  // ------------------------------
-  getUnitResourceTxt(pToken: string, bookletDbId: number, resId: string): Observable<string | ServerError> {
-    const myHttpOptions = {
-          headers: new HttpHeaders({
-            'Content-Type':  'application/json'
-          }),
-          responseType: 'text' as 'json'
-      };
-
-      return this.http
-      .post<string>(this.serverUrl + 'getUnitResourceTxt.php', {au: pToken + '##' + bookletDbId.toString(), r: resId}, myHttpOptions)
-        .pipe(
-          catchError(this.handle)
-        );
+      );
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
@@ -212,3 +164,42 @@ export class BackendService {
     return of(myreturn);
   }
 }
+
+
+  // ------------------------------
+  // getUnitResource(sessiontoken: string, resId: string): Observable<string | ServerError> {
+  //   const myHttpOptions = {
+  //         headers: new HttpHeaders({
+  //           'Content-Type':  'application/json'
+  //         }),
+  //         responseType: 'arraybuffer' as 'json'
+  //     };
+
+  //   return this.http
+  //   .post<ArrayBuffer>(this.serverUrl + 'getUnitResource.php', {st: sessiontoken, r: resId}, myHttpOptions)
+  //     .pipe(
+  //       map((r: ArrayBuffer) => {
+  //         let str64 = '';
+  //         const alen = r.byteLength;
+  //         for (let i = 0; i < alen; i++) {
+  //           str64 += String.fromCharCode(r[i]);
+  //         }
+  //         return window.btoa(str64);
+  //       }),
+  //       catchError(this.handle)
+  //   );
+  // }
+  // getUnitResource64(sessiontoken: string, resId: string): Observable<string | ServerError> {
+  //   const myHttpOptions = {
+  //         headers: new HttpHeaders({
+  //           'Content-Type':  'application/json'
+  //         }),
+  //         responseType: 'text' as 'json'
+  //     };
+
+  //     return this.http
+  //     .post<string>(this.serverUrl + 'getUnitResource64.php', {st: sessiontoken, r: resId}, myHttpOptions)
+  //       .pipe(
+  //         catchError(this.handle)
+  //       );
+  // }

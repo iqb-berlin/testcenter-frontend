@@ -1,6 +1,6 @@
-import { LogindataService } from './../../logindata.service';
-import { BackendService, UnitData } from './../backend.service';
-import { SyscheckDataService } from './../syscheck-data.service';
+import { MainDataService } from '../../maindata.service';
+import { BackendService, UnitData } from '../backend.service';
+import { SyscheckDataService } from '../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 import { Subscription, BehaviorSubject } from 'rxjs';
@@ -33,7 +33,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   constructor(
     private ds: SyscheckDataService,
     private bs: BackendService,
-    private lds: LogindataService
+    private mds: MainDataService
   ) {
   }
 
@@ -47,7 +47,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
         }, '*');
       }
     });
-    this.postMessageSubscription = this.lds.postMessage$.subscribe((m: MessageEvent) => {
+    this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData['type'];
       console.log(msgData);
@@ -68,7 +68,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
 
             if (hasData) {
               this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
-              this.postMessageTarget = m.source;
+              this.postMessageTarget = m.source as Window;
               this.postMessageTarget.postMessage({
                 type: 'OpenCBA.ToItemPlayer.DataTransfer',
                 sessionId: this.itemplayerSessionId,

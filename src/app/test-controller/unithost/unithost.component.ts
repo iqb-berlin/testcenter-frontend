@@ -1,3 +1,4 @@
+import { MainDataService } from './../../maindata.service';
 import { debounceTime, bufferTime, switchMap } from 'rxjs/operators';
 import { TestControllerService } from './../test-controller.service';
 import { Subscription, BehaviorSubject } from 'rxjs';
@@ -6,7 +7,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 import { Location } from '@angular/common';
-import { LogindataService } from '../../logindata.service';
 import { UnitRestorePointData, UnitResponseData, UnitLogData } from '../test-controller.interfaces';
 
 @Component({
@@ -50,12 +50,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
   constructor(
     private tcs: TestControllerService,
     private bs: BackendService,
-    private lds: LogindataService,
+    private mds: MainDataService,
     private location: Location,
     private route: ActivatedRoute
   ) {
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    this.postMessageSubscription = this.lds.postMessage$.subscribe((m: MessageEvent) => {
+    this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData['type'];
 
@@ -161,33 +161,33 @@ export class UnithostComponent implements OnInit, OnDestroy {
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.restorePoint$.pipe(
       debounceTime(300)).subscribe(data => {
-        if (data !== null) {
-          const b = this.tcs.booklet$.getValue();
-          if (b !== null) {
-            const u = b.getUnitAt(this.myUnitNumber);
-            if (u !== null) {
-              u.restorePoint = data.restorePoint;
-            }
-          }
+        // if (data !== null) {
+        //   const b = this.tcs.booklet$.getValue();
+        //   if (b !== null) {
+        //     const u = b.getUnitAt(this.myUnitNumber);
+        //     if (u !== null) {
+        //       u.restorePoint = data.restorePoint;
+        //     }
+        //   }
 
-          this.restorePoints[data.unitName] = data.restorePoint;
-          if (this.lds.loginMode$.getValue() !== 'review') {
-            this.bs.setUnitRestorePoint(this.lds.personToken$.getValue(),
-                this.lds.bookletDbId$.getValue(), data.unitName, data.restorePoint)
-            .subscribe();
-          }
-        }
+        //   this.restorePoints[data.unitName] = data.restorePoint;
+        //   if (this.lds.loginMode$.getValue() !== 'review') {
+        //     this.bs.setUnitRestorePoint(this.lds.personToken$.getValue(),
+        //         this.lds.bookletDbId$.getValue(), data.unitName, data.restorePoint)
+        //     .subscribe();
+        //   }
+        // }
     });
 
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.response$.pipe(
       debounceTime(300)
     ).subscribe(data => {
-        if ((data !== null) && (this.lds.loginMode$.getValue() !== 'review')) {
-          this.bs.setUnitResponses(this.lds.personToken$.getValue(),
-              this.lds.bookletDbId$.getValue(), data.unitName, data.response, data.responseType)
-          .subscribe();
-      }
+        // if ((data !== null) && (this.lds.loginMode$.getValue() !== 'review')) {
+        //   this.bs.setUnitResponses(this.lds.personToken$.getValue(),
+        //       this.lds.bookletDbId$.getValue(), data.unitName, data.response, data.responseType)
+        //   .subscribe();
+      // }
     });
 
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -208,7 +208,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
         });
         for (const unitName in myLogs) {
           if (myLogs[unitName].length > 0) {
-            this.bs.setUnitLog(this.lds.personToken$.getValue(), this.lds.bookletDbId$.getValue(), unitName, myLogs[unitName]).subscribe();
+            // ## this.bs.setUnitLog(this.lds.personToken$.getValue(),
+            // this.lds.bookletDbId$.getValue(), unitName, myLogs[unitName]).subscribe();
           }
         }
       }
@@ -238,9 +239,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.loadItemplayer();
     });
 
-    this.lds.bookletDbId$.subscribe(auth => {
-      this.restorePoints = {};
-    });
+    // this.lds.bookletDbId$.subscribe(auth => {
+    //   this.restorePoints = {};
+    // });
 
     this.tcs.currentUnitPos$.subscribe(up => {
       if (up >= 0) {

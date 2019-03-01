@@ -2,56 +2,43 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { LoginData, BookletStatus, PersonTokenAndBookletId, BookletData, BookletDataListByCode } from './app.interfaces';
 
 
 @Injectable()
 export class BackendService {
+  private serverSlimUrl = '';
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
       this.serverUrl = this.serverUrl + 'php_start/';
+      this.serverSlimUrl = this.serverUrl + 'login.php/';
     }
 
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  login(name: string, password: string): Observable<string | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  login(name: string, password: string): Observable<LoginData | ServerError> {
     return this.http
-      .post<string>(this.serverUrl + 'testlogin.php', {n: name, p: password}, httpOptions)
+      .post<LoginData>(this.serverSlimUrl + 'login', {n: name, p: password})
         .pipe(
           catchError(ErrorHandler.handle)
         );
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  // don't use LoginData.code!
-  getLoginDataByLoginToken(logintoken: string): Observable<LoginData | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  getLoginData(loginToken: string, personToken: string): Observable<LoginData | ServerError> {
     return this.http
-      .post<LoginData>(this.serverUrl + 'getLoginDataByLoginToken.php', {lt: logintoken}, httpOptions)
+      .post<LoginData>(this.serverSlimUrl + 'login', {lt: loginToken, pt: personToken})
         .pipe(
           catchError(ErrorHandler.handle)
         );
   }
 
-   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-   getLoginDataByPersonToken(persontoken: string): Observable<LoginData | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<LoginData>(this.serverUrl + 'getLoginDataByPersonToken.php', {pt: persontoken}, httpOptions)
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  getBookletStatus(code: string, bookletid: string, bookletlabel: string): Observable<BookletStatus | ServerError> {
+    return this.http.get<BookletStatus>(this.serverSlimUrl + 'bookletstatus?c='
+                  + code + '&b=' + bookletid + '&bl=' + encodeURI(bookletlabel))
         .pipe(
           catchError(ErrorHandler.handle)
         );
@@ -181,36 +168,4 @@ export class ServerError {
     this.labelNice = labelNice;
     this.labelSystem = labelSystem;
   }
-}
-
-export interface BookletData {
-  id: string;
-  filename: string;
-  label: string;
-}
-
-export interface BookletDataListByCode {
-  [code: string]: BookletData[];
-}
-
-export interface LoginData {
-  mode: string;
-  groupname: string;
-  loginname: string;
-  workspaceName: string;
-  booklets: BookletDataListByCode;
-  code: string;
-}
-
-export interface BookletStatus {
-  statusLabel: string;
-  lastUnit: number;
-  canStart: boolean;
-  id: number;
-  label: string;
-}
-
-export interface PersonTokenAndBookletId {
-  pt: string;
-  b: number;
 }

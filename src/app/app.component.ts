@@ -1,9 +1,9 @@
-import { LogindataService } from './logindata.service';
+import { MainDataService } from './maindata.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'tc-root',
-  templateUrl: './app.component.html',
+  template: `<router-outlet></router-outlet>`,
   styleUrls: ['./app.component.scss']
 })
 
@@ -11,7 +11,7 @@ import { Component, OnInit } from '@angular/core';
 export class AppComponent implements OnInit {
 
   constructor (
-    private lds: LogindataService
+    private mds: MainDataService
   ) { }
 
   ngOnInit() {
@@ -21,9 +21,10 @@ export class AppComponent implements OnInit {
       const msgType = msgData['type'];
       if ((msgType !== undefined) && (msgType !== null)) {
         if (msgType.substr(0, 7) === 'OpenCBA') {
-          this.lds.postMessage$.next(event);
+          this.mds.postMessage$.next(event);
         }
       }
     });
+    this.mds.loadLoginStatus();
   }
 }

@@ -1,10 +1,9 @@
 import { Router } from '@angular/router';
-import { LogindataService } from './../logindata.service';
 import { BehaviorSubject, of, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { switchMap } from 'rxjs/operators';
 import { BackendService } from './backend.service';
-import { ServerError} from '../start/backend.service';
+import { ServerError} from '../backend.service';
 import { UnitDef, BookletDef } from './test-controller.classes';
 
 @Injectable({
@@ -13,6 +12,7 @@ import { UnitDef, BookletDef } from './test-controller.classes';
 export class TestControllerService {
   public booklet$ = new BehaviorSubject<BookletDef>(null);
   public currentUnitPos$ = new BehaviorSubject<number>(-1);
+  public mode = '';
 
   // for Navi-Buttons:
   public showNaviButtons$ = new BehaviorSubject<boolean>(false);
@@ -46,8 +46,7 @@ export class TestControllerService {
 
   constructor(
     private bs: BackendService,
-    private router: Router,
-    private lds: LogindataService
+    private router: Router
   ) {
     this.currentUnitPos$.subscribe((p: number) => {
       const b = this.booklet$.getValue();
@@ -97,7 +96,7 @@ export class TestControllerService {
     } else {
       // to avoid multiple calls before returning:
       this.itemplayers[unitDefinitionType] = null;
-      return this.bs.getUnitResourceTxt(pToken, bookletDbId, unitDefinitionType)
+      return this.bs.getResource(unitDefinitionType)
           .pipe(
             switchMap(myData => {
               if (myData instanceof ServerError) {
@@ -156,7 +155,8 @@ export class TestControllerService {
     if ((targetUnitSequenceId >= 0) && (currentBooklet !== null) && (targetUnitSequenceId < currentBooklet.units.length)) {
       this.currentUnitPos$.next(targetUnitSequenceId);
 
-      this.bs.setBookletStatus(this.lds.personToken$.getValue(), this.lds.bookletDbId$.getValue(), {u: targetUnitSequenceId}).subscribe();
+      // this.bs.setBookletStatus(this.lds.personToken$.getValue(),
+      // this.lds.bookletDbId$.getValue(), {u: targetUnitSequenceId}).subscribe();
     }
   }
 }

@@ -40,7 +40,7 @@
         </mat-card-content>
         <mat-card-actions>
           <button mat-raised-button type="submit" [disabled]="codeinputform.invalid" color="primary">Weiter</button>
-          <button mat-raised-button color="foreground" (click)="changeLogin()">Test-Anmeldung ändern</button>
+          <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
         </mat-card-actions>
       </form>
     </mat-card>
@@ -61,8 +61,7 @@
         </div>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button color="foreground" (click)="changeLogin()">Test-Anmeldung ändern</button>
-        <button mat-raised-button color="foreground" *ngIf="validCodes.length > 1" (click)="changeCode()">Personen-Code ändern</button>
+        <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
       </mat-card-actions>
     </mat-card>
 
@@ -72,9 +71,8 @@
       <mat-card-content>
         <div fxLayout="column" fxLayoutGap="20px">
           <button mat-raised-button color="primary" [routerLink]="['/t']">Zum Test zurückkehren</button>
-          <button mat-raised-button color="primary" (click)="buttonEndTest()">{{ testEndButtonText }}</button>
-          <button mat-raised-button color="foreground" (click)="changeLogin()">Test-Anmeldung ändern</button>
-          <button mat-raised-button color="foreground" *ngIf="validCodes.length > 1" (click)="changeCode()">Personen-Code ändern</button>
+          <button mat-raised-button color="primary" (click)="finishBooklet()">{{ testEndButtonText }}</button>
+          <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
         </div>
       </mat-card-content>
     </mat-card>
@@ -110,7 +108,7 @@
         <!-- - - - - - - - - - - - - - - - - -->
         <div *ngIf="showCodeForm">
           <p>Für das Starten eines Tests ist die Eingabe eines Personen-Codes nötig.</p>
-          <p>{{ codeInputPromt }}</p>
+          <p>{{ codeInputPrompt }}</p>
         </div>
 
         <!-- - - - - - - - - - - - - - - - - -->

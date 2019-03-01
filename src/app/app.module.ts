@@ -12,7 +12,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { IqbCommonModule } from './iqb-common';
-import { BackendService } from './start/backend.service';
+import { BackendService } from './backend.service';
 import { StartComponent } from './start/start.component';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';

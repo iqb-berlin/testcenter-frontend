@@ -1,11 +1,11 @@
-import { BehaviorSubject } from 'rxjs';
-import { LogindataService } from './../logindata.service';
+import { MainDataService } from './../maindata.service';
+import { Subscription, BehaviorSubject } from 'rxjs';
 import { MessageDialogComponent, MessageDialogData, MessageType } from './../iqb-common';
 import { MatDialog } from '@angular/material';
-import { BackendService, PersonTokenAndBookletId,
-  BookletDataListByCode, LoginData, BookletStatus, ServerError } from './backend.service';
+import { BackendService, ServerError } from '../backend.service';
+import {  PersonTokenAndBookletId, BookletDataListByCode, LoginData, BookletStatus } from '../app.interfaces';
 import { Router } from '@angular/router';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { StartButtonData } from './start-button-data.class';
 
@@ -13,24 +13,26 @@ import { StartButtonData } from './start-button-data.class';
   templateUrl: './start.component.html',
   styleUrls: ['./start.component.css']
 })
-export class StartComponent implements OnInit {
+export class StartComponent implements OnInit, OnDestroy {
+  private loginDataSubscription: Subscription = null;
   private dataLoading = false;
 
   // for template
   private showLoginForm = true;
-  private loginStatusText = ['nicht angemeldet'];
   private showCodeForm = false;
-  private codeInputPromt = 'Bitte gib den Personen-Code ein, den du auf dem Zettel am Platz gefunden hast!';
   private showBookletButtons = false;
   private bookletlist: StartButtonData[] = [];
-  private bookletSelectPromptOne = 'Bitte klick auf die Schaltfläche links, um den Test zu starten!';
-  private bookletSelectPromptMany = 'Bitte klicken Sie auf eine der Schaltflächen links, um einen Test zu starten!';
   private showTestRunningButtons = false;
   private validCodes = [];
+  private loginStatusText = ['nicht angemeldet'];
 
   private testtakerloginform: FormGroup;
   private codeinputform: FormGroup;
+  private lastloginname = '';
   private testEndButtonText = 'Test beenden';
+  private bookletSelectPromptOne = 'Bitte klick auf die Schaltfläche links, um den Test zu starten!';
+  private bookletSelectPromptMany = 'Bitte klicken Sie auf eine der Schaltflächen links, um einen Test zu starten!';
+  private codeInputPrompt = 'Bitte Log-in eingeben, der auf dem Zettel steht!';
 
   // ??
   // private sessiondata: PersonBooklets;
@@ -40,7 +42,7 @@ export class StartComponent implements OnInit {
 
 
   constructor(private fb: FormBuilder,
-    private lds: LogindataService,
+    private mds: MainDataService,
     public messsageDialog: MatDialog,
     private router: Router,
     private bs: BackendService) {
@@ -48,117 +50,125 @@ export class StartComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.lds.loginStatusText$.subscribe(t => this.loginStatusText = t);
+    this.loginDataSubscription = this.mds.loginData$.subscribe(logindata => {
+      this.bookletlist = [];
+      if (logindata.logintoken.length > 0) {
+        // Statustext box
+        this.loginStatusText = [];
+        this.loginStatusText.push('Studie: ' + logindata.workspaceName);
+        this.loginStatusText.push('angemeldet als "' +
+          logindata.loginname + (logindata.code.length > 0 ? ('/' + logindata.code + '"') : '"'));
+        this.loginStatusText.push('Gruppe: ' + logindata.groupname);
 
-    this.lds.personToken$.subscribe(pt => {
-      const bId = this.lds.bookletDbId$.getValue();
-      if (pt.length > 0) {
+        if (logindata.mode === 'trial') {
+          this.loginStatusText.push('Ausführungsmodus "trial": Die Zeit-Beschränkungen, die eventuell ' +
+            'für das Testheft oder bestimmte Aufgaben festgelegt wurden, gelten nicht. Sie können ' +
+            'Kommentare über das Menü oben rechts speichern.');
+        } else if (logindata.mode === 'review') {
+          this.loginStatusText.push(
+            'Ausführungsmodus "review": Beschränkungen für Zeit und Navigation sind nicht wirksam. Antworten werden ' +
+            'nicht gespeichert. Sie können Kommentare über das Menü oben rechts speichern.');
+        }
+
         this.showLoginForm = false;
-        this.showCodeForm = false;
-        this.showBookletButtons = bId === 0;
-        this.showTestRunningButtons = bId > 0;
+        let createBookletSelectButtons = false;
+        if (logindata.persontoken.length > 0) {
+          // test started or just finished
+          this.showBookletButtons = false;
+          this.showCodeForm = false;
+          this.showLoginForm = false;
+          if (logindata.booklet === 0) {
+            this.showBookletButtons = true;
+            this.showTestRunningButtons = false;
+            // booklet finished
+            // buttons to select booklet
+
+            createBookletSelectButtons = true;
+            this.loginStatusText.push('Test nicht gestartet.');
+          } else {
+            // booklet started
+            this.showBookletButtons = false;
+            this.showTestRunningButtons = true;
+
+            this.loginStatusText.push('Test gestartet.');
+          }
+
+        } else {
+          this.showTestRunningButtons = false;
+
+          this.validCodes = Object.keys(logindata.booklets);
+          if (this.validCodes.length > 1) {
+            if (logindata.code.length > 0) {
+              this.showCodeForm = false;
+              this.showBookletButtons = true;
+              // code given
+              // buttons to select booklet
+
+              createBookletSelectButtons = true;
+            } else {
+              // code not yet given
+              // code prompt
+
+              this.showCodeForm = true;
+              this.showBookletButtons = false;
+            }
+          } else {
+            // no code but there is only one
+            // buttons to select booklet
+
+            this.showCodeForm = false;
+            this.showBookletButtons = true;
+            createBookletSelectButtons = true;
+          }
+        }
+
+        if (createBookletSelectButtons) {
+          for (const booklet of logindata.booklets[logindata.code]) {
+            const myTest = new StartButtonData(booklet.id, booklet.label, booklet.filename);
+            if (logindata.persontoken.length > 0) {
+              myTest.getBookletStatusByPersonToken(this.bs, logindata.persontoken);
+            } else {
+              myTest.getBookletStatusByLoginToken(this.bs, logindata.logintoken, logindata.code);
+            }
+            this.bookletlist.push(myTest);
+          }
+        }
       } else {
-        this.showLoginForm = this.lds.loginToken$.getValue().length === 0;
-        this.showCodeForm = this.validCodes.length > 1;
+        // blank start, only login form
+        this.validCodes = [];
+        this.loginStatusText = ['nicht angemeldet'];
         this.showBookletButtons = false;
+        this.showCodeForm = false;
+        this.showLoginForm = true;
         this.showTestRunningButtons = false;
       }
-    });
+    }); // loginDataSubscription
 
-    this.lds.bookletDbId$.subscribe(id => {
-      const ptLength = this.lds.personToken$.getValue().length;
-      if (id > 0) {
-        this.showLoginForm = false;
-        this.showCodeForm = false;
-        this.showBookletButtons = false;
-        this.showTestRunningButtons = ptLength > 0;
-      } else {
-        this.showLoginForm = ptLength === 0;
-        this.showCodeForm = false;
-        this.showBookletButtons = ptLength > 0;
-        this.showTestRunningButtons = false;
-      }
-    });
 
     this.testtakerloginform = this.fb.group({
-      testname: this.fb.control(this.lds.loginName$.getValue(), [Validators.required, Validators.minLength(3)]),
+      testname: this.fb.control(this.lastloginname, [Validators.required, Validators.minLength(3)]),
       testpw: this.fb.control('', [Validators.required, Validators.minLength(3)])
     });
 
     this.codeinputform = this.fb.group({
       code: this.fb.control('', [Validators.required, Validators.minLength(1)])
     });
-
-    this.lds.loginMode$.subscribe(m => {
-      if (m === 'hot') {
-        this.testEndButtonText = 'Test beenden';
-      } else {
-        this.testEndButtonText = 'Test verlassen';
-      }
-    });
-
   }
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   testtakerlogin() {
     this.dataLoading = true;
     this.bs.login(this.testtakerloginform.get('testname').value, this.testtakerloginform.get('testpw').value).subscribe(
-      loginTokenUntyped => {
-        if (loginTokenUntyped instanceof ServerError) {
-          const e = loginTokenUntyped as ServerError;
-          this.lds.globalErrorMsg$.next(e);
-          this.dataLoading = false;
+      loginData => {
+        if (loginData instanceof ServerError) {
+          const e = loginData as ServerError;
+          this.mds.globalErrorMsg$.next(e);
           // no change in other data
         } else {
-          this.validCodes = [];
-          this.bookletlist = [];
-          this.lds.personToken$.next('');
-          this.lds.personCode$.next('');
-          this.lds.globalErrorMsg$.next(null);
-          this.lds.workspaceName$.next('');
-          this.lds.bookletsByCode$.next(null);
-          this.lds.bookletData$.next([]);
-          this.lds.bookletDbId$.next(0); // very important: to let test-controller reset booklet data
-          this.lds.bookletLabel$.next('');
-          this.lds.loginMode$.next('');
-          this.lds.loginName$.next('');
-
-          this.lds.loginToken$.next(loginTokenUntyped as string);
-
-          // overwrite all data
-          this.bs.getLoginDataByLoginToken(this.lds.loginToken$.getValue()).subscribe(
-            loginDataUntyped => {
-              if (loginDataUntyped instanceof ServerError) {
-                const e = loginDataUntyped as ServerError;
-                this.lds.globalErrorMsg$.next(e);
-                this.lds.loginToken$.next('');
-              } else {
-                const loginData = loginDataUntyped as LoginData;
-                this.lds.globalErrorMsg$.next(null);
-                this.lds.personToken$.next('');
-                this.lds.bookletsByCode$.next(loginData.booklets);
-                this.lds.bookletData$.next([]);
-                this.lds.groupName$.next(loginData.groupname);
-                this.lds.workspaceName$.next(loginData.workspaceName);
-                this.lds.loginMode$.next(loginData.mode);
-                this.lds.loginName$.next(loginData.loginname);
-
-                this.validCodes = Object.keys(loginData.booklets);
-                this.showLoginForm = false;
-
-                if (this.validCodes.length > 1) {
-                  this.showCodeForm = true;
-                } else {
-                  this.lds.personCode$.next((this.validCodes.length > 0) ? this.validCodes[0] : '');
-                  this.showCodeForm = false;
-                  this.showBookletButtons = true;
-                  this.lds.bookletData$.next(loginData.booklets['']);
-                  this.bookletlist = this.getStartButtonData();
-                }
-              }
-              this.dataLoading = false;
-            });
-          }
+          this.mds.globalErrorMsg$.next(null);
+          this.mds.setNewLoginData(loginData);
+        }
+        this.dataLoading = false;
       }
     );
   }
@@ -166,13 +176,12 @@ export class StartComponent implements OnInit {
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   codeinput() {
     const myCode = this.codeinputform.get('code').value as string;
-    this.lds.personToken$.next('');
     if (myCode.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
         data: <MessageDialogData>{
-          title: 'Eingabe Personen-Code',
-          content: 'Bitte geben Sie einen Personen-Code ein!.',
+          title: 'Eingabe Personen-Code: Leer',
+          content: this.codeInputPrompt,
           type: MessageType.error
         }
       });
@@ -180,157 +189,124 @@ export class StartComponent implements OnInit {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
         data: <MessageDialogData>{
-          title: 'Eingabe Personen-Code',
-          content: 'Für diesen Personen-Code liegen keine Informationen vor.',
+          title: 'Eingabe Personen-Code: Ungültig',
+          content: this.codeInputPrompt,
           type: MessageType.error
         }
       });
     } else {
-      this.lds.personCode$.next(myCode);
-      this.showCodeForm = false;
-      this.showBookletButtons = true;
-      const codeToBooklets = this.lds.bookletsByCode$.getValue();
-      this.lds.bookletData$.next(codeToBooklets[myCode]);
-      this.bookletlist = this.getStartButtonData();
+      this.mds.setCode(myCode);
     }
-  }
-
-  // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  getStartButtonData(): StartButtonData[] {
-    const myreturn: StartButtonData[] = [];
-    const lt = this.lds.loginToken$.getValue();
-    const pt = this.lds.personToken$.getValue();
-    const code = this.lds.personCode$.getValue();
-
-    const bookletData = this.lds.bookletData$.getValue();
-    if (pt.length > 0 || lt.length > 0) {
-      for (const booklet of bookletData) {
-        const myTest = new StartButtonData(booklet.id, booklet.label, booklet.filename);
-        if (pt.length > 0) {
-          myTest.getBookletStatusByPersonToken(this.bs, pt);
-        } else {
-          myTest.getBookletStatusByLoginToken(this.bs, lt, code);
-        }
-        myreturn.push(myTest);
-      }
-    }
-    return myreturn;
   }
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   buttonStartTest(b: StartButtonData) {
-    const lt = this.lds.loginToken$.getValue();
-    const pt = this.lds.personToken$.getValue();
-    const code = this.lds.personCode$.getValue();
+    // const lt = this.lds.loginToken$.getValue();
+    // const pt = this.lds.personToken$.getValue();
+    // const code = this.lds.personCode$.getValue();
 
-    if (pt.length > 0 || lt.length > 0) {
-      if (pt.length > 0) {
-        this.bs.startBookletByPersonToken(pt, b.filename).subscribe(
-          bookletIdUntyped => {
-            if (bookletIdUntyped instanceof ServerError) {
-              const e = bookletIdUntyped as ServerError;
-              this.lds.globalErrorMsg$.next(e);
-            } else {
-              const bookletId = bookletIdUntyped as number;
-              this.lds.globalErrorMsg$.next(null);
-              if (bookletId > 0) {
-                this.lds.bookletDbId$.next(bookletId);
-                this.lds.bookletLabel$.next(b.label);
-                this.lds.globalErrorMsg$.next(null);
-                // ************************************************
+    // if (pt.length > 0 || lt.length > 0) {
+    //   if (pt.length > 0) {
+    //     this.bs.startBookletByPersonToken(pt, b.filename).subscribe(
+    //       bookletIdUntyped => {
+    //         if (bookletIdUntyped instanceof ServerError) {
+    //           const e = bookletIdUntyped as ServerError;
+    //           this.lds.globalErrorMsg$.next(e);
+    //         } else {
+    //           const bookletId = bookletIdUntyped as number;
+    //           this.lds.globalErrorMsg$.next(null);
+    //           if (bookletId > 0) {
+    //             this.lds.bookletDbId$.next(bookletId);
+    //             this.lds.bookletLabel$.next(b.label);
+    //             this.lds.globalErrorMsg$.next(null);
+    //             // ************************************************
 
-                // by setting bookletDbId$ the test-controller will load the booklet
-                this.router.navigateByUrl('/t');
+    //             // by setting bookletDbId$ the test-controller will load the booklet
+    //             this.router.navigateByUrl('/t');
 
-                // ************************************************
-              } else {
-                this.lds.globalErrorMsg$.next(new ServerError(401, 'ungültige Anmeldung', 'start.component'));
-              }
-            }
-          }
-        );
-      } else {
-        this.bs.startBookletByLoginToken(lt, code, b.filename).subscribe(
-          startDataUntyped => {
-            if (startDataUntyped instanceof ServerError) {
-              const e = startDataUntyped as ServerError;
-              this.lds.globalErrorMsg$.next(e);
-            } else {
-              const startData = startDataUntyped as PersonTokenAndBookletId;
+    //             // ************************************************
+    //           } else {
+    //             this.lds.globalErrorMsg$.next(new ServerError(401, 'ungültige Anmeldung', 'start.component'));
+    //           }
+    //         }
+    //       }
+    //     );
+    //   } else {
+    //     this.bs.startBookletByLoginToken(lt, code, b.filename).subscribe(
+    //       startDataUntyped => {
+    //         if (startDataUntyped instanceof ServerError) {
+    //           const e = startDataUntyped as ServerError;
+    //           this.lds.globalErrorMsg$.next(e);
+    //         } else {
+    //           const startData = startDataUntyped as PersonTokenAndBookletId;
 
-              if (startData.b > 0) {
-                this.lds.personToken$.next(startData.pt);
-                this.lds.globalErrorMsg$.next(null);
-                this.lds.bookletLabel$.next(b.label);
-                this.lds.bookletDbId$.next(startData.b); // as last to trigger auth with success!
-                // ************************************************
+    //           if (startData.b > 0) {
+    //             this.lds.personToken$.next(startData.pt);
+    //             this.lds.globalErrorMsg$.next(null);
+    //             this.lds.bookletLabel$.next(b.label);
+    //             this.lds.bookletDbId$.next(startData.b); // as last to trigger auth with success!
+    //             // ************************************************
 
-                // by setting bookletDbId$ the test-controller will load the booklet
-                this.router.navigateByUrl('/t');
+    //             // by setting bookletDbId$ the test-controller will load the booklet
+    //             this.router.navigateByUrl('/t');
 
-                // ************************************************
-              } else {
-                this.lds.globalErrorMsg$.next(new ServerError(401, 'ungültige Anmeldung', 'start.component'));
-              }
-            }
-          }
-        );
-      }
-    } else {
-      this.lds.globalErrorMsg$.next(new ServerError(401, 'ungültige Anmeldung', 'start.component'));
-    }
+    //             // ************************************************
+    //           } else {
+    //             this.lds.globalErrorMsg$.next(new ServerError(401, 'ungültige Anmeldung', 'start.component'));
+    //           }
+    //         }
+    //       }
+    //     );
+    //   }
+    // } else {
+    //   this.lds.globalErrorMsg$.next(new ServerError(401, 'ungültige Anmeldung', 'start.component'));
+    // }
   }
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  changeLogin() {
-    this.showBookletButtons = false;
-    this.showCodeForm = false;
-    this.showLoginForm = true;
-    this.showTestRunningButtons = false;
-  }
-
-  // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  changeCode() {
-    this.showBookletButtons = false;
-    this.showCodeForm = true;
-    this.showLoginForm = false;
-    this.showTestRunningButtons = false;
+  resetLogin() {
+    this.mds.setNewLoginData();
   }
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   buttonEndTest() {
-    const pToken = this.lds.personToken$.getValue();
-    const bookletDbId = this.lds.bookletDbId$.getValue();
-    if ((this.lds.loginMode$.getValue() === 'hot') && (bookletDbId !== 0)) {
-      this.bs.endBooklet(pToken, bookletDbId).subscribe(
-        finOkUntyped => {
-          if (finOkUntyped instanceof ServerError) {
-            const e = finOkUntyped as ServerError;
-            this.lds.globalErrorMsg$.next(e);
-          } else {
-            const finOK = finOkUntyped as boolean;
-            this.lds.globalErrorMsg$.next(null);
-            if (finOK) {
-              this.showLoginForm = false;
-              this.showCodeForm = false;
-              this.showBookletButtons = true;
-              this.showTestRunningButtons = false;
-              this.resetBooklet();
-            }
-          }
-      });
-    } else {
-      this.showLoginForm = false;
-      this.showCodeForm = false;
-      this.showBookletButtons = true;
-      this.showTestRunningButtons = false;
-      this.resetBooklet();
-    }
+    // const pToken = this.lds.personToken$.getValue();
+    // const bookletDbId = this.lds.bookletDbId$.getValue();
+    // if ((this.lds.loginMode$.getValue() === 'hot') && (bookletDbId !== 0)) {
+    //   this.bs.endBooklet(pToken, bookletDbId).subscribe(
+    //     finOkUntyped => {
+    //       if (finOkUntyped instanceof ServerError) {
+    //         const e = finOkUntyped as ServerError;
+    //         this.lds.globalErrorMsg$.next(e);
+    //       } else {
+    //         const finOK = finOkUntyped as boolean;
+    //         this.lds.globalErrorMsg$.next(null);
+    //         if (finOK) {
+    //           this.showLoginForm = false;
+    //           this.showCodeForm = false;
+    //           this.showBookletButtons = true;
+    //           this.showTestRunningButtons = false;
+    //           this.resetBooklet();
+    //         }
+    //       }
+    //   });
+    // } else {
+    //   this.showLoginForm = false;
+    //   this.showCodeForm = false;
+    //   this.showBookletButtons = true;
+    //   this.showTestRunningButtons = false;
+    //   this.resetBooklet();
+    // }
   }
 
-  private resetBooklet() {
-    this.lds.bookletDbId$.next(0);
-    this.lds.bookletLabel$.next('');
-    this.bookletlist = this.getStartButtonData();
+  finishBooklet() {
+    // bs.finishBooklet().subscribe( => mds.setBooklet)
+  }
+
+  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+  ngOnDestroy() {
+    if (this.loginDataSubscription !== null) {
+      this.loginDataSubscription.unsubscribe();
+    }
   }
 }

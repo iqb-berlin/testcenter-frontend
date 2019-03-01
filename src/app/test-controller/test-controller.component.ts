@@ -1,93 +1,74 @@
-import { ServerError } from '../start/backend.service';
+import { MainDataService } from './../maindata.service';
+import { ServerError } from '../backend.service';
 import { BackendService } from './backend.service';
 
-import { LogindataService } from './../logindata.service';
 import { TestControllerService } from './test-controller.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UnitDef, BookletDef } from './test-controller.classes';
 import { BookletData } from './test-controller.interfaces';
+import { Subscription } from 'rxjs';
 
 @Component({
   templateUrl: './test-controller.component.html',
   styleUrls: ['./test-controller.component.css']
 })
-export class TestControllerComponent implements OnInit {
+export class TestControllerComponent implements OnInit, OnDestroy {
+  private loginDataSubscription: Subscription = null;
+  private unitPosSubsription: Subscription = null;
+
   private showUnitComponent = false;
   private allUnits: UnitDef[] = [];
   private statusMsg = '';
   private dataLoading = false;
-  private myLastBooklet = 0; // to avoid double load
 
   constructor (
     private tcs: TestControllerService,
     private bs: BackendService,
-    private lds: LogindataService
+    private mds: MainDataService
   ) {
-    this.tcs.booklet$.subscribe(b => {
-      if (b === null) {
-        this.allUnits = [];
-      } else {
-        this.allUnits = b.units;
-      }
-      this.updateStatus();
-    });
-    this.tcs.currentUnitPos$.subscribe(u => this.updateStatus());
+    this.unitPosSubsription = this.tcs.currentUnitPos$.subscribe(u => this.updateStatus());
   }
 
   ngOnInit() {
-    this.loadBooklet('init');
-    this.lds.bookletDbId$.subscribe(authori => {
-      this.loadBooklet('subsc');
-    });
-  }
+    this.loginDataSubscription = this.mds.loginData$.subscribe(loginData => {
+      this.tcs.booklet$.next(null);
+      this.tcs.currentUnitPos$.next(-1);
+      this.tcs.showNaviButtons$.next(false);
+      this.tcs.itemplayerValidPages$.next([]);
+      this.tcs.itemplayerCurrentPage$.next('');
+      this.tcs.nextUnit$.next(-1);
+      this.tcs.prevUnit$.next(-1);
+      this.tcs.unitRequest$.next(-1);
+      this.tcs.canLeaveTest$.next(false);
+      this.tcs.itemplayerPageRequest$.next('');
+      this.tcs.mode = '';
 
-  private loadBooklet(s: string) {
-    const pToken = this.lds.personToken$.getValue();
-    const bookletDbId = this.lds.bookletDbId$.getValue();
-
-    if (bookletDbId === 0) {
-      this.resetBookletData();
-      this.myLastBooklet = 0;
-    } else {
-      if (this.myLastBooklet !== bookletDbId) {
-        this.myLastBooklet = bookletDbId;
-
-        this.dataLoading = true;
-        this.bs.getBookletData().subscribe(myData => {
-          console.log(myData);
-          if (myData instanceof ServerError) {
-            const e = myData as ServerError;
-            this.lds.globalErrorMsg$.next(e);
-            this.tcs.booklet$.next(null);
-            this.tcs.currentUnitPos$.next(-1);
-          } else {
-            this.lds.globalErrorMsg$.next(null);
-            const myBookletData = myData as BookletData;
-            const myBookletDef = new BookletDef(myBookletData);
-            myBookletDef.loadUnits(this.bs, this.tcs, pToken, bookletDbId).subscribe(okList => {
-              this.dataLoading = false;
-              this.tcs.booklet$.next(myBookletDef);
-              this.tcs.showNaviButtons$.next(myBookletDef.unlockedUnitCount() > 1);
-              this.tcs.currentUnitPos$.next(myBookletData.u);
-              this.tcs.goToUnitByPosition(myBookletData.u);
-            });
-          }
-        });
+      if (loginData !== null) {
+        this.tcs.mode = loginData.mode;
+        if (loginData.booklet > 0) {
+          this.dataLoading = true;
+          this.bs.getBookletData().subscribe(myData => {
+            if (myData instanceof ServerError) {
+              const e = myData as ServerError;
+              this.mds.globalErrorMsg$.next(e);
+              this.tcs.booklet$.next(null);
+              this.tcs.currentUnitPos$.next(-1);
+            } else {
+              this.mds.globalErrorMsg$.next(null);
+              const myBookletData = myData as BookletData;
+              const myBookletDef = new BookletDef(myBookletData);
+              myBookletDef.loadUnits(this.bs, this.tcs, loginData.persontoken, loginData.booklet).subscribe(okList => {
+                this.dataLoading = false;
+                this.tcs.booklet$.next(myBookletDef);
+                this.tcs.showNaviButtons$.next(myBookletDef.unlockedUnitCount() > 1);
+                this.tcs.currentUnitPos$.next(myBookletData.u);
+                this.tcs.goToUnitByPosition(myBookletData.u);
+              });
+            }
+          });
+        }
       }
-    }
-  }
-
-  private resetBookletData() {
-    this.tcs.booklet$.next(null);
-    this.tcs.currentUnitPos$.next(-1);
-    this.tcs.showNaviButtons$.next(false);
-    this.tcs.itemplayerValidPages$.next([]);
-    this.tcs.itemplayerCurrentPage$.next('');
-    this.tcs.nextUnit$.next(-1);
-    this.tcs.prevUnit$.next(-1);
-    this.tcs.unitRequest$.next(-1);
-    this.tcs.canLeaveTest$.next(false);
-    this.tcs.itemplayerPageRequest$.next('');
+    });
   }
 
   private updateStatus() {
@@ -113,5 +94,15 @@ export class TestControllerComponent implements OnInit {
       }
     }
     this.showUnitComponent = this.statusMsg.length === 0;
+  }
+
+  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+  ngOnDestroy() {
+    if (this.unitPosSubsription !== null) {
+      this.unitPosSubsription.unsubscribe();
+    }
+    if (this.loginDataSubscription !== null) {
+      this.loginDataSubscription.unsubscribe();
+    }
   }
 }
