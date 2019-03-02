@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { LoginData, BookletStatus, PersonTokenAndBookletId, BookletData, BookletDataListByCode } from './app.interfaces';
+import { LoginData, BookletStatus, PersonTokenAndBookletDbId, BookletData, BookletDataListByCode } from './app.interfaces';
 
 // ============================================================================
 // class instead of interface to be able to use instanceof to check type
@@ -10,7 +10,7 @@ export class ServerError {
   public code: number;
   public labelNice: string;
   public labelSystem: string;
-  constructor(code: number, labelNice: string, labelSystem) {
+  constructor(code: number, labelNice: string, labelSystem: string) {
     this.code = code;
     this.labelNice = labelNice;
     this.labelSystem = labelSystem;
@@ -44,8 +44,8 @@ export class BackendService {
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
+      this.serverSlimUrl = this.serverUrl + 'php_tc/login.php/';
       this.serverUrl = this.serverUrl + 'php_start/';
-      this.serverSlimUrl = this.serverUrl + 'login.php/';
     }
 
 
@@ -81,90 +81,18 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  getBookletStatusByNameAndPersonToken(persontoken: string, bookletname: string): Observable<BookletStatus | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  startBooklet(code: string, bookletid: string, bookletLabel: string): Observable<PersonTokenAndBookletDbId | ServerError> {
     return this.http
-      .post<BookletStatus>(this.serverUrl + 'getBookletStatusByNameAndPersonToken.php', {
-        pt: persontoken, b: bookletname}, httpOptions)
+      .post<PersonTokenAndBookletDbId>(this.serverSlimUrl + 'startbooklet', {c: code, b: bookletid, bl: bookletLabel})
         .pipe(
           catchError(ErrorHandler.handle)
         );
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  getBookletStatusByNameAndLoginToken(logintoken: string, code: string,
-      bookletid: string, bookletlabel: string): Observable<BookletStatus | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  stopBooklet(): Observable<Boolean | ServerError> {
     return this.http
-      .post<BookletStatus>(this.serverUrl + 'getBookletStatusByNameAndLoginToken.php', {
-        lt: logintoken, b: bookletid, c: code, bl: bookletlabel}, httpOptions)
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
-  }
-
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  getBookletStatusByDbId(persontoken: string, bookletid: number): Observable<BookletStatus | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<BookletStatus>(this.serverUrl + 'getBookletStatusByDbId.php', {
-        pt: persontoken, b: bookletid}, httpOptions)
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
-  }
-
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  startBookletByLoginToken(logintoken: string, code: string, bookletFilename: string): Observable<PersonTokenAndBookletId | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<PersonTokenAndBookletId>(this.serverUrl +
-            'startBookletByLoginToken.php', {lt: logintoken, c: code, b: bookletFilename}, httpOptions)
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
-  }
-
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  // ??????????????????????? startBookletByPersonToken.php not available yet
-  startBookletByPersonToken(persontoken: string, bookletFilename: string): Observable<number | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<number>(this.serverUrl + 'startBookletByPersonToken.php', {pt: persontoken, b: bookletFilename}, httpOptions)
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
-  }
-
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  endBooklet(persontoken: string, bookletDbId: number): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<boolean>(this.serverUrl + 'endBooklet.php', {pt: persontoken, b: bookletDbId}, httpOptions)
+      .post<Boolean>(this.serverSlimUrl + 'stopbooklet', {})
         .pipe(
           catchError(ErrorHandler.handle)
         );

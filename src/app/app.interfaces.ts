@@ -22,6 +22,7 @@ export interface LoginData {
   persontoken: string;
   code: string;
   booklet: number;
+  bookletlabel: string;
 }
 
 export interface BookletStatus {
@@ -32,7 +33,7 @@ export interface BookletStatus {
   label: string;
 }
 
-export interface PersonTokenAndBookletId {
-  pt: string;
-  b: number;
+export interface PersonTokenAndBookletDbId {
+  persontoken: string;
+  bookletDbId: number;
 }

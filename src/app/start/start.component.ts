@@ -3,7 +3,7 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 import { MessageDialogComponent, MessageDialogData, MessageType } from './../iqb-common';
 import { MatDialog } from '@angular/material';
 import { BackendService, ServerError } from '../backend.service';
-import {  PersonTokenAndBookletId, BookletDataListByCode, LoginData, BookletStatus } from '../app.interfaces';
+import { PersonTokenAndBookletDbId, BookletDataListByCode, LoginData, BookletStatus } from '../app.interfaces';
 import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -90,7 +90,7 @@ export class StartComponent implements OnInit, OnDestroy {
             this.showBookletButtons = false;
             this.showTestRunningButtons = true;
 
-            this.loginStatusText.push('Test gestartet.');
+            this.loginStatusText.push('Test gestartet: "' + logindata.bookletlabel + '"');
           }
 
         } else {
@@ -196,67 +196,25 @@ export class StartComponent implements OnInit, OnDestroy {
   }
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  buttonStartTest(b: StartButtonData) {
-    // const lt = this.lds.loginToken$.getValue();
-    // const pt = this.lds.personToken$.getValue();
-    // const code = this.lds.personCode$.getValue();
+  startBooklet(b: StartButtonData) {
+    this.bs.startBooklet(this.mds.getCode(), b.id, b.label).subscribe(
+      startReturnUntyped => {
+        if (startReturnUntyped instanceof ServerError) {
+          const e = startReturnUntyped as ServerError;
+          this.mds.globalErrorMsg$.next(e);
+        } else {
+          const startReturn = startReturnUntyped as PersonTokenAndBookletDbId;
+          this.mds.setBookletDbId(startReturn.persontoken, startReturn.bookletDbId, b.label);
+          this.mds.globalErrorMsg$.next(null);
+          // ************************************************
 
-    // if (pt.length > 0 || lt.length > 0) {
-    //   if (pt.length > 0) {
-    //     this.bs.startBookletByPersonToken(pt, b.filename).subscribe(
-    //       bookletIdUntyped => {
-    //         if (bookletIdUntyped instanceof ServerError) {
-    //           const e = bookletIdUntyped as ServerError;
-    //           this.lds.globalErrorMsg$.next(e);
-    //         } else {
-    //           const bookletId = bookletIdUntyped as number;
-    //           this.lds.globalErrorMsg$.next(null);
-    //           if (bookletId > 0) {
-    //             this.lds.bookletDbId$.next(bookletId);
-    //             this.lds.bookletLabel$.next(b.label);
-    //             this.lds.globalErrorMsg$.next(null);
-    //             // ************************************************
+          // by setting bookletDbId$ the test-controller will load the booklet
+          this.router.navigateByUrl('/t');
 
-    //             // by setting bookletDbId$ the test-controller will load the booklet
-    //             this.router.navigateByUrl('/t');
-
-    //             // ************************************************
-    //           } else {
-    //             this.lds.globalErrorMsg$.next(new ServerError(401, 'ungültige Anmeldung', 'start.component'));
-    //           }
-    //         }
-    //       }
-    //     );
-    //   } else {
-    //     this.bs.startBookletByLoginToken(lt, code, b.filename).subscribe(
-    //       startDataUntyped => {
-    //         if (startDataUntyped instanceof ServerError) {
-    //           const e = startDataUntyped as ServerError;
-    //           this.lds.globalErrorMsg$.next(e);
-    //         } else {
-    //           const startData = startDataUntyped as PersonTokenAndBookletId;
-
-    //           if (startData.b > 0) {
-    //             this.lds.personToken$.next(startData.pt);
-    //             this.lds.globalErrorMsg$.next(null);
-    //             this.lds.bookletLabel$.next(b.label);
-    //             this.lds.bookletDbId$.next(startData.b); // as last to trigger auth with success!
-    //             // ************************************************
-
-    //             // by setting bookletDbId$ the test-controller will load the booklet
-    //             this.router.navigateByUrl('/t');
-
-    //             // ************************************************
-    //           } else {
-    //             this.lds.globalErrorMsg$.next(new ServerError(401, 'ungültige Anmeldung', 'start.component'));
-    //           }
-    //         }
-    //       }
-    //     );
-    //   }
-    // } else {
-    //   this.lds.globalErrorMsg$.next(new ServerError(401, 'ungültige Anmeldung', 'start.component'));
-    // }
+          // ************************************************
+        }
+      }
+    );
   }
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -265,38 +223,23 @@ export class StartComponent implements OnInit, OnDestroy {
   }
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  buttonEndTest() {
-    // const pToken = this.lds.personToken$.getValue();
-    // const bookletDbId = this.lds.bookletDbId$.getValue();
-    // if ((this.lds.loginMode$.getValue() === 'hot') && (bookletDbId !== 0)) {
-    //   this.bs.endBooklet(pToken, bookletDbId).subscribe(
-    //     finOkUntyped => {
-    //       if (finOkUntyped instanceof ServerError) {
-    //         const e = finOkUntyped as ServerError;
-    //         this.lds.globalErrorMsg$.next(e);
-    //       } else {
-    //         const finOK = finOkUntyped as boolean;
-    //         this.lds.globalErrorMsg$.next(null);
-    //         if (finOK) {
-    //           this.showLoginForm = false;
-    //           this.showCodeForm = false;
-    //           this.showBookletButtons = true;
-    //           this.showTestRunningButtons = false;
-    //           this.resetBooklet();
-    //         }
-    //       }
-    //   });
-    // } else {
-    //   this.showLoginForm = false;
-    //   this.showCodeForm = false;
-    //   this.showBookletButtons = true;
-    //   this.showTestRunningButtons = false;
-    //   this.resetBooklet();
-    // }
-  }
-
-  finishBooklet() {
-    // bs.finishBooklet().subscribe( => mds.setBooklet)
+  stopBooklet() {
+    this.bs.stopBooklet().subscribe(
+      stopReturnUntyped => {
+        if (stopReturnUntyped instanceof ServerError) {
+          const e = stopReturnUntyped as ServerError;
+          this.mds.globalErrorMsg$.next(e);
+        } else {
+          const stopReturn = stopReturnUntyped as boolean;
+          if (stopReturn) {
+            this.mds.setBookletDbId(this.mds.getPersonToken(), 0, '');
+            this.mds.globalErrorMsg$.next(null);
+          } else {
+            this.mds.globalErrorMsg$.next(new ServerError(503, 'Konnte Testheft nicht beenden.', ''));
+          }
+        }
+      }
+    );
   }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

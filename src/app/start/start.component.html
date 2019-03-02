@@ -53,7 +53,7 @@
           <p *ngIf="bookletlist.length === 0">
             Für diese Anmeldung wurde kein Test gefunden.
           </p>
-          <button mat-raised-button color="primary" (click)="buttonStartTest(b)"
+          <button mat-raised-button color="primary" (click)="startBooklet(b)"
             [disabled]="!b.isEnabled" *ngFor="let b of bookletlist">
               <p class="booklet_title">{{b.label}}</p>
               <p class="booklet_status">{{b.statustxt}}</p>
@@ -71,7 +71,7 @@
       <mat-card-content>
         <div fxLayout="column" fxLayoutGap="20px">
           <button mat-raised-button color="primary" [routerLink]="['/t']">Zum Test zurückkehren</button>
-          <button mat-raised-button color="primary" (click)="finishBooklet()">{{ testEndButtonText }}</button>
+          <button mat-raised-button color="primary" (click)="stopBooklet()">{{ testEndButtonText }}</button>
           <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
         </div>
       </mat-card-content>

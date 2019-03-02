@@ -16,7 +16,8 @@ export class MainDataService {
     workspaceName: '',
     booklets: null,
     code: '',
-    booklet: 0
+    booklet: 0,
+    bookletlabel: ''
   };
 
   public loginData$ = new BehaviorSubject<LoginData>(this.standardLoginData);
@@ -85,7 +86,8 @@ export class MainDataService {
       workspaceName: this.standardLoginData.workspaceName,
       booklets: this.standardLoginData.booklets,
       code: this.standardLoginData.code,
-      booklet: this.standardLoginData.booklet
+      booklet: this.standardLoginData.booklet,
+      bookletlabel: this.standardLoginData.bookletlabel
     };
 
     if (logindata) {
@@ -113,6 +115,9 @@ export class MainDataService {
             if (logindata.persontoken.length > 0) {
               myLoginData.persontoken = logindata.persontoken;
               myLoginData.booklet = logindata.booklet;
+              if (myLoginData.booklet > 0) {
+                myLoginData.bookletlabel = logindata.bookletlabel;
+              }
             }
           }
       }
@@ -129,6 +134,32 @@ export class MainDataService {
     const myLoginData = this.loginData$.getValue();
     myLoginData.code = newCode;
     this.setNewLoginData(myLoginData);
-    localStorage.setItem('c', myLoginData.code);
+  }
+
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  setBookletDbId ( personToken: string, bId: number, bLabel: string) {
+    const myLoginData = this.loginData$.getValue();
+    myLoginData.persontoken = personToken;
+    myLoginData.booklet = bId;
+    myLoginData.bookletlabel = bLabel;
+    this.setNewLoginData(myLoginData);
+  }
+
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  getCode(): string {
+    const myLoginData = this.loginData$.getValue();
+    return myLoginData.code;
+  }
+
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  getBookletLabel(): string {
+    const myLoginData = this.loginData$.getValue();
+    return myLoginData.bookletlabel;
+  }
+
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  getPersonToken(): string {
+    const myLoginData = this.loginData$.getValue();
+    return myLoginData.persontoken;
   }
 }
