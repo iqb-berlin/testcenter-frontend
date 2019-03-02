@@ -8,13 +8,17 @@ export interface BookletDataListByCode {
   [code: string]: BookletData[];
 }
 
+export interface BookletListByCode {
+  [code: string]: string[];
+}
+
 export interface LoginData {
   logintoken: string;
   loginname: string;
   mode: string;
   groupname: string;
   workspaceName: string;
-  booklets: BookletDataListByCode;
+  booklets: BookletListByCode;
   persontoken: string;
   code: string;
   booklet: number;

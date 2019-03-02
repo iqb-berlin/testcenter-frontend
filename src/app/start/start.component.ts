@@ -124,12 +124,8 @@ export class StartComponent implements OnInit, OnDestroy {
 
         if (createBookletSelectButtons) {
           for (const booklet of logindata.booklets[logindata.code]) {
-            const myTest = new StartButtonData(booklet.id, booklet.label, booklet.filename);
-            if (logindata.persontoken.length > 0) {
-              myTest.getBookletStatusByPersonToken(this.bs, logindata.persontoken);
-            } else {
-              myTest.getBookletStatusByLoginToken(this.bs, logindata.logintoken, logindata.code);
-            }
+            const myTest = new StartButtonData(booklet);
+            myTest.getBookletStatus(this.bs, logindata.code); // not waiting for response
             this.bookletlist.push(myTest);
           }
         }

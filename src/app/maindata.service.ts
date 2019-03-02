@@ -7,7 +7,7 @@ import { LoginData, BookletStatus, BookletData, BookletDataListByCode } from './
   providedIn: 'root'
 })
 export class MainDataService {
-  private readonly standardLoginData: LoginData = {
+  private standardLoginData: Readonly<LoginData> = {
     logintoken: '',
     persontoken: '',
     mode: '',
@@ -25,38 +25,50 @@ export class MainDataService {
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();
 
-  constructor( private bs: BackendService ) {
-    this.loginData$.subscribe(loginData => {
-      localStorage.setItem('lt', loginData.logintoken);
-      localStorage.setItem('pt', loginData.persontoken);
-      localStorage.setItem('bi', loginData.booklet.toString());
-    });
-  }
+
+  constructor( private bs: BackendService ) { }
 
 
   // call only from app.component.ts to restore data after reload
   loadLoginStatus() {
     const loginToken = localStorage.getItem('lt');
     if (loginToken !== null) {
-      const personToken = localStorage.getItem('pt');
-      let bookletDbId = 0;
-      if (personToken !== null) {
-        const bookletDbIdStr = localStorage.getItem('bi');
-        if (bookletDbIdStr !== null) {
-          bookletDbId = Number(bookletDbId);
-        }
-      }
-
-      this.bs.getLoginData(loginToken, personToken).subscribe(ld => {
-        if (ld instanceof ServerError) {
-          this.setNewLoginData();
+      if (loginToken.length > 0) {
+        let personToken = localStorage.getItem('pt');
+        let bookletDbId = 0;
+        if (personToken !== null) {
+          if (personToken.length > 0) {
+            const bookletDbIdStr = localStorage.getItem('bi');
+            if (bookletDbIdStr !== null) {
+              bookletDbId = Number(bookletDbId);
+            }
+          }
         } else {
-          const loginData = ld as LoginData;
-          // dirty: one should check whether the localStored booklet is valid
-          loginData.booklet = bookletDbId;
-          this.setNewLoginData(loginData);
+          personToken = '';
         }
-      });
+        let code = localStorage.getItem('c');
+        if (code === null) {
+          code = '';
+        }
+
+        this.bs.getLoginData(loginToken, personToken).subscribe(ld => {
+          if (ld instanceof ServerError) {
+            this.setNewLoginData();
+          } else {
+            const loginData = ld as LoginData;
+            // dirty: one should check whether the localStored booklet is valid
+            loginData.logintoken = loginToken;
+            loginData.persontoken = personToken;
+            if (personToken.length === 0) {
+              loginData.code = code;
+            }
+            loginData.booklet = bookletDbId;
+            this.setNewLoginData(loginData);
+          }
+        });
+      } else {
+        this.setNewLoginData();
+      }
     } else {
       this.setNewLoginData();
     }
@@ -64,7 +76,18 @@ export class MainDataService {
 
   // ensures consistency
   setNewLoginData(logindata?: LoginData) {
-    const myLoginData = this.standardLoginData;
+    const myLoginData: LoginData = {
+      logintoken: this.standardLoginData.logintoken,
+      persontoken: this.standardLoginData.persontoken,
+      mode: this.standardLoginData.mode,
+      groupname: this.standardLoginData.groupname,
+      loginname: this.standardLoginData.loginname,
+      workspaceName: this.standardLoginData.workspaceName,
+      booklets: this.standardLoginData.booklets,
+      code: this.standardLoginData.code,
+      booklet: this.standardLoginData.booklet
+    };
+
     if (logindata) {
       if (
         (logindata.logintoken.length > 0) &&
@@ -96,6 +119,9 @@ export class MainDataService {
 
     }
     this.loginData$.next(myLoginData);
+    localStorage.setItem('lt', myLoginData.logintoken);
+    localStorage.setItem('pt', myLoginData.persontoken);
+    localStorage.setItem('bi', myLoginData.booklet.toString());
   }
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -103,5 +129,6 @@ export class MainDataService {
     const myLoginData = this.loginData$.getValue();
     myLoginData.code = newCode;
     this.setNewLoginData(myLoginData);
+    localStorage.setItem('c', myLoginData.code);
   }
 }

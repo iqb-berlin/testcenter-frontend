@@ -4,7 +4,39 @@ import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { LoginData, BookletStatus, PersonTokenAndBookletId, BookletData, BookletDataListByCode } from './app.interfaces';
 
+// ============================================================================
+// class instead of interface to be able to use instanceof to check type
+export class ServerError {
+  public code: number;
+  public labelNice: string;
+  public labelSystem: string;
+  constructor(code: number, labelNice: string, labelSystem) {
+    this.code = code;
+    this.labelNice = labelNice;
+    this.labelSystem = labelSystem;
+  }
+}
 
+// ============================================================================
+export class ErrorHandler {
+  public static handle(errorObj: HttpErrorResponse): Observable<ServerError> {
+    let myreturn: ServerError = null;
+    if (errorObj.error instanceof ErrorEvent) {
+      myreturn = new ServerError(500, 'Verbindungsproblem', (<ErrorEvent>errorObj.error).message);
+    } else {
+      myreturn = new ServerError(errorObj.status, 'Verbindungsproblem', errorObj.message);
+      if (errorObj.status === 401) {
+        myreturn.labelNice = 'Zugriff verweigert - bitte (neu) anmelden!';
+      } else if (errorObj.status === 503) {
+        myreturn.labelNice = 'Achtung: Server meldet Datenbankproblem.';
+      }
+    }
+
+    return of(myreturn);
+  }
+}
+
+// ============================================================================
 @Injectable()
 export class BackendService {
   private serverSlimUrl = '';
@@ -36,9 +68,13 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  getBookletStatus(code: string, bookletid: string, bookletlabel: string): Observable<BookletStatus | ServerError> {
-    return this.http.get<BookletStatus>(this.serverSlimUrl + 'bookletstatus?c='
-                  + code + '&b=' + bookletid + '&bl=' + encodeURI(bookletlabel))
+  getBookletStatus(bookletid: string, code = ''): Observable<BookletStatus | ServerError> {
+    let urlString = '?b=' + bookletid;
+    if (code.length > 0) {
+      urlString += '&c=' + code;
+    }
+
+    return this.http.get<BookletStatus>(this.serverSlimUrl + 'bookletstatus' + urlString)
         .pipe(
           catchError(ErrorHandler.handle)
         );
@@ -132,40 +168,5 @@ export class BackendService {
         .pipe(
           catchError(ErrorHandler.handle)
         );
-  }
-
-  // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-}
-
-export class ErrorHandler {
-  public static handle(errorObj: HttpErrorResponse): Observable<ServerError> {
-    let myreturn: ServerError = null;
-    if (errorObj.error instanceof ErrorEvent) {
-      myreturn = new ServerError(500, 'Verbindungsproblem', (<ErrorEvent>errorObj.error).message);
-    } else {
-      myreturn = new ServerError(errorObj.status, 'Verbindungsproblem', errorObj.message);
-      if (errorObj.status === 401) {
-        myreturn.labelNice = 'Zugriff verweigert - bitte (neu) anmelden!';
-      } else if (errorObj.status === 503) {
-        myreturn.labelNice = 'Achtung: Server meldet Datenbankproblem.';
-      }
-    }
-
-    return of(myreturn);
-  }
-}
-
-
-// #############################################################################################
-
-// class instead of interface to be able to use instanceof to check type
-export class ServerError {
-  public code: number;
-  public labelNice: string;
-  public labelSystem: string;
-  constructor(code: number, labelNice: string, labelSystem) {
-    this.code = code;
-    this.labelNice = labelNice;
-    this.labelSystem = labelSystem;
   }
 }
