@@ -22,11 +22,24 @@ export interface StartLockData {
 export interface BookletData {
     xml: string;
     locked: boolean;
-    u: number;
+    state: BookletState;
 }
 
 export interface UnitData {
     xml: string;
     restorepoint: string;
     status: {};
+}
+
+export interface BookletState {
+    u: number;
+    responses: string;
+    presented: string;
+    status: string;
+}
+
+export interface CodeInputData {
+    prompt: string;
+    code: string;
+    value: string;
 }

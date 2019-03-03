@@ -35,17 +35,17 @@ export class TcNaviButtonsComponent {
     const validPages = this.tcs.itemplayerValidPages$.getValue();
     const p = this.tcs.itemplayerCurrentPage$.getValue();
     const pagePos = validPages.indexOf(p);
-    if (pagePos > 0) {
-      this.tcs.itemplayerPageRequest$.next(validPages[pagePos - 1]);
-    }
+    // if (pagePos > 0) {
+    //   this.tcs.itemplayerPageRequest$.next(validPages[pagePos - 1]);
+    // }
   }
   nextPageNaviButtonClick() {
     const validPages = this.tcs.itemplayerValidPages$.getValue();
     const p = this.tcs.itemplayerCurrentPage$.getValue();
     const pagePos = validPages.indexOf(p);
-    if ((pagePos >= 0) && (pagePos < validPages.length - 1)) {
-      this.tcs.itemplayerPageRequest$.next(validPages[pagePos + 1]);
-    }
+    // if ((pagePos >= 0) && (pagePos < validPages.length - 1)) {
+    //   this.tcs.itemplayerPageRequest$.next(validPages[pagePos + 1]);
+    // }
   }
   nextUnitNaviButtonClick() {
     this.tcs.unitRequest$.next(this.tcs.nextUnit$.getValue());

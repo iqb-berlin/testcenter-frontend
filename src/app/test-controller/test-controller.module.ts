@@ -10,11 +10,11 @@ import { TestControllerComponent } from './test-controller.component';
 import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameChild.directive';
 import { unitRoutingGuards } from './unithost/unit-routing-guards';
 import { TcMenuButtonsComponent } from './tc-menu-buttons/tc-menu-buttons.component';
-import { TcNaviButtonsComponent } from './tc-navi-buttons/tc-navi-buttons.component';
+// import { TcNaviButtonsComponent } from './tc-navi-buttons/tc-navi-buttons.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReviewDialogComponent } from './tc-menu-buttons/review-dialog.component';
 import { ReactiveFormsModule } from '../../../node_modules/@angular/forms';
-import { TcSidenaviButtonComponent } from './tc-sidenavi-button/tc-sidenavi-button.component';
+// import { TcSidenaviButtonComponent } from './tc-sidenavi-button/tc-sidenavi-button.component';
 import { StartLockInputComponent } from './start-lock-input/start-lock-input.component';
 
 
@@ -41,9 +41,9 @@ import { StartLockInputComponent } from './start-lock-input/start-lock-input.com
     TestControllerComponent,
     ResizeIFrameChildDirective,
     TcMenuButtonsComponent,
-    TcNaviButtonsComponent,
+    // TcNaviButtonsComponent,
     ReviewDialogComponent,
-    TcSidenaviButtonComponent,
+    // TcSidenaviButtonComponent,
     StartLockInputComponent
   ],
   entryComponents: [
@@ -55,7 +55,7 @@ import { StartLockInputComponent } from './start-lock-input/start-lock-input.com
   ],
   exports: [
     TestControllerComponent,
-    TcNaviButtonsComponent,
+    // TcNaviButtonsComponent,
     TcMenuButtonsComponent
   ]
 })

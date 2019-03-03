@@ -18,3 +18,7 @@ p.booklet_status {
 .status {
   background-color: lightgrey;
 }
+
+.error-msg {
+  color: brown;
+}

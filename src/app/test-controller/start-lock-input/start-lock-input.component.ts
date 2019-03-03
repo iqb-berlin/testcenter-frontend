@@ -8,15 +8,10 @@ import { StartLockData } from '../test-controller.interfaces';
   templateUrl: './start-lock-input.component.html',
   styleUrls: ['./start-lock-input.component.css']
 })
-export class StartLockInputComponent implements OnInit {
+export class StartLockInputComponent {
   startkeyform: FormGroup;
 
   constructor(private fb: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: StartLockData) { }
 
-  ngOnInit() {
-    this.startkeyform = this.fb.group({
-      key: this.fb.control(this.data.keyPreset)
-    });
-  }
 }

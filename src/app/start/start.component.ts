@@ -204,11 +204,12 @@ export class StartComponent implements OnInit, OnDestroy {
           this.mds.globalErrorMsg$.next(e);
         } else {
           const startReturn = startReturnUntyped as PersonTokenAndBookletDbId;
-          this.mds.setBookletDbId(startReturn.persontoken, startReturn.bookletDbId, b.label);
           this.mds.globalErrorMsg$.next(null);
           // ************************************************
 
           // by setting bookletDbId$ the test-controller will load the booklet
+          this.dataLoading = true;
+          this.mds.setBookletDbId(startReturn.persontoken, startReturn.bookletDbId, b.label);
           this.router.navigateByUrl('/t');
 
           // ************************************************
@@ -224,6 +225,7 @@ export class StartComponent implements OnInit, OnDestroy {
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   stopBooklet() {
+    this.dataLoading = true;
     this.bs.stopBooklet().subscribe(
       stopReturnUntyped => {
         if (stopReturnUntyped instanceof ServerError) {
@@ -238,6 +240,7 @@ export class StartComponent implements OnInit, OnDestroy {
             this.mds.globalErrorMsg$.next(new ServerError(503, 'Konnte Testheft nicht beenden.', ''));
           }
         }
+        this.dataLoading = false;
       }
     );
   }

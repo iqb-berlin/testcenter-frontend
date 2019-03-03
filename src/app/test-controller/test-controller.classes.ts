@@ -10,7 +10,7 @@ export class ServerError {
     public code: number;
     public labelNice: string;
     public labelSystem: string;
-    constructor(code: number, labelNice: string, labelSystem) {
+    constructor(code: number, labelNice: string, labelSystem = '') {
       this.code = code;
       this.labelNice = labelNice;
       this.labelSystem = labelSystem;
@@ -19,107 +19,197 @@ export class ServerError {
 
 // .....................................................................
 // .....................................................................
-export class UnitDef {
-    sequenceId: number;
-    id: string;
-    locked: boolean;
-    label: string;
-    shortlabel: string;
-    resources: ResourceData[];
-    restorePoint: string;
-    unitDefinition: string;
-    unitDefinitionType: string;
-    startLockKey: string;
-    startLockPrompt: string;
+export class TestletContentElement {
+  readonly sequenceId: number;
+  readonly id: string;
+  readonly title: string;
+  canEnter: 'y' | 'n' | 'w';
+  canLeave: 'y' | 'n' | 'w';
+  tryEnterMessage: string;
+  tryLeaveMessage: string;
+  children: TestletContentElement[];
 
-    constructor(unit_id: string, unit_label: string) {
-      this.id = unit_id;
-      this.label = unit_label;
-      const labelSplits = unit_label.split(' ');
-      this.shortlabel = labelSplits[0];
-      this.resources = [];
-      this.restorePoint = '';
-      this.unitDefinition = '';
-      this.unitDefinitionType = '';
-      this.locked = true;
-      this.sequenceId = 0;
-      this.startLockKey = '';
-      this.startLockPrompt = '';
-    }
+  constructor(sequenceId: number, id: string, title: string) {
+    this.sequenceId = sequenceId;
+    this.id = id;
+    this.title = title;
+    this.canEnter = 'y';
+    this.canLeave = 'y';
+    this.tryEnterMessage = '';
+    this.tryLeaveMessage = '';
+    this.children = [];
+  }
 
-    getResourcesAsDictionary(): {[resourceID: string]: string} {
-      const myResources = {};
-      for (let i = 0; i < this.resources.length; i++) {
-        myResources[this.resources[i].id] = this.resources[i].dataString;
+  // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
+  setCanEnter (can: string, message: string, allChildren = false) {
+    let newCan: 'y' | 'n' | 'w' = 'y';
+    if (can.length > 0) {
+      const checkChar = can.substr(0, 1).toLowerCase();
+      if (checkChar === 'n') {
+        newCan = 'n';
+      } else if (checkChar === 'w') {
+        newCan = 'w';
       }
-      return myResources;
     }
-
-    loadOk(bs: BackendService, tcs: TestControllerService, pToken: string, bookletDbId: number): Observable<boolean> {
-      return bs.getUnitData(this.id)
-        .pipe(
-          switchMap(myData => {
-            if (myData instanceof ServerError) {
-              const e = myData as ServerError;
-              this.label = e.code.toString() + ': ' + e.labelNice;
-              return of(false);
-            } else {
-              const myUnitData = myData as UnitData;
-              if (myUnitData.restorepoint.length > 0) {
-                this.restorePoint = JSON.parse(myUnitData.restorepoint);
-              }
-              const oParser = new DOMParser();
-              const oDOM = oParser.parseFromString(myUnitData.xml, 'text/xml');
-
-              if (oDOM.documentElement.nodeName === 'Unit') {
-                // ________________________
-                let definitionRef = '';
-                const defElements = oDOM.documentElement.getElementsByTagName('Definition');
-
-                if (defElements.length > 0) {
-                  const defElement = defElements[0];
-                  this.unitDefinition = defElement.textContent;
-                  this.unitDefinitionType = defElement.getAttribute('type');
-                } else {
-                  const defRefElements = oDOM.documentElement.getElementsByTagName('DefinitionRef');
-
-                  if (defRefElements.length > 0) {
-                    const defRefElement = defRefElements[0];
-                    definitionRef = defRefElement.textContent;
-                    this.unitDefinition = '';
-                    this.unitDefinitionType = defRefElement.getAttribute('type');
-                  }
-                }
-                if (this.unitDefinitionType.length > 0) {
-
-                  return tcs.loadItemplayerOk(pToken, bookletDbId, this.unitDefinitionType).pipe(
-                    switchMap(ok => {
-                      if (ok && definitionRef.length > 0) {
-                        return bs.getResource(definitionRef).pipe(
-                          switchMap(def => {
-                            if (def instanceof ServerError) {
-                              return of(false);
-                            } else {
-                              this.unitDefinition = def as string;
-                              this.locked = false;
-                              return of(true);
-                            }
-                          }));
-                      } else {
-                        return of(this.locked = !ok);
-                      }
-                    }));
-                } else {
-                  this.label = 'unitdef not found';
-                  return of(false); // Def-Element required
-                }
-              } else {
-                return of(false);
-              }
-            }
-          })
-        );
+    this.canEnter = newCan;
+    this.tryEnterMessage = message;
+    if (allChildren) {
+      this.children.forEach(tce => {
+        tce.setCanEnter(can, message, allChildren);
+      });
     }
+  }
+
+  // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
+  setCanLeave (can: string, message: string, allChildren = false) {
+    let newCan: 'y' | 'n' | 'w' = 'y';
+    if (can.length > 0) {
+      const checkChar = can.substr(0, 1).toLowerCase();
+      if (checkChar === 'n') {
+        newCan = 'n';
+      } else if (checkChar === 'w') {
+        newCan = 'w';
+      }
+    }
+    this.canLeave = newCan;
+    this.tryLeaveMessage = message;
+    if (allChildren) {
+      this.children.forEach(tce => {
+        tce.setCanLeave(can, message, allChildren);
+      });
+    }
+  }
+
+  // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
+  getNextSequenceId(tmpId = 0): number {
+    if (this.sequenceId >= tmpId) {
+      tmpId = this.sequenceId + 1;
+    }
+    this.children.forEach(tce => {
+      tmpId = tce.getNextSequenceId(tmpId);
+    });
+    return tmpId;
+  }
+}
+
+// .....................................................................
+// .....................................................................
+export class UnitDef extends TestletContentElement {
+  readonly alias: string;
+  readonly naviButtonLabel: string;
+  readonly playerId: string;
+  readonly reportStatus: boolean;
+  statusResponses: 'no' | 'some' | 'all';
+  statusPresentation: 'no' | 'partly' | 'full';
+
+  constructor(
+    sequenceId: number,
+    id: string,
+    title: string,
+    alias: string,
+    naviButtonLabel: string,
+    reportStatus: boolean,
+    ) {
+      super(sequenceId, id, title);
+      this.alias = alias;
+      this.naviButtonLabel = naviButtonLabel;
+      this.reportStatus = reportStatus;
+      this.statusResponses = 'no';
+      this.statusPresentation = 'no';
+  }
+
+  // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
+  setStatusResponses (status: string) {
+    let newStatus: 'no' | 'some' | 'all' = 'no';
+    if (status.length > 0) {
+      const checkChar = status.substr(0, 1).toLowerCase();
+      if (checkChar === 's') {
+        newStatus = 'some';
+      } else if (checkChar === 'a') {
+        newStatus = 'all';
+      }
+    }
+    this.statusResponses = newStatus;
+  }
+
+  // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
+  setStatusPresentation (status: string) {
+    let newStatus: 'no' | 'partly' | 'full' = 'no';
+    if (status.length > 0) {
+      const checkChar = status.substr(0, 1).toLowerCase();
+      if (checkChar === 'p') {
+        newStatus = 'partly';
+      } else if (checkChar === 'f') {
+        newStatus = 'full';
+      }
+    }
+    this.statusPresentation = newStatus;
+  }
+}
+
+// .....................................................................
+// .....................................................................
+export class UnitControllerData {
+  unitDef: UnitDef = null;
+  codeRequiringTestlets: Testlet[] = [];
+  constructor(unitDef: UnitDef) {
+    this.unitDef = unitDef;
+  }
+}
+
+// .....................................................................
+// .....................................................................
+export class Testlet extends TestletContentElement {
+  codeToEnter = '';
+  codePrompt = '';
+
+  // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
+  addTestlet(id: string, title: string): Testlet {
+    const newChild = new Testlet(0, id, title);
+    this.children.push(newChild);
+    return newChild;
+  }
+
+  // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
+  addUnit(
+    sequenceId: number,
+    id: string,
+    title: string,
+    alias: string,
+    naviButtonLabel: string,
+    reportStatus: boolean): UnitDef {
+    const newChild = new UnitDef(sequenceId, id, title, alias, naviButtonLabel, reportStatus);
+    this.children.push(newChild);
+    return newChild;
+  }
+
+  // first looking for the unit, then on the way back adding restrictions
+  getUnitAt(sequenceId: number): UnitControllerData {
+    let myreturn: UnitControllerData = null;
+    for (const tce of this.children) {
+      if (tce instanceof Testlet) {
+        const localTestlet = tce as Testlet;
+        myreturn = localTestlet.getUnitAt(sequenceId);
+        if (myreturn !== null) {
+          if (localTestlet.codeToEnter.length > 0) {
+            myreturn.codeRequiringTestlets.push(localTestlet);
+          }
+          break;
+        }
+      } else if (tce instanceof UnitDef) {
+        if (tce.sequenceId === sequenceId) {
+          myreturn = new UnitControllerData(tce);
+          break;
+        }
+      }
+    }
+    if (myreturn !== null) {
+      if (this.codeToEnter.length > 0) {
+        myreturn.codeRequiringTestlets.push(this);
+      }
+    }
+    return myreturn;
+  }
 }
 
 // .....................................................................
@@ -168,117 +258,25 @@ export class SessionDataToSend {
     }
 }
 
-// .....................................................................
-// .....................................................................
-export class BookletDef {
-    id: string;
-    label: string;
-    units: UnitDef[];
-    navibar: string;
+  // forgetStartLock(key: string) {
+  //   for (let i = 0; i < this.units.length; i++) {
+  //     if (this.units[i].startLockKey === key) {
+  //       this.units[i].startLockKey = '';
+  //     }
+  //   }
+  // }
 
-    private addUnits(node: Element, startLockKey: string, startLockPrompt: string) {
-      const childElements = node.children;
-      if (childElements.length > 0) {
-        let restrictionElement: Element = null;
-        for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
-          if (childElements[childIndex].nodeName === 'Restrictions') {
-            restrictionElement = childElements[childIndex];
-            break;
-          }
-        }
-        if (restrictionElement !== null) {
-          const restrictionElements = restrictionElement.children;
-          for (let childIndex = 0; childIndex < restrictionElements.length; childIndex++) {
-            if (restrictionElements[childIndex].nodeName === 'StartLock') {
-              const restrictionParameter = restrictionElements[childIndex].getAttribute('parameter');
-              if ((typeof restrictionParameter !== 'undefined') && (restrictionParameter !== null)) {
-                startLockKey = restrictionParameter.toUpperCase();
-                startLockPrompt = restrictionElements[childIndex].textContent;
-                break;
-              }
-            }
-          }
-        }
+  // unlockedUnitCount(): number {
+  //   let myCount = 0;
+  //   for (let i = 0; i < this.units.length; i++) {
+  //     if (!this.units[i].locked) {
+  //       myCount += 1;
+  //     }
+  //   }
+  //   return myCount;
+  // }
 
-        for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
-          if (childElements[childIndex].nodeName === 'Unit') {
-            const newUnit = new UnitDef(childElements[childIndex].getAttribute('id'),
-                  childElements[childIndex].getAttribute('label'));
-            const shortLabel = childElements[childIndex].getAttribute('labelshort');
-            if ((typeof shortLabel !== 'undefined') && (shortLabel !== null)) {
-              newUnit.shortlabel = shortLabel;
-            }
-            if (startLockKey.length > 0) {
-              newUnit.startLockKey = startLockKey;
-              newUnit.startLockPrompt = startLockPrompt;
-            }
-            newUnit.sequenceId = this.units.length;
-            this.units.push(newUnit);
-          } else if (childElements[childIndex].nodeName === 'Testlet') {
-            this.addUnits(childElements[childIndex], startLockKey, startLockPrompt);
-          }
-        }
-      }
-    }
-
-    constructor(bdata: BookletData) {
-      const oParser = new DOMParser();
-      const oDOM = oParser.parseFromString(bdata.xml, 'text/xml');
-      this.id = '??';
-      this.label = '??';
-      this.units = [];
-      this.navibar = '';
-
-      if (oDOM.documentElement.nodeName === 'Booklet') {
-        // ________________________
-        const metadataElements = oDOM.documentElement.getElementsByTagName('Metadata');
-        if (metadataElements.length > 0) {
-          const metadataElement = metadataElements[0];
-          const IdElement = metadataElement.getElementsByTagName('Id')[0];
-          this.id = IdElement.textContent;
-          const LabelElement = metadataElement.getElementsByTagName('Label')[0];
-          this.label = LabelElement.textContent;
-        }
-
-        // ________________________
-        const unitsElements = oDOM.documentElement.getElementsByTagName('Units');
-        if (unitsElements.length > 0) {
-          this.addUnits(unitsElements[0], '', '');
-        }
-      }
-    }
-
-    loadUnits(bs: BackendService, tcs: TestControllerService, pToken: string, bookletDbId: number): Observable<boolean[]> {
-      const myUnitLoadings = [];
-      for (let i = 0; i < this.units.length; i++) {
-        myUnitLoadings.push(this.units[i].loadOk(bs, tcs, pToken, bookletDbId));
-      }
-      return forkJoin(myUnitLoadings);
-    }
-
-    getUnitAt(pos: number): UnitDef {
-      if ((this.units.length > 0) && (pos < this.units.length)) {
-        return this.units[pos];
-      } else {
-        return null;
-      }
-    }
-
-    forgetStartLock(key: string) {
-      for (let i = 0; i < this.units.length; i++) {
-        if (this.units[i].startLockKey === key) {
-          this.units[i].startLockKey = '';
-        }
-      }
-    }
-
-    unlockedUnitCount(): number {
-      let myCount = 0;
-      for (let i = 0; i < this.units.length; i++) {
-        if (!this.units[i].locked) {
-          myCount += 1;
-        }
-      }
-      return myCount;
-    }
-  }
+// 7777777777777777777777777777777777777777777777777777777777777
+export class BookletConfig {
+  showMainNaviButtons: boolean;
+}

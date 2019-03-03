@@ -45,7 +45,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   // buffering restorePoints
   private lastBookletState = '';
   private lastUnitResponses = '';
-  private restorePoints: {[unitname: string]: string} = {};
 
   constructor(
     private tcs: TestControllerService,
@@ -216,15 +215,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
     });
 
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    this.tcs.itemplayerPageRequest$.subscribe(newUnitPage => {
-      if ((this.postMessageTarget !== null) && (newUnitPage.length > 0)) {
-        this.postMessageTarget.postMessage({
-          type: 'OpenCBA.ToItemPlayer.PageNavigationRequest',
-          sessionId: this.itemplayerSessionId,
-          newPage: newUnitPage
-        }, '*');
-      }
-    });
+    // this.tcs.itemplayerPageRequest$.subscribe(newUnitPage => {
+    //   if ((this.postMessageTarget !== null) && (newUnitPage.length > 0)) {
+    //     this.postMessageTarget.postMessage({
+    //       type: 'OpenCBA.ToItemPlayer.PageNavigationRequest',
+    //       sessionId: this.itemplayerSessionId,
+    //       newPage: newUnitPage
+    //     }, '*');
+    //   }
+    // });
   }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -235,45 +234,44 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.leaveWarning = false;
 
     this.routingSubscription = this.route.params.subscribe(params => {
-      this.myUnitNumber = +params['u'];
-      this.loadItemplayer();
+      this.myUnitNumber = Number(params['u']);
+      this.loadItemplayer(this.myUnitNumber);
     });
 
     // this.lds.bookletDbId$.subscribe(auth => {
     //   this.restorePoints = {};
     // });
 
-    this.tcs.currentUnitPos$.subscribe(up => {
-      if (up >= 0) {
-        this.loadItemplayer();
-      }
-    });
+    // this.tcs.currentUnitPos$.subscribe(up => {
+    //   if (up >= 0) {
+    //     this.loadItemplayer();
+    //   }
+    // });
   }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-  loadItemplayer() {
+  loadItemplayer(unitSequenceId: number) {
     while (this.iFrameHostElement.hasChildNodes()) {
       this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
     }
-    const currentUnitId = this.tcs.currentUnitPos$.getValue();
-    const booklet = this.tcs.booklet$.getValue();
-    if ((currentUnitId >= 0) && (this.myUnitNumber === currentUnitId) && (booklet !== null)) {
-      const currentUnit = booklet.getUnitAt(currentUnitId);
-      this.unitTitle = currentUnit.label; // (currentUnitId + 1).toString() + '. '
-      this.myUnitName = currentUnit.id;
+
+    if ((unitSequenceId >= 1) && (this.myUnitNumber === unitSequenceId) && (this.tcs.rootTestlet !== null)) {
+      const currentUnit = this.tcs.rootTestlet.getUnitAt(unitSequenceId);
+      this.unitTitle = currentUnit.unitDef.title; // (currentUnitId + 1).toString() + '. '
+      this.myUnitName = currentUnit.unitDef.id;
 
       this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-      this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getItemplayer(currentUnit.unitDefinitionType));
+      this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(currentUnit.unitDef.playerId));
       this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
       this.iFrameItemplayer.setAttribute('class', 'unitHost');
       this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
 
-      this.pendingUnitDefinition$.next(currentUnit.unitDefinition);
-      const restorePoint = this.restorePoints[this.myUnitName];
+      this.pendingUnitDefinition$.next(this.tcs.getUnitDefinition(unitSequenceId));
+      const restorePoint = this.tcs.getUnitRestorePoint(unitSequenceId);
       this.leaveWarning = false;
 
       if ((restorePoint === null) || (restorePoint === undefined)) {
-        this.pendingRestorePoint$.next(currentUnit.restorePoint);
+        // this.pendingRestorePoint$.next(currentUnit.restorePoint);
       } else {
         this.pendingRestorePoint$.next(restorePoint);
       }

@@ -10,13 +10,15 @@ import { ServerError } from './test-controller.classes';
   providedIn: 'root'
 })
 export class BackendService {
-  private serverSlimUrl = '';
+  private serverSlimUrl_GET = '';
+  private serverSlimUrl_POST = '';
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
+      this.serverSlimUrl_GET = this.serverUrl + 'php_tc/tc_get.php/';
+      this.serverSlimUrl_POST = this.serverUrl + 'php_tc/tc_post.php/';
       this.serverUrl = this.serverUrl + 'php_tc/';
-      this.serverSlimUrl = this.serverUrl + 'tc.php/';
     }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
@@ -58,7 +60,7 @@ export class BackendService {
   // 7777777777777777777777777777777777777777777777777777777777777777777777
 
   getBookletData(): Observable<BookletData | ServerError> {
-    return this.http.get<BookletData>(this.serverSlimUrl + 'bookletdata')
+    return this.http.get<BookletData>(this.serverSlimUrl_GET + 'bookletdata')
         .pipe(
           catchError(this.handle)
         );
@@ -66,7 +68,7 @@ export class BackendService {
 
   // ------------------------------
   getUnitData(unitid: string): Observable<UnitData | ServerError> {
-    return this.http.get<UnitData>(this.serverSlimUrl + 'unitdata/' + unitid)
+    return this.http.get<UnitData>(this.serverSlimUrl_GET + 'unitdata/' + unitid)
       .pipe(
         catchError(this.handle)
       );
@@ -74,7 +76,7 @@ export class BackendService {
 
   // ------------------------------
   getResource(resId: string): Observable<string | ServerError> {
-    return this.http.get<string>(this.serverSlimUrl + 'resource/' + resId)
+    return this.http.get<string>(this.serverSlimUrl_GET + 'resource/' + resId)
       .pipe(
         catchError(this.handle)
       );

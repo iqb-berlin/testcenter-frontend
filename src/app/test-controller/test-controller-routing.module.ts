@@ -1,4 +1,4 @@
-import { UnitActivateGuard, UnitDeactivateGuard, UnitResolver } from './unithost/unit-routing-guards';
+import { UnitActivateGuard, UnitDeactivateGuard } from './unithost/unit-routing-guards';
 import { UnithostComponent } from './unithost/unithost.component';
 import { TestControllerComponent } from './test-controller.component';
 import { NgModule } from '@angular/core';
@@ -16,9 +16,6 @@ const routes: Routes = [
           component: UnithostComponent,
           canActivate: [UnitActivateGuard],
           canDeactivate: [UnitDeactivateGuard]
-            // resolve: {
-            //   unitData: UnitResolver
-            // }
       }
     ]
   }

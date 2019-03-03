@@ -8,7 +8,8 @@ import { UnithostComponent } from './unithost.component';
 import { Injectable } from '@angular/core';
 import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot, Resolve } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { UnitDef } from '../test-controller.classes';
+import { UnitDef, UnitControllerData } from '../test-controller.classes';
+import { CodeInputData } from '../test-controller.interfaces';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
@@ -22,30 +23,34 @@ export class UnitActivateGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
 
-    const targetUnitSequenceId: number = +next.params['u'];
-    const currentBooklet = this.tcs.booklet$.getValue();
+    const targetUnitSequenceId: number = Number(next.params['u']);
+    // const currentBooklet = this.tcs.booklet$.getValue();
 
     let myreturn = false;
-    if (currentBooklet === null) {
-      console.log('unit canActivate: true (booklet null)');
-      myreturn = true;
-    } else if ((targetUnitSequenceId < 0) || (currentBooklet.units.length < targetUnitSequenceId - 1)) {
+    if (this.tcs.rootTestlet === null) {
+      console.log('unit canActivate: true (rootTestlet null)');
+      myreturn = true; // ??
+    } else if ((targetUnitSequenceId < 1) || (this.tcs.numberOfUnits < targetUnitSequenceId)) {
       console.log('unit canActivate: false (unit# out of range)');
       myreturn = false;
     } else {
-      const newUnit = currentBooklet.getUnitAt(targetUnitSequenceId);
-      if (newUnit.locked) {
+      const newUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
+      if (newUnit.unitDef.canEnter === 'n') {
         myreturn = false;
         console.log('unit canActivate: false (unit is locked)');
       // } else if (!this.bs.isItemplayerReady(newUnit.unitDefinitionType)) {
       //   console.log('itemplayer for unit not available');
-      } else if (newUnit.startLockKey.length > 0) {
+      } else if (newUnit.codeRequiringTestlets.length > 0) {
         const dialogRef = this.startLockDialog.open(StartLockInputComponent, {
           width: '500px',
           height: '300px',
           data: {
-            prompt: newUnit.startLockPrompt,
-            keyPreset: this.tcs.mode === 'review' ? newUnit.startLockKey : ''
+            codes: newUnit.codeRequiringTestlets.forEach(t =>
+              (<CodeInputData>{
+                prompt: t.codePrompt,
+                code: t.codeToEnter.toUpperCase().trim(),
+                value: this.tcs.mode === 'hot' ? '' : t.codeToEnter
+              }))
           }
         });
         return dialogRef.afterClosed().pipe(
@@ -53,10 +58,19 @@ export class UnitActivateGuard implements CanActivate {
               if (result === false) {
                 return of(false);
               } else {
-                const key = (<FormGroup>result).get('key').value.toUpperCase();
-                if (key === newUnit.startLockKey) {
-                  this.tcs.setCurrentUnit(targetUnitSequenceId);
-                  currentBooklet.forgetStartLock(key);
+                const codeData = result as CodeInputData[];
+                let codesOk = true;
+                for (const c of codeData) {
+                  if (c.value.toUpperCase().trim() !== c.code) {
+                    codesOk = false;
+                    break;
+                  }
+                }
+                if (codesOk) {
+                  // ?? this.tcs.setCurrentUnit(targetUnitSequenceId);
+                  newUnit.codeRequiringTestlets.forEach(t => {
+                    t.codeToEnter = '';
+                  });
                   return of(true);
                 } else {
                   this.snackBar.open('Die Eingabe war nicht korrekt.', 'Freigabewort', {duration: 3000});
@@ -66,7 +80,7 @@ export class UnitActivateGuard implements CanActivate {
             }
         ));
       } else {
-        this.tcs.setCurrentUnit(targetUnitSequenceId);
+        // ?? this.tcs.setCurrentUnit(targetUnitSequenceId);
         myreturn = true;
       }
     }
@@ -88,56 +102,37 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
 
-    const currentBooklet = this.tcs.booklet$.getValue();
-    if (currentBooklet !== null) {
-      const currentUnitPos = this.tcs.currentUnitPos$.getValue();
-      const currentUnit = currentBooklet.getUnitAt(currentUnitPos);
-      if (currentUnit !== null) {
-        if (component.leaveWarning) {
+    // if (this.tcs.rootTestlet !== null) {
+    //   // const currentUnitPos = this.tcs.currentUnitPos$.getValue();
+    //   const currentUnit = currentBooklet.getUnitAt(currentUnitPos);
+    //   if (currentUnit !== null) {
+    //     if (component.leaveWarning) {
 
-          const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
-            width: '500px',
-            height: '300px',
-            data:  <ConfirmDialogData>{
-              title: 'Aufgabe verlassen?',
-              content: component.leaveWarningText,
-              confirmbuttonlabel: 'Weiterblättern',
-              confirmbuttonreturn: true
-            }
-          });
-          return dialogRef.afterClosed().pipe(
-            switchMap(result => {
-                if (result === false) {
-                  return of(false);
-                } else {
-                  return of(true);
-                }
-              }
-          ));
-        }
-      }
-    }
+    //       const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
+    //         width: '500px',
+    //         height: '300px',
+    //         data:  <ConfirmDialogData>{
+    //           title: 'Aufgabe verlassen?',
+    //           content: component.leaveWarningText,
+    //           confirmbuttonlabel: 'Weiterblättern',
+    //           confirmbuttonreturn: true
+    //         }
+    //       });
+    //       return dialogRef.afterClosed().pipe(
+    //         switchMap(result => {
+    //             if (result === false) {
+    //               return of(false);
+    //             } else {
+    //               return of(true);
+    //             }
+    //           }
+    //       ));
+    //     }
+    //   }
+    // }
     return true;
   }
 }
 
-@Injectable()
-// enriches the routing data with unit data and resources:
-// places in data['unit'] the unit object
-export class UnitResolver implements Resolve<UnitDef> {
-  constructor(private tcs: TestControllerService) { }
-
-  resolve(next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<UnitDef> {
-
-    // const targetUnitSequenceId = next.params['u'] as number;
-    // const currentBooklet = this.tcs.booklet$.getValue();
-    // const newUnit = currentBooklet.units[targetUnitSequenceId];
-    // this.tcs.currentUnit$.next(newUnit);
-    // return of(newUnit);
-    return null;
-  }
-}
-
-
+// 777777777777777777777777777777777777777777777777777777777777777777777777777777777
 export const unitRoutingGuards = [UnitActivateGuard, UnitDeactivateGuard];

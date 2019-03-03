@@ -28,7 +28,7 @@ export class TcSidenaviButtonComponent implements OnInit {
 
   sideNaviButtonClick() {
     if (this.unitData !== null) {
-      this.tcs.goToUnitByPosition(this.unitData.sequenceId);
+      // this.tcs.goToUnitByPosition(this.unitData.sequenceId);
     }
   }
 }

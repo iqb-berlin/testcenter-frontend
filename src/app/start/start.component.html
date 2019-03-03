@@ -66,7 +66,7 @@
     </mat-card>
 
     <!-- - - - - - - - - - - - - - - - - -->
-    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showTestRunningButtons">
+    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showTestRunningButtons && !dataLoading">
       <mat-card-title>Ein Testheft ist gestartet</mat-card-title>
       <mat-card-content>
         <div fxLayout="column" fxLayoutGap="20px">
@@ -123,7 +123,7 @@
             <p>Es wird gerade ein Test ausgeführt. Bitte wählen Sie durch Klicken auf eine der beiden Schaltflächen
               links, ob der Test fortgesetzt oder beendet werden soll!</p>
         </div>
-        <app-errormsg></app-errormsg>
+        <div class="error-msg">{{ mds.globalErrorMsg$.labelNice | async }}</div>
 
       </mat-card-content>
       <mat-card-actions>
