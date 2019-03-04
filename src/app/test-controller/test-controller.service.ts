@@ -1,10 +1,6 @@
-import { Router } from '@angular/router';
 import { BehaviorSubject, of, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { switchMap } from 'rxjs/operators';
-import { BackendService } from './backend.service';
-import { ServerError} from '../backend.service';
-import { UnitDef, Testlet, BookletConfig } from './test-controller.classes';
+import { Testlet, BookletConfig } from './test-controller.classes';
 
 @Injectable({
   providedIn: 'root'
@@ -16,11 +12,14 @@ export class TestControllerService {
   public bookletConfig$ = new BehaviorSubject<BookletConfig>(this.standardBookletConfig);
   public rootTestlet: Testlet = null;
   public numberOfUnits = 0;
+  public loginname = '';
   public mode = '';
 
+  public currentUnitSequenceId = -1;
+  public currentUnitId = '';
+  public currentUnitTitle = '';
 
   // public booklet$ = new BehaviorSubject<BookletDef>(null);
-  public currentUnitPos$ = new BehaviorSubject<number>(-1);
 
   // for Navi-Buttons:
   public showNaviButtons$ = new BehaviorSubject<boolean>(false);
@@ -45,6 +44,10 @@ export class TestControllerService {
     this.rootTestlet = null;
     this.numberOfUnits = 0;
     this.mode = '';
+    this.loginname = '';
+    this.currentUnitSequenceId = 0;
+    this.currentUnitId = '';
+    this.currentUnitTitle = '';
   }
 
 

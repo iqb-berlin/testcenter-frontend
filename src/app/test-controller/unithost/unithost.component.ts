@@ -235,6 +235,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     this.routingSubscription = this.route.params.subscribe(params => {
       this.myUnitNumber = Number(params['u']);
+      this.tcs.currentUnitSequenceId = this.myUnitNumber;
       this.loadItemplayer(this.myUnitNumber);
     });
 
@@ -259,6 +260,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
       const currentUnit = this.tcs.rootTestlet.getUnitAt(unitSequenceId);
       this.unitTitle = currentUnit.unitDef.title; // (currentUnitId + 1).toString() + '. '
       this.myUnitName = currentUnit.unitDef.id;
+      this.tcs.currentUnitId = this.myUnitName;
+      this.tcs.currentUnitTitle = this.unitTitle;
 
       this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
       this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(currentUnit.unitDef.playerId));

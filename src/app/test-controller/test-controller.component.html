@@ -3,6 +3,9 @@
     <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
   </a>
 </div>
+<button id="reviewbutton" mat-button *ngIf="tcs.mode === 'review'" (click)="showReviewDialog()">
+  <mat-icon>rate_review</mat-icon>
+</button>
 <div class="spinner-container" *ngIf="dataLoading">
   <mat-spinner></mat-spinner>
 </div>

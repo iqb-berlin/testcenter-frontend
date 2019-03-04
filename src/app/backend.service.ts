@@ -59,9 +59,9 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  getLoginData(loginToken: string, personToken: string): Observable<LoginData | ServerError> {
+  getLoginData(loginToken: string, personToken: string, bookletDbId: number): Observable<LoginData | ServerError> {
     return this.http
-      .post<LoginData>(this.serverSlimUrl + 'login', {lt: loginToken, pt: personToken})
+      .post<LoginData>(this.serverSlimUrl + 'login', {lt: loginToken, pt: personToken, b: bookletDbId})
         .pipe(
           catchError(ErrorHandler.handle)
         );

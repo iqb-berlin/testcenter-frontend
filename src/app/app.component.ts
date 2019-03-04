@@ -1,5 +1,7 @@
 import { MainDataService } from './maindata.service';
 import { Component, OnInit } from '@angular/core';
+import { BackendService, ServerError } from './backend.service';
+import { LoginData } from './app.interfaces';
 
 @Component({
   selector: 'tc-root',
@@ -11,7 +13,8 @@ import { Component, OnInit } from '@angular/core';
 export class AppComponent implements OnInit {
 
   constructor (
-    private mds: MainDataService
+    private mds: MainDataService,
+    private bs: BackendService
   ) { }
 
   ngOnInit() {
@@ -25,6 +28,48 @@ export class AppComponent implements OnInit {
         }
       }
     });
-    this.mds.loadLoginStatus();
+
+    // restore login status if stored in localStorage
+    const loginToken = localStorage.getItem('lt');
+    if (loginToken !== null) {
+      if (loginToken.length > 0) {
+        let personToken = localStorage.getItem('pt');
+        let bookletDbId = 0;
+        if (personToken !== null) {
+          if (personToken.length > 0) {
+            const bookletDbIdStr = localStorage.getItem('bi');
+            if (bookletDbIdStr !== null) {
+              bookletDbId = Number(bookletDbIdStr);
+            }
+          }
+        } else {
+          personToken = '';
+        }
+        let code = localStorage.getItem('c');
+        if (code === null) {
+          code = '';
+        }
+
+          // bookletDbId is not yet checked by getLoginData, only passed-through
+          this.bs.getLoginData(loginToken, personToken, bookletDbId).subscribe(ld => {
+          if (ld instanceof ServerError) {
+            this.mds.setNewLoginData();
+          } else {
+            const loginData = ld as LoginData;
+            loginData.logintoken = loginToken;
+            loginData.persontoken = personToken;
+            if (personToken.length === 0) {
+              loginData.code = code;
+              loginData.booklet = 0;
+            }
+            this.mds.setNewLoginData(loginData);
+          }
+        });
+      } else {
+        this.mds.setNewLoginData();
+      }
+    } else {
+      this.mds.setNewLoginData();
+    }
   }
 }

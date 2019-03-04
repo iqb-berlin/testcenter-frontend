@@ -3,8 +3,7 @@ import { MAT_DIALOG_DATA } from '@angular/material';
 import { Component, OnInit, Inject } from '@angular/core';
 
 @Component({
-  templateUrl: './review-dialog.component.html',
-  styleUrls: ['./review-dialog.component.css']
+  templateUrl: './review-dialog.component.html'
 })
 export class ReviewDialogComponent implements OnInit {
   reviewform: FormGroup;

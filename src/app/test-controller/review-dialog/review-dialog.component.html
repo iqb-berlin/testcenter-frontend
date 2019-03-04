@@ -1,12 +1,12 @@
 <form [formGroup]="reviewform">
-  <h1 mat-dialog-title>Kommentar geben</h1>
+  <h1 mat-dialog-title>Kommentar geben ({{ data.loginname }})</h1>
 
   <mat-dialog-content fxLayout="column">
     <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
         <p>Kommentar für:</p>
-        <mat-radio-group formControlName="target" fxLayout="row" fxLayoutGap="10px">
-            <mat-radio-button value="b" [matTooltip]="data.bookletname">aktuelles Testheft</mat-radio-button>
-            <mat-radio-button value="u" [disabled]="data.unitname.length === 0" [matTooltip]="data.unitname">aktuelle Aufgabe</mat-radio-button>
+        <mat-radio-group formControlName="target" fxLayout="column" fxLayoutGap="4px">
+            <mat-radio-button value="b" [matTooltip]="data.bookletname">aktuelles Testheft "{{ data.bookletname }}"</mat-radio-button>
+            <mat-radio-button value="u" [disabled]="data.unitname.length === 0" [matTooltip]="data.unitname">aktuelle Aufgabe "{{ data.unitname }}"</mat-radio-button>
         </mat-radio-group>
     </div>
     <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">

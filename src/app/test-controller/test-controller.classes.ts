@@ -97,8 +97,8 @@ export class TestletContentElement {
 export class UnitDef extends TestletContentElement {
   readonly alias: string;
   readonly naviButtonLabel: string;
-  readonly playerId: string;
   readonly reportStatus: boolean;
+  playerId: string;
   statusResponses: 'no' | 'some' | 'all';
   statusPresentation: 'no' | 'partly' | 'full';
 

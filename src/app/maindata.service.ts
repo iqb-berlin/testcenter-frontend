@@ -1,7 +1,7 @@
-import { BackendService, ServerError } from './backend.service';
+import { ServerError } from './backend.service';
 import { BehaviorSubject, Subject, merge } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { LoginData, BookletStatus, BookletData, BookletDataListByCode } from './app.interfaces';
+import { LoginData } from './app.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -26,54 +26,6 @@ export class MainDataService {
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();
 
-
-  constructor( private bs: BackendService ) { }
-
-
-  // call only from app.component.ts to restore data after reload
-  loadLoginStatus() {
-    const loginToken = localStorage.getItem('lt');
-    if (loginToken !== null) {
-      if (loginToken.length > 0) {
-        let personToken = localStorage.getItem('pt');
-        let bookletDbId = 0;
-        if (personToken !== null) {
-          if (personToken.length > 0) {
-            const bookletDbIdStr = localStorage.getItem('bi');
-            if (bookletDbIdStr !== null) {
-              bookletDbId = Number(bookletDbId);
-            }
-          }
-        } else {
-          personToken = '';
-        }
-        let code = localStorage.getItem('c');
-        if (code === null) {
-          code = '';
-        }
-
-        this.bs.getLoginData(loginToken, personToken).subscribe(ld => {
-          if (ld instanceof ServerError) {
-            this.setNewLoginData();
-          } else {
-            const loginData = ld as LoginData;
-            // dirty: one should check whether the localStored booklet is valid
-            loginData.logintoken = loginToken;
-            loginData.persontoken = personToken;
-            if (personToken.length === 0) {
-              loginData.code = code;
-            }
-            loginData.booklet = bookletDbId;
-            this.setNewLoginData(loginData);
-          }
-        });
-      } else {
-        this.setNewLoginData();
-      }
-    } else {
-      this.setNewLoginData();
-    }
-  }
 
   // ensures consistency
   setNewLoginData(logindata?: LoginData) {

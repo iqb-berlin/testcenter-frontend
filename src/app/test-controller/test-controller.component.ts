@@ -1,10 +1,14 @@
+import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
+import { MatDialog, MatSnackBar } from '@angular/material';
+import { FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { MainDataService } from './../maindata.service';
 import { ServerError } from '../backend.service';
 import { BackendService } from './backend.service';
 
 import { TestControllerService } from './test-controller.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { UnitDef, Testlet } from './test-controller.classes';
+import { UnitDef, Testlet, UnitControllerData } from './test-controller.classes';
 import { BookletData, UnitData } from './test-controller.interfaces';
 import { Subscription, Observable, of, forkJoin } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -26,8 +30,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   constructor (
     private tcs: TestControllerService,
+    private reviewDialog: MatDialog,
     private bs: BackendService,
-    private mds: MainDataService
+    private mds: MainDataService,
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {
     // this.unitPosSubsription = this.tcs.currentUnitPos$.subscribe(u => this.updateStatus());
   }
@@ -215,6 +222,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             }
 
             if (playerId.length > 0) {
+              myUnit.playerId = playerId;
 
               return this.loadPlayerOk(playerId).pipe(
                 switchMap(ok => {
@@ -249,22 +257,27 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   // ==========================================================
   // ==========================================================
   ngOnInit() {
+    this.router.navigateByUrl('/t');
+
     this.loginDataSubscription = this.mds.loginData$.subscribe(loginData => {
       this.tcs.resetDataStore();
       if ((loginData.persontoken.length > 0) && (loginData.booklet > 0)) {
         this.tcs.mode = loginData.mode;
+        this.tcs.loginname = loginData.loginname;
 
         this.dataLoading = true;
         this.bs.getBookletData().subscribe(myData => {
           if (myData instanceof ServerError) {
             const e = myData as ServerError;
             this.mds.globalErrorMsg$.next(e);
+            this.dataLoading = false;
           } else {
             const bookletData = myData as BookletData;
             this.tcs.rootTestlet = this.getBookletFromXml(bookletData.xml);
 
             if (this.tcs.rootTestlet === null) {
               this.mds.globalErrorMsg$.next(new ServerError(0, 'Error Parsing Booklet Xml', ''));
+              this.dataLoading = false;
             } else {
               this.mds.globalErrorMsg$.next(null);
               this.tcs.numberOfUnits = this.lastUnitSequenceId - 1;
@@ -272,20 +285,114 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               const myUnitLoadings = [];
               for (let i = 1; i < this.tcs.numberOfUnits + 1; i++) {
                 const ud = this.tcs.rootTestlet.getUnitAt(i);
-                if (ud === null) {
-                  console.log('# yo hm: ' + i.toString());
-                } else {
-                  myUnitLoadings.push(this.loadUnitOk(ud.unitDef, i));
-                }
+                myUnitLoadings.push(this.loadUnitOk(ud.unitDef, i));
               }
               forkJoin(myUnitLoadings).subscribe(allOk => {
-                console.log(allOk);
+                this.dataLoading = false;
+
+                let loadingOk = true;
+                for (const ok of allOk) {
+                  if (!ok) {
+                    loadingOk = false;
+                    break;
+                  }
+                }
+
+                if (loadingOk) {
+                  // =================================================
+
+                  this.goToUnitBySequenceId(1);
+
+                  // =================================================
+                } else {
+                  console.log('loading failed');
+                  this.mds.globalErrorMsg$.next(new ServerError(0, 'Inhalte des Testheftes konnten nicht alle geladen werden.', ''));
+                  this.tcs.resetDataStore();
+                }
               });
             }
           }
         });
       }
     });
+  }
+
+
+
+  // ==========================================================
+  goToUnitBySequenceId(sequenceId: number) {
+    if (this.tcs.rootTestlet !== null) {
+      this.router.navigateByUrl('/t/u/' + sequenceId.toString());
+    }
+  }
+
+
+
+  // ==========================================================
+  showReviewDialog() {
+    if (this.tcs.rootTestlet === null) {
+      this.snackBar.open('Kein Testheft verfügbar.', '', {duration: 3000});
+    } else {
+      const dialogRef = this.reviewDialog.open(ReviewDialogComponent, {
+        width: '700px',
+        data: {
+          loginname: this.tcs.loginname,
+          bookletname: this.tcs.rootTestlet.title,
+          unitname: this.tcs.currentUnitTitle
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (typeof result !== 'undefined') {
+          if (result !== false) {
+            const targetSelection = (<FormGroup>result).get('target').value;
+            if (targetSelection === 'u') {
+      //         this.bs.saveUnitReview(
+      //             this.lds.personToken$.getValue(),
+      //             this.lds.bookletDbId$.getValue(),
+      //             currentUnitId,
+      //             (<FormGroup>result).get('priority').value,
+      //             dialogRef.componentInstance.getCategories(),
+      //             (<FormGroup>result).get('entry').value
+      //           ).subscribe(myData => {
+      //             if (myData instanceof ServerError) {
+      //               const e = myData as ServerError;
+      //               this.snackBar.open(
+      // 'Konnte Kommentar nicht speichern (' + e.code.toString() + ': ' + e.labelNice, '', {duration: 3000});
+      //             } else {
+      //               const ok = myData as boolean;
+      //               if (ok) {
+      //                 this.snackBar.open('Kommentar gespeichert', '', {duration: 1000});
+      //               } else {
+      //                 this.snackBar.open('Konnte Kommentar nicht speichern.', '', {duration: 3000});
+      //               }
+      //             }
+      //           });
+            } else {
+              // this.bs.saveBookletReview(
+              //   this.lds.personToken$.getValue(),
+              //   this.lds.bookletDbId$.getValue(),
+              // (<FormGroup>result).get('priority').value,
+              //   dialogRef.componentInstance.getCategories(),
+              //   (<FormGroup>result).get('entry').value
+              // ).subscribe(myData => {
+              //   if (myData instanceof ServerError) {
+              //     const e = myData as ServerError;
+              //     this.snackBar.open('Konnte Kommentar nicht speichern (' + e.code.toString() + ': ' + e.labelNice, '', {duration: 3000});
+              //   } else {
+              //     const ok = myData as boolean;
+              //     if (ok) {
+              //       this.snackBar.open('Kommentar gespeichert', '', {duration: 1000});
+              //     } else {
+              //       this.snackBar.open('Konnte Kommentar nicht speichern.', '', {duration: 3000});
+              //     }
+              //   }
+              // });
+            }
+          }
+        }
+      });
+    }
   }
 
   // private updateStatus() {
@@ -321,15 +428,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
 
 
-  // goToUnitByPosition(pos: number) {
-  //   const myBooklet = this.booklet$.getValue();
-  //   if (myBooklet !== null) {
-  //     const unitCount = myBooklet.units.length;
-  //     if ((pos >= 0 ) && (pos < unitCount)) {
-  //       this.router.navigateByUrl('/t/u/' + pos.toString());
-  //     }
-  //   }
-  // }
 
   // setCurrentUnit(targetUnitSequenceId: number) {
   //   const currentBooklet = this.booklet$.getValue();

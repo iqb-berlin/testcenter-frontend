@@ -25,3 +25,16 @@
   top: 65px;
   bottom: 0;
 }
+
+#reviewbutton .material-icons {
+  font-size: 2.0rem;
+}
+#reviewbutton .mat-button {
+  text-align: right;
+}
+#reviewbutton {
+  position: absolute;
+  right: 5px;
+  top: 5px;  
+  color: white;
+}

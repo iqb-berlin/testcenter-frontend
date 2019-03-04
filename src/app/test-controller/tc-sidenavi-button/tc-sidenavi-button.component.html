@@ -1,8 +1,0 @@
-<div>
-  <div class="active-bar" *ngIf="isActive"></div>
-  <div class="not-active-bar" *ngIf="!isActive"></div>
-  <button mat-raised-button (click)="sideNaviButtonClick()"
-  [disabled]="unitData.locked" >
-  {{ unitData.sequenceId + 1 }}
-  </button>
-</div>
