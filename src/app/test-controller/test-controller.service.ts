@@ -15,20 +15,29 @@ export class TestControllerService {
   public loginname = '';
   public mode = '';
 
-  public currentUnitSequenceId = -1;
+  private _currentUnitSequenceId: number;
+  public get currentUnitSequenceId(): number {
+    return this._currentUnitSequenceId;
+  }
+  public set currentUnitSequenceId(v: number) {
+    this.unitPrevEnabled = v > 1;
+    this.unitNextEnabled = v < this.numberOfUnits;
+    this._currentUnitSequenceId = v;
+  }
+
   public currentUnitId = '';
   public currentUnitTitle = '';
+  public unitPrevEnabled = false;
+  public unitNextEnabled = false;
 
   // public booklet$ = new BehaviorSubject<BookletDef>(null);
 
   // for Navi-Buttons:
-  public showNaviButtons$ = new BehaviorSubject<boolean>(false);
-  public itemplayerValidPages$ = new BehaviorSubject<string[]>([]);
-  public itemplayerCurrentPage$ = new BehaviorSubject<string>('');
-  public nextUnit$ = new BehaviorSubject<number>(-1);
-  public prevUnit$ = new BehaviorSubject<number>(-1);
-  public unitRequest$ = new BehaviorSubject<number>(-1);
-  public canLeaveTest$ = new BehaviorSubject<boolean>(false);
+  // public showNaviButtons$ = new BehaviorSubject<boolean>(false);
+  // public nextUnit$ = new BehaviorSubject<number>(-1);
+  // public prevUnit$ = new BehaviorSubject<number>(-1);
+  // public unitRequest$ = new BehaviorSubject<number>(-1);
+  // public canLeaveTest$ = new BehaviorSubject<boolean>(false);
 
   // ))))))))))))))))))))))))))))))))))))))))))))))))
 
@@ -48,10 +57,12 @@ export class TestControllerService {
     this.currentUnitSequenceId = 0;
     this.currentUnitId = '';
     this.currentUnitTitle = '';
+    this.unitPrevEnabled = false;
+    this.unitNextEnabled = false;
   }
 
 
-  
+
   // public unitname$ = new BehaviorSubject<string>('-');
   // private saveToBackend$: Observable<string>;
   //

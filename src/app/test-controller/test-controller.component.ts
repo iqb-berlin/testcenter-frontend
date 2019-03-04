@@ -378,7 +378,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               // ).subscribe(myData => {
               //   if (myData instanceof ServerError) {
               //     const e = myData as ServerError;
-              //     this.snackBar.open('Konnte Kommentar nicht speichern (' + e.code.toString() + ': ' + e.labelNice, '', {duration: 3000});
+              //     this.snackBar.open('Konnte Kommentar nicht speichern (' + e.code.toString()
+              // + ': ' + e.labelNice, '', {duration: 3000});
               //   } else {
               //     const ok = myData as boolean;
               //     if (ok) {
@@ -395,56 +396,22 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
-  // private updateStatus() {
-  //   const cu = this.tcs.currentUnitPos$.getValue();
-  //   if (cu >= 0) {
-  //     this.statusMsg = '';
-  //   } else {
-  //     if (this.allUnits.length === 0) {
-  //       this.statusMsg = 'Es stehen keine Informationen über ein gewähltes Testheft zur Verfügung.';
-  //     } else {
-  //       let allLocked = true;
-  //       for (let i = 0; i < this.allUnits.length; i++) {
-  //         if (!this.allUnits[i].locked) {
-  //           allLocked = false;
-  //           break;
-  //         }
-  //       }
-  //       if (allLocked) {
-  //         this.statusMsg = 'Alle Aufgaben sind für die Bearbeitung gesperrt. Der Test kann nicht fortgesetzt werden.';
-  //       } else {
-  //         this.statusMsg = 'Bitte wählen Sie links eine Aufgabe!';
-  //       }
-  //     }
-  //   }
-  //   this.showUnitComponent = this.statusMsg.length === 0;
-  // }
+  // ==========================================================
+  nextUnitNaviButtonClick() {
+    if (this.tcs.rootTestlet !== null) {
+      this.router.navigateByUrl('/t/u/' + (this.tcs.currentUnitSequenceId + 1).toString());
+    }
+  }
 
-
-
-
-
-
-
-
-
-
-  // setCurrentUnit(targetUnitSequenceId: number) {
-  //   const currentBooklet = this.booklet$.getValue();
-  //   if ((targetUnitSequenceId >= 0) && (currentBooklet !== null) && (targetUnitSequenceId < currentBooklet.units.length)) {
-  //     this.currentUnitPos$.next(targetUnitSequenceId);
-
-  //     // this.bs.setBookletStatus(this.lds.personToken$.getValue(),
-  //     // this.lds.bookletDbId$.getValue(), {u: targetUnitSequenceId}).subscribe();
-  //   }
-  // }
-
+  // ==========================================================
+  prevUnitNaviButtonClick() {
+    if (this.tcs.rootTestlet !== null) {
+      this.router.navigateByUrl('/t/u/' + (this.tcs.currentUnitSequenceId - 1).toString());
+    }
+  }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   ngOnDestroy() {
-    // if (this.unitPosSubsription !== null) {
-    //   this.unitPosSubsription.unsubscribe();
-    // }
     if (this.loginDataSubscription !== null) {
       this.loginDataSubscription.unsubscribe();
     }

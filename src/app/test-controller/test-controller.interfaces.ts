@@ -11,6 +11,7 @@ export interface UnitResponseData {
 
 export interface UnitRestorePointData {
     unitName: string;
+    unitSequenceId: number;
     restorePoint: string;
 }
 
@@ -42,4 +43,16 @@ export interface CodeInputData {
     prompt: string;
     code: string;
     value: string;
+}
+
+export interface TaggedString {
+    tag: string;
+    value: string;
+}
+
+export interface PageData {
+    index: number;
+    id: string;
+    type: 'next' | 'prev' | 'goto';
+    disabled: boolean;
 }

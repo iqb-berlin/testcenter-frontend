@@ -38,3 +38,26 @@
   top: 5px;  
   color: white;
 }
+
+#navButtonsContainer {
+  position: fixed;
+  z-index: 100;
+  top: 4px;
+  right: 90px;
+}
+
+#navButtonsContainer .material-icons {
+  position: relative;
+  top: -8px;
+  font-size: 36px;
+  padding: 2px;
+}
+
+.mat-fab {
+  margin-right: 6px;
+}
+
+
+.mat-fab[disabled] {
+  background-color: grey;
+}

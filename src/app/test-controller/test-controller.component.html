@@ -3,6 +3,14 @@
     <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
   </a>
 </div>
+<div id="navButtonsContainer" fxLayout="row">
+  <button mat-fab [disabled]="!tcs.unitPrevEnabled" color="accent" (click)="prevUnitNaviButtonClick()">
+    <i class="material-icons">chevron_left</i>
+  </button>
+  <button mat-fab [disabled]="!tcs.unitNextEnabled" color="accent" (click)="nextUnitNaviButtonClick()">
+    <i class="material-icons">chevron_right</i>
+  </button>
+</div>
 <button id="reviewbutton" mat-button *ngIf="tcs.mode === 'review'" (click)="showReviewDialog()">
   <mat-icon>rate_review</mat-icon>
 </button>

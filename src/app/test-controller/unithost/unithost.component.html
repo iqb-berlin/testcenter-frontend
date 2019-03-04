@@ -7,37 +7,27 @@
 <div id="iFrameHost" iqbResizeIFrameChild class="unit-body">
     
 </div>
-<div id="pageNav" fxLayout="row" fxLayoutAlign="space-between center">
-    <div fxLayout="row" fxLayoutAlign="space-between center">
-        <button (click)="return()" fxLayout="row" fxLayoutAlign="center center" matTooltip="Zurück zum Autorenmodus">
-            <i class="material-icons">arrow_back</i>
-        </button>
-        <div class="statusVisual" fxLayout="row">
-            <div *ngFor="let sV of statusVisual" [style.background-color]="sV.color" [matTooltip]="sV.description">{{ sV.label }}</div>
-        </div>
-        <p>{{ player }}</p>
-    </div>
-    
+<div id="pageNav" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px">
+   
     <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="showPageNav">
         <div id="pageNavPrompt">
             Wähle hier andere Seiten dieser Aufgabe:
         </div>
     
         <div *ngFor="let p of pageList">
-        <button *ngIf="p.type === 'prev'" (click)="gotoPage(p.type, p.index)" [disabled]="p.disabled" fxLayout="row" fxLayoutAlign="center center">
-            <i class="material-icons">chevron_left</i>
-        </button>
-        <button *ngIf="p.type === 'next'" (click)="gotoPage(p.type, p.index)" [disabled]="p.disabled" fxLayout="row" fxLayoutAlign="center center">
-            <i class="material-icons">chevron_right</i>
-        </button>
-        <div *ngIf="p.type === 'goto'" fxLayout="column">
-            <div class="pageNavEnabled" *ngIf="!p.disabled"></div>
-            <div class="pageNavDisabled" *ngIf="p.disabled"></div>
-            <button (click)="gotoPage(p.type, p.index)" [disabled]="p.disabled">{{ p.index }}</button>
-            <div class="pageNavEnabled" *ngIf="!p.disabled"></div>
-            <div class="pageNavDisabled" *ngIf="p.disabled"></div>
-        </div>
+            <button *ngIf="p.type === 'prev'" (click)="gotoPage(p.type, p.index)" [disabled]="p.disabled" fxLayout="row" fxLayoutAlign="center center">
+                <i class="material-icons">chevron_left</i>
+            </button>
+            <button *ngIf="p.type === 'next'" (click)="gotoPage(p.type, p.index)" [disabled]="p.disabled" fxLayout="row" fxLayoutAlign="center center">
+                <i class="material-icons">chevron_right</i>
+            </button>
+            <div *ngIf="p.type === 'goto'" fxLayout="column">
+                <div class="pageNavEnabled" *ngIf="!p.disabled"></div>
+                <div class="pageNavDisabled" *ngIf="p.disabled"></div>
+                <button (click)="gotoPage(p.type, p.index)" [disabled]="p.disabled">{{ p.index }}</button>
+                <div class="pageNavEnabled" *ngIf="!p.disabled"></div>
+                <div class="pageNavDisabled" *ngIf="p.disabled"></div>
+            </div>
         </div>
     </div>
 </div>
-      

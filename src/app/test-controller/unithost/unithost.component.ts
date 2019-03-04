@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 import { Location } from '@angular/common';
-import { UnitRestorePointData, UnitResponseData, UnitLogData } from '../test-controller.interfaces';
+import { UnitRestorePointData, UnitResponseData, UnitLogData, TaggedString, PageData } from '../test-controller.interfaces';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -15,9 +15,6 @@ import { UnitRestorePointData, UnitResponseData, UnitLogData } from '../test-con
 })
 
 export class UnithostComponent implements OnInit, OnDestroy {
-  // private message = 'yoyoyo';
-
-  // public showIframe = false;
   private iFrameHostElement: HTMLElement;
   private iFrameItemplayer: HTMLIFrameElement;
   private routingSubscription: Subscription = null;
@@ -34,17 +31,20 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private postMessageSubscription: Subscription = null;
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
-  private pendingUnitDefinition$ = new BehaviorSubject<string>('');
-  private pendingRestorePoint$ = new BehaviorSubject<string>('');
+  private pendingUnitDefinition: TaggedString = null;
+  private pendingUnitRestorePoint: TaggedString = null;
+
+  private itemplayerValidPages: string[] = [];
+  private itemplayerCurrentPage = '';
+  private showPageNav = false;
+  private pageList: PageData[] = [];
 
   // changed by itemplayer via postMessage, observed here to save (see below)
   public restorePoint$ = new BehaviorSubject<UnitRestorePointData>(null);
   public response$ = new BehaviorSubject<UnitResponseData>(null);
   public log$ = new BehaviorSubject<UnitLogData>(null);
 
-  // buffering restorePoints
-  private lastBookletState = '';
-  private lastUnitResponses = '';
+
 
   constructor(
     private tcs: TestControllerService,
@@ -57,96 +57,85 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData['type'];
+      let msgPlayerId = msgData['sessionId'];
+      if ((msgPlayerId === undefined) || (msgPlayerId === null)) {
+        msgPlayerId = this.itemplayerSessionId;
+      }
 
       if ((msgType !== undefined) && (msgType !== null)) {
         switch (msgType) {
 
           // // // // // // //
           case 'OpenCBA.FromItemPlayer.ReadyNotification':
-            let hasData = false;
-            const initParams = {};
-
-            const pendingSpec = this.pendingUnitDefinition$.getValue();
-            if (pendingSpec.length > 0) {
-              hasData = true;
-              this.pendingUnitDefinition$.next('');
-            }
-
-            if (hasData) {
-              const pendingRespp = this.pendingRestorePoint$.getValue();
-              if (pendingRespp.length > 0) {
-                this.pendingRestorePoint$.next('');
+            let pendingUnitDef = '';
+            if (this.pendingUnitDefinition !== null) {
+              if (this.pendingUnitDefinition.tag === msgPlayerId) {
+                pendingUnitDef = this.pendingUnitDefinition.value;
+                this.pendingUnitDefinition = null;
               }
-
-              this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
-              this.log$.next({'unitName': this.myUnitName, 'logEntry': 'start'});
-              this.postMessageTarget = m.source as Window;
-              this.postMessageTarget.postMessage({
-                type: 'OpenCBA.ToItemPlayer.DataTransfer',
-                sessionId: this.itemplayerSessionId,
-                unitDefinition: pendingSpec,
-                restorePoint: pendingRespp
-              }, '*');
             }
+
+            let pendingRestorePoint = '';
+            if (this.pendingUnitRestorePoint !== null) {
+              if (this.pendingUnitRestorePoint.tag === msgPlayerId) {
+                pendingRestorePoint = this.pendingUnitRestorePoint.value;
+                this.pendingUnitRestorePoint = null;
+              }
+            }
+
+            this.postMessageTarget = m.source as Window;
+            this.postMessageTarget.postMessage({
+              type: 'OpenCBA.ToItemPlayer.DataTransfer',
+              sessionId: this.itemplayerSessionId,
+              unitDefinition: pendingUnitDef,
+              restorePoint: pendingRestorePoint
+            }, '*');
+
             break;
 
           // // // // // // //
           case 'OpenCBA.FromItemPlayer.StartedNotification':
-            const validPages = msgData['validPages'];
-            if ((validPages instanceof Array) && (validPages.length > 1)) {
-              this.tcs.itemplayerValidPages$.next(validPages);
-              let currentPage = msgData['currentPage'];
-              if (currentPage  === undefined) {
-                currentPage = validPages[0];
-              }
-              this.tcs.itemplayerCurrentPage$.next(currentPage);
-            } else {
-              this.tcs.itemplayerValidPages$.next([]);
-              this.tcs.itemplayerCurrentPage$.next('');
-            }
+            if (msgPlayerId === this.itemplayerSessionId) {
+              this.setPageList(msgData['validPages'], msgData['currentPage']);
 
-            const canLeave = msgData['canLeave'];
-            if (canLeave !== undefined) {
-              if (canLeave as string === 'warning') {
-                this.leaveWarning = true;
+              const canLeave = msgData['canLeave'];
+              if (canLeave !== undefined) {
+                if (canLeave as string === 'warning') {
+                  this.leaveWarning = true;
+                }
               }
             }
             break;
 
           // // // // // // //
           case 'OpenCBA.FromItemPlayer.ChangedDataTransfer':
-            const validPagesChanged = msgData['validPages'];
-            let currentPageChanged = msgData['currentPage'];
-            if ((validPagesChanged instanceof Array)) {
-              this.tcs.itemplayerValidPages$.next(validPagesChanged);
-              if (currentPageChanged  === undefined) {
-                currentPageChanged = validPagesChanged[0];
+            if (msgPlayerId === this.itemplayerSessionId) {
+              this.setPageList(msgData['validPages'], msgData['currentPage']);
+
+              const restorePoint = msgData['restorePoint'] as string;
+              if (restorePoint !== undefined) {
+                this.restorePoint$.next({
+                  unitName: this.myUnitName,
+                  unitSequenceId: this.myUnitNumber,
+                  restorePoint: restorePoint});
               }
-            }
-            if (currentPageChanged !== undefined) {
-              this.tcs.itemplayerCurrentPage$.next(currentPageChanged);
-            }
-
-            const restorePoint = msgData['restorePoint'] as string;
-            if (restorePoint !== undefined) {
-              this.restorePoint$.next({'unitName': this.myUnitName, 'restorePoint': restorePoint});
-            }
-            const response = msgData['response'] as string;
-            if (response !== undefined) {
-              this.response$.next({'unitName': this.myUnitName, 'response': response, 'responseType': msgData['responseType']});
-            }
-            const canLeaveChanged = msgData['canLeave'];
-            if (canLeaveChanged !== undefined) {
-              this.leaveWarning = (canLeaveChanged as string === 'warning');
-            }
+              const response = msgData['response'] as string;
+              if (response !== undefined) {
+                this.response$.next({'unitName': this.myUnitName, 'response': response, 'responseType': msgData['responseType']});
+              }
+              const canLeaveChanged = msgData['canLeave'];
+              if (canLeaveChanged !== undefined) {
+                this.leaveWarning = (canLeaveChanged as string === 'warning');
+              }
 
 
-            // const logEntries = msgData['logEntries'] as string[];
-            // if ((logEntries !== undefined) && (logEntries.length > 0)) {
-            //   logEntries.forEach(log => {
-            //     this.log$.next({'unitName': this.myUnitName, 'msg': log});
-            //   });
-            // }
+              // const logEntries = msgData['logEntries'] as string[];
+              // if ((logEntries !== undefined) && (logEntries.length > 0)) {
+              //   logEntries.forEach(log => {
+              //     this.log$.next({'unitName': this.myUnitName, 'msg': log});
+              //   });
+              // }
+            }
             break;
 
           // // // // // // //
@@ -160,22 +149,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.restorePoint$.pipe(
       debounceTime(300)).subscribe(data => {
-        // if (data !== null) {
-        //   const b = this.tcs.booklet$.getValue();
-        //   if (b !== null) {
-        //     const u = b.getUnitAt(this.myUnitNumber);
-        //     if (u !== null) {
-        //       u.restorePoint = data.restorePoint;
-        //     }
-        //   }
-
-        //   this.restorePoints[data.unitName] = data.restorePoint;
-        //   if (this.lds.loginMode$.getValue() !== 'review') {
-        //     this.bs.setUnitRestorePoint(this.lds.personToken$.getValue(),
-        //         this.lds.bookletDbId$.getValue(), data.unitName, data.restorePoint)
-        //     .subscribe();
-        //   }
-        // }
+        if (data !== null) {
+          this.tcs.addUnitRestorePoint(data.unitSequenceId, data.restorePoint);
+          // if (this.lds.loginMode$.getValue() !== 'review') {
+          //   this.bs.setUnitRestorePoint(this.lds.personToken$.getValue(),
+          //       this.lds.bookletDbId$.getValue(), data.unitName, data.restorePoint)
+          //   .subscribe();
+          // }
+        }
     });
 
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -213,17 +194,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
         }
       }
     });
-
-    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    // this.tcs.itemplayerPageRequest$.subscribe(newUnitPage => {
-    //   if ((this.postMessageTarget !== null) && (newUnitPage.length > 0)) {
-    //     this.postMessageTarget.postMessage({
-    //       type: 'OpenCBA.ToItemPlayer.PageNavigationRequest',
-    //       sessionId: this.itemplayerSessionId,
-    //       newPage: newUnitPage
-    //     }, '*');
-    //   }
-    // });
   }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -236,58 +206,153 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.routingSubscription = this.route.params.subscribe(params => {
       this.myUnitNumber = Number(params['u']);
       this.tcs.currentUnitSequenceId = this.myUnitNumber;
-      this.loadItemplayer(this.myUnitNumber);
+
+      while (this.iFrameHostElement.hasChildNodes()) {
+        this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
+      }
+
+      if ((this.myUnitNumber >= 1) && (this.myUnitNumber === this.myUnitNumber) && (this.tcs.rootTestlet !== null)) {
+        const currentUnit = this.tcs.rootTestlet.getUnitAt(this.myUnitNumber);
+        this.unitTitle = currentUnit.unitDef.title; // (currentUnitId + 1).toString() + '. '
+        this.myUnitName = currentUnit.unitDef.id;
+        this.tcs.currentUnitId = this.myUnitName;
+        this.tcs.currentUnitTitle = this.unitTitle;
+        this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+
+        this.setPageList([], '');
+
+        this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
+        this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(currentUnit.unitDef.playerId));
+        this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
+        this.iFrameItemplayer.setAttribute('class', 'unitHost');
+        this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
+
+        if (this.tcs.hasUnitDefinition(this.myUnitNumber)) {
+          this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: this.tcs.getUnitDefinition(this.myUnitNumber)};
+        } else {
+          this.pendingUnitDefinition = null;
+        }
+
+        if (this.tcs.hasUnitRestorePoint(this.myUnitNumber)) {
+          this.pendingUnitRestorePoint = {tag: this.itemplayerSessionId, value: this.tcs.getUnitRestorePoint(this.myUnitNumber)};
+        } else {
+          this.pendingUnitRestorePoint = null;
+        }
+
+        this.leaveWarning = false;
+
+        this.iFrameHostElement.appendChild(this.iFrameItemplayer);    }
     });
-
-    // this.lds.bookletDbId$.subscribe(auth => {
-    //   this.restorePoints = {};
-    // });
-
-    // this.tcs.currentUnitPos$.subscribe(up => {
-    //   if (up >= 0) {
-    //     this.loadItemplayer();
-    //   }
-    // });
   }
 
-  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-  loadItemplayer(unitSequenceId: number) {
-    while (this.iFrameHostElement.hasChildNodes()) {
-      this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
+  // ++++++++++++ page nav ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  setPageList(validPages: string[], currentPage: string) {
+    if ((validPages instanceof Array)) {
+      const newPageList: PageData[] = [];
+      if (validPages.length > 1) {
+        for (let i = 0; i < validPages.length; i++) {
+          if (i === 0) {
+            newPageList.push({
+              index: -1,
+              id: 'prev',
+              disabled: validPages[i] === currentPage,
+              type: 'prev'
+            });
+          }
+
+          newPageList.push({
+            index: i + 1,
+            id: validPages[i],
+            disabled: validPages[i] === currentPage,
+            type: 'goto'
+          });
+
+          if (i === validPages.length - 1) {
+            newPageList.push({
+              index: -1,
+              id: 'next',
+              disabled: validPages[i] === currentPage,
+              type: 'next'
+            });
+          }
+        }
+      }
+      this.pageList = newPageList;
+
+    } else if ((this.pageList.length > 1) && (currentPage !== undefined)) {
+      let currentPageIndex = 0;
+      for (let i = 0; i < this.pageList.length; i++) {
+        if (this.pageList[i].type === 'goto') {
+          if (this.pageList[i].id === currentPage) {
+            this.pageList[i].disabled = true;
+            currentPageIndex = i;
+          } else {
+            this.pageList[i].disabled = false;
+          }
+        }
+      }
+      if (currentPageIndex === 1) {
+        this.pageList[0].disabled = true;
+        this.pageList[this.pageList.length - 1].disabled = false;
+      } else {
+        this.pageList[0].disabled = false;
+        if (currentPageIndex === this.pageList.length - 2) {
+          this.pageList[this.pageList.length - 1].disabled = true;
+        } else {
+          this.pageList[this.pageList.length - 1].disabled = false;
+        }
+      }
+    }
+    this.showPageNav = this.pageList.length > 0;
+  }
+
+  gotoPage(action: string, index: number) {
+    let nextPageId = '';
+    // currentpage is detected by disabled-attribute of page
+    if (action === 'next') {
+      let currentPageIndex = 0;
+      for (let i = 0; i < this.pageList.length; i++) {
+        if ((this.pageList[i].index > 0) && (this.pageList[i].disabled)) {
+          currentPageIndex = i;
+          break;
+        }
+      }
+      if ((currentPageIndex > 0) && (currentPageIndex < this.pageList.length - 2)) {
+        nextPageId = this.pageList[currentPageIndex + 1].id;
+      }
+    } else if (action === 'prev') {
+      let currentPageIndex = 0;
+      for (let i = 0; i < this.pageList.length; i++) {
+        if ((this.pageList[i].index > 0) && (this.pageList[i].disabled)) {
+          currentPageIndex = i;
+          break;
+        }
+      }
+      if (currentPageIndex > 1) {
+        nextPageId = this.pageList[currentPageIndex - 1].id;
+      }
+    } else if (action === 'goto') {
+      if ((index > 0) && (index < this.pageList.length - 1)) {
+        nextPageId = this.pageList[index].id;
+      }
     }
 
-    if ((unitSequenceId >= 1) && (this.myUnitNumber === unitSequenceId) && (this.tcs.rootTestlet !== null)) {
-      const currentUnit = this.tcs.rootTestlet.getUnitAt(unitSequenceId);
-      this.unitTitle = currentUnit.unitDef.title; // (currentUnitId + 1).toString() + '. '
-      this.myUnitName = currentUnit.unitDef.id;
-      this.tcs.currentUnitId = this.myUnitName;
-      this.tcs.currentUnitTitle = this.unitTitle;
-
-      this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-      this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(currentUnit.unitDef.playerId));
-      this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
-      this.iFrameItemplayer.setAttribute('class', 'unitHost');
-      this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
-
-      this.pendingUnitDefinition$.next(this.tcs.getUnitDefinition(unitSequenceId));
-      const restorePoint = this.tcs.getUnitRestorePoint(unitSequenceId);
-      this.leaveWarning = false;
-
-      if ((restorePoint === null) || (restorePoint === undefined)) {
-        // this.pendingRestorePoint$.next(currentUnit.restorePoint);
-      } else {
-        this.pendingRestorePoint$.next(restorePoint);
-      }
-      // this.tss.pendingItemResources$.next(newUnit.getResourcesAsDictionary());
-      // this.tss.pendingItemRestorePoint$.next(newUnit.restorePoint);
-
-      this.iFrameHostElement.appendChild(this.iFrameItemplayer);    }
+    if (nextPageId.length > 0) {
+      this.postMessageTarget.postMessage({
+        type: 'OpenCBA.ToItemPlayer.PageNavigationRequest',
+        sessionId: this.itemplayerSessionId,
+        newPage: nextPageId
+      }, '*');
+    }
   }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   ngOnDestroy() {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
+    }
+    if (this.postMessageSubscription !== null) {
+      this.postMessageSubscription.unsubscribe();
     }
   }
 }

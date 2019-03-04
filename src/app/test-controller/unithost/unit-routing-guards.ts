@@ -80,7 +80,7 @@ export class UnitActivateGuard implements CanActivate {
             }
         ));
       } else {
-        // ?? this.tcs.setCurrentUnit(targetUnitSequenceId);
+        this.tcs.currentUnitSequenceId = targetUnitSequenceId;
         myreturn = true;
       }
     }
