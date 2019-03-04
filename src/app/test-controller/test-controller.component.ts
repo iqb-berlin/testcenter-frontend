@@ -151,6 +151,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           .pipe(
             switchMap(myData => {
               if (myData instanceof ServerError) {
+                console.log('## problem getting player "' + playerId + '"');
                 return of(false);
               } else {
                 const player = myData as string;
@@ -158,6 +159,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                   this.tcs.addPlayer(playerId, player);
                   return of(true);
                 } else {
+                  console.log('## size of player "' + playerId + '" = 0');
                   return of(false);
                 }
               }
@@ -220,6 +222,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     return this.bs.getResource(definitionRef).pipe(
                       switchMap(def => {
                         if (def instanceof ServerError) {
+                          console.log('error getting unit "' + myUnit.id + '": getting "' + definitionRef + '" failed');
                           return of(false);
                         } else {
                           this.tcs.addUnitDefinition(sequenceId, def as string);
@@ -268,10 +271,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
               const myUnitLoadings = [];
               for (let i = 1; i < this.tcs.numberOfUnits + 1; i++) {
-                myUnitLoadings.push(this.loadUnitOk(this.tcs.rootTestlet.getUnitAt(i).unitDef, i));
+                const ud = this.tcs.rootTestlet.getUnitAt(i);
+                if (ud === null) {
+                  console.log('# yo hm: ' + i.toString());
+                } else {
+                  myUnitLoadings.push(this.loadUnitOk(ud.unitDef, i));
+                }
               }
               forkJoin(myUnitLoadings).subscribe(allOk => {
-                console.log('# yo hm');
                 console.log(allOk);
               });
             }
