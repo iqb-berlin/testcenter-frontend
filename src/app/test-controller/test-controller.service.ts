@@ -25,7 +25,7 @@ export class TestControllerService {
     this._currentUnitSequenceId = v;
   }
 
-  public currentUnitId = '';
+  public currentUnitDbKey = '';
   public currentUnitTitle = '';
   public unitPrevEnabled = false;
   public unitNextEnabled = false;
@@ -55,7 +55,7 @@ export class TestControllerService {
     this.mode = '';
     this.loginname = '';
     this.currentUnitSequenceId = 0;
-    this.currentUnitId = '';
+    this.currentUnitDbKey = '';
     this.currentUnitTitle = '';
     this.unitPrevEnabled = false;
     this.unitNextEnabled = false;

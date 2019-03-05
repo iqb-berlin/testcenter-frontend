@@ -6,7 +6,7 @@
         <p>Kommentar für:</p>
         <mat-radio-group formControlName="target" fxLayout="column" fxLayoutGap="4px">
             <mat-radio-button value="b" [matTooltip]="data.bookletname">aktuelles Testheft "{{ data.bookletname }}"</mat-radio-button>
-            <mat-radio-button value="u" [disabled]="data.unitname.length === 0" [matTooltip]="data.unitname">aktuelle Aufgabe "{{ data.unitname }}"</mat-radio-button>
+            <mat-radio-button value="u" [disabled]="data.unitDbKey.length === 0" [matTooltip]="data.unitDbKey">aktuelle Aufgabe "{{ data.unitTitle }}"</mat-radio-button>
         </mat-radio-group>
     </div>
     <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">

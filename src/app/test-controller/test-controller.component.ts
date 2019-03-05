@@ -338,7 +338,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         data: {
           loginname: this.tcs.loginname,
           bookletname: this.tcs.rootTestlet.title,
-          unitname: this.tcs.currentUnitTitle
+          unitTitle: this.tcs.currentUnitTitle,
+          unitDbKey: this.tcs.currentUnitDbKey
         }
       });
 
@@ -347,48 +348,44 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           if (result !== false) {
             const targetSelection = (<FormGroup>result).get('target').value;
             if (targetSelection === 'u') {
-      //         this.bs.saveUnitReview(
-      //             this.lds.personToken$.getValue(),
-      //             this.lds.bookletDbId$.getValue(),
-      //             currentUnitId,
-      //             (<FormGroup>result).get('priority').value,
-      //             dialogRef.componentInstance.getCategories(),
-      //             (<FormGroup>result).get('entry').value
-      //           ).subscribe(myData => {
-      //             if (myData instanceof ServerError) {
-      //               const e = myData as ServerError;
-      //               this.snackBar.open(
-      // 'Konnte Kommentar nicht speichern (' + e.code.toString() + ': ' + e.labelNice, '', {duration: 3000});
-      //             } else {
-      //               const ok = myData as boolean;
-      //               if (ok) {
-      //                 this.snackBar.open('Kommentar gespeichert', '', {duration: 1000});
-      //               } else {
-      //                 this.snackBar.open('Konnte Kommentar nicht speichern.', '', {duration: 3000});
-      //               }
-      //             }
-      //           });
+              this.bs.saveUnitReview(
+                  this.tcs.currentUnitDbKey,
+                  (<FormGroup>result).get('priority').value,
+                  dialogRef.componentInstance.getCategories(),
+                  (<FormGroup>result).get('entry').value
+                ).subscribe(myData => {
+                  if (myData instanceof ServerError) {
+                    const e = myData as ServerError;
+                    this.snackBar.open(
+      'Konnte Kommentar nicht speichern (' + e.code.toString() + ': ' + e.labelNice, '', {duration: 3000});
+                  } else {
+                    const ok = myData as boolean;
+                    if (ok) {
+                      this.snackBar.open('Kommentar gespeichert', '', {duration: 1000});
+                    } else {
+                      this.snackBar.open('Konnte Kommentar nicht speichern.', '', {duration: 3000});
+                    }
+                  }
+                });
             } else {
-              // this.bs.saveBookletReview(
-              //   this.lds.personToken$.getValue(),
-              //   this.lds.bookletDbId$.getValue(),
-              // (<FormGroup>result).get('priority').value,
-              //   dialogRef.componentInstance.getCategories(),
-              //   (<FormGroup>result).get('entry').value
-              // ).subscribe(myData => {
-              //   if (myData instanceof ServerError) {
-              //     const e = myData as ServerError;
-              //     this.snackBar.open('Konnte Kommentar nicht speichern (' + e.code.toString()
-              // + ': ' + e.labelNice, '', {duration: 3000});
-              //   } else {
-              //     const ok = myData as boolean;
-              //     if (ok) {
-              //       this.snackBar.open('Kommentar gespeichert', '', {duration: 1000});
-              //     } else {
-              //       this.snackBar.open('Konnte Kommentar nicht speichern.', '', {duration: 3000});
-              //     }
-              //   }
-              // });
+              this.bs.saveBookletReview(
+              (<FormGroup>result).get('priority').value,
+                dialogRef.componentInstance.getCategories(),
+                (<FormGroup>result).get('entry').value
+              ).subscribe(myData => {
+                if (myData instanceof ServerError) {
+                  const e = myData as ServerError;
+                  this.snackBar.open('Konnte Kommentar nicht speichern (' + e.code.toString()
+              + ': ' + e.labelNice, '', {duration: 3000});
+                } else {
+                  const ok = myData as boolean;
+                  if (ok) {
+                    this.snackBar.open('Kommentar gespeichert', '', {duration: 1000});
+                  } else {
+                    this.snackBar.open('Konnte Kommentar nicht speichern.', '', {duration: 3000});
+                  }
+                }
+              });
             }
           }
         }

@@ -1,16 +1,16 @@
 export interface UnitLogData {
-    unitName: string;
+    unitDbKey: string;
     logEntry: string;
 }
 
 export interface UnitResponseData {
-    unitName: string;
+    unitDbKey: string;
     response: string;
     responseType: string;
 }
 
 export interface UnitRestorePointData {
-    unitName: string;
+    unitDbKey: string;
     unitSequenceId: number;
     restorePoint: string;
 }

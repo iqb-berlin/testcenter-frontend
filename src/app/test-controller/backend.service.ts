@@ -24,35 +24,22 @@ export class BackendService {
   // 7777777777777777777777777777777777777777777777777777777777777777777777
   // send reviews
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  saveUnitReview(pToken: string, bookletDbId: number, unit: string, priority: number,
-    categories: string, entry: string): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  saveUnitReview(unit: string, priority: number,
+      categories: string, entry: string): Observable<boolean | ServerError> {
     return this.http
-    .post<boolean>(this.serverUrl + 'addUnitReview.php', {au: pToken + '##' + bookletDbId.toString(), u: unit,
-        p: priority, c: categories, e: entry}, httpOptions)
-      .pipe(
-        catchError(this.handle)
-      );
+      .post<boolean>(this.serverSlimUrl_POST + 'review', {u: unit, p: priority, c: categories, e: entry})
+        .pipe(
+          catchError(this.handle)
+        );
   }
 
   // ------------------------------
-  saveBookletReview(pToken: string, bookletDbId: number, priority: number,
-          categories: string, entry: string): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  saveBookletReview(priority: number, categories: string, entry: string): Observable<boolean | ServerError> {
     return this.http
-    .post<boolean>(this.serverUrl + 'addBookletReview.php', {au: pToken + '##' + bookletDbId.toString(),
-        p: priority, c: categories, e: entry}, httpOptions)
-      .pipe(
-        catchError(this.handle)
-      );
+      .post<boolean>(this.serverSlimUrl_POST + 'review', {p: priority, c: categories, e: entry})
+        .pipe(
+          catchError(this.handle)
+        );
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777

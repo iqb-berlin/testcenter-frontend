@@ -24,7 +24,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
           'Verlassen der Aufgabe wird der Hörtext nicht noch einmal gestartet. Trotzdem die Aufgabe verlassen?';
 
   private myUnitNumber = -1;
-  private myUnitName = '';
+  private myUnitDbKey = '';
   private unitTitle = '';
 
   // :::::::::::::::::::::
@@ -115,13 +115,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
               const restorePoint = msgData['restorePoint'] as string;
               if (restorePoint !== undefined) {
                 this.restorePoint$.next({
-                  unitName: this.myUnitName,
+                  unitDbKey: this.myUnitDbKey,
                   unitSequenceId: this.myUnitNumber,
                   restorePoint: restorePoint});
               }
               const response = msgData['response'] as string;
               if (response !== undefined) {
-                this.response$.next({'unitName': this.myUnitName, 'response': response, 'responseType': msgData['responseType']});
+                this.response$.next({unitDbKey: this.myUnitDbKey, response: response, responseType: msgData['responseType']});
               }
               const canLeaveChanged = msgData['canLeave'];
               if (canLeaveChanged !== undefined) {
@@ -179,10 +179,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
         data.forEach(lg => {
           if (lg !== null) {
             if (lg.logEntry.length > 0) {
-              if (typeof myLogs[lg.unitName] === 'undefined') {
-                myLogs[lg.unitName] = [];
+              if (typeof myLogs[lg.unitDbKey] === 'undefined') {
+                myLogs[lg.unitDbKey] = [];
               }
-              myLogs[lg.unitName].push(JSON.stringify(lg.logEntry));
+              myLogs[lg.unitDbKey].push(JSON.stringify(lg.logEntry));
             }
           }
         });
@@ -214,8 +214,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
       if ((this.myUnitNumber >= 1) && (this.myUnitNumber === this.myUnitNumber) && (this.tcs.rootTestlet !== null)) {
         const currentUnit = this.tcs.rootTestlet.getUnitAt(this.myUnitNumber);
         this.unitTitle = currentUnit.unitDef.title; // (currentUnitId + 1).toString() + '. '
-        this.myUnitName = currentUnit.unitDef.id;
-        this.tcs.currentUnitId = this.myUnitName;
+        this.myUnitDbKey = currentUnit.unitDef.alias;
+        this.tcs.currentUnitDbKey = this.myUnitDbKey;
         this.tcs.currentUnitTitle = this.unitTitle;
         this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
 
