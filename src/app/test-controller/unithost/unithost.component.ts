@@ -139,6 +139,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
             break;
 
           // // // // // // //
+          case 'OpenCBA.FromItemPlayer.NavigationRequestedNotification':
+            if (msgPlayerId === this.itemplayerSessionId) {
+              this.tcs.setUnitNavigationRequest(msgData['navigationTarget']);
+            }
+            break;
+
+          // // // // // // //
           default:
             console.log('processMessagePost ignored message: ' + msgType);
             break;

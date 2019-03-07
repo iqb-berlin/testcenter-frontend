@@ -15,6 +15,8 @@ export class TestControllerService {
   public loginname = '';
   public mode = '';
 
+  public navigationRequest$ = new BehaviorSubject<string>('');
+
   private _currentUnitSequenceId: number;
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -169,5 +171,10 @@ export class TestControllerService {
   }
   public getUnitRestorePoint(sequenceId: number): string {
     return this.unitRestorePoints[sequenceId];
+  }
+
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  public setUnitNavigationRequest(RequenstKey: string) {
+    this.navigationRequest$.next(RequenstKey);
   }
 }
