@@ -1,8 +1,7 @@
 import { MainDataService } from './../../maindata.service';
 import { debounceTime, bufferTime, switchMap } from 'rxjs/operators';
 import { TestControllerService } from './../test-controller.service';
-import { Subscription, BehaviorSubject } from 'rxjs';
-import { BackendService } from './../backend.service';
+import { Subscription, Subject } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
@@ -23,7 +22,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   public leaveWarningText = 'Du hast den Hörtext noch nicht vollständig gehört. Nach dem ' +
           'Verlassen der Aufgabe wird der Hörtext nicht noch einmal gestartet. Trotzdem die Aufgabe verlassen?';
 
-  private myUnitNumber = -1;
+  private myUnitSequenceId = -1;
   private myUnitDbKey = '';
   private unitTitle = '';
 
@@ -40,19 +39,32 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private pageList: PageData[] = [];
 
   // changed by itemplayer via postMessage, observed here to save (see below)
-  public restorePoint$ = new BehaviorSubject<UnitRestorePointData>(null);
-  public response$ = new BehaviorSubject<UnitResponseData>(null);
-  public log$ = new BehaviorSubject<UnitLogData>(null);
+  private restorePoint$ = new Subject<string>();
+  private restorePointSubscription: Subscription = null;
+  private response$ = new Subject<TaggedString>();
+  private responseSubscription: Subscription = null;
 
 
 
   constructor(
     private tcs: TestControllerService,
-    private bs: BackendService,
     private mds: MainDataService,
-    private location: Location,
     private route: ActivatedRoute
   ) {
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    this.restorePointSubscription = this.restorePoint$.pipe(
+      debounceTime(300)).subscribe(restorePoint => {
+        this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, restorePoint, true);
+      }
+    );
+
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    this.responseSubscription = this.response$.pipe(
+      debounceTime(300)).subscribe(response => {
+        this.tcs.newUnitResponse(this.myUnitDbKey, response.value, response.tag);
+      }
+    );
+
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
@@ -113,28 +125,17 @@ export class UnithostComponent implements OnInit, OnDestroy {
               this.setPageList(msgData['validPages'], msgData['currentPage']);
 
               const restorePoint = msgData['restorePoint'] as string;
-              if (restorePoint !== undefined) {
-                this.restorePoint$.next({
-                  unitDbKey: this.myUnitDbKey,
-                  unitSequenceId: this.myUnitNumber,
-                  restorePoint: restorePoint});
+              if (restorePoint) {
+                this.restorePoint$.next(restorePoint);
               }
               const response = msgData['response'] as string;
               if (response !== undefined) {
-                this.response$.next({unitDbKey: this.myUnitDbKey, response: response, responseType: msgData['responseType']});
+                this.response$.next({tag: msgData['responseType'], value: response});
               }
               const canLeaveChanged = msgData['canLeave'];
               if (canLeaveChanged !== undefined) {
                 this.leaveWarning = (canLeaveChanged as string === 'warning');
               }
-
-
-              // const logEntries = msgData['logEntries'] as string[];
-              // if ((logEntries !== undefined) && (logEntries.length > 0)) {
-              //   logEntries.forEach(log => {
-              //     this.log$.next({'unitName': this.myUnitName, 'msg': log});
-              //   });
-              // }
             }
             break;
 
@@ -152,55 +153,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
         }
       }
     });
-
-    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    this.restorePoint$.pipe(
-      debounceTime(300)).subscribe(data => {
-        if (data !== null) {
-          this.tcs.addUnitRestorePoint(data.unitSequenceId, data.restorePoint);
-          // if (this.lds.loginMode$.getValue() !== 'review') {
-          //   this.bs.setUnitRestorePoint(this.lds.personToken$.getValue(),
-          //       this.lds.bookletDbId$.getValue(), data.unitName, data.restorePoint)
-          //   .subscribe();
-          // }
-        }
-    });
-
-    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    this.response$.pipe(
-      debounceTime(300)
-    ).subscribe(data => {
-        // if ((data !== null) && (this.lds.loginMode$.getValue() !== 'review')) {
-        //   this.bs.setUnitResponses(this.lds.personToken$.getValue(),
-        //       this.lds.bookletDbId$.getValue(), data.unitName, data.response, data.responseType)
-        //   .subscribe();
-      // }
-    });
-
-    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    this.log$.pipe(
-      bufferTime(500)
-    ).subscribe((data: UnitLogData[]) => {
-      if (data.length > 0) {
-        const myLogs = {};
-        data.forEach(lg => {
-          if (lg !== null) {
-            if (lg.logEntry.length > 0) {
-              if (typeof myLogs[lg.unitDbKey] === 'undefined') {
-                myLogs[lg.unitDbKey] = [];
-              }
-              myLogs[lg.unitDbKey].push(JSON.stringify(lg.logEntry));
-            }
-          }
-        });
-        for (const unitName in myLogs) {
-          if (myLogs[unitName].length > 0) {
-            // ## this.bs.setUnitLog(this.lds.personToken$.getValue(),
-            // this.lds.bookletDbId$.getValue(), unitName, myLogs[unitName]).subscribe();
-          }
-        }
-      }
-    });
   }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -211,15 +163,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.leaveWarning = false;
 
     this.routingSubscription = this.route.params.subscribe(params => {
-      this.myUnitNumber = Number(params['u']);
-      this.tcs.currentUnitSequenceId = this.myUnitNumber;
+      this.myUnitSequenceId = Number(params['u']);
+      this.tcs.currentUnitSequenceId = this.myUnitSequenceId;
 
       while (this.iFrameHostElement.hasChildNodes()) {
         this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
       }
 
-      if ((this.myUnitNumber >= 1) && (this.myUnitNumber === this.myUnitNumber) && (this.tcs.rootTestlet !== null)) {
-        const currentUnit = this.tcs.rootTestlet.getUnitAt(this.myUnitNumber);
+      if ((this.myUnitSequenceId >= 1) && (this.myUnitSequenceId === this.myUnitSequenceId) && (this.tcs.rootTestlet !== null)) {
+        const currentUnit = this.tcs.rootTestlet.getUnitAt(this.myUnitSequenceId);
         this.unitTitle = currentUnit.unitDef.title; // (currentUnitId + 1).toString() + '. '
         this.myUnitDbKey = currentUnit.unitDef.alias;
         this.tcs.currentUnitDbKey = this.myUnitDbKey;
@@ -234,14 +186,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
         this.iFrameItemplayer.setAttribute('class', 'unitHost');
         this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
 
-        if (this.tcs.hasUnitDefinition(this.myUnitNumber)) {
-          this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: this.tcs.getUnitDefinition(this.myUnitNumber)};
+        if (this.tcs.hasUnitDefinition(this.myUnitSequenceId)) {
+          this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: this.tcs.getUnitDefinition(this.myUnitSequenceId)};
         } else {
           this.pendingUnitDefinition = null;
         }
 
-        if (this.tcs.hasUnitRestorePoint(this.myUnitNumber)) {
-          this.pendingUnitRestorePoint = {tag: this.itemplayerSessionId, value: this.tcs.getUnitRestorePoint(this.myUnitNumber)};
+        if (this.tcs.hasUnitRestorePoint(this.myUnitSequenceId)) {
+          this.pendingUnitRestorePoint = {tag: this.itemplayerSessionId, value: this.tcs.getUnitRestorePoint(this.myUnitSequenceId)};
         } else {
           this.pendingUnitRestorePoint = null;
         }
@@ -360,6 +312,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     if (this.postMessageSubscription !== null) {
       this.postMessageSubscription.unsubscribe();
+    }
+    if (this.restorePointSubscription !== null) {
+      this.restorePointSubscription.unsubscribe();
+    }
+    if (this.responseSubscription !== null) {
+      this.responseSubscription.unsubscribe();
     }
   }
 }

@@ -1,6 +1,11 @@
-import { BehaviorSubject, of, Observable } from 'rxjs';
+import { BehaviorSubject, of, Observable, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Testlet, BookletConfig } from './test-controller.classes';
+import { BookletLogData, UnitLogData, BookletStateEntry,
+  UnitResponseData, UnitRestorePointData } from './test-controller.interfaces';
+import { BackendService } from './backend.service';
+import { JsonpInterceptor } from '@angular/common/http';
+import { ServerError } from '../backend.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +16,12 @@ export class TestControllerService {
   };
   public bookletConfig$ = new BehaviorSubject<BookletConfig>(this.standardBookletConfig);
   public rootTestlet: Testlet = null;
+  public bookletDbId = 0;
   public numberOfUnits = 0;
   public loginname = '';
   public mode = '';
 
-  public navigationRequest$ = new BehaviorSubject<string>('');
+  public navigationRequest$ = new Subject<string>();
 
   private _currentUnitSequenceId: number;
   public get currentUnitSequenceId(): number {
@@ -47,8 +53,14 @@ export class TestControllerService {
   private unitDefinitions: {[sequenceId: number]: string} = {};
   private unitRestorePoints: {[sequenceId: number]: string} = {};
 
+  constructor (
+    private bs: BackendService
+  ) { }
+
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
   public resetDataStore() {
     this.bookletConfig$.next(this.standardBookletConfig);
+    this.bookletDbId = 0;
     this.players = {};
     this.unitDefinitions = {};
     this.unitRestorePoints = {};
@@ -163,9 +175,7 @@ export class TestControllerService {
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  public addUnitRestorePoint (sequenceId: number, uRP: string) {
-    this.unitRestorePoints[sequenceId] = uRP;
-  }
+  // adding RestorePoint via newUnitRestorePoint below
   public hasUnitRestorePoint (sequenceId: number): boolean {
     return this.unitRestorePoints.hasOwnProperty(sequenceId);
   }
@@ -174,7 +184,75 @@ export class TestControllerService {
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  public setUnitNavigationRequest(RequenstKey: string) {
-    this.navigationRequest$.next(RequenstKey);
+  public setUnitNavigationRequest(RequestKey: string) {
+    this.navigationRequest$.next(RequestKey);
   }
+
+
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  public addBookletLog(entry: string) {
+    this.bs.addBookletLog(this.bookletDbId, Date.now(), JSON.stringify(entry)).subscribe(ok => {
+      if (ok instanceof ServerError) {
+        console.log('((((((((((((((((addBookletLog');
+      }
+    });
+  }
+  public setBookletState(stateKey: string, state: string) {
+    this.bs.setBookletState(this.bookletDbId, stateKey, state).subscribe(ok => {
+      if (ok instanceof ServerError) {
+        console.log('((((((((((((((((setBookletState');
+      }
+    });
+  }
+  public addUnitLog(unitDbKey: string, entry: string) {
+    this.bs.addUnitLog(this.bookletDbId, Date.now(), unitDbKey, JSON.stringify(entry)).subscribe(ok => {
+      if (ok instanceof ServerError) {
+        console.log('((((((((((((((((addUnitLog');
+      }
+    });
+  }
+  public newUnitResponse(unitDbKey: string, response: string, responseType) {
+    this.bs.newUnitResponse(this.bookletDbId, Date.now(), unitDbKey, JSON.stringify(response), responseType).subscribe(ok => {
+      if (ok instanceof ServerError) {
+        console.log('((((((((((((((((newUnitResponse');
+      }
+    });
+  }
+  public newUnitRestorePoint(unitDbKey: string, unitSequenceId: number, restorePoint: string, postToServer: boolean) {
+    this.unitRestorePoints[unitSequenceId] = restorePoint;
+    if (postToServer) {
+      this.bs.newUnitRestorePoint(this.bookletDbId, unitDbKey, Date.now(), JSON.stringify(restorePoint)).subscribe(ok => {
+        if (ok instanceof ServerError) {
+          console.log('((((((((((((((((newUnitRestorePoint');
+        }
+      });
+    }
+  }
+
+
+  // -- -- -- -- -- -- -- -- -- -- -- -- -- --
+      // this.log$.pipe(
+      //   bufferTime(500)
+      // ).subscribe((data: UnitLogData[]) => {
+      //   if (data.length > 0) {
+      //     const myLogs = {};
+      //     data.forEach(lg => {
+      //       if (lg !== null) {
+      //         if (lg.logEntry.length > 0) {
+      //           if (typeof myLogs[lg.unitDbKey] === 'undefined') {
+      //             myLogs[lg.unitDbKey] = [];
+      //           }
+      //           myLogs[lg.unitDbKey].push(JSON.stringify(lg.logEntry));
+      //         }
+      //       }
+      //     });
+      //     for (const unitName in myLogs) {
+      //       if (myLogs[unitName].length > 0) {
+      //         // ## this.bs.setUnitLog(this.lds.personToken$.getValue(),
+      //         // this.lds.bookletDbId$.getValue(), unitName, myLogs[unitName]).subscribe();
+      //       }
+      //     }
+      //   }
+      // });
+
 }

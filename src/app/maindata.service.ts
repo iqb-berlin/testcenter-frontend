@@ -98,6 +98,14 @@ export class MainDataService {
   }
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  endBooklet () {
+    const myLoginData = this.loginData$.getValue();
+    myLoginData.booklet = 0;
+    myLoginData.bookletlabel = '';
+    this.setNewLoginData(myLoginData);
+  }
+
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   getCode(): string {
     const myLoginData = this.loginData$.getValue();
     return myLoginData.code;

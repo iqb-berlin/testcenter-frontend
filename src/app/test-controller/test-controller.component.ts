@@ -19,7 +19,7 @@ import { switchMap } from 'rxjs/operators';
 })
 export class TestControllerComponent implements OnInit, OnDestroy {
   private loginDataSubscription: Subscription = null;
-  // private unitPosSubsription: Subscription = null;
+  private navigationRequestSubsription: Subscription = null;
 
   // private showUnitComponent = false;
   // private allUnits: UnitDef[] = [];
@@ -189,7 +189,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             return of(false);
           } else {
             const myUnitData = myData as UnitData;
-            this.tcs.addUnitRestorePoint(sequenceId, myUnitData.restorepoint);
+            this.tcs.newUnitRestorePoint(myUnit.id, sequenceId, myUnitData.restorepoint, false);
             let playerId = '';
             let definitionRef = '';
 
@@ -254,11 +254,55 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       );
   }
 
-  // ==========================================================
-  // ==========================================================
+  // #####################################################################################
+  // #####################################################################################
   ngOnInit() {
     this.router.navigateByUrl('/t');
 
+    // ==========================================================
+    // navigation between units and end booklet
+    this.navigationRequestSubsription = this.tcs.navigationRequest$.subscribe((navString: string) => {
+      if (this.tcs.rootTestlet === null) {
+        this.snackBar.open('Kein Testheft verfügbar.', '', {duration: 3000});
+      } else {
+        switch (navString) {
+          case '#next':
+            if (this.tcs.rootTestlet !== null) {
+              this.router.navigateByUrl('/t/u/' + (this.tcs.currentUnitSequenceId + 1).toString());
+            }
+            break;
+          case '#previous':
+            if (this.tcs.rootTestlet !== null) {
+              this.router.navigateByUrl('/t/u/' + (this.tcs.currentUnitSequenceId - 1).toString());
+            }
+            break;
+          case '#first':
+            if (this.tcs.rootTestlet !== null) {
+              this.router.navigateByUrl('/t/u/1');
+            }
+            break;
+          case '#last':
+            if (this.tcs.rootTestlet !== null) {
+              this.router.navigateByUrl('/t/u/' + this.tcs.numberOfUnits.toString());
+            }
+            break;
+          case '#end':
+            this.mds.endBooklet();
+            break;
+
+          default:
+            if (this.tcs.rootTestlet !== null) {
+              this.router.navigateByUrl('/t/u/' + navString);
+            }
+            break;
+        }
+      }
+    });
+
+
+    // ==========================================================
+    // loading booklet data and all unit content
+    // navigation to first unit
     this.loginDataSubscription = this.mds.loginData$.subscribe(loginData => {
       this.tcs.resetDataStore();
       if ((loginData.persontoken.length > 0) && (loginData.booklet > 0)) {
@@ -299,11 +343,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 }
 
                 if (loadingOk) {
-                  // =================================================
+                  // =====================
+                  this.tcs.bookletDbId = loginData.booklet;
+                  this.tcs.setBookletState('LASTUNIT', '1');
+                  this.tcs.setUnitNavigationRequest('#first');
 
-                  this.goToUnitBySequenceId(1);
-
-                  // =================================================
+                  // =====================
                 } else {
                   console.log('loading failed');
                   this.mds.globalErrorMsg$.next(new ServerError(0, 'Inhalte des Testheftes konnten nicht alle geladen werden.', ''));
@@ -313,22 +358,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             }
           }
         });
+      } else {
+        this.router.navigateByUrl('/');
       }
     });
   }
 
 
-
-  // ==========================================================
-  goToUnitBySequenceId(sequenceId: number) {
-    if (this.tcs.rootTestlet !== null) {
-      this.router.navigateByUrl('/t/u/' + sequenceId.toString());
-    }
-  }
-
-
-
-  // ==========================================================
+  // #####################################################################################
   showReviewDialog() {
     if (this.tcs.rootTestlet === null) {
       this.snackBar.open('Kein Testheft verfügbar.', '', {duration: 3000});
@@ -393,24 +430,39 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ==========================================================
-  nextUnitNaviButtonClick() {
-    if (this.tcs.rootTestlet !== null) {
-      this.router.navigateByUrl('/t/u/' + (this.tcs.currentUnitSequenceId + 1).toString());
-    }
-  }
 
-  // ==========================================================
-  prevUnitNaviButtonClick() {
-    if (this.tcs.rootTestlet !== null) {
-      this.router.navigateByUrl('/t/u/' + (this.tcs.currentUnitSequenceId - 1).toString());
-    }
-  }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   ngOnDestroy() {
     if (this.loginDataSubscription !== null) {
       this.loginDataSubscription.unsubscribe();
     }
+    if (this.navigationRequestSubsription !== null) {
+      this.navigationRequestSubsription.unsubscribe();
+    }
   }
 }
+  // // -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  // this.log$.pipe(
+  //   bufferTime(500)
+  // ).subscribe((data: UnitLogData[]) => {
+  //   if (data.length > 0) {
+  //     const myLogs = {};
+  //     data.forEach(lg => {
+  //       if (lg !== null) {
+  //         if (lg.logEntry.length > 0) {
+  //           if (typeof myLogs[lg.unitDbKey] === 'undefined') {
+  //             myLogs[lg.unitDbKey] = [];
+  //           }
+  //           myLogs[lg.unitDbKey].push(JSON.stringify(lg.logEntry));
+  //         }
+  //       }
+  //     });
+  //     for (const unitName in myLogs) {
+  //       if (myLogs[unitName].length > 0) {
+  //         // ## this.bs.setUnitLog(this.lds.personToken$.getValue(),
+  //         // this.lds.bookletDbId$.getValue(), unitName, myLogs[unitName]).subscribe();
+  //       }
+  //     }
+  //   }
+  // });

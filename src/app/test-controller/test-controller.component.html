@@ -4,16 +4,21 @@
   </a>
 </div>
 <div id="navButtonsContainer" fxLayout="row">
-  <button mat-fab [disabled]="!tcs.unitPrevEnabled" color="accent" (click)="prevUnitNaviButtonClick()">
+  <button mat-fab [disabled]="!tcs.unitPrevEnabled" color="accent" (click)="tcs.setUnitNavigationRequest('#previous')" matTooltip="Zurück">
     <i class="material-icons">chevron_left</i>
   </button>
-  <button mat-fab [disabled]="!tcs.unitNextEnabled" color="accent" (click)="nextUnitNaviButtonClick()">
+  <button mat-fab [disabled]="!tcs.unitNextEnabled" color="accent" (click)="tcs.setUnitNavigationRequest('#next')" matTooltip="Weiter">
     <i class="material-icons">chevron_right</i>
   </button>
 </div>
-<button id="reviewbutton" mat-button *ngIf="tcs.mode === 'review'" (click)="showReviewDialog()">
-  <mat-icon>rate_review</mat-icon>
-</button>
+<div id="reviewButtonsContainer" *ngIf="tcs.mode === 'review'" fxLayout="row">
+  <button mat-button (click)="showReviewDialog()" matTooltip="Kommentar senden">
+    <mat-icon>rate_review</mat-icon>
+  </button>
+  <button mat-button (click)="tcs.setUnitNavigationRequest('#end')" matTooltip="Aktuelles Testheft beenden">
+    <mat-icon>exit_to_app</mat-icon>
+  </button>
+</div>
 <div class="spinner-container" *ngIf="dataLoading">
   <mat-spinner></mat-spinner>
 </div>

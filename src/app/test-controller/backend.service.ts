@@ -78,68 +78,47 @@ export class BackendService {
   // 7777777777777777777777777777777777777777777777777777777777777777777777
   // send responses, status, logs
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  setBookletStatus(pToken: string, bookletDbId: number, state: {}): Observable<string | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    // if ((sessiontoken + JSON.stringify(state)) === this.lastBookletState) {
-    //   return new Observable(null);
-    // } else {
-    //   this.lastBookletState = sessiontoken + JSON.stringify(state);
-      return this.http
-      .post<string>(this.serverUrl + 'setBookletStatus.php', {au: pToken + '##' + bookletDbId.toString(), state: state}, httpOptions)
+  addBookletLog(bookletDbId: number, timestamp: number, entry: string): Observable<boolean | ServerError> {
+    return this.http
+      .post<boolean>(this.serverSlimUrl_POST + 'bookletlog', {b: bookletDbId, t: timestamp, e: entry})
         .pipe(
           catchError(this.handle)
         );
-    // }
   }
 
-  // ------------------------------
-  setUnitResponses(pToken: string, bookletDbId: number, unit: string,
-        unitdata: string, responseType: string): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  setBookletState(bookletDbId: number, stateKey: string, state: string): Observable<boolean | ServerError> {
     return this.http
-    .post<boolean>(this.serverUrl + 'setUnitResponse.php',
-            {au: pToken + '##' + bookletDbId.toString(), u: unit, d: JSON.stringify(unitdata), rt: responseType}, httpOptions)
-      .pipe(
-        catchError(this.handle)
-      );
+      .post<boolean>(this.serverSlimUrl_POST + 'bookletstate', {b: bookletDbId, sk: stateKey, s: state})
+        .pipe(
+          catchError(this.handle)
+        );
   }
 
-  // ------------------------------
-  setUnitRestorePoint(pToken: string, bookletDbId: number, unit: string, unitdata: string): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  addUnitLog(bookletDbId: number, timestamp: number, unitDbKey: string, entry: string): Observable<boolean | ServerError> {
     return this.http
-    .post<boolean>(this.serverUrl + 'setUnitRestorePoint.php',
-        {au: pToken + '##' + bookletDbId.toString(), u: unit, d: JSON.stringify(unitdata)}, httpOptions)
-      .pipe(
-        catchError(this.handle)
-      );
+      .post<boolean>(this.serverSlimUrl_POST + 'unitlog', {b: bookletDbId, u: unitDbKey, t: timestamp, e: entry})
+        .pipe(
+          catchError(this.handle)
+        );
   }
 
-  // ------------------------------
-  setUnitLog(pToken: string, bookletDbId: number, unit: string, unitdata: string[]): Observable<boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  newUnitResponse(bookletDbId: number, timestamp: number,
+            unitDbKey: string, response: string, responseType: string): Observable<boolean | ServerError> {
     return this.http
-    .post<boolean>(this.serverUrl + 'setUnitLog.php', {au: pToken + '##' + bookletDbId.toString(), u: unit, d: unitdata}, httpOptions)
-      .pipe(
-        catchError(this.handle)
-      );
+      .post<boolean>(this.serverSlimUrl_POST + 'response', {b: bookletDbId, u: unitDbKey, t: timestamp, r: response, rt: responseType})
+        .pipe(
+          catchError(this.handle)
+        );
   }
+
+  newUnitRestorePoint(bookletDbId: number, unitDbKey: string, timestamp: number, restorePoint: string): Observable<boolean | ServerError> {
+    return this.http
+      .post<boolean>(this.serverSlimUrl_POST + 'restorepoint', {b: bookletDbId, u: unitDbKey, t: timestamp, r: restorePoint})
+        .pipe(
+          catchError(this.handle)
+        );
+  }
+
 
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
