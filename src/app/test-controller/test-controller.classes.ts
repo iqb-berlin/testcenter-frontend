@@ -258,6 +258,68 @@ export class SessionDataToSend {
     }
 }
 
+
+// .....................................................................
+// .....................................................................
+export class EnvironmentData {
+  public browserVersion = '';
+  public browserName = '';
+  public get browserTxt(): string {
+    return `${this.browserName} Version ${this.browserVersion}`;
+  }
+  public osName = '';
+  public screenSizeWidth = 0;
+  public screenSizeHeight = 0;
+  public get screenSizeTxt(): string {
+    return `Bildschirmgröße ist ${this.screenSizeWidth} x ${this.screenSizeWidth}`;
+  }
+
+  constructor () {
+    const deviceInfo = window.navigator.userAgent;
+
+    // browser + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+    // tslint:disable-next-line:max-line-length
+    const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/;
+    // credit due to: https://gist.github.com/ticky/3909462#gistcomment-2245669
+    const deviceInfoSplits = regex.exec(deviceInfo);
+    const helperRegex = /[^.]*/;
+    const browserInfo = helperRegex.exec(deviceInfoSplits[0]);
+    const browserInfoSplits = browserInfo[0].split('/');
+    this.browserVersion = browserInfoSplits[1];
+    this.browserName = browserInfoSplits[0];
+
+    // os + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+    if (deviceInfo.indexOf('Windows') !== -1) {
+      if (deviceInfo.indexOf('Windows NT 10.0') !== -1) {
+        this.osName = 'Windows 10';
+      } else if (deviceInfo.indexOf('Windows NT 6.2') !== -1) {
+        this.osName = 'Windows 8';
+      } else if (deviceInfo.indexOf('Windows NT 6.1') !== -1) {
+        this.osName = 'Windows 7';
+      } else if (deviceInfo.indexOf('Windows NT 6.0') !== -1) {
+        this.osName = 'Windows Vista';
+      } else if (deviceInfo.indexOf('Windows NT 5.1') !== -1) {
+        this.osName = 'Windows XP';
+      } else if (deviceInfo.indexOf('Windows NT 5.0') !== -1) {
+        this.osName = 'Windows 2000';
+      } else {
+        this.osName = 'Windows, unbekannte Version';
+      }
+    } else if (deviceInfo.indexOf('Mac') !== -1) {
+      this.osName = 'Mac/iOS';
+    } else if (deviceInfo.indexOf('X11') !== -1) {
+      this.osName = 'UNIX';
+    } else if (deviceInfo.indexOf('Linux') !== -1) {
+      this.osName = 'Linux';
+    } else {
+      this.osName = window.navigator.platform;
+    }
+
+    this.screenSizeHeight = window.screen.height;
+    this.screenSizeWidth = window.screen.width;
+  }
+}
+
   // forgetStartLock(key: string) {
   //   for (let i = 0; i < this.units.length; i++) {
   //     if (this.units[i].startLockKey === key) {
