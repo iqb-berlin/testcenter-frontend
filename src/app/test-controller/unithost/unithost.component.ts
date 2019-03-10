@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 import { Location } from '@angular/common';
-import { UnitRestorePointData, UnitResponseData, UnitLogData, TaggedString, PageData } from '../test-controller.interfaces';
+import { TaggedString, PageData, LastStateKey, LogEntryKey } from '../test-controller.interfaces';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -94,6 +94,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
                 this.pendingUnitRestorePoint = null;
               }
             }
+            this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
 
             this.postMessageTarget = m.source as Window;
             this.postMessageTarget.postMessage({
@@ -109,6 +110,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
           case 'OpenCBA.FromItemPlayer.StartedNotification':
             if (msgPlayerId === this.itemplayerSessionId) {
               this.setPageList(msgData['validPages'], msgData['currentPage']);
+              this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
 
               const canLeave = msgData['canLeave'];
               if (canLeave !== undefined) {
@@ -123,6 +125,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
           case 'OpenCBA.FromItemPlayer.ChangedDataTransfer':
             if (msgPlayerId === this.itemplayerSessionId) {
               this.setPageList(msgData['validPages'], msgData['currentPage']);
+              if (msgData['currentPage'] !== undefined) {
+                this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
+              }
 
               const restorePoint = msgData['restorePoint'] as string;
               if (restorePoint) {
@@ -136,6 +141,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
               if (canLeaveChanged !== undefined) {
                 this.leaveWarning = (canLeaveChanged as string === 'warning');
               }
+            }
+            break;
+
+          // // // // // // // ;-)
+          case 'vo.FromPlayer.PageNavigationRequestedNotification':
+            if (msgPlayerId === this.itemplayerSessionId) {
+              this.gotoPage(msgData['newPage']);
             }
             break;
 
@@ -171,8 +183,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
       }
 
       if ((this.myUnitSequenceId >= 1) && (this.myUnitSequenceId === this.myUnitSequenceId) && (this.tcs.rootTestlet !== null)) {
+        this.tcs.setBookletState(LastStateKey.LASTUNIT, params['u']);
+
         const currentUnit = this.tcs.rootTestlet.getUnitAt(this.myUnitSequenceId);
-        this.unitTitle = currentUnit.unitDef.title; // (currentUnitId + 1).toString() + '. '
+        this.unitTitle = currentUnit.unitDef.title;
         this.myUnitDbKey = currentUnit.unitDef.alias;
         this.tcs.currentUnitDbKey = this.myUnitDbKey;
         this.tcs.currentUnitTitle = this.unitTitle;
@@ -200,7 +214,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
         this.leaveWarning = false;
 
-        this.iFrameHostElement.appendChild(this.iFrameItemplayer);    }
+        this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+        this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.UNITSTART);
+      }
     });
   }
 
@@ -213,9 +229,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
           if (i === 0) {
             newPageList.push({
               index: -1,
-              id: 'prev',
+              id: '#previous',
               disabled: validPages[i] === currentPage,
-              type: 'prev'
+              type: '#previous'
             });
           }
 
@@ -223,15 +239,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
             index: i + 1,
             id: validPages[i],
             disabled: validPages[i] === currentPage,
-            type: 'goto'
+            type: '#goto'
           });
 
           if (i === validPages.length - 1) {
             newPageList.push({
               index: -1,
-              id: 'next',
+              id: '#next',
               disabled: validPages[i] === currentPage,
-              type: 'next'
+              type: '#next'
             });
           }
         }
@@ -241,7 +257,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     } else if ((this.pageList.length > 1) && (currentPage !== undefined)) {
       let currentPageIndex = 0;
       for (let i = 0; i < this.pageList.length; i++) {
-        if (this.pageList[i].type === 'goto') {
+        if (this.pageList[i].type === '#goto') {
           if (this.pageList[i].id === currentPage) {
             this.pageList[i].disabled = true;
             currentPageIndex = i;
@@ -265,10 +281,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.showPageNav = this.pageList.length > 0;
   }
 
-  gotoPage(action: string, index: number) {
+  gotoPage(action: string, index = 0) {
     let nextPageId = '';
     // currentpage is detected by disabled-attribute of page
-    if (action === 'next') {
+    if (action === '#next') {
       let currentPageIndex = 0;
       for (let i = 0; i < this.pageList.length; i++) {
         if ((this.pageList[i].index > 0) && (this.pageList[i].disabled)) {
@@ -279,7 +295,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       if ((currentPageIndex > 0) && (currentPageIndex < this.pageList.length - 2)) {
         nextPageId = this.pageList[currentPageIndex + 1].id;
       }
-    } else if (action === 'prev') {
+    } else if (action === '#previous') {
       let currentPageIndex = 0;
       for (let i = 0; i < this.pageList.length; i++) {
         if ((this.pageList[i].index > 0) && (this.pageList[i].disabled)) {
@@ -290,13 +306,17 @@ export class UnithostComponent implements OnInit, OnDestroy {
       if (currentPageIndex > 1) {
         nextPageId = this.pageList[currentPageIndex - 1].id;
       }
-    } else if (action === 'goto') {
+    } else if (action === '#goto') {
       if ((index > 0) && (index < this.pageList.length - 1)) {
         nextPageId = this.pageList[index].id;
       }
+    } else if (index === 0) {
+      // call from player
+      nextPageId = action;
     }
 
     if (nextPageId.length > 0) {
+      this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, nextPageId);
       this.postMessageTarget.postMessage({
         type: 'OpenCBA.ToItemPlayer.PageNavigationRequest',
         sessionId: this.itemplayerSessionId,

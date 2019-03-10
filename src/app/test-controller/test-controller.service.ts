@@ -1,8 +1,7 @@
 import { BehaviorSubject, of, Observable, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Testlet, BookletConfig } from './test-controller.classes';
-import { BookletLogData, UnitLogData, BookletStateEntry,
-  UnitResponseData, UnitRestorePointData } from './test-controller.interfaces';
+import { LastStateKey, LogEntryKey } from './test-controller.interfaces';
 import { BackendService } from './backend.service';
 import { JsonpInterceptor } from '@angular/common/http';
 import { ServerError } from '../backend.service';
@@ -190,22 +189,24 @@ export class TestControllerService {
 
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  public addBookletLog(entry: string) {
-    this.bs.addBookletLog(this.bookletDbId, Date.now(), JSON.stringify(entry)).subscribe(ok => {
+  public addBookletLog(logKey: LogEntryKey, entry = '') {
+    this.bs.addBookletLog(this.bookletDbId, Date.now(),
+            entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey).subscribe(ok => {
       if (ok instanceof ServerError) {
         console.log('((((((((((((((((addBookletLog');
       }
     });
   }
-  public setBookletState(stateKey: string, state: string) {
+  public setBookletState(stateKey: LastStateKey, state: string) {
     this.bs.setBookletState(this.bookletDbId, stateKey, state).subscribe(ok => {
       if (ok instanceof ServerError) {
         console.log('((((((((((((((((setBookletState');
       }
     });
   }
-  public addUnitLog(unitDbKey: string, entry: string) {
-    this.bs.addUnitLog(this.bookletDbId, Date.now(), unitDbKey, JSON.stringify(entry)).subscribe(ok => {
+  public addUnitLog(unitDbKey: string, logKey: LogEntryKey, entry = '') {
+    this.bs.addUnitLog(this.bookletDbId, Date.now(), unitDbKey,
+            entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey).subscribe(ok => {
       if (ok instanceof ServerError) {
         console.log('((((((((((((((((addUnitLog');
       }

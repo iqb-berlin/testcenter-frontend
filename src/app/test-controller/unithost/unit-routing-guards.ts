@@ -9,7 +9,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot, Resolve } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { UnitDef, UnitControllerData } from '../test-controller.classes';
-import { CodeInputData } from '../test-controller.interfaces';
+import { CodeInputData, LogEntryKey } from '../test-controller.interfaces';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
@@ -99,8 +99,13 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
 
   canDeactivate(
     component: UnithostComponent,
-    next: ActivatedRouteSnapshot,
+    currentRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+      if (this.tcs.rootTestlet !== null) {
+        const currentUnitSequenceId: number = Number(currentRoute.params['u']);
+        const currentUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(currentUnitSequenceId);
+        this.tcs.addUnitLog(currentUnit.unitDef.id, LogEntryKey.UNITLEAVE);
+      }
 
     // if (this.tcs.rootTestlet !== null) {
     //   // const currentUnitPos = this.tcs.currentUnitPos$.getValue();

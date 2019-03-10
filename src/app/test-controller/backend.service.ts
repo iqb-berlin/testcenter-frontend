@@ -80,7 +80,7 @@ export class BackendService {
   // 7777777777777777777777777777777777777777777777777777777777777777777777
   addBookletLog(bookletDbId: number, timestamp: number, entry: string): Observable<boolean | ServerError> {
     return this.http
-      .post<boolean>(this.serverSlimUrl_POST + 'bookletlog', {b: bookletDbId, t: timestamp, e: entry})
+      .post<boolean>(this.serverSlimUrl_POST + 'log', {b: bookletDbId, t: timestamp, e: entry})
         .pipe(
           catchError(this.handle)
         );
@@ -88,7 +88,7 @@ export class BackendService {
 
   setBookletState(bookletDbId: number, stateKey: string, state: string): Observable<boolean | ServerError> {
     return this.http
-      .post<boolean>(this.serverSlimUrl_POST + 'bookletstate', {b: bookletDbId, sk: stateKey, s: state})
+      .post<boolean>(this.serverSlimUrl_POST + 'state', {b: bookletDbId, sk: stateKey, s: state})
         .pipe(
           catchError(this.handle)
         );
@@ -96,7 +96,7 @@ export class BackendService {
 
   addUnitLog(bookletDbId: number, timestamp: number, unitDbKey: string, entry: string): Observable<boolean | ServerError> {
     return this.http
-      .post<boolean>(this.serverSlimUrl_POST + 'unitlog', {b: bookletDbId, u: unitDbKey, t: timestamp, e: entry})
+      .post<boolean>(this.serverSlimUrl_POST + 'log', {b: bookletDbId, u: unitDbKey, t: timestamp, e: entry})
         .pipe(
           catchError(this.handle)
         );

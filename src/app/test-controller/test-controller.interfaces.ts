@@ -40,13 +40,13 @@ export interface KeyValuePair {
 export interface BookletData {
     xml: string;
     locked: boolean;
-    state: KeyValuePair[];
+    laststate: KeyValuePair[];
 }
 
 export interface UnitData {
     xml: string;
     restorepoint: string;
-    state: KeyValuePair[];
+    laststate: KeyValuePair[];
 }
 
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++
@@ -70,10 +70,25 @@ export interface UnitLogData {
     entry: string;
 }
 
+export enum LastStateKey {
+    LASTUNIT = 'LASTUNIT'
+}
+
+export enum LogEntryKey {
+    UNITSTART = 'UNITSTART',
+    UNITLEAVE = 'UNITLEAVE',
+    BOOKLETLOADSTART = 'BOOKLETLOADSTART',
+    BOOKLETLOADCOMPLETE = 'BOOKLETLOADCOMPLETE',
+    PAGENAVIGATIONSTART = 'PAGENAVIGATIONSTART',
+    PAGENAVIGATIONCOMPLETE = 'PAGENAVIGATIONCOMPLETE',
+    PRESENTATIONCOMPLETE = 'PRESENTATIONCOMPLETE',
+    RESPONSESCOMPLETE = 'RESPONSESCOMPLETE'
+}
+
 // for unithost ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 export interface PageData {
     index: number;
     id: string;
-    type: 'next' | 'prev' | 'goto';
+    type: '#next' | '#previous' | '#goto';
     disabled: boolean;
 }

@@ -9,9 +9,10 @@ import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UnitDef, Testlet, UnitControllerData } from './test-controller.classes';
-import { BookletData, UnitData } from './test-controller.interfaces';
+import { LastStateKey, LogEntryKey, BookletData, UnitData } from './test-controller.interfaces';
 import { Subscription, Observable, of, forkJoin } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { JsonpInterceptor } from '@angular/common/http';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -189,7 +190,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             return of(false);
           } else {
             const myUnitData = myData as UnitData;
-            this.tcs.newUnitRestorePoint(myUnit.id, sequenceId, myUnitData.restorepoint, false);
+            if (myUnitData.restorepoint) {
+              this.tcs.newUnitRestorePoint(myUnit.id, sequenceId, JSON.parse(myUnitData.restorepoint), false);
+            }
             let playerId = '';
             let definitionRef = '';
 
@@ -306,6 +309,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     this.loginDataSubscription = this.mds.loginData$.subscribe(loginData => {
       this.tcs.resetDataStore();
       if ((loginData.persontoken.length > 0) && (loginData.booklet > 0)) {
+        this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADSTART);
+
         this.tcs.mode = loginData.mode;
         this.tcs.loginname = loginData.loginname;
 
@@ -317,44 +322,52 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             this.dataLoading = false;
           } else {
             const bookletData = myData as BookletData;
-            this.tcs.rootTestlet = this.getBookletFromXml(bookletData.xml);
-
-            if (this.tcs.rootTestlet === null) {
-              this.mds.globalErrorMsg$.next(new ServerError(0, 'Error Parsing Booklet Xml', ''));
-              this.dataLoading = false;
+            if (bookletData.locked) {
+              console.log('loading failed');
+              this.mds.globalErrorMsg$.next(new ServerError(0, 'Das Testheft ist für die Bearbeitung gesperrt.', ''));
+              this.tcs.resetDataStore();
             } else {
-              this.mds.globalErrorMsg$.next(null);
-              this.tcs.numberOfUnits = this.lastUnitSequenceId - 1;
+              this.tcs.rootTestlet = this.getBookletFromXml(bookletData.xml);
 
-              const myUnitLoadings = [];
-              for (let i = 1; i < this.tcs.numberOfUnits + 1; i++) {
-                const ud = this.tcs.rootTestlet.getUnitAt(i);
-                myUnitLoadings.push(this.loadUnitOk(ud.unitDef, i));
-              }
-              forkJoin(myUnitLoadings).subscribe(allOk => {
+              if (this.tcs.rootTestlet === null) {
+                this.mds.globalErrorMsg$.next(new ServerError(0, 'Error Parsing Booklet Xml', ''));
                 this.dataLoading = false;
+              } else {
+                this.mds.globalErrorMsg$.next(null);
+                this.tcs.numberOfUnits = this.lastUnitSequenceId - 1;
 
-                let loadingOk = true;
-                for (const ok of allOk) {
-                  if (!ok) {
-                    loadingOk = false;
-                    break;
+                const myUnitLoadings = [];
+                for (let i = 1; i < this.tcs.numberOfUnits + 1; i++) {
+                  const ud = this.tcs.rootTestlet.getUnitAt(i);
+                  myUnitLoadings.push(this.loadUnitOk(ud.unitDef, i));
+                }
+                forkJoin(myUnitLoadings).subscribe(allOk => {
+                  this.dataLoading = false;
+
+                  let loadingOk = true;
+                  for (const ok of allOk) {
+                    if (!ok) {
+                      loadingOk = false;
+                      break;
+                    }
                   }
-                }
 
-                if (loadingOk) {
-                  // =====================
-                  this.tcs.bookletDbId = loginData.booklet;
-                  this.tcs.setBookletState('LASTUNIT', '1');
-                  this.tcs.setUnitNavigationRequest('#first');
+                  if (loadingOk) {
+                    // =====================
+                    this.tcs.bookletDbId = loginData.booklet;
+                    this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
+                    const navTarget = bookletData.laststate.hasOwnProperty(LastStateKey.LASTUNIT) ?
+                                    bookletData.laststate[LastStateKey.LASTUNIT] : '#first';
+                    this.tcs.setUnitNavigationRequest(navTarget);
 
-                  // =====================
-                } else {
-                  console.log('loading failed');
-                  this.mds.globalErrorMsg$.next(new ServerError(0, 'Inhalte des Testheftes konnten nicht alle geladen werden.', ''));
-                  this.tcs.resetDataStore();
-                }
-              });
+                    // =====================
+                  } else {
+                    console.log('loading failed');
+                    this.mds.globalErrorMsg$.next(new ServerError(0, 'Inhalte des Testheftes konnten nicht alle geladen werden.', ''));
+                    this.tcs.resetDataStore();
+                  }
+                });
+              }
             }
           }
         });
@@ -393,8 +406,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 ).subscribe(myData => {
                   if (myData instanceof ServerError) {
                     const e = myData as ServerError;
-                    this.snackBar.open(
-      'Konnte Kommentar nicht speichern (' + e.code.toString() + ': ' + e.labelNice, '', {duration: 3000});
+                    this.snackBar.open('Konnte Kommentar nicht speichern (' +
+                                e.code.toString() + ': ' + e.labelNice, '', {duration: 3000});
                   } else {
                     const ok = myData as boolean;
                     if (ok) {
@@ -442,27 +455,3 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 }
-  // // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-  // this.log$.pipe(
-  //   bufferTime(500)
-  // ).subscribe((data: UnitLogData[]) => {
-  //   if (data.length > 0) {
-  //     const myLogs = {};
-  //     data.forEach(lg => {
-  //       if (lg !== null) {
-  //         if (lg.logEntry.length > 0) {
-  //           if (typeof myLogs[lg.unitDbKey] === 'undefined') {
-  //             myLogs[lg.unitDbKey] = [];
-  //           }
-  //           myLogs[lg.unitDbKey].push(JSON.stringify(lg.logEntry));
-  //         }
-  //       }
-  //     });
-  //     for (const unitName in myLogs) {
-  //       if (myLogs[unitName].length > 0) {
-  //         // ## this.bs.setUnitLog(this.lds.personToken$.getValue(),
-  //         // this.lds.bookletDbId$.getValue(), unitName, myLogs[unitName]).subscribe();
-  //       }
-  //     }
-  //   }
-  // });
