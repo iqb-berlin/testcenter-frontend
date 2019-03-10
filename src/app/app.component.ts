@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
       const msgData = event.data;
       const msgType = msgData['type'];
       if ((msgType !== undefined) && (msgType !== null)) {
-        if (msgType.substr(0, 7) === 'OpenCBA') {
+        if (msgType.substr(0, 3) === 'vo.') {
           this.mds.postMessage$.next(event);
         }
       }

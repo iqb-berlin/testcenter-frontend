@@ -10,7 +10,12 @@ import { delay } from 'rxjs/operators';
 // import { DatastoreService } from './datastore.service';
 // import { MainDatastoreService } from './../maindatastore.service';
 
-
+// BEWARE: not working since 3/2019
+// BEWARE: not working since 3/2019
+// BEWARE: not working since 3/2019
+// BEWARE: not working since 3/2019
+// BEWARE: not working since 3/2019
+// BEWARE: not working since 3/2019
 
 @Component({
   selector: 'iqb-unit-check',
@@ -41,7 +46,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     this.ds.itemplayerPageRequest$.subscribe((newPage: string) => {
       if (newPage.length > 0) {
         this.postMessageTarget.postMessage({
-          type: 'OpenCBA.ToItemPlayer.PageNavigationRequest',
+          type: 'vo.ToPlayer.PageNavigationRequest',
           sessionId: this.itemplayerSessionId,
           newPage: newPage
         }, '*');
@@ -56,7 +61,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
         switch (msgType) {
 
           // // // // // // //
-          case 'OpenCBA.FromItemPlayer.ReadyNotification':
+          case 'vo.FromPlayer.ReadyNotification':
             let hasData = false;
             const initParams = {};
 
@@ -70,7 +75,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
               this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
               this.postMessageTarget = m.source as Window;
               this.postMessageTarget.postMessage({
-                type: 'OpenCBA.ToItemPlayer.DataTransfer',
+                type: 'vo.ToPlayer.DataTransfer',
                 sessionId: this.itemplayerSessionId,
                 unitDefinition: pendingSpec
               }, '*');
@@ -78,7 +83,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
             break;
 
           // // // // // // //
-          case 'OpenCBA.FromItemPlayer.StartedNotification':
+          case 'vo.FromPlayer.StartedNotification':
             this.iFrameItemplayer.setAttribute('height', String(Math.trunc(this.iFrameHostElement.nativeElement.clientHeight)));
             const validPages = msgData['validPages'];
             if ((validPages instanceof Array) && (validPages.length > 1)) {
@@ -95,7 +100,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
             break;
 
           // // // // // // //
-          case 'OpenCBA.FromItemPlayer.ChangedDataTransfer':
+          case 'vo.FromPlayer.ChangedDataTransfer':
             const validPagesChanged = msgData['validPages'];
             let currentPageChanged = msgData['currentPage'];
             if ((validPagesChanged instanceof Array)) {

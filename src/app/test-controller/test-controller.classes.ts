@@ -212,52 +212,6 @@ export class Testlet extends TestletContentElement {
   }
 }
 
-// .....................................................................
-// .....................................................................
-export class ResourceData {
-    filename: string;
-    id: string;
-    type: string;
-    dataString: string;
-
-    constructor(filename: string, id: string) {
-      if ((typeof filename === 'undefined') || (filename == null)) {
-        filename = '';
-      }
-      if ((typeof id === 'undefined') || (id == null)) {
-        id = '';
-      }
-
-      if ((filename + id).length === 0) {
-        this.filename = '?';
-        this.id = '?';
-      } else {
-        if (filename.length === 0) {
-          this.filename = id;
-        } else {
-          this.filename = filename;
-        }
-        if (id.length === 0) {
-          this.id = filename;
-        } else {
-          this.id = id;
-        }
-      }
-    }
-}
-
-// .....................................................................
-// .....................................................................
-export class SessionDataToSend {
-    public readonly unitId: string;
-    public response = '';
-    public restorePoint$ = new BehaviorSubject<string>('');
-
-    constructor (unitId: string) {
-      this.unitId = unitId;
-    }
-}
-
 
 // .....................................................................
 // .....................................................................

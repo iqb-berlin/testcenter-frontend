@@ -78,7 +78,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         switch (msgType) {
 
           // // // // // // //
-          case 'OpenCBA.FromItemPlayer.ReadyNotification':
+          case 'vo.FromPlayer.ReadyNotification':
             let pendingUnitDef = '';
             if (this.pendingUnitDefinition !== null) {
               if (this.pendingUnitDefinition.tag === msgPlayerId) {
@@ -98,7 +98,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
             this.postMessageTarget = m.source as Window;
             this.postMessageTarget.postMessage({
-              type: 'OpenCBA.ToItemPlayer.DataTransfer',
+              type: 'vo.ToPlayer.DataTransfer',
               sessionId: this.itemplayerSessionId,
               unitDefinition: pendingUnitDef,
               restorePoint: pendingRestorePoint
@@ -107,7 +107,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
             break;
 
           // // // // // // //
-          case 'OpenCBA.FromItemPlayer.StartedNotification':
+          case 'vo.FromPlayer.StartedNotification':
             if (msgPlayerId === this.itemplayerSessionId) {
               this.setPageList(msgData['validPages'], msgData['currentPage']);
               this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
@@ -122,7 +122,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
             break;
 
           // // // // // // //
-          case 'OpenCBA.FromItemPlayer.ChangedDataTransfer':
+          case 'vo.FromPlayer.ChangedDataTransfer':
             if (msgPlayerId === this.itemplayerSessionId) {
               this.setPageList(msgData['validPages'], msgData['currentPage']);
               if (msgData['currentPage'] !== undefined) {
@@ -152,7 +152,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
             break;
 
           // // // // // // //
-          case 'OpenCBA.FromItemPlayer.NavigationRequestedNotification':
+          case 'vo.FromPlayer.NavigationRequestedNotification':
             if (msgPlayerId === this.itemplayerSessionId) {
               this.tcs.setUnitNavigationRequest(msgData['navigationTarget']);
             }
@@ -215,7 +215,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
         this.leaveWarning = false;
 
         this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-        this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.UNITSTART);
       }
     });
   }
@@ -318,7 +317,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (nextPageId.length > 0) {
       this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, nextPageId);
       this.postMessageTarget.postMessage({
-        type: 'OpenCBA.ToItemPlayer.PageNavigationRequest',
+        type: 'vo.ToPlayer.PageNavigationRequest',
         sessionId: this.itemplayerSessionId,
         newPage: nextPageId
       }, '*');

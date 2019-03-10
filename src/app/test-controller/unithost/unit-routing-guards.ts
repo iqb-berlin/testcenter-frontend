@@ -71,6 +71,8 @@ export class UnitActivateGuard implements CanActivate {
                   newUnit.codeRequiringTestlets.forEach(t => {
                     t.codeToEnter = '';
                   });
+                  this.tcs.addUnitLog(newUnit.unitDef.id, LogEntryKey.UNITENTER);
+
                   return of(true);
                 } else {
                   this.snackBar.open('Die Eingabe war nicht korrekt.', 'Freigabewort', {duration: 3000});
@@ -81,6 +83,8 @@ export class UnitActivateGuard implements CanActivate {
         ));
       } else {
         this.tcs.currentUnitSequenceId = targetUnitSequenceId;
+        this.tcs.addUnitLog(newUnit.unitDef.id, LogEntryKey.UNITENTER);
+
         myreturn = true;
       }
     }

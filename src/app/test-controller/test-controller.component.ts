@@ -206,7 +206,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 if (defElements.length > 0) {
                   const defElement = defElements[0];
                   this.tcs.addUnitDefinition(sequenceId, defElement.textContent);
-                  playerId = defElement.getAttribute('type');
+                  playerId = defElement.getAttribute('player');
                 } else {
                   const defRefElements = oDOM.documentElement.getElementsByTagName('DefinitionRef');
 
@@ -214,7 +214,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     const defRefElement = defRefElements[0];
                     definitionRef = defRefElement.textContent;
                     this.tcs.addUnitDefinition(sequenceId, '');
-                    playerId = defRefElement.getAttribute('type');
+                    playerId = defRefElement.getAttribute('player');
                   }
                 }
               }
