@@ -41,7 +41,7 @@ export class UsersComponent implements OnInit {
     private messsageDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
-    this.tableselectionRow.onChange.subscribe(
+    this.tableselectionRow.changed.subscribe(
       r => {
         this.selectedUser = r.added[0].name;
         this.updateWorkspaceList();

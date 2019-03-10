@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { tokenKey } from '@angular/core/src/view';
 
@@ -26,11 +26,12 @@ export class BackendService {
         'Content-Type':  'application/json'
       })
     };
-    return this.http
-      .post<string>(this.serverUrl + 'getAboutText.php', httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
+    return of('jajajaja');
+    //  this.http
+    //   .post<string>(this.serverUrl + 'getAboutText.php', httpOptions)
+    //     .pipe(
+    //       catchError(this.handleError)
+    //     );
   }
 
   private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {

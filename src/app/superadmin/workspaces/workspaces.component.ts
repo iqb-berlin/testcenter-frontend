@@ -42,7 +42,7 @@ export class WorkspacesComponent implements OnInit {
     private messsageDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
-    this.tableselectionRow.onChange.subscribe(
+    this.tableselectionRow.changed.subscribe(
       r => {
         if (r.added.length > 0) {
           this.selectedWorkspaceId = r.added[0].id;
