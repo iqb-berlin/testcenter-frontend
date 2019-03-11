@@ -135,7 +135,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
               }
               const response = msgData['response'] as string;
               if (response !== undefined) {
-                this.response$.next({tag: msgData['responseType'], value: response});
+                this.response$.next({tag: msgData['responseConverter'], value: response});
               }
               const canLeaveChanged = msgData['canLeave'];
               if (canLeaveChanged !== undefined) {
@@ -145,14 +145,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
             break;
 
           // // // // // // // ;-)
-          case 'vo.FromPlayer.PageNavigationRequestedNotification':
+          case 'vo.FromPlayer.PageNavigationRequest':
             if (msgPlayerId === this.itemplayerSessionId) {
               this.gotoPage(msgData['newPage']);
             }
             break;
 
           // // // // // // //
-          case 'vo.FromPlayer.NavigationRequestedNotification':
+          case 'vo.FromPlayer.UnitNavigationRequest':
             if (msgPlayerId === this.itemplayerSessionId) {
               this.tcs.setUnitNavigationRequest(msgData['navigationTarget']);
             }
@@ -317,7 +317,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (nextPageId.length > 0) {
       this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, nextPageId);
       this.postMessageTarget.postMessage({
-        type: 'vo.ToPlayer.PageNavigationRequest',
+        type: 'vo.ToPlayer.NavigateToPage',
         sessionId: this.itemplayerSessionId,
         newPage: nextPageId
       }, '*');

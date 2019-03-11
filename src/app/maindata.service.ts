@@ -1,5 +1,5 @@
-import { ServerError } from './backend.service';
-import { BehaviorSubject, Subject, merge } from 'rxjs';
+import { ServerError, BackendService } from './backend.service';
+import { BehaviorSubject, Subject, forkJoin } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { LoginData } from './app.interfaces';
 
@@ -26,6 +26,7 @@ export class MainDataService {
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();
 
+  constructor(private bs: BackendService) {}
 
   // ensures consistency
   setNewLoginData(logindata?: LoginData) {
@@ -100,9 +101,19 @@ export class MainDataService {
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   endBooklet () {
     const myLoginData = this.loginData$.getValue();
-    myLoginData.booklet = 0;
-    myLoginData.bookletlabel = '';
-    this.setNewLoginData(myLoginData);
+    if (myLoginData.booklet > 0) {
+      forkJoin(
+        this.bs.addBookletLogClose(myLoginData.booklet),
+        this.bs.setBookletState(myLoginData.booklet)
+      ).subscribe(ok => {
+        myLoginData.booklet = 0;
+        myLoginData.bookletlabel = '';
+        this.setNewLoginData(myLoginData);
+      });
+    } else {
+      myLoginData.bookletlabel = '';
+      this.setNewLoginData(myLoginData);
+    }
   }
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

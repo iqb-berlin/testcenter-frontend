@@ -225,24 +225,7 @@ export class StartComponent implements OnInit, OnDestroy {
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   stopBooklet() {
-    this.dataLoading = true;
-    this.bs.stopBooklet().subscribe(
-      stopReturnUntyped => {
-        if (stopReturnUntyped instanceof ServerError) {
-          const e = stopReturnUntyped as ServerError;
-          this.mds.globalErrorMsg$.next(e);
-        } else {
-          const stopReturn = stopReturnUntyped as boolean;
-          if (stopReturn) {
-            this.mds.setBookletDbId(this.mds.getPersonToken(), 0, '');
-            this.mds.globalErrorMsg$.next(null);
-          } else {
-            this.mds.globalErrorMsg$.next(new ServerError(503, 'Konnte Testheft nicht beenden.', ''));
-          }
-        }
-        this.dataLoading = false;
-      }
-    );
+    this.mds.endBooklet();
   }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

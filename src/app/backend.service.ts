@@ -40,11 +40,13 @@ export class ErrorHandler {
 @Injectable()
 export class BackendService {
   private serverSlimUrl = '';
+  private serverSlimUrl_Close = '';
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
       this.serverSlimUrl = this.serverUrl + 'php_tc/login.php/';
+      this.serverSlimUrl_Close = this.serverUrl + 'php_tc/tc_post.php/';
       this.serverUrl = this.serverUrl + 'php_start/';
     }
 
@@ -90,9 +92,18 @@ export class BackendService {
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  stopBooklet(): Observable<Boolean | ServerError> {
+  addBookletLogClose(bookletDbId: number): Observable<boolean | ServerError> {
     return this.http
-      .post<Boolean>(this.serverSlimUrl + 'stopbooklet', {})
+      .post<boolean>(this.serverSlimUrl_Close + 'log', {b: bookletDbId, t: Date.now(), e: 'BOOKLETCLOSED'})
+        .pipe(
+          catchError(ErrorHandler.handle)
+        );
+  }
+
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  setBookletState(bookletDbId: number): Observable<boolean | ServerError> {
+    return this.http
+      .post<boolean>(this.serverSlimUrl_Close + 'state', {b: bookletDbId, sk: 'BOOKLETCLOSED', s: 'Y'})
         .pipe(
           catchError(ErrorHandler.handle)
         );

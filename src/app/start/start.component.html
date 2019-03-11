@@ -15,7 +15,7 @@
       <!-- - - - - - - - - - - - - - - - - -->
       <form [formGroup]="testtakerloginform" (ngSubmit)="testtakerlogin()">
         <mat-card-title>Anmelden</mat-card-title>
-        <mat-card-content>
+        <mat-card-content fxLayout="column">
           <mat-form-field>
             <input matInput formControlName="testname" placeholder="Anmeldename" (keyup.enter)="pw.focus()">
           </mat-form-field>
