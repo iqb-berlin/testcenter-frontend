@@ -1,5 +1,5 @@
 import { MainDataService } from './../maindata.service';
-import { Subscription, BehaviorSubject } from 'rxjs';
+import { Subscription, BehaviorSubject, forkJoin } from 'rxjs';
 import { MessageDialogComponent, MessageDialogData, MessageType } from './../iqb-common';
 import { MatDialog } from '@angular/material';
 import { BackendService, ServerError } from '../backend.service';
@@ -15,6 +15,7 @@ import { StartButtonData } from './start-button-data.class';
 })
 export class StartComponent implements OnInit, OnDestroy {
   private loginDataSubscription: Subscription = null;
+  private globalErrorMsgSubscription: Subscription = null;
   private dataLoading = false;
 
   // for template
@@ -23,6 +24,7 @@ export class StartComponent implements OnInit, OnDestroy {
   private showBookletButtons = false;
   private bookletlist: StartButtonData[] = [];
   private showTestRunningButtons = false;
+  private errormsg: ServerError = null;
   private validCodes = [];
   private loginStatusText = ['nicht angemeldet'];
 
@@ -30,8 +32,10 @@ export class StartComponent implements OnInit, OnDestroy {
   private codeinputform: FormGroup;
   private lastloginname = '';
   private testEndButtonText = 'Test beenden';
+  private bookletSelectPrompt = 'Bitte wählen';
+  private bookletSelectTitle = 'Bitte wählen';
   private bookletSelectPromptOne = 'Bitte klick auf die Schaltfläche links, um den Test zu starten!';
-  private bookletSelectPromptMany = 'Bitte klicken Sie auf eine der Schaltflächen links, um einen Test zu starten!';
+  private bookletSelectPromptMany = 'Bitte klicken Sie auf eine der Schaltflächen, um einen Test zu starten!';
   private codeInputPrompt = 'Bitte Log-in eingeben, der auf dem Zettel steht!';
 
   // ??
@@ -50,6 +54,9 @@ export class StartComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.globalErrorMsgSubscription = this.mds.globalErrorMsg$.subscribe(m => {
+      this.errormsg = m;
+    });
     this.loginDataSubscription = this.mds.loginData$.subscribe(logindata => {
       this.bookletlist = [];
       if (logindata.logintoken.length > 0) {
@@ -123,10 +130,37 @@ export class StartComponent implements OnInit, OnDestroy {
         }
 
         if (createBookletSelectButtons) {
-          for (const booklet of logindata.booklets[logindata.code]) {
-            const myTest = new StartButtonData(booklet);
-            myTest.getBookletStatus(this.bs, logindata.code); // not waiting for response
-            this.bookletlist.push(myTest);
+          if (logindata.booklets[logindata.code].length > 0) {
+            const myBookletStatusLoadings = [];
+            for (const booklet of logindata.booklets[logindata.code]) {
+              const myTest = new StartButtonData(booklet);
+              myBookletStatusLoadings.push(myTest.getBookletStatus(this.bs, logindata.code));
+              this.bookletlist.push(myTest);
+            }
+            this.dataLoading = true;
+            forkJoin(myBookletStatusLoadings).subscribe(allOk => {
+              this.dataLoading = false;
+
+              let numberOfOpenBooklets = 0;
+              for (const ok of allOk) {
+                if (ok) {
+                  numberOfOpenBooklets += 1;
+                }
+              }
+
+              if (numberOfOpenBooklets === 0) {
+                this.bookletSelectPrompt = (allOk.length > 1) ? 'Testhefte beendet' : 'Testheft beendet';
+                this.bookletSelectTitle = 'Beendet';
+              } else if (numberOfOpenBooklets === 1) {
+                this.bookletSelectPrompt = this.bookletSelectPromptOne;
+                this.bookletSelectTitle = 'Bitte starten';
+              } else {
+                this.bookletSelectPrompt = this.bookletSelectPromptMany;
+                this.bookletSelectTitle = 'Bitte wählen';
+              }
+            });
+          } else {
+            this.bookletSelectPrompt = 'Keine Testhefte verfügbar';
           }
         }
       } else {

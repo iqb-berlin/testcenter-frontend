@@ -27,6 +27,7 @@
           <button mat-raised-button type="submit" [disabled]="testtakerloginform.invalid" color="primary">Weiter</button>
         </mat-card-actions>
       </form>
+      <p class="error-msg">{{ errormsg?.labelNice }}</p>
     </mat-card>
 
     <!-- - - - - - - - - - - - - - - - - -->
@@ -47,7 +48,7 @@
 
     <!-- - - - - - - - - - - - - - - - - -->
     <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showBookletButtons">
-      <mat-card-title>Bitte wählen</mat-card-title>
+      <mat-card-title>{{ bookletSelectTitle }}</mat-card-title>
       <mat-card-content>
         <div fxLayout="row" fxLayoutGap="10px" fxLayout="column">
           <p *ngIf="bookletlist.length === 0">
@@ -113,9 +114,7 @@
 
         <!-- - - - - - - - - - - - - - - - - -->
         <div *ngIf="showBookletButtons">
-          <p *ngIf="bookletlist.length === 0">Fehler: Kein Testmaterial für diese Anmeldung gefunden.</p>
-          <p *ngIf="bookletlist.length === 1">{{ bookletSelectPromptOne }}</p>
-          <p *ngIf="bookletlist.length > 1">{{ bookletSelectPromptMany }}</p>
+          <p>{{ bookletSelectPrompt }}</p>
         </div>
 
         <!-- - - - - - - - - - - - - - - - - -->
@@ -123,7 +122,7 @@
             <p>Es wird gerade ein Test ausgeführt. Bitte wählen Sie durch Klicken auf eine der beiden Schaltflächen
               links, ob der Test fortgesetzt oder beendet werden soll!</p>
         </div>
-        <div class="error-msg">{{ mds.globalErrorMsg$.labelNice | async }}</div>
+        <div class="error-msg">{{ (mds.globalErrorMsg | async)?.labelNice }}</div>
 
       </mat-card-content>
       <mat-card-actions>

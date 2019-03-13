@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { Testlet, BookletConfig } from './test-controller.classes';
 import { LastStateKey, LogEntryKey } from './test-controller.interfaces';
 import { BackendService } from './backend.service';
-import { JsonpInterceptor } from '@angular/common/http';
 import { ServerError } from '../backend.service';
 
 @Injectable({

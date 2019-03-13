@@ -12,7 +12,6 @@ import { UnitDef, Testlet, UnitControllerData, EnvironmentData } from './test-co
 import { LastStateKey, LogEntryKey, BookletData, UnitData } from './test-controller.interfaces';
 import { Subscription, Observable, of, forkJoin } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { JsonpInterceptor } from '@angular/common/http';
 
 @Component({
   templateUrl: './test-controller.component.html',

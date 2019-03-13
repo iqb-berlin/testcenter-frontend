@@ -1,5 +1,8 @@
+import { map } from 'rxjs/operators';
 import { BackendService, ServerError } from '../backend.service';
 import { BookletStatus } from '../app.interfaces';
+import { of } from 'rxjs';
+import { pipe } from '@angular/core/src/render3';
 
 export class StartButtonData {
     id: string;
@@ -20,17 +23,23 @@ export class StartButtonData {
     }
 
     public getBookletStatus(bs: BackendService, code = '') {
-      bs.getBookletStatus(this.id, code).subscribe(respDataUntyped => {
-        if (respDataUntyped instanceof ServerError) {
-          const e = respDataUntyped as ServerError;
-          this.statustxt = e.code.toString() + ': ' + e.labelNice;
-        } else {
-          const respData = respDataUntyped as BookletStatus;
-          this.statustxt = respData.statusLabel;
-          this.isEnabled = respData.canStart;
-          this.lastUnit = respData.lastUnit;
-          this.label = respData.label;
-        }
-      });
+      return bs.getBookletStatus(this.id, code)
+      .pipe(
+        map(respDataUntyped => {
+          let myreturn = false;
+          if (respDataUntyped instanceof ServerError) {
+            const e = respDataUntyped as ServerError;
+            this.statustxt = e.code.toString() + ': ' + e.labelNice;
+          } else {
+            const respData = respDataUntyped as BookletStatus;
+            this.statustxt = respData.statusLabel;
+            this.isEnabled = respData.canStart;
+            myreturn = respData.canStart;
+            this.lastUnit = respData.lastUnit;
+            this.label = respData.label;
+          }
+          return myreturn;
+        })
+      );
     }
   }

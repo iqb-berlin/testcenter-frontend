@@ -104,7 +104,7 @@ export class MainDataService {
     if (myLoginData.booklet > 0) {
       forkJoin(
         this.bs.addBookletLogClose(myLoginData.booklet),
-        this.bs.setBookletState(myLoginData.booklet)
+        this.bs.lockBooklet(myLoginData.booklet)
       ).subscribe(ok => {
         myLoginData.booklet = 0;
         myLoginData.bookletlabel = '';

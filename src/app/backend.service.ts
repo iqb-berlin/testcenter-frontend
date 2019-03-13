@@ -94,16 +94,16 @@ export class BackendService {
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
   addBookletLogClose(bookletDbId: number): Observable<boolean | ServerError> {
     return this.http
-      .post<boolean>(this.serverSlimUrl_Close + 'log', {b: bookletDbId, t: Date.now(), e: 'BOOKLETCLOSED'})
+      .post<boolean>(this.serverSlimUrl_Close + 'log', {b: bookletDbId, t: Date.now(), e: 'BOOKLETLOCKEDbyTESTEE'})
         .pipe(
           catchError(ErrorHandler.handle)
         );
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  setBookletState(bookletDbId: number): Observable<boolean | ServerError> {
+  lockBooklet(bookletDbId: number): Observable<boolean | ServerError> {
     return this.http
-      .post<boolean>(this.serverSlimUrl_Close + 'state', {b: bookletDbId, sk: 'BOOKLETCLOSED', s: 'Y'})
+      .post<boolean>(this.serverSlimUrl_Close + 'lock', {b: bookletDbId})
         .pipe(
           catchError(ErrorHandler.handle)
         );
