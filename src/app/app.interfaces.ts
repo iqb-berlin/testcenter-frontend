@@ -37,3 +37,17 @@ export interface PersonTokenAndBookletDbId {
   persontoken: string;
   bookletDbId: number;
 }
+
+export interface KeyValuePair {
+  [K: string]: string;
+}
+
+export enum SysConfigKey {
+  testEndButtonText = 'testEndButtonText',
+  bookletSelectPrompt = 'bookletSelectPrompt',
+  bookletSelectTitle = 'bookletSelectTitle',
+  bookletSelectPromptOne = 'bookletSelectPromptOne',
+  bookletSelectPromptMany = 'bookletSelectPromptMany',
+  codeInputTitle = 'codeInputTitle',
+  codeInputPrompt = 'codeInputPrompt'
+}

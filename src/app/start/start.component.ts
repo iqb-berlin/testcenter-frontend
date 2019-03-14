@@ -1,3 +1,4 @@
+import { SysConfigKey } from './../app.interfaces';
 import { MainDataService } from './../maindata.service';
 import { Subscription, BehaviorSubject, forkJoin } from 'rxjs';
 import { MessageDialogComponent, MessageDialogData, MessageType } from './../iqb-common';
@@ -15,7 +16,6 @@ import { StartButtonData } from './start-button-data.class';
 })
 export class StartComponent implements OnInit, OnDestroy {
   private loginDataSubscription: Subscription = null;
-  private globalErrorMsgSubscription: Subscription = null;
   private dataLoading = false;
 
   // for template
@@ -24,7 +24,6 @@ export class StartComponent implements OnInit, OnDestroy {
   private showBookletButtons = false;
   private bookletlist: StartButtonData[] = [];
   private showTestRunningButtons = false;
-  private errormsg: ServerError = null;
   private validCodes = [];
   private loginStatusText = ['nicht angemeldet'];
 
@@ -34,9 +33,8 @@ export class StartComponent implements OnInit, OnDestroy {
   private testEndButtonText = 'Test beenden';
   private bookletSelectPrompt = 'Bitte wählen';
   private bookletSelectTitle = 'Bitte wählen';
-  private bookletSelectPromptOne = 'Bitte klick auf die Schaltfläche links, um den Test zu starten!';
-  private bookletSelectPromptMany = 'Bitte klicken Sie auf eine der Schaltflächen, um einen Test zu starten!';
-  private codeInputPrompt = 'Bitte Log-in eingeben, der auf dem Zettel steht!';
+  private codeInputPrompt = '';
+  private codeInputTitle = '';
 
   // ??
   // private sessiondata: PersonBooklets;
@@ -54,9 +52,6 @@ export class StartComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.globalErrorMsgSubscription = this.mds.globalErrorMsg$.subscribe(m => {
-      this.errormsg = m;
-    });
     this.loginDataSubscription = this.mds.loginData$.subscribe(logindata => {
       this.bookletlist = [];
       if (logindata.logintoken.length > 0) {
@@ -115,12 +110,13 @@ export class StartComponent implements OnInit, OnDestroy {
             } else {
               // code not yet given
               // code prompt
-
+              this.codeInputTitle = this.mds.getSysConfigValue(SysConfigKey.codeInputTitle);
+              this.codeInputPrompt = this.mds.getSysConfigValue(SysConfigKey.codeInputPrompt);
               this.showCodeForm = true;
               this.showBookletButtons = false;
             }
           } else {
-            // no code but there is only one
+            // no code but there is only one code
             // buttons to select booklet
 
             this.showCodeForm = false;
@@ -152,10 +148,10 @@ export class StartComponent implements OnInit, OnDestroy {
                 this.bookletSelectPrompt = (allOk.length > 1) ? 'Testhefte beendet' : 'Testheft beendet';
                 this.bookletSelectTitle = 'Beendet';
               } else if (numberOfOpenBooklets === 1) {
-                this.bookletSelectPrompt = this.bookletSelectPromptOne;
+                this.bookletSelectPrompt = this.mds.getSysConfigValue(SysConfigKey.bookletSelectPromptOne);
                 this.bookletSelectTitle = 'Bitte starten';
               } else {
-                this.bookletSelectPrompt = this.bookletSelectPromptMany;
+                this.bookletSelectPrompt = this.mds.getSysConfigValue(SysConfigKey.bookletSelectPromptMany);
                 this.bookletSelectTitle = 'Bitte wählen';
               }
             });

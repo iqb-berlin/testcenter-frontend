@@ -1,7 +1,8 @@
+import { KeyValuePair } from './test-controller/test-controller.interfaces';
 import { ServerError, BackendService } from './backend.service';
 import { BehaviorSubject, Subject, forkJoin } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { LoginData } from './app.interfaces';
+import { LoginData, SysConfigKey } from './app.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,7 @@ export class MainDataService {
 
   public loginData$ = new BehaviorSubject<LoginData>(this.standardLoginData);
   public globalErrorMsg$ = new BehaviorSubject<ServerError>(null);
+  private _sysConfig: KeyValuePair = null;
 
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();
@@ -132,5 +134,28 @@ export class MainDataService {
   getPersonToken(): string {
     const myLoginData = this.loginData$.getValue();
     return myLoginData.persontoken;
+  }
+
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  setSysConfig(sc: KeyValuePair) {
+    this._sysConfig = sc;
+  }
+
+  getSysConfigValue(key: SysConfigKey): string {
+    if (this._sysConfig !== null) {
+      if (this._sysConfig.hasOwnProperty(key)) {
+        return this._sysConfig[key];
+      }
+    }
+    switch (key) {
+      case SysConfigKey.testEndButtonText: return 'Test beenden';
+      case SysConfigKey.bookletSelectPrompt: return 'Bitte wählen';
+      case SysConfigKey.bookletSelectTitle: return 'Bitte wählen';
+      case SysConfigKey.bookletSelectPromptOne: return 'Bitte klick auf die Schaltfläche links, um den Test zu starten!';
+      case SysConfigKey.bookletSelectPromptMany: return 'Bitte klick auf eine der Schaltflächen links, um einen Test zu starten!';
+      case SysConfigKey.codeInputPrompt: return 'Bitte den Personencode eingeben!';
+      case SysConfigKey.codeInputTitle: return 'Personencode eingeben';
+    }
+    return '?';
   }
 }

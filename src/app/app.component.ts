@@ -29,47 +29,50 @@ export class AppComponent implements OnInit {
       }
     });
 
-    // restore login status if stored in localStorage
-    const loginToken = localStorage.getItem('lt');
-    if (loginToken !== null) {
-      if (loginToken.length > 0) {
-        let personToken = localStorage.getItem('pt');
-        let bookletDbId = 0;
-        if (personToken !== null) {
-          if (personToken.length > 0) {
-            const bookletDbIdStr = localStorage.getItem('bi');
-            if (bookletDbIdStr !== null) {
-              bookletDbId = Number(bookletDbIdStr);
+    this.bs.getSysConfig().subscribe(sc => {
+      this.mds.setSysConfig(sc);
+      // restore login status if stored in localStorage
+      const loginToken = localStorage.getItem('lt');
+      if (loginToken !== null) {
+        if (loginToken.length > 0) {
+          let personToken = localStorage.getItem('pt');
+          let bookletDbId = 0;
+          if (personToken !== null) {
+            if (personToken.length > 0) {
+              const bookletDbIdStr = localStorage.getItem('bi');
+              if (bookletDbIdStr !== null) {
+                bookletDbId = Number(bookletDbIdStr);
+              }
             }
+          } else {
+            personToken = '';
           }
-        } else {
-          personToken = '';
-        }
-        let code = localStorage.getItem('c');
-        if (code === null) {
-          code = '';
-        }
+          let code = localStorage.getItem('c');
+          if (code === null) {
+            code = '';
+          }
 
           // bookletDbId is not yet checked by getLoginData, only passed-through
           this.bs.getLoginData(loginToken, personToken, bookletDbId).subscribe(ld => {
-          if (ld instanceof ServerError) {
-            this.mds.setNewLoginData();
-          } else {
-            const loginData = ld as LoginData;
-            loginData.logintoken = loginToken;
-            loginData.persontoken = personToken;
-            if (personToken.length === 0) {
-              loginData.code = code;
-              loginData.booklet = 0;
+            if (ld instanceof ServerError) {
+              this.mds.setNewLoginData();
+            } else {
+              const loginData = ld as LoginData;
+              loginData.logintoken = loginToken;
+              loginData.persontoken = personToken;
+              if (personToken.length === 0) {
+                loginData.code = code;
+                loginData.booklet = 0;
+              }
+              this.mds.setNewLoginData(loginData);
             }
-            this.mds.setNewLoginData(loginData);
-          }
-        });
+          });
+        } else {
+          this.mds.setNewLoginData();
+        }
       } else {
         this.mds.setNewLoginData();
       }
-    } else {
-      this.mds.setNewLoginData();
-    }
+    });
   }
 }

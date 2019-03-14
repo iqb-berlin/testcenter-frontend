@@ -27,13 +27,14 @@
           <button mat-raised-button type="submit" [disabled]="testtakerloginform.invalid" color="primary">Weiter</button>
         </mat-card-actions>
       </form>
-      <p class="error-msg">{{ errormsg?.labelNice }}</p>
+      <p class="error-msg">{{ (mds.globalErrorMsg$ | async)?.labelNice }}</p>
+
     </mat-card>
 
     <!-- - - - - - - - - - - - - - - - - -->
     <mat-card fxFlex="0 0 400px" *ngIf="showCodeForm">
       <form [formGroup]="codeinputform" (ngSubmit)="codeinput()">
-        <mat-card-title>Anmelden</mat-card-title>
+        <mat-card-title>{{ codeInputTitle }}</mat-card-title>
         <mat-card-content>
           <mat-form-field>
             <input matInput formControlName="code" placeholder="Personen-Code"(keyup.enter)="codeinput()">
@@ -122,7 +123,7 @@
             <p>Es wird gerade ein Test ausgeführt. Bitte wählen Sie durch Klicken auf eine der beiden Schaltflächen
               links, ob der Test fortgesetzt oder beendet werden soll!</p>
         </div>
-        <div class="error-msg">{{ (mds.globalErrorMsg | async)?.labelNice }}</div>
+        <div class="error-msg">{{ (mds.globalErrorMsg$ | async)?.labelNice }}</div>
 
       </mat-card-content>
       <mat-card-actions>

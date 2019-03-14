@@ -1,8 +1,10 @@
+
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { LoginData, BookletStatus, PersonTokenAndBookletDbId, BookletData, BookletDataListByCode } from './app.interfaces';
+import { LoginData, BookletStatus, PersonTokenAndBookletDbId, BookletData, BookletDataListByCode,
+  KeyValuePair } from './app.interfaces';
 
 // ============================================================================
 // class instead of interface to be able to use instanceof to check type
@@ -66,6 +68,14 @@ export class BackendService {
       .post<LoginData>(this.serverSlimUrl + 'login', {lt: loginToken, pt: personToken, b: bookletDbId})
         .pipe(
           catchError(ErrorHandler.handle)
+        );
+  }
+
+  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+  getSysConfig(): Observable<KeyValuePair> {
+    return this.http.get<KeyValuePair>(this.serverSlimUrl + 'sysconfig')
+        .pipe(
+          catchError(e => of(null))
         );
   }
 
