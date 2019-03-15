@@ -333,6 +333,9 @@ export interface UnitResponse {
   responses: string;
   restorepoint:  string;
   responsetype: string;
+  responses_ts: number;
+  restorepoint_ts: number;
+  laststate: string;
 }
 
 export interface MonitorData {
@@ -358,7 +361,7 @@ export interface LogData {
   code: string;
   bookletname: string;
   unitname: string;
-  logtime: Date;
+  timestamp: number;
   logentry: string;
 }
 

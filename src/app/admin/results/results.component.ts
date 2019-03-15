@@ -79,7 +79,8 @@ export class ResultsComponent implements OnInit {
           const lineDelimiter = '\n';
           let myCsvData = 'groupname' + columnDelimiter + 'loginname' + columnDelimiter + 'code' + columnDelimiter +
               'bookletname' + columnDelimiter + 'unitname' + columnDelimiter + 'responses' + columnDelimiter +
-              'restorePoint' + columnDelimiter + 'responseType' + lineDelimiter;
+              'restorePoint' + columnDelimiter + 'responseType' + lineDelimiter + 'response-ts' + lineDelimiter +
+              'restorePoint-ts' + lineDelimiter + 'laststate';
           responseData.forEach((resp: UnitResponse) => {
             myCsvData += '"' + resp.groupname + '"' + columnDelimiter + '"' + resp.loginname + '"' + columnDelimiter + '"' + resp.code + '"' + columnDelimiter +
                 '"' + resp.bookletname + '"' + columnDelimiter + '"' + resp.unitname + '"' + columnDelimiter;
@@ -94,7 +95,13 @@ export class ResultsComponent implements OnInit {
               myCsvData += columnDelimiter;
             }
             if ((resp.responsetype !== null) && (resp.responsetype.length > 0)) {
-              myCsvData += '"' + resp.responsetype + '"' + lineDelimiter;
+              myCsvData += '"' + resp.responsetype + '"' + columnDelimiter;
+            } else {
+              myCsvData += columnDelimiter;
+            }
+            myCsvData += resp.responses_ts + columnDelimiter + resp.restorepoint_ts + columnDelimiter;
+            if ((resp.laststate !== null) && (resp.laststate.length > 0)) {
+              myCsvData += '"' + resp.laststate + '"' + lineDelimiter;
             } else {
               myCsvData += lineDelimiter;
             }
@@ -191,12 +198,12 @@ export class ResultsComponent implements OnInit {
           const lineDelimiter = '\n';
           let myCsvData = 'groupname' + columnDelimiter + 'loginname' + columnDelimiter + 'code' + columnDelimiter +
               'bookletname' + columnDelimiter + 'unitname' + columnDelimiter +
-              'logtime' + columnDelimiter + 'logentry' + lineDelimiter;
+              'timestamp' + columnDelimiter + 'logentry' + lineDelimiter;
           responseData.forEach((resp: LogData) => {
             if ((resp.logentry !== null) && (resp.logentry.length > 0)) {
              myCsvData += '"' + resp.groupname + '"' + columnDelimiter + '"' + resp.loginname + '"' + columnDelimiter + '"' + resp.code + '"' + columnDelimiter +
               '"' + resp.bookletname + '"' + columnDelimiter + '"' + resp.unitname + '"' + columnDelimiter  + '"' +
-              resp.logtime + '"' + columnDelimiter  + resp.logentry.replace(/\\"/g, '""')  + lineDelimiter;
+              resp.timestamp.toString() + '"' + columnDelimiter  + resp.logentry.replace(/\\"/g, '""')  + lineDelimiter;
             }
           });
           var blob = new Blob([myCsvData], {type: "text/csv;charset=utf-8"});
