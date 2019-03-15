@@ -38,11 +38,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private showPageNav = false;
   private pageList: PageData[] = [];
 
-  // changed by itemplayer via postMessage, observed here to save (see below)
-  private restorePoint$ = new Subject<string>();
-  private restorePointSubscription: Subscription = null;
-  private response$ = new Subject<TaggedString>();
-  private responseSubscription: Subscription = null;
 
 
 
@@ -52,18 +47,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    this.restorePointSubscription = this.restorePoint$.pipe(
-      debounceTime(300)).subscribe(restorePoint => {
-        this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, restorePoint, true);
-      }
-    );
-
-    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    this.responseSubscription = this.response$.pipe(
-      debounceTime(300)).subscribe(response => {
-        this.tcs.newUnitResponse(this.myUnitDbKey, response.value, response.tag);
-      }
-    );
 
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
@@ -97,12 +80,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
             this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
 
             this.postMessageTarget = m.source as Window;
-            this.postMessageTarget.postMessage({
-              type: 'vo.ToPlayer.DataTransfer',
-              sessionId: this.itemplayerSessionId,
-              unitDefinition: pendingUnitDef,
-              restorePoint: pendingRestorePoint
-            }, '*');
+            if (typeof this.postMessageTarget !== 'undefined') {
+                this.postMessageTarget.postMessage({
+                type: 'vo.ToPlayer.DataTransfer',
+                sessionId: this.itemplayerSessionId,
+                unitDefinition: pendingUnitDef,
+                restorePoint: pendingRestorePoint
+              }, '*');
+            }
 
             break;
 
@@ -131,11 +116,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
               const restorePoint = msgData['restorePoint'] as string;
               if (restorePoint) {
-                this.restorePoint$.next(restorePoint);
+                this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, restorePoint, true);
               }
               const response = msgData['response'] as string;
               if (response !== undefined) {
-                this.response$.next({tag: msgData['responseConverter'], value: response});
+                this.tcs.newUnitResponse(this.myUnitDbKey, response, msgData['responseConverter']);
               }
               const canLeaveChanged = msgData['canLeave'];
               if (canLeaveChanged !== undefined) {
@@ -316,11 +301,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     if (nextPageId.length > 0) {
       this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, nextPageId);
-      this.postMessageTarget.postMessage({
-        type: 'vo.ToPlayer.NavigateToPage',
-        sessionId: this.itemplayerSessionId,
-        newPage: nextPageId
-      }, '*');
+      if (typeof this.postMessageTarget !== 'undefined') {
+        this.postMessageTarget.postMessage({
+          type: 'vo.ToPlayer.NavigateToPage',
+          sessionId: this.itemplayerSessionId,
+          newPage: nextPageId
+        }, '*');
+      }
     }
   }
 
@@ -331,12 +318,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     if (this.postMessageSubscription !== null) {
       this.postMessageSubscription.unsubscribe();
-    }
-    if (this.restorePointSubscription !== null) {
-      this.restorePointSubscription.unsubscribe();
-    }
-    if (this.responseSubscription !== null) {
-      this.responseSubscription.unsubscribe();
     }
   }
 }

@@ -62,14 +62,15 @@ export class BackendService {
   }
 
   // ------------------------------
-  getResource(resId: string): Observable<string | ServerError> {
+  getResource(resId: string, versionning = false): Observable<string | ServerError> {
     const myHttpOptions = {
         headers: new HttpHeaders({
           'Content-Type':  'application/json'
         }),
         responseType: 'text' as 'json'
     };
-    return this.http.get<string>(this.serverSlimUrl_GET + 'resource/' + resId, myHttpOptions)
+    const urlSuffix = versionning ? '?v=1' : '';
+    return this.http.get<string>(this.serverSlimUrl_GET + 'resource/' + resId + urlSuffix, myHttpOptions)
       .pipe(
         catchError(this.handle)
       );

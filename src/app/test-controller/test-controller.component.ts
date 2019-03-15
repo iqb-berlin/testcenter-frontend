@@ -154,7 +154,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     } else {
       // to avoid multiple calls before returning:
       this.tcs.addPlayer(playerId, '');
-      return this.bs.getResource(this.tcs.normaliseId(playerId, 'html'))
+      return this.bs.getResource(this.tcs.normaliseId(playerId, 'html'), true)
           .pipe(
             switchMap(myData => {
               if (myData instanceof ServerError) {

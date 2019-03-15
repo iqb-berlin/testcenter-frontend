@@ -5,18 +5,13 @@ export interface TaggedString {
 }
 
 export interface UnitResponseData {
-    bookletDbId: number;
     unitDbKey: string;
-    timestamp: number;
     response: string;
     responseType: string;
 }
 
 export interface UnitRestorePointData {
-    bookletDbId: number;
     unitDbKey: string;
-    unitSequenceId: number;
-    timestamp: number;
     restorePoint: string;
 }
 

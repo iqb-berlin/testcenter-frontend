@@ -1,7 +1,8 @@
+import { debounceTime } from 'rxjs/operators';
 import { BehaviorSubject, of, Observable, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Testlet, BookletConfig } from './test-controller.classes';
-import { LastStateKey, LogEntryKey } from './test-controller.interfaces';
+import { LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData } from './test-controller.interfaces';
 import { BackendService } from './backend.service';
 import { ServerError } from '../backend.service';
 
@@ -51,9 +52,35 @@ export class TestControllerService {
   private unitDefinitions: {[sequenceId: number]: string} = {};
   private unitRestorePoints: {[sequenceId: number]: string} = {};
 
+  private restorePointsToSave$ = new Subject<UnitRestorePointData>();
+  private responsesToSave$ = new Subject<UnitResponseData>();
+
   constructor (
     private bs: BackendService
-  ) { }
+  ) {
+    this.restorePointsToSave$.pipe(
+      debounceTime(200)).subscribe(restorePoint => {
+        this.bs.newUnitRestorePoint(this.bookletDbId, restorePoint.unitDbKey, Date.now(),
+              JSON.stringify(restorePoint.restorePoint)).subscribe(ok => {
+          if (ok instanceof ServerError) {
+            console.log('((((((((((((((((newUnitRestorePoint');
+          }
+        });
+      }
+    );
+
+    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    this.responsesToSave$.pipe(
+      debounceTime(200)).subscribe(response => {
+        this.bs.newUnitResponse(this.bookletDbId, Date.now(), response.unitDbKey,
+              JSON.stringify(response.response), response.responseType).subscribe(ok => {
+          if (ok instanceof ServerError) {
+            console.log('((((((((((((((((newUnitResponse');
+          }
+        });
+      }
+    );
+  }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
   public resetDataStore() {
@@ -211,20 +238,19 @@ export class TestControllerService {
       }
     });
   }
-  public newUnitResponse(unitDbKey: string, response: string, responseType) {
-    this.bs.newUnitResponse(this.bookletDbId, Date.now(), unitDbKey, JSON.stringify(response), responseType).subscribe(ok => {
-      if (ok instanceof ServerError) {
-        console.log('((((((((((((((((newUnitResponse');
-      }
+  public newUnitResponse(unitDbKey: string, response: string, responseType: string) {
+    this.responsesToSave$.next({
+      unitDbKey: unitDbKey,
+      response: response,
+      responseType: responseType
     });
   }
   public newUnitRestorePoint(unitDbKey: string, unitSequenceId: number, restorePoint: string, postToServer: boolean) {
     this.unitRestorePoints[unitSequenceId] = restorePoint;
     if (postToServer) {
-      this.bs.newUnitRestorePoint(this.bookletDbId, unitDbKey, Date.now(), JSON.stringify(restorePoint)).subscribe(ok => {
-        if (ok instanceof ServerError) {
-          console.log('((((((((((((((((newUnitRestorePoint');
-        }
+      this.restorePointsToSave$.next({
+        unitDbKey: unitDbKey,
+        restorePoint: restorePoint
       });
     }
   }
