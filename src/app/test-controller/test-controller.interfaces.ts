@@ -17,11 +17,12 @@ export interface UnitRestorePointData {
 
 // testcontroller restrictions +++++++++++++++++++++++++++++++++++
 export interface StartLockData {
-    prompt: string;
-    keyPreset: string;
+    title: string;
+    codes: CodeInputData[];
 }
 
 export interface CodeInputData {
+    testletId: string;
     prompt: string;
     code: string;
     value: string;
@@ -66,7 +67,8 @@ export interface UnitLogData {
 }
 
 export enum LastStateKey {
-    LASTUNIT = 'LASTUNIT'
+    LASTUNIT = 'LASTUNIT',
+    MAXTIMELEFT = 'MAXTIMELEFT'
 }
 
 export enum LogEntryKey {
@@ -78,6 +80,19 @@ export enum LogEntryKey {
     PAGENAVIGATIONCOMPLETE = 'PAGENAVIGATIONCOMPLETE',
     PRESENTATIONCOMPLETE = 'PRESENTATIONCOMPLETE',
     RESPONSESCOMPLETE = 'RESPONSESCOMPLETE'
+}
+
+export enum MaxTimerDataType {
+    START = 'START',
+    STEP = 'STEP',
+    CANCELLED = 'CANCELLED',
+    END = 'END'
+}
+
+export interface MaxTimerData {
+    timeLeft: number; // seconds
+    testletId: string;
+    type: MaxTimerDataType;
 }
 
 // for unithost ++++++++++++++++++++++++++++++++++++++++++++++++++++++

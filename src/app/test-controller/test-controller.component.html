@@ -4,6 +4,8 @@
   </a>
 </div>
 <div id="navButtonsContainer" fxLayout="row">
+  <button (click)="stopTimer()">STOP Timer</button>
+  <p class="timer">{{ timerValue }}</p>
   <button mat-fab [disabled]="!tcs.unitPrevEnabled" color="accent" (click)="tcs.setUnitNavigationRequest('#previous')" matTooltip="Zurück">
     <i class="material-icons">chevron_left</i>
   </button>

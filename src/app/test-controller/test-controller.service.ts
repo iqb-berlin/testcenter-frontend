@@ -1,8 +1,8 @@
-import { debounceTime } from 'rxjs/operators';
-import { BehaviorSubject, of, Observable, Subject } from 'rxjs';
+import { debounceTime, takeUntil, map } from 'rxjs/operators';
+import { BehaviorSubject, of, Observable, Subject, Subscription, interval, timer } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Testlet, BookletConfig } from './test-controller.classes';
-import { LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData } from './test-controller.interfaces';
+import { LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData, MaxTimerData, MaxTimerDataType } from './test-controller.interfaces';
 import { BackendService } from './backend.service';
 import { ServerError } from '../backend.service';
 
@@ -21,6 +21,8 @@ export class TestControllerService {
   public mode = '';
 
   public navigationRequest$ = new Subject<string>();
+  public maxTimeTimer$ = new Subject<MaxTimerData>();
+  private maxTimeIntervalSubscription: Subscription = null;
 
   private _currentUnitSequenceId: number;
   public get currentUnitSequenceId(): number {
@@ -99,66 +101,6 @@ export class TestControllerService {
     this.unitPrevEnabled = false;
     this.unitNextEnabled = false;
   }
-
-
-
-  // public unitname$ = new BehaviorSubject<string>('-');
-  // private saveToBackend$: Observable<string>;
-  //
-  // private _currentUnitId = '';
-
-  // // .................................................................................
-  // private currentUnitId$ = new BehaviorSubject<number>(0);
-  // public isSession$ = new BehaviorSubject<boolean>(false);
-
-  // get sessionToken(): string {
-  //   return this._sessionToken;
-  // }
-
-  // constructor(
-  //   private bs: BackendService,
-  //   private router: Router
-  // ) {
-  //   this.currentUnitPos$.subscribe((p: number) => {
-  //     const b = this.booklet$.getValue();
-  //     if (b === null) {
-  //       this.prevUnit$.next(-1);
-  //       this.nextUnit$.next(-1);
-  //     } else {
-  //       if (p > 0) {
-  //         this.prevUnit$.next(p - 1);
-  //       } else {
-  //         this.prevUnit$.next(-1);
-  //       }
-  //       const uCount = b.units.length;
-  //       if (p < (uCount - 1)) {
-  //         this.nextUnit$.next(p + 1);
-  //       } else {
-  //         this.nextUnit$.next(-1);
-  //       }
-  //     }
-  //   });
-
-  //   this.unitRequest$.subscribe(p => {
-  //     this.goToUnitByPosition(p);
-  //   });
-  // }
-
-  // 66666666666666666666666666666666666666666666666666666666666666666666666666
-  // getUnitForPlayer(unitId): UnitDef {
-  //   const myBooklet = this.booklet$.getValue();
-  //   if (myBooklet === null) {
-  //     return null;
-  //   } else {
-  //     for (let i = 0; i < myBooklet.units.length; i++) {
-  //       if (myBooklet.units[i].id === unitId) {
-  //         return myBooklet.units[i];
-  //       }
-  //     }
-  //   }
-  //   return null;
-  // }
-
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
   // uppercase and add extension if not part
@@ -255,30 +197,52 @@ export class TestControllerService {
     }
   }
 
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  public startMaxTimer(testletId: string, timeLeft: number) {
+    if (this.maxTimeIntervalSubscription !== null) {
+      this.maxTimeIntervalSubscription.unsubscribe();
+    }
+    this.maxTimeTimer$.next({
+      type: MaxTimerDataType.START,
+      testletId: testletId,
+      timeLeft: timeLeft
+    });
 
-  // -- -- -- -- -- -- -- -- -- -- -- -- -- --
-      // this.log$.pipe(
-      //   bufferTime(500)
-      // ).subscribe((data: UnitLogData[]) => {
-      //   if (data.length > 0) {
-      //     const myLogs = {};
-      //     data.forEach(lg => {
-      //       if (lg !== null) {
-      //         if (lg.logEntry.length > 0) {
-      //           if (typeof myLogs[lg.unitDbKey] === 'undefined') {
-      //             myLogs[lg.unitDbKey] = [];
-      //           }
-      //           myLogs[lg.unitDbKey].push(JSON.stringify(lg.logEntry));
-      //         }
-      //       }
-      //     });
-      //     for (const unitName in myLogs) {
-      //       if (myLogs[unitName].length > 0) {
-      //         // ## this.bs.setUnitLog(this.lds.personToken$.getValue(),
-      //         // this.lds.bookletDbId$.getValue(), unitName, myLogs[unitName]).subscribe();
-      //       }
-      //     }
-      //   }
-      // });
+    this.maxTimeIntervalSubscription = interval(1000)
+      .pipe(
+        takeUntil(
+          timer(timeLeft * 1000)
+        ),
+        map(val => timeLeft - val - 1)
+      ).subscribe(
+        val => {
+          this.maxTimeTimer$.next({
+            type: MaxTimerDataType.STEP,
+            testletId: testletId,
+            timeLeft: val
+          });
+        },
+        e => console.log('maxTime onError: %s', e),
+        () => {
+          this.maxTimeTimer$.next({
+            type: MaxTimerDataType.END,
+            testletId: testletId,
+            timeLeft: 0
+          });
+        }
+      );
+  }
+
+  public stopMaxTimer() {
+    if (this.maxTimeIntervalSubscription !== null) {
+      this.maxTimeIntervalSubscription.unsubscribe();
+      this.maxTimeIntervalSubscription = null;
+      this.maxTimeTimer$.next({
+        type: MaxTimerDataType.CANCELLED,
+        testletId: '',
+        timeLeft: 0
+      });
+    }
+  }
 
 }

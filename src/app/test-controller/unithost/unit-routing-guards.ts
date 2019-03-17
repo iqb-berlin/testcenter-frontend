@@ -9,7 +9,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot, Resolve } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { UnitDef, UnitControllerData } from '../test-controller.classes';
-import { CodeInputData, LogEntryKey } from '../test-controller.interfaces';
+import { CodeInputData, LogEntryKey, StartLockData } from '../test-controller.interfaces';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
@@ -41,16 +41,21 @@ export class UnitActivateGuard implements CanActivate {
       // } else if (!this.bs.isItemplayerReady(newUnit.unitDefinitionType)) {
       //   console.log('itemplayer for unit not available');
       } else if (newUnit.codeRequiringTestlets.length > 0) {
+        const myCodes: CodeInputData[] = [];
+        newUnit.codeRequiringTestlets.forEach(t => {
+          myCodes.push(<CodeInputData>{
+            testletId: t.id,
+            prompt: t.codePrompt,
+            code: t.codeToEnter.toUpperCase().trim(),
+            value: this.tcs.mode === 'hot' ? '' : t.codeToEnter
+          });
+        });
+
         const dialogRef = this.startLockDialog.open(StartLockInputComponent, {
           width: '500px',
-          height: '300px',
-          data: {
-            codes: newUnit.codeRequiringTestlets.forEach(t =>
-              (<CodeInputData>{
-                prompt: t.codePrompt,
-                code: t.codeToEnter.toUpperCase().trim(),
-                value: this.tcs.mode === 'hot' ? '' : t.codeToEnter
-              }))
+          data: <StartLockData>{
+            title: 'Freigabecodes',
+            codes: myCodes
           }
         });
         return dialogRef.afterClosed().pipe(

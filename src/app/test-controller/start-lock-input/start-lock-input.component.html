@@ -1,16 +1,15 @@
-<form [formGroup]="startkeyform">
+<form [formGroup]="startkeyform" fxLayout="column">
   <h1 mat-dialog-title>Freigabewort</h1>
 
-  <mat-dialog-content fxLayout="column">
-    <mat-form-field *ngFor="let c of data.codes">
-        <p>{{ c.prompt }}</p>
-        <input matInput placeholder="Freigabewort" required [(ngModel])="c.value">
-    </mat-form-field>
+  <mat-dialog-content>
+        <mat-form-field *ngFor="let c of data.codes" fxLayout="column">
+          <p>{{ c.prompt }}</p>
+          <input matInput [formControlName]="c.testletId" [(ngModel)]="c.value">
+        </mat-form-field>
   </mat-dialog-content>
 
   <mat-dialog-actions>
     <button mat-raised-button color="primary" type="submit" [mat-dialog-close]="data.codes">Weiter</button>
     <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
   </mat-dialog-actions>
-
 </form>

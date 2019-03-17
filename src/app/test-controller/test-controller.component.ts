@@ -9,9 +9,9 @@ import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UnitDef, Testlet, UnitControllerData, EnvironmentData } from './test-controller.classes';
-import { LastStateKey, LogEntryKey, BookletData, UnitData } from './test-controller.interfaces';
-import { Subscription, Observable, of, forkJoin } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { LastStateKey, LogEntryKey, BookletData, UnitData, MaxTimerDataType } from './test-controller.interfaces';
+import { Subscription, Observable, of, forkJoin, interval, timer } from 'rxjs';
+import { switchMap, takeUntil, map } from 'rxjs/operators';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -20,6 +20,7 @@ import { switchMap } from 'rxjs/operators';
 export class TestControllerComponent implements OnInit, OnDestroy {
   private loginDataSubscription: Subscription = null;
   private navigationRequestSubsription: Subscription = null;
+  private maxTimerSubscription: Subscription = null;
 
   // private showUnitComponent = false;
   // private allUnits: UnitDef[] = [];
@@ -27,6 +28,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private dataLoading = false;
   private lastUnitSequenceId = 0;
   private lastTestletIndex = 0;
+  private timerValue = 0;
 
   constructor (
     private tcs: TestControllerService,
@@ -47,6 +49,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (childElements.length > 0) {
       let codeToEnter = '';
       let codePrompt = '';
+      let maxTime = -1;
 
       let restrictionElement: Element = null;
       for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
@@ -63,7 +66,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             if ((typeof restrictionParameter !== 'undefined') && (restrictionParameter !== null)) {
               codeToEnter = restrictionParameter.toUpperCase();
               codePrompt = restrictionElements[childIndex].textContent;
-              break;
+            }
+          } else if (restrictionElements[childIndex].nodeName === 'TimeMax') {
+            const restrictionParameter = restrictionElements[childIndex].getAttribute('parameter');
+            if ((typeof restrictionParameter !== 'undefined') && (restrictionParameter !== null)) {
+              maxTime = Number(restrictionParameter);
+              if (isNaN(maxTime)) {
+                maxTime = -1;
+              }
             }
           }
         }
@@ -73,6 +83,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         targetTestlet.codeToEnter = codeToEnter;
         targetTestlet.codePrompt = codePrompt;
       }
+      targetTestlet.maxTimeLeft = maxTime;
 
       for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
         if (childElements[childIndex].nodeName === 'Unit') {
@@ -256,10 +267,27 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       );
   }
 
+  stopTimer() {
+    this.tcs.stopMaxTimer();
+  }
   // #####################################################################################
   // #####################################################################################
   ngOnInit() {
     this.router.navigateByUrl('/t');
+
+    this.maxTimerSubscription = this.tcs.maxTimeTimer$.subscribe(maxTimerData => {
+      if (maxTimerData.type === MaxTimerDataType.START) {
+        this.snackBar.open('Bearbeitungszeit hat begonnen: ' + maxTimerData.testletId, '', {duration: 3000});
+      } else if (maxTimerData.type === MaxTimerDataType.END) {
+        this.snackBar.open('Bearbeitungszeit beendet: ' + maxTimerData.testletId, '', {duration: 3000});
+      } else if (maxTimerData.type === MaxTimerDataType.CANCELLED) {
+        this.snackBar.open('Bearbeitungszeit abgebrochen', '', {duration: 3000});
+      } else {
+        this.timerValue = maxTimerData.timeLeft;
+      }
+    });
+
+    this.tcs.startMaxTimer('yoyoyo', 15);
 
     // ==========================================================
     // navigation between units and end booklet
@@ -335,6 +363,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               } else {
                 this.mds.globalErrorMsg$.next(null);
                 this.tcs.numberOfUnits = this.lastUnitSequenceId - 1;
+                // set last maxTimer value if available
+                this.tcs.rootTestlet.setTimeLeft(bookletData.laststate);
 
                 const myUnitLoadings = [];
                 for (let i = 1; i < this.tcs.numberOfUnits + 1; i++) {
@@ -356,8 +386,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     // =====================
                     this.tcs.bookletDbId = loginData.booklet;
                     this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
-                    const navTarget = bookletData.laststate.hasOwnProperty(LastStateKey.LASTUNIT) ?
-                                    bookletData.laststate[LastStateKey.LASTUNIT] : '#first';
+                    let navTarget = '#first';
+                    if (bookletData.laststate !== null) {
+                      if (bookletData.laststate.hasOwnProperty(LastStateKey.LASTUNIT)) {
+                        navTarget = bookletData.laststate[LastStateKey.LASTUNIT];
+                      }
+                    }
                     this.tcs.setUnitNavigationRequest(navTarget);
 
                     // =====================
@@ -452,6 +486,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
     if (this.navigationRequestSubsription !== null) {
       this.navigationRequestSubsription.unsubscribe();
+    }
+    if (this.maxTimerSubscription !== null) {
+      this.maxTimerSubscription.unsubscribe();
     }
   }
 }

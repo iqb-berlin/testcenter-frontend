@@ -2,7 +2,8 @@ import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
 import { Observable, of, BehaviorSubject, forkJoin } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { UnitData, BookletData } from './test-controller.interfaces';
+import { UnitData, BookletData, LastStateKey } from './test-controller.interfaces';
+import { KeyValuePair } from '../app.interfaces';
 
 // .....................................................................
 // .....................................................................
@@ -28,6 +29,7 @@ export class TestletContentElement {
   tryEnterMessage: string;
   tryLeaveMessage: string;
   children: TestletContentElement[];
+
 
   constructor(sequenceId: number, id: string, title: string) {
     this.sequenceId = sequenceId;
@@ -162,6 +164,7 @@ export class UnitControllerData {
 export class Testlet extends TestletContentElement {
   codeToEnter = '';
   codePrompt = '';
+  maxTimeLeft = -1;
 
   // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
   addTestlet(id: string, title: string): Testlet {
@@ -183,6 +186,7 @@ export class Testlet extends TestletContentElement {
     return newChild;
   }
 
+  // .....................................................................
   // first looking for the unit, then on the way back adding restrictions
   getUnitAt(sequenceId: number): UnitControllerData {
     let myreturn: UnitControllerData = null;
@@ -191,9 +195,6 @@ export class Testlet extends TestletContentElement {
         const localTestlet = tce as Testlet;
         myreturn = localTestlet.getUnitAt(sequenceId);
         if (myreturn !== null) {
-          if (localTestlet.codeToEnter.length > 0) {
-            myreturn.codeRequiringTestlets.push(localTestlet);
-          }
           break;
         }
       } else if (tce instanceof UnitDef) {
@@ -209,6 +210,26 @@ export class Testlet extends TestletContentElement {
       }
     }
     return myreturn;
+  }
+
+  // .....................................................................
+  setTimeLeft(newMaxTimeLeft: KeyValuePair[]) {
+    if (newMaxTimeLeft !== null) {
+      if (newMaxTimeLeft.length > 0) {
+        if (newMaxTimeLeft.hasOwnProperty(LastStateKey.MAXTIMELEFT + '_' + this.id)) {
+          const newLeft = Number(newMaxTimeLeft.hasOwnProperty(LastStateKey.MAXTIMELEFT + '_' + this.id));
+          if (!isNaN(newLeft)) {
+            this.maxTimeLeft = newLeft;
+          }
+        }
+        for (const tce of this.children) {
+          if (tce instanceof Testlet) {
+            const localTestlet = tce as Testlet;
+            localTestlet.setTimeLeft(newMaxTimeLeft);
+          }
+        }
+      }
+    }
   }
 }
 
