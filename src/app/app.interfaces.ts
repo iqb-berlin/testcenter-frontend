@@ -42,6 +42,10 @@ export interface KeyValuePair {
   [K: string]: string;
 }
 
+export interface KeyValuePairNumber {
+  [K: string]: number;
+}
+
 export enum SysConfigKey {
   testEndButtonText = 'testEndButtonText',
   bookletSelectPrompt = 'bookletSelectPrompt',

@@ -103,7 +103,7 @@ export class MainDataService {
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   endBooklet () {
     const myLoginData = this.loginData$.getValue();
-    if (myLoginData.booklet > 0) {
+    if (myLoginData.booklet > 0 && myLoginData.mode === 'hot') {
       forkJoin(
         this.bs.addBookletLogClose(myLoginData.booklet),
         this.bs.lockBooklet(myLoginData.booklet)

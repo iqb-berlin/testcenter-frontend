@@ -1,6 +1,8 @@
 .timer {
-  color: chartreuse;
+  color: lightgray;
+  margin: 0 10px;
 }
+
 .tcSidenav {
   background-color: teal;
   height: 100%;
@@ -30,30 +32,25 @@
 }
 
 /* --------------------------------------------- */
-#reviewButtonsContainer {
+#buttonsContainer {
   position: absolute;
   right: 5px;
   top: 5px;  
   color: white;
 }
-#reviewButtonsContainer .material-icons {
+#buttonsContainer .material-icons {
   font-size: 2.0rem;
-  padding: 2px;
-  min-width: 2px;
-}
-#reviewButtonsContainer .mat-button {
-  text-align: right;
 }
 
 /* --------------------------------------------- */
-#navButtonsContainer {
+mat-toolbar {
   position: fixed;
   z-index: 100;
   top: 4px;
   right: 90px;
 }
 
-#navButtonsContainer .material-icons {
+#buttonsContainer .material-icons {
   position: relative;
   top: -8px;
   font-size: 36px;

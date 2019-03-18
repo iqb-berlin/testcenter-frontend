@@ -5,7 +5,7 @@ import { Testlet, BookletConfig, MaxTimerData } from './test-controller.classes'
 import { LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData, MaxTimerDataType } from './test-controller.interfaces';
 import { BackendService } from './backend.service';
 import { ServerError } from '../backend.service';
-import { KeyValuePair } from '../app.interfaces';
+import { KeyValuePair, KeyValuePairNumber } from '../app.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +41,7 @@ export class TestControllerService {
     this._currentUnitSequenceId = v;
   }
 
+  public LastMaxTimerState: KeyValuePairNumber = {};
    // ))))))))))))))))))))))))))))))))))))))))))))))))
 
   private players: {[filename: string]: string} = {};
@@ -98,6 +99,7 @@ export class TestControllerService {
       this.maxTimeIntervalSubscription = null;
     }
     this.currentMaxTimerTestletId = '';
+    this.LastMaxTimerState = {};
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
@@ -229,8 +231,11 @@ export class TestControllerService {
     this.currentMaxTimerTestletId = '';
   }
 
-  public refreshNaviButtonsState() {
-    this.minUnitSequenceId = this.rootTestlet.getFirstUnlockedUnitSequenceId();
-    this.maxUnitSequenceId = this.rootTestlet.getLastUnlockedUnitSequenceId();
+  public updateMinMaxUnitSequenceId(startWith: number) {
+    if (this.rootTestlet) {
+      this.minUnitSequenceId = this.rootTestlet.getFirstUnlockedUnitSequenceId(startWith);
+      this.maxUnitSequenceId = this.rootTestlet.getLastUnlockedUnitSequenceId(startWith);
+      console.log('updateMinMaxUnitSequenceId: ' + this.minUnitSequenceId.toString() + '/' + this.maxUnitSequenceId.toString());
+    }
   }
 }

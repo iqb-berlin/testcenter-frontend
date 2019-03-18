@@ -3,23 +3,18 @@
     <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
   </a>
 </div>
-<div id="navButtonsContainer" fxLayout="row">
-  <!-- <button (click)="startStopTimer()">START/STOP Timer</button> -->
-  <!-- <p class="timer">{{ tcs.unitPrevEnabled$ | async }}</p>
-  <p class="timer">{{ tcs.unitNextEnabled$ | async }}</p>
-  <p class="timer">{{ timerValue?.timeLeftString }}</p> -->
+<div id="buttonsContainer" fxLayout="row" fxLayoutAlign="end center">
+  <p class="timer" *ngIf="tcs.mode !== 'hot'">{{ timerValue?.timeLeftString }}</p>
   <button mat-fab [disabled]="!(tcs.unitPrevEnabled$ | async)" color="accent" (click)="tcs.setUnitNavigationRequest('#previous')" matTooltip="Zurück">
     <i class="material-icons">chevron_left</i>
   </button>
   <button mat-fab [disabled]="!(tcs.unitNextEnabled$ | async)" color="accent" (click)="tcs.setUnitNavigationRequest('#next')" matTooltip="Weiter">
     <i class="material-icons">chevron_right</i>
   </button>
-</div>
-<div id="reviewButtonsContainer" *ngIf="tcs.mode === 'review'" fxLayout="row">
-  <button mat-button (click)="showReviewDialog()" matTooltip="Kommentar senden">
+  <button mat-button (click)="showReviewDialog()" *ngIf="tcs.mode === 'review'" matTooltip="Kommentar senden">
     <mat-icon>rate_review</mat-icon>
   </button>
-  <button mat-button (click)="tcs.setUnitNavigationRequest('#end')" matTooltip="Aktuelles Testheft beenden">
+  <button mat-button (click)="tcs.setUnitNavigationRequest('#end')"  *ngIf="tcs.mode !== 'hot'" matTooltip="Zur Testheft-Auswahl zurückkehren">
     <mat-icon>exit_to_app</mat-icon>
   </button>
 </div>

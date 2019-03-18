@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { TestControllerRoutingModule } from './test-controller-routing.module';
 import { UnithostComponent } from './unithost/unithost.component';
 import { MatProgressSpinnerModule, MatIconModule, MatMenuModule, MatTooltipModule, MatButtonModule,
-  MatDialogModule, MatSnackBarModule, MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatInputModule } from '@angular/material';
+  MatDialogModule, MatSnackBarModule, MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatToolbarModule } from '@angular/material';
 import { TestControllerComponent } from './test-controller.component';
 import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameChild.directive';
 import { unitRoutingGuards } from './unithost/unit-routing-guards';
@@ -31,6 +31,7 @@ import { StartLockInputComponent } from './start-lock-input/start-lock-input.com
     MatFormFieldModule,
     MatMenuModule,
     MatButtonModule,
+    MatToolbarModule,
     MatIconModule
   ],
   declarations: [

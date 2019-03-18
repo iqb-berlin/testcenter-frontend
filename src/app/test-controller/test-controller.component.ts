@@ -30,6 +30,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private lastTestletIndex = 0;
   private timerValue: MaxTimerData = null;
   private timerRunning = false;
+  private allUnitIds: string[] = [];
 
   constructor (
     private tcs: TestControllerService,
@@ -85,6 +86,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         targetTestlet.codePrompt = codePrompt;
       }
       targetTestlet.maxTimeLeft = maxTime;
+      if (this.tcs.LastMaxTimerState) {
+        if (this.tcs.LastMaxTimerState.hasOwnProperty(targetTestlet.id)) {
+          targetTestlet.maxTimeLeft = this.tcs.LastMaxTimerState[targetTestlet.id];
+        }
+      }
 
       for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
         if (childElements[childIndex].nodeName === 'Unit') {
@@ -102,8 +108,21 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             reportstatus = 'n';
           }
 
-          const newUnit = targetTestlet.addUnit(this.lastUnitSequenceId, childElements[childIndex].getAttribute('id'),
-                childElements[childIndex].getAttribute('label'), childElements[childIndex].getAttribute('id'),
+          const myUnitId = childElements[childIndex].getAttribute('id');
+          let myUnitAlias = childElements[childIndex].getAttribute('alias');
+          if (!myUnitAlias) {
+            myUnitAlias = myUnitId;
+          }
+          let myUnitAliasClear = myUnitAlias;
+          let unitIdSuffix = 1;
+          while (this.allUnitIds.indexOf(myUnitAliasClear) > -1) {
+            myUnitAliasClear = myUnitAlias + '%' + unitIdSuffix.toString();
+            unitIdSuffix += 1;
+          }
+          this.allUnitIds.push(myUnitAliasClear);
+
+          const newUnit = targetTestlet.addUnit(this.lastUnitSequenceId, myUnitId,
+                childElements[childIndex].getAttribute('label'), myUnitAliasClear,
                 childElements[childIndex].getAttribute('navBtnLabel'), reportstatus === 't');
           this.lastUnitSequenceId += 1;
 
@@ -147,6 +166,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             // recursive call through all testlets
             this.lastUnitSequenceId = 1;
             this.lastTestletIndex = 1;
+            this.allUnitIds = [];
             this.addTestletContentFromBookletXml(rootTestlet, unitsElements[0]);
           }
         }
@@ -285,23 +305,29 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     this.maxTimerSubscription = this.tcs.maxTimeTimer$.subscribe(maxTimerData => {
       if (maxTimerData.type === MaxTimerDataType.STARTED) {
         this.snackBar.open('Bearbeitungszeit hat begonnen: ' + maxTimerData.timeLeftMinString, '', {duration: 3000});
-        this.tcs.rootTestlet.lockUnits_before(maxTimerData.testletId);
-        this.tcs.refreshNaviButtonsState();
         this.timerValue = maxTimerData;
       } else if (maxTimerData.type === MaxTimerDataType.ENDED) {
         this.snackBar.open('Bearbeitungszeit beendet', '', {duration: 3000});
         this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
-        this.tcs.refreshNaviButtonsState();
+        this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
+        this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
         this.timerRunning = false;
         this.timerValue = null;
-        this.tcs.setUnitNavigationRequest('#next');
+        if (this.tcs.mode !== 'review') {
+          this.tcs.setUnitNavigationRequest('#next');
+        }
       } else if (maxTimerData.type === MaxTimerDataType.CANCELLED) {
         this.snackBar.open('Bearbeitungszeit abgebrochen', '', {duration: 3000});
         this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
-        this.tcs.refreshNaviButtonsState();
+        this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
+        this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
         this.timerValue = null;
       } else {
         this.timerValue = maxTimerData;
+        if ((maxTimerData.timeLeftSeconds % 15) === 0) {
+          this.tcs.LastMaxTimerState[maxTimerData.testletId] = Math.round(maxTimerData.timeLeftSeconds / 60);
+          this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
+        }
         if ((maxTimerData.timeLeftSeconds / 60) === 5) {
           this.snackBar.open('Bearbeitungszeit noch ca. 5 min', '', {duration: 3000});
         } else if ((maxTimerData.timeLeftSeconds / 60) === 1) {
@@ -316,10 +342,18 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       if (this.tcs.rootTestlet === null) {
         this.snackBar.open('Kein Testheft verfügbar.', '', {duration: 3000});
       } else {
+        if (!navString) {
+          navString = '#next';
+        }
         switch (navString) {
           case '#next':
             if (this.tcs.rootTestlet !== null) {
-              const nextUnitSequenceId = this.tcs.rootTestlet.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
+              let startWith = this.tcs.currentUnitSequenceId;
+              if (startWith < this.tcs.minUnitSequenceId) {
+                startWith = this.tcs.minUnitSequenceId - 1;
+              }
+              const nextUnitSequenceId = this.tcs.rootTestlet.getNextUnlockedUnitSequenceId(startWith);
+              console.log('getNextUnlockedUnitSequenceId: ' + nextUnitSequenceId.toString());
               if (nextUnitSequenceId > 0) {
                 this.router.navigateByUrl('/t/u/' + (nextUnitSequenceId).toString());
               }
@@ -332,7 +366,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             break;
           case '#first':
             if (this.tcs.rootTestlet !== null) {
-              this.router.navigateByUrl('/t/u/1');
+              this.router.navigateByUrl('/t/u/' + this.tcs.minUnitSequenceId.toString());
             }
             break;
           case '#last':
@@ -374,11 +408,22 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             this.dataLoading = false;
           } else {
             const bookletData = myData as BookletData;
+
             if (bookletData.locked) {
               console.log('loading failed');
               this.mds.globalErrorMsg$.next(new ServerError(0, 'Das Testheft ist für die Bearbeitung gesperrt.', ''));
               this.tcs.resetDataStore();
             } else {
+              let navTarget = '';
+              if (bookletData.laststate !== null) {
+                if (bookletData.laststate.hasOwnProperty(LastStateKey.LASTUNIT)) {
+                  navTarget = bookletData.laststate[LastStateKey.LASTUNIT];
+                }
+                if (bookletData.laststate.hasOwnProperty(LastStateKey.MAXTIMELEFT)) {
+                  this.tcs.LastMaxTimerState = JSON.parse(bookletData.laststate[LastStateKey.MAXTIMELEFT]);
+                }
+              }
+
               this.tcs.rootTestlet = this.getBookletFromXml(bookletData.xml);
 
               if (this.tcs.rootTestlet === null) {
@@ -410,13 +455,19 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     // =====================
                     this.tcs.bookletDbId = loginData.booklet;
                     this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
-                    let navTarget = '#first';
-                    if (bookletData.laststate !== null) {
-                      if (bookletData.laststate.hasOwnProperty(LastStateKey.LASTUNIT)) {
-                        navTarget = bookletData.laststate[LastStateKey.LASTUNIT];
+                    this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
+                    if (navTarget) {
+                      const navTargetNumber = Number(navTarget);
+                      if (isNaN(navTargetNumber)) {
+                        navTarget = '';
+                      } else {
+                        this.tcs.updateMinMaxUnitSequenceId(navTargetNumber);
+                        if (navTargetNumber < this.tcs.minUnitSequenceId) {
+                          navTarget = '';
+                        }
                       }
                     }
-                    this.tcs.refreshNaviButtonsState();
+
                     this.tcs.setUnitNavigationRequest(navTarget);
 
                     // =====================

@@ -171,13 +171,18 @@ export class UnitActivateGuard implements CanActivate {
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
 
     const targetUnitSequenceId: number = Number(next.params['u']);
-    // const currentBooklet = this.tcs.booklet$.getValue();
+    if (this.tcs.currentUnitSequenceId > 0) {
+      this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
+    } else {
+      this.tcs.updateMinMaxUnitSequenceId(targetUnitSequenceId);
+    }
+
 
     let myreturn = false;
     if (this.tcs.rootTestlet === null) {
       console.log('unit canActivate: true (rootTestlet null)');
       myreturn = true; // ??
-    } else if ((targetUnitSequenceId < 1) || (this.tcs.maxUnitSequenceId < targetUnitSequenceId)) {
+    } else if ((targetUnitSequenceId < this.tcs.minUnitSequenceId) || (targetUnitSequenceId > this.tcs.maxUnitSequenceId)) {
       console.log('unit canActivate: false (unit# out of range)');
       myreturn = false;
     } else {
@@ -202,6 +207,7 @@ export class UnitActivateGuard implements CanActivate {
                     return of(false);
                   } else {
                     this.tcs.currentUnitSequenceId = targetUnitSequenceId;
+                    this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
                     this.tcs.addUnitLog(newUnit.unitDef.id, LogEntryKey.UNITENTER);
                     return of(true);
                   }

@@ -83,12 +83,12 @@ export class TestletContentElement {
   }
 
   // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
-  getNextSequenceId(tmpId = 0): number {
+  getMaxSequenceId(tmpId = 0): number {
     if (this.sequenceId >= tmpId) {
       tmpId = this.sequenceId + 1;
     }
     this.children.forEach(tce => {
-      tmpId = tce.getNextSequenceId(tmpId);
+      tmpId = tce.getMaxSequenceId(tmpId);
     });
     return tmpId;
   }
@@ -323,25 +323,56 @@ export class Testlet extends TestletContentElement {
   }
 
   // .....................................................................
-  getFirstUnlockedUnitSequenceId(): number {
-    let myreturn = 1;
-    let myUnit: UnitControllerData = this.getUnitAt(myreturn);
-    while (myUnit !== null && myUnit.unitDef.locked) {
-      myreturn += 1;
-      myUnit = this.getUnitAt(myreturn);
+  getFirstUnlockedUnitSequenceId(startWith: number): number {
+    let myreturn = startWith;
+    const myUnit: UnitControllerData = this.getUnitAt(myreturn);
+    if (myUnit) {
+      if (myUnit.unitDef.locked) {
+        myreturn = this.getNextUnlockedUnitSequenceId(myreturn);
+      } else if (myreturn > 1) {
+        let myPrevUnit: UnitControllerData = this.getUnitAt(myreturn - 1);
+        while (myPrevUnit !== null && myreturn > 1 && !myPrevUnit.unitDef.locked) {
+          myreturn -= 1;
+          myPrevUnit = this.getUnitAt(myreturn - 1);
+        }
+      }
     }
     return myUnit ? myreturn : 0;
   }
 
   // .....................................................................
-  getLastUnlockedUnitSequenceId(): number {
-    let myreturn = this.getNextSequenceId() - 1;
-    let myUnit: UnitControllerData = this.getUnitAt(myreturn);
-    while (myUnit !== null && myUnit.unitDef.locked) {
-      myreturn -= 1;
-      myUnit = this.getUnitAt(myreturn);
+  getLastUnlockedUnitSequenceId(startWith: number): number {
+    const maxSequenceId = this.getMaxSequenceId();
+    let myreturn = startWith;
+    const myUnit: UnitControllerData = this.getUnitAt(myreturn);
+    if (myUnit) {
+      if (myUnit.unitDef.locked) {
+        myreturn = this.getNextUnlockedUnitSequenceId(myreturn);
+      }
+      if (myreturn > 0 && myreturn < maxSequenceId) {
+        let myNextUnit: UnitControllerData = this.getUnitAt(myreturn + 1);
+        while (myNextUnit !== null && myreturn < maxSequenceId && !myNextUnit.unitDef.locked) {
+          myreturn += 1;
+          myNextUnit = this.getUnitAt(myreturn + 1);
+        }
+      }
     }
+
     return myUnit ? myreturn : 0;
+  }
+
+  // .....................................................................
+  lockUnitsIfTimeLeftNull(lock = false) {
+    lock = lock || this.maxTimeLeft === 0;
+    for (const tce of this.children) {
+      if (tce instanceof Testlet) {
+        const localTestlet = tce as Testlet;
+        localTestlet.lockUnitsIfTimeLeftNull(lock);
+      } else if (lock) {
+        const localUnit = tce as UnitDef;
+        localUnit.locked = true;
+      }
+    }
   }
 }
 

@@ -46,6 +46,7 @@ import { httpInterceptorProviders } from './app.interceptor';
     FlexLayoutModule,
     ReactiveFormsModule,
     HttpClientModule,
+    MatToolbarModule,
     AppRoutingModule,
     IqbCommonModule
   ],
