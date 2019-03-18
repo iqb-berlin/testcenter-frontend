@@ -4,12 +4,14 @@
   </a>
 </div>
 <div id="navButtonsContainer" fxLayout="row">
-  <button (click)="stopTimer()">STOP Timer</button>
-  <p class="timer">{{ timerValue }}</p>
-  <button mat-fab [disabled]="!tcs.unitPrevEnabled" color="accent" (click)="tcs.setUnitNavigationRequest('#previous')" matTooltip="Zurück">
+  <!-- <button (click)="startStopTimer()">START/STOP Timer</button> -->
+  <!-- <p class="timer">{{ tcs.unitPrevEnabled$ | async }}</p>
+  <p class="timer">{{ tcs.unitNextEnabled$ | async }}</p>
+  <p class="timer">{{ timerValue?.timeLeftString }}</p> -->
+  <button mat-fab [disabled]="!(tcs.unitPrevEnabled$ | async)" color="accent" (click)="tcs.setUnitNavigationRequest('#previous')" matTooltip="Zurück">
     <i class="material-icons">chevron_left</i>
   </button>
-  <button mat-fab [disabled]="!tcs.unitNextEnabled" color="accent" (click)="tcs.setUnitNavigationRequest('#next')" matTooltip="Weiter">
+  <button mat-fab [disabled]="!(tcs.unitNextEnabled$ | async)" color="accent" (click)="tcs.setUnitNavigationRequest('#next')" matTooltip="Weiter">
     <i class="material-icons">chevron_right</i>
   </button>
 </div>

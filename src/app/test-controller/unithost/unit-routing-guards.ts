@@ -8,39 +8,22 @@ import { UnithostComponent } from './unithost.component';
 import { Injectable } from '@angular/core';
 import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot, Resolve } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { UnitDef, UnitControllerData } from '../test-controller.classes';
-import { CodeInputData, LogEntryKey, StartLockData } from '../test-controller.interfaces';
+import { UnitDef, UnitControllerData, Testlet } from '../test-controller.classes';
+import { CodeInputData, LogEntryKey, StartLockData, KeyValuePair, LastStateKey } from '../test-controller.interfaces';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
   constructor(
     private tcs: TestControllerService,
     public startLockDialog: MatDialog,
+    public confirmDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
 
-  canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-
-    const targetUnitSequenceId: number = Number(next.params['u']);
-    // const currentBooklet = this.tcs.booklet$.getValue();
-
-    let myreturn = false;
-    if (this.tcs.rootTestlet === null) {
-      console.log('unit canActivate: true (rootTestlet null)');
-      myreturn = true; // ??
-    } else if ((targetUnitSequenceId < 1) || (this.tcs.numberOfUnits < targetUnitSequenceId)) {
-      console.log('unit canActivate: false (unit# out of range)');
-      myreturn = false;
-    } else {
-      const newUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
-      if (newUnit.unitDef.canEnter === 'n') {
-        myreturn = false;
-        console.log('unit canActivate: false (unit is locked)');
-      // } else if (!this.bs.isItemplayerReady(newUnit.unitDefinitionType)) {
-      //   console.log('itemplayer for unit not available');
-      } else if (newUnit.codeRequiringTestlets.length > 0) {
+  // ****************************************************************************************
+  checkAndSolve_Code(newUnit: UnitControllerData): Observable<Boolean> {
+    if (newUnit.codeRequiringTestlets) {
+      if (newUnit.codeRequiringTestlets.length > 0) {
         const myCodes: CodeInputData[] = [];
         newUnit.codeRequiringTestlets.forEach(t => {
           myCodes.push(<CodeInputData>{
@@ -72,13 +55,12 @@ export class UnitActivateGuard implements CanActivate {
                   }
                 }
                 if (codesOk) {
-                  // ?? this.tcs.setCurrentUnit(targetUnitSequenceId);
                   newUnit.codeRequiringTestlets.forEach(t => {
                     t.codeToEnter = '';
                   });
-                  this.tcs.addUnitLog(newUnit.unitDef.id, LogEntryKey.UNITENTER);
 
                   return of(true);
+
                 } else {
                   this.snackBar.open('Die Eingabe war nicht korrekt.', 'Freigabewort', {duration: 3000});
                   return of(false);
@@ -87,10 +69,147 @@ export class UnitActivateGuard implements CanActivate {
             }
         ));
       } else {
-        this.tcs.currentUnitSequenceId = targetUnitSequenceId;
-        this.tcs.addUnitLog(newUnit.unitDef.id, LogEntryKey.UNITENTER);
+        return of(true);
+      }
+    } else {
+      return of(true);
+    }
+  }
 
-        myreturn = true;
+
+  // ****************************************************************************************
+  checkAndSolve_maxTime(newUnit: UnitControllerData): Observable<Boolean> {
+    if (newUnit.maxTimerRequiringTestlet === null) {
+
+      // 1 targetUnit is not in timed block \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+      if (this.tcs.currentMaxTimerTestletId) {
+
+        // 1 a) leaving a timed block \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+        const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+          width: '500px',
+          // height: '300px',
+          data:  <ConfirmDialogData>{
+            title: 'Aufgabenbereich verlassen? 1',
+            content: 'Wenn du jetzt weiterblätterst, ist die Bearbeitungszeit beendet und du kannst nicht zurück.',
+            confirmbuttonlabel: 'Trotzdem weiter',
+            confirmbuttonreturn: true
+          }
+        });
+        return dialogCDRef.afterClosed().pipe(
+          switchMap(cdresult => {
+              if (cdresult === false) {
+                return of(false);
+              } else {
+                this.tcs.stopMaxTimer();
+
+                return of(true);
+              }
+            }
+        ));
+      } else {
+
+        // 1 b) no timers \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+        return of(true);
+      }
+    } else if (this.tcs.currentMaxTimerTestletId && (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)) {
+
+      // 2 staying in timed block
+
+      return of(true);
+
+    } else {
+
+      // 3 entering timed block
+
+      if (this.tcs.currentMaxTimerTestletId && (newUnit.maxTimerRequiringTestlet.id !== this.tcs.currentMaxTimerTestletId)) {
+
+        // 3 a) leaving a timed block \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+        const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+          width: '500px',
+          // height: '300px',
+          data:  <ConfirmDialogData>{
+            title: 'Aufgabenbereich verlassen? 2',
+            content: 'Wenn du jetzt weiterblätterst, ist die Bearbeitungszeit des vorherigen Aufgabenbereiches' +
+                    ' beendet und du kannst nicht zurück.',
+            confirmbuttonlabel: 'Trotzdem weiter',
+            confirmbuttonreturn: true
+          }
+        });
+        return dialogCDRef.afterClosed().pipe(
+          switchMap(cdresult => {
+              if (cdresult === false) {
+                return of(false);
+              } else {
+                this.tcs.stopMaxTimer();
+                this.tcs.rootTestlet.lockUnits_before(newUnit.maxTimerRequiringTestlet.id);
+                this.tcs.startMaxTimer(newUnit.maxTimerRequiringTestlet.id, newUnit.maxTimerRequiringTestlet.maxTimeLeft);
+
+                return of(true);
+              }
+            }
+        ));
+      } else {
+
+        // 3 b) just entering timed block, no timed block before
+
+        this.tcs.rootTestlet.lockUnits_before(newUnit.maxTimerRequiringTestlet.id);
+        this.tcs.startMaxTimer(newUnit.maxTimerRequiringTestlet.id, newUnit.maxTimerRequiringTestlet.maxTimeLeft);
+
+        return of(true);
+      }
+    }
+  }
+
+  // ****************************************************************************************
+  // ****************************************************************************************
+  canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+
+    const targetUnitSequenceId: number = Number(next.params['u']);
+    // const currentBooklet = this.tcs.booklet$.getValue();
+
+    let myreturn = false;
+    if (this.tcs.rootTestlet === null) {
+      console.log('unit canActivate: true (rootTestlet null)');
+      myreturn = true; // ??
+    } else if ((targetUnitSequenceId < 1) || (this.tcs.maxUnitSequenceId < targetUnitSequenceId)) {
+      console.log('unit canActivate: false (unit# out of range)');
+      myreturn = false;
+    } else {
+      const newUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
+      if (newUnit.unitDef.locked) {
+        myreturn = false;
+        console.log('unit canActivate: locked');
+      } else if (newUnit.unitDef.canEnter === 'n') {
+        myreturn = false;
+        console.log('unit canActivate: false (unit is locked)');
+      } else {
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        return this.checkAndSolve_Code(newUnit).pipe(
+          switchMap(cAsC => {
+            if (!cAsC) {
+              return of(false);
+            } else {
+              return this.checkAndSolve_maxTime(newUnit).pipe(
+                switchMap(cAsMT => {
+                  if (!cAsMT) {
+                    return of(false);
+                  } else {
+                    this.tcs.currentUnitSequenceId = targetUnitSequenceId;
+                    this.tcs.addUnitLog(newUnit.unitDef.id, LogEntryKey.UNITENTER);
+                    return of(true);
+                  }
+                }));
+            }
+          }));
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%
       }
     }
 
@@ -110,40 +229,13 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     component: UnithostComponent,
     currentRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-      if (this.tcs.rootTestlet !== null) {
-        const currentUnitSequenceId: number = Number(currentRoute.params['u']);
-        const currentUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(currentUnitSequenceId);
-        this.tcs.addUnitLog(currentUnit.unitDef.id, LogEntryKey.UNITLEAVE);
-      }
 
-    // if (this.tcs.rootTestlet !== null) {
-    //   // const currentUnitPos = this.tcs.currentUnitPos$.getValue();
-    //   const currentUnit = currentBooklet.getUnitAt(currentUnitPos);
-    //   if (currentUnit !== null) {
-    //     if (component.leaveWarning) {
+    if (this.tcs.rootTestlet !== null) {
+      const currentUnitSequenceId: number = Number(currentRoute.params['u']);
+      const currentUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(currentUnitSequenceId);
 
-    //       const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
-    //         width: '500px',
-    //         height: '300px',
-    //         data:  <ConfirmDialogData>{
-    //           title: 'Aufgabe verlassen?',
-    //           content: component.leaveWarningText,
-    //           confirmbuttonlabel: 'Weiterblättern',
-    //           confirmbuttonreturn: true
-    //         }
-    //       });
-    //       return dialogRef.afterClosed().pipe(
-    //         switchMap(result => {
-    //             if (result === false) {
-    //               return of(false);
-    //             } else {
-    //               return of(true);
-    //             }
-    //           }
-    //       ));
-    //     }
-    //   }
-    // }
+      this.tcs.addUnitLog(currentUnit.unitDef.id, LogEntryKey.UNITLEAVE);
+    }
     return true;
   }
 }

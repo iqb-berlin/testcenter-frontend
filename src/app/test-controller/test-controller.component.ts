@@ -8,7 +8,7 @@ import { BackendService } from './backend.service';
 
 import { TestControllerService } from './test-controller.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { UnitDef, Testlet, UnitControllerData, EnvironmentData } from './test-controller.classes';
+import { UnitDef, Testlet, UnitControllerData, EnvironmentData, MaxTimerData } from './test-controller.classes';
 import { LastStateKey, LogEntryKey, BookletData, UnitData, MaxTimerDataType } from './test-controller.interfaces';
 import { Subscription, Observable, of, forkJoin, interval, timer } from 'rxjs';
 import { switchMap, takeUntil, map } from 'rxjs/operators';
@@ -28,7 +28,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private dataLoading = false;
   private lastUnitSequenceId = 0;
   private lastTestletIndex = 0;
-  private timerValue = 0;
+  private timerValue: MaxTimerData = null;
+  private timerRunning = false;
 
   constructor (
     private tcs: TestControllerService,
@@ -108,7 +109,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
         } else if (childElements[childIndex].nodeName === 'Testlet') {
           let testletId: string = childElements[childIndex].getAttribute('id');
-          if ((typeof testletId !== 'undefined') && (testletId !== null)) {
+          if (!testletId) {
             testletId = 'Testlet' + this.lastTestletIndex.toString();
             this.lastTestletIndex += 1;
           }
@@ -267,8 +268,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       );
   }
 
-  stopTimer() {
-    this.tcs.stopMaxTimer();
+  startStopTimer() {
+    if (this.timerRunning) {
+      this.timerRunning = false;
+      this.tcs.stopMaxTimer();
+    } else {
+      this.timerRunning = true;
+      this.tcs.startMaxTimer('ss', 2);
+    }
   }
   // #####################################################################################
   // #####################################################################################
@@ -276,18 +283,32 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/t');
 
     this.maxTimerSubscription = this.tcs.maxTimeTimer$.subscribe(maxTimerData => {
-      if (maxTimerData.type === MaxTimerDataType.START) {
-        this.snackBar.open('Bearbeitungszeit hat begonnen: ' + maxTimerData.testletId, '', {duration: 3000});
-      } else if (maxTimerData.type === MaxTimerDataType.END) {
-        this.snackBar.open('Bearbeitungszeit beendet: ' + maxTimerData.testletId, '', {duration: 3000});
+      if (maxTimerData.type === MaxTimerDataType.STARTED) {
+        this.snackBar.open('Bearbeitungszeit hat begonnen: ' + maxTimerData.timeLeftMinString, '', {duration: 3000});
+        this.tcs.rootTestlet.lockUnits_before(maxTimerData.testletId);
+        this.tcs.refreshNaviButtonsState();
+        this.timerValue = maxTimerData;
+      } else if (maxTimerData.type === MaxTimerDataType.ENDED) {
+        this.snackBar.open('Bearbeitungszeit beendet', '', {duration: 3000});
+        this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
+        this.tcs.refreshNaviButtonsState();
+        this.timerRunning = false;
+        this.timerValue = null;
+        this.tcs.setUnitNavigationRequest('#next');
       } else if (maxTimerData.type === MaxTimerDataType.CANCELLED) {
         this.snackBar.open('Bearbeitungszeit abgebrochen', '', {duration: 3000});
+        this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
+        this.tcs.refreshNaviButtonsState();
+        this.timerValue = null;
       } else {
-        this.timerValue = maxTimerData.timeLeft;
+        this.timerValue = maxTimerData;
+        if ((maxTimerData.timeLeftSeconds / 60) === 5) {
+          this.snackBar.open('Bearbeitungszeit noch ca. 5 min', '', {duration: 3000});
+        } else if ((maxTimerData.timeLeftSeconds / 60) === 1) {
+          this.snackBar.open('Bearbeitungszeit noch ca. 1 min', '', {duration: 3000});
+        }
       }
     });
-
-    this.tcs.startMaxTimer('yoyoyo', 15);
 
     // ==========================================================
     // navigation between units and end booklet
@@ -298,7 +319,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         switch (navString) {
           case '#next':
             if (this.tcs.rootTestlet !== null) {
-              this.router.navigateByUrl('/t/u/' + (this.tcs.currentUnitSequenceId + 1).toString());
+              const nextUnitSequenceId = this.tcs.rootTestlet.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
+              if (nextUnitSequenceId > 0) {
+                this.router.navigateByUrl('/t/u/' + (nextUnitSequenceId).toString());
+              }
             }
             break;
           case '#previous':
@@ -313,7 +337,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             break;
           case '#last':
             if (this.tcs.rootTestlet !== null) {
-              this.router.navigateByUrl('/t/u/' + this.tcs.numberOfUnits.toString());
+              this.router.navigateByUrl('/t/u/' + this.tcs.maxUnitSequenceId.toString());
             }
             break;
           case '#end':
@@ -362,12 +386,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 this.dataLoading = false;
               } else {
                 this.mds.globalErrorMsg$.next(null);
-                this.tcs.numberOfUnits = this.lastUnitSequenceId - 1;
+                this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
                 // set last maxTimer value if available
-                this.tcs.rootTestlet.setTimeLeft(bookletData.laststate);
+                // this.tcs.rootTestlet.setTimeLeft(bookletData.laststate);
 
                 const myUnitLoadings = [];
-                for (let i = 1; i < this.tcs.numberOfUnits + 1; i++) {
+                for (let i = 1; i < this.tcs.maxUnitSequenceId + 1; i++) {
                   const ud = this.tcs.rootTestlet.getUnitAt(i);
                   myUnitLoadings.push(this.loadUnitOk(ud.unitDef, i));
                 }
@@ -392,6 +416,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                         navTarget = bookletData.laststate[LastStateKey.LASTUNIT];
                       }
                     }
+                    this.tcs.refreshNaviButtonsState();
                     this.tcs.setUnitNavigationRequest(navTarget);
 
                     // =====================

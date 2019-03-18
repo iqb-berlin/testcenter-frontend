@@ -1,10 +1,11 @@
 import { debounceTime, takeUntil, map } from 'rxjs/operators';
 import { BehaviorSubject, of, Observable, Subject, Subscription, interval, timer } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { Testlet, BookletConfig } from './test-controller.classes';
-import { LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData, MaxTimerData, MaxTimerDataType } from './test-controller.interfaces';
+import { Testlet, BookletConfig, MaxTimerData } from './test-controller.classes';
+import { LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData, MaxTimerDataType } from './test-controller.interfaces';
 import { BackendService } from './backend.service';
 import { ServerError } from '../backend.service';
+import { KeyValuePair } from '../app.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -16,39 +17,31 @@ export class TestControllerService {
   public bookletConfig$ = new BehaviorSubject<BookletConfig>(this.standardBookletConfig);
   public rootTestlet: Testlet = null;
   public bookletDbId = 0;
-  public numberOfUnits = 0;
+  public maxUnitSequenceId = 0;
+  public minUnitSequenceId = 0;
   public loginname = '';
   public mode = '';
 
   public navigationRequest$ = new Subject<string>();
   public maxTimeTimer$ = new Subject<MaxTimerData>();
+  public currentMaxTimerTestletId = '';
   private maxTimeIntervalSubscription: Subscription = null;
 
   private _currentUnitSequenceId: number;
+  public currentUnitDbKey = '';
+  public currentUnitTitle = '';
+  public unitPrevEnabled$ = new BehaviorSubject<boolean>(false);
+  public unitNextEnabled$ = new BehaviorSubject<boolean>(false);
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
   }
   public set currentUnitSequenceId(v: number) {
-    this.unitPrevEnabled = v > 1;
-    this.unitNextEnabled = v < this.numberOfUnits;
+    this.unitPrevEnabled$.next(v > this.minUnitSequenceId);
+    this.unitNextEnabled$.next(v < this.maxUnitSequenceId);
     this._currentUnitSequenceId = v;
   }
 
-  public currentUnitDbKey = '';
-  public currentUnitTitle = '';
-  public unitPrevEnabled = false;
-  public unitNextEnabled = false;
-
-  // public booklet$ = new BehaviorSubject<BookletDef>(null);
-
-  // for Navi-Buttons:
-  // public showNaviButtons$ = new BehaviorSubject<boolean>(false);
-  // public nextUnit$ = new BehaviorSubject<number>(-1);
-  // public prevUnit$ = new BehaviorSubject<number>(-1);
-  // public unitRequest$ = new BehaviorSubject<number>(-1);
-  // public canLeaveTest$ = new BehaviorSubject<boolean>(false);
-
-  // ))))))))))))))))))))))))))))))))))))))))))))))))
+   // ))))))))))))))))))))))))))))))))))))))))))))))))
 
   private players: {[filename: string]: string} = {};
   private unitDefinitions: {[sequenceId: number]: string} = {};
@@ -92,14 +85,19 @@ export class TestControllerService {
     this.unitDefinitions = {};
     this.unitRestorePoints = {};
     this.rootTestlet = null;
-    this.numberOfUnits = 0;
+    this.maxUnitSequenceId = 0;
     this.mode = '';
     this.loginname = '';
     this.currentUnitSequenceId = 0;
     this.currentUnitDbKey = '';
     this.currentUnitTitle = '';
-    this.unitPrevEnabled = false;
-    this.unitNextEnabled = false;
+    this.unitPrevEnabled$.next(false);
+    this.unitNextEnabled$.next(false);
+    if (this.maxTimeIntervalSubscription !== null) {
+      this.maxTimeIntervalSubscription.unsubscribe();
+      this.maxTimeIntervalSubscription = null;
+    }
+    this.currentMaxTimerTestletId = '';
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
@@ -198,37 +196,26 @@ export class TestControllerService {
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  public startMaxTimer(testletId: string, timeLeft: number) {
+  public startMaxTimer(testletId: string, timeLeftMinutes: number) {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
     }
-    this.maxTimeTimer$.next({
-      type: MaxTimerDataType.START,
-      testletId: testletId,
-      timeLeft: timeLeft
-    });
-
+    this.maxTimeTimer$.next(new MaxTimerData(timeLeftMinutes, testletId, MaxTimerDataType.STARTED));
+    this.currentMaxTimerTestletId = testletId;
     this.maxTimeIntervalSubscription = interval(1000)
       .pipe(
         takeUntil(
-          timer(timeLeft * 1000)
+          timer(timeLeftMinutes * 60 * 1000)
         ),
-        map(val => timeLeft - val - 1)
+        map(val => (timeLeftMinutes * 60) - val - 1)
       ).subscribe(
         val => {
-          this.maxTimeTimer$.next({
-            type: MaxTimerDataType.STEP,
-            testletId: testletId,
-            timeLeft: val
-          });
+          this.maxTimeTimer$.next(new MaxTimerData(val / 60, testletId, MaxTimerDataType.STEP));
         },
         e => console.log('maxTime onError: %s', e),
         () => {
-          this.maxTimeTimer$.next({
-            type: MaxTimerDataType.END,
-            testletId: testletId,
-            timeLeft: 0
-          });
+          this.maxTimeTimer$.next(new MaxTimerData(0, testletId, MaxTimerDataType.ENDED));
+          this.currentMaxTimerTestletId = '';
         }
       );
   }
@@ -237,12 +224,13 @@ export class TestControllerService {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
       this.maxTimeIntervalSubscription = null;
-      this.maxTimeTimer$.next({
-        type: MaxTimerDataType.CANCELLED,
-        testletId: '',
-        timeLeft: 0
-      });
+      this.maxTimeTimer$.next(new MaxTimerData(0, this.currentMaxTimerTestletId, MaxTimerDataType.CANCELLED));
     }
+    this.currentMaxTimerTestletId = '';
   }
 
+  public refreshNaviButtonsState() {
+    this.minUnitSequenceId = this.rootTestlet.getFirstUnlockedUnitSequenceId();
+    this.maxUnitSequenceId = this.rootTestlet.getLastUnlockedUnitSequenceId();
+  }
 }

@@ -83,16 +83,10 @@ export enum LogEntryKey {
 }
 
 export enum MaxTimerDataType {
-    START = 'START',
+    STARTED = 'STARTED',
     STEP = 'STEP',
     CANCELLED = 'CANCELLED',
-    END = 'END'
-}
-
-export interface MaxTimerData {
-    timeLeft: number; // seconds
-    testletId: string;
-    type: MaxTimerDataType;
+    ENDED = 'ENDED'
 }
 
 // for unithost ++++++++++++++++++++++++++++++++++++++++++++++++++++++

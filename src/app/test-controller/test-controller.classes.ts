@@ -2,7 +2,7 @@ import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
 import { Observable, of, BehaviorSubject, forkJoin } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { UnitData, BookletData, LastStateKey } from './test-controller.interfaces';
+import { UnitData, BookletData, LastStateKey, MaxTimerDataType } from './test-controller.interfaces';
 import { KeyValuePair } from '../app.interfaces';
 
 // .....................................................................
@@ -103,6 +103,8 @@ export class UnitDef extends TestletContentElement {
   playerId: string;
   statusResponses: 'no' | 'some' | 'all';
   statusPresentation: 'no' | 'partly' | 'full';
+  locked = false;
+  ignoreCompleted = false;
 
   constructor(
     sequenceId: number,
@@ -154,6 +156,7 @@ export class UnitDef extends TestletContentElement {
 export class UnitControllerData {
   unitDef: UnitDef = null;
   codeRequiringTestlets: Testlet[] = [];
+  maxTimerRequiringTestlet: Testlet = null;
   constructor(unitDef: UnitDef) {
     this.unitDef = unitDef;
   }
@@ -208,28 +211,137 @@ export class Testlet extends TestletContentElement {
       if (this.codeToEnter.length > 0) {
         myreturn.codeRequiringTestlets.push(this);
       }
+      if (this.maxTimeLeft > 0) {
+        myreturn.maxTimerRequiringTestlet = this;
+      }
     }
     return myreturn;
   }
 
   // .....................................................................
-  setTimeLeft(newMaxTimeLeft: KeyValuePair[]) {
-    if (newMaxTimeLeft !== null) {
-      if (newMaxTimeLeft.length > 0) {
-        if (newMaxTimeLeft.hasOwnProperty(LastStateKey.MAXTIMELEFT + '_' + this.id)) {
-          const newLeft = Number(newMaxTimeLeft.hasOwnProperty(LastStateKey.MAXTIMELEFT + '_' + this.id));
-          if (!isNaN(newLeft)) {
-            this.maxTimeLeft = newLeft;
-          }
-        }
-        for (const tce of this.children) {
-          if (tce instanceof Testlet) {
-            const localTestlet = tce as Testlet;
-            localTestlet.setTimeLeft(newMaxTimeLeft);
+  getTestlet(testletId: string): Testlet {
+    let myreturn = null;
+    if (this.id === testletId) {
+      myreturn = this;
+    } else {
+      for (const tce of this.children) {
+        if (tce instanceof Testlet) {
+          const localTestlet = tce as Testlet;
+          myreturn = localTestlet.getTestlet(testletId);
+          if (myreturn !== null) {
+            break;
           }
         }
       }
     }
+    return myreturn;
+  }
+
+  // .....................................................................
+  setTimeLeftNull(testletId = '') {
+    if (testletId) {
+      // find testlet
+      const myTestlet = this.getTestlet(testletId);
+      if (myTestlet) {
+        myTestlet.setTimeLeftNull();
+        myTestlet.lockUnits_allChildren();
+      }
+    } else {
+      this.maxTimeLeft = 0;
+      for (const tce of this.children) {
+        if (tce instanceof Testlet) {
+          const localTestlet = tce as Testlet;
+          localTestlet.setTimeLeftNull();
+        }
+      }
+    }
+  }
+
+  // .....................................................................
+  lockUnits_allChildren(testletId = '') {
+    if (testletId) {
+      // find testlet
+      const myTestlet = this.getTestlet(testletId);
+      if (myTestlet) {
+        myTestlet.lockUnits_allChildren();
+      }
+    } else {
+      for (const tce of this.children) {
+        if (tce instanceof Testlet) {
+          const localTestlet = tce as Testlet;
+          localTestlet.lockUnits_allChildren();
+        } else {
+          const localUnit = tce as UnitDef;
+          localUnit.locked = true;
+        }
+      }
+    }
+  }
+
+  // .....................................................................
+  private minTestletUnitSequenceId(id = -1): number {
+    let myreturn = id;
+    for (const tce of this.children) {
+      if (tce instanceof Testlet) {
+        const localTestlet = tce as Testlet;
+        myreturn = localTestlet.minTestletUnitSequenceId(myreturn);
+      } else {
+        const localUnit = tce as UnitDef;
+        if ((myreturn === -1) || (localUnit.sequenceId < myreturn)) {
+          myreturn = localUnit.sequenceId;
+        }
+      }
+    }
+    return myreturn;
+  }
+
+  // .....................................................................
+  lockUnits_before(testletId = '') {
+    let myTestlet: Testlet = this;
+    if (testletId) {
+      myTestlet = this.getTestlet(testletId);
+    }
+    const minSeq = myTestlet.minTestletUnitSequenceId();
+    for (let i = minSeq - 1; i > 0; i--)  {
+      const u = this.getUnitAt(i);
+      u.unitDef.locked = true;
+    }
+  }
+
+  // .....................................................................
+  getNextUnlockedUnitSequenceId(currentUnitSequenceId: number): number {
+    currentUnitSequenceId += 1;
+    let myUnit: UnitControllerData = this.getUnitAt(currentUnitSequenceId);
+    while (myUnit !== null && myUnit.unitDef.locked) {
+      currentUnitSequenceId += 1;
+      myUnit = this.getUnitAt(currentUnitSequenceId);
+    }
+    if (myUnit) {
+      myUnit.unitDef.ignoreCompleted = true;
+    }
+    return myUnit ? currentUnitSequenceId : 0;
+  }
+
+  // .....................................................................
+  getFirstUnlockedUnitSequenceId(): number {
+    let myreturn = 1;
+    let myUnit: UnitControllerData = this.getUnitAt(myreturn);
+    while (myUnit !== null && myUnit.unitDef.locked) {
+      myreturn += 1;
+      myUnit = this.getUnitAt(myreturn);
+    }
+    return myUnit ? myreturn : 0;
+  }
+
+  // .....................................................................
+  getLastUnlockedUnitSequenceId(): number {
+    let myreturn = this.getNextSequenceId() - 1;
+    let myUnit: UnitControllerData = this.getUnitAt(myreturn);
+    while (myUnit !== null && myUnit.unitDef.locked) {
+      myreturn -= 1;
+      myUnit = this.getUnitAt(myreturn);
+    }
+    return myUnit ? myreturn : 0;
   }
 }
 
@@ -295,23 +407,27 @@ export class EnvironmentData {
   }
 }
 
-  // forgetStartLock(key: string) {
-  //   for (let i = 0; i < this.units.length; i++) {
-  //     if (this.units[i].startLockKey === key) {
-  //       this.units[i].startLockKey = '';
-  //     }
-  //   }
-  // }
+// 7777777777777777777777777777777777777777777777777777777777777
+export class MaxTimerData {
+  timeLeftSeconds: number; // seconds
+  testletId: string;
+  type: MaxTimerDataType;
 
-  // unlockedUnitCount(): number {
-  //   let myCount = 0;
-  //   for (let i = 0; i < this.units.length; i++) {
-  //     if (!this.units[i].locked) {
-  //       myCount += 1;
-  //     }
-  //   }
-  //   return myCount;
-  // }
+  get timeLeftString() {
+    const afterDecimal = Math.round(this.timeLeftSeconds % 60);
+    return (Math.round(this.timeLeftSeconds - afterDecimal) / 60).toString()
+              + ':' + (afterDecimal < 10 ? '0' : '') + afterDecimal.toString();
+  }
+  get timeLeftMinString() {
+    return Math.round(this.timeLeftSeconds / 60).toString() + ' min';
+  }
+
+  constructor (timeMinutes: number, tId: string, type: MaxTimerDataType) {
+    this.timeLeftSeconds = timeMinutes * 60;
+    this.testletId = tId;
+    this.type = type;
+  }
+}
 
 // 7777777777777777777777777777777777777777777777777777777777777
 export class BookletConfig {
