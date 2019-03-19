@@ -45,7 +45,7 @@ export class UnitActivateGuard implements CanActivate {
                 confirmbuttonreturn: false
               }
             });
-            return dialogCDRef.afterClosed();
+            return dialogCDRef.afterClosed().pipe(map(ok => false));
           } else {
             this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden.', 'Weiterblättern', {duration: 3000});
             return of(true);
@@ -64,7 +64,7 @@ export class UnitActivateGuard implements CanActivate {
               confirmbuttonreturn: false
             }
           });
-          return dialogCDRef.afterClosed();
+          return dialogCDRef.afterClosed().pipe(map(ok => false));
         } else {
           this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden.', 'Weiterblättern', {duration: 3000});
           return of(true);
