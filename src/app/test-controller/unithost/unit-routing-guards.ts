@@ -91,7 +91,7 @@ export class UnitActivateGuard implements CanActivate {
           width: '500px',
           // height: '300px',
           data:  <ConfirmDialogData>{
-            title: 'Aufgabenbereich verlassen? 1',
+            title: 'Aufgabenbereich verlassen?',
             content: 'Wenn du jetzt weiterblätterst, ist die Bearbeitungszeit beendet und du kannst nicht zurück.',
             confirmbuttonlabel: 'Trotzdem weiter',
             confirmbuttonreturn: true
@@ -132,7 +132,7 @@ export class UnitActivateGuard implements CanActivate {
           width: '500px',
           // height: '300px',
           data:  <ConfirmDialogData>{
-            title: 'Aufgabenbereich verlassen? 2',
+            title: 'Aufgabenbereich verlassen?',
             content: 'Wenn du jetzt weiterblätterst, ist die Bearbeitungszeit des vorherigen Aufgabenbereiches' +
                     ' beendet und du kannst nicht zurück.',
             confirmbuttonlabel: 'Trotzdem weiter',

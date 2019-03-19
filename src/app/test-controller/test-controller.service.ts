@@ -34,6 +34,8 @@ export class TestControllerService {
   public unitPrevEnabled$ = new BehaviorSubject<boolean>(false);
   public unitNextEnabled$ = new BehaviorSubject<boolean>(false);
   public unitListForNaviButtons$ = new BehaviorSubject<UnitNaviButtonData[]>([]);
+  public navPolicyNextOnlyIfPresentationComplete = false;
+  public showNavButtons = false;
 
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -41,15 +43,15 @@ export class TestControllerService {
   public set currentUnitSequenceId(v: number) {
     this.unitPrevEnabled$.next(v > this.minUnitSequenceId);
     this.unitNextEnabled$.next(v < this.maxUnitSequenceId);
-    const myUnitListForNaviButtons: UnitNaviButtonData[] = [];
-    if (this.rootTestlet) {
+    if (this.rootTestlet && this.showNavButtons) {
+      const myUnitListForNaviButtons: UnitNaviButtonData[] = [];
       for (let sequ = 1; sequ <= this.rootTestlet.getMaxSequenceId(); sequ++) {
         const myUnitData = this.rootTestlet.getUnitAt(sequ);
         if (myUnitData) {
           const disabled = (sequ < this.minUnitSequenceId) || (sequ > this.maxUnitSequenceId) || myUnitData.unitDef.locked;
           myUnitListForNaviButtons.push({
             sequenceId: sequ,
-            label: disabled ? '' : myUnitData.unitDef.naviButtonLabel, //  myUnitData.unitDef.naviButtonLabel,
+            label: myUnitData.unitDef.naviButtonLabel, //  myUnitData.unitDef.naviButtonLabel,disabled ? '' :
             disabled: disabled,
             isCurrent: sequ === v
           });
@@ -120,6 +122,8 @@ export class TestControllerService {
     this.currentMaxTimerTestletId = '';
     this.LastMaxTimerState = {};
     this.unitListForNaviButtons$.next([]);
+    this.navPolicyNextOnlyIfPresentationComplete = false;
+    this.showNavButtons = false;
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777

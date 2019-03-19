@@ -3,16 +3,18 @@
     <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
   </a>
 </div>
-<div id="buttonsContainer" fxLayout="row" fxLayoutAlign="end center">
+<div id="buttonsContainer" fxLayout="row wrap" fxLayoutAlign="end center">
   <p class="timer" *ngIf="tcs.mode !== 'hot'">{{ timerValue?.timeLeftString }}</p>
   <button mat-fab [disabled]="!(tcs.unitPrevEnabled$ | async)" color="accent" (click)="tcs.setUnitNavigationRequest('#previous')" matTooltip="Zurück">
     <i class="material-icons">chevron_left</i>
   </button>
-  <div *ngFor="let u of (tcs.unitListForNaviButtons$ | async)">
-    <div fxLayout="column" fxLayoutAlign="start center">
-        <button (click)="gotoUnit(u.sequenceId)" [disabled]="u.disabled">{{ u.label }}</button>
-        <span class="current-unit-dot" *ngIf="u.isCurrent"></span>
-        <span class="notcurrent-unit-dot" *ngIf="!u.isCurrent"></span>
+  <div *ngIf="tcs.showNavButtons" fxLayout="row" fxLayoutAlign="start center">
+    <div *ngFor="let u of (tcs.unitListForNaviButtons$ | async)">
+      <div fxLayout="column" fxLayoutAlign="start center">
+          <button (click)="gotoUnit(u.sequenceId)" class="unit-button" [disabled]="u.disabled">{{ u.label }}</button>
+          <span class="current-unit-dot" *ngIf="u.isCurrent"></span>
+          <span class="notcurrent-unit-dot" *ngIf="!u.isCurrent"></span>
+      </div>
     </div>
   </div>
   <button mat-fab [disabled]="!(tcs.unitNextEnabled$ | async)" color="accent" (click)="tcs.setUnitNavigationRequest('#next')" matTooltip="Weiter">

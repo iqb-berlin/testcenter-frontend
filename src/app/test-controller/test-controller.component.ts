@@ -163,6 +163,28 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
           const unitsElements = oDOM.documentElement.getElementsByTagName('Units');
           if (unitsElements.length > 0) {
+            const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
+            if (bookletConfigElements.length > 0) {
+              const bookletConfigs = bookletConfigElements[0].children;
+              for (let childIndex = 0; childIndex < bookletConfigs.length; childIndex++) {
+                if (bookletConfigs[childIndex].nodeName === 'NavPolicy') {
+                  const configParameter = bookletConfigs[childIndex].getAttribute('parameter');
+                  if ((typeof configParameter !== 'undefined') && (configParameter !== null)) {
+                    if (configParameter.toUpperCase() === 'NextOnlyIfPresentationComplete'.toUpperCase()) {
+                      this.tcs.navPolicyNextOnlyIfPresentationComplete = true;
+                    }
+                  }
+                } else if (bookletConfigs[childIndex].nodeName === 'ShowNaviButtons') {
+                  const configParameter = bookletConfigs[childIndex].getAttribute('parameter');
+                  if ((typeof configParameter !== 'undefined') && (configParameter !== null)) {
+                    if (configParameter === '1') {
+                      this.tcs.showNavButtons = true;
+                    }
+                  }
+                }
+              }
+            }
+
             // recursive call through all testlets
             this.lastUnitSequenceId = 1;
             this.lastTestletIndex = 1;
