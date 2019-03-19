@@ -113,6 +113,7 @@ export class MainDataService {
         this.setNewLoginData(myLoginData);
       });
     } else {
+      myLoginData.booklet = 0;
       myLoginData.bookletlabel = '';
       this.setNewLoginData(myLoginData);
     }

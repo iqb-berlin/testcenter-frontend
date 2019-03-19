@@ -89,6 +89,13 @@ export enum MaxTimerDataType {
     ENDED = 'ENDED'
 }
 
+export interface UnitNaviButtonData {
+  sequenceId: number;
+  disabled: boolean;
+  label: string;
+  isCurrent: boolean;
+}
+
 // for unithost ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 export interface PageData {
     index: number;

@@ -123,7 +123,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
           const newUnit = targetTestlet.addUnit(this.lastUnitSequenceId, myUnitId,
                 childElements[childIndex].getAttribute('label'), myUnitAliasClear,
-                childElements[childIndex].getAttribute('navBtnLabel'), reportstatus === 't');
+                childElements[childIndex].getAttribute('labelshort'), reportstatus === 't');
           this.lastUnitSequenceId += 1;
 
         } else if (childElements[childIndex].nodeName === 'Testlet') {
@@ -467,6 +467,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                         }
                       }
                     }
+                    if (!navTarget) {
+                      this.tcs.updateMinMaxUnitSequenceId(1);
+                    }
 
                     this.tcs.setUnitNavigationRequest(navTarget);
 
@@ -553,7 +556,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
-
+  // #####################################################################################
+  gotoUnit(newSequenceId: number) {
+    this.tcs.setUnitNavigationRequest(newSequenceId.toString());
+  }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   ngOnDestroy() {

@@ -2,7 +2,8 @@ import { debounceTime, takeUntil, map } from 'rxjs/operators';
 import { BehaviorSubject, of, Observable, Subject, Subscription, interval, timer } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Testlet, BookletConfig, MaxTimerData } from './test-controller.classes';
-import { LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData, MaxTimerDataType } from './test-controller.interfaces';
+import { LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData,
+    MaxTimerDataType, UnitNaviButtonData } from './test-controller.interfaces';
 import { BackendService } from './backend.service';
 import { ServerError } from '../backend.service';
 import { KeyValuePair, KeyValuePairNumber } from '../app.interfaces';
@@ -32,12 +33,30 @@ export class TestControllerService {
   public currentUnitTitle = '';
   public unitPrevEnabled$ = new BehaviorSubject<boolean>(false);
   public unitNextEnabled$ = new BehaviorSubject<boolean>(false);
+  public unitListForNaviButtons$ = new BehaviorSubject<UnitNaviButtonData[]>([]);
+
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
   }
   public set currentUnitSequenceId(v: number) {
     this.unitPrevEnabled$.next(v > this.minUnitSequenceId);
     this.unitNextEnabled$.next(v < this.maxUnitSequenceId);
+    const myUnitListForNaviButtons: UnitNaviButtonData[] = [];
+    if (this.rootTestlet) {
+      for (let sequ = 1; sequ <= this.rootTestlet.getMaxSequenceId(); sequ++) {
+        const myUnitData = this.rootTestlet.getUnitAt(sequ);
+        if (myUnitData) {
+          const disabled = (sequ < this.minUnitSequenceId) || (sequ > this.maxUnitSequenceId) || myUnitData.unitDef.locked;
+          myUnitListForNaviButtons.push({
+            sequenceId: sequ,
+            label: disabled ? '' : myUnitData.unitDef.naviButtonLabel, //  myUnitData.unitDef.naviButtonLabel,
+            disabled: disabled,
+            isCurrent: sequ === v
+          });
+        }
+      }
+      this.unitListForNaviButtons$.next(myUnitListForNaviButtons);
+    }
     this._currentUnitSequenceId = v;
   }
 
@@ -100,6 +119,7 @@ export class TestControllerService {
     }
     this.currentMaxTimerTestletId = '';
     this.LastMaxTimerState = {};
+    this.unitListForNaviButtons$.next([]);
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777

@@ -35,7 +35,7 @@
 #buttonsContainer {
   position: absolute;
   right: 5px;
-  top: 5px;  
+  top: 5px;
   color: white;
 }
 #buttonsContainer .material-icons {
@@ -64,4 +64,19 @@ mat-toolbar {
 
 .mat-fab[disabled] {
   background-color: grey;
+}
+
+.current-unit-dot {
+  height: 5px;
+  width: 5px;
+  background-color: red;
+  border-radius: 50%;
+  display: inline-block;
+}
+.notcurrent-unit-dot {
+  height: 5px;
+  width: 5px;
+  background-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
 }

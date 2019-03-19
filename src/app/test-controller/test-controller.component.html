@@ -8,6 +8,13 @@
   <button mat-fab [disabled]="!(tcs.unitPrevEnabled$ | async)" color="accent" (click)="tcs.setUnitNavigationRequest('#previous')" matTooltip="Zurück">
     <i class="material-icons">chevron_left</i>
   </button>
+  <div *ngFor="let u of (tcs.unitListForNaviButtons$ | async)">
+    <div fxLayout="column" fxLayoutAlign="start center">
+        <button (click)="gotoUnit(u.sequenceId)" [disabled]="u.disabled">{{ u.label }}</button>
+        <span class="current-unit-dot" *ngIf="u.isCurrent"></span>
+        <span class="notcurrent-unit-dot" *ngIf="!u.isCurrent"></span>
+    </div>
+  </div>
   <button mat-fab [disabled]="!(tcs.unitNextEnabled$ | async)" color="accent" (click)="tcs.setUnitNavigationRequest('#next')" matTooltip="Weiter">
     <i class="material-icons">chevron_right</i>
   </button>
