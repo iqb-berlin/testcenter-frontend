@@ -22,15 +22,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private navigationRequestSubsription: Subscription = null;
   private maxTimerSubscription: Subscription = null;
 
-  // private showUnitComponent = false;
-  // private allUnits: UnitDef[] = [];
-  // private statusMsg = '';
   private dataLoading = false;
   private lastUnitSequenceId = 0;
   private lastTestletIndex = 0;
   private timerValue: MaxTimerData = null;
   private timerRunning = false;
   private allUnitIds: string[] = [];
+  private progressValue = 0;
+  private loadedUnitCount = 0;
+  private showProgress = true;
 
   constructor (
     private tcs: TestControllerService,
@@ -228,6 +228,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
+  private incrementProgressValueBy1() {
+    this.loadedUnitCount += 1;
+    this.progressValue = this.loadedUnitCount * 100 / this.lastUnitSequenceId;
+  }
+
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   // private: read unitdata
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -276,6 +281,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               playerId = '';
               definitionRef = '';
             }
+            this.incrementProgressValueBy1();
 
             if (playerId.length > 0) {
               myUnit.playerId = playerId;
@@ -310,15 +316,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       );
   }
 
-  startStopTimer() {
-    if (this.timerRunning) {
-      this.timerRunning = false;
-      this.tcs.stopMaxTimer();
-    } else {
-      this.timerRunning = true;
-      this.tcs.startMaxTimer('ss', 2);
-    }
-  }
   // #####################################################################################
   // #####################################################################################
   ngOnInit() {
@@ -458,6 +455,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 // this.tcs.rootTestlet.setTimeLeft(bookletData.laststate);
 
                 const myUnitLoadings = [];
+                this.showProgress = true;
+                this.loadedUnitCount = 0;
                 for (let i = 1; i < this.tcs.maxUnitSequenceId + 1; i++) {
                   const ud = this.tcs.rootTestlet.getUnitAt(i);
                   myUnitLoadings.push(this.loadUnitOk(ud.unitDef, i));
@@ -472,6 +471,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                       break;
                     }
                   }
+                  this.showProgress = false;
 
                   if (loadingOk) {
                     // =====================

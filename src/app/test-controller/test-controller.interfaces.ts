@@ -68,7 +68,8 @@ export interface UnitLogData {
 
 export enum LastStateKey {
     LASTUNIT = 'LASTUNIT',
-    MAXTIMELEFT = 'MAXTIMELEFT'
+    MAXTIMELEFT = 'MAXTIMELEFT',
+    PRESENTATIONCOMPLETE = 'PRESENTATIONCOMPLETE'
 }
 
 export enum LogEntryKey {

@@ -3,7 +3,7 @@ import { StartLockInputComponent } from '../start-lock-input/start-lock-input.co
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../iqb-common/confirm-dialog/confirm-dialog.component';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { TestControllerService } from '../test-controller.service';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, map } from 'rxjs/operators';
 import { UnithostComponent } from './unithost.component';
 import { Injectable } from '@angular/core';
 import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot, Resolve } from '@angular/router';
@@ -19,6 +19,61 @@ export class UnitActivateGuard implements CanActivate {
     public confirmDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
+
+  // ****************************************************************************************
+  checkAndSolve_PresentationCompleteCode(newUnit: UnitControllerData): Observable<Boolean> {
+    let checkPC = this.tcs.navPolicyNextOnlyIfPresentationComplete && this.tcs.currentUnitSequenceId > 0;
+    if (checkPC) {
+      // only check if target unit sequenceIf higher then current
+      checkPC = this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId;
+    }
+    if (checkPC) {
+      if (this.tcs.hasUnitPresentationComplete(this.tcs.currentUnitSequenceId)) {
+        const pcValue = this.tcs.getUnitPresentationComplete(this.tcs.currentUnitSequenceId);
+        if (pcValue === 'yes') {
+          return of(true);
+        } else {
+          if (this.tcs.mode === 'hot') {
+            const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+              width: '500px',
+              // height: '300px',
+              data:  <ConfirmDialogData>{
+                title: 'Weiterblättern nicht möglich',
+                content: 'Bitte warte das Abspielen des Audiotextes ab bzw. schau dir alle Seiten vollständig an! ' +
+                  'Erst dann kannst Du weiterblättern.',
+                confirmbuttonlabel: 'OK',
+                confirmbuttonreturn: false
+              }
+            });
+            return dialogCDRef.afterClosed();
+          } else {
+            this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden.', 'Weiterblättern', {duration: 3000});
+            return of(true);
+          }
+        }
+      } else {
+        if (this.tcs.mode === 'hot') {
+          const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+            width: '500px',
+            // height: '300px',
+            data:  <ConfirmDialogData>{
+              title: 'Weiterblättern nicht möglich',
+              content: 'Bitte warte das Abspielen des Audiotextes ab bzw. schau dir alle Seiten vollständig an! ' +
+                'Erst dann kannst Du weiterblättern.',
+              confirmbuttonlabel: 'OK',
+              confirmbuttonreturn: false
+            }
+          });
+          return dialogCDRef.afterClosed();
+        } else {
+          this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden.', 'Weiterblättern', {duration: 3000});
+          return of(true);
+        }
+      }
+    } else {
+      return of(true);
+    }
+  }
 
   // ****************************************************************************************
   checkAndSolve_Code(newUnit: UnitControllerData): Observable<Boolean> {
@@ -196,24 +251,31 @@ export class UnitActivateGuard implements CanActivate {
       } else {
         // %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        return this.checkAndSolve_Code(newUnit).pipe(
-          switchMap(cAsC => {
-            if (!cAsC) {
+        return this.checkAndSolve_PresentationCompleteCode(newUnit).pipe(
+          switchMap(cAsPC => {
+            if (!cAsPC) {
               return of(false);
             } else {
-              return this.checkAndSolve_maxTime(newUnit).pipe(
-                switchMap(cAsMT => {
-                  if (!cAsMT) {
+              return this.checkAndSolve_Code(newUnit).pipe(
+                switchMap(cAsC => {
+                  if (!cAsC) {
                     return of(false);
                   } else {
-                    this.tcs.currentUnitSequenceId = targetUnitSequenceId;
-                    this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
-                    this.tcs.addUnitLog(newUnit.unitDef.id, LogEntryKey.UNITENTER);
-                    return of(true);
+                    return this.checkAndSolve_maxTime(newUnit).pipe(
+                      switchMap(cAsMT => {
+                        if (!cAsMT) {
+                          return of(false);
+                        } else {
+                          this.tcs.currentUnitSequenceId = targetUnitSequenceId;
+                          this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
+                          this.tcs.addUnitLog(newUnit.unitDef.id, LogEntryKey.UNITENTER);
+                          return of(true);
+                        }
+                      }));
                   }
                 }));
-            }
-          }));
+          }
+        }));
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%
       }

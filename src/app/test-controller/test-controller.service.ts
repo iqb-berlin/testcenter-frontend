@@ -68,6 +68,7 @@ export class TestControllerService {
   private players: {[filename: string]: string} = {};
   private unitDefinitions: {[sequenceId: number]: string} = {};
   private unitRestorePoints: {[sequenceId: number]: string} = {};
+  private unitPresentationCompleteStates: {[sequenceId: number]: string} = {};
 
   private restorePointsToSave$ = new Subject<UnitRestorePointData>();
   private responsesToSave$ = new Subject<UnitResponseData>();
@@ -175,6 +176,19 @@ export class TestControllerService {
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
+  // adding PresentationComplete via newUnitStatePresentationComplete below
+  public addUnitPresentationComplete (sequenceId: number, uPC: string) {
+    this.unitPresentationCompleteStates[sequenceId] = uPC;
+  }
+  public hasUnitPresentationComplete (sequenceId: number): boolean {
+    return this.unitPresentationCompleteStates.hasOwnProperty(sequenceId);
+  }
+  public getUnitPresentationComplete(sequenceId: number): string {
+    return this.unitPresentationCompleteStates[sequenceId];
+  }
+
+
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
   public setUnitNavigationRequest(RequestKey: string) {
     this.navigationRequest$.next(RequestKey);
   }
@@ -182,42 +196,66 @@ export class TestControllerService {
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
   public addBookletLog(logKey: LogEntryKey, entry = '') {
-    this.bs.addBookletLog(this.bookletDbId, Date.now(),
+    if (this.mode !== 'review') {
+      this.bs.addBookletLog(this.bookletDbId, Date.now(),
             entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey).subscribe(ok => {
-      if (ok instanceof ServerError) {
-        console.log('((((((((((((((((addBookletLog');
-      }
-    });
+        if (ok instanceof ServerError) {
+          console.log('((((((((((((((((addBookletLog');
+        }
+      });
+    }
   }
   public setBookletState(stateKey: LastStateKey, state: string) {
-    this.bs.setBookletState(this.bookletDbId, stateKey, state).subscribe(ok => {
-      if (ok instanceof ServerError) {
-        console.log('((((((((((((((((setBookletState');
-      }
-    });
+    if (this.mode !== 'review') {
+      this.bs.setBookletState(this.bookletDbId, stateKey, state).subscribe(ok => {
+        if (ok instanceof ServerError) {
+          console.log('((((((((((((((((setBookletState');
+        }
+      });
+    }
   }
   public addUnitLog(unitDbKey: string, logKey: LogEntryKey, entry = '') {
-    this.bs.addUnitLog(this.bookletDbId, Date.now(), unitDbKey,
+    if (this.mode !== 'review') {
+      this.bs.addUnitLog(this.bookletDbId, Date.now(), unitDbKey,
             entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey).subscribe(ok => {
-      if (ok instanceof ServerError) {
-        console.log('((((((((((((((((addUnitLog');
-      }
-    });
+        if (ok instanceof ServerError) {
+          console.log('((((((((((((((((addUnitLog');
+        }
+      });
+    }
   }
   public newUnitResponse(unitDbKey: string, response: string, responseType: string) {
-    this.responsesToSave$.next({
-      unitDbKey: unitDbKey,
-      response: response,
-      responseType: responseType
-    });
+    if (this.mode !== 'review') {
+      this.responsesToSave$.next({
+        unitDbKey: unitDbKey,
+        response: response,
+        responseType: responseType
+      });
+    }
   }
   public newUnitRestorePoint(unitDbKey: string, unitSequenceId: number, restorePoint: string, postToServer: boolean) {
     this.unitRestorePoints[unitSequenceId] = restorePoint;
-    if (postToServer) {
+    if (postToServer && this.mode !== 'review') {
       this.restorePointsToSave$.next({
         unitDbKey: unitDbKey,
         restorePoint: restorePoint
       });
+    }
+  }
+  public newUnitStatePresentationComplete(unitDbKey: string, unitSequenceId: number, presentationComplete: string) {
+    this.unitPresentationCompleteStates[unitSequenceId] = presentationComplete;
+    if (this.mode !== 'review') {
+      this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationComplete);
+      this.bs.setUnitState(unitDbKey, LastStateKey.PRESENTATIONCOMPLETE, presentationComplete).subscribe(ok => {
+        if (ok instanceof ServerError) {
+          console.log('((((((((((((((((setUnitState');
+        }
+      });
+    }
+  }
+  public newUnitStateResponsesGiven(unitDbKey: string, unitSequenceId: number, responsesGiven: string) {
+    if (this.mode !== 'review') {
+      this.addUnitLog(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
     }
   }
 

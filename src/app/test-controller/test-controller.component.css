@@ -1,3 +1,10 @@
+.progress-bar {
+  position: absolute;
+  right: 50px;
+  top: 300px;
+  left: 50px;
+}
+
 .timer {
   color: lightgray;
   margin: 0 10px;

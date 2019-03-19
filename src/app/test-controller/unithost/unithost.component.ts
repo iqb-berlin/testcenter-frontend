@@ -97,11 +97,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
               this.setPageList(msgData['validPages'], msgData['currentPage']);
               this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
 
-              const canLeave = msgData['canLeave'];
-              if (canLeave !== undefined) {
-                if (canLeave as string === 'warning') {
-                  this.leaveWarning = true;
-                }
+              const presentationComplete = msgData['presentationComplete'];
+              if (presentationComplete) {
+                this.tcs.newUnitStatePresentationComplete(this.myUnitDbKey, this.myUnitSequenceId, presentationComplete);
+              }
+              const responsesGiven = msgData['responsesGiven'];
+              if (responsesGiven) {
+                this.tcs.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responsesGiven);
               }
             }
             break;
@@ -122,9 +124,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
               if (response !== undefined) {
                 this.tcs.newUnitResponse(this.myUnitDbKey, response, msgData['responseConverter']);
               }
-              const canLeaveChanged = msgData['canLeave'];
-              if (canLeaveChanged !== undefined) {
-                this.leaveWarning = (canLeaveChanged as string === 'warning');
+              const presentationComplete = msgData['presentationComplete'];
+              if (presentationComplete) {
+                this.tcs.newUnitStatePresentationComplete(this.myUnitDbKey, this.myUnitSequenceId, presentationComplete);
+              }
+              const responsesGiven = msgData['responsesGiven'];
+              if (responsesGiven) {
+                this.tcs.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responsesGiven);
               }
             }
             break;

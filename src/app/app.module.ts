@@ -7,7 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule, MatCardModule,
   MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule,
-  MatTabsModule, MatProgressSpinnerModule, MatRadioModule } from '@angular/material';
+  MatTabsModule, MatProgressSpinnerModule, MatRadioModule, MatProgressBarModule } from '@angular/material';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -34,6 +34,7 @@ import { httpInterceptorProviders } from './app.interceptor';
     MatFormFieldModule,
     MatMenuModule,
     MatToolbarModule,
+    MatProgressBarModule,
     MatIconModule,
     MatInputModule,
     MatTooltipModule,

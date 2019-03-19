@@ -95,6 +95,14 @@ export class BackendService {
         );
   }
 
+  setUnitState(unitDbKey: string, stateKey: string, state: string): Observable<boolean | ServerError> {
+    return this.http
+      .post<boolean>(this.serverSlimUrl_POST + 'state', {u: unitDbKey, sk: stateKey, s: state})
+        .pipe(
+          catchError(this.handle)
+        );
+  }
+
   addUnitLog(bookletDbId: number, timestamp: number, unitDbKey: string, entry: string): Observable<boolean | ServerError> {
     return this.http
       .post<boolean>(this.serverSlimUrl_POST + 'log', {b: bookletDbId, u: unitDbKey, t: timestamp, e: entry})

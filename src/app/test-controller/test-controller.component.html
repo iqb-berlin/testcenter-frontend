@@ -30,6 +30,16 @@
 <div class="spinner-container" *ngIf="dataLoading">
   <mat-spinner></mat-spinner>
 </div>
+<mat-card *ngIf="showProgress" class="progress-bar">
+  <mat-card-content fxLaxout="column">
+    <h2>Lade alle Aufgaben... bitte warten</h2>
+    <mat-progress-bar
+        color="primary"
+        mode="determinate"
+        [value]="progressValue">
+    </mat-progress-bar>
+  </mat-card-content>
+</mat-card>
 <div class="tc-body">
     <router-outlet></router-outlet>
 </div>
