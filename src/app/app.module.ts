@@ -35,6 +35,7 @@ import { FlexLayoutModule } from "@angular/flex-layout";
     MatToolbarModule,
     MatIconModule,
     MatInputModule,
+    FlexLayoutModule,
     MatCheckboxModule,
     MatTooltipModule,
     MatDialogModule,

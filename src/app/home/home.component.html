@@ -10,7 +10,7 @@
       <!-- - - - - - - - - - - - - - - - - -->
       <form [formGroup]="adminloginform" (ngSubmit)="login()">
         <mat-card-title>Anmelden</mat-card-title>
-        <mat-card-content>
+        <mat-card-content fxLayout="column">
           <mat-form-field class="full-width">
             <input matInput formControlName="testname" placeholder="Anmeldename" (keyup.enter)="pw.focus()">
           </mat-form-field>
