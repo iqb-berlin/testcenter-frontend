@@ -1,6 +1,3 @@
-<div class="spinner-container" *ngIf="dataLoading">
-  <mat-spinner></mat-spinner>
-</div>
 <div class="step-body">
   <h2>Computer-Info</h2>
   <p *ngFor="let rd of environmentData">{{ rd.label }}: {{ rd.value }}</p>

@@ -22,9 +22,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
   public leaveWarningText = 'Du hast den Hörtext noch nicht vollständig gehört. Nach dem ' +
           'Verlassen der Aufgabe wird der Hörtext nicht noch einmal gestartet. Trotzdem die Aufgabe verlassen?';
 
+  public unitTitle = '';
+  public showPageNav = false;
+
   private myUnitSequenceId = -1;
   private myUnitDbKey = '';
-  private unitTitle = '';
 
   // :::::::::::::::::::::
   private postMessageSubscription: Subscription = null;
@@ -35,7 +37,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private itemplayerValidPages: string[] = [];
   private itemplayerCurrentPage = '';
-  private showPageNav = false;
   private pageList: PageData[] = [];
 
 

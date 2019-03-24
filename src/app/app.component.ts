@@ -30,7 +30,7 @@ export class AppComponent implements OnInit {
     });
 
     this.bs.getSysConfig().subscribe(sc => {
-      this.mds.setSysConfig(sc);
+      this.mds.setCostumTextsApp(sc);
       // restore login status if stored in localStorage
       const loginToken = localStorage.getItem('lt');
       if (loginToken !== null) {
@@ -56,6 +56,7 @@ export class AppComponent implements OnInit {
           this.bs.getLoginData(loginToken, personToken, bookletDbId).subscribe(ld => {
             if (ld instanceof ServerError) {
               this.mds.setNewLoginData();
+              this.mds.setCostumTextsLogin();
             } else {
               const loginData = ld as LoginData;
               loginData.logintoken = loginToken;
@@ -65,13 +66,16 @@ export class AppComponent implements OnInit {
                 loginData.booklet = 0;
               }
               this.mds.setNewLoginData(loginData);
+              this.mds.setCostumTextsLogin(loginData.costumTexts);
             }
           });
         } else {
           this.mds.setNewLoginData();
+          this.mds.setCostumTextsLogin();
         }
       } else {
         this.mds.setNewLoginData();
+        this.mds.setCostumTextsLogin();
       }
     });
   }

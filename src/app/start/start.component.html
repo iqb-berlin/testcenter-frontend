@@ -34,7 +34,7 @@
     <!-- - - - - - - - - - - - - - - - - -->
     <mat-card fxFlex="0 0 400px" *ngIf="showCodeForm">
       <form [formGroup]="codeinputform" (ngSubmit)="codeinput()">
-        <mat-card-title>{{ codeInputTitle }}</mat-card-title>
+        <mat-card-title>{{ showCodeForm | customText:'login_codeInputTitle' }}</mat-card-title>
         <mat-card-content>
           <mat-form-field>
             <input matInput formControlName="code" placeholder="Personen-Code"(keyup.enter)="codeinput()">
@@ -49,7 +49,7 @@
 
     <!-- - - - - - - - - - - - - - - - - -->
     <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showBookletButtons">
-      <mat-card-title>{{ bookletSelectTitle }}</mat-card-title>
+      <mat-card-title>{{ showBookletButtons | customText:'login_bookletSelectTitle' }}</mat-card-title>
       <mat-card-content>
         <div fxLayout="row" fxLayoutGap="10px" fxLayout="column">
           <p *ngIf="bookletlist.length === 0">
@@ -73,7 +73,7 @@
       <mat-card-content>
         <div fxLayout="column" fxLayoutGap="20px">
           <button mat-raised-button color="primary" [routerLink]="['/t']">Zum Test zurückkehren</button>
-          <button mat-raised-button color="primary" (click)="stopBooklet()">{{ testEndButtonText }}</button>
+          <button mat-raised-button color="primary" (click)="stopBooklet()">{{ showTestRunningButtons | customText:'login_testEndButtonText' }}</button>
           <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
         </div>
       </mat-card-content>
@@ -82,7 +82,7 @@
     <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
     <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
     <mat-card fxFlex="0 2 400px" fxLayout="column" class="status">
-      <mat-card-title>IQB-Testcenter</mat-card-title>
+      <mat-card-title>{{ mds.refreshCostumTexts | customText:'app_title' }}</mat-card-title>
 
       <!-- - - - - - - - - - - - - - - - - -->
       <mat-card-content>
@@ -110,18 +110,18 @@
         <!-- - - - - - - - - - - - - - - - - -->
         <div *ngIf="showCodeForm">
           <p>Für das Starten eines Tests ist die Eingabe eines Personen-Codes nötig.</p>
-          <p>{{ codeInputPrompt }}</p>
+          <p>{{ showCodeForm | customText:'login_codeInputPrompt' }}</p>
         </div>
 
         <!-- - - - - - - - - - - - - - - - - -->
         <div *ngIf="showBookletButtons">
-          <p>{{ bookletSelectPrompt }}</p>
+          <p>{{ showBookletButtons | customText:'login_bookletSelectPrompt' }}</p>
         </div>
 
         <!-- - - - - - - - - - - - - - - - - -->
         <div *ngIf="showTestRunningButtons">
-            <p>Es wird gerade ein Test ausgeführt. Bitte wählen Sie durch Klicken auf eine der beiden Schaltflächen
-              links, ob der Test fortgesetzt oder beendet werden soll!</p>
+            <p>Es wird gerade ein Test ausgeführt. Bitte durch Klicken auf eine der beiden Schaltflächen
+              links wählen, ob der Test fortgesetzt oder beendet werden soll!</p>
         </div>
         <div class="error-msg">{{ (mds.globalErrorMsg$ | async)?.labelNice }}</div>
 

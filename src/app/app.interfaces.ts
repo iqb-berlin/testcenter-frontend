@@ -23,6 +23,7 @@ export interface LoginData {
   code: string;
   booklet: number;
   bookletlabel: string;
+  costumTexts: KeyValuePair;
 }
 
 export interface BookletStatus {
@@ -44,14 +45,4 @@ export interface KeyValuePair {
 
 export interface KeyValuePairNumber {
   [K: string]: number;
-}
-
-export enum SysConfigKey {
-  testEndButtonText = 'testEndButtonText',
-  bookletSelectPrompt = 'bookletSelectPrompt',
-  bookletSelectTitle = 'bookletSelectTitle',
-  bookletSelectPromptOne = 'bookletSelectPromptOne',
-  bookletSelectPromptMany = 'bookletSelectPromptMany',
-  codeInputTitle = 'codeInputTitle',
-  codeInputPrompt = 'codeInputPrompt'
 }

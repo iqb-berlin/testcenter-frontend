@@ -18,6 +18,7 @@ export interface UnitRestorePointData {
 // testcontroller restrictions +++++++++++++++++++++++++++++++++++
 export interface StartLockData {
     title: string;
+    prompt: string;
     codes: CodeInputData[];
 }
 

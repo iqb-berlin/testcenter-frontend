@@ -99,7 +99,6 @@ export class TestletContentElement {
 export class UnitDef extends TestletContentElement {
   readonly alias: string;
   readonly naviButtonLabel: string;
-  readonly reportStatus: boolean;
   playerId: string;
   statusResponses: 'no' | 'some' | 'all';
   statusPresentation: 'no' | 'partly' | 'full';
@@ -111,13 +110,11 @@ export class UnitDef extends TestletContentElement {
     id: string,
     title: string,
     alias: string,
-    naviButtonLabel: string,
-    reportStatus: boolean,
+    naviButtonLabel: string
     ) {
       super(sequenceId, id, title);
       this.alias = alias;
       this.naviButtonLabel = naviButtonLabel;
-      this.reportStatus = reportStatus;
       this.statusResponses = 'no';
       this.statusPresentation = 'no';
   }
@@ -182,9 +179,8 @@ export class Testlet extends TestletContentElement {
     id: string,
     title: string,
     alias: string,
-    naviButtonLabel: string,
-    reportStatus: boolean): UnitDef {
-    const newChild = new UnitDef(sequenceId, id, title, alias, naviButtonLabel, reportStatus);
+    naviButtonLabel: string): UnitDef {
+    const newChild = new UnitDef(sequenceId, id, title, alias, naviButtonLabel);
     this.children.push(newChild);
     return newChild;
   }

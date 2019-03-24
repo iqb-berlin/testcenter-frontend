@@ -22,7 +22,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private navigationRequestSubsription: Subscription = null;
   private maxTimerSubscription: Subscription = null;
 
-  private dataLoading = false;
+  public dataLoading = false;
+  public showProgress = true;
+
   private lastUnitSequenceId = 0;
   private lastTestletIndex = 0;
   private timerValue: MaxTimerData = null;
@@ -30,19 +32,26 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private allUnitIds: string[] = [];
   private progressValue = 0;
   private loadedUnitCount = 0;
-  private showProgress = true;
 
   constructor (
-    private tcs: TestControllerService,
-    private reviewDialog: MatDialog,
-    private bs: BackendService,
     private mds: MainDataService,
+    public tcs: TestControllerService,
+    private bs: BackendService,
+    private reviewDialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router
   ) {
     // this.unitPosSubsription = this.tcs.currentUnitPos$.subscribe(u => this.updateStatus());
   }
 
+  private getCostumText(key: string): string {
+    const value = this.tcs.getCostumText(key);
+    if (value.length > 0) {
+      return value;
+    } else {
+      return this.mds.getCostumText(key);
+    }
+  }
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   // private: recursive reading testlets/units from xml
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -94,20 +103,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
       for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
         if (childElements[childIndex].nodeName === 'Unit') {
-          let reportstatus: string = childElements[childIndex].getAttribute('reportStatus');
-          if ((typeof reportstatus !== 'undefined') && (reportstatus !== null)) {
-            if (reportstatus.length > 0) {
-              reportstatus = reportstatus.substr(0, 1).toLowerCase();
-              if ((reportstatus === 'y') || (reportstatus === 'j')) {
-                reportstatus = 't';
-              }
-            } else {
-              reportstatus = 'n';
-            }
-          } else {
-            reportstatus = 'n';
-          }
-
           const myUnitId = childElements[childIndex].getAttribute('id');
           let myUnitAlias = childElements[childIndex].getAttribute('alias');
           if (!myUnitAlias) {
@@ -123,7 +118,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
           const newUnit = targetTestlet.addUnit(this.lastUnitSequenceId, myUnitId,
                 childElements[childIndex].getAttribute('label'), myUnitAliasClear,
-                childElements[childIndex].getAttribute('labelshort'), reportstatus === 't');
+                childElements[childIndex].getAttribute('labelshort'));
           this.lastUnitSequenceId += 1;
 
         } else if (childElements[childIndex].nodeName === 'Testlet') {
@@ -163,6 +158,21 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
           const unitsElements = oDOM.documentElement.getElementsByTagName('Units');
           if (unitsElements.length > 0) {
+            const costumTextsElements = oDOM.documentElement.getElementsByTagName('CostumTexts');
+            if (costumTextsElements.length > 0) {
+              const costumTexts = costumTextsElements[0].children;
+              const costumTextsForBooklet = {};
+              for (let childIndex = 0; childIndex < costumTexts.length; childIndex++) {
+                if (costumTexts[childIndex].nodeName === 'Text') {
+                  const costumTextKey = costumTexts[childIndex].getAttribute('key');
+                  if ((typeof costumTextKey !== 'undefined') && (costumTextKey !== null)) {
+                    costumTextsForBooklet[costumTextKey] = costumTexts[childIndex].textContent;
+                  }
+                }
+              }
+              this.tcs.setCostumTexts(costumTextsForBooklet);
+            }
+
             const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
             if (bookletConfigElements.length > 0) {
               const bookletConfigs = bookletConfigElements[0].children;
@@ -179,6 +189,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                   if ((typeof configParameter !== 'undefined') && (configParameter !== null)) {
                     if (configParameter === '1') {
                       this.tcs.showNavButtons = true;
+                    }
+                  }
+                } else if (bookletConfigs[childIndex].nodeName === 'LockOnlyIfResponsesComplete') {
+                  const configParameter = bookletConfigs[childIndex].getAttribute('parameter');
+                  if ((typeof configParameter !== 'undefined') && (configParameter !== null)) {
+                    if (configParameter === '1') {
+                      this.tcs.LockOnlyIfResponsesComplete = true;
                     }
                   }
                 }
@@ -251,7 +268,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             if (myUnitData.restorepoint) {
               this.tcs.newUnitRestorePoint(myUnit.id, sequenceId, JSON.parse(myUnitData.restorepoint), false);
             }
-            let playerId = '';
+            let playerId = null;
             let definitionRef = '';
 
             try {
@@ -278,12 +295,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               }
             } catch (error) {
               console.log('error parsing xml for unit "' + myUnit.id + '": ' + error.toString());
-              playerId = '';
+              playerId = null;
               definitionRef = '';
             }
             this.incrementProgressValueBy1();
 
-            if (playerId.length > 0) {
+            if (playerId) {
               myUnit.playerId = playerId;
 
               return this.loadPlayerOk(playerId).pipe(
@@ -323,10 +340,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
     this.maxTimerSubscription = this.tcs.maxTimeTimer$.subscribe(maxTimerData => {
       if (maxTimerData.type === MaxTimerDataType.STARTED) {
-        this.snackBar.open('Bearbeitungszeit hat begonnen: ' + maxTimerData.timeLeftMinString, '', {duration: 3000});
+        this.snackBar.open(this.getCostumText('booklet_msgTimerStarted') + maxTimerData.timeLeftMinString, '', {duration: 3000});
         this.timerValue = maxTimerData;
       } else if (maxTimerData.type === MaxTimerDataType.ENDED) {
-        this.snackBar.open('Bearbeitungszeit beendet', '', {duration: 3000});
+        this.snackBar.open(this.getCostumText('booklet_msgTimeOver'), '', {duration: 3000});
         this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
         this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
         this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
@@ -336,7 +353,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.tcs.setUnitNavigationRequest('#next');
         }
       } else if (maxTimerData.type === MaxTimerDataType.CANCELLED) {
-        this.snackBar.open('Bearbeitungszeit abgebrochen', '', {duration: 3000});
+        this.snackBar.open(this.getCostumText('booklet_msgTimerCancelled'), '', {duration: 3000});
         this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
         this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
         this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
@@ -348,9 +365,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
         }
         if ((maxTimerData.timeLeftSeconds / 60) === 5) {
-          this.snackBar.open('Bearbeitungszeit noch ca. 5 min', '', {duration: 3000});
+          this.snackBar.open(this.getCostumText('booklet_msgSoonTimeOver5Minutes'), '', {duration: 3000});
         } else if ((maxTimerData.timeLeftSeconds / 60) === 1) {
-          this.snackBar.open('Bearbeitungszeit noch ca. 1 min', '', {duration: 3000});
+          this.snackBar.open(this.getCostumText('booklet_msgSoonTimeOver1Minute'), '', {duration: 3000});
         }
       }
     });
@@ -372,7 +389,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 startWith = this.tcs.minUnitSequenceId - 1;
               }
               const nextUnitSequenceId = this.tcs.rootTestlet.getNextUnlockedUnitSequenceId(startWith);
-              console.log('getNextUnlockedUnitSequenceId: ' + nextUnitSequenceId.toString());
               if (nextUnitSequenceId > 0) {
                 this.router.navigateByUrl('/t/u/' + (nextUnitSequenceId).toString());
               }

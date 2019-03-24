@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./tc-navi-buttons.component.css']
 })
 export class TcNaviButtonsComponent {
-  private showPageNaviButtons = true;
+  public showPageNaviButtons = true;
   private pagePrevEnabled = false;
   private pageNextEnabled = false;
 

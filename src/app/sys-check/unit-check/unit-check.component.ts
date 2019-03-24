@@ -33,7 +33,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
 
   private pendingItemDefinition$ = new BehaviorSubject(null);
 
-  private dataLoading = false;
+  public dataLoading = false;
 
   constructor(
     private ds: SyscheckDataService,

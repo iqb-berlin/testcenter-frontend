@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./errormsg.component.css']
 })
 export class ErrormsgComponent implements OnInit, OnDestroy {
-  private errorMsg: ServerError = null;
+  public errorMsg: ServerError = null;
   private globalErrorMsgSubscription: Subscription = null;
 
   constructor(

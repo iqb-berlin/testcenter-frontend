@@ -1,4 +1,3 @@
-import { SysConfigKey } from './../app.interfaces';
 import { MainDataService } from './../maindata.service';
 import { Subscription, BehaviorSubject, forkJoin } from 'rxjs';
 import { MessageDialogComponent, MessageDialogData, MessageType } from './../iqb-common';
@@ -15,26 +14,24 @@ import { StartButtonData } from './start-button-data.class';
   styleUrls: ['./start.component.css']
 })
 export class StartComponent implements OnInit, OnDestroy {
+  public dataLoading = false;
+  public showLoginForm = true;
+  public showCodeForm = false;
+  public showBookletButtons = false;
+  public bookletlist: StartButtonData[] = [];
+  public showTestRunningButtons = false;
+
   private loginDataSubscription: Subscription = null;
-  private dataLoading = false;
 
   // for template
-  private showLoginForm = true;
-  private showCodeForm = false;
-  private showBookletButtons = false;
-  private bookletlist: StartButtonData[] = [];
-  private showTestRunningButtons = false;
   private validCodes = [];
   private loginStatusText = ['nicht angemeldet'];
 
   private testtakerloginform: FormGroup;
   private codeinputform: FormGroup;
   private lastloginname = '';
-  private testEndButtonText = 'Test beenden';
   private bookletSelectPrompt = 'Bitte wählen';
   private bookletSelectTitle = 'Bitte wählen';
-  private codeInputPrompt = '';
-  private codeInputTitle = '';
 
   // ??
   // private sessiondata: PersonBooklets;
@@ -44,7 +41,7 @@ export class StartComponent implements OnInit, OnDestroy {
 
 
   constructor(private fb: FormBuilder,
-    private mds: MainDataService,
+    public mds: MainDataService,
     public messsageDialog: MatDialog,
     private router: Router,
     private bs: BackendService) {
@@ -110,8 +107,6 @@ export class StartComponent implements OnInit, OnDestroy {
             } else {
               // code not yet given
               // code prompt
-              this.codeInputTitle = this.mds.getSysConfigValue(SysConfigKey.codeInputTitle);
-              this.codeInputPrompt = this.mds.getSysConfigValue(SysConfigKey.codeInputPrompt);
               this.showCodeForm = true;
               this.showBookletButtons = false;
             }
@@ -148,10 +143,8 @@ export class StartComponent implements OnInit, OnDestroy {
                 this.bookletSelectPrompt = (allOk.length > 1) ? 'Testhefte beendet' : 'Testheft beendet';
                 this.bookletSelectTitle = 'Beendet';
               } else if (numberOfOpenBooklets === 1) {
-                this.bookletSelectPrompt = this.mds.getSysConfigValue(SysConfigKey.bookletSelectPromptOne);
                 this.bookletSelectTitle = 'Bitte starten';
               } else {
-                this.bookletSelectPrompt = this.mds.getSysConfigValue(SysConfigKey.bookletSelectPromptMany);
                 this.bookletSelectTitle = 'Bitte wählen';
               }
             });
@@ -192,6 +185,7 @@ export class StartComponent implements OnInit, OnDestroy {
           // no change in other data
         } else {
           this.mds.globalErrorMsg$.next(null);
+          this.mds.setCostumTextsLogin(loginData.costumTexts);
           this.mds.setNewLoginData(loginData);
         }
         this.dataLoading = false;
@@ -206,8 +200,8 @@ export class StartComponent implements OnInit, OnDestroy {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
         data: <MessageDialogData>{
-          title: 'Eingabe Personen-Code: Leer',
-          content: this.codeInputPrompt,
+          title: this.mds.getCostumText('login_codeInputTitle') + ': Leer',
+          content: this.mds.getCostumText('login_codeInputPrompt'),
           type: MessageType.error
         }
       });
@@ -215,8 +209,8 @@ export class StartComponent implements OnInit, OnDestroy {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
         data: <MessageDialogData>{
-          title: 'Eingabe Personen-Code: Ungültig',
-          content: this.codeInputPrompt,
+          title: this.mds.getCostumText('login_codeInputTitle') + ': Ungültig',
+          content: this.mds.getCostumText('login_codeInputPrompt'),
           type: MessageType.error
         }
       });
@@ -250,6 +244,7 @@ export class StartComponent implements OnInit, OnDestroy {
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   resetLogin() {
+    this.mds.setCostumTextsLogin();
     this.mds.setNewLoginData();
   }
 

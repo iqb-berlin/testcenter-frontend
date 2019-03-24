@@ -12,7 +12,7 @@ import { Component, OnInit } from '@angular/core';
 
 export class StartComponent implements OnInit {
   checkConfigList: CheckConfig[] = [];
-  private dataLoading = false;
+  public dataLoading = false;
 
   constructor(
     private bs: BackendService,

@@ -36,6 +36,7 @@ export class TestControllerService {
   public unitListForNaviButtons$ = new BehaviorSubject<UnitNaviButtonData[]>([]);
   public navPolicyNextOnlyIfPresentationComplete = false;
   public showNavButtons = false;
+  public LockOnlyIfResponsesComplete = false;
 
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -72,6 +73,7 @@ export class TestControllerService {
 
   private restorePointsToSave$ = new Subject<UnitRestorePointData>();
   private responsesToSave$ = new Subject<UnitResponseData>();
+  private _costumTexts: KeyValuePair = {};
 
   constructor (
     private bs: BackendService
@@ -125,6 +127,7 @@ export class TestControllerService {
     this.unitListForNaviButtons$.next([]);
     this.navPolicyNextOnlyIfPresentationComplete = false;
     this.showNavButtons = false;
+    this._costumTexts = {};
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
@@ -297,7 +300,19 @@ export class TestControllerService {
     if (this.rootTestlet) {
       this.minUnitSequenceId = this.rootTestlet.getFirstUnlockedUnitSequenceId(startWith);
       this.maxUnitSequenceId = this.rootTestlet.getLastUnlockedUnitSequenceId(startWith);
-      console.log('updateMinMaxUnitSequenceId: ' + this.minUnitSequenceId.toString() + '/' + this.maxUnitSequenceId.toString());
     }
+  }
+
+  // 7777777777777777777777777777777777777777777777777777777777777777777777
+  public setCostumTexts(sc: KeyValuePair = {}) {
+    this._costumTexts = sc;
+  }
+  public getCostumText(key: string): string {
+    if (this._costumTexts) {
+      if (this._costumTexts.hasOwnProperty(key)) {
+        return this._costumTexts[key];
+      }
+    }
+    return '';
   }
 }

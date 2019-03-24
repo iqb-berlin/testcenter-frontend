@@ -1,6 +1,3 @@
-<div class="spinner-container" *ngIf="dataLoading">
-  <mat-spinner></mat-spinner>
-</div>
 <div class="step-body" #questionnaireBody>
   <div [formGroup]="form" class="formList" fxLayout="column">
     <div *ngFor="let q of questions">

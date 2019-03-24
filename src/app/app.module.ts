@@ -18,6 +18,7 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ErrormsgComponent } from './errormsg/errormsg.component';
 import { httpInterceptorProviders } from './app.interceptor';
+import { CustomTextPipe } from './custom-text.pipe';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { httpInterceptorProviders } from './app.interceptor';
     AppComponent,
     StartComponent,
     AboutComponent,
-    ErrormsgComponent
+    ErrormsgComponent,
+    CustomTextPipe
   ],
   imports: [
     BrowserModule,

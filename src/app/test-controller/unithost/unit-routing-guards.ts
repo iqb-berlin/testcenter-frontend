@@ -1,4 +1,3 @@
-import { FormGroup } from '@angular/forms';
 import { StartLockInputComponent } from '../start-lock-input/start-lock-input.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../iqb-common/confirm-dialog/confirm-dialog.component';
 import { MatDialog, MatSnackBar } from '@angular/material';
@@ -6,19 +5,30 @@ import { TestControllerService } from '../test-controller.service';
 import { switchMap, map } from 'rxjs/operators';
 import { UnithostComponent } from './unithost.component';
 import { Injectable } from '@angular/core';
-import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot, Resolve } from '@angular/router';
+import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { UnitDef, UnitControllerData, Testlet } from '../test-controller.classes';
-import { CodeInputData, LogEntryKey, StartLockData, KeyValuePair, LastStateKey } from '../test-controller.interfaces';
+import { UnitControllerData } from '../test-controller.classes';
+import { CodeInputData, LogEntryKey, StartLockData } from '../test-controller.interfaces';
+import { MainDataService } from 'src/app/maindata.service';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
   constructor(
     private tcs: TestControllerService,
+    private mds: MainDataService,
     public startLockDialog: MatDialog,
     public confirmDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
+
+  private getCostumText(key: string): string {
+    const value = this.tcs.getCostumText(key);
+    if (value.length > 0) {
+      return value;
+    } else {
+      return this.mds.getCostumText(key);
+    }
+  }
 
   // ****************************************************************************************
   checkAndSolve_PresentationCompleteCode(newUnit: UnitControllerData): Observable<Boolean> {
@@ -38,16 +48,16 @@ export class UnitActivateGuard implements CanActivate {
               width: '500px',
               // height: '300px',
               data:  <ConfirmDialogData>{
-                title: 'Weiterblättern nicht möglich',
-                content: 'Bitte warte das Abspielen des Audiotextes ab bzw. schau dir alle Seiten vollständig an! ' +
-                  'Erst dann kannst Du weiterblättern.',
+                title: this.getCostumText('booklet_msgPresentationNotCompleteTitle'),
+                content: this.getCostumText('booklet_msgPresentationNotCompleteText'),
                 confirmbuttonlabel: 'OK',
                 confirmbuttonreturn: false
               }
             });
             return dialogCDRef.afterClosed().pipe(map(ok => false));
           } else {
-            this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden.', 'Weiterblättern', {duration: 3000});
+            this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden (PresentationNotComplete).',
+                'Weiterblättern', {duration: 3000});
             return of(true);
           }
         }
@@ -57,16 +67,16 @@ export class UnitActivateGuard implements CanActivate {
             width: '500px',
             // height: '300px',
             data:  <ConfirmDialogData>{
-              title: 'Weiterblättern nicht möglich',
-              content: 'Bitte warte das Abspielen des Audiotextes ab bzw. schau dir alle Seiten vollständig an! ' +
-                'Erst dann kannst Du weiterblättern.',
+              title: this.getCostumText('booklet_msgPresentationNotCompleteTitle'),
+              content: this.getCostumText('booklet_msgPresentationNotCompleteText'),
               confirmbuttonlabel: 'OK',
               confirmbuttonreturn: false
             }
           });
           return dialogCDRef.afterClosed().pipe(map(ok => false));
         } else {
-          this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden.', 'Weiterblättern', {duration: 3000});
+          this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden (PresentationNotComplete).',
+              'Weiterblättern', {duration: 3000});
           return of(true);
         }
       }
@@ -92,7 +102,8 @@ export class UnitActivateGuard implements CanActivate {
         const dialogRef = this.startLockDialog.open(StartLockInputComponent, {
           width: '500px',
           data: <StartLockData>{
-            title: 'Freigabecodes',
+            title: this.getCostumText('booklet_codeToEnterTitle'),
+            prompt: this.getCostumText('booklet_codeToEnterPrompt'),
             codes: myCodes
           }
         });
@@ -117,7 +128,7 @@ export class UnitActivateGuard implements CanActivate {
                   return of(true);
 
                 } else {
-                  this.snackBar.open('Die Eingabe war nicht korrekt.', 'Freigabewort', {duration: 3000});
+                  this.snackBar.open('Die Eingabe war nicht korrekt.', this.getCostumText('booklet_codeToEnterTitle'), {duration: 3000});
                   return of(false);
                 }
               }
@@ -146,8 +157,8 @@ export class UnitActivateGuard implements CanActivate {
           width: '500px',
           // height: '300px',
           data:  <ConfirmDialogData>{
-            title: 'Aufgabenbereich verlassen?',
-            content: 'Wenn du jetzt weiterblätterst, ist die Bearbeitungszeit beendet und du kannst nicht zurück.',
+            title: this.getCostumText('booklet_warningLeaveTimerBlockTitle'),
+            content: this.getCostumText('booklet_warningLeaveTimerBlockPrompt'),
             confirmbuttonlabel: 'Trotzdem weiter',
             confirmbuttonreturn: true
           }
@@ -187,9 +198,8 @@ export class UnitActivateGuard implements CanActivate {
           width: '500px',
           // height: '300px',
           data:  <ConfirmDialogData>{
-            title: 'Aufgabenbereich verlassen?',
-            content: 'Wenn du jetzt weiterblätterst, ist die Bearbeitungszeit des vorherigen Aufgabenbereiches' +
-                    ' beendet und du kannst nicht zurück.',
+            title: this.getCostumText('booklet_warningLeaveTimerBlockTitle'),
+            content: this.getCostumText('booklet_warningLeaveTimerBlockTextPrompt'),
             confirmbuttonlabel: 'Trotzdem weiter',
             confirmbuttonreturn: true
           }

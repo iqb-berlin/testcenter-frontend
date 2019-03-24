@@ -2,13 +2,13 @@ import { KeyValuePair } from './test-controller/test-controller.interfaces';
 import { ServerError, BackendService } from './backend.service';
 import { BehaviorSubject, Subject, forkJoin } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { LoginData, SysConfigKey } from './app.interfaces';
+import { LoginData } from './app.interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MainDataService {
-  private standardLoginData: Readonly<LoginData> = {
+  private static defaultLoginData: LoginData = {
     logintoken: '',
     persontoken: '',
     mode: '',
@@ -18,12 +18,40 @@ export class MainDataService {
     booklets: null,
     code: '',
     booklet: 0,
-    bookletlabel: ''
+    bookletlabel: '',
+    costumTexts: {}
+  };
+  private static defaultCostumTexts = {
+    'app_title': 'IQB-Testcenter',
+    'app_loginErrorMsg': 'Die Anmeldedaten sind nicht korrekt.',
+    'login_testEndButtonText': 'Test beenden',
+    'login_bookletSelectPrompt': 'Bitte wählen',
+    'login_bookletSelectTitle': 'Bitte wählen',
+    'login_bookletSelectPromptOne': 'Bitte klick auf die Schaltfläche links, um den Test zu starten!',
+    'login_bookletSelectPromptMany': 'Bitte klick auf eine der Schaltflächen links, um einen Test zu starten!',
+    'login_codeInputPrompt': 'Bitte Log-in eingeben, der auf dem Zettel steht!',
+    'login_codeInputTitle': 'Log-in eingeben',
+    'booklet_msgPresentationNotCompleteTitle':
+        'Weiterblättern nicht möglich',
+    'booklet_msgPresentationNotCompleteText':
+        'Du kannst erst weiterblättern, wenn Audio-Dateien vollständig abgespielt wurden '
+        + 'und wenn du in allen Fenstern bis ganz nach unten gescrollt hast.',
+    'booklet_codeToEnterTitle': 'Freigabecode',
+    'booklet_codeToEnterPrompt': 'Bitte gib den Code ein, der angesagt wurde!',
+    'booklet_msgSoonTimeOver5Minutes': 'Du hast noch 5 Minuten Zeit für die Bearbeitung der Aufgaben in diesem Abschnitt.',
+    'booklet_msgSoonTimeOver1Minute': 'Du hast noch 1 Minute Zeit für die Bearbeitung der Aufgaben in diesem Abschnitt.',
+    'booklet_msgTimerStarted': 'Die Bearbeitungszeit für diesen Abschnitt hat begonnen: ',
+    'booklet_msgTimerCancelled': 'Die Bearbeitung des Abschnittes wurde abgebrochen.',
+    'booklet_msgTimeOver': 'Die Bearbeitung des Abschnittes ist beendet.',
+    'booklet_warningLeaveTimerBlockTitle': 'Aufgabenabschnitt verlassen?',
+    'booklet_warningLeaveTimerBlockPrompt': 'Wenn du jetzt weiterblätterst, ist die Bearbeitungszeit beendet und du kannst nicht zurück.',
   };
 
-  public loginData$ = new BehaviorSubject<LoginData>(this.standardLoginData);
+  public loginData$ = new BehaviorSubject<LoginData>(MainDataService.defaultLoginData);
   public globalErrorMsg$ = new BehaviorSubject<ServerError>(null);
-  private _sysConfig: KeyValuePair = null;
+  public refreshCostumTexts = false;
+  private _costumTextsApp: KeyValuePair = {};
+  private _costumTextsLogin: KeyValuePair = {};
 
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();
@@ -33,16 +61,17 @@ export class MainDataService {
   // ensures consistency
   setNewLoginData(logindata?: LoginData) {
     const myLoginData: LoginData = {
-      logintoken: this.standardLoginData.logintoken,
-      persontoken: this.standardLoginData.persontoken,
-      mode: this.standardLoginData.mode,
-      groupname: this.standardLoginData.groupname,
-      loginname: this.standardLoginData.loginname,
-      workspaceName: this.standardLoginData.workspaceName,
-      booklets: this.standardLoginData.booklets,
-      code: this.standardLoginData.code,
-      booklet: this.standardLoginData.booklet,
-      bookletlabel: this.standardLoginData.bookletlabel
+      logintoken: MainDataService.defaultLoginData.logintoken,
+      persontoken: MainDataService.defaultLoginData.persontoken,
+      mode: MainDataService.defaultLoginData.mode,
+      groupname: MainDataService.defaultLoginData.groupname,
+      loginname: MainDataService.defaultLoginData.loginname,
+      workspaceName: MainDataService.defaultLoginData.workspaceName,
+      booklets: MainDataService.defaultLoginData.booklets,
+      code: MainDataService.defaultLoginData.code,
+      booklet: MainDataService.defaultLoginData.booklet,
+      bookletlabel: MainDataService.defaultLoginData.bookletlabel,
+      costumTexts: MainDataService.defaultLoginData.costumTexts // always ignored except right after getting from backend!
     };
 
     if (logindata) {
@@ -138,25 +167,30 @@ export class MainDataService {
   }
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  setSysConfig(sc: KeyValuePair) {
-    this._sysConfig = sc;
+  setCostumTextsApp(sc: KeyValuePair = {}) {
+    this.refreshCostumTexts = false;
+    this._costumTextsApp = sc;
+    this.refreshCostumTexts = true;
   }
-
-  getSysConfigValue(key: SysConfigKey): string {
-    if (this._sysConfig !== null) {
-      if (this._sysConfig.hasOwnProperty(key)) {
-        return this._sysConfig[key];
+  setCostumTextsLogin(sc: KeyValuePair = {}) {
+    this.refreshCostumTexts = false;
+    this._costumTextsLogin = sc;
+    this.refreshCostumTexts = true;
+  }
+  getCostumText(key: string): string {
+    if (this._costumTextsLogin) {
+      if (this._costumTextsLogin.hasOwnProperty(key)) {
+        return this._costumTextsLogin[key];
       }
     }
-    switch (key) {
-      case SysConfigKey.testEndButtonText: return 'Test beenden';
-      case SysConfigKey.bookletSelectPrompt: return 'Bitte wählen';
-      case SysConfigKey.bookletSelectTitle: return 'Bitte wählen';
-      case SysConfigKey.bookletSelectPromptOne: return 'Bitte klick auf die Schaltfläche links, um den Test zu starten!';
-      case SysConfigKey.bookletSelectPromptMany: return 'Bitte klick auf eine der Schaltflächen links, um einen Test zu starten!';
-      case SysConfigKey.codeInputPrompt: return 'Bitte den Personencode eingeben!';
-      case SysConfigKey.codeInputTitle: return 'Personencode eingeben';
+    if (this._costumTextsApp) {
+      if (this._costumTextsApp.hasOwnProperty(key)) {
+        return this._costumTextsApp[key];
+      }
     }
-    return '?';
+    if (MainDataService.defaultCostumTexts.hasOwnProperty(key)) {
+        return MainDataService.defaultCostumTexts[key];
+    }
+    return key;
   }
 }
