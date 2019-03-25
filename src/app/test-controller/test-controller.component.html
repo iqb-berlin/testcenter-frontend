@@ -5,10 +5,10 @@
 </div>
 <div id="buttonsContainer" fxLayout="row wrap" fxLayoutAlign="end center">
   <p class="timer" *ngIf="tcs.mode !== 'hot'">{{ timerValue?.timeLeftString }}</p>
-  <button mat-fab [disabled]="!(tcs.unitPrevEnabled$ | async)" color="accent" (click)="tcs.setUnitNavigationRequest('#previous')" matTooltip="Zurück">
+  <button mat-fab [disabled]="!(tcs.unitPrevEnabled$ | async)" *ngIf="tcs.navArrows" color="accent" (click)="tcs.setUnitNavigationRequest('#previous')" matTooltip="Zurück">
     <i class="material-icons">chevron_left</i>
   </button>
-  <div *ngIf="tcs.showNavButtons" fxLayout="row" fxLayoutAlign="start center">
+  <div *ngIf="tcs.navButtons" fxLayout="row" fxLayoutAlign="start center">
     <div *ngFor="let u of (tcs.unitListForNaviButtons$ | async)">
       <div fxLayout="column" fxLayoutAlign="start center">
           <button (click)="gotoUnit(u.sequenceId)" class="unit-button" [disabled]="u.disabled">{{ u.label }}</button>
@@ -17,7 +17,7 @@
       </div>
     </div>
   </div>
-  <button mat-fab [disabled]="!(tcs.unitNextEnabled$ | async)" color="accent" (click)="tcs.setUnitNavigationRequest('#next')" matTooltip="Weiter">
+  <button mat-fab [disabled]="!(tcs.unitNextEnabled$ | async)" *ngIf="tcs.navArrows" color="accent" (click)="tcs.setUnitNavigationRequest('#next')" matTooltip="Weiter">
     <i class="material-icons">chevron_right</i>
   </button>
   <button mat-button (click)="showReviewDialog()" *ngIf="tcs.mode === 'review'" matTooltip="Kommentar senden">

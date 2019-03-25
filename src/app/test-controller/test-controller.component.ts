@@ -177,27 +177,61 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             if (bookletConfigElements.length > 0) {
               const bookletConfigs = bookletConfigElements[0].children;
               for (let childIndex = 0; childIndex < bookletConfigs.length; childIndex++) {
-                if (bookletConfigs[childIndex].nodeName === 'NavPolicy') {
-                  const configParameter = bookletConfigs[childIndex].getAttribute('parameter');
-                  if ((typeof configParameter !== 'undefined') && (configParameter !== null)) {
-                    if (configParameter.toUpperCase() === 'NextOnlyIfPresentationComplete'.toUpperCase()) {
-                      this.tcs.navPolicyNextOnlyIfPresentationComplete = true;
+                const configParameter = bookletConfigs[childIndex].getAttribute('parameter');
+                const configValue = bookletConfigs[childIndex].textContent;
+                switch (bookletConfigs[childIndex].nodeName) {
+                  // ----------------------
+                  case 'NavPolicy':
+                    if (configParameter) {
+                      if (configParameter.toUpperCase() === 'NextOnlyIfPresentationComplete'.toUpperCase()) {
+                        this.tcs.navPolicyNextOnlyIfPresentationComplete = true;
+                      }
                     }
-                  }
-                } else if (bookletConfigs[childIndex].nodeName === 'ShowNaviButtons') {
-                  const configParameter = bookletConfigs[childIndex].getAttribute('parameter');
-                  if ((typeof configParameter !== 'undefined') && (configParameter !== null)) {
-                    if (configParameter === '1') {
-                      this.tcs.showNavButtons = true;
+                    break;
+                  // ----------------------
+                  case 'ShowNaviButtons':
+                  case 'NavButtons':
+                    if (configParameter) {
+                      switch (configParameter.toUpperCase()) {
+                        case '1':
+                        case 'ON':
+                          this.tcs.navButtons = true;
+                          this.tcs.navArrows = true;
+                          break;
+                        case 'OFF':
+                          this.tcs.navButtons = false;
+                          this.tcs.navArrows = false;
+                          break;
+                        case 'ARROWSONLY': // default
+                          this.tcs.navButtons = false;
+                          this.tcs.navArrows = true;
+                          break;
+                        default:
+                          console.log('unknown booklet configParameter NavButtons "' + configParameter + '"');
+                          break;
+                      }
                     }
-                  }
-                } else if (bookletConfigs[childIndex].nodeName === 'LockOnlyIfResponsesComplete') {
-                  const configParameter = bookletConfigs[childIndex].getAttribute('parameter');
-                  if ((typeof configParameter !== 'undefined') && (configParameter !== null)) {
-                    if (configParameter === '1') {
-                      this.tcs.LockOnlyIfResponsesComplete = true;
+                    break;
+                  // ----------------------
+                  case 'PageNavBar':
+                    if (configParameter) {
+                      if (configParameter.toUpperCase() === 'OFF') {
+                        this.tcs.pageNav = false;
+                      }
                     }
-                  }
+                    break;
+                  // ----------------------
+                  case 'Logging':
+                    if (configParameter) {
+                      if (configParameter.toUpperCase() === 'OFF') {
+                        this.tcs.logging = false;
+                      }
+                    }
+                    break;
+                  // ----------------------
+                  default:
+                    console.log('unknown booklet config "' + bookletConfigs[childIndex].nodeName + '"');
+                    break;
                 }
               }
             }

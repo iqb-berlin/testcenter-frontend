@@ -38,29 +38,20 @@ export class UnitActivateGuard implements CanActivate {
       checkPC = this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId;
     }
     if (checkPC) {
-      if (this.tcs.hasUnitPresentationComplete(this.tcs.currentUnitSequenceId)) {
-        const pcValue = this.tcs.getUnitPresentationComplete(this.tcs.currentUnitSequenceId);
-        if (pcValue === 'yes') {
-          return of(true);
-        } else {
-          if (this.tcs.mode === 'hot') {
-            const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-              width: '500px',
-              // height: '300px',
-              data:  <ConfirmDialogData>{
-                title: this.getCostumText('booklet_msgPresentationNotCompleteTitle'),
-                content: this.getCostumText('booklet_msgPresentationNotCompleteText'),
-                confirmbuttonlabel: 'OK',
-                confirmbuttonreturn: false
-              }
-            });
-            return dialogCDRef.afterClosed().pipe(map(ok => false));
-          } else {
-            this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden (PresentationNotComplete).',
-                'Weiterblättern', {duration: 3000});
-            return of(true);
+      let myreturn = true;
+      let checkUnitSequenceId = newUnit.unitDef.sequenceId - 1;
+      while (myreturn && (checkUnitSequenceId >= this.tcs.currentUnitSequenceId)) {
+        if (this.tcs.hasUnitPresentationComplete(checkUnitSequenceId)) {
+          if (this.tcs.getUnitPresentationComplete(checkUnitSequenceId) !== 'yes') {
+            myreturn = false;
           }
+        } else {
+          myreturn = false;
         }
+        checkUnitSequenceId -= 1;
+      }
+      if (myreturn) {
+        return of(true);
       } else {
         if (this.tcs.mode === 'hot') {
           const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
@@ -70,7 +61,8 @@ export class UnitActivateGuard implements CanActivate {
               title: this.getCostumText('booklet_msgPresentationNotCompleteTitle'),
               content: this.getCostumText('booklet_msgPresentationNotCompleteText'),
               confirmbuttonlabel: 'OK',
-              confirmbuttonreturn: false
+              confirmbuttonreturn: false,
+              showcancel: false
             }
           });
           return dialogCDRef.afterClosed().pipe(map(ok => false));
@@ -101,6 +93,7 @@ export class UnitActivateGuard implements CanActivate {
 
         const dialogRef = this.startLockDialog.open(StartLockInputComponent, {
           width: '500px',
+          autoFocus: true,
           data: <StartLockData>{
             title: this.getCostumText('booklet_codeToEnterTitle'),
             prompt: this.getCostumText('booklet_codeToEnterPrompt'),
@@ -114,6 +107,7 @@ export class UnitActivateGuard implements CanActivate {
               } else {
                 const codeData = result as CodeInputData[];
                 let codesOk = true;
+                console.log(codeData);
                 for (const c of codeData) {
                   if (c.value.toUpperCase().trim() !== c.code) {
                     codesOk = false;
@@ -160,7 +154,8 @@ export class UnitActivateGuard implements CanActivate {
             title: this.getCostumText('booklet_warningLeaveTimerBlockTitle'),
             content: this.getCostumText('booklet_warningLeaveTimerBlockPrompt'),
             confirmbuttonlabel: 'Trotzdem weiter',
-            confirmbuttonreturn: true
+            confirmbuttonreturn: true,
+            showcancel: true
           }
         });
         return dialogCDRef.afterClosed().pipe(
@@ -196,12 +191,12 @@ export class UnitActivateGuard implements CanActivate {
 
         const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
           width: '500px',
-          // height: '300px',
           data:  <ConfirmDialogData>{
             title: this.getCostumText('booklet_warningLeaveTimerBlockTitle'),
             content: this.getCostumText('booklet_warningLeaveTimerBlockTextPrompt'),
             confirmbuttonlabel: 'Trotzdem weiter',
-            confirmbuttonreturn: true
+            confirmbuttonreturn: true,
+            showcancel: true
           }
         });
         return dialogCDRef.afterClosed().pipe(

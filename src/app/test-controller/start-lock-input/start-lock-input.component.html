@@ -4,12 +4,14 @@
   <mat-dialog-content>
         <mat-form-field *ngFor="let c of data.codes" fxLayout="column">
           <p>{{ c.prompt }}</p>
-          <input matInput [formControlName]="c.testletId" [(ngModel)]="c.value">
+          <input matInput [formControlName]="c.testletId" [(ngModel)]="c.value" (keyup.enter)="close()">
         </mat-form-field>
   </mat-dialog-content>
 
   <mat-dialog-actions>
-    <button mat-raised-button color="primary" type="submit" [mat-dialog-close]="data.codes">Weiter</button>
+    <button mat-raised-button #okButton color="primary"
+        [disabled]="startkeyform.invalid"
+        type="submit" [mat-dialog-close]="data.codes">Weiter</button>
     <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
   </mat-dialog-actions>
 </form>

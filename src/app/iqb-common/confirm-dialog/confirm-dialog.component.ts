@@ -7,6 +7,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
   styleUrls: ['./confirm-dialog.component.css']
 })
 export class ConfirmDialogComponent implements OnInit {
+  public showcancel = true;
 
   constructor(@Inject(MAT_DIALOG_DATA) public confirmdata: ConfirmDialogData) {
 
@@ -19,6 +20,9 @@ export class ConfirmDialogComponent implements OnInit {
     if ((typeof this.confirmdata.confirmbuttonlabel === 'undefined') || (this.confirmdata.confirmbuttonlabel.length === 0)) {
       this.confirmdata.confirmbuttonlabel = 'Bestätigen';
     }
+    if (!this.confirmdata.showcancel) {
+      this.showcancel = false;
+    }
   }
 
 }
@@ -27,4 +31,5 @@ export interface ConfirmDialogData {
   title: string;
   content: string;
   confirmbuttonlabel: string;
+  showcancel: boolean;
 }

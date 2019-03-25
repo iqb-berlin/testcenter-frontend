@@ -2,15 +2,15 @@
     {{ unitTitle }}
 </div>
 <div id="iFrameHost" iqbResizeIFrameChild class="unit-body">
-    
+
 </div>
-<div id="pageNav" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px">
-   
+<div id="pageNav" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px" *ngIf="tcs.pageNav">
+
     <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="showPageNav">
         <div id="pageNavPrompt">
             Wähle hier andere Seiten dieser Aufgabe:
         </div>
-    
+
         <div *ngFor="let p of pageList">
             <button *ngIf="p.type === '#previous'" (click)="gotoPage(p.type)" [disabled]="p.disabled" fxLayout="row" fxLayoutAlign="center center">
                 <i class="material-icons">chevron_left</i>

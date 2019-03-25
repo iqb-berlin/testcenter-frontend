@@ -22,6 +22,7 @@ export class TestControllerService {
   public minUnitSequenceId = 0;
   public loginname = '';
   public mode = '';
+  public logging = true;
 
   public navigationRequest$ = new Subject<string>();
   public maxTimeTimer$ = new Subject<MaxTimerData>();
@@ -35,8 +36,9 @@ export class TestControllerService {
   public unitNextEnabled$ = new BehaviorSubject<boolean>(false);
   public unitListForNaviButtons$ = new BehaviorSubject<UnitNaviButtonData[]>([]);
   public navPolicyNextOnlyIfPresentationComplete = false;
-  public showNavButtons = false;
-  public LockOnlyIfResponsesComplete = false;
+  public navButtons = false;
+  public navArrows = true;
+  public pageNav = true;
 
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -44,7 +46,7 @@ export class TestControllerService {
   public set currentUnitSequenceId(v: number) {
     this.unitPrevEnabled$.next(v > this.minUnitSequenceId);
     this.unitNextEnabled$.next(v < this.maxUnitSequenceId);
-    if (this.rootTestlet && this.showNavButtons) {
+    if (this.rootTestlet && this.navButtons) {
       const myUnitListForNaviButtons: UnitNaviButtonData[] = [];
       for (let sequ = 1; sequ <= this.rootTestlet.getMaxSequenceId(); sequ++) {
         const myUnitData = this.rootTestlet.getUnitAt(sequ);
@@ -112,6 +114,7 @@ export class TestControllerService {
     this.rootTestlet = null;
     this.maxUnitSequenceId = 0;
     this.mode = '';
+    this.logging = true;
     this.loginname = '';
     this.currentUnitSequenceId = 0;
     this.currentUnitDbKey = '';
@@ -126,7 +129,9 @@ export class TestControllerService {
     this.LastMaxTimerState = {};
     this.unitListForNaviButtons$.next([]);
     this.navPolicyNextOnlyIfPresentationComplete = false;
-    this.showNavButtons = false;
+    this.navButtons = false;
+    this.navArrows = true;
+    this.pageNav = true;
     this._costumTexts = {};
   }
 
@@ -199,7 +204,7 @@ export class TestControllerService {
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
   public addBookletLog(logKey: LogEntryKey, entry = '') {
-    if (this.mode !== 'review') {
+    if ((this.mode !== 'review') && this.logging) {
       this.bs.addBookletLog(this.bookletDbId, Date.now(),
             entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey).subscribe(ok => {
         if (ok instanceof ServerError) {
@@ -218,7 +223,7 @@ export class TestControllerService {
     }
   }
   public addUnitLog(unitDbKey: string, logKey: LogEntryKey, entry = '') {
-    if (this.mode !== 'review') {
+    if ((this.mode !== 'review') && this.logging) {
       this.bs.addUnitLog(this.bookletDbId, Date.now(), unitDbKey,
             entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey).subscribe(ok => {
         if (ok instanceof ServerError) {

@@ -43,7 +43,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
 
   constructor(
-    private tcs: TestControllerService,
+    public tcs: TestControllerService,
     private mds: MainDataService,
     private route: ActivatedRoute
   ) {
@@ -205,7 +205,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
         }
 
         this.leaveWarning = false;
-
+        if (!this.tcs.pageNav) {
+          this.iFrameHostElement.style.bottom = '0px';
+        }
         this.iFrameHostElement.appendChild(this.iFrameItemplayer);
       }
     });
