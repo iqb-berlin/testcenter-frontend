@@ -21,7 +21,7 @@ export class MainDataService {
     bookletlabel: '',
     costumTexts: {}
   };
-  private static defaultCostumTexts = {
+  private static defaultCostumTexts: KeyValuePair = {
     'app_title': 'IQB-Testcenter',
     'app_loginErrorMsg': 'Die Anmeldedaten sind nicht korrekt.',
     'login_testEndButtonText': 'Test beenden',
@@ -189,7 +189,7 @@ export class MainDataService {
       }
     }
     if (MainDataService.defaultCostumTexts.hasOwnProperty(key)) {
-        return MainDataService.defaultCostumTexts[key];
+      return MainDataService.defaultCostumTexts[key];
     }
     return key;
   }

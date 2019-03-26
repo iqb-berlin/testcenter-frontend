@@ -1,11 +1,11 @@
 <form [formGroup]="startkeyform" fxLayout="column">
-  <h1 mat-dialog-title>Freigabewort</h1>
+  <h1 mat-dialog-title>{{ data.title }}</h1>
 
   <mat-dialog-content>
-        <mat-form-field *ngFor="let c of data.codes" fxLayout="column">
-          <p>{{ c.prompt }}</p>
-          <input matInput [formControlName]="c.testletId" [(ngModel)]="c.value" (keyup.enter)="close()">
-        </mat-form-field>
+    <mat-form-field *ngFor="let c of data.codes" fxLayout="column">
+      <p>{{ c.prompt }}</p>
+      <input matInput [formControlName]="c.testletId" [(ngModel)]="c.value" (keyup.enter)="close()">
+    </mat-form-field>
   </mat-dialog-content>
 
   <mat-dialog-actions>

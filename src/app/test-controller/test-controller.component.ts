@@ -158,7 +158,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
           const unitsElements = oDOM.documentElement.getElementsByTagName('Units');
           if (unitsElements.length > 0) {
-            const costumTextsElements = oDOM.documentElement.getElementsByTagName('CostumTexts');
+            const costumTextsElements = oDOM.documentElement.getElementsByTagName('CustomTexts');
             if (costumTextsElements.length > 0) {
               const costumTexts = costumTextsElements[0].children;
               const costumTextsForBooklet = {};
@@ -171,6 +171,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 }
               }
               this.tcs.setCostumTexts(costumTextsForBooklet);
+              console.log('##__##');
+              console.log(costumTextsForBooklet);
             }
 
             const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');

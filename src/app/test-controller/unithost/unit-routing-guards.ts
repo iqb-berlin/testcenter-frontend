@@ -107,7 +107,6 @@ export class UnitActivateGuard implements CanActivate {
               } else {
                 const codeData = result as CodeInputData[];
                 let codesOk = true;
-                console.log(codeData);
                 for (const c of codeData) {
                   if (c.value.toUpperCase().trim() !== c.code) {
                     codesOk = false;
