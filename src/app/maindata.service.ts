@@ -23,28 +23,28 @@ export class MainDataService {
   };
   private static defaultCostumTexts: KeyValuePair = {
     'app_title': 'IQB-Testcenter',
-    'app_loginErrorMsg': 'Die Anmeldedaten sind nicht korrekt.',
     'login_testEndButtonText': 'Test beenden',
-    'login_bookletSelectPrompt': 'Bitte wählen',
-    'login_bookletSelectTitle': 'Bitte wählen',
-    'login_bookletSelectPromptOne': 'Bitte klick auf die Schaltfläche links, um den Test zu starten!',
-    'login_bookletSelectPromptMany': 'Bitte klick auf eine der Schaltflächen links, um einen Test zu starten!',
+    'login_bookletSelectPrompt': 'Bitte wählen!',
+    'login_bookletSelectTitle': 'Bitte wählen!',
+    'login_bookletSelectPromptOne': 'Bitte klicke auf die Schaltfläche auf der linken Seite, um den Test zu starten!',
+    'login_bookletSelectPromptMany': 'Bitte klicke auf eine der Schaltflächen auf der linken Seite, um einen Test zu starten!',
     'login_codeInputPrompt': 'Bitte Log-in eingeben, der auf dem Zettel steht!',
     'login_codeInputTitle': 'Log-in eingeben',
     'booklet_msgPresentationNotCompleteTitle':
-        'Weiterblättern nicht möglich',
+        'Weiterblättern nicht möglich!',
     'booklet_msgPresentationNotCompleteText':
         'Du kannst erst weiterblättern, wenn Audio-Dateien vollständig abgespielt wurden '
         + 'und wenn du in allen Fenstern bis ganz nach unten gescrollt hast.',
-    'booklet_codeToEnterTitle': 'Freigabecode',
-    'booklet_codeToEnterPrompt': 'Bitte gib den Code ein, der angesagt wurde!',
+    'booklet_codeToEnterTitle': 'Freigabewort',
+    'booklet_codeToEnterPrompt': 'Bitte gib das Freigabewort ein, das angesagt wurde!',
     'booklet_msgSoonTimeOver5Minutes': 'Du hast noch 5 Minuten Zeit für die Bearbeitung der Aufgaben in diesem Abschnitt.',
     'booklet_msgSoonTimeOver1Minute': 'Du hast noch 1 Minute Zeit für die Bearbeitung der Aufgaben in diesem Abschnitt.',
     'booklet_msgTimerStarted': 'Die Bearbeitungszeit für diesen Abschnitt hat begonnen: ',
     'booklet_msgTimerCancelled': 'Die Bearbeitung des Abschnittes wurde abgebrochen.',
     'booklet_msgTimeOver': 'Die Bearbeitung des Abschnittes ist beendet.',
     'booklet_warningLeaveTimerBlockTitle': 'Aufgabenabschnitt verlassen?',
-    'booklet_warningLeaveTimerBlockPrompt': 'Wenn du jetzt weiterblätterst, ist die Bearbeitungszeit beendet und du kannst nicht zurück.',
+    'booklet_warningLeaveTimerBlockPrompt': 'Wenn du jetzt weiterblätterst, beendest ' +
+        'du vorzeitig die Bearbeitung dieses Aufgabenabschnitts und du kannst nicht mehr zurück.',
   };
 
   public loginData$ = new BehaviorSubject<LoginData>(MainDataService.defaultLoginData);

@@ -2,6 +2,7 @@
   <h1 mat-dialog-title>{{ data.title }}</h1>
 
   <mat-dialog-content>
+    <p>{{ data.prompt }}</p>
     <mat-form-field *ngFor="let c of data.codes" fxLayout="column">
       <p>{{ c.prompt }}</p>
       <input matInput [formControlName]="c.testletId" [(ngModel)]="c.value" (keyup.enter)="close()">

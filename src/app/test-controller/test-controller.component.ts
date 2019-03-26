@@ -490,7 +490,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 if (bookletData.laststate.hasOwnProperty(LastStateKey.LASTUNIT)) {
                   navTarget = bookletData.laststate[LastStateKey.LASTUNIT];
                 }
-                if (bookletData.laststate.hasOwnProperty(LastStateKey.MAXTIMELEFT)) {
+                if (bookletData.laststate.hasOwnProperty(LastStateKey.MAXTIMELEFT) && (loginData.mode === 'hot')) {
                   this.tcs.LastMaxTimerState = JSON.parse(bookletData.laststate[LastStateKey.MAXTIMELEFT]);
                 }
               }

@@ -1,31 +1,34 @@
-<div class="logo">
+<div id="buttonsContainer" fxLayout="row" fxLayoutAlign="space-between center">
   <a [routerLink]="['/']">
     <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
   </a>
-</div>
-<div id="buttonsContainer" fxLayout="row wrap" fxLayoutAlign="end center">
-  <p class="timer" *ngIf="tcs.mode !== 'hot'">{{ timerValue?.timeLeftString }}</p>
-  <button mat-fab [disabled]="!(tcs.unitPrevEnabled$ | async)" *ngIf="tcs.navArrows" color="accent" (click)="tcs.setUnitNavigationRequest('#previous')" matTooltip="Zurück">
-    <i class="material-icons">chevron_left</i>
-  </button>
-  <div *ngIf="tcs.navButtons" fxLayout="row" fxLayoutAlign="start center">
-    <div *ngFor="let u of (tcs.unitListForNaviButtons$ | async)">
-      <div fxLayout="column" fxLayoutAlign="start center">
-          <button (click)="gotoUnit(u.sequenceId)" class="unit-button" [disabled]="u.disabled">{{ u.label }}</button>
-          <span class="current-unit-dot" *ngIf="u.isCurrent"></span>
-          <span class="notcurrent-unit-dot" *ngIf="!u.isCurrent"></span>
+  <div fxLayout="row" fxLayoutAlign="end center">
+    <p class="timer" *ngIf="tcs.mode !== 'hot'">{{ timerValue?.timeLeftString }}</p>
+    <button mat-fab [disabled]="!(tcs.unitPrevEnabled$ | async)" *ngIf="tcs.navArrows" color="accent"
+        (click)="tcs.setUnitNavigationRequest('#previous')" matTooltip="Zurück" fxFlex="none">
+      <i class="material-icons">chevron_left</i>
+    </button>
+    <div *ngIf="tcs.navButtons" fxLayout="row wrap" fxLayoutAlign="start center" fxFlex="0 3 100%">
+      <div *ngFor="let u of (tcs.unitListForNaviButtons$ | async)">
+        <div fxLayout="column" fxLayoutAlign="start center">
+            <button (click)="gotoUnit(u.sequenceId)" class="unit-button" [disabled]="u.disabled">{{ u.label }}</button>
+            <span class="current-unit-dot" *ngIf="u.isCurrent"></span>
+            <span class="notcurrent-unit-dot" *ngIf="!u.isCurrent"></span>
+        </div>
       </div>
     </div>
+    <button mat-fab [disabled]="!(tcs.unitNextEnabled$ | async)" *ngIf="tcs.navArrows" color="accent"
+        (click)="tcs.setUnitNavigationRequest('#next')" matTooltip="Weiter" fxFlex="none">
+      <i class="material-icons">chevron_right</i>
+    </button>
+    <button mat-button (click)="showReviewDialog()" *ngIf="tcs.mode === 'review'" matTooltip="Kommentar senden" fxFlex="none">
+      <mat-icon>rate_review</mat-icon>
+    </button>
+    <button mat-button (click)="tcs.setUnitNavigationRequest('#end')"  *ngIf="tcs.mode !== 'hot'"
+          matTooltip="Zur Testheft-Auswahl zurückkehren" fxFlex="none">
+      <mat-icon>exit_to_app</mat-icon>
+    </button>
   </div>
-  <button mat-fab [disabled]="!(tcs.unitNextEnabled$ | async)" *ngIf="tcs.navArrows" color="accent" (click)="tcs.setUnitNavigationRequest('#next')" matTooltip="Weiter">
-    <i class="material-icons">chevron_right</i>
-  </button>
-  <button mat-button (click)="showReviewDialog()" *ngIf="tcs.mode === 'review'" matTooltip="Kommentar senden">
-    <mat-icon>rate_review</mat-icon>
-  </button>
-  <button mat-button (click)="tcs.setUnitNavigationRequest('#end')"  *ngIf="tcs.mode !== 'hot'" matTooltip="Zur Testheft-Auswahl zurückkehren">
-    <mat-icon>exit_to_app</mat-icon>
-  </button>
 </div>
 <div class="spinner-container" *ngIf="dataLoading">
   <mat-spinner></mat-spinner>
