@@ -41,12 +41,15 @@ export class UnitActivateGuard implements CanActivate {
       let myreturn = true;
       let checkUnitSequenceId = newUnit.unitDef.sequenceId - 1;
       while (myreturn && (checkUnitSequenceId >= this.tcs.currentUnitSequenceId)) {
-        if (this.tcs.hasUnitPresentationComplete(checkUnitSequenceId)) {
-          if (this.tcs.getUnitPresentationComplete(checkUnitSequenceId) !== 'yes') {
+        const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
+        if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
+          if (this.tcs.hasUnitPresentationComplete(checkUnitSequenceId)) {
+            if (this.tcs.getUnitPresentationComplete(checkUnitSequenceId) !== 'yes') {
+              myreturn = false;
+            }
+          } else {
             myreturn = false;
           }
-        } else {
-          myreturn = false;
         }
         checkUnitSequenceId -= 1;
       }
