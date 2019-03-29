@@ -185,7 +185,9 @@ export class StartComponent implements OnInit, OnDestroy {
           // no change in other data
         } else {
           this.mds.globalErrorMsg$.next(null);
+          this.mds.refreshCostumTexts = false;
           this.mds.setCostumTextsLogin(loginData.costumTexts);
+          this.mds.refreshCostumTexts = true;
           this.mds.setNewLoginData(loginData);
         }
         this.dataLoading = false;
