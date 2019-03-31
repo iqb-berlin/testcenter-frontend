@@ -30,11 +30,16 @@ export class MainDataService {
     'login_bookletSelectPromptMany': 'Bitte klicke auf eine der Schaltflächen auf der linken Seite, um einen Test zu starten!',
     'login_codeInputPrompt': 'Bitte Log-in eingeben, der auf dem Zettel steht!',
     'login_codeInputTitle': 'Log-in eingeben',
-    'booklet_msgPresentationNotCompleteTitle':
+    'booklet_msgPresentationNotCompleteTitleNext':
         'Weiterblättern nicht möglich!',
-    'booklet_msgPresentationNotCompleteText':
+    'booklet_msgPresentationNotCompleteTextNext':
         'Du kannst erst weiterblättern, wenn Audio-Dateien vollständig abgespielt wurden '
         + 'und wenn du in allen Fenstern bis ganz nach unten gescrollt hast.',
+    'booklet_msgPresentationNotCompleteTitlePrev':
+        'Zurückblättern - Warnung',
+    'booklet_msgPresentationNotCompleteTextPrev':
+        'Eine Audio-Datei ist noch nicht bis zu Ende abgespielt oder Seiten wurden noch nicht vollständig gezeigt. '
+        + 'Wenn du jetzt zurückblätterst, kannst Du später Audio-Dateien nicht nocheinmal starten.',
     'booklet_codeToEnterTitle': 'Freigabewort',
     'booklet_codeToEnterPrompt': 'Bitte gib das Freigabewort ein, das angesagt wurde!',
     'booklet_msgSoonTimeOver5Minutes': 'Du hast noch 5 Minuten Zeit für die Bearbeitung der Aufgaben in diesem Abschnitt.',

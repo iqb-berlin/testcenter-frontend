@@ -32,47 +32,77 @@ export class UnitActivateGuard implements CanActivate {
 
   // ****************************************************************************************
   checkAndSolve_PresentationCompleteCode(newUnit: UnitControllerData): Observable<Boolean> {
-    let checkPC = this.tcs.navPolicyNextOnlyIfPresentationComplete && this.tcs.currentUnitSequenceId > 0;
-    if (checkPC) {
-      // only check if target unit sequenceIf higher then current
-      checkPC = this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId;
-    }
-    if (checkPC) {
-      let myreturn = true;
-      let checkUnitSequenceId = newUnit.unitDef.sequenceId - 1;
-      while (myreturn && (checkUnitSequenceId >= this.tcs.currentUnitSequenceId)) {
-        const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
-        if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
-          if (this.tcs.hasUnitPresentationComplete(checkUnitSequenceId)) {
-            if (this.tcs.getUnitPresentationComplete(checkUnitSequenceId) !== 'yes') {
+    if (this.tcs.navPolicyNextOnlyIfPresentationComplete && this.tcs.currentUnitSequenceId > 0) {
+      if (this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
+        // go forwards ===================================
+        let myreturn = true;
+        let checkUnitSequenceId = newUnit.unitDef.sequenceId - 1;
+        while (myreturn && (checkUnitSequenceId >= this.tcs.currentUnitSequenceId)) {
+          const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
+          if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
+            if (this.tcs.hasUnitPresentationComplete(checkUnitSequenceId)) {
+              if (this.tcs.getUnitPresentationComplete(checkUnitSequenceId) !== 'yes') {
+                myreturn = false;
+              }
+            } else {
               myreturn = false;
             }
+          }
+          checkUnitSequenceId -= 1;
+        }
+        if (myreturn) {
+          return of(true);
+        } else {
+          if (this.tcs.mode === 'hot') {
+            const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+              width: '500px',
+              // height: '300px',
+              data:  <ConfirmDialogData>{
+                title: this.getCostumText('booklet_msgPresentationNotCompleteTitleNext'),
+                content: this.getCostumText('booklet_msgPresentationNotCompleteTextNext'),
+                confirmbuttonlabel: 'OK',
+                confirmbuttonreturn: false,
+                showcancel: false
+              }
+            });
+            return dialogCDRef.afterClosed().pipe(map(ok => false));
           } else {
-            myreturn = false;
+            this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden (PresentationNotComplete).',
+                'Weiterblättern', {duration: 3000});
+            return of(true);
           }
         }
-        checkUnitSequenceId -= 1;
-      }
-      if (myreturn) {
-        return of(true);
       } else {
-        if (this.tcs.mode === 'hot') {
-          const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-            width: '500px',
-            // height: '300px',
-            data:  <ConfirmDialogData>{
-              title: this.getCostumText('booklet_msgPresentationNotCompleteTitle'),
-              content: this.getCostumText('booklet_msgPresentationNotCompleteText'),
-              confirmbuttonlabel: 'OK',
-              confirmbuttonreturn: false,
-              showcancel: false
-            }
-          });
-          return dialogCDRef.afterClosed().pipe(map(ok => false));
+        // go backwards ===================================
+        let myreturn = true;
+        if (this.tcs.hasUnitPresentationComplete(this.tcs.currentUnitSequenceId)) {
+          if (this.tcs.getUnitPresentationComplete(this.tcs.currentUnitSequenceId) !== 'yes') {
+            myreturn = false;
+          }
         } else {
-          this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden (PresentationNotComplete).',
-              'Weiterblättern', {duration: 3000});
+          myreturn = false;
+        }
+        if (myreturn) {
           return of(true);
+        } else {
+          if (this.tcs.mode === 'hot') {
+            const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+              width: '500px',
+              // height: '300px',
+              data:  <ConfirmDialogData>{
+                title: this.getCostumText('booklet_msgPresentationNotCompleteTitlePrev'),
+                content: this.getCostumText('booklet_msgPresentationNotCompleteTextPrev'),
+                confirmbuttonlabel: 'Trotzdem zurück',
+                confirmbuttonreturn: true,
+                showcancel: true
+              }
+            });
+            return dialogCDRef.afterClosed();
+          } else {
+            this.snackBar.open('Im Hot-Modus käme eine Warnung (PresentationNotComplete).',
+                'Zurückblättern', {duration: 3000});
+            return of(true);
+          }
         }
       }
     } else {
@@ -309,7 +339,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       const currentUnitSequenceId: number = Number(currentRoute.params['u']);
       const currentUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(currentUnitSequenceId);
 
-      this.tcs.addUnitLog(currentUnit.unitDef.id, LogEntryKey.UNITLEAVE);
+      this.tcs.addUnitLog(currentUnit.unitDef.id, LogEntryKey.UNITTRYLEAVE);
     }
     return true;
   }
