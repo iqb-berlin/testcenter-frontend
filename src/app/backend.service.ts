@@ -1,63 +1,94 @@
+import { LoginData } from './app.interfaces';
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { tokenKey } from '@angular/core/src/view';
 
+// ============================================================================
+// class instead of interface to be able to use instanceof to check type
+export class ServerError {
+  public code: number;
+  public labelNice: string;
+  public labelSystem: string;
+  constructor(code: number, labelNice: string, labelSystem: string) {
+    this.code = code;
+    this.labelNice = labelNice;
+    this.labelSystem = labelSystem;
+  }
+}
+
+// ============================================================================
+export class ErrorHandler {
+  public static handle(errorObj: HttpErrorResponse): Observable<ServerError> {
+    let myreturn: ServerError = null;
+    if (errorObj.error instanceof ErrorEvent) {
+      myreturn = new ServerError(500, 'Verbindungsproblem', (<ErrorEvent>errorObj.error).message);
+    } else {
+      myreturn = new ServerError(errorObj.status, 'Verbindungsproblem', errorObj.message);
+      if (errorObj.status === 401) {
+        myreturn.labelNice = 'Zugriff verweigert - bitte (neu) anmelden!';
+      } else if (errorObj.status === 503) {
+        myreturn.labelNice = 'Achtung: Server meldet Datenbankproblem.';
+      }
+    }
+
+    return of(myreturn);
+  }
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class BackendService {
-  constructor(
-    @Inject('SERVER_URL') private serverUrl: string,
-    private http: HttpClient) {
-      this.serverUrl = this.serverUrl + 'php_start/';
-    }
+  private serverUrlSlim = '';
 
-  private errorHandler(error: Error | any): Observable<any> {
-    return Observable.throw(error);
+  constructor(
+      @Inject('SERVER_URL') private serverUrl: string,
+      private http: HttpClient) {
+
+    this.serverUrlSlim = this.serverUrl + 'php/';
+    this.serverUrl = this.serverUrl + 'php_start/';
   }
 
   // *******************************************************************
-  getAboutText(): Observable<string | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  login(name: string, password: string): Observable<LoginData | ServerError> {
     return this.http
-      .post<string>(this.serverUrl + 'getAboutText.php', httpOptions)
+      .post<LoginData>(this.serverUrlSlim + 'login.php/login', {n: name, p: password})
         .pipe(
-          catchError(this.handleError)
+          catchError(ErrorHandler.handle)
         );
   }
 
-  private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
-    const myreturn: ServerError = {
-      label: 'Fehler bei Datenübertragung',
-      code: errorObj.status
-    };
-    if (errorObj.status === 401) {
-      myreturn.label = 'Fehler: Zugriff verweigert - bitte (neu) anmelden!';
-    } else if (errorObj.status === 503) {
-      myreturn.label = 'Fehler: Server meldet Datenbankproblem.';
-    } else if (errorObj.error instanceof ErrorEvent) {
-      myreturn.label = 'Fehler: ' + (<ErrorEvent>errorObj.error).message;
-    } else {
-      myreturn.label = 'Fehler: ' + errorObj.message;
-    }
-
-    return Observable.throw(myreturn.label);
+  // *******************************************************************
+  logout(): Observable<boolean | ServerError> {
+    return this.http
+      .post<boolean>(this.serverUrlSlim + 'logout', {})
+        .pipe(
+          catchError(ErrorHandler.handle)
+        );
   }
+
+  // *******************************************************************
+  getLoginData(adminToken: string): Observable<LoginData | ServerError> {
+    return this.http
+      .post<LoginData>(this.serverUrlSlim + 'login.php/login', {at: adminToken})
+        .pipe(
+          catchError(ErrorHandler.handle)
+        );
+  }
+
+  // // *******************************************************************
+  // getAboutText(): Observable<string | ServerError> {
+  //   const httpOptions = {
+  //     headers: new HttpHeaders({
+  //       'Content-Type':  'application/json'
+  //     })
+  //   };
+  //   return this.http
+  //     .post<string>(this.serverUrl + 'getAboutText.php', httpOptions)
+  //       .pipe(
+  //         catchError(this.handleError)
+  //       );
+  // }
+
 }
-
-
-/////// * Interfaces * ///////
-
-export interface ServerError {
-  code: number;
-  label: string;
-}
-
-

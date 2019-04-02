@@ -1,6 +1,11 @@
 .mat-card {
   margin: 10px;
 }
+
 .status {
   background-color: lightgrey;
+}
+
+.error-msg {
+  color: brown;
 }

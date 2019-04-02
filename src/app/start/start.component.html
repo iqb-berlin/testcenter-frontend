@@ -1,3 +1,8 @@
+<div class="logo">
+  <a [routerLink]="['/']">
+    <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
+  </a>
+</div>
 <div class="page-body">
   <div class="spinner-container" *ngIf="dataLoading">
     <mat-spinner></mat-spinner>
@@ -6,15 +11,15 @@
 
 
     <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
-    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="!isLoggedIn">
+    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showLogin">
       <!-- - - - - - - - - - - - - - - - - -->
       <form [formGroup]="adminloginform" (ngSubmit)="login()">
         <mat-card-title>Anmelden</mat-card-title>
         <mat-card-content fxLayout="column">
-          <mat-form-field class="full-width">
+          <mat-form-field>
             <input matInput formControlName="testname" placeholder="Anmeldename" (keyup.enter)="pw.focus()">
           </mat-form-field>
-          <mat-form-field class="full-width">
+          <mat-form-field>
             <input matInput #pw type="password" formControlName="testpw" placeholder="Kennwort" (keyup.enter)="login()">
           </mat-form-field>
         </mat-card-content>
@@ -22,24 +27,25 @@
           <button mat-raised-button type="submit" [disabled]="adminloginform.invalid" color="primary">Weiter</button>
         </mat-card-actions>
       </form>
+      <p class="error-msg">{{ (mds.globalErrorMsg$ | async)?.labelNice }}</p>
     </mat-card>
 
-    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="isLoggedIn">
+    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="!showLogin">
       <mat-card-title>Studie wählen</mat-card-title>
       <mat-card-content>
         <div fxLayout="row" fxLayoutGap="10px" fxLayout="column">
-          <p *ngIf="workspaceList.length === 0">
+          <p *ngIf="(mds.loginData$ | async)?.workspaces.length === 0">
             Für diese Anmeldung wurden keine Studien gefunden.
           </p>
           <button mat-raised-button color="primary" (click)="buttonGotoWorkspace(ws)"
-            *ngFor="let ws of workspaceList">
+            *ngFor="let ws of (mds.loginData$ | async)?.workspaces">
               {{ws.name}}
           </button>
         </div>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button color="foreground" *ngIf="isSuperadmin" [routerLink]="['/superadmin']">Nutzer/Arbeitsbereiche</button>
-        <button mat-raised-button color="foreground" (click)="changeLogin()">Anmeldung ändern</button>
+        <button mat-raised-button color="foreground" *ngIf="(mds.loginData$ | async)?.is_superadmin" [routerLink]="['/superadmin']">Nutzer/Arbeitsbereiche</button>
+        <button mat-raised-button color="foreground" (click)="mds.setNewLoginData()">Anmeldung ändern</button>
       </mat-card-actions>
     </mat-card>
 
@@ -49,20 +55,19 @@
 
       <!-- - - - - - - - - - - - - - - - - -->
       <mat-card-content>
-        <div *ngIf="!isLoggedIn">
+        <div>
           <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
             betreibt auf diesen Seiten eine Pilotanwendung für das computerbasierte Leistungstesten von
             Schülerinnen und Schülern. Dies ist die Web-Anwendung zur Verwaltung der Testinhalte und -ergebnisse.
             Der Zugang ist nur möglich, wenn Sie vom IQB
             Zugangsdaten erhalten haben. Es sind keine weiteren Seiten öffentlich verfügbar.</p>
         </div>
-        <div *ngIf="isLoggedIn">
+        <div *ngIf="!showLogin">
           <ul>
-            <li>angemeldet als: {{ loginName }}</li>
-            <li *ngIf="isSuperadmin">Superkräfte, d. h. zum Ändern von Nutzerrechten und Arbeitsbereichen berechtigt</li>
+            <li>angemeldet als: {{ (mds.loginData$ | async)?.name }}</li>
+            <li *ngIf="(mds.loginData$ | async)?.is_superadmin">zum Ändern von Nutzerrechten und Arbeitsbereichen berechtigt</li>
           </ul>
         </div>
-        <p>{{ errorMessage }}</p>
       </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button color="foreground" [routerLink]="['/about']">Impressum/Datenschutz</button>

@@ -1,4 +1,3 @@
-import { MainDatastoreService } from './../../admin/maindatastore.service';
 import { EditworkspaceComponent } from './editworkspace/editworkspace.component';
 import { NewworkspaceComponent } from './newworkspace/newworkspace.component';
 import { BackendService, GetUserDataResponse, IdLabelSelectedData, ServerError } from '../backend.service';
@@ -34,7 +33,6 @@ export class WorkspacesComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(
-    private mds: MainDatastoreService,
     private bs: BackendService,
     private newworkspaceDialog: MatDialog,
     private editworkspaceDialog: MatDialog,
@@ -56,10 +54,7 @@ export class WorkspacesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.mds.isSuperadmin$.subscribe(i => {
-      this.isSuperadmin = i;
-      this.updateObjectList();
-    });
+    this.updateObjectList();
   }
 
   // ***********************************************************************************
@@ -75,9 +70,7 @@ export class WorkspacesComponent implements OnInit {
       if (typeof result !== 'undefined') {
         if (result !== false) {
           this.dataLoading = true;
-          this.bs.addWorkspace(
-              this.mds.adminToken$.getValue(),
-              (<FormGroup>result).get('name').value).subscribe(
+          this.bs.addWorkspace((<FormGroup>result).get('name').value).subscribe(
                 respOk => {
                   if (respOk) {
                     this.snackBar.open('Arbeitsbereich hinzugefügt', '', {duration: 1000});
@@ -119,9 +112,7 @@ export class WorkspacesComponent implements OnInit {
         if (typeof result !== 'undefined') {
           if (result !== false) {
             this.dataLoading = true;
-            this.bs.changeWorkspace(
-                this.mds.adminToken$.getValue(),
-                selectedRows[0].id,
+            this.bs.changeWorkspace(selectedRows[0].id,
                 (<FormGroup>result).get('name').value).subscribe(
                   respOk => {
                     if (respOk) {
@@ -174,7 +165,7 @@ export class WorkspacesComponent implements OnInit {
           this.dataLoading = true;
           const workspacesToDelete = [];
           selectedRows.forEach((r: IdLabelSelectedData) => workspacesToDelete.push(r.id));
-          this.bs.deleteWorkspaces(this.mds.adminToken$.getValue(), workspacesToDelete).subscribe(
+          this.bs.deleteWorkspaces(workspacesToDelete).subscribe(
             respOk => {
               if (respOk) {
                 this.snackBar.open('Arbeitsbereich/e gelöscht', '', {duration: 1000});
@@ -195,7 +186,7 @@ export class WorkspacesComponent implements OnInit {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
       this.dataLoading = true;
-      this.bs.getUsersByWorkspace(this.mds.adminToken$.getValue(), this.selectedWorkspaceId).subscribe(
+      this.bs.getUsersByWorkspace(this.selectedWorkspaceId).subscribe(
         (dataresponse: IdLabelSelectedData[]) => {
           this.UserlistDatasource = new MatTableDataSource(dataresponse);
           this.dataLoading = false;
@@ -217,7 +208,7 @@ export class WorkspacesComponent implements OnInit {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
       this.dataLoading = true;
-      this.bs.setUsersByWorkspace(this.mds.adminToken$.getValue(), this.selectedWorkspaceId, this.UserlistDatasource.data).subscribe(
+      this.bs.setUsersByWorkspace(this.selectedWorkspaceId, this.UserlistDatasource.data).subscribe(
         respOk => {
           if (respOk) {
             this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
@@ -235,7 +226,7 @@ export class WorkspacesComponent implements OnInit {
   updateObjectList() {
     if (this.isSuperadmin) {
       this.dataLoading = true;
-      this.bs.getWorkspaces(this.mds.adminToken$.getValue()).subscribe(
+      this.bs.getWorkspaces().subscribe(
         (dataresponse: IdLabelSelectedData[]) => {
           this.objectsDatasource = new MatTableDataSource(dataresponse);
           this.objectsDatasource.sort = this.sort;

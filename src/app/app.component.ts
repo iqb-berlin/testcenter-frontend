@@ -1,46 +1,39 @@
-import { environment } from '../environments/environment';
-import { Router } from '@angular/router';
+import { LoginData } from './app.interfaces';
+import { BackendService, ServerError } from './backend.service';
 import { Component, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material';
-import { FormGroup } from '@angular/forms';
-
-import { LoginStatusResponseData } from './admin/backend.service';
-import { MainDatastoreService } from './admin';
-import { IqbCommonModule, ConfirmDialogComponent, ConfirmDialogData } from './iqb-common';
+import { MainDataService } from './maindata.service';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
+  template: `<router-outlet></router-outlet>`,
   styleUrls: ['./app.component.scss']
 })
 
 
 export class AppComponent implements OnInit {
-  public title = '';
-  public isLoggedIn = false;
-  public isSuperadmin = false;
 
   constructor (
-    private mds: MainDatastoreService,
-    private router: Router,
-    public aboutDialog: MatDialog) { }
+    private mds: MainDataService,
+    private bs: BackendService) { }
 
   ngOnInit() {
-    this.mds.isAdmin$.subscribe(
-      is => this.isLoggedIn = is);
-
-    this.mds.pageTitle$.subscribe(
-      t => this.title = t);
-
-    this.mds.isSuperadmin$.subscribe(
-      is => this.isSuperadmin = is);
-
+    const adminToken = localStorage.getItem('at');
+    if (adminToken !== null) {
+      if (adminToken.length > 0) {
+        this.bs.getLoginData(adminToken).subscribe(
+          (admindata: LoginData) => {
+            this.mds.setNewLoginData(admindata);
+          }, (err: ServerError) => {
+            this.mds.setNewLoginData();
+            console.log(err);
+            this.mds.globalErrorMsg$.next(err);
+          }
+        );
+      } else {
+        this.mds.setNewLoginData();
+      }
+    } else {
+      this.mds.setNewLoginData();
+    }
   }
-
-
-  // *******************************************************************************************************
-  logout() {
-    this.mds.logout();
-  }
-
 }

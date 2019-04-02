@@ -5,7 +5,7 @@
 
 export const environment = {
   production: false,
-  testcenterUrl: 'https://itemdb2.iqb.hu-berlin.de/',
+  testcenterUrl: 'https://itemdb2.iqb.hu-berlin.de/admin/',
   appName: 'IQB-Testcenter Verwaltung',
   appPublisher: 'IQB - Institut zur Qualitätsentwicklung im Bildungswesen',
   appVersion: '0.5 (dev)'

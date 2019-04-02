@@ -14,15 +14,15 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { IqbCommonModule } from './iqb-common';
-import { AdminModule } from './admin';
-import { HomeComponent } from './home/home.component';
+import { WorkspaceModule } from './workspace';
+import { StartComponent } from './start/start.component';
 import { SuperadminModule } from './superadmin';
 import { FlexLayoutModule } from "@angular/flex-layout";
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
+    StartComponent,
     AboutComponent
   ],
   imports: [
@@ -42,7 +42,7 @@ import { FlexLayoutModule } from "@angular/flex-layout";
     MatTabsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    AdminModule,
+    WorkspaceModule,
     SuperadminModule,
     AppRoutingModule,
     IqbCommonModule,

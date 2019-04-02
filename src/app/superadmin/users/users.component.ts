@@ -1,4 +1,3 @@
-import { MainDatastoreService } from './../../admin/maindatastore.service';
 import { NewpasswordComponent } from './newpassword/newpassword.component';
 import { NewuserComponent } from './newuser/newuser.component';
 import { BackendService, GetUserDataResponse, IdLabelSelectedData, ServerError } from '../backend.service';
@@ -33,7 +32,6 @@ export class UsersComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(
-    private mds: MainDatastoreService,
     private bs: BackendService,
     private newuserDialog: MatDialog,
     private newpasswordDialog: MatDialog,
@@ -49,10 +47,7 @@ export class UsersComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.mds.isSuperadmin$.subscribe(i => {
-      this.isSuperadmin = i;
-      this.updateObjectList();
-    });
+    this.updateObjectList();
   }
 
   // ***********************************************************************************
@@ -67,9 +62,7 @@ export class UsersComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (typeof result !== 'undefined') {
         if (result !== false) {
-          this.bs.addUser(
-              this.mds.adminToken$.getValue(),
-              (<FormGroup>result).get('name').value,
+          this.bs.addUser((<FormGroup>result).get('name').value,
               (<FormGroup>result).get('pw').value).subscribe(
                 respOk => {
                   if (respOk) {
@@ -110,9 +103,7 @@ export class UsersComponent implements OnInit {
         if (typeof result !== 'undefined') {
           if (result !== false) {
             this.dataLoading = true;
-            this.bs.changePassword(
-                this.mds.adminToken$.getValue(),
-                selectedRows[0]['name'],
+            this.bs.changePassword(selectedRows[0]['name'],
                 (<FormGroup>result).get('pw').value).subscribe(
                   respOk => {
                     if (respOk) {
@@ -164,7 +155,7 @@ export class UsersComponent implements OnInit {
           this.dataLoading = true;
           const usersToDelete = [];
           selectedRows.forEach((r: GetUserDataResponse) => usersToDelete.push(r.name));
-          this.bs.deleteUsers(this.mds.adminToken$.getValue(), usersToDelete).subscribe(
+          this.bs.deleteUsers(usersToDelete).subscribe(
             respOk => {
               if (respOk) {
                 this.snackBar.open('Nutzer gelöscht', '', {duration: 1000});
@@ -185,7 +176,7 @@ export class UsersComponent implements OnInit {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser.length > 0) {
       this.dataLoading = true;
-      this.bs.getWorkspacesByUser(this.mds.adminToken$.getValue(), this.selectedUser).subscribe(
+      this.bs.getWorkspacesByUser(this.selectedUser).subscribe(
         (dataresponse: IdLabelSelectedData[]) => {
           this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
           this.dataLoading = false;
@@ -207,7 +198,7 @@ export class UsersComponent implements OnInit {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser.length > 0) {
       this.dataLoading = true;
-      this.bs.setWorkspacesByUser(this.mds.adminToken$.getValue(), this.selectedUser, this.WorkspacelistDatasource.data).subscribe(
+      this.bs.setWorkspacesByUser(this.selectedUser, this.WorkspacelistDatasource.data).subscribe(
         respOk => {
           if (respOk) {
             this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
@@ -225,7 +216,7 @@ export class UsersComponent implements OnInit {
   updateObjectList() {
     if (this.isSuperadmin) {
       this.dataLoading = true;
-      this.bs.getUsers(this.mds.adminToken$.getValue()).subscribe(
+      this.bs.getUsers().subscribe(
         (dataresponse: GetUserDataResponse[]) => {
           this.objectsDatasource = new MatTableDataSource(dataresponse);
           this.objectsDatasource.sort = this.sort;

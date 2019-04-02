@@ -1,9 +1,16 @@
+<div id="buttonsContainer" fxLayout="row" fxLayoutAlign="space-between center">
+  <a [routerLink]="['/']">
+    <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
+  </a>
+  <div fxLayout="row" fxLayoutAlign="end center">
+    <p>{{ wds?.wsName }} ({{wds?.wsRole}})</p>
+  </div>
+</div>
 <div class="page-body">
   <div class="adminbackground">
 
-    <p class="communication-error-message" *ngIf="!isAdmin">{{ notLoggedInMessage }}</p>
 
-    <nav mat-tab-nav-bar *ngIf="isAdmin">
+    <nav mat-tab-nav-bar>
       <a mat-tab-link
           *ngFor="let link of navLinks"
           [routerLink]="link.path"

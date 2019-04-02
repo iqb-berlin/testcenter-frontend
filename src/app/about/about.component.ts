@@ -1,4 +1,3 @@
-import { MainDatastoreService } from './../admin/maindatastore.service';
 import { Component, Inject, OnInit } from '@angular/core';
 import { BackendService } from './../backend.service';
 
@@ -11,15 +10,13 @@ export class AboutComponent implements OnInit {
   constructor(
     @Inject('APP_NAME') private appName: string,
     @Inject('APP_PUBLISHER') private appPublisher: string,
-    @Inject('APP_VERSION') private appVersion: string,
-    private mds: MainDatastoreService,
-    private bs: BackendService
+    @Inject('APP_VERSION') private appVersion: string
   ) { }
 
   ngOnInit() {
-    this.mds.pageTitle$.next('');
-    this.bs.getAboutText().subscribe(t => this.myAboutText = t as string);
+    // this.mds.pageTitle$.next('');
+    // this.bs.getAboutText().subscribe(t => this.myAboutText = t as string);
   }
 
-  
+
 }

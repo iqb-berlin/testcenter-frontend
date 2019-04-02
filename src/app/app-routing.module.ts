@@ -1,15 +1,15 @@
 import { AboutComponent } from './about/about.component';
 import { SuperadminComponent } from './superadmin/superadmin.component';
-import { HomeComponent } from './home/home.component';
+import { StartComponent } from './start/start.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AdminComponent } from './admin';
+import { WorkspaceComponent } from './workspace';
 
 
 const routes: Routes = [
-  {path: '', redirectTo: 'home', pathMatch: 'full'},
-  {path: 'home', component: HomeComponent},
-  {path: 'admin', component: AdminComponent},
+  {path: '', redirectTo: 'start', pathMatch: 'full'},
+  {path: 'start', component: StartComponent},
+  {path: 'ws', component: WorkspaceComponent},
   {path: 'about', component: AboutComponent},
   {path: 'superadmin', component: SuperadminComponent}
 ];

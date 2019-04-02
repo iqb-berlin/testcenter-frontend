@@ -1,11 +1,13 @@
-import { MainDatastoreService } from './../maindatastore.service';
+import { ServerError } from './../../backend.service';
+import { WorkspaceDataService } from './../workspacedata.service';
+import { GetFileResponseData, CheckWorkspaceResponseData } from './../workspace.interfaces';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
   MessageDialogData, MessageType } from '../../iqb-common';
 import { DataSource } from '@angular/cdk/collections';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material';
-import { BackendService, GetFileResponseData, CheckWorkspaceResponseData, ServerError } from '../backend.service';
+import { BackendService } from '../backend.service';
 import { Input, Output, EventEmitter, Component, OnInit, Inject, ElementRef } from '@angular/core';
 import { NgModule, ViewChild } from '@angular/core';
 import { MatSort, MatDialog } from '@angular/material';
@@ -14,20 +16,15 @@ import { IqbFilesUploadQueueComponent, IqbFilesUploadInputForDirective } from '.
 
 
 @Component({
-  templateUrl: './myfiles.component.html',
-  styleUrls: ['./myfiles.component.css']
+  templateUrl: './files.component.html',
+  styleUrls: ['./files.component.css']
 })
-export class MyfilesComponent implements OnInit {
+export class FilesComponent implements OnInit {
   public serverfiles: MatTableDataSource<GetFileResponseData>;
   public displayedColumns = ['checked', 'filename', 'typelabel', 'filesize', 'filedatetime'];
   public uploadUrl = '';
   public fileNameAlias = 'fileforvo';
   public dataLoading = false;
-
-  // for iqb-FileUpload
-  private isAdmin = false;
-  public token = '';
-  public workspace = -1;
 
   // for workspace-check
   public checkErrors = [];
@@ -39,23 +36,16 @@ export class MyfilesComponent implements OnInit {
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private bs: BackendService,
-    private mds: MainDatastoreService,
+    private wds: WorkspaceDataService,
     public confirmDialog: MatDialog,
     public messsageDialog: MatDialog,
     public snackBar: MatSnackBar
   ) {
-    this.mds.isAdmin$.subscribe(i => {
-      this.isAdmin = i;
-    });
-    this.uploadUrl = this.serverUrl + 'admin/php_admin/uploadFile.php';
+    this.uploadUrl = this.serverUrl + 'php_admin/uploadFile.php';
   }
 
   ngOnInit() {
-    this.mds.workspaceId$.subscribe(ws => {
-      this.updateFileList();
-      this.workspace = ws;
-    });
-    this.mds.adminToken$.subscribe(token => this.token = token);
+    this.updateFileList();
   }
 
   // ***********************************************************************************
@@ -98,17 +88,20 @@ export class MyfilesComponent implements OnInit {
         if (result !== false) {
           // =========================================================
           this.dataLoading = true;
-          this.bs.deleteFiles(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue(), filesToDelete).subscribe(
-            (deletefilesresponse: string) => {
-              if ((deletefilesresponse.length > 5) && (deletefilesresponse.substr(0, 2) === 'e:')) {
-                this.snackBar.open(deletefilesresponse.substr(2), 'Fehler', {duration: 1000});
+          this.bs.deleteFiles(filesToDelete).subscribe(deletefilesresponse => {
+            if (deletefilesresponse instanceof ServerError) {
+              this.wds.setNewErrorMsg(deletefilesresponse as ServerError);
+            } else {
+              const deletefilesresponseOk = deletefilesresponse as string;
+              if ((deletefilesresponseOk.length > 5) && (deletefilesresponseOk.substr(0, 2) === 'e:')) {
+                this.snackBar.open(deletefilesresponseOk.substr(2), 'Fehler', {duration: 1000});
               } else {
-                this.snackBar.open(deletefilesresponse, '', {duration: 1000});
+                this.snackBar.open(deletefilesresponseOk, '', {duration: 1000});
                 this.updateFileList();
               }
-            }, (err: ServerError) => {
-              this.mds.updateAdminStatus('', '', [], false, err.label);
-            });
+              this.wds.setNewErrorMsg();
+            }
+          });
           // =========================================================
         }
       });
@@ -131,36 +124,24 @@ export class MyfilesComponent implements OnInit {
     this.checkWarnings = [];
     this.checkInfos = [];
 
-    if (this.isAdmin) {
-      const myWorkspaceId = this.mds.workspaceId$.getValue();
-      if (myWorkspaceId < 0) {
-        this.serverfiles = null;
+    this.dataLoading = true;
+    this.bs.getFiles().subscribe(
+      (filedataresponse: GetFileResponseData[]) => {
+        this.serverfiles = new MatTableDataSource(filedataresponse);
+        this.serverfiles.sort = this.sort;
         this.dataLoading = false;
-      } else {
-        this.dataLoading = true;
-        this.bs.getFiles(this.mds.adminToken$.getValue(), myWorkspaceId).subscribe(
-          (filedataresponse: GetFileResponseData[]) => {
-            this.serverfiles = new MatTableDataSource(filedataresponse);
-            this.serverfiles.sort = this.sort;
-            this.dataLoading = false;
-          }, (err: ServerError) => {
-            this.mds.updateAdminStatus('', '', [], false, err.label);
-            this.dataLoading = false;
-          }
-        );
+        this.wds.setNewErrorMsg();
+      }, (err: ServerError) => {
+        this.wds.setNewErrorMsg(err);
+        this.dataLoading = false;
       }
-    } else {
-      this.serverfiles = null;
-      this.dataLoading = false;
-    }
+    );
   }
 
   // ***********************************************************************************
   getDownloadRef(element: GetFileResponseData): string {
     return this.serverUrl
-        + 'admin/php_admin/getFile.php?at=' + this.mds.adminToken$.getValue()
-        + '&ws=' + this.mds.workspaceId$.getValue()
-        + '&t=' + element.type
+        + 'admin/php_admin/getFile.php?t=' + element.type
         + '&fn=' + element.filename;
   }
 
@@ -169,31 +150,21 @@ export class MyfilesComponent implements OnInit {
     this.checkWarnings = [];
     this.checkInfos = [];
 
-    if (this.isAdmin) {
-      const myWorkspaceId = this.mds.workspaceId$.getValue();
-      if (myWorkspaceId < 0) {
-        // this.serverfiles = null;
-        this.dataLoading = false;
-      } else {
-        this.dataLoading = true;
-        this.bs.checkWorkspace(this.mds.adminToken$.getValue(), myWorkspaceId).subscribe(
-          (checkResponse: CheckWorkspaceResponseData) => {
-            // this.serverfiles = new MatTableDataSource(filedataresponse);
-            // this.serverfiles.sort = this.sort;
-            this.checkErrors = checkResponse.errors;
-            this.checkWarnings = checkResponse.warnings;
-            this.checkInfos = checkResponse.infos;
+    this.dataLoading = true;
+    this.bs.checkWorkspace().subscribe(
+      (checkResponse: CheckWorkspaceResponseData) => {
+        // this.serverfiles = new MatTableDataSource(filedataresponse);
+        // this.serverfiles.sort = this.sort;
+        this.checkErrors = checkResponse.errors;
+        this.checkWarnings = checkResponse.warnings;
+        this.checkInfos = checkResponse.infos;
+        this.wds.setNewErrorMsg();
 
-            this.dataLoading = false;
-          }, (err: ServerError) => {
-            this.mds.updateAdminStatus('', '', [], false, err.label);
-            this.dataLoading = false;
-          }
-        );
+        this.dataLoading = false;
+      }, (err: ServerError) => {
+        this.wds.setNewErrorMsg(err);
+        this.dataLoading = false;
       }
-    } else {
-      // this.serverfiles = null;
-      this.dataLoading = false;
-    }
+    );
   }
 }

@@ -1,9 +1,11 @@
-import { BackendService, MonitorData, BookletsStarted } from './../backend.service';
-import { MainDatastoreService } from './../maindatastore.service';
+import { BookletsStarted } from './../workspace.interfaces';
+import { WorkspaceDataService } from './../workspacedata.service';
+import { BackendService } from './../backend.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSnackBar, MatSort, MatTableDataSource } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
+import { MonitorData } from '../workspace.interfaces';
 
 
 @Component({
@@ -15,29 +17,24 @@ export class MonitorComponent implements OnInit {
   displayedColumns: string[] = ['selectCheckbox', 'groupname', 'loginsPrepared',
           'personsPrepared', 'bookletsPrepared', 'bookletsStarted', 'bookletsLocked'];
   private monitorDataSource = new MatTableDataSource<MonitorData>([]);
-  private isAdmin = false;
   private tableselectionCheckbox = new SelectionModel<MonitorData>(true, []);
   private dataLoading = false;
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(
     private bs: BackendService,
-    private mds: MainDatastoreService,
+    private wds: WorkspaceDataService,
     public snackBar: MatSnackBar
-  ) {
-    this.mds.isAdmin$.subscribe(
-      i => this.isAdmin = i);
-  }
+  ) { }
 
   ngOnInit() {
-    this.mds.adminToken$.subscribe(at => this.updateTable());
-    this.mds.workspaceId$.subscribe(ws => this.updateTable());
+    this.updateTable();
   }
 
   updateTable() {
     this.dataLoading = true;
     this.tableselectionCheckbox.clear;
-    this.bs.getMonitorData(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue()).subscribe(
+    this.bs.getMonitorData().subscribe(
       (monitorData: MonitorData[]) => {
         this.dataLoading = false;
         this.monitorDataSource = new MatTableDataSource<MonitorData>(monitorData);
@@ -66,10 +63,7 @@ export class MonitorComponent implements OnInit {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.getBookletsStarted(
-            this.mds.adminToken$.getValue(),
-            this.mds.workspaceId$.getValue(),
-            selectedGroups).subscribe(bData => {
+      this.bs.getBookletsStarted(selectedGroups).subscribe(bData => {
 
           const bookletList = bData as BookletsStarted[];
           if (bookletList.length > 0) {
@@ -102,10 +96,7 @@ export class MonitorComponent implements OnInit {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.lockBooklets(
-            this.mds.adminToken$.getValue(),
-            this.mds.workspaceId$.getValue(),
-            selectedGroups).subscribe(success => {
+      this.bs.lockBooklets(selectedGroups).subscribe(success => {
               const ok = success as boolean;
               if (ok) {
                 this.snackBar.open('Testhefte wurden gesperrt.', 'Sperrung', {duration: 1000});
@@ -125,10 +116,7 @@ export class MonitorComponent implements OnInit {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.unlockBooklets(
-            this.mds.adminToken$.getValue(),
-            this.mds.workspaceId$.getValue(),
-            selectedGroups).subscribe(success => {
+      this.bs.unlockBooklets(selectedGroups).subscribe(success => {
               const ok = success as boolean;
               if (ok) {
                 this.snackBar.open('Testhefte wurden freigegeben.', 'Sperrung', {duration: 1000});
