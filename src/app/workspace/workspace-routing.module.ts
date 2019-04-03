@@ -11,7 +11,7 @@ const routes: Routes = [
     path: 'ws/:ws',
     component: WorkspaceComponent,
     children: [
-      {path: '', redirectTo: 'myfiles', pathMatch: 'full'},
+      {path: '', redirectTo: 'files', pathMatch: 'full'},
       {path: 'files', component: FilesComponent},
       {path: 'syscheck', component: SyscheckComponent},
       {path: 'monitor', component: MonitorComponent},

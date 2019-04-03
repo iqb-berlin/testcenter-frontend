@@ -23,6 +23,7 @@ import { MonitorComponent } from './monitor/monitor.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import {MatGridListModule} from '@angular/material/grid-list';
 import { SyscheckComponent } from './syscheck/syscheck.component';
+import { httpInterceptorProviders } from './workspace.interceptor';
 
 @NgModule({
   imports: [
@@ -66,6 +67,7 @@ import { SyscheckComponent } from './syscheck/syscheck.component';
   ],
   providers: [
     BackendService,
+    httpInterceptorProviders,
     WorkspaceDataService
   ],
 })

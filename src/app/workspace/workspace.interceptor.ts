@@ -25,7 +25,6 @@ export class WorkspaceInterceptor implements HttpInterceptor {
       }
     });
 
-    console.log('### # workspace.interceptor >' + requestA.headers.get('AuthToken'));
     return next.handle(requestA);
   }
 }

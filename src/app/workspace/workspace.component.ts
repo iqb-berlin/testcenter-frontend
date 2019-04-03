@@ -20,6 +20,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
   public pageTitle = '';
   private routingSubscription: Subscription = null;
+  private logindataSubscription: Subscription = null;
 
   // CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
   constructor(
@@ -31,7 +32,22 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   // CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
   ngOnInit() {
     this.routingSubscription = this.route.params.subscribe(params => {
-      this.wds.setWorkspaceId(Number(params['ws']));
+      const ws = Number(params['ws']);
+      this.wds.setWorkspaceId(ws);
+      if ((this.mds.adminToken.length > 0) && (ws > 0)) {
+        this.pageTitle = this.mds.getWorkspaceName(ws) + ' (' + this.mds.getWorkspaceRole(ws) + ')';
+      } else {
+        this.pageTitle = '';
+      }
+    });
+
+    this.logindataSubscription = this.mds.loginData$.subscribe(ld => {
+      const ws = this.wds.ws;
+      if (ws > 0) {
+        this.pageTitle = this.mds.getWorkspaceName(ws) + ' (' + this.mds.getWorkspaceRole(ws) + ')';
+      } else {
+        this.pageTitle = '';
+      }
     });
   }
 
@@ -39,6 +55,9 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
+    }
+    if (this.logindataSubscription !== null) {
+      this.logindataSubscription.unsubscribe();
     }
   }
 }

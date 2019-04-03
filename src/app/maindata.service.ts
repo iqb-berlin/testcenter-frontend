@@ -14,6 +14,16 @@ export class MainDataService {
     is_superadmin: false
   };
 
+  public get adminToken() : string {
+    const myLoginData = this.loginData$.getValue();
+    if (myLoginData) {
+      return myLoginData.admintoken;
+    } else {
+      return '';
+    }
+  }
+
+
   public loginData$ = new BehaviorSubject<LoginData>(MainDataService.defaultLoginData);
   public globalErrorMsg$ = new BehaviorSubject<ServerError>(null);
 

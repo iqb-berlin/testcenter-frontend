@@ -20,14 +20,8 @@ export class WorkspaceDataService {
   public workspaceId$ = new BehaviorSubject<number>(-1);
   public globalErrorMsg$ = new BehaviorSubject<ServerError>(null);
 
-  private _wsName : string;
-  public get wsName() : string {
-    return this._wsName;
-  }
-
-  private _wsRole : string;
-  public get wsRole() : string {
-    return this._wsRole;
+  public get ws() : number {
+    return this.workspaceId$.getValue();
   }
 
 
@@ -74,7 +68,5 @@ export class WorkspaceDataService {
   // *******************************************************************************************************
   setWorkspaceId(newId: number) {
     this.workspaceId$.next(newId);
-    this._wsName = this.mds.getWorkspaceName(newId);
-    this._wsRole = this.mds.getWorkspaceRole(newId);
   }
 }

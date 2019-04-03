@@ -18,6 +18,7 @@ import { WorkspaceModule } from './workspace';
 import { StartComponent } from './start/start.component';
 import { SuperadminModule } from './superadmin';
 import { FlexLayoutModule } from "@angular/flex-layout";
+import { httpInterceptorProviders } from './app.interceptor';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { FlexLayoutModule } from "@angular/flex-layout";
       provide: LocationStrategy,
       useClass: HashLocationStrategy
     },
-    BackendService
+    BackendService,
+    httpInterceptorProviders
   ],
   bootstrap: [AppComponent]
 })

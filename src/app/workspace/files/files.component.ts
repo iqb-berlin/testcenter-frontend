@@ -1,14 +1,16 @@
+import { LoginData } from './../../app.interfaces';
+import { MainDataService } from './../../maindata.service';
 import { ServerError } from './../../backend.service';
 import { WorkspaceDataService } from './../workspacedata.service';
 import { GetFileResponseData, CheckWorkspaceResponseData } from './../workspace.interfaces';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
   MessageDialogData, MessageType } from '../../iqb-common';
 import { DataSource } from '@angular/cdk/collections';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, Subscription, merge } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material';
 import { BackendService } from '../backend.service';
-import { Input, Output, EventEmitter, Component, OnInit, Inject, ElementRef } from '@angular/core';
+import { Input, Output, EventEmitter, Component, OnInit, Inject, ElementRef, OnDestroy } from '@angular/core';
 import { NgModule, ViewChild } from '@angular/core';
 import { MatSort, MatDialog } from '@angular/material';
 import { HttpEventType, HttpErrorResponse, HttpEvent } from '@angular/common/http';
@@ -19,12 +21,13 @@ import { IqbFilesUploadQueueComponent, IqbFilesUploadInputForDirective } from '.
   templateUrl: './files.component.html',
   styleUrls: ['./files.component.css']
 })
-export class FilesComponent implements OnInit {
+export class FilesComponent implements OnInit, OnDestroy {
   public serverfiles: MatTableDataSource<GetFileResponseData>;
   public displayedColumns = ['checked', 'filename', 'typelabel', 'filesize', 'filedatetime'];
   public uploadUrl = '';
   public fileNameAlias = 'fileforvo';
   public dataLoading = false;
+  private logindataSubscription: Subscription = null;
 
   // for workspace-check
   public checkErrors = [];
@@ -36,6 +39,7 @@ export class FilesComponent implements OnInit {
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private bs: BackendService,
+    private mds: MainDataService,
     private wds: WorkspaceDataService,
     public confirmDialog: MatDialog,
     public messsageDialog: MatDialog,
@@ -45,7 +49,11 @@ export class FilesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.updateFileList();
+    this.logindataSubscription = this.mds.loginData$.subscribe(ld => {
+        const ws = this.wds.ws;
+        let at = ld ? ld.admintoken : '';
+        this.updateFileList((ws <= 0) || (at.length === 0));
+    });
   }
 
   // ***********************************************************************************
@@ -119,23 +127,27 @@ export class FilesComponent implements OnInit {
   }
 
   // ***********************************************************************************
-  updateFileList() {
+  updateFileList(empty = false) {
     this.checkErrors = [];
     this.checkWarnings = [];
     this.checkInfos = [];
 
-    this.dataLoading = true;
-    this.bs.getFiles().subscribe(
-      (filedataresponse: GetFileResponseData[]) => {
-        this.serverfiles = new MatTableDataSource(filedataresponse);
-        this.serverfiles.sort = this.sort;
-        this.dataLoading = false;
-        this.wds.setNewErrorMsg();
-      }, (err: ServerError) => {
-        this.wds.setNewErrorMsg(err);
-        this.dataLoading = false;
-      }
-    );
+    if (empty) {
+      this.serverfiles = new MatTableDataSource([]);
+    } else {
+      this.dataLoading = true;
+      this.bs.getFiles().subscribe(
+        (filedataresponse: GetFileResponseData[]) => {
+          this.serverfiles = new MatTableDataSource(filedataresponse);
+          this.serverfiles.sort = this.sort;
+          this.dataLoading = false;
+          this.wds.setNewErrorMsg();
+        }, (err: ServerError) => {
+          this.wds.setNewErrorMsg(err);
+          this.dataLoading = false;
+        }
+      );
+    }
   }
 
   // ***********************************************************************************
@@ -166,5 +178,12 @@ export class FilesComponent implements OnInit {
         this.dataLoading = false;
       }
     );
+  }
+
+  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+  ngOnDestroy() {
+    if (this.logindataSubscription !== null) {
+      this.logindataSubscription.unsubscribe();
+    }
   }
 }

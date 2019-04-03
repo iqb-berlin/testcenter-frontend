@@ -37,15 +37,9 @@ export class BackendService {
   }
 
   // *******************************************************************
-  // Fehlerbehandlung beim Aufrufer
   getFiles(): Observable<GetFileResponseData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
     return this.http
-      .post<GetFileResponseData[]>(this.serverUrl + 'getFileList.php', {}, httpOptions)
+      .get<GetFileResponseData[]>(this.serverUrlSlim + 'filelist')
         .pipe(
           catchError(ErrorHandler.handle)
         );
