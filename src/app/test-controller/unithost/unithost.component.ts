@@ -1,7 +1,7 @@
 import { MainDataService } from './../../maindata.service';
-import { debounceTime, bufferTime, switchMap } from 'rxjs/operators';
+import { debounceTime, bufferTime, switchMap, takeWhile, timeout } from 'rxjs/operators';
 import { TestControllerService } from './../test-controller.service';
-import { Subscription, Subject } from 'rxjs';
+import { Subscription, Subject, interval, Observable } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
@@ -192,12 +192,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
         this.iFrameItemplayer.setAttribute('class', 'unitHost');
         this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
 
-        if (this.tcs.hasUnitDefinition(this.myUnitSequenceId)) {
-          this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: this.tcs.getUnitDefinition(this.myUnitSequenceId)};
-        } else {
-          this.pendingUnitDefinition = null;
-        }
-
         if (this.tcs.hasUnitRestorePoint(this.myUnitSequenceId)) {
           this.pendingUnitRestorePoint = {tag: this.itemplayerSessionId, value: this.tcs.getUnitRestorePoint(this.myUnitSequenceId)};
         } else {
@@ -208,7 +202,33 @@ export class UnithostComponent implements OnInit, OnDestroy {
         if (!this.tcs.pageNav) {
           this.iFrameHostElement.style.bottom = '0px';
         }
-        this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+
+        if (this.tcs.hasUnitDefinition(this.myUnitSequenceId)) {
+          this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: this.tcs.getUnitDefinition(this.myUnitSequenceId)};
+          console.log('hasUnitDefinition #1');
+          this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+        } else if (this.tcs.lazyloading) {
+          console.log('hasUnitDefinition #2');
+          const waiter = interval(1000)
+            .pipe(
+              takeWhile(data => this.tcs.hasUnitDefinition(this.myUnitSequenceId)),
+              timeout(5000)
+            );
+          waiter.subscribe(data => {
+            if (this.tcs.hasUnitDefinition(this.myUnitSequenceId)) {
+              console.log('hasUnitDefinition #3');
+              this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: this.tcs.getUnitDefinition(this.myUnitSequenceId)};
+            } else {
+              console.log('hasUnitDefinition #4');
+              this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: ''};
+            }
+            this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+          });
+        } else {
+          console.log('hasUnitDefinition #5');
+          this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: ''};
+          this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+        }
       }
     });
   }

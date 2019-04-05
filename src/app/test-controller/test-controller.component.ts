@@ -8,7 +8,7 @@ import { BackendService } from './backend.service';
 
 import { TestControllerService } from './test-controller.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { UnitDef, Testlet, UnitControllerData, EnvironmentData, MaxTimerData } from './test-controller.classes';
+import { UnitDef, Testlet, UnitControllerData, EnvironmentData, MaxTimerData, UnitDefLoadQueue } from './test-controller.classes';
 import { LastStateKey, LogEntryKey, BookletData, UnitData, MaxTimerDataType } from './test-controller.interfaces';
 import { Subscription, Observable, of, forkJoin, interval, timer } from 'rxjs';
 import { switchMap, takeUntil, map } from 'rxjs/operators';
@@ -32,6 +32,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private allUnitIds: string[] = [];
   private progressValue = 0;
   private loadedUnitCount = 0;
+  private unitLoadQueue: UnitDefLoadQueue;
 
   constructor (
     private mds: MainDataService,
@@ -41,7 +42,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private router: Router
   ) {
-    // this.unitPosSubsription = this.tcs.currentUnitPos$.subscribe(u => this.updateStatus());
+    this.unitLoadQueue = new UnitDefLoadQueue(this.bs, this.tcs);
   }
 
   private getCostumText(key: string): string {
@@ -191,11 +192,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     }
                     break;
                   // ----------------------
-                  case 'ShowNaviButtons':
                   case 'NavButtons':
                     if (configParameter) {
                       switch (configParameter.toUpperCase()) {
-                        case '1':
                         case 'ON':
                           this.tcs.navButtons = true;
                           this.tcs.navArrows = true;
@@ -227,6 +226,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     if (configParameter) {
                       if (configParameter.toUpperCase() === 'OFF') {
                         this.tcs.logging = false;
+                      }
+                    }
+                    break;
+                  // ----------------------
+                  case 'Loading':
+                    if (configParameter) {
+                      if (configParameter.toUpperCase() === 'LAZY') {
+                        this.tcs.lazyloading = true;
                       }
                     }
                     break;
@@ -324,7 +331,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                   if (defRefElements.length > 0) {
                     const defRefElement = defRefElements[0];
                     definitionRef = defRefElement.textContent;
-                    this.tcs.addUnitDefinition(sequenceId, '');
+                    // this.tcs.addUnitDefinition(sequenceId, '');
                     playerId = defRefElement.getAttribute('player');
                   }
                 }
@@ -342,17 +349,23 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               return this.loadPlayerOk(playerId).pipe(
                 switchMap(ok => {
                   if (ok && definitionRef.length > 0) {
-                    return this.bs.getResource(definitionRef).pipe(
-                      switchMap(def => {
-                        if (def instanceof ServerError) {
-                          console.log('error getting unit "' + myUnit.id + '": getting "' + definitionRef + '" failed');
-                          return of(false);
-                        } else {
-                          this.tcs.addUnitDefinition(sequenceId, def as string);
-                          myUnit.setCanEnter('y', '');
-                          return of(true);
-                        }
-                      }));
+                    if (this.tcs.lazyloading) {
+                      this.unitLoadQueue.addUnitDefToLoad(sequenceId, definitionRef);
+                      myUnit.setCanEnter('y', '');
+                      return of(true);
+                    } else {
+                      return this.bs.getResource(definitionRef).pipe(
+                        switchMap(def => {
+                          if (def instanceof ServerError) {
+                            console.log('error getting unit "' + myUnit.id + '": getting "' + definitionRef + '" failed');
+                            return of(false);
+                          } else {
+                            this.tcs.addUnitDefinition(sequenceId, def as string);
+                            myUnit.setCanEnter('y', '');
+                            return of(true);
+                          }
+                        }));
+                    }
                   } else {
                     if (ok) {
                       myUnit.setCanEnter('y', '');
@@ -528,7 +541,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                   if (loadingOk) {
                     // =====================
                     this.tcs.bookletDbId = loginData.booklet;
-                    this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
+                    if (this.tcs.lazyloading) {
+                      this.unitLoadQueue.setWaiterOff();
+                    } else {
+                      this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
+                    }
                     this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
                     if (navTarget) {
                       const navTargetNumber = Number(navTarget);

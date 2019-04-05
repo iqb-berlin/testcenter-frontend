@@ -2,7 +2,7 @@ import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
 import { Observable, of, BehaviorSubject, forkJoin } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { UnitData, BookletData, LastStateKey, MaxTimerDataType } from './test-controller.interfaces';
+import { UnitData, BookletData, LastStateKey, MaxTimerDataType, TaggedString, LogEntryKey } from './test-controller.interfaces';
 import { KeyValuePair } from '../app.interfaces';
 
 // .....................................................................
@@ -459,4 +459,63 @@ export class MaxTimerData {
 // 7777777777777777777777777777777777777777777777777777777777777
 export class BookletConfig {
   showMainNaviButtons: boolean;
+}
+
+// 7777777777777777777777777777777777777777777777777777777777777
+export class UnitDefLoadQueue {
+  private unitsToLoad: {[sequenceId: string]: string} = {};
+  private loading = false;
+  private waitForNewUnits = true;
+
+  // ---------------------------------------------
+  constructor (private bs: BackendService, private tcs: TestControllerService) {}
+
+  // ---------------------------------------------
+  private startLoad() {
+    if (!this.loading) {
+      // find next load request
+      let myUnitSequenceId = 0;
+      let myUnitDefinitionRef = '';
+      for (const unitSeqenceIdStr of Object.keys(this.unitsToLoad)) {
+        if (this.unitsToLoad[unitSeqenceIdStr]) {
+          myUnitSequenceId = Number(unitSeqenceIdStr);
+          myUnitDefinitionRef = this.unitsToLoad[unitSeqenceIdStr];
+          this.unitsToLoad[unitSeqenceIdStr] = null;
+          break;
+        }
+      }
+
+      if (myUnitSequenceId > 0) {
+        this.loading = true;
+        this.bs.getResource(myUnitDefinitionRef).subscribe(def => {
+          this.loading = false;
+          console.log('start loading ' + myUnitDefinitionRef);
+          if (def instanceof ServerError) {
+            console.log('error getting unit "' + myUnitSequenceId.toString() + '": getting "' + myUnitDefinitionRef + '" failed');
+          } else {
+            this.tcs.addUnitDefinition(myUnitSequenceId, def as string);
+            console.log('loading complete ' + myUnitDefinitionRef);
+            this.startLoad();
+          }
+        });
+      } else if (!this.waitForNewUnits) {
+        this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
+      }
+    }
+  }
+
+  // ---------------------------------------------
+  public addUnitDefToLoad(unitSequenceId: number, filename: string) {
+    this.unitsToLoad[unitSequenceId.toString()] = filename;
+    this.startLoad();
+  }
+
+  // ---------------------------------------------
+  public setWaiterOff() {
+    this.waitForNewUnits = false;
+    if (!this.loading) {
+      this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
+    }
+  }
+
 }

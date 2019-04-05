@@ -23,6 +23,7 @@ export class TestControllerService {
   public loginname = '';
   public mode = '';
   public logging = true;
+  public lazyloading = false;
 
   public navigationRequest$ = new Subject<string>();
   public maxTimeTimer$ = new Subject<MaxTimerData>();
@@ -132,6 +133,7 @@ export class TestControllerService {
     this.navButtons = false;
     this.navArrows = true;
     this.pageNav = true;
+    this.lazyloading = false;
     this._costumTexts = {};
   }
 
