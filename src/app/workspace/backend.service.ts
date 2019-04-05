@@ -1,6 +1,6 @@
 import { GetFileResponseData, CheckWorkspaceResponseData, BookletsStarted, SysCheckStatistics, ReviewData, LogData, UnitResponse, ResultData, MonitorData } from './workspace.interfaces';
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse, HttpUrlEncodingCodec } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 // import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { catchError } from 'rxjs/operators';
@@ -17,24 +17,6 @@ export class BackendService {
       this.serverUrl = this.serverUrl + 'php_admin/';
   }
 
-
-  // *******************************************************************
-  // Fehlerbehandlung beim Aufrufer
-  getFile(filetype: string, filename: string): Observable<GetFileResponseData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<GetFileResponseData[]>(this.serverUrl + 'getFile.php', {
-            ft: filetype,
-            fn: filename
-          }, httpOptions)
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
-  }
 
   // *******************************************************************
   getFiles(): Observable<GetFileResponseData[] | ServerError> {

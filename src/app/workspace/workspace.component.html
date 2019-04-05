@@ -2,9 +2,9 @@
   <a [routerLink]="['/']">
     <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
   </a>
-  <div fxLayout="row" fxLayoutAlign="end center">
-    <p>{{ pageTitle }}</p>
-  </div>
+  <div class="error-msg">{{ (mds.globalErrorMsg$ | async)?.labelNice }}</div>
+  <div>IQB-Testcenter Verwaltung</div>
+  <div>{{ pageTitle }}</div>
 </div>
 <div class="page-body">
   <div class="adminbackground">

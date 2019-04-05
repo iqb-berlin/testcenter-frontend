@@ -153,8 +153,10 @@ export class FilesComponent implements OnInit, OnDestroy {
   // ***********************************************************************************
   getDownloadRef(element: GetFileResponseData): string {
     return this.serverUrl
-        + 'admin/php_admin/getFile.php?t=' + element.type
-        + '&fn=' + element.filename;
+        + 'php/getFile.php?t=' + element.type
+        + '&fn=' + element.filename
+        + '&at=' + this.mds.adminToken
+        + '&ws=' + this.wds.ws.toString();
   }
 
   checkWorkspace() {
