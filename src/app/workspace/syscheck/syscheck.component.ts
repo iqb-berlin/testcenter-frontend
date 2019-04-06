@@ -1,10 +1,10 @@
 import { ConfirmDialogComponent, ConfirmDialogData } from './../../iqb-common/confirm-dialog/confirm-dialog.component';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { BackendService, SysCheckStatistics } from './../backend.service';
-import { MainDatastoreService } from './../maindatastore.service';
+import { BackendService } from './../backend.service';
 import { MatSnackBar, MatSort, MatTableDataSource, MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
+import { SysCheckStatistics } from '../workspace.interfaces';
 
 
 @Component({
@@ -23,24 +23,19 @@ export class SyscheckComponent implements OnInit {
 
   constructor(
     private bs: BackendService,
-    private mds: MainDatastoreService,
     private deleteConfirmDialog: MatDialog,
     public snackBar: MatSnackBar
   ) {
-    this.mds.isAdmin$.subscribe(
-      i => this.isAdmin = i);
   }
 
   ngOnInit() {
-    this.mds.adminToken$.subscribe(at => this.updateTable());
-    this.mds.workspaceId$.subscribe(ws => this.updateTable());
-    // console.log(saveAs);
+    this.updateTable();
   }
 
   updateTable() {
     this.dataLoading = true;
     this.tableselectionCheckbox.clear();
-    this.bs.getSysCheckReportList(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue()).subscribe(
+    this.bs.getSysCheckReportList().subscribe(
       (resultData: SysCheckStatistics[]) => {
         this.dataLoading = false;
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);
@@ -69,10 +64,7 @@ export class SyscheckComponent implements OnInit {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedReports.push(element.id);
       });
-      this.bs.getSysCheckReport(
-            this.mds.adminToken$.getValue(),
-            this.mds.workspaceId$.getValue(),
-            selectedReports, ';', '"').subscribe(
+      this.bs.getSysCheckReport(selectedReports, ';', '"').subscribe(
       (reportData: string[]) => {
         if (reportData.length > 0) {
           const lineDelimiter = '\n';
@@ -118,10 +110,7 @@ export class SyscheckComponent implements OnInit {
         if (result !== false) {
           // =========================================================
           this.dataLoading = true;
-          this.bs.deleteSysCheckReports(
-                this.mds.adminToken$.getValue(),
-                this.mds.workspaceId$.getValue(),
-                selectedReports).subscribe((deleteOk: boolean) => {
+          this.bs.deleteSysCheckReports(selectedReports).subscribe((deleteOk: boolean) => {
                   this.tableselectionCheckbox.clear();
                   this.dataLoading = false;
                 });

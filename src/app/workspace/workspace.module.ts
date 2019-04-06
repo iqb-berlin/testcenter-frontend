@@ -5,14 +5,14 @@ import { IqbCommonModule } from '../iqb-common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgModule, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MainDatastoreService } from './maindatastore.service';
+import { WorkspaceDataService } from './workspacedata.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 import { HttpClientModule } from '@angular/common/http';
-import { AdminRoutingModule } from './admin-routing.module';
-import { AdminComponent } from './admin.component';
-import { MyfilesComponent } from './myfiles/myfiles.component';
+import { WorkspaceRoutingModule } from './workspace-routing.module';
+import { WorkspaceComponent } from './workspace.component';
+import { FilesComponent } from './files/files.component';
 import { ResultsComponent } from './results/results.component';
 
 
@@ -23,12 +23,13 @@ import { MonitorComponent } from './monitor/monitor.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import {MatGridListModule} from '@angular/material/grid-list';
 import { SyscheckComponent } from './syscheck/syscheck.component';
+import { httpInterceptorProviders } from './workspace.interceptor';
 
 @NgModule({
   imports: [
     IqbFilesModule,
     CommonModule,
-    AdminRoutingModule,
+    WorkspaceRoutingModule,
     MatTableModule,
     MatTabsModule,
     MatIconModule,
@@ -55,19 +56,20 @@ import { SyscheckComponent } from './syscheck/syscheck.component';
     FlexLayoutModule
   ],
   exports: [
-    AdminComponent
+    WorkspaceComponent
   ],
   declarations: [
-    AdminComponent,
-    MyfilesComponent,
+    WorkspaceComponent,
+    FilesComponent,
     ResultsComponent,
     MonitorComponent,
     SyscheckComponent
   ],
   providers: [
     BackendService,
-    MainDatastoreService
+    httpInterceptorProviders,
+    WorkspaceDataService
   ],
 })
 
-export class AdminModule { }
+export class WorkspaceModule { }

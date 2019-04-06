@@ -1,10 +1,12 @@
+import { LogData } from './../workspace.interfaces';
+import { WorkspaceDataService } from './../workspacedata.service';
 import { ConfirmDialogComponent, ConfirmDialogData } from './../../iqb-common/confirm-dialog/confirm-dialog.component';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { BackendService, UnitResponse, ResultData, ReviewData, LogData } from './../backend.service';
-import { MainDatastoreService } from './../maindatastore.service';
+import { BackendService } from './../backend.service';
 import { MatSnackBar, MatSort, MatTableDataSource, MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
+import { ResultData, UnitResponse, ReviewData } from '../workspace.interfaces';
 
 
 @Component({
@@ -14,7 +16,6 @@ import { saveAs } from 'file-saver';
 export class ResultsComponent implements OnInit {
   displayedColumns: string[] = ['selectCheckbox', 'groupname', 'bookletsStarted', 'num_units_min', 'num_units_max', 'num_units_mean'];
   private resultDataSource = new MatTableDataSource<ResultData>([]);
-  private isAdmin = false;
   // prepared for selection if needed sometime
   private tableselectionCheckbox = new SelectionModel<ResultData>(true, []);
   private dataLoading = false;
@@ -23,24 +24,19 @@ export class ResultsComponent implements OnInit {
 
   constructor(
     private bs: BackendService,
-    private mds: MainDatastoreService,
+    private wds: WorkspaceDataService,
     private deleteConfirmDialog: MatDialog,
     public snackBar: MatSnackBar
-  ) {
-    this.mds.isAdmin$.subscribe(
-      i => this.isAdmin = i);
-  }
+  ) { }
 
   ngOnInit() {
-    this.mds.adminToken$.subscribe(at => this.updateTable());
-    this.mds.workspaceId$.subscribe(ws => this.updateTable());
-    // console.log(saveAs);
+    this.updateTable();
   }
 
   updateTable() {
     this.dataLoading = true;
     this.tableselectionCheckbox.clear();
-    this.bs.getResultData(this.mds.adminToken$.getValue(), this.mds.workspaceId$.getValue()).subscribe(
+    this.bs.getResultData().subscribe(
       (resultData: ResultData[]) => {
         this.dataLoading = false;
         this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
@@ -69,10 +65,7 @@ export class ResultsComponent implements OnInit {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.getResponses(
-            this.mds.adminToken$.getValue(),
-            this.mds.workspaceId$.getValue(),
-            selectedGroups).subscribe(
+      this.bs.getResponses(selectedGroups).subscribe(
       (responseData: UnitResponse[]) => {
         if (responseData.length > 0) {
           const columnDelimiter = ';';
@@ -125,10 +118,7 @@ export class ResultsComponent implements OnInit {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.getReviews(
-            this.mds.adminToken$.getValue(),
-            this.mds.workspaceId$.getValue(),
-            selectedGroups).subscribe(
+      this.bs.getReviews(selectedGroups).subscribe(
       (responseData: ReviewData[]) => {
         if (responseData.length > 0) {
           // collect categories
@@ -188,10 +178,7 @@ export class ResultsComponent implements OnInit {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.getLogs(
-            this.mds.adminToken$.getValue(),
-            this.mds.workspaceId$.getValue(),
-            selectedGroups).subscribe(
+      this.bs.getLogs(selectedGroups).subscribe(
       (responseData: LogData[]) => {
         if (responseData.length > 0) {
           const columnDelimiter = ';';
@@ -244,10 +231,7 @@ export class ResultsComponent implements OnInit {
         if (result !== false) {
           // =========================================================
           this.dataLoading = true;
-          this.bs.deleteData(
-                this.mds.adminToken$.getValue(),
-                this.mds.workspaceId$.getValue(),
-                selectedGroups).subscribe((deleteOk: boolean) => {
+          this.bs.deleteData(selectedGroups).subscribe((deleteOk: boolean) => {
                   this.tableselectionCheckbox.clear();
                   this.dataLoading = false;
                 });

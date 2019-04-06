@@ -20,177 +20,177 @@ export class BackendService {
   }
 
   // *******************************************************************
-  getUsers(token: string): Observable<GetUserDataResponse[] | ServerError> {
+  getUsers(): Observable<GetUserDataResponse[] | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<GetUserDataResponse[]>(this.serverUrl + 'getUsers.php', {t: token}, httpOptions)
+      .post<GetUserDataResponse[]>(this.serverUrl + 'getUsers.php', {}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
   }
 
 
-  addUser(token: string, name: string, password: string): Observable<Boolean | ServerError> {
+  addUser(name: string, password: string): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<Boolean>(this.serverUrl + 'addUser.php', {t: token, n: name, p: password}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'addUser.php', {n: name, p: password}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
   }
 
-  changePassword(token: string, name: string, password: string): Observable<Boolean | ServerError> {
+  changePassword(name: string, password: string): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<Boolean>(this.serverUrl + 'setPassword.php', {t: token, n: name, p: password}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'setPassword.php', {n: name, p: password}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
   }
 
-  deleteUsers(token: string, users: string[]): Observable<Boolean | ServerError> {
+  deleteUsers(users: string[]): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<Boolean>(this.serverUrl + 'deleteUsers.php', {t: token, u: users}, httpOptions)
-        .pipe(
-          catchError(this.handleError)
-        );
-  }
-
-  // *******************************************************************
-  getWorkspacesByUser(token: string, username: string): Observable<IdLabelSelectedData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<IdLabelSelectedData[]>(this.serverUrl + 'getUserWorkspaces.php', {t: token, u: username}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'deleteUsers.php', {u: users}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
   }
 
   // *******************************************************************
-  setWorkspacesByUser(token: string, user: string, accessTo: IdLabelSelectedData[]): Observable<Boolean | ServerError> {
+  getWorkspacesByUser(username: string): Observable<IdLabelSelectedData[] | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<Boolean>(this.serverUrl + 'setUserWorkspaces.php', {t: token, u: user, w: accessTo}, httpOptions)
+      .post<IdLabelSelectedData[]>(this.serverUrl + 'getUserWorkspaces.php', {u: username}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
   }
 
-  setAboutText(token: string, text: string): Observable<string | ServerError> {
+  // *******************************************************************
+  setWorkspacesByUser(user: string, accessTo: IdLabelSelectedData[]): Observable<Boolean | ServerError> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+    return this.http
+      .post<Boolean>(this.serverUrl + 'setUserWorkspaces.php', {u: user, w: accessTo}, httpOptions)
+        .pipe(
+          catchError(this.handleError)
+        );
+  }
+
+  setAboutText(text: string): Observable<string | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/text'
       })
     };
     return this.http
-    .post<string>(this.serverUrl + 'setAboutText.php', {t: token, text: text}, httpOptions).pipe(catchError(this.handleError));
+    .post<string>(this.serverUrl + 'setAboutText.php', {text: text}, httpOptions).pipe(catchError(this.handleError));
   }
 
   // *******************************************************************
   // *******************************************************************
-  addWorkspace(token: string, name: string): Observable<Boolean | ServerError> {
+  addWorkspace(name: string): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<Boolean>(this.serverUrl + 'addWorkspace.php', {t: token, n: name}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'addWorkspace.php', {n: name}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
   }
 
   // *******************************************************************
-  changeWorkspace(token: string, wsId: number, wsName: string): Observable<Boolean | ServerError> {
+  changeWorkspace(wsId: number, wsName: string): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<Boolean>(this.serverUrl + 'setWorkspace.php', {t: token, ws_id: wsId, ws_name: wsName}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'setWorkspace.php', {ws_id: wsId, ws_name: wsName}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
   }
 
   // *******************************************************************
-  deleteWorkspaces(token: string, workspaces: number[]): Observable<Boolean | ServerError> {
+  deleteWorkspaces(workspaces: number[]): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<Boolean>(this.serverUrl + 'deleteWorkspaces.php', {t: token, ws: workspaces}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'deleteWorkspaces.php', {ws: workspaces}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
   }
 
   // *******************************************************************
-  getUsersByWorkspace(token: string, workspaceId: number): Observable<IdLabelSelectedData[] | ServerError> {
+  getUsersByWorkspace(workspaceId: number): Observable<IdLabelSelectedData[] | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<IdLabelSelectedData[]>(this.serverUrl + 'getWorkspaceUsers.php', {t: token, ws: workspaceId}, httpOptions)
+      .post<IdLabelSelectedData[]>(this.serverUrl + 'getWorkspaceUsers.php', {ws: workspaceId}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
   }
 
   // *******************************************************************
-  setUsersByWorkspace(token: string, workspace: number, accessing: IdLabelSelectedData[]): Observable<Boolean | ServerError> {
+  setUsersByWorkspace(workspace: number, accessing: IdLabelSelectedData[]): Observable<Boolean | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<Boolean>(this.serverUrl + 'setWorkspaceUsers.php', {t: token, w: workspace, u: accessing}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'setWorkspaceUsers.php', {w: workspace, u: accessing}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );
   }
 
   // *******************************************************************
-  getWorkspaces(token: string): Observable<IdLabelSelectedData[] | ServerError> {
+  getWorkspaces(): Observable<IdLabelSelectedData[] | ServerError> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
     return this.http
-      .post<IdLabelSelectedData[]>(this.serverUrl + 'getWorkspaces.php', {t: token}, httpOptions)
+      .post<IdLabelSelectedData[]>(this.serverUrl + 'getWorkspaces.php', {}, httpOptions)
         .pipe(
           catchError(this.handleError)
         );

@@ -1,4 +1,3 @@
-import { MainDatastoreService } from './../admin/maindatastore.service';
 import { Component, OnInit } from '@angular/core';
 
 
@@ -18,11 +17,10 @@ export class SuperadminComponent implements OnInit {
 
 
   constructor(
-    private mds: MainDatastoreService
   ) { }
 
   ngOnInit() {
-    this.mds.updatePageTitle('IQB-Testcenter Verwaltung: Nutzer und Arbeitsbereiche');
+    // this.mds.updatePageTitle('IQB-Testcenter Verwaltung: Nutzer und Arbeitsbereiche');
   }
 
 }

@@ -8,7 +8,6 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
   MessageDialogData, MessageType } from '../../iqb-common';
 // import { AboutComponent } from './../../about';
-import { MainDatastoreService } from './../../admin/maindatastore.service';
 import { BackendService as BackendServiceReadOnly } from './../../backend.service';
 import { BackendService as BackendServiceSuperAdmin } from './../backend.service';
 // import * as Quill from 'quill';
@@ -26,7 +25,6 @@ export class AboutTextComponent implements OnInit {
   aboutText: string;
 
   constructor(
-    private mds: MainDatastoreService,
     private bsRO: BackendServiceReadOnly,
     private bsSA: BackendServiceSuperAdmin,
     private fb: FormBuilder,
@@ -37,13 +35,13 @@ export class AboutTextComponent implements OnInit {
     this.aboutTextForm = this.fb.group({
       myTextArea: this.fb.control('')
     });
-    this.mds.pageTitle$.next('');
-    this.bsRO.getAboutText().subscribe(t => this.aboutTextForm.get('myTextArea').setValue(t as string));
+    // this.mds.pageTitle$.next('');
+    // this.bsRO.getAboutText().subscribe(t => this.aboutTextForm.get('myTextArea').setValue(t as string));
   }
 
   setAboutText() {
 
-    this.bsSA.setAboutText(this.mds.adminToken$.getValue(), this.aboutTextForm.get('myTextArea').value).subscribe(respOk => {
+    this.bsSA.setAboutText(this.aboutTextForm.get('myTextArea').value).subscribe(respOk => {
       if (respOk) {
         this.snackBar.open('Geänderter Text', '', {duration: 1500});
       } else {
