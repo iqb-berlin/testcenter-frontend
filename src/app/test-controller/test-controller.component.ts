@@ -527,18 +527,20 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     },
                     err => console.error('unit load error from loadUnitOk: ' + err),
                     () => {
-                      this.showProgress = false;
-                      this.tcs.dataLoading = false;
 
                       // =====================
                       this.tcs.bookletDbId = loginData.booklet;
                       this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
                       this.tcs.updateMinMaxUnitSequenceId(navTarget);
+                      this.loadedUnitCount = 0;
 
                       // =====================
                       this.unitLoadQueueSubscription2 = from(this.unitLoadQueue).pipe(
                         concatMap(queueEntry => {
                           const unitSequ = Number(queueEntry.tag);
+                          if (!this.tcs.lazyloading) {
+                            this.incrementProgressValueBy1();
+                          }
                           // avoid to load unit def if not necessary
                           if (unitSequ < this.tcs.minUnitSequenceId) {
                             return of({tag: unitSequ.toString(), value: ''});
@@ -556,10 +558,22 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                           }
                         },
                         err => console.error('unit load error: ' + err),
-                        () => this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE) // complete
+                        () => { // complete
+                          this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
+                          this.tcs.bookletLoadComplete = true;
+                          if (!this.tcs.lazyloading) {
+                              this.showProgress = false;
+                              this.tcs.dataLoading = false;
+                              this.tcs.setUnitNavigationRequest(navTarget.toString());
+                          }
+                        }
                       );
 
-                      this.tcs.setUnitNavigationRequest(navTarget.toString());
+                      if (this.tcs.lazyloading) {
+                        this.showProgress = false;
+                        this.tcs.dataLoading = false;
+                        this.tcs.setUnitNavigationRequest(navTarget.toString());
+                      }
 
                     } // complete
                 );

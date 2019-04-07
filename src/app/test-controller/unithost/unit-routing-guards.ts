@@ -170,16 +170,71 @@ export class UnitActivateGuard implements CanActivate {
 
   // ****************************************************************************************
   checkAndSolve_DefLoaded(newUnit: UnitControllerData): Observable<Boolean> {
-    if (this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)) {
+    if (this.tcs.bookletLoadComplete) {
       return of(true);
     } else {
-      this.tcs.dataLoading = true;
-      return interval(1000)
-        .pipe(
-          filter(intervalvalue => this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)),
-          map(v => true),
-          take(1)
-        );
+      if (this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
+
+        // 1 going forwards
+
+        if ((newUnit.maxTimerRequiringTestlet === null) || (this.tcs.mode === 'review')) {
+
+          // 1 a) target is not in timed block or review mode --> check only target unit
+
+          if (this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)) {
+            return of(true);
+          } else {
+            this.tcs.dataLoading = true;
+            return interval(1000)
+              .pipe(
+                filter(intervalvalue => this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)),
+                map(v => true),
+                take(1)
+              );
+          }
+        } else if (this.tcs.currentMaxTimerTestletId && (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)) {
+
+          // 1 b) staying in timed block --> check has been already done
+
+          return of(true);
+
+        } else {
+
+          // entering timed block --> check all units
+          const allUnitsSequenceIdsToCheck = this.tcs.rootTestlet.getAllUnitSequenceIds(newUnit.maxTimerRequiringTestlet.id);
+          let ok = true;
+          allUnitsSequenceIdsToCheck.forEach(u => {
+            if (!this.tcs.hasUnitDefinition(u)) {
+              ok = false;
+            }
+          });
+          if (ok) {
+            return of(true);
+          } else {
+            this.tcs.dataLoading = true;
+            return interval(1000)
+              .pipe(
+                filter(intervalvalue => {
+                  let localOk = true;
+                  allUnitsSequenceIdsToCheck.forEach(u => {
+                    if (!this.tcs.hasUnitDefinition(u)) {
+                      localOk = false;
+                    }
+                  });
+                  return localOk;
+                }),
+                map(v => true),
+                take(1)
+              );
+          }
+
+        }
+      } else {
+
+        // 2 going backwards --> no check, because units are loaded in ascending order
+
+        return of(true);
+      }
     }
   }
 

@@ -49,7 +49,7 @@
 
     <!-- - - - - - - - - - - - - - - - - -->
     <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showBookletButtons">
-      <mat-card-title>{{ showBookletButtons | customText:'login_bookletSelectTitle' }}</mat-card-title>
+      <mat-card-title>{{ bookletSelectTitle }}</mat-card-title>
       <mat-card-content>
         <div fxLayout="row" fxLayoutGap="10px" fxLayout="column">
           <p *ngIf="bookletlist.length === 0">
@@ -114,7 +114,7 @@
 
         <!-- - - - - - - - - - - - - - - - - -->
         <div *ngIf="showBookletButtons">
-          <p>{{ showBookletButtons | customText:'login_bookletSelectPrompt' }}</p>
+          <p>{{ bookletSelectPrompt }}</p>
         </div>
 
         <!-- - - - - - - - - - - - - - - - - -->

@@ -25,6 +25,7 @@ export class TestControllerService {
   public logging = true;
   public lazyloading = true;
   public dataLoading = false;
+  public bookletLoadComplete = false;
 
   public navigationRequest$ = new Subject<string>();
   public maxTimeTimer$ = new Subject<MaxTimerData>();
@@ -137,6 +138,7 @@ export class TestControllerService {
     this.lazyloading = true;
     this._costumTexts = {};
     this.dataLoading = false;
+    this.bookletLoadComplete = false;
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777

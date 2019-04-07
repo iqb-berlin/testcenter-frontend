@@ -234,6 +234,30 @@ export class Testlet extends TestletContentElement {
   }
 
   // .....................................................................
+  getAllUnitSequenceIds(testletId = ''): number[] {
+    let myreturn = [];
+
+    if (testletId) {
+      // find testlet
+      const myTestlet = this.getTestlet(testletId);
+      if (myTestlet) {
+        myreturn = myTestlet.getAllUnitSequenceIds();
+      }
+    } else {
+      for (const tce of this.children) {
+        if (tce instanceof Testlet) {
+          const localTestlet = tce as Testlet;
+          localTestlet.getAllUnitSequenceIds().forEach(u => myreturn.push(u));
+        } else {
+          const localUnit = tce as UnitDef;
+          myreturn.push(localUnit.sequenceId);
+        }
+      }
+    }
+    return myreturn;
+  }
+
+  // .....................................................................
   setTimeLeftNull(testletId = '') {
     if (testletId) {
       // find testlet
