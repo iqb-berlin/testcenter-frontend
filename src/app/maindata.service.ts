@@ -46,6 +46,8 @@ export class MainDataService {
           myLoginData.name = logindata.name;
           myLoginData.workspaces = logindata.workspaces;
           myLoginData.is_superadmin = logindata.is_superadmin;
+          console.log('fü33 ' + myLoginData.name);
+
       }
     }
     this.loginData$.next(myLoginData);
@@ -60,12 +62,14 @@ export class MainDataService {
   // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   getWorkspaceName(ws: number): string {
     let myreturn = '';
-    const myLoginData = this.loginData$.getValue();
-    if ((myLoginData !== null) && (myLoginData.workspaces.length > 0)) {
-      for (let i = 0; i < myLoginData.workspaces.length; i++) {
-        if (myLoginData.workspaces[i].id == ws) {
-          myreturn = myLoginData.workspaces[i].name;
-          break;
+    if (ws > 0) {
+      const myLoginData = this.loginData$.getValue();
+      if ((myLoginData !== null) && (myLoginData.workspaces.length > 0)) {
+        for (let i = 0; i < myLoginData.workspaces.length; i++) {
+          if (myLoginData.workspaces[i].id == ws) {
+            myreturn = myLoginData.workspaces[i].name;
+            break;
+          }
         }
       }
     }
@@ -75,12 +79,14 @@ export class MainDataService {
   // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   getWorkspaceRole(ws: number): string {
     let myreturn = '';
-    const myLoginData = this.loginData$.getValue();
-    if ((myLoginData !== null) && (myLoginData.workspaces.length > 0)) {
-      for (let i = 0; i < myLoginData.workspaces.length; i++) {
-        if (myLoginData.workspaces[i].id == ws) {
-          myreturn = myLoginData.workspaces[i].role;
-          break;
+    if (ws > 0) {
+      const myLoginData = this.loginData$.getValue();
+      if ((myLoginData !== null) && (myLoginData.workspaces.length > 0)) {
+        for (let i = 0; i < myLoginData.workspaces.length; i++) {
+          if (myLoginData.workspaces[i].id == ws) {
+            myreturn = myLoginData.workspaces[i].role;
+            break;
+          }
         }
       }
     }

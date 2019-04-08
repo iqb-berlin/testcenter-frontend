@@ -1,12 +1,17 @@
-.columnhost {
+/* .columnhost {
   width: 100%;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: left;
-}
+} */
 
-.mat-icon {
+/* .mat-icon {
   margin-right: 5px;
+} */
+
+.mat-raised-button {
+  min-width: 100px;
+  margin: 2px;
 }

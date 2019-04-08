@@ -49,7 +49,11 @@ export class StartComponent implements OnInit, OnDestroy {
   }
 
   buttonGotoWorkspace(ws: WorkspaceData) {
-    this.router.navigateByUrl('/ws/' + ws.id.toString());
+    if (ws.role === 'MO') {
+      this.router.navigateByUrl('/ws/' + ws.id.toString() + '/monitor');
+    } else {
+      this.router.navigateByUrl('/ws/' + ws.id.toString() + '/files');
+    }
   }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

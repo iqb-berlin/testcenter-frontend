@@ -7,12 +7,12 @@
         matTooltip="Download markierte Gruppen als CSV für Excel" matTooltipPosition="above">
       <mat-icon>cloud_download</mat-icon>
     </button>
-    <button mat-raised-button (click)="lock()" [disabled]="!tableselectionCheckbox.hasValue()"
+    <button mat-raised-button (click)="lock()" [disabled]="!tableselectionCheckbox.hasValue() || (wds.wsRole !== 'RW')"
         matTooltip="Sperre gestartete Testhefte für markierte Gruppen" matTooltipPosition="above">
       <mat-icon>lock</mat-icon>
     </button>
 
-    <button mat-raised-button (click)="unlock()" [disabled]="!tableselectionCheckbox.hasValue()"
+    <button mat-raised-button (click)="unlock()" [disabled]="!tableselectionCheckbox.hasValue() || (wds.wsRole !== 'RW')"
         matTooltip="Gesperrte Testhefte für markierte Gruppen freigeben" matTooltipPosition="above">
       <mat-icon>lock_open</mat-icon>
     </button>
@@ -62,6 +62,11 @@
     <ng-container matColumnDef="bookletsLocked">
       <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">gesperrte Testhefte</mat-header-cell>
       <mat-cell *matCellDef="let element" fxLayoutAlign="center center"> {{ element.bookletsLocked }} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="laststart">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Letzter Start</mat-header-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center"> {{ element.laststartStr }} </mat-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

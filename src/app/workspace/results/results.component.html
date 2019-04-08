@@ -2,7 +2,7 @@
   <div class="spinner-container" *ngIf="dataLoading">
     <mat-spinner></mat-spinner>
   </div>
-  <div fxLayout="row" fxLayoutGap="10px">
+  <div fxLayout="row">
     <button mat-raised-button (click)="downloadResponsesCSV()" [disabled]="!tableselectionCheckbox.hasValue()"
         matTooltip="Download markierte Gruppen als CSV für Excel" matTooltipPosition="above">
       <mat-icon>cloud_download</mat-icon>Antworten
@@ -15,7 +15,7 @@
         matTooltip="Download markierte Gruppen als CSV für Excel" matTooltipPosition="above">
       <mat-icon>cloud_download</mat-icon>Kommentare
     </button>
-    <button mat-raised-button (click)="deleteData()" [disabled]="!tableselectionCheckbox.hasValue()"
+    <button mat-raised-button (click)="deleteData()" [disabled]="!tableselectionCheckbox.hasValue() || (wds.wsRole !== 'RW')"
         matTooltip="Löschen Ergebnisdaten aus der Datenbank für markierte Gruppen" matTooltipPosition="above">
       <mat-icon>delete</mat-icon>
     </button>
@@ -60,6 +60,11 @@
     <ng-container matColumnDef="num_units_mean">
       <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Aufgaben Mittelwert</mat-header-cell>
       <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.num_units_mean | number:'1.1-1'}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="lastchange">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Letzte Änderung</mat-header-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.lastchange | date:'dd.MM.yyyy HH:mm'}} </mat-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

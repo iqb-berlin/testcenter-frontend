@@ -24,10 +24,12 @@ import { IqbFilesUploadQueueComponent, IqbFilesUploadInputForDirective } from '.
 export class FilesComponent implements OnInit, OnDestroy {
   public serverfiles: MatTableDataSource<GetFileResponseData>;
   public displayedColumns = ['checked', 'filename', 'typelabel', 'filesize', 'filedatetime'];
+  public dataLoading = false;
+  private workspaceIdSubscription: Subscription = null;
+
+  // for fileupload
   public uploadUrl = '';
   public fileNameAlias = 'fileforvo';
-  public dataLoading = false;
-  private logindataSubscription: Subscription = null;
 
   // for workspace-check
   public checkErrors = [];
@@ -45,14 +47,12 @@ export class FilesComponent implements OnInit, OnDestroy {
     public messsageDialog: MatDialog,
     public snackBar: MatSnackBar
   ) {
-    this.uploadUrl = this.serverUrl + 'php_admin/uploadFile.php';
+    this.uploadUrl = this.serverUrl + 'php/uploadFile.php';
   }
 
   ngOnInit() {
-    this.logindataSubscription = this.mds.loginData$.subscribe(ld => {
-        const ws = this.wds.ws;
-        let at = ld ? ld.admintoken : '';
-        this.updateFileList((ws <= 0) || (at.length === 0));
+    this.workspaceIdSubscription = this.wds.workspaceId$.subscribe(ws => {
+      this.updateFileList((this.wds.ws <= 0) || (this.mds.adminToken.length === 0));
     });
   }
 
@@ -65,65 +65,66 @@ export class FilesComponent implements OnInit, OnDestroy {
 
   // ***********************************************************************************
   deleteFiles() {
-    this.checkErrors = [];
-    this.checkWarnings = [];
-    this.checkInfos = [];
+    if (this.wds.wsRole === 'RW') {
+      this.checkErrors = [];
+      this.checkWarnings = [];
+      this.checkInfos = [];
 
-    const filesToDelete = [];
-    this.serverfiles.data.forEach(element => {
-      if (element.isChecked) {
-        filesToDelete.push(element.type + '::' + element.filename);
-      }
-    });
-
-    if (filesToDelete.length > 0) {
-      let prompt = 'Sie haben ';
-      if (filesToDelete.length > 1) {
-        prompt = prompt + filesToDelete.length + ' Dateien ausgewählt. Sollen';
-      } else {
-        prompt = prompt + ' eine Datei ausgewählt. Soll';
-      }
-      const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
-        width: '400px',
-        data: <ConfirmDialogData>{
-          title: 'Löschen von Dateien',
-          content: prompt + ' diese gelöscht werden?',
-          confirmbuttonlabel: 'Löschen'
+      const filesToDelete = [];
+      this.serverfiles.data.forEach(element => {
+        if (element.isChecked) {
+          filesToDelete.push(element.type + '::' + element.filename);
         }
       });
 
-      dialogRef.afterClosed().subscribe(result => {
-        if (result !== false) {
-          // =========================================================
-          this.dataLoading = true;
-          this.bs.deleteFiles(filesToDelete).subscribe(deletefilesresponse => {
-            if (deletefilesresponse instanceof ServerError) {
-              this.wds.setNewErrorMsg(deletefilesresponse as ServerError);
-            } else {
-              const deletefilesresponseOk = deletefilesresponse as string;
-              if ((deletefilesresponseOk.length > 5) && (deletefilesresponseOk.substr(0, 2) === 'e:')) {
-                this.snackBar.open(deletefilesresponseOk.substr(2), 'Fehler', {duration: 1000});
+      if (filesToDelete.length > 0) {
+        let prompt = 'Sie haben ';
+        if (filesToDelete.length > 1) {
+          prompt = prompt + filesToDelete.length + ' Dateien ausgewählt. Sollen';
+        } else {
+          prompt = prompt + ' eine Datei ausgewählt. Soll';
+        }
+        const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
+          width: '400px',
+          data: <ConfirmDialogData>{
+            title: 'Löschen von Dateien',
+            content: prompt + ' diese gelöscht werden?',
+            confirmbuttonlabel: 'Löschen'
+          }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (result !== false) {
+            // =========================================================
+            this.dataLoading = true;
+            this.bs.deleteFiles(filesToDelete).subscribe(deletefilesresponse => {
+              if (deletefilesresponse instanceof ServerError) {
+                this.wds.setNewErrorMsg(deletefilesresponse as ServerError);
               } else {
-                this.snackBar.open(deletefilesresponseOk, '', {duration: 1000});
-                this.updateFileList();
+                const deletefilesresponseOk = deletefilesresponse as string;
+                if ((deletefilesresponseOk.length > 5) && (deletefilesresponseOk.substr(0, 2) === 'e:')) {
+                  this.snackBar.open(deletefilesresponseOk.substr(2), 'Fehler', {duration: 1000});
+                } else {
+                  this.snackBar.open(deletefilesresponseOk, '', {duration: 1000});
+                  this.updateFileList();
+                }
+                this.wds.setNewErrorMsg();
               }
-              this.wds.setNewErrorMsg();
-            }
-          });
-          // =========================================================
-        }
-      });
-    } else {
-      this.messsageDialog.open(MessageDialogComponent, {
-        width: '400px',
-        data: <MessageDialogData>{
-          title: 'Löschen von Dateien',
-          content: 'Bitte markieren Sie erst Dateien!',
-          type: MessageType.error
-        }
-      });
+            });
+            // =========================================================
+          }
+        });
+      } else {
+        this.messsageDialog.open(MessageDialogComponent, {
+          width: '400px',
+          data: <MessageDialogData>{
+            title: 'Löschen von Dateien',
+            content: 'Bitte markieren Sie erst Dateien!',
+            type: MessageType.error
+          }
+        });
+      }
     }
-
   }
 
   // ***********************************************************************************
@@ -132,7 +133,7 @@ export class FilesComponent implements OnInit, OnDestroy {
     this.checkWarnings = [];
     this.checkInfos = [];
 
-    if (empty) {
+    if (empty || this.wds.wsRole === 'MO') {
       this.serverfiles = new MatTableDataSource([]);
     } else {
       this.dataLoading = true;
@@ -167,8 +168,6 @@ export class FilesComponent implements OnInit, OnDestroy {
     this.dataLoading = true;
     this.bs.checkWorkspace().subscribe(
       (checkResponse: CheckWorkspaceResponseData) => {
-        // this.serverfiles = new MatTableDataSource(filedataresponse);
-        // this.serverfiles.sort = this.sort;
         this.checkErrors = checkResponse.errors;
         this.checkWarnings = checkResponse.warnings;
         this.checkInfos = checkResponse.infos;
@@ -184,8 +183,8 @@ export class FilesComponent implements OnInit, OnDestroy {
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   ngOnDestroy() {
-    if (this.logindataSubscription !== null) {
-      this.logindataSubscription.unsubscribe();
+    if (this.workspaceIdSubscription !== null) {
+      this.workspaceIdSubscription.unsubscribe();
     }
   }
 }

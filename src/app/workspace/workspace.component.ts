@@ -11,14 +11,6 @@ import { MatTabsModule, MatSelectModule, MatFormFieldModule } from '@angular/mat
   styleUrls: ['./workspace.component.css']
 })
 export class WorkspaceComponent implements OnInit, OnDestroy {
-  public navLinks = [
-    {path: 'files', label: 'Dateien'},
-    {path: 'syscheck', label: 'System-Check Berichte'},
-    {path: 'monitor', label: 'Monitor'},
-    {path: 'results', label: 'Ergebnisse'}
-  ];
-
-  public pageTitle = '';
   private routingSubscription: Subscription = null;
   private logindataSubscription: Subscription = null;
 
@@ -33,21 +25,11 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.routingSubscription = this.route.params.subscribe(params => {
       const ws = Number(params['ws']);
-      this.wds.setWorkspaceId(ws);
-      if ((this.mds.adminToken.length > 0) && (ws > 0)) {
-        this.pageTitle = this.mds.getWorkspaceName(ws) + ' (' + this.mds.getWorkspaceRole(ws) + ')';
-      } else {
-        this.pageTitle = '';
-      }
+      this.wds.setWorkspace(ws, this.mds.getWorkspaceRole(ws), this.mds.getWorkspaceName(ws));
     });
 
     this.logindataSubscription = this.mds.loginData$.subscribe(ld => {
-      const ws = this.wds.ws;
-      if (ws > 0) {
-        this.pageTitle = this.mds.getWorkspaceName(ws) + ' (' + this.mds.getWorkspaceRole(ws) + ')';
-      } else {
-        this.pageTitle = '';
-      }
+      this.wds.setWorkspace(this.wds.ws, this.mds.getWorkspaceRole(this.wds.ws), this.mds.getWorkspaceName(this.wds.ws));
     });
   }
 

@@ -14,7 +14,7 @@ export class BackendService {
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
       this.serverUrlSlim = this.serverUrl + 'php/ws.php/'
-      this.serverUrl = this.serverUrl + 'php_admin/';
+      this.serverUrl = this.serverUrl + 'php/';
   }
 
 
@@ -28,15 +28,9 @@ export class BackendService {
   }
 
   // *******************************************************************
-  // Fehlerbehandlung beim Aufrufer
   deleteFiles(filesToDelete: Array<string>): Observable<string | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
     return this.http
-      .post<string>(this.serverUrl + 'deleteFiles.php', {f: filesToDelete}, httpOptions)
+      .post<string>(this.serverUrlSlim + 'delete', {f: filesToDelete})
         .pipe(
           catchError(ErrorHandler.handle)
         );
@@ -44,13 +38,8 @@ export class BackendService {
 
   // *******************************************************************
   checkWorkspace(): Observable<CheckWorkspaceResponseData | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
     return this.http
-      .post<CheckWorkspaceResponseData>(this.serverUrl + 'checkWorkspace.php', {}, httpOptions)
+      .post<CheckWorkspaceResponseData>(this.serverUrl + 'checkWorkspace.php', {})
         .pipe(
           catchError(ErrorHandler.handle)
         );
@@ -58,13 +47,8 @@ export class BackendService {
 
   /*******************************/
   getBookletsStarted(groups: string[]): Observable<BookletsStarted[] | ServerError>{
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
     return this.http
-      .post<BookletsStarted[]>(this.serverUrl + 'getBookletsStarted.php', {g: groups}, httpOptions)
+      .post<BookletsStarted[]>(this.serverUrl + 'getBookletsStarted.php', {g: groups})
         .pipe(
           catchError(ErrorHandler.handle)
         );
@@ -72,13 +56,8 @@ export class BackendService {
 
   /*******************************/
   lockBooklets(groups: string[]): Observable<boolean | ServerError>{
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
     return this.http
-      .post<boolean>(this.serverUrl + 'lockBooklets.php', {g: groups}, httpOptions)
+      .post<boolean>(this.serverUrlSlim + 'lock', {g: groups})
         .pipe(
           catchError(ErrorHandler.handle)
         );
@@ -86,14 +65,9 @@ export class BackendService {
 
   /*******************************/
   unlockBooklets(groups: string[]): Observable<boolean | ServerError>{
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
     return this.http
-      .post<boolean>(this.serverUrl + 'unlockBooklets.php', {g: groups}, httpOptions)
-        .pipe(
+    .post<boolean>(this.serverUrlSlim + 'unlock', {g: groups})
+      .pipe(
           catchError(ErrorHandler.handle)
         );
 }
@@ -113,70 +87,45 @@ export class BackendService {
 }
 
   /*******************************/
-  getResultData(): Observable<ResultData[] | ServerError>{
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  getResultData(): Observable<ResultData[]>{
     return this.http
-      .post<ResultData[]>(this.serverUrl + 'getResultData.php', {}, httpOptions)
+      .post<ResultData[]>(this.serverUrl + 'getResultData.php', {})
         .pipe(
-          catchError(ErrorHandler.handle)
+          catchError(err => [])
         );
   }
 
   /*******************************/
-  getResponses(groups: string[]): Observable<UnitResponse[] | ServerError>{
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  getResponses(groups: string[]): Observable<UnitResponse[]>{
     return this.http
-      .post<UnitResponse[]>(this.serverUrl + 'getResponses.php', {g: groups}, httpOptions)
+      .post<UnitResponse[]>(this.serverUrl + 'getResponses.php', {g: groups})
         .pipe(
-          catchError(ErrorHandler.handle)
-        );
-}
-
-  /*******************************/
-  getLogs(groups: string[]): Observable<LogData[] | ServerError>{
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http
-      .post<LogData[]>(this.serverUrl + 'getLogs.php', {g: groups}, httpOptions)
-        .pipe(
-          catchError(ErrorHandler.handle)
+          catchError(err => [])
         );
   }
 
   /*******************************/
-  getReviews(groups: string[]): Observable<ReviewData[] | ServerError>{
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  getLogs(groups: string[]): Observable<LogData[]>{
     return this.http
-      .post<ReviewData[]>(this.serverUrl + 'getReviews.php', {g: groups}, httpOptions)
+      .post<LogData[]>(this.serverUrl + 'getLogs.php', {g: groups})
         .pipe(
-          catchError(ErrorHandler.handle)
+          catchError(err => [])
+        );
+  }
+
+  /*******************************/
+  getReviews(groups: string[]): Observable<ReviewData[]>{
+    return this.http
+      .post<ReviewData[]>(this.serverUrl + 'getReviews.php', {g: groups})
+        .pipe(
+          catchError(err => [])
         );
   }
 
   /*******************************/
   deleteData(groups: string[]): Observable<boolean | ServerError>{
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
     return this.http
-      .post<boolean>(this.serverUrl + 'deleteData.php', {g: groups}, httpOptions)
+      .post<boolean>(this.serverUrl + 'deleteData.php', {g: groups})
         .pipe(
           catchError(ErrorHandler.handle)
         );

@@ -1,10 +1,12 @@
-<div id="buttonsContainer" fxLayout="row" fxLayoutAlign="space-between center">
+<div id="buttonsContainer" fxLayout="row" fxLayoutAlign="start center">
   <a [routerLink]="['/']">
     <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
   </a>
-  <div class="error-msg">{{ (mds.globalErrorMsg$ | async)?.labelNice }}</div>
-  <div>IQB-Testcenter Verwaltung</div>
-  <div>{{ pageTitle }}</div>
+  <div fxLayout="row wrap" fxLayoutAlign="space-between center" fxFlex>
+    <div class="error-msg">{{ (mds.globalErrorMsg$ | async)?.labelNice }}</div>
+    <div>IQB-Testcenter Verwaltung</div>
+    <div>{{ wds.wsName }} ({{ wds.wsRole }})</div>
+  </div>
 </div>
 <div class="page-body">
   <div class="adminbackground">
@@ -12,7 +14,7 @@
 
     <nav mat-tab-nav-bar>
       <a mat-tab-link
-          *ngFor="let link of navLinks"
+          *ngFor="let link of wds.navLinks"
           [routerLink]="link.path"
           routerLinkActive #rla="routerLinkActive"
           [active]="rla.isActive">

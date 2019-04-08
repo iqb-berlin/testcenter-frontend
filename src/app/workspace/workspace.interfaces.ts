@@ -29,6 +29,7 @@ export interface BookletsStarted {
   code: string;
   bookletname: string;
   locked: boolean;
+  laststart: Date;
 }
 
 export interface UnitResponse {
@@ -52,6 +53,8 @@ export interface MonitorData {
   bookletsPrepared: number;
   bookletsStarted: number;
   bookletsLocked: number;
+  laststart: Date;
+  laststartStr: string;
 }
 
 export interface ResultData {
@@ -60,6 +63,7 @@ export interface ResultData {
   num_units_min: number;
   num_units_max: number;
   num_units_mean: number;
+  lastchange: number;
 }
 
 export interface LogData {

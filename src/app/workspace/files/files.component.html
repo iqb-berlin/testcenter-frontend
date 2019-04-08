@@ -43,10 +43,10 @@
 
   <!-- ============================================= -->
   <div class="uploads">
-    <button mat-raised-button (click)="deleteFiles()" matTooltip="Markierte Dateien löschen" matTooltipPosition="above">
+    <button mat-raised-button (click)="deleteFiles()" matTooltip="Markierte Dateien löschen" matTooltipPosition="above" [disabled]="wds.wsRole !== 'RW'">
       <mat-icon>delete</mat-icon>
     </button>
-    <button mat-raised-button (click)="hiddenfileinput.click()" matTooltip="Dateien hochladen/aktualisieren" matTooltipPosition="above">
+    <button mat-raised-button (click)="hiddenfileinput.click()" matTooltip="Dateien hochladen/aktualisieren" matTooltipPosition="above" [disabled]="wds.wsRole !== 'RW'">
       <mat-icon>cloud_upload</mat-icon>
     </button>
     <button mat-raised-button (click)="checkWorkspace()" matTooltip="Arbeitsbereich prüfen" matTooltipPosition="above">
@@ -59,9 +59,9 @@
       [httpUrl]="uploadUrl"
       [fileAlias]="fileNameAlias"
       [tokenName]="'at'"
-      [token]="token"
+      [token]="'kisduUjjw.;kiskw..9200'"
       [folderName]="'ws'"
-      [folder]="workspace"
+      [folder]="'workspace'"
       (uploadCompleteEvent)="updateFileList()">
     </iqb-files-upload-queue>
 

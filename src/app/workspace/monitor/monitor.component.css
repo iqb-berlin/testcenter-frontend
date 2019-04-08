@@ -22,3 +22,8 @@
 .cellstyle1 {
   padding: 5px;
 }
+
+.mat-raised-button {
+  margin: 5px;
+  min-width: 100px;
+}

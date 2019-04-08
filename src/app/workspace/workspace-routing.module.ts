@@ -11,12 +11,12 @@ const routes: Routes = [
     path: 'ws/:ws',
     component: WorkspaceComponent,
     children: [
-      {path: '', redirectTo: 'files', pathMatch: 'full'},
+      {path: '', redirectTo: 'monitor', pathMatch: 'full'},
       {path: 'files', component: FilesComponent},
       {path: 'syscheck', component: SyscheckComponent},
       {path: 'monitor', component: MonitorComponent},
       {path: 'results', component: ResultsComponent},
-      {path: '**', component: FilesComponent}
+      {path: '**', component: MonitorComponent}
     ]
   }];
 

@@ -1,24 +1,26 @@
 import { LogData } from './../workspace.interfaces';
 import { WorkspaceDataService } from './../workspacedata.service';
 import { ConfirmDialogComponent, ConfirmDialogData } from './../../iqb-common/confirm-dialog/confirm-dialog.component';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { BackendService } from './../backend.service';
 import { MatSnackBar, MatSort, MatTableDataSource, MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 import { ResultData, UnitResponse, ReviewData } from '../workspace.interfaces';
+import { Subscription } from 'rxjs';
 
 
 @Component({
   templateUrl: './results.component.html',
   styleUrls: ['./results.component.css']
 })
-export class ResultsComponent implements OnInit {
-  displayedColumns: string[] = ['selectCheckbox', 'groupname', 'bookletsStarted', 'num_units_min', 'num_units_max', 'num_units_mean'];
+export class ResultsComponent implements OnInit, OnDestroy {
+  displayedColumns: string[] = ['selectCheckbox', 'groupname', 'bookletsStarted', 'num_units_min', 'num_units_max', 'num_units_mean', 'lastchange'];
   private resultDataSource = new MatTableDataSource<ResultData>([]);
   // prepared for selection if needed sometime
   private tableselectionCheckbox = new SelectionModel<ResultData>(true, []);
   private dataLoading = false;
+  private workspaceIdSubscription: Subscription = null;
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -30,19 +32,25 @@ export class ResultsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.updateTable();
+    this.workspaceIdSubscription = this.wds.workspaceId$.subscribe(ws => {
+      this.updateTable();
+    });
   }
 
   updateTable() {
-    this.dataLoading = true;
     this.tableselectionCheckbox.clear();
-    this.bs.getResultData().subscribe(
-      (resultData: ResultData[]) => {
-        this.dataLoading = false;
-        this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
-        this.resultDataSource.sort = this.sort;
-      }
-    )
+    if (this.wds.wsRole === 'MO') {
+      this.resultDataSource = new MatTableDataSource<ResultData>([]);
+    } else {
+      this.dataLoading = true;
+      this.bs.getResultData().subscribe(
+        (resultData: ResultData[]) => {
+          this.dataLoading = false;
+          this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
+          this.resultDataSource.sort = this.sort;
+        }
+      )
+    }
   }
 
   isAllSelected() {
@@ -72,8 +80,8 @@ export class ResultsComponent implements OnInit {
           const lineDelimiter = '\n';
           let myCsvData = 'groupname' + columnDelimiter + 'loginname' + columnDelimiter + 'code' + columnDelimiter +
               'bookletname' + columnDelimiter + 'unitname' + columnDelimiter + 'responses' + columnDelimiter +
-              'restorePoint' + columnDelimiter + 'responseType' + lineDelimiter + 'response-ts' + lineDelimiter +
-              'restorePoint-ts' + lineDelimiter + 'laststate';
+              'restorePoint' + columnDelimiter + 'responseType' + columnDelimiter + 'response-ts' + columnDelimiter +
+              'restorePoint-ts' + columnDelimiter + 'laststate' + lineDelimiter;
           responseData.forEach((resp: UnitResponse) => {
             myCsvData += '"' + resp.groupname + '"' + columnDelimiter + '"' + resp.loginname + '"' + columnDelimiter + '"' + resp.code + '"' + columnDelimiter +
                 '"' + resp.bookletname + '"' + columnDelimiter + '"' + resp.unitname + '"' + columnDelimiter;
@@ -237,6 +245,13 @@ export class ResultsComponent implements OnInit {
                 });
           }
         });
+    }
+  }
+
+  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+  ngOnDestroy() {
+    if (this.workspaceIdSubscription !== null) {
+      this.workspaceIdSubscription.unsubscribe();
     }
   }
 }
