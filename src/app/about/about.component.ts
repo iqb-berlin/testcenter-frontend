@@ -1,22 +1,13 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { BackendService } from './../backend.service';
+import { Component, Inject } from '@angular/core';
 
 @Component({
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.css']
 })
-export class AboutComponent implements OnInit {
-  myAboutText : string;
+export class AboutComponent {
   constructor(
-    @Inject('APP_NAME') private appName: string,
-    @Inject('APP_PUBLISHER') private appPublisher: string,
-    @Inject('APP_VERSION') private appVersion: string
+    @Inject('APP_NAME') public appName: string,
+    @Inject('APP_PUBLISHER') public appPublisher: string,
+    @Inject('APP_VERSION') public appVersion: string
   ) { }
-
-  ngOnInit() {
-    // this.mds.pageTitle$.next('');
-    // this.bs.getAboutText().subscribe(t => this.myAboutText = t as string);
-  }
-
-
 }

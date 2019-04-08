@@ -18,15 +18,15 @@ export class MonitorComponent implements OnInit, OnDestroy {
 
   displayedColumns: string[] = ['selectCheckbox', 'groupname', 'loginsPrepared',
           'personsPrepared', 'bookletsPrepared', 'bookletsStarted', 'bookletsLocked', 'laststart'];
-  private monitorDataSource = new MatTableDataSource<MonitorData>([]);
-  private tableselectionCheckbox = new SelectionModel<MonitorData>(true, []);
+  public monitorDataSource = new MatTableDataSource<MonitorData>([]);
+  public tableselectionCheckbox = new SelectionModel<MonitorData>(true, []);
   private workspaceIdSubscription: Subscription = null;
-  private dataLoading = false;
+  public dataLoading = false;
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(
     private bs: BackendService,
-    private wds: WorkspaceDataService,
+    public wds: WorkspaceDataService,
     public snackBar: MatSnackBar
   ) { }
 

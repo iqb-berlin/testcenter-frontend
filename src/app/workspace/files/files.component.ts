@@ -42,7 +42,7 @@ export class FilesComponent implements OnInit, OnDestroy {
     @Inject('SERVER_URL') private serverUrl: string,
     private bs: BackendService,
     private mds: MainDataService,
-    private wds: WorkspaceDataService,
+    public wds: WorkspaceDataService,
     public confirmDialog: MatDialog,
     public messsageDialog: MatDialog,
     public snackBar: MatSnackBar

@@ -16,17 +16,17 @@ import { Subscription } from 'rxjs';
 })
 export class ResultsComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['selectCheckbox', 'groupname', 'bookletsStarted', 'num_units_min', 'num_units_max', 'num_units_mean', 'lastchange'];
-  private resultDataSource = new MatTableDataSource<ResultData>([]);
+  public resultDataSource = new MatTableDataSource<ResultData>([]);
   // prepared for selection if needed sometime
-  private tableselectionCheckbox = new SelectionModel<ResultData>(true, []);
-  private dataLoading = false;
+  public tableselectionCheckbox = new SelectionModel<ResultData>(true, []);
+  public dataLoading = false;
   private workspaceIdSubscription: Subscription = null;
 
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(
     private bs: BackendService,
-    private wds: WorkspaceDataService,
+    public wds: WorkspaceDataService,
     private deleteConfirmDialog: MatDialog,
     public snackBar: MatSnackBar
   ) { }

@@ -1,6 +1,6 @@
 import { NewpasswordComponent } from './newpassword/newpassword.component';
 import { NewuserComponent } from './newuser/newuser.component';
-import { BackendService, GetUserDataResponse, IdLabelSelectedData, ServerError, IdRoleData } from '../backend.service';
+import { BackendService, NameOnly, IdRoleData } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { ViewChild, OnDestroy } from '@angular/core';
 
@@ -19,12 +19,12 @@ import { MainDataService } from 'src/app/maindata.service';
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit, OnDestroy {
-  private isSuperadmin = false;
+  public isSuperadmin = false;
   public dataLoading = false;
-  public objectsDatasource: MatTableDataSource<GetUserDataResponse>;
+  public objectsDatasource: MatTableDataSource<NameOnly>;
   public displayedColumns = ['selectCheckbox', 'name'];
-  private tableselectionCheckbox = new SelectionModel <GetUserDataResponse>(true, []);
-  private tableselectionRow = new SelectionModel <GetUserDataResponse>(false, []);
+  private tableselectionCheckbox = new SelectionModel <NameOnly>(true, []);
+  private tableselectionRow = new SelectionModel <NameOnly>(false, []);
   private selectedUser = '';
 
   private pendingWorkspaceChanges = false;
@@ -45,7 +45,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   ) {
     this.tableselectionRow.changed.subscribe(
       r => {
-        if (r.added[0]) {
+        if (r.added.length > 0) {
           this.selectedUser = r.added[0].name;
         } else {
           this.selectedUser = '';  
@@ -165,7 +165,7 @@ export class UsersComponent implements OnInit, OnDestroy {
           // =========================================================
           this.dataLoading = true;
           const usersToDelete = [];
-          selectedRows.forEach((r: GetUserDataResponse) => usersToDelete.push(r.name));
+          selectedRows.forEach((r: NameOnly) => usersToDelete.push(r.name));
           this.bs.deleteUsers(usersToDelete).subscribe(
             respOk => {
               if (respOk) {

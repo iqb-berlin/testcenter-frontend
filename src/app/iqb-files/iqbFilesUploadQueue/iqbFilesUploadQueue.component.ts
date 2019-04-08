@@ -15,7 +15,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 
     @ViewChildren(IqbFilesUploadComponent) fileUploads: QueryList<IqbFilesUploadComponent>;
 
-    private files: Array<any> = [];
+    public files: Array<any> = [];
     private numberOfErrors = 0;
     private numberOfUploads = 0;
     private disableClearButton = true;

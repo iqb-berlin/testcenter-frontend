@@ -13,11 +13,11 @@ import { SysCheckStatistics } from '../workspace.interfaces';
 })
 export class SyscheckComponent implements OnInit {
   displayedColumns: string[] = ['selectCheckbox', 'syscheckLabel', 'number', 'details'];
-  private resultDataSource = new MatTableDataSource<SysCheckStatistics>([]);
+  public resultDataSource = new MatTableDataSource<SysCheckStatistics>([]);
   private isAdmin = false;
   // prepared for selection if needed sometime
-  private tableselectionCheckbox = new SelectionModel<SysCheckStatistics>(true, []);
-  private dataLoading = false;
+  public tableselectionCheckbox = new SelectionModel<SysCheckStatistics>(true, []);
+  public dataLoading = false;
 
   @ViewChild(MatSort) sort: MatSort;
 

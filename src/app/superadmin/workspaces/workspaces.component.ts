@@ -1,8 +1,8 @@
 import { EditworkspaceComponent } from './editworkspace/editworkspace.component';
 import { NewworkspaceComponent } from './newworkspace/newworkspace.component';
-import { BackendService, GetUserDataResponse, IdLabelSelectedData, ServerError } from '../backend.service';
+import { BackendService, IdAndName, IdRoleData } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { ViewChild } from '@angular/core';
+import { ViewChild, OnDestroy } from '@angular/core';
 
 import { Component, OnInit } from '@angular/core';
 import { MatSort, MatDialog, MatSnackBar } from '@angular/material';
@@ -10,29 +10,33 @@ import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
   MessageDialogData, MessageType } from '../../iqb-common';
+import { Subscription } from 'rxjs';
+import { MainDataService } from 'src/app/maindata.service';
 
 @Component({
   templateUrl: './workspaces.component.html',
   styleUrls: ['./workspaces.component.css']
 })
-export class WorkspacesComponent implements OnInit {
-  private isSuperadmin = false;
+export class WorkspacesComponent implements OnInit, OnDestroy {
+  public isSuperadmin = false;
   public dataLoading = false;
-  public objectsDatasource: MatTableDataSource<IdLabelSelectedData>;
+  public objectsDatasource: MatTableDataSource<IdAndName>;
   public displayedColumns = ['selectCheckbox', 'name'];
-  private tableselectionCheckbox = new SelectionModel <IdLabelSelectedData>(true, []);
-  private tableselectionRow = new SelectionModel <IdLabelSelectedData>(false, []);
+  private tableselectionCheckbox = new SelectionModel <IdAndName>(true, []);
+  private tableselectionRow = new SelectionModel <IdAndName>(false, []);
   private selectedWorkspaceId = 0;
   private selectedWorkspaceName = '';
+  private logindataSubscription: Subscription = null;
 
   private pendingUserChanges = false;
-  public UserlistDatasource: MatTableDataSource<IdLabelSelectedData>;
+  public UserlistDatasource: MatTableDataSource<IdRoleData>;
   public displayedUserColumns = ['selectCheckbox', 'name'];
 
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(
     private bs: BackendService,
+    private mds: MainDataService,
     private newworkspaceDialog: MatDialog,
     private editworkspaceDialog: MatDialog,
     private deleteConfirmDialog: MatDialog,
@@ -43,7 +47,7 @@ export class WorkspacesComponent implements OnInit {
       r => {
         if (r.added.length > 0) {
           this.selectedWorkspaceId = r.added[0].id;
-          this.selectedWorkspaceName = r.added[0].label;
+          this.selectedWorkspaceName = r.added[0].name;
         } else {
           this.selectedWorkspaceId = 0;
           this.selectedWorkspaceName = '';
@@ -53,7 +57,10 @@ export class WorkspacesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.updateObjectList();
+    this.logindataSubscription = this.mds.loginData$.subscribe(ld => {
+      this.isSuperadmin = ld.is_superadmin;
+      this.updateObjectList();
+    });
   }
 
   // ***********************************************************************************
@@ -102,8 +109,8 @@ export class WorkspacesComponent implements OnInit {
       const dialogRef = this.editworkspaceDialog.open(EditworkspaceComponent, {
         width: '600px',
         data: {
-          name: selectedRows[0].label,
-          oldname: selectedRows[0].label
+          name: selectedRows[0].name,
+          oldname: selectedRows[0].name
         }
       });
 
@@ -111,14 +118,14 @@ export class WorkspacesComponent implements OnInit {
         if (typeof result !== 'undefined') {
           if (result !== false) {
             this.dataLoading = true;
-            this.bs.changeWorkspace(selectedRows[0].id,
+            this.bs.renameWorkspace(selectedRows[0].id,
                 (<FormGroup>result).get('name').value).subscribe(
                   respOk => {
                     if (respOk) {
                       this.snackBar.open('Arbeitsbereich geändert', '', {duration: 1000});
                       this.updateObjectList();
                     } else {
-                      this.snackBar.open('Konnte Arbeitsbereich nicht ändern', 'Fehler', {duration: 1000});
+                      this.snackBar.open('Konnte Arbeitsbereich nicht ändern', 'Fehler', {duration: 2000});
                     }
                     this.dataLoading = false;
                   });
@@ -147,7 +154,7 @@ export class WorkspacesComponent implements OnInit {
       if (selectedRows.length > 1) {
         prompt = prompt + 'en ' + selectedRows.length + ' Arbeitsbereiche ';
       } else {
-        prompt = prompt + ' Arbeitsbereich "' + selectedRows[0].label + '" ';
+        prompt = prompt + ' Arbeitsbereich "' + selectedRows[0].name + '" ';
       }
       const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
         width: '400px',
@@ -163,7 +170,7 @@ export class WorkspacesComponent implements OnInit {
           // =========================================================
           this.dataLoading = true;
           const workspacesToDelete = [];
-          selectedRows.forEach((r: IdLabelSelectedData) => workspacesToDelete.push(r.id));
+          selectedRows.forEach((r: IdAndName) => workspacesToDelete.push(r.id));
           this.bs.deleteWorkspaces(workspacesToDelete).subscribe(
             respOk => {
               if (respOk) {
@@ -185,12 +192,8 @@ export class WorkspacesComponent implements OnInit {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
       this.dataLoading = true;
-      this.bs.getUsersByWorkspace(this.selectedWorkspaceId).subscribe(
-        (dataresponse: IdLabelSelectedData[]) => {
+      this.bs.getUsersByWorkspace(this.selectedWorkspaceId).subscribe(dataresponse => {
           this.UserlistDatasource = new MatTableDataSource(dataresponse);
-          this.dataLoading = false;
-        }, (err: ServerError) => {
-          // this.ass.updateAdminStatus('', '', [], err.label);
           this.dataLoading = false;
         });
     } else {
@@ -198,8 +201,12 @@ export class WorkspacesComponent implements OnInit {
     }
   }
 
-  selectUser(ws?: IdLabelSelectedData) {
-    ws.selected = !ws.selected;
+  selectUser(ws: IdRoleData, role: string) {
+    if (ws.role === role) {
+      ws.role = '';
+    } else {
+      ws.role = role;
+    }
     this.pendingUserChanges = true;
   }
 
@@ -212,7 +219,7 @@ export class WorkspacesComponent implements OnInit {
           if (respOk) {
             this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
           } else {
-            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 1000});
+            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 2000});
           }
           this.dataLoading = false;
         });
@@ -225,14 +232,9 @@ export class WorkspacesComponent implements OnInit {
   updateObjectList() {
     if (this.isSuperadmin) {
       this.dataLoading = true;
-      this.bs.getWorkspaces().subscribe(
-        (dataresponse: IdLabelSelectedData[]) => {
+      this.bs.getWorkspaces().subscribe(dataresponse => {
           this.objectsDatasource = new MatTableDataSource(dataresponse);
           this.objectsDatasource.sort = this.sort;
-          this.tableselectionCheckbox.clear();
-          this.tableselectionRow.clear();
-          this.dataLoading = false;
-        }, (err: ServerError) => {
           this.tableselectionCheckbox.clear();
           this.tableselectionRow.clear();
           this.dataLoading = false;
@@ -255,5 +257,12 @@ export class WorkspacesComponent implements OnInit {
 
   selectRow(row) {
     this.tableselectionRow.select(row);
+  }
+
+  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+  ngOnDestroy() {
+    if (this.logindataSubscription !== null) {
+      this.logindataSubscription.unsubscribe();
+    }
   }
 }

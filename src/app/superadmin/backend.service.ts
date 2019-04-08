@@ -20,9 +20,9 @@ export class BackendService {
   }
 
   // *******************************************************************
-  getUsers(): Observable<GetUserDataResponse[]> {
+  getUsers(): Observable<NameOnly[]> {
     return this.http
-      .get<GetUserDataResponse[]>(this.serverUrl + 'users')
+      .get<NameOnly[]>(this.serverUrl + 'users')
         .pipe(
           catchError(err => [])
         );
@@ -56,7 +56,7 @@ export class BackendService {
   // *******************************************************************
   getWorkspacesByUser(username: string): Observable<IdRoleData[]> {
     return this.http
-      .get<IdLabelSelectedData[]>(this.serverUrl + 'workspaces/' + username)
+      .get<IdLabelSelectedData[]>(this.serverUrl + 'workspaces?u=' + username)
         .pipe(
           catchError(err => [])
         );
@@ -71,129 +71,70 @@ export class BackendService {
         );
   }
 
-  setAboutText(text: string): Observable<string | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/text'
-      })
-    };
-    return this.http
-    .post<string>(this.serverUrl + 'setAboutText.php', {text: text}, httpOptions).pipe(catchError(this.handleError));
-  }
-
   // *******************************************************************
   // *******************************************************************
-  addWorkspace(name: string): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  addWorkspace(name: string): Observable<Boolean> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'addWorkspace.php', {n: name}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'workspace/add', {n: name})
         .pipe(
-          catchError(this.handleError)
+          catchError(err => of(false))
         );
   }
 
   // *******************************************************************
-  changeWorkspace(wsId: number, wsName: string): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  renameWorkspace(wsId: number, wsName: string): Observable<Boolean> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'setWorkspace.php', {ws_id: wsId, ws_name: wsName}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'workspace/rename', {ws: wsId, n: wsName})
         .pipe(
-          catchError(this.handleError)
+          catchError(err => of(false))
         );
   }
 
   // *******************************************************************
-  deleteWorkspaces(workspaces: number[]): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  deleteWorkspaces(workspaces: number[]): Observable<Boolean> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'deleteWorkspaces.php', {ws: workspaces}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'workspaces/delete', {ws: workspaces})
         .pipe(
-          catchError(this.handleError)
+          catchError(err => of(false))
         );
   }
 
   // *******************************************************************
-  getUsersByWorkspace(workspaceId: number): Observable<IdLabelSelectedData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  getUsersByWorkspace(workspaceId: number): Observable<IdRoleData[]> {
     return this.http
-      .post<IdLabelSelectedData[]>(this.serverUrl + 'getWorkspaceUsers.php', {ws: workspaceId}, httpOptions)
+      .get<IdRoleData[]>(this.serverUrl + 'users?ws=' + workspaceId)
         .pipe(
-          catchError(this.handleError)
+          catchError(err => [])
         );
   }
 
   // *******************************************************************
-  setUsersByWorkspace(workspace: number, accessing: IdLabelSelectedData[]): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  setUsersByWorkspace(workspace: number, accessing: IdRoleData[]): Observable<Boolean> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'setWorkspaceUsers.php', {w: workspace, u: accessing}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'workspace/users', {ws: workspace, u: accessing})
         .pipe(
-          catchError(this.handleError)
+          catchError(err => of(false))
         );
   }
 
   // *******************************************************************
-  getWorkspaces(): Observable<IdLabelSelectedData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  getWorkspaces(): Observable<IdAndName[]> {
     return this.http
-      .post<IdLabelSelectedData[]>(this.serverUrl + 'getWorkspaces.php', {}, httpOptions)
+      .get<IdAndName[]>(this.serverUrl + 'workspaces')
         .pipe(
-          catchError(this.handleError)
+          catchError(err => [])
         );
-  }
-
-  // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-  private handleError(errorObj: HttpErrorResponse): Observable<ServerError> {
-    const myreturn: ServerError = {
-      label: 'Fehler bei Datenübertragung',
-      code: errorObj.status
-    };
-    if (errorObj.status === 401) {
-      myreturn.label = 'Fehler: Zugriff verweigert - bitte (neu) anmelden!';
-    } else if (errorObj.status === 503) {
-      myreturn.label = 'Fehler: Server meldet Datenbankproblem.';
-    } else if (errorObj.error instanceof ErrorEvent) {
-      myreturn.label = 'Fehler: ' + (<ErrorEvent>errorObj.error).message;
-    } else {
-      myreturn.label = 'Fehler: ' + errorObj.message;
-    }
-
-    return Observable.throw(myreturn.label);
   }
 }
 
 
 // / / / / / /
-export interface ServerError {
-  code: number;
-  label: string;
+export interface NameOnly {
+  name: string;
 }
 
-export interface GetUserDataResponse {
+export interface IdAndName {
+  id: number;
   name: string;
 }
 

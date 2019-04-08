@@ -1,11 +1,16 @@
+<div class="logo">
+  <a [routerLink]="['/']">
+    <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
+  </a>
+</div>
 <div class="page-body">
-  <div fxLayout="row" fxLayoutAlign="center start">
+  <div fxLayout="row wrap" fxLayoutAlign="center stretch" style="padding: 30px;">
     <mat-card fxFlex="0 2 500px">
       <mat-card-title>IQB-Testcenter Verwaltung - Impressum/Datenschutz</mat-card-title>
 
       <!-- - - - - - - - - - - - - - - - - -->
       <mat-card-content>
-        <!-- <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
+        <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
         betreibt auf diesen Seiten eine Pilotanwendung für das computerbasierte Leistungstesten von
         Schülerinnen und Schülern. Dies ist die Web-Anwendung zur Verwaltung der Testinhalte und -ergebnisse.
         Der Zugang ist nur möglich, wenn Sie vom IQB
@@ -37,8 +42,7 @@
             Tel: +49 (30) 2093-2591<br/>
             E-Mail: datenschutz@uv.hu-berlin.de<br/>
             <a href="http://www.hu-berlin.de/de/datenschutz" target="_blank">www.hu-berlin.de/de/datenschutz</a>
-        </p> -->
-        {{ myAboutText }}
+        </p>
       </mat-card-content>
     </mat-card>
   </div>

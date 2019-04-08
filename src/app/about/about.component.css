@@ -1,4 +1,7 @@
-div.intro-main {
-  margin: 40px;
-  max-width: 600px;
+.mat-card {
+  margin: 10px;
+}
+
+.status {
+  background-color: lightgrey;
 }

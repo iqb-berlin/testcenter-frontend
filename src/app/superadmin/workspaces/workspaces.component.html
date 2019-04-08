@@ -60,19 +60,25 @@
         </button>
     </div>
 
-    <mat-table [dataSource]="UserlistDatasource">
+    <mat-table [dataSource]="UserlistDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
-        <mat-cell *matCellDef="let row" fxFlex="70px">
-          <mat-checkbox (change)="selectUser(row)"
-                        [checked]="row.selected">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>RO | RW | MO</mat-header-cell>
+        <mat-cell *matCellDef="let row" fxFlex="100px">
+          <mat-checkbox (change)="selectUser(row, 'RO')" [checked]="row.role === 'RO'" matTooltip="RO">
+          </mat-checkbox>
+          <mat-checkbox (change)="selectUser(row, 'RW')" [checked]="row.role === 'RW'" matTooltip="RW">
+          </mat-checkbox>
+          <mat-checkbox (change)="selectUser(row, 'MO')" [checked]="row.role === 'MO'" matTooltip="MO">
           </mat-checkbox>
         </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Nutzer </mat-header-cell>
         <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
       </ng-container>
 
+      <mat-header-row *matHeaderRowDef="displayedUserColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedUserColumns;"></mat-row>
     </mat-table>
   </div>

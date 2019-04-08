@@ -9,7 +9,7 @@ import { MainDataService } from '../maindata.service';
 })
 export class SuperadminComponent {
   constructor(
-    private mds: MainDataService
+    public mds: MainDataService
   ) { }
 
   public navLinks = [

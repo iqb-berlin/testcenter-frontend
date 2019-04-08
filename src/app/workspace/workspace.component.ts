@@ -17,8 +17,8 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   // CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
   constructor(
     private route: ActivatedRoute,
-    private mds: MainDataService,
-    private wds: WorkspaceDataService
+    public mds: MainDataService,
+    public wds: WorkspaceDataService
   ) { }
 
   // CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
