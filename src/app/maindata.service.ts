@@ -46,8 +46,6 @@ export class MainDataService {
           myLoginData.name = logindata.name;
           myLoginData.workspaces = logindata.workspaces;
           myLoginData.is_superadmin = logindata.is_superadmin;
-          console.log('fü33 ' + myLoginData.name);
-
       }
     }
     this.loginData$.next(myLoginData);

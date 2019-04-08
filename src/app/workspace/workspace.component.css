@@ -33,8 +33,3 @@ mat-toolbar {
   margin: 15px;
   padding: 25px;
 }
-
-.communication-error-message {
-  color: red;
-  padding: 10px 50px;
-}

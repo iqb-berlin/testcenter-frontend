@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 
@@ -12,7 +12,7 @@ export class BackendService {
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
-      this.serverUrl = this.serverUrl + 'admin/php_superadmin/';
+      this.serverUrl = this.serverUrl + 'php/sys.php/';
     }
 
   private errorHandler(error: Error | any): Observable<any> {
@@ -20,84 +20,54 @@ export class BackendService {
   }
 
   // *******************************************************************
-  getUsers(): Observable<GetUserDataResponse[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  getUsers(): Observable<GetUserDataResponse[]> {
     return this.http
-      .post<GetUserDataResponse[]>(this.serverUrl + 'getUsers.php', {}, httpOptions)
+      .get<GetUserDataResponse[]>(this.serverUrl + 'users')
         .pipe(
-          catchError(this.handleError)
+          catchError(err => [])
         );
   }
 
 
-  addUser(name: string, password: string): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  addUser(name: string, password: string): Observable<Boolean> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'addUser.php', {n: name, p: password}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'user/add', {n: name, p: password})
         .pipe(
-          catchError(this.handleError)
+          catchError(err => of(false))
         );
   }
 
-  changePassword(name: string, password: string): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  changePassword(name: string, password: string): Observable<Boolean> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'setPassword.php', {n: name, p: password}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'user/pw', {n: name, p: password})
         .pipe(
-          catchError(this.handleError)
+          catchError(err => of(false))
         );
   }
 
-  deleteUsers(users: string[]): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  deleteUsers(users: string[]): Observable<Boolean> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'deleteUsers.php', {u: users}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'users/delete', {u: users})
         .pipe(
-          catchError(this.handleError)
+          catchError(err => of(false))
         );
   }
 
   // *******************************************************************
-  getWorkspacesByUser(username: string): Observable<IdLabelSelectedData[] | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  getWorkspacesByUser(username: string): Observable<IdRoleData[]> {
     return this.http
-      .post<IdLabelSelectedData[]>(this.serverUrl + 'getUserWorkspaces.php', {u: username}, httpOptions)
+      .get<IdLabelSelectedData[]>(this.serverUrl + 'workspaces/' + username)
         .pipe(
-          catchError(this.handleError)
+          catchError(err => [])
         );
   }
 
   // *******************************************************************
-  setWorkspacesByUser(user: string, accessTo: IdLabelSelectedData[]): Observable<Boolean | ServerError> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  setWorkspacesByUser(user: string, accessTo: IdRoleData[]): Observable<Boolean> {
     return this.http
-      .post<Boolean>(this.serverUrl + 'setUserWorkspaces.php', {u: user, w: accessTo}, httpOptions)
+      .post<Boolean>(this.serverUrl + 'user/workspaces', {u: user, ws: accessTo})
         .pipe(
-          catchError(this.handleError)
+          catchError(err => of(false))
         );
   }
 
@@ -231,4 +201,10 @@ export interface IdLabelSelectedData {
   id: number;
   label: string;
   selected: boolean;
+}
+
+export interface IdRoleData {
+  id: number;
+  label: string;
+  role: string;
 }

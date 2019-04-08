@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MainDataService } from '../maindata.service';
 
 
 
@@ -6,21 +7,13 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './superadmin.component.html',
   styleUrls: ['./superadmin.component.css']
 })
-export class SuperadminComponent implements OnInit {
-
+export class SuperadminComponent {
+  constructor(
+    private mds: MainDataService
+  ) { }
 
   public navLinks = [
     {path: 'users', label: 'Users'},
-    {path: 'workspaces', label: 'Arbeitsbereiche'},
-    {path: 'aboutText', label: 'AboutText'}
+    {path: 'workspaces', label: 'Arbeitsbereiche'}
   ];
-
-
-  constructor(
-  ) { }
-
-  ngOnInit() {
-    // this.mds.updatePageTitle('IQB-Testcenter Verwaltung: Nutzer und Arbeitsbereiche');
-  }
-
 }

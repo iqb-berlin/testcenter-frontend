@@ -1,7 +1,14 @@
+<div id="buttonsContainer" fxLayout="row" fxLayoutAlign="start center">
+  <a [routerLink]="['/']">
+    <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
+  </a>
+  <div fxLayout="row wrap" fxLayoutAlign="space-between center" fxFlex>
+    <div class="error-msg">{{ (mds.globalErrorMsg$ | async)?.labelNice }}</div>
+    <div>IQB-Testcenter Systemverwaltung</div>
+  </div>
+</div>
 <div class="page-body">
   <div class="adminbackground">
-
-    <!--<p class="communication-error-message" *ngIf="!isAdmin">{{ notLoggedInMessage }}</p>-->
 
     <nav mat-tab-nav-bar>
       <a mat-tab-link

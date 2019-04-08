@@ -4,7 +4,6 @@ import { BackendService, GetUserDataResponse, IdLabelSelectedData, ServerError }
 import { MatTableDataSource } from '@angular/material/table';
 import { ViewChild } from '@angular/core';
 
-import { DatastoreService } from '../datastore.service';
 import { Component, OnInit } from '@angular/core';
 import { MatSort, MatDialog, MatSnackBar } from '@angular/material';
 import { FormGroup } from '@angular/forms';

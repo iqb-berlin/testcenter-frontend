@@ -7,11 +7,12 @@
   padding: 25px;
 }
 
-.communication-error-message {
-  color: red;
-  padding: 10px 50px;
+#buttonsContainer {
+  color: rgb(253, 249, 196);
+  padding: 0 10px 0 0;
+  font-weight: bold;
 }
 
-.columnhost {
-  width: 100%;
+#buttonsContainer img {
+  width: 100px;
 }

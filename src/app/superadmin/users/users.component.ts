@@ -1,8 +1,8 @@
 import { NewpasswordComponent } from './newpassword/newpassword.component';
 import { NewuserComponent } from './newuser/newuser.component';
-import { BackendService, GetUserDataResponse, IdLabelSelectedData, ServerError } from '../backend.service';
+import { BackendService, GetUserDataResponse, IdLabelSelectedData, ServerError, IdRoleData } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { ViewChild } from '@angular/core';
+import { ViewChild, OnDestroy } from '@angular/core';
 
 import { Component, OnInit } from '@angular/core';
 import { MatSort, MatDialog, MatSnackBar } from '@angular/material';
@@ -10,13 +10,15 @@ import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
   MessageDialogData, MessageType } from '../../iqb-common';
+import { Subscription } from 'rxjs';
+import { MainDataService } from 'src/app/maindata.service';
 
 
 @Component({
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css']
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent implements OnInit, OnDestroy {
   private isSuperadmin = false;
   public dataLoading = false;
   public objectsDatasource: MatTableDataSource<GetUserDataResponse>;
@@ -26,13 +28,15 @@ export class UsersComponent implements OnInit {
   private selectedUser = '';
 
   private pendingWorkspaceChanges = false;
-  public WorkspacelistDatasource: MatTableDataSource<IdLabelSelectedData>;
+  public WorkspacelistDatasource: MatTableDataSource<IdRoleData>;
   public displayedWorkspaceColumns = ['selectCheckbox', 'label'];
+  private logindataSubscription: Subscription = null;
 
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(
     private bs: BackendService,
+    private mds: MainDataService,
     private newuserDialog: MatDialog,
     private newpasswordDialog: MatDialog,
     private deleteConfirmDialog: MatDialog,
@@ -41,13 +45,20 @@ export class UsersComponent implements OnInit {
   ) {
     this.tableselectionRow.changed.subscribe(
       r => {
-        this.selectedUser = r.added[0].name;
+        if (r.added[0]) {
+          this.selectedUser = r.added[0].name;
+        } else {
+          this.selectedUser = '';  
+        }
         this.updateWorkspaceList();
       });
   }
 
   ngOnInit() {
-    this.updateObjectList();
+    this.logindataSubscription = this.mds.loginData$.subscribe(ld => {
+      this.isSuperadmin = ld.is_superadmin;
+      this.updateObjectList();
+    });
   }
 
   // ***********************************************************************************
@@ -162,7 +173,7 @@ export class UsersComponent implements OnInit {
                 this.updateObjectList();
                 this.dataLoading = false;
               } else {
-                this.snackBar.open('Konnte Nutzer nicht löschen', 'Fehler', {duration: 1000});
+                this.snackBar.open('Konnte Nutzer nicht löschen', 'Fehler', {duration: 2000});
                 this.dataLoading = false;
               }
           });
@@ -176,12 +187,8 @@ export class UsersComponent implements OnInit {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser.length > 0) {
       this.dataLoading = true;
-      this.bs.getWorkspacesByUser(this.selectedUser).subscribe(
-        (dataresponse: IdLabelSelectedData[]) => {
+      this.bs.getWorkspacesByUser(this.selectedUser).subscribe(dataresponse => {
           this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
-          this.dataLoading = false;
-        }, (err: ServerError) => {
-          // this.ass.updateAdminStatus('', '', [], err.label);
           this.dataLoading = false;
         });
     } else {
@@ -189,8 +196,12 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  selectWorkspace(ws?: IdLabelSelectedData) {
-    ws.selected = !ws.selected;
+  selectWorkspace(ws: IdRoleData, role: string) {
+    if (ws.role === role) {
+      ws.role = '';
+    } else {
+      ws.role = role;
+    }
     this.pendingWorkspaceChanges = true;
   }
 
@@ -203,7 +214,7 @@ export class UsersComponent implements OnInit {
           if (respOk) {
             this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
           } else {
-            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 1000});
+            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 2000});
           }
           this.dataLoading = false;
         });
@@ -216,17 +227,11 @@ export class UsersComponent implements OnInit {
   updateObjectList() {
     if (this.isSuperadmin) {
       this.dataLoading = true;
-      this.bs.getUsers().subscribe(
-        (dataresponse: GetUserDataResponse[]) => {
+      this.tableselectionCheckbox.clear();
+      this.tableselectionRow.clear();
+      this.bs.getUsers().subscribe(dataresponse => {
           this.objectsDatasource = new MatTableDataSource(dataresponse);
           this.objectsDatasource.sort = this.sort;
-          this.tableselectionCheckbox.clear();
-          this.tableselectionRow.clear();
-          this.dataLoading = false;
-        }, (err: ServerError) => {
-          // this.ass.updateAdminStatus('', '', [], err.label);
-          this.tableselectionCheckbox.clear();
-          this.tableselectionRow.clear();
           this.dataLoading = false;
         }
       );
@@ -247,5 +252,12 @@ export class UsersComponent implements OnInit {
 
   selectRow(row) {
     this.tableselectionRow.select(row);
+  }
+
+  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+  ngOnDestroy() {
+    if (this.logindataSubscription !== null) {
+      this.logindataSubscription.unsubscribe();
+    }
   }
 }
