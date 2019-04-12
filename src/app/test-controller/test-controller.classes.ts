@@ -234,6 +234,30 @@ export class Testlet extends TestletContentElement {
   }
 
   // .....................................................................
+  getAllUnitSequenceIds(testletId = ''): number[] {
+    let myreturn = [];
+
+    if (testletId) {
+      // find testlet
+      const myTestlet = this.getTestlet(testletId);
+      if (myTestlet) {
+        myreturn = myTestlet.getAllUnitSequenceIds();
+      }
+    } else {
+      for (const tce of this.children) {
+        if (tce instanceof Testlet) {
+          const localTestlet = tce as Testlet;
+          localTestlet.getAllUnitSequenceIds().forEach(u => myreturn.push(u));
+        } else {
+          const localUnit = tce as UnitDef;
+          myreturn.push(localUnit.sequenceId);
+        }
+      }
+    }
+    return myreturn;
+  }
+
+  // .....................................................................
   setTimeLeftNull(testletId = '') {
     if (testletId) {
       // find testlet
@@ -468,54 +492,51 @@ export class UnitDefLoadQueue {
   private waitForNewUnits = true;
 
   // ---------------------------------------------
-  constructor (private bs: BackendService, private tcs: TestControllerService) {}
+  // public startLoad(bs: BackendService, tcs: TestControllerService): Observable<TaggedString> {
+  //   if (!this.loading) {
+  //     // find next load request
+  //     let myUnitSequenceId = 0;
+  //     let myUnitDefinitionRef = '';
+  //     for (const unitSeqenceIdStr of Object.keys(this.unitsToLoad)) {
+  //       if (this.unitsToLoad[unitSeqenceIdStr]) {
+  //         myUnitSequenceId = Number(unitSeqenceIdStr);
+  //         myUnitDefinitionRef = this.unitsToLoad[unitSeqenceIdStr];
+  //         this.unitsToLoad[unitSeqenceIdStr] = null;
+  //         break;
+  //       }
+  //     }
 
-  // ---------------------------------------------
-  private startLoad() {
-    if (!this.loading) {
-      // find next load request
-      let myUnitSequenceId = 0;
-      let myUnitDefinitionRef = '';
-      for (const unitSeqenceIdStr of Object.keys(this.unitsToLoad)) {
-        if (this.unitsToLoad[unitSeqenceIdStr]) {
-          myUnitSequenceId = Number(unitSeqenceIdStr);
-          myUnitDefinitionRef = this.unitsToLoad[unitSeqenceIdStr];
-          this.unitsToLoad[unitSeqenceIdStr] = null;
-          break;
-        }
-      }
+  //     if (myUnitSequenceId > 0) {
+  //       this.loading = true;
+  //       this.bs.getResource(myUnitDefinitionRef).subscribe(def => {
+  //         this.loading = false;
+  //         console.log('start loading ' + myUnitDefinitionRef);
+  //         if (def instanceof ServerError) {
+  //           console.log('error getting unit "' + myUnitSequenceId.toString() + '": getting "' + myUnitDefinitionRef + '" failed');
+  //         } else {
+  //           this.tcs.addUnitDefinition(myUnitSequenceId, def as string);
+  //           console.log('loading complete ' + myUnitDefinitionRef);
+  //           this.startLoad();
+  //         }
+  //       });
+  //     } else if (!this.waitForNewUnits) {
+  //       this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
+  //     }
+  //   }
+  // }
 
-      if (myUnitSequenceId > 0) {
-        this.loading = true;
-        this.bs.getResource(myUnitDefinitionRef).subscribe(def => {
-          this.loading = false;
-          console.log('start loading ' + myUnitDefinitionRef);
-          if (def instanceof ServerError) {
-            console.log('error getting unit "' + myUnitSequenceId.toString() + '": getting "' + myUnitDefinitionRef + '" failed');
-          } else {
-            this.tcs.addUnitDefinition(myUnitSequenceId, def as string);
-            console.log('loading complete ' + myUnitDefinitionRef);
-            this.startLoad();
-          }
-        });
-      } else if (!this.waitForNewUnits) {
-        this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
-      }
-    }
-  }
+  // // ---------------------------------------------
+  // public addUnitDefToLoad(unitSequenceId: number, filename: string) {
+  //   this.unitsToLoad[unitSequenceId.toString()] = filename;
+  //   this.startLoad();
+  // }
 
-  // ---------------------------------------------
-  public addUnitDefToLoad(unitSequenceId: number, filename: string) {
-    this.unitsToLoad[unitSequenceId.toString()] = filename;
-    this.startLoad();
-  }
-
-  // ---------------------------------------------
-  public setWaiterOff() {
-    this.waitForNewUnits = false;
-    if (!this.loading) {
-      this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
-    }
-  }
+  // // ---------------------------------------------
+  // public setWaiterOff() {
+  //   this.waitForNewUnits = false;
+  //   if (!this.loading) {
+  //     this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
+  //   }
+  // }
 
 }

@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap, switchMap } from 'rxjs/operators';
-import { BookletData, UnitData } from './test-controller.interfaces';
+import { BookletData, UnitData, TaggedString } from './test-controller.interfaces';
 import { ServerError } from './test-controller.classes';
 
 
@@ -62,7 +62,7 @@ export class BackendService {
   }
 
   // ------------------------------
-  getResource(resId: string, versionning = false): Observable<string | ServerError> {
+  getResource(internalKey: string, resId: string, versionning = false): Observable<TaggedString | ServerError> {
     const myHttpOptions = {
         headers: new HttpHeaders({
           'Content-Type':  'application/json'
@@ -72,6 +72,7 @@ export class BackendService {
     const urlSuffix = versionning ? '?v=1' : '';
     return this.http.get<string>(this.serverSlimUrl_GET + 'resource/' + resId + urlSuffix, myHttpOptions)
       .pipe(
+        map(def => <TaggedString>{tag: internalKey, value: def}),
         catchError(this.handle)
       );
   }

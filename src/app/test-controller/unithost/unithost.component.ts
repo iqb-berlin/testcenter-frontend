@@ -205,30 +205,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
         if (this.tcs.hasUnitDefinition(this.myUnitSequenceId)) {
           this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: this.tcs.getUnitDefinition(this.myUnitSequenceId)};
-          console.log('hasUnitDefinition #1');
-          this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-        } else if (this.tcs.lazyloading) {
-          console.log('hasUnitDefinition #2');
-          const waiter = interval(1000)
-            .pipe(
-              takeWhile(data => this.tcs.hasUnitDefinition(this.myUnitSequenceId)),
-              timeout(5000)
-            );
-          waiter.subscribe(data => {
-            if (this.tcs.hasUnitDefinition(this.myUnitSequenceId)) {
-              console.log('hasUnitDefinition #3');
-              this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: this.tcs.getUnitDefinition(this.myUnitSequenceId)};
-            } else {
-              console.log('hasUnitDefinition #4');
-              this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: ''};
-            }
-            this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-          });
         } else {
-          console.log('hasUnitDefinition #5');
-          this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: ''};
-          this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+          this.pendingUnitDefinition = null;
         }
+        this.iFrameHostElement.appendChild(this.iFrameItemplayer);
       }
     });
   }

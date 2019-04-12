@@ -9,9 +9,9 @@ import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UnitDef, Testlet, UnitControllerData, EnvironmentData, MaxTimerData, UnitDefLoadQueue } from './test-controller.classes';
-import { LastStateKey, LogEntryKey, BookletData, UnitData, MaxTimerDataType } from './test-controller.interfaces';
-import { Subscription, Observable, of, forkJoin, interval, timer } from 'rxjs';
-import { switchMap, takeUntil, map } from 'rxjs/operators';
+import { LastStateKey, LogEntryKey, BookletData, UnitData, MaxTimerDataType, TaggedString } from './test-controller.interfaces';
+import { Subscription, Observable, of, forkJoin, interval, timer, from } from 'rxjs';
+import { switchMap, takeUntil, map, concatMap } from 'rxjs/operators';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -21,8 +21,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private loginDataSubscription: Subscription = null;
   private navigationRequestSubsription: Subscription = null;
   private maxTimerSubscription: Subscription = null;
+  private unitLoadQueueSubscription1: Subscription = null;
+  private unitLoadQueueSubscription2: Subscription = null;
 
-  public dataLoading = false;
   public showProgress = true;
 
   private lastUnitSequenceId = 0;
@@ -32,7 +33,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private allUnitIds: string[] = [];
   private progressValue = 0;
   private loadedUnitCount = 0;
-  private unitLoadQueue: UnitDefLoadQueue;
+  private unitLoadQueue: TaggedString[] = [];
 
   constructor (
     private mds: MainDataService,
@@ -41,9 +42,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private reviewDialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router
-  ) {
-    this.unitLoadQueue = new UnitDefLoadQueue(this.bs, this.tcs);
-  }
+  ) { }
 
   private getCostumText(key: string): string {
     const value = this.tcs.getCostumText(key);
@@ -232,8 +231,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                   // ----------------------
                   case 'Loading':
                     if (configParameter) {
-                      if (configParameter.toUpperCase() === 'LAZY') {
-                        this.tcs.lazyloading = true;
+                      if (configParameter.toUpperCase() === 'EAGER') {
+                        this.tcs.lazyloading = false;
                       }
                     }
                     break;
@@ -268,16 +267,16 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     } else {
       // to avoid multiple calls before returning:
       this.tcs.addPlayer(playerId, '');
-      return this.bs.getResource(this.tcs.normaliseId(playerId, 'html'), true)
+      return this.bs.getResource('', this.tcs.normaliseId(playerId, 'html'), true)
           .pipe(
             switchMap(myData => {
               if (myData instanceof ServerError) {
                 console.log('## problem getting player "' + playerId + '"');
                 return of(false);
               } else {
-                const player = myData as string;
-                if (player.length > 0) {
-                  this.tcs.addPlayer(playerId, player);
+                const player = myData as TaggedString;
+                if (player.value.length > 0) {
+                  this.tcs.addPlayer(playerId, player.value);
                   return of(true);
                 } else {
                   console.log('## size of player "' + playerId + '" = 0');
@@ -349,24 +348,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               return this.loadPlayerOk(playerId).pipe(
                 switchMap(ok => {
                   if (ok && definitionRef.length > 0) {
-                    if (this.tcs.lazyloading) {
-                      this.unitLoadQueue.addUnitDefToLoad(sequenceId, definitionRef);
+                    const newUnditDef: TaggedString = {
+                      tag: sequenceId.toString(),
+                      value: definitionRef
+                    };
+                    this.unitLoadQueue.push(newUnditDef);
                       myUnit.setCanEnter('y', '');
                       return of(true);
                     } else {
-                      return this.bs.getResource(definitionRef).pipe(
-                        switchMap(def => {
-                          if (def instanceof ServerError) {
-                            console.log('error getting unit "' + myUnit.id + '": getting "' + definitionRef + '" failed');
-                            return of(false);
-                          } else {
-                            this.tcs.addUnitDefinition(sequenceId, def as string);
-                            myUnit.setCanEnter('y', '');
-                            return of(true);
-                          }
-                        }));
-                    }
-                  } else {
                     if (ok) {
                       myUnit.setCanEnter('y', '');
                     }
@@ -484,12 +473,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.mode = loginData.mode;
         this.tcs.loginname = loginData.loginname;
 
-        this.dataLoading = true;
+        this.tcs.dataLoading = true;
         this.bs.getBookletData().subscribe(myData => {
           if (myData instanceof ServerError) {
             const e = myData as ServerError;
             this.mds.globalErrorMsg$.next(e);
-            this.dataLoading = false;
+            this.tcs.dataLoading = false;
           } else {
             const bookletData = myData as BookletData;
 
@@ -498,10 +487,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               this.mds.globalErrorMsg$.next(new ServerError(0, 'Das Testheft ist für die Bearbeitung gesperrt.', ''));
               this.tcs.resetDataStore();
             } else {
-              let navTarget = '';
+              let navTarget = 1;
               if (bookletData.laststate !== null) {
                 if (bookletData.laststate.hasOwnProperty(LastStateKey.LASTUNIT)) {
-                  navTarget = bookletData.laststate[LastStateKey.LASTUNIT];
+                  const navTargetTemp = Number(bookletData.laststate[LastStateKey.LASTUNIT]);
+                  if (!isNaN(navTargetTemp)) {
+                    navTarget = navTargetTemp;
+                  }
                 }
                 if (bookletData.laststate.hasOwnProperty(LastStateKey.MAXTIMELEFT) && (loginData.mode === 'hot')) {
                   this.tcs.LastMaxTimerState = JSON.parse(bookletData.laststate[LastStateKey.MAXTIMELEFT]);
@@ -512,65 +504,79 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
               if (this.tcs.rootTestlet === null) {
                 this.mds.globalErrorMsg$.next(new ServerError(0, 'Error Parsing Booklet Xml', ''));
-                this.dataLoading = false;
+                this.tcs.dataLoading = false;
               } else {
                 this.mds.globalErrorMsg$.next(null);
                 this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
-                // set last maxTimer value if available
-                // this.tcs.rootTestlet.setTimeLeft(bookletData.laststate);
 
-                const myUnitLoadings = [];
                 this.showProgress = true;
                 this.loadedUnitCount = 0;
+                const sequArray = [];
                 for (let i = 1; i < this.tcs.maxUnitSequenceId + 1; i++) {
-                  const ud = this.tcs.rootTestlet.getUnitAt(i);
-                  myUnitLoadings.push(this.loadUnitOk(ud.unitDef, i));
+                  sequArray.push(i);
                 }
-                forkJoin(myUnitLoadings).subscribe(allOk => {
-                  this.dataLoading = false;
-
-                  let loadingOk = true;
-                  for (const ok of allOk) {
-                    if (!ok) {
-                      loadingOk = false;
-                      break;
-                    }
-                  }
-                  this.showProgress = false;
-
-                  if (loadingOk) {
-                    // =====================
-                    this.tcs.bookletDbId = loginData.booklet;
-                    if (this.tcs.lazyloading) {
-                      this.unitLoadQueue.setWaiterOff();
-                    } else {
-                      this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
-                    }
-                    this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
-                    if (navTarget) {
-                      const navTargetNumber = Number(navTarget);
-                      if (isNaN(navTargetNumber)) {
-                        navTarget = '';
-                      } else {
-                        this.tcs.updateMinMaxUnitSequenceId(navTargetNumber);
-                        if (navTargetNumber < this.tcs.minUnitSequenceId) {
-                          navTarget = '';
-                        }
+                this.unitLoadQueueSubscription1 = from(sequArray).pipe(
+                  concatMap(uSequ => {
+                    const ud = this.tcs.rootTestlet.getUnitAt(uSequ);
+                    return this.loadUnitOk(ud.unitDef, uSequ);
+                  })
+                ).subscribe(ok => {
+                      if (!ok) {
+                          console.log('unit load problem from loadUnitOk');
                       }
-                    }
-                    if (!navTarget) {
-                      this.tcs.updateMinMaxUnitSequenceId(1);
-                    }
+                    },
+                    err => console.error('unit load error from loadUnitOk: ' + err),
+                    () => {
 
-                    this.tcs.setUnitNavigationRequest(navTarget);
+                      // =====================
+                      this.tcs.bookletDbId = loginData.booklet;
+                      this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
+                      this.tcs.updateMinMaxUnitSequenceId(navTarget);
+                      this.loadedUnitCount = 0;
 
-                    // =====================
-                  } else {
-                    console.log('loading failed');
-                    this.mds.globalErrorMsg$.next(new ServerError(0, 'Inhalte des Testheftes konnten nicht alle geladen werden.', ''));
-                    this.tcs.resetDataStore();
-                  }
-                });
+                      // =====================
+                      this.unitLoadQueueSubscription2 = from(this.unitLoadQueue).pipe(
+                        concatMap(queueEntry => {
+                          const unitSequ = Number(queueEntry.tag);
+                          if (!this.tcs.lazyloading) {
+                            this.incrementProgressValueBy1();
+                          }
+                          // avoid to load unit def if not necessary
+                          if (unitSequ < this.tcs.minUnitSequenceId) {
+                            return of({tag: unitSequ.toString(), value: ''});
+                          } else {
+                            return this.bs.getResource(queueEntry.tag, queueEntry.value);
+                          }
+                        })
+                      ).subscribe(
+                        def => {
+                          if (def instanceof ServerError) {
+                            console.log('getting unit data failed ' + def.labelNice + '/' + def.labelSystem);
+                          } else {
+                            const udef = def as TaggedString;
+                            this.tcs.addUnitDefinition(Number(udef.tag), udef.value);
+                          }
+                        },
+                        err => console.error('unit load error: ' + err),
+                        () => { // complete
+                          this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
+                          this.tcs.bookletLoadComplete = true;
+                          if (!this.tcs.lazyloading) {
+                              this.showProgress = false;
+                              this.tcs.dataLoading = false;
+                              this.tcs.setUnitNavigationRequest(navTarget.toString());
+                          }
+                        }
+                      );
+
+                      if (this.tcs.lazyloading) {
+                        this.showProgress = false;
+                        this.tcs.dataLoading = false;
+                        this.tcs.setUnitNavigationRequest(navTarget.toString());
+                      }
+
+                    } // complete
+                );
               }
             }
           }
@@ -662,6 +668,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
     if (this.maxTimerSubscription !== null) {
       this.maxTimerSubscription.unsubscribe();
+    }
+    if (this.unitLoadQueueSubscription1 !== null) {
+      this.unitLoadQueueSubscription1.unsubscribe();
+    }
+    if (this.unitLoadQueueSubscription2 !== null) {
+      this.unitLoadQueueSubscription2.unsubscribe();
     }
   }
 }

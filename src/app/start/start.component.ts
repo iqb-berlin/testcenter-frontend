@@ -26,12 +26,12 @@ export class StartComponent implements OnInit, OnDestroy {
   // for template
   private validCodes = [];
   private loginStatusText = ['nicht angemeldet'];
+  public bookletSelectTitle = 'Bitte wählen';
 
   private testtakerloginform: FormGroup;
   private codeinputform: FormGroup;
   private lastloginname = '';
-  private bookletSelectPrompt = 'Bitte wählen';
-  private bookletSelectTitle = 'Bitte wählen';
+  public bookletSelectPrompt = 'Bitte wählen';
 
   // ??
   // private sessiondata: PersonBooklets;
@@ -139,9 +139,11 @@ export class StartComponent implements OnInit, OnDestroy {
                 this.bookletSelectTitle = 'Beendet';
                 this.bookletSelectPrompt = this.mds.getCostumText('login_bookletSelectPromptNull');
               } else if (numberOfOpenBooklets === 1) {
+                this.bookletSelectPrompt = 'Bitte links auf den Testheft-Schalter klicken!';
                 this.bookletSelectTitle = 'Bitte starten';
                 this.bookletSelectPrompt = this.mds.getCostumText('login_bookletSelectPromptOne');
               } else {
+                this.bookletSelectPrompt = 'Bitte links ein Testheft wählen und klicken!';
                 this.bookletSelectTitle = 'Bitte wählen';
                 this.bookletSelectPrompt = this.mds.getCostumText('login_bookletSelectPromptMany');
               }

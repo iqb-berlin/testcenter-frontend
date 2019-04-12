@@ -2,11 +2,11 @@ import { StartLockInputComponent } from '../start-lock-input/start-lock-input.co
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../iqb-common/confirm-dialog/confirm-dialog.component';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { TestControllerService } from '../test-controller.service';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap, map, takeWhile, ignoreElements, filter, take } from 'rxjs/operators';
 import { UnithostComponent } from './unithost.component';
 import { Injectable } from '@angular/core';
 import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { Observable, of, interval } from 'rxjs';
 import { UnitControllerData } from '../test-controller.classes';
 import { CodeInputData, LogEntryKey, StartLockData } from '../test-controller.interfaces';
 import { MainDataService } from 'src/app/maindata.service';
@@ -135,7 +135,7 @@ export class UnitActivateGuard implements CanActivate {
         });
         return dialogRef.afterClosed().pipe(
           switchMap(result => {
-              if (result === false) {
+              if ((typeof result === 'undefined') || (result === false)) {
                 return of(false);
               } else {
                 const codeData = result as CodeInputData[];
@@ -168,6 +168,75 @@ export class UnitActivateGuard implements CanActivate {
     }
   }
 
+  // ****************************************************************************************
+  checkAndSolve_DefLoaded(newUnit: UnitControllerData): Observable<Boolean> {
+    if (this.tcs.bookletLoadComplete) {
+      return of(true);
+    } else {
+      if (this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
+
+        // 1 going forwards
+
+        if ((newUnit.maxTimerRequiringTestlet === null) || (this.tcs.mode === 'review')) {
+
+          // 1 a) target is not in timed block or review mode --> check only target unit
+
+          if (this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)) {
+            return of(true);
+          } else {
+            this.tcs.dataLoading = true;
+            return interval(1000)
+              .pipe(
+                filter(intervalvalue => this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)),
+                map(v => true),
+                take(1)
+              );
+          }
+        } else if (this.tcs.currentMaxTimerTestletId && (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)) {
+
+          // 1 b) staying in timed block --> check has been already done
+
+          return of(true);
+
+        } else {
+
+          // entering timed block --> check all units
+          const allUnitsSequenceIdsToCheck = this.tcs.rootTestlet.getAllUnitSequenceIds(newUnit.maxTimerRequiringTestlet.id);
+          let ok = true;
+          allUnitsSequenceIdsToCheck.forEach(u => {
+            if (!this.tcs.hasUnitDefinition(u)) {
+              ok = false;
+            }
+          });
+          if (ok) {
+            return of(true);
+          } else {
+            this.tcs.dataLoading = true;
+            return interval(1000)
+              .pipe(
+                filter(intervalvalue => {
+                  let localOk = true;
+                  allUnitsSequenceIdsToCheck.forEach(u => {
+                    if (!this.tcs.hasUnitDefinition(u)) {
+                      localOk = false;
+                    }
+                  });
+                  return localOk;
+                }),
+                map(v => true),
+                take(1)
+              );
+          }
+
+        }
+      } else {
+
+        // 2 going backwards --> no check, because units are loaded in ascending order
+
+        return of(true);
+      }
+    }
+  }
 
   // ****************************************************************************************
   checkAndSolve_maxTime(newUnit: UnitControllerData): Observable<Boolean> {
@@ -192,7 +261,7 @@ export class UnitActivateGuard implements CanActivate {
         });
         return dialogCDRef.afterClosed().pipe(
           switchMap(cdresult => {
-              if (cdresult === false) {
+              if ((typeof cdresult === 'undefined') || (cdresult === false)) {
                 return of(false);
               } else {
                 this.tcs.stopMaxTimer();
@@ -233,7 +302,7 @@ export class UnitActivateGuard implements CanActivate {
         });
         return dialogCDRef.afterClosed().pipe(
           switchMap(cdresult => {
-              if (cdresult === false) {
+              if ((typeof cdresult === 'undefined') || (cdresult === false)) {
                 return of(false);
               } else {
                 this.tcs.stopMaxTimer();
@@ -279,7 +348,10 @@ export class UnitActivateGuard implements CanActivate {
       myreturn = false;
     } else {
       const newUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
-      if (newUnit.unitDef.locked) {
+      if (!newUnit) {
+        myreturn = false;
+        console.log('target unit null (targetUnitSequenceId: ' + targetUnitSequenceId.toString());
+      } else if (newUnit.unitDef.locked) {
         myreturn = false;
         console.log('unit canActivate: locked');
       } else if (newUnit.unitDef.canEnter === 'n') {
@@ -298,19 +370,27 @@ export class UnitActivateGuard implements CanActivate {
                   if (!cAsC) {
                     return of(false);
                   } else {
-                    return this.checkAndSolve_maxTime(newUnit).pipe(
-                      switchMap(cAsMT => {
-                        if (!cAsMT) {
+                    return this.checkAndSolve_DefLoaded(newUnit).pipe(
+                      switchMap(cAsDL => {
+                        this.tcs.dataLoading = false;
+                        if (!cAsDL) {
                           return of(false);
                         } else {
-                          this.tcs.currentUnitSequenceId = targetUnitSequenceId;
-                          this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
-                          this.tcs.addUnitLog(newUnit.unitDef.id, LogEntryKey.UNITENTER);
-                          return of(true);
+                            return this.checkAndSolve_maxTime(newUnit).pipe(
+                              switchMap(cAsMT => {
+                                if (!cAsMT) {
+                                  return of(false);
+                                } else {
+                                  this.tcs.currentUnitSequenceId = targetUnitSequenceId;
+                                  this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
+                                  this.tcs.addUnitLog(newUnit.unitDef.id, LogEntryKey.UNITENTER);
+                                  return of(true);
+                                }
+                              }));
                         }
                       }));
-                  }
-                }));
+                }
+              }));
           }
         }));
 
