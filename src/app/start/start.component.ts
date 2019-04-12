@@ -60,9 +60,15 @@ export class StartComponent implements OnInit, OnDestroy {
         this.loginStatusText.push('Gruppe: ' + logindata.groupname);
 
         if (logindata.mode === 'trial') {
-          this.loginStatusText.push(this.mds.getCostumText('login_trialmodeText'));
+          const tmt = this.mds.getCostumText('login_trialmodeText');
+          if (tmt.length > 0) {
+            this.loginStatusText.push(tmt);
+          }
         } else if (logindata.mode === 'review') {
-          this.loginStatusText.push(this.mds.getCostumText('login_reviewmodeText'));
+          const tmt = this.mds.getCostumText('login_reviewmodeText');
+          if (tmt.length > 0) {
+            this.loginStatusText.push(tmt);
+          }
         }
 
         this.showLoginForm = false;

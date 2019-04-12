@@ -8,6 +8,8 @@ import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 import { Location } from '@angular/common';
 import { TaggedString, PageData, LastStateKey, LogEntryKey } from '../test-controller.interfaces';
 
+declare var srcDoc: any;
+
 @Component({
   templateUrl: './unithost.component.html',
   styleUrls: ['./unithost.component.css']
@@ -187,7 +189,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         this.setPageList([], '');
 
         this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-        this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(currentUnit.unitDef.playerId));
+        // this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(currentUnit.unitDef.playerId));
         this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
         this.iFrameItemplayer.setAttribute('class', 'unitHost');
         this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
@@ -209,6 +211,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
           this.pendingUnitDefinition = null;
         }
         this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+        srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(currentUnit.unitDef.playerId));
       }
     });
   }
