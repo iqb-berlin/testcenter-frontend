@@ -60,13 +60,9 @@ export class StartComponent implements OnInit, OnDestroy {
         this.loginStatusText.push('Gruppe: ' + logindata.groupname);
 
         if (logindata.mode === 'trial') {
-          this.loginStatusText.push('Ausführungsmodus "trial": Die Zeit-Beschränkungen, die eventuell ' +
-            'für das Testheft oder bestimmte Aufgaben festgelegt wurden, gelten nicht. Sie können ' +
-            'Kommentare über das Menü oben rechts speichern.');
+          this.loginStatusText.push(this.mds.getCostumText('login_trialmodeText'));
         } else if (logindata.mode === 'review') {
-          this.loginStatusText.push(
-            'Ausführungsmodus "review": Beschränkungen für Zeit und Navigation sind nicht wirksam. Antworten werden ' +
-            'nicht gespeichert. Sie können Kommentare über das Menü oben rechts speichern.');
+          this.loginStatusText.push(this.mds.getCostumText('login_reviewmodeText'));
         }
 
         this.showLoginForm = false;
@@ -83,13 +79,13 @@ export class StartComponent implements OnInit, OnDestroy {
             // buttons to select booklet
 
             createBookletSelectButtons = true;
-            this.loginStatusText.push('Test nicht gestartet.');
+            this.loginStatusText.push('Nicht gestartet.');
           } else {
             // booklet started
             this.showBookletButtons = false;
             this.showTestRunningButtons = true;
 
-            this.loginStatusText.push('Test gestartet: "' + logindata.bookletlabel + '"');
+            this.loginStatusText.push('Gestartet: "' + logindata.bookletlabel + '"');
           }
 
         } else {
@@ -140,16 +136,19 @@ export class StartComponent implements OnInit, OnDestroy {
               }
 
               if (numberOfOpenBooklets === 0) {
-                this.bookletSelectPrompt = (allOk.length > 1) ? 'Testhefte beendet' : 'Testheft beendet';
                 this.bookletSelectTitle = 'Beendet';
+                this.bookletSelectPrompt = this.mds.getCostumText('login_bookletSelectPromptNull');
               } else if (numberOfOpenBooklets === 1) {
                 this.bookletSelectTitle = 'Bitte starten';
+                this.bookletSelectPrompt = this.mds.getCostumText('login_bookletSelectPromptOne');
               } else {
                 this.bookletSelectTitle = 'Bitte wählen';
+                this.bookletSelectPrompt = this.mds.getCostumText('login_bookletSelectPromptMany');
               }
             });
           } else {
-            this.bookletSelectPrompt = 'Keine Testhefte verfügbar';
+            this.bookletSelectTitle = 'Kein Zugriff';
+            this.bookletSelectPrompt = 'Keine Informationen zu dieser Anmeldung verfügbar';
           }
         }
       } else {

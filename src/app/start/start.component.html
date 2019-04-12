@@ -57,8 +57,8 @@
           </p>
           <button mat-raised-button color="primary" (click)="startBooklet(b)"
             [disabled]="!b.isEnabled" *ngFor="let b of bookletlist">
-              <p class="booklet_title">{{b.label}}</p>
-              <p class="booklet_status">{{b.statustxt}}</p>
+              <div class="booklet_title">{{b.label}}</div>
+              <div class="booklet_status">{{b.statustxt}}</div>
           </button>
         </div>
       </mat-card-content>
@@ -72,7 +72,7 @@
       <mat-card-title>Ein Testheft ist gestartet</mat-card-title>
       <mat-card-content>
         <div fxLayout="column" fxLayoutGap="20px">
-          <button mat-raised-button color="primary" [routerLink]="['/t']">Zum Test zurückkehren</button>
+          <button mat-raised-button color="primary" [routerLink]="['/t']">{{ showTestRunningButtons | customText:'login_testReturnButtonText' }}</button>
           <button mat-raised-button color="primary" (click)="stopBooklet()">{{ showTestRunningButtons | customText:'login_testEndButtonText' }}</button>
           <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
         </div>
@@ -88,14 +88,12 @@
       <mat-card-content>
         <div *ngIf="showLoginForm">
           <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
-            betreibt auf diesen Seiten eine Pilotanwendung für das computerbasierte Leistungstesten von
-            Schülerinnen und Schülern. Der Zugang zu einem Test ist nur möglich, wenn Sie von Testverantwortlichen
-            Zugangsdaten erhalten haben, die Sie bitte links eingeben. Es sind keine weiteren Seiten öffentlich verfügbar.</p>
+            {{ mds.refreshCostumTexts | customText:'app_intro1' }}</p>
 
-          <p>Die mit diesem Testsystem erhobenen Daten sind vertraulich und enthalten grundsätzlich keinen direkten
-            Personenbezug. Es werden z. B. nie Namen gespeichert. Um Auskünfte zu einer bestimmten Studie
-            zu erhalten, wenden Sie sich bitte an das <a href="mailto:mechtel@iqb.hu-berlin.de?subject=Zum%20IQB-Testsystem">
-              IQB</a>. Wir benötigen dazu den ungefähren Testzeitraum und das Bundesland, in dem die Studie
+          <p>Die mit diesem System erhobenen Daten enthalten grundsätzlich keinen direkten
+            Personenbezug. Es werden z. B. nie Namen gespeichert. Um Auskünfte zu einer bestimmten Befragung bzw. Studie
+            zu erhalten, wenden Sie sich bitte an das <a href="mailto:mechtel@iqb.hu-berlin.de">
+              IQB</a>. Wir benötigen dazu den ungefähren Zeitraum und das Bundesland, in dem die Befragung bzw. Studie
               durchgeführt wurde.</p>
         </div>
 
@@ -114,7 +112,7 @@
 
         <!-- - - - - - - - - - - - - - - - - -->
         <div *ngIf="showBookletButtons">
-          <p>{{ showBookletButtons | customText:'login_bookletSelectPrompt' }}</p>
+          <p>{{ bookletSelectPrompt }}</p>
         </div>
 
         <!-- - - - - - - - - - - - - - - - - -->

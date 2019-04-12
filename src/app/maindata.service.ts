@@ -23,9 +23,12 @@ export class MainDataService {
   };
   private static defaultCostumTexts: KeyValuePair = {
     'app_title': 'IQB-Testcenter',
+    'app_intro1': 'betreibt auf diesen Seiten eine Pilotanwendung für das computerbasierte Leistungstesten von ' +
+        'Schülerinnen und Schülern. Der Zugang zu einem Test ist nur möglich, wenn Sie von Testverantwortlichen ' +
+        'Zugangsdaten erhalten haben, die Sie bitte links eingeben. Es sind keine weiteren Seiten öffentlich verfügbar.',
     'login_testEndButtonText': 'Test beenden',
-    'login_bookletSelectPrompt': 'Bitte wählen!',
-    'login_bookletSelectTitle': 'Bitte wählen!',
+    'login_testReturnButtonText': 'Zum Test zurückkehren',
+    'login_bookletSelectPromptNull': 'Beendet. Es können keine weiteren Testhefte gestartet werden.',
     'login_bookletSelectPromptOne': 'Bitte klicke auf die Schaltfläche auf der linken Seite, um den Test zu starten!',
     'login_bookletSelectPromptMany': 'Bitte klicke auf eine der Schaltflächen auf der linken Seite, um einen Test zu starten!',
     'login_codeInputPrompt': 'Bitte Log-in eingeben, der auf dem Zettel steht!',
@@ -50,6 +53,11 @@ export class MainDataService {
     'booklet_warningLeaveTimerBlockTitle': 'Aufgabenabschnitt verlassen?',
     'booklet_warningLeaveTimerBlockPrompt': 'Wenn du jetzt weiterblätterst, beendest ' +
         'du vorzeitig die Bearbeitung dieses Aufgabenabschnitts und du kannst nicht mehr zurück.',
+    'login_trialmodeText': 'Ausführungsmodus "trial": Navigationsbeschränkungen sowie Zeit-Beschränkungen, ' +
+        'die eventuell für das Testheft oder bestimmte Aufgaben festgelegt wurden, gelten nicht.',
+    'login_reviewmodeText': 'Ausführungsmodus "review": Beschränkungen für Zeit und Navigation sind nicht wirksam. Antworten werden ' +
+            'nicht gespeichert. Sie können Kommentare über das Menü oben rechts speichern.'
+
   };
 
   public loginData$ = new BehaviorSubject<LoginData>(MainDataService.defaultLoginData);
