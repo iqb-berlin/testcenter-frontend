@@ -400,6 +400,7 @@ export class Testlet extends TestletContentElement {
 // .....................................................................
 // .....................................................................
 export class EnvironmentData {
+  public appVersion: string;
   public browserVersion = '';
   public browserName = '';
   public get browserTxt(): string {
@@ -412,7 +413,8 @@ export class EnvironmentData {
     return `Bildschirmgröße ist ${this.screenSizeWidth} x ${this.screenSizeWidth}`;
   }
 
-  constructor () {
+  constructor (appVersion: string) {
+    this.appVersion = appVersion;
     const deviceInfo = window.navigator.userAgent;
 
     // browser + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +

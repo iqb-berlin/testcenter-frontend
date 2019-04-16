@@ -7,7 +7,7 @@ import { ServerError } from '../backend.service';
 import { BackendService } from './backend.service';
 
 import { TestControllerService } from './test-controller.service';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { UnitDef, Testlet, UnitControllerData, EnvironmentData, MaxTimerData, UnitDefLoadQueue } from './test-controller.classes';
 import { LastStateKey, LogEntryKey, BookletData, UnitData, MaxTimerDataType, TaggedString } from './test-controller.interfaces';
 import { Subscription, Observable, of, forkJoin, interval, timer, from } from 'rxjs';
@@ -36,6 +36,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private unitLoadQueue: TaggedString[] = [];
 
   constructor (
+    @Inject('APP_VERSION') public appVersion: string,
     private mds: MainDataService,
     public tcs: TestControllerService,
     private bs: BackendService,
@@ -467,7 +468,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     this.loginDataSubscription = this.mds.loginData$.subscribe(loginData => {
       this.tcs.resetDataStore();
       if ((loginData.persontoken.length > 0) && (loginData.booklet > 0)) {
-        const envData = new EnvironmentData();
+        const envData = new EnvironmentData(this.appVersion);
         this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADSTART, JSON.stringify(envData));
 
         this.tcs.mode = loginData.mode;

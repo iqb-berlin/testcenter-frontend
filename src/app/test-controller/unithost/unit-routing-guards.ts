@@ -383,7 +383,7 @@ export class UnitActivateGuard implements CanActivate {
                                 } else {
                                   this.tcs.currentUnitSequenceId = targetUnitSequenceId;
                                   this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
-                                  this.tcs.addUnitLog(newUnit.unitDef.id, LogEntryKey.UNITENTER);
+                                  this.tcs.addUnitLog(newUnit.unitDef.alias, LogEntryKey.UNITENTER);
                                   return of(true);
                                 }
                               }));
@@ -419,7 +419,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       const currentUnitSequenceId: number = Number(currentRoute.params['u']);
       const currentUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(currentUnitSequenceId);
 
-      this.tcs.addUnitLog(currentUnit.unitDef.id, LogEntryKey.UNITTRYLEAVE);
+      this.tcs.addUnitLog(currentUnit.unitDef.alias, LogEntryKey.UNITTRYLEAVE);
     }
     return true;
   }
