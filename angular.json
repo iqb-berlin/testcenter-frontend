@@ -20,6 +20,7 @@
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
               "src/assets",
+              "src/web-animations.min.js",
               "src/assets/android-chrome-192x192.png",
               "src/assets/android-chrome-512x512.png",
               "src/assets/apple-touch-icon.png",
@@ -29,10 +30,18 @@
               "src/assets/favicon-32x32.png",
               "src/assets/mstile-150x150.png",
               "src/assets/safari-pinned-tab.svg",
-              "src/assets/site.webmanifest"
-            ],
+              "src/assets/site.webmanifest",
+              "src/assets/MaterialIcons-Regular.ijmap",
+              "src/assets/codepoints",
+              "src/assets/material-icons.css",
+              "src/assets/MaterialIcons-Regular.eot",
+              "src/assets/MaterialIcons-Regular.svg",
+              "src/assets/MaterialIcons-Regular.ttf",
+              "src/assets/MaterialIcons-Regular.woff",
+              "src/assets/MaterialIcons-Regular.woff2"],
             "styles": [
               "src/iqb-theme1.scss",
+              "src/assets/material-icons.css",
               "src/styles.css"
             ],
             "scripts": []

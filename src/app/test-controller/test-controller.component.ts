@@ -45,6 +45,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private router: Router
   ) { }
 
+  // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   private getCostumText(key: string): string {
     const value = this.tcs.getCostumText(key);
     if (value.length > 0) {
@@ -54,10 +55,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
+  private getChildElements(element) {
+    return Array.prototype.slice.call(element.childNodes)
+    .filter(function (e) { return e.nodeType === 1; });
+  }
+  // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   // private: recursive reading testlets/units from xml
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   private addTestletContentFromBookletXml(targetTestlet: Testlet, node: Element) {
-    const childElements = node.children;
+    const childElements = this.getChildElements(node);
     if (childElements.length > 0) {
       let codeToEnter = '';
       let codePrompt = '';
@@ -71,7 +77,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
       }
       if (restrictionElement !== null) {
-        const restrictionElements = restrictionElement.children;
+        const restrictionElements = this.getChildElements(restrictionElement);
         for (let childIndex = 0; childIndex < restrictionElements.length; childIndex++) {
           if (restrictionElements[childIndex].nodeName === 'CodeToEnter') {
             const restrictionParameter = restrictionElements[childIndex].getAttribute('parameter');
@@ -156,12 +162,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           const IdElement = metadataElement.getElementsByTagName('Id')[0];
           const LabelElement = metadataElement.getElementsByTagName('Label')[0];
           rootTestlet = new Testlet(0, IdElement.textContent, LabelElement.textContent);
-
           const unitsElements = oDOM.documentElement.getElementsByTagName('Units');
           if (unitsElements.length > 0) {
             const costumTextsElements = oDOM.documentElement.getElementsByTagName('CustomTexts');
             if (costumTextsElements.length > 0) {
-              const costumTexts = costumTextsElements[0].children;
+              const costumTexts = this.getChildElements(costumTextsElements[0]);
               const costumTextsForBooklet = {};
               for (let childIndex = 0; childIndex < costumTexts.length; childIndex++) {
                 if (costumTexts[childIndex].nodeName === 'Text') {
@@ -172,16 +177,16 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 }
               }
               this.tcs.setCostumTexts(costumTextsForBooklet);
-              console.log('##__##');
-              console.log(costumTextsForBooklet);
             }
 
             const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
+
             if (bookletConfigElements.length > 0) {
-              const bookletConfigs = bookletConfigElements[0].children;
+              const bookletConfigs = this.getChildElements(bookletConfigElements[0]);
               for (let childIndex = 0; childIndex < bookletConfigs.length; childIndex++) {
                 const configParameter = bookletConfigs[childIndex].getAttribute('parameter');
                 const configValue = bookletConfigs[childIndex].textContent;
+
                 switch (bookletConfigs[childIndex].nodeName) {
                   // ----------------------
                   case 'NavPolicy':
@@ -254,6 +259,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
       }
     } catch (error) {
+      console.log('error reading booklet XML:');
+      console.log(error);
+
       rootTestlet = null;
     }
     return rootTestlet;
@@ -482,6 +490,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             this.tcs.dataLoading = false;
           } else {
             const bookletData = myData as BookletData;
+            console.log('#2');
 
             if (bookletData.locked) {
               console.log('loading failed');
@@ -504,6 +513,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               this.tcs.rootTestlet = this.getBookletFromXml(bookletData.xml);
 
               if (this.tcs.rootTestlet === null) {
+                console.log('rootTestlet = null');
                 this.mds.globalErrorMsg$.next(new ServerError(0, 'Error Parsing Booklet Xml', ''));
                 this.tcs.dataLoading = false;
               } else {

@@ -69,7 +69,7 @@
 
     <!-- - - - - - - - - - - - - - - - - -->
     <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showTestRunningButtons && !dataLoading">
-      <mat-card-title>Ein Testheft ist gestartet</mat-card-title>
+      <mat-card-title>{{ showTestRunningButtons | customText:'login_testRunningText' }}</mat-card-title>
       <mat-card-content>
         <div fxLayout="column" fxLayoutGap="20px">
           <button mat-raised-button color="primary" [routerLink]="['/t']">{{ showTestRunningButtons | customText:'login_testReturnButtonText' }}</button>
@@ -117,8 +117,7 @@
 
         <!-- - - - - - - - - - - - - - - - - -->
         <div *ngIf="showTestRunningButtons">
-            <p>Es wird gerade ein Test ausgeführt. Bitte durch Klicken auf eine der beiden Schaltflächen
-              links wählen, ob der Test fortgesetzt oder beendet werden soll!</p>
+            <p>{{ showTestRunningButtons | customText:'login_testRunningLongText' }}</p>
         </div>
         <div class="error-msg">{{ (mds.globalErrorMsg$ | async)?.labelNice }}</div>
 

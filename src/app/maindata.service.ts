@@ -26,6 +26,9 @@ export class MainDataService {
     'app_intro1': 'betreibt auf diesen Seiten eine Pilotanwendung für das computerbasierte Leistungstesten von ' +
         'Schülerinnen und Schülern. Der Zugang zu einem Test ist nur möglich, wenn Sie von Testverantwortlichen ' +
         'Zugangsdaten erhalten haben, die Sie bitte links eingeben. Es sind keine weiteren Seiten öffentlich verfügbar.',
+    'login_testRunningText': 'Ein Testheft ist gestartet',
+    'login_testRunningLongText': 'Es wird gerade ein Test ausgeführt. Bitte durch Klicken auf eine der beiden Schaltflächen ' +
+              'links wählen, ob der Test fortgesetzt oder beendet werden soll!',
     'login_testEndButtonText': 'Test beenden',
     'login_testReturnButtonText': 'Zum Test zurückkehren',
     'login_bookletSelectPromptNull': 'Beendet. Es können keine weiteren Testhefte gestartet werden.',
