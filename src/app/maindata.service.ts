@@ -40,8 +40,7 @@ export class MainDataService {
     if (logindata) {
       if (
         (logindata.admintoken.length > 0) &&
-        (logindata.name.length > 0) &&
-        (logindata.workspaces.length > 0)) {
+        (logindata.name.length > 0)) {
           myLoginData.admintoken = logindata.admintoken;
           myLoginData.name = logindata.name;
           myLoginData.workspaces = logindata.workspaces;
