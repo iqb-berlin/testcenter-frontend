@@ -52,8 +52,10 @@ export class BackendService {
 
   // *******************************************************************
   login(name: string, password: string): Observable<LoginData | ServerError> {
+
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
     return this.http
-      .post<LoginData>(this.serverUrlSlim + 'login.php/login', {n: name, p: password})
+      .post<LoginData>(this.serverUrlSlim + 'login.php/login', {n: name, p: password}, {headers})
         .pipe(
           catchError(ErrorHandler.handle)
         );
