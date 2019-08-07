@@ -1,7 +1,7 @@
 {
   "rulesDirectory": [
     "node_modules/codelyzer",
-    "node_modules/rxjs-tslint"
+    "node_modules/tslint"
   ],
   "rules": {
     "arrow-return-shorthand": true,
