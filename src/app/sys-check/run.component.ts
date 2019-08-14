@@ -118,7 +118,7 @@ export class RunComponent implements OnInit {
       this.ds.showNaviButtons$.next(true);
       if (!this.stepUnit.completed) {
         const cd = this.ds.checkConfig$.getValue();
-        this.compUnit.loadUnit(cd.id);
+        this.compUnit.loadUnitandPlayer(cd.id);
         this.stepUnit.completed = true;
       }
     } else if (e.selectedStep === this.stepNetwork) {
