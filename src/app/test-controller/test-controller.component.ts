@@ -364,7 +364,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     this.unitLoadQueue.push(newUnditDef);
                       myUnit.setCanEnter('y', '');
                       return of(true);
-                    } else {
+                  } else {
                     if (ok) {
                       myUnit.setCanEnter('y', '');
                     }
