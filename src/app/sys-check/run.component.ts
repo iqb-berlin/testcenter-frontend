@@ -1,15 +1,14 @@
-import { element } from 'protractor';
 import { SaveReportComponent } from './report/save-report/save-report.component';
 import { NetworkCheckComponent } from './network-check/network-check.component';
 import { SyscheckDataService } from './syscheck-data.service';
-import { BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CheckConfigData, BackendService, ReportEntry } from './backend.service';
-import { MatStepper, MatStep } from '../../../node_modules/@angular/material';
+import { BackendService} from './backend.service';
+import { MatStepper, MatStep } from '@angular/material';
 import { UnitCheckComponent } from './unit-check/unit-check.component';
-import { EnvironmentCheckComponent } from './environment-check/environment-check.component';
 import { MatDialog, MatSnackBar } from '@angular/material';
+import { map, skip, zip } from 'rxjs/operators';
+import { StepperSelectionEvent } from '@angular/cdk/stepper';
 
 
 @Component({
@@ -108,10 +107,20 @@ export class RunComponent implements OnInit {
         );
       }
     });
+
+
+
+    this.stepper.animationDone
+      .pipe(
+        skip(1), // animationDone gets called when the the stepper is rendered the frist time on step 1, but not selectionChange
+        zip(this.stepper.selectionChange),
+        map((combined: [any, StepperSelectionEvent]) => combined[1])
+      )
+      .subscribe(stepEvent => {this.stepperSelectionChanged(stepEvent); });
   }
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  stepperSelectionChanged(e) {
+  stepperSelectionChanged(e: StepperSelectionEvent) {
     this.ds.showNaviButtons$.next(false);
 
     if (e.selectedStep === this.stepUnit) {
@@ -130,7 +139,6 @@ export class RunComponent implements OnInit {
         }
       }
     }
-
   }
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -159,4 +167,6 @@ export class RunComponent implements OnInit {
       }
     });
   }
+
+
 }
