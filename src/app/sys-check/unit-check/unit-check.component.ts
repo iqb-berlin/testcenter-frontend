@@ -118,11 +118,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   public loadUnitandPlayer(checkId: string): void{
 
     this.clearPlayerElement();
-    // sometimes, the stepper takes too much time to show the next step component - if the data come too early, the
-    // iframehost has still height of 0px, so no iframe content is shown; the delay of the data arrival ensures
-    // that iframehost is in full height when the iframe is filled up
     this.bs.getUnitData(checkId).pipe(
-      delay(1000),
       flatMap((data: UnitData) => this.loadPlayerCode(data)),
       map((playerCode: string) => this.createPlayerElement(playerCode)),
     ).subscribe();
