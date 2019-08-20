@@ -2,7 +2,9 @@ import { CheckConfig } from './backend.service';
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
+import { TaggedString } from '../test-controller/test-controller.interfaces';
+import { ServerError } from '../test-controller/test-controller.classes';
 
 @Injectable({
   providedIn: 'root'
@@ -31,11 +33,46 @@ export class BackendService {
       pingMinimum: 5000,
       pingGood: 1000
     };
+  private serverSlimUrl_GET: string;
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
       this.serverUrl = this.serverUrl + 'php_tc/';
+      this.serverSlimUrl_GET = this.serverUrl + 'tc_get.php/';
+  }
+
+  // uppercase and add extension if not part
+  // TODO there is a copy of this in testController/backendService -> move to common ancestor
+  static normaliseId(s: string, standardext = ''): string {
+    s = s.trim().toUpperCase();
+    s.replace(/\s/g, '_');
+    if (standardext.length > 0) {
+      standardext = standardext.trim().toUpperCase();
+      standardext.replace(/\s/g, '_');
+      standardext = '.' + standardext.replace('.', '');
+
+      if (s.slice(-(standardext.length)) !== standardext) {
+        s = s + standardext;
+      }
+    }
+    return s;
+  }
+
+  // TODO there is a copy of this in testController/backendService -> move to common ancestor
+  static handle(errorObj: HttpErrorResponse): Observable<ServerError> {
+    let myreturn: ServerError = null;
+    if (errorObj.error instanceof ErrorEvent) {
+      myreturn = new ServerError(500, 'Verbindungsproblem', (<ErrorEvent>errorObj.error).message);
+    } else {
+      myreturn = new ServerError(errorObj.status, 'Verbindungsproblem', errorObj.message);
+      if (errorObj.status === 401) {
+        myreturn.labelNice = 'Zugriff verweigert - bitte (neu) anmelden!';
+      } else if (errorObj.status === 504) {
+        myreturn.labelNice = 'Achtung: Server meldet Datenbankproblem.';
+      }
+    }
+    return of(myreturn);
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
@@ -105,6 +142,23 @@ export class BackendService {
             return of(myreturn);
           })
         );
+  }
+
+
+  // TODO there is a copy of this in testController -> move to common service
+  getResource(internalKey: string, resId: string, versionning = false): Observable<TaggedString | ServerError> {
+    const myHttpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      }),
+      responseType: 'text' as 'json'
+    };
+    const urlSuffix = versionning ? '?v=1' : '';
+    return this.http.get<string>(this.serverSlimUrl_GET + 'resource/' + resId + urlSuffix, myHttpOptions)
+      .pipe(
+        map(def => <TaggedString>{tag: internalKey, value: def}),
+        catchError(BackendService.handle)
+      );
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777

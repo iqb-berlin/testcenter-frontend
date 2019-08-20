@@ -3,19 +3,10 @@ import { BackendService, UnitData } from '../backend.service';
 import { SyscheckDataService } from '../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
-import { Subscription, BehaviorSubject } from 'rxjs';
-import { delay } from 'rxjs/operators';
-
-// import { BackendService, UnitPreviewData } from './backend.service';
-// import { DatastoreService } from './datastore.service';
-// import { MainDatastoreService } from './../maindatastore.service';
-
-// BEWARE: not working since 3/2019
-// BEWARE: not working since 3/2019
-// BEWARE: not working since 3/2019
-// BEWARE: not working since 3/2019
-// BEWARE: not working since 3/2019
-// BEWARE: not working since 3/2019
+import { Subscription, BehaviorSubject, Observable } from 'rxjs';
+import { delay, flatMap, map } from 'rxjs/operators';
+import { ServerError } from '../../backend.service';
+import { TaggedString } from '../../test-controller/test-controller.interfaces';
 
 @Component({
   selector: 'iqb-unit-check',
@@ -123,36 +114,58 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     });
   }
 
-  // // // // // // // // // // // // // // // // // // // // // // // //
-  public loadUnit(checkId: string) {
+
+  public loadUnitandPlayer(checkId: string): void{
+
+    this.clearPlayerElement();
+    this.bs.getUnitData(checkId).pipe(
+      flatMap((data: UnitData) => this.loadPlayerCode(data)),
+      map((playerCode: string) => this.createPlayerElement(playerCode)),
+    ).subscribe();
+  }
+
+  private loadPlayerCode(data: UnitData): Observable<string> {
+
+    return this.bs.getResource('', BackendService.normaliseId(data.player, 'html'), true)
+      .pipe(
+        map((player: TaggedString | ServerError) => {
+
+          if (player instanceof ServerError) {
+            throw new Error(player.labelNice);
+          }
+
+          if (player.value.length === 0) {
+            throw new Error('## size of player "' + data.player + '" = 0');
+          }
+
+          this.pendingItemDefinition$.next(data.def);
+          return player.value;
+        })
+      );
+
+  }
+
+  private clearPlayerElement(): void  {
+
     this.dataLoading = true;
+
     while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
       this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
     }
+  }
 
-    // sometimes, the stepper takes too much time to show the next step component - if the data come too early, the
-    // iframehost has still height of 0px, so no iframe content is shown; the delay of the data arrival ensures
-    // that iframehost is in full height when the iframe is filled up
-    this.bs.getUnitData(checkId).pipe(
-      delay(1000)
-    ).subscribe((data: UnitData) => {
-      // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+  private createPlayerElement(playerCode: string): void {
 
-      this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-      this.iFrameItemplayer.setAttribute('srcdoc', data.player);
-      this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
-      this.iFrameItemplayer.setAttribute('class', 'unitHost');
-      this.iFrameItemplayer.setAttribute('height', '100');
-
-      this.pendingItemDefinition$.next(data.def);
-
-      this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
-      this.dataLoading = false;
-    });
+    this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
+    this.iFrameItemplayer.setAttribute('srcdoc', playerCode);
+    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
+    this.iFrameItemplayer.setAttribute('class', 'unitHost');
+    this.iFrameItemplayer.setAttribute('height', '100');
+    this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
+    this.dataLoading = false;
   }
 
   ngOnDestroy() {
     this.postMessageSubscription.unsubscribe();
   }
 }
-
