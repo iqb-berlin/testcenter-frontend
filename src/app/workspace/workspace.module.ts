@@ -1,7 +1,7 @@
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { BackendService } from './backend.service';
 import { IqbFilesModule } from '../iqb-files';
-import { IqbCommonModule } from '../iqb-common';
+import { IqbComponents } from 'iqb-components';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgModule, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -49,7 +49,7 @@ import { httpInterceptorProviders } from './workspace.interceptor';
     MatToolbarModule,
     MatSnackBarModule,
     MatGridListModule,
-    IqbCommonModule,
+    IqbComponents,
     FlexLayoutModule,
     MatCardModule,
     BrowserAnimationsModule,

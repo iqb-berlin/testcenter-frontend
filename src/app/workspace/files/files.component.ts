@@ -4,7 +4,7 @@ import { ServerError } from './../../backend.service';
 import { WorkspaceDataService } from './../workspacedata.service';
 import { GetFileResponseData, CheckWorkspaceResponseData } from './../workspace.interfaces';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType } from '../../iqb-common';
+  MessageDialogData, MessageType } from 'iqb-components';
 import { DataSource } from '@angular/cdk/collections';
 import { Observable, BehaviorSubject, Subscription, merge } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
@@ -89,7 +89,8 @@ export class FilesComponent implements OnInit, OnDestroy {
           data: <ConfirmDialogData>{
             title: 'Löschen von Dateien',
             content: prompt + ' diese gelöscht werden?',
-            confirmbuttonlabel: 'Löschen'
+            confirmbuttonlabel: 'Löschen',
+            showcancel: true
           }
         });
 

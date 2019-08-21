@@ -7,7 +7,6 @@ import { Injectable, Component, Input, Output, EventEmitter } from '@angular/cor
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { IqbCommonModule, ConfirmDialogComponent, ConfirmDialogData } from '../iqb-common';
 import { BackendService } from './backend.service';
 import { WorkspaceData } from '../app.interfaces';
 import { ServerError } from '../backend.service';
@@ -111,7 +110,7 @@ export class WorkspaceDataService {
         this.navLinks = [];
         break;
       }
-    }    
+    }
     this.workspaceId$.next(newId);
   }
 }

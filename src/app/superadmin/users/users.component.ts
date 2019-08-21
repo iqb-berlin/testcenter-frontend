@@ -9,7 +9,7 @@ import { MatSort, MatDialog, MatSnackBar } from '@angular/material';
 import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType } from '../../iqb-common';
+  MessageDialogData, MessageType } from 'iqb-components';
 import { Subscription } from 'rxjs';
 import { MainDataService } from 'src/app/maindata.service';
 
@@ -48,7 +48,7 @@ export class UsersComponent implements OnInit, OnDestroy {
         if (r.added.length > 0) {
           this.selectedUser = r.added[0].name;
         } else {
-          this.selectedUser = '';  
+          this.selectedUser = '';
         }
         this.updateWorkspaceList();
       });
@@ -156,7 +156,8 @@ export class UsersComponent implements OnInit, OnDestroy {
         data: <ConfirmDialogData>{
           title: 'Löschen von Nutzern',
           content: prompt + 'gelöscht werden?',
-          confirmbuttonlabel: 'Nutzer löschen'
+          confirmbuttonlabel: 'Nutzer löschen',
+          showcancel: true
         }
       });
 

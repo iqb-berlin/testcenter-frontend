@@ -1,4 +1,4 @@
-import { IqbCommonModule } from '../iqb-common';
+import { IqbComponents } from 'iqb-components';
 import { NgModule } from '@angular/core';
 import { IqbFilesUploadComponent } from './iqbFilesUpload/iqbFilesUpload.component';
 import { IqbFilesUploadQueueComponent } from './iqbFilesUploadQueue/iqbFilesUploadQueue.component';
@@ -17,7 +17,7 @@ import { CommonModule } from '@angular/common';
     MatIconModule,
     MatCardModule,
     HttpClientModule,
-    IqbCommonModule,
+    IqbComponents,
     CommonModule
   ],
   declarations: [

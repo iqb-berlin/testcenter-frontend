@@ -1,4 +1,4 @@
-import { ConfirmDialogComponent, ConfirmDialogData } from './../../iqb-common/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { BackendService } from './../backend.service';
 import { MatSnackBar, MatSort, MatTableDataSource, MatDialog } from '@angular/material';
@@ -102,7 +102,8 @@ export class SyscheckComponent implements OnInit {
         data: <ConfirmDialogData>{
           title: 'Löschen von Berichten',
           content: prompt + 'gelöscht. Fortsetzen?',
-          confirmbuttonlabel: 'Berichtsdaten löschen'
+          confirmbuttonlabel: 'Berichtsdaten löschen',
+          showcancel: true
         }
       });
 
