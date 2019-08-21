@@ -11,7 +11,7 @@ import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule, Ma
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { IqbCommonModule } from './iqb-common';
+import { IqbComponents } from 'iqb-components';
 import { BackendService } from './backend.service';
 import { StartComponent } from './start/start.component';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
@@ -51,7 +51,7 @@ import { CustomTextPipe } from './custom-text.pipe';
     HttpClientModule,
     MatToolbarModule,
     AppRoutingModule,
-    IqbCommonModule
+    IqbComponents
   ],
   providers: [
     BackendService,

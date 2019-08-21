@@ -1,5 +1,5 @@
 import { StartLockInputComponent } from '../start-lock-input/start-lock-input.component';
-import { ConfirmDialogComponent, ConfirmDialogData } from '../../iqb-common/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { TestControllerService } from '../test-controller.service';
 import { switchMap, map, takeWhile, ignoreElements, filter, take } from 'rxjs/operators';
