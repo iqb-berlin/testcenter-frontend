@@ -1,3 +1,18 @@
+.step-body {
+  position: absolute;
+  background-color: white;
+  /*border: 1px solid darkgreen;*/
+  left: 0;
+  top: 103px;
+  width: 100%;
+  overflow: hidden;
+  bottom: -4px;
+}
+
+.scrollable {
+  overflow: auto;
+}
+
 .mat-mini-fab {
   margin-right: 4px
 }
