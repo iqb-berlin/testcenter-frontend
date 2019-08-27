@@ -9,7 +9,7 @@ import { MatSort, MatDialog, MatSnackBar } from '@angular/material';
 import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType } from '../../iqb-common';
+  MessageDialogData, MessageType } from 'iqb-components';
 import { Subscription } from 'rxjs';
 import { MainDataService } from 'src/app/maindata.service';
 
@@ -161,7 +161,8 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
         data: <ConfirmDialogData>{
           title: 'Löschen von Arbeitsbereichen',
           content: prompt + 'gelöscht werden?',
-          confirmbuttonlabel: 'Arbeitsbereich/e löschen'
+          confirmbuttonlabel: 'Arbeitsbereich/e löschen',
+          showcancel: true
         }
       });
 

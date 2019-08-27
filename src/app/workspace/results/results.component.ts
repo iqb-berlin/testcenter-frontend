@@ -1,6 +1,6 @@
 import { LogData } from './../workspace.interfaces';
 import { WorkspaceDataService } from './../workspacedata.service';
-import { ConfirmDialogComponent, ConfirmDialogData } from './../../iqb-common/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { BackendService } from './../backend.service';
 import { MatSnackBar, MatSort, MatTableDataSource, MatDialog } from '@angular/material';
@@ -231,7 +231,8 @@ export class ResultsComponent implements OnInit, OnDestroy {
         data: <ConfirmDialogData>{
           title: 'Löschen von Gruppendaten',
           content: prompt + 'gelöscht. Fortsetzen?',
-          confirmbuttonlabel: 'Gruppendaten löschen'
+          confirmbuttonlabel: 'Gruppendaten löschen',
+          showcancel: true
         }
       });
 

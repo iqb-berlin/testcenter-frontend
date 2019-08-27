@@ -24,6 +24,7 @@
     "@angular/platform-browser-dynamic": "~7.2.15",
     "@angular/router": "~7.2.15",
     "@types/file-saver": "^1.3.0",
+    "iqb-components": "~1.4.3",
     "core-js": "^2.6.5",
     "file-saver": "^1.3.8",
     "hammerjs": "^2.0.8",

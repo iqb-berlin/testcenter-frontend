@@ -13,7 +13,7 @@ import { UsersComponent } from './users/users.component';
 import { SuperadminComponent } from './superadmin.component';
 import { BackendService } from './backend.service';
 import { IqbFilesModule } from '../iqb-files/iqb-files.module';
-import { IqbCommonModule } from '../iqb-common/iqb-common.module';
+import { IqbComponents } from 'iqb-components';
 import { NewuserComponent } from './users/newuser/newuser.component';
 import { NewpasswordComponent } from './users/newpassword/newpassword.component';
 import { NewworkspaceComponent } from './workspaces/newworkspace/newworkspace.component';
@@ -25,7 +25,7 @@ import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace
     CommonModule,
     SuperadminRoutingModule,
     IqbFilesModule,
-    IqbCommonModule,
+    IqbComponents,
     MatTableModule,
     MatTabsModule,
     MatIconModule,
