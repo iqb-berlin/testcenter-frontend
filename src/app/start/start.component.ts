@@ -1,6 +1,6 @@
 import { MainDataService } from './../maindata.service';
 import { Subscription, BehaviorSubject, forkJoin } from 'rxjs';
-import { MessageDialogComponent, MessageDialogData, MessageType } from './../iqb-common';
+import { MessageDialogComponent, MessageDialogData, MessageType } from 'iqb-components';
 import { MatDialog } from '@angular/material';
 import { BackendService, ServerError } from '../backend.service';
 import { PersonTokenAndBookletDbId, BookletDataListByCode, LoginData, BookletStatus } from '../app.interfaces';
