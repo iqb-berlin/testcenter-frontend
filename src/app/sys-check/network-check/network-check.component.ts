@@ -90,6 +90,16 @@ export class NetworkCheckComponent implements OnInit {
 
             // bytes / miliseconds * 1000 = bytes / second
             this.averageSpeed[type] = Math.floor(totalSize / totalTime) * 1000;
+            // console.log(type, currentTestResultIndex);
+            // console.log(testResults[currentTestResultIndex].duration);
+            // console.log(testResults[currentTestResultIndex].size);
+            // console.log(this.averageSpeed[type]);
+            // console.log('--------------------');
+            /*
+            - es werden base64 chars encoded
+            - fehler vom be werden nicht ausgewertet -> fehlercode?
+            - stimmen aber die berechnungen?
+             */
 
               if (this.averageSpeed.pingTest === -1) {
                   // if ping is not yet discovered, mark it down
