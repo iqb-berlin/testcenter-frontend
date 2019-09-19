@@ -1,7 +1,12 @@
-import { SyscheckDataService } from './../syscheck-data.service';
+import { SyscheckDataService } from '../syscheck-data.service';
 import { Component, OnInit } from '@angular/core';
-import { BackendService, NetworkRequestTestResult, RequestBenchmarkerFunction,
-      RequestBenchmarkerFunctionCallback, ReportEntry} from '../backend.service';
+import {
+  BackendService,
+  NetworkRequestTestResult,
+  ReportEntry,
+  RequestBenchmarkerFunction,
+  RequestBenchmarkerFunctionCallback
+} from '../backend.service';
 
 @Component({
   selector: 'iqb-network-check',
@@ -21,7 +26,7 @@ export class NetworkCheckComponent implements OnInit {
     uploadRating: 'N/A',
     pingRating: 'N/A',
     overallRating: 'N/A'
-};
+  };
 
   constructor(
     private ds: SyscheckDataService,
@@ -33,6 +38,7 @@ export class NetworkCheckComponent implements OnInit {
   }
 
   public startCheck() {
+
     this.testDone = false;
 
     const testResults: Array<NetworkRequestTestResult> = [];
@@ -53,49 +59,49 @@ export class NetworkCheckComponent implements OnInit {
         this.status = newStatus;
     };
 
-    const nextStepOfConnectionTest = (whatIsBeingTested: 'download' | 'upload',
-                                      requestBenchmarkerFunction: RequestBenchmarkerFunction,
-                                      callback: Function) => {
+    const nextStepOfConnectionTest =
+      (whatIsBeingTested: 'download' | 'upload', requestBenchmarkerFunction: RequestBenchmarkerFunction, callback: Function) => {
         currentSizeIteration++;
         let shouldContinue = true;
 
         if (currentSizeIteration > 3) {
-            if (currentSizePassed === 0) {
-              shouldContinue = false;
-            }
-            if (currentSize * 2 > 1024 * 1024 * 5) {
-              shouldContinue = false;
-            }
 
-            if (currentSizePassed === 3) {
-                // if there were 3 succesful requests at this size, calculate the average speed and save it as the latest result
-                const currentTestResultIndex: number = testResults.length - 1;
+          if (currentSizePassed === 0) {
+            shouldContinue = false;
+          }
 
-                const type: string = testResults[currentTestResultIndex].type;
+          if (currentSize * 2 > 1024 * 1024 * 5) {
+            shouldContinue = false;
+          }
 
-                const totalSize: number  =   testResults[currentTestResultIndex].size +
-                                             testResults[currentTestResultIndex - 1].size +
-                                             testResults[currentTestResultIndex - 2].size;
+          if (currentSizePassed === 3) {
+            // if there were 3 succesful requests at this size, calculate the average speed and save it as the latest result
+            const currentTestResultIndex: number = testResults.length - 1;
 
-                const totalTime: number  =   testResults[currentTestResultIndex].duration +
-                                            testResults[currentTestResultIndex - 1].duration +
-                                            testResults[currentTestResultIndex - 2].duration;
+            const type: string = testResults[currentTestResultIndex].type;
 
-                const currentAverageSpeed  = Math.floor(totalSize / totalTime) * 1000; // bytes / miliseconds * 1000 = bytes / second
+            const totalSize: number = testResults[currentTestResultIndex].size +
+                                      testResults[currentTestResultIndex - 1].size +
+                                      testResults[currentTestResultIndex - 2].size;
 
-                this.averageSpeed[type] = currentAverageSpeed;
+            const totalTime: number = testResults[currentTestResultIndex].duration +
+                                      testResults[currentTestResultIndex - 1].duration +
+                                      testResults[currentTestResultIndex - 2].duration;
 
-                if (this.averageSpeed.pingTest === -1) {
-                    // if ping is not yet discovered, mark it down
-                    if (currentSize === 1024) {
-                      this.averageSpeed.pingTest = Math.floor(totalTime / 3); // ping is given in miliseconds
-                    }
-                }
-            }
+            // bytes / miliseconds * 1000 = bytes / second
+            this.averageSpeed[type] = Math.floor(totalSize / totalTime) * 1000;
 
-            currentSizeIteration = 1;
-            currentSize = currentSize * 2;
-            currentSizePassed = 0;
+              if (this.averageSpeed.pingTest === -1) {
+                  // if ping is not yet discovered, mark it down
+                  if (currentSize === 1024) {
+                    this.averageSpeed.pingTest = Math.floor(totalTime / 3); // ping is given in miliseconds
+                  }
+              }
+          }
+
+          currentSizeIteration = 1;
+          currentSize = currentSize * 2;
+          currentSizePassed = 0;
         }
 
         if (shouldContinue) {
@@ -130,113 +136,114 @@ export class NetworkCheckComponent implements OnInit {
     nextStepOfConnectionTest('download', (requestSize: number, timeout: number, callback: RequestBenchmarkerFunctionCallback) => {
         this.bs.benchmarkDownloadRequest(requestSize, timeout, callback);
     }, () => {
+      // then
+
+      nextStepOfConnectionTest('upload', (requestSize: number, timeout: number, callback: RequestBenchmarkerFunctionCallback) => {
+          this.bs.benchmarkUploadRequest(requestSize, timeout, callback);
+      }, () => {
         // then
+        // console.log('done');
 
-        nextStepOfConnectionTest('upload', (requestSize: number, timeout: number, callback: RequestBenchmarkerFunctionCallback) => {
-            this.bs.benchmarkUploadRequest(requestSize, timeout, callback);
-        }, () => {
-             // then
-            // console.log('done');
+        // console.log('Test results:');
+        // console.log(testResults);
+        // console.log(averageSpeed);
 
-            // console.log('Test results:');
-            // console.log(testResults);
-            // console.log(averageSpeed);
+        this.networkRating = this.calculateNetworkRating(this.averageSpeed);
 
-            this.networkRating = this.calculateNetworkRating(this.averageSpeed);
+        updateStatus(`Die folgenden Netzwerkeigenschaften wurden festgestellt:`);
+        this.testDone = true;
 
-            updateStatus(`Die folgenden Netzwerkeigenschaften wurden festgestellt:`);
-            this.testDone = true;
+        // send data for reporting
+        const myReport: ReportEntry[] = [];
 
-            // send data for reporting
-            const myReport: ReportEntry[] = [];
+        myReport.push({'id': '0', 'type': 'network',
+          'label': 'Downloadgeschwindigkeit', 'value': this.averageSpeed.downloadTest.toLocaleString()});
+        myReport.push({'id': '0', 'type': 'network',
+          'label': 'Downloadbewertung', 'value': this.networkRating.downloadRating});
 
-            myReport.push({'id': '0', 'type': 'network',
-              'label': 'Downloadgeschwindigkeit', 'value': this.averageSpeed.downloadTest.toLocaleString()});
-            myReport.push({'id': '0', 'type': 'network',
-              'label': 'Downloadbewertung', 'value': this.networkRating.downloadRating});
+        myReport.push({'id': '0', 'type': 'network',
+          'label': 'Uploadgeschwindigkeit', 'value': this.averageSpeed.uploadTest.toLocaleString()});
+        myReport.push({'id': '0', 'type': 'network',
+          'label': 'Uploadbewertung', 'value': this.networkRating.uploadRating});
 
-            myReport.push({'id': '0', 'type': 'network',
-              'label': 'Uploadgeschwindigkeit', 'value': this.averageSpeed.uploadTest.toLocaleString()});
-            myReport.push({'id': '0', 'type': 'network',
-              'label': 'Uploadbewertung', 'value': this.networkRating.uploadRating});
+        myReport.push({'id': '0', 'type': 'network',
+          'label': 'Ping', 'value': this.averageSpeed.pingTest.toLocaleString()});
+        myReport.push({'id': '0', 'type': 'network',
+          'label': 'Ping-Bewertung', 'value': this.networkRating.pingRating});
 
-            myReport.push({'id': '0', 'type': 'network',
-              'label': 'Ping', 'value': this.averageSpeed.pingTest.toLocaleString()});
-            myReport.push({'id': '0', 'type': 'network',
-              'label': 'Ping-Bewertung', 'value': this.networkRating.pingRating});
+        myReport.push({'id': '0', 'type': 'network',
+          'label': 'Allgemeine Bewertung der Verbindung zum Server', 'value': this.networkRating.overallRating});
 
-            myReport.push({'id': '0', 'type': 'network',
-              'label': 'Allgemeine Bewertung der Verbindung zum Server', 'value': this.networkRating.overallRating});
+        this.ds.networkData$.next(myReport);
 
-            this.ds.networkData$.next(myReport);
-
-        });
+      });
     });
   }
 
   public calculateNetworkRating(nd: NetworkData): NetworkRating {
-        // assumes that this.ds.checkConfig$ is already set;
 
-        const testConfig = this.ds.checkConfig$.getValue();
-        // console.log('Test configuration used to calculate network compatibility with the Test Center:');
-        // console.log(testConfig);
+    // assumes that this.ds.checkConfig$ is already set;
 
-        const awardedNetworkRating: NetworkRating = {
-            downloadRating: 'N/A',
-            uploadRating: 'N/A',
-            pingRating: 'N/A',
-            overallRating: 'N/A'
-        };
+    const testConfig = this.ds.checkConfig$.getValue();
+    // console.log('Test configuration used to calculate network compatibility with the Test Center:');
+    // console.log(testConfig);
 
-        // the ratings are calculated individually, by a "how low can you go" approach
+    const awardedNetworkRating: NetworkRating = {
+        downloadRating: 'N/A',
+        uploadRating: 'N/A',
+        pingRating: 'N/A',
+        overallRating: 'N/A'
+    };
 
-        awardedNetworkRating.downloadRating = 'good';
-        if (nd.downloadTest < testConfig.downloadGood) {
-            awardedNetworkRating.downloadRating = 'ok';
-        }
-        if (nd.downloadTest < testConfig.downloadMinimum) {
-            awardedNetworkRating.downloadRating = 'insufficient';
-        }
+    // the ratings are calculated individually, by a "how low can you go" approach
 
-        awardedNetworkRating.uploadRating = 'good';
-        if (nd.uploadTest < testConfig.downloadGood) {
-            awardedNetworkRating.uploadRating = 'ok';
-        }
-        if (nd.uploadTest < testConfig.downloadMinimum) {
-            awardedNetworkRating.uploadRating = 'insufficient';
-        }
-
-        awardedNetworkRating.pingRating = 'good';
-        if (nd.pingTest > testConfig.downloadGood) {
-            awardedNetworkRating.pingRating = 'ok';
-        }
-        if (nd.pingTest > testConfig.downloadMinimum) {
-            awardedNetworkRating.pingRating = 'insufficient';
-        }
-
-        awardedNetworkRating.overallRating = 'good';
-        if (awardedNetworkRating.downloadRating === 'ok' ||
-            awardedNetworkRating.uploadRating === 'ok' ||
-            awardedNetworkRating.pingRating === 'ok') {
-
-            // if at least one rating is lower than good, then the overall network rating is also lower than good
-            awardedNetworkRating.overallRating = 'ok';
-        }
-
-        if (awardedNetworkRating.downloadRating === 'insufficient' ||
-            awardedNetworkRating.uploadRating === 'insufficient' ||
-            awardedNetworkRating.pingRating === 'insufficient') {
-
-            // if at least one rating is lower than good, then the overall rating is also lower than good
-            awardedNetworkRating.overallRating = 'insufficient';
-        }
-
-        return awardedNetworkRating;
+    awardedNetworkRating.downloadRating = 'good';
+    if (nd.downloadTest < testConfig.downloadGood) {
+        awardedNetworkRating.downloadRating = 'ok';
+    }
+    if (nd.downloadTest < testConfig.downloadMinimum) {
+        awardedNetworkRating.downloadRating = 'insufficient';
     }
 
+    awardedNetworkRating.uploadRating = 'good';
+    if (nd.uploadTest < testConfig.downloadGood) {
+        awardedNetworkRating.uploadRating = 'ok';
+    }
+    if (nd.uploadTest < testConfig.downloadMinimum) {
+        awardedNetworkRating.uploadRating = 'insufficient';
+    }
+
+    awardedNetworkRating.pingRating = 'good';
+    if (nd.pingTest > testConfig.downloadGood) {
+        awardedNetworkRating.pingRating = 'ok';
+    }
+    if (nd.pingTest > testConfig.downloadMinimum) {
+        awardedNetworkRating.pingRating = 'insufficient';
+    }
+
+    awardedNetworkRating.overallRating = 'good';
+    if (awardedNetworkRating.downloadRating === 'ok' ||
+        awardedNetworkRating.uploadRating === 'ok' ||
+        awardedNetworkRating.pingRating === 'ok') {
+
+        // if at least one rating is lower than good, then the overall network rating is also lower than good
+        awardedNetworkRating.overallRating = 'ok';
+    }
+
+    if (awardedNetworkRating.downloadRating === 'insufficient' ||
+        awardedNetworkRating.uploadRating === 'insufficient' ||
+        awardedNetworkRating.pingRating === 'insufficient') {
+
+        // if at least one rating is lower than good, then the overall rating is also lower than good
+        awardedNetworkRating.overallRating = 'insufficient';
+    }
+
+    return awardedNetworkRating;
+  }
 
 
   public humanReadableBytes(bytes: number): string {
+
     const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
     if (isNaN(parseFloat('' + bytes)) || !isFinite(bytes)) {
       return '-';
