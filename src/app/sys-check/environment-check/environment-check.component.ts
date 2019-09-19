@@ -55,8 +55,6 @@ export class EnvironmentCheckComponent implements OnInit {
       }
     } else if (deviceInfo.indexOf('Mac') !== -1) {
       this.osName = 'Mac/iOS';
-    } else if (deviceInfo.indexOf('X11') !== -1) {
-      this.osName = 'UNIX';
     } else if (deviceInfo.indexOf('Linux') !== -1) {
       this.osName = 'Linux';
     } else {
