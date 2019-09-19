@@ -18,7 +18,7 @@
   <mat-card>
     <mat-card-title>Geschwindigkeit Download</mat-card-title>
     <mat-card-content>
-      <p *ngIf="averageSpeed.downloadTest >= 0">{{ averageSpeed.downloadTest | number }} bytes pro Sekunde</p>
+      <p *ngIf="averageSpeed.downloadTest >= 0">{{ humanReadableBytes(averageSpeed.downloadTest) }} pro Sekunde</p>
       <p *ngIf="averageSpeed.downloadTest < 0">bitte warten</p>
     </mat-card-content>
   </mat-card>
@@ -26,7 +26,7 @@
   <mat-card>
     <mat-card-title>Geschwindigkeit Upload</mat-card-title>
     <mat-card-content>
-      <p *ngIf="averageSpeed.uploadTest >= 0">{{ averageSpeed.uploadTest | number }} bytes pro Sekunde</p>
+      <p *ngIf="averageSpeed.uploadTest >= 0">{{ humanReadableBytes(averageSpeed.uploadTest) }} pro Sekunde</p>
       <p *ngIf="averageSpeed.uploadTest < 0">bitte warten</p>
     </mat-card-content>
   </mat-card>

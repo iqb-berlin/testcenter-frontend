@@ -233,6 +233,22 @@ export class NetworkCheckComponent implements OnInit {
 
         return awardedNetworkRating;
     }
+
+
+
+  public humanReadableBytes(bytes: number): string {
+    const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    if (isNaN(parseFloat('' + bytes)) || !isFinite(bytes)) {
+      return '-';
+    }
+    if (bytes <= 0 ) {
+      return '0';
+    }
+
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return (bytes / Math.pow(1024, Math.floor(i))).toFixed(1) +  ' ' + units[i];
+  }
+
 }
 
 export interface AverageSpeed {
