@@ -161,108 +161,108 @@ export class BackendService {
       );
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
-  // Network check functions
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
-  benchmarkDownloadRequest (requestedDownloadSize: number,
-                            timeout: number,
-                            callback: RequestBenchmarkerFunctionCallback): void {
-    // uses https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/timeout
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET',  this.serverUrl + 'doSysCheckDownloadTest.php?size=' +
-                     requestedDownloadSize + '&uid=' + (new Date().getTime()), true);
+  benchmarkDownloadRequest(requestedDownloadSize: number): PromiseLike<NetworkRequestTestResult> {
 
-    xhr.timeout = timeout;
+    const serverUrl = this.serverUrl;
+    return new Promise(function(resolve, reject) {
 
-    let startingTime;
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET',  serverUrl + 'doSysCheckDownloadTest.php?size=' +
+                       requestedDownloadSize + '&uid=' + (new Date().getTime()), true);
 
-    xhr.onload = function () {
-        // Request finished. Do processing here.
-        const currentTime = new Date().getTime();
+      xhr.timeout = 1000;
 
-        const testResult: NetworkRequestTestResult = {
-            'type': 'downloadTest',
-            'size': requestedDownloadSize,
-            'duration': currentTime - startingTime
-        };
+      let startingTime;
 
-        callback(testResult);
-    };
+      xhr.onload = function () {
+          // Request finished. Do processing here.
+          const currentTime = new Date().getTime();
 
-    xhr.ontimeout = function (e) {
-        // XMLHttpRequest timed out. Do something here.
-        const testResult: NetworkRequestTestResult = {
-            'type': 'downloadTest',
-            'size': requestedDownloadSize,
-            'duration': -1 * xhr.timeout
-        };
+          const testResult: NetworkRequestTestResult = {
+              'type': 'downloadTest',
+              'size': requestedDownloadSize,
+              'duration': currentTime - startingTime,
+              'timeout': false
+          };
 
-        callback(testResult);
-    };
+        resolve(testResult);
+      };
 
-    startingTime = new Date().getTime();
+      xhr.ontimeout = function (e) {
+          // XMLHttpRequest timed out. Do something here.
+          const testResult: NetworkRequestTestResult = {
+              'type': 'downloadTest',
+              'size': requestedDownloadSize,
+              'duration': -1 * xhr.timeout,
+              'timeout': true
+          };
 
-    xhr.send(null);
+        resolve(testResult);
+      };
+
+      startingTime = new Date().getTime();
+
+      xhr.send(null);
+    });
   }
 
-  benchmarkUploadRequest (requestedUploadSize: number,
-                          timeout: number,
-                          callback: RequestBenchmarkerFunctionCallback) {
-    // uses https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/timeout
-    // and https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send
+  benchmarkUploadRequest (requestedUploadSize: number): PromiseLike<NetworkRequestTestResult> {
 
-    const base64Characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz0123456789+/';
+    const serverUrl = this.serverUrl;
+    return new Promise(function(resolve, reject) {
 
-    let startingTime;
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', this.serverUrl + 'doSysCheckUploadTest.php', true);
+      const base64Characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz0123456789+/';
 
-    xhr.timeout = timeout;
+      let startingTime;
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', serverUrl + 'doSysCheckUploadTest.php', true);
 
-    // Send the proper header information along with the request
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.timeout = 1000;
 
-    xhr.onreadystatechange = function() { // Call a function when the state changes.
-        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-            // Request finished. Do processing here.
-            const currentTime = new Date().getTime();
+      // Send the proper header information along with the request
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-            const testResult: NetworkRequestTestResult = {
-                'type': 'uploadTest',
-                'size': requestedUploadSize,
-                'duration': currentTime - startingTime
-            };
+      xhr.onreadystatechange = function() { // Call a function when the state changes.
+          if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+              // Request finished. Do processing here.
+              const currentTime = new Date().getTime();
 
-            callback(testResult);
+              const testResult: NetworkRequestTestResult = {
+                  'type': 'uploadTest',
+                  'size': requestedUploadSize,
+                  'duration': currentTime - startingTime,
+                  'timeout': false
+              };
+
+            resolve(testResult);
+          }
+      };
+
+      xhr.ontimeout = function (e) {
+          // XMLHttpRequest timed out. Do something here.
+          const testResult: NetworkRequestTestResult = {
+              'type': 'uploadTest',
+              'size': requestedUploadSize,
+              'duration': -1 * xhr.timeout,
+              'timeout': false
+          };
+        resolve(testResult);
+      };
+
+      let uploadedContent = '';
+      for (let i = 1; i <= requestedUploadSize; i++)  {
+        let randomCharacterID = Math.floor(Math.random() * 63);
+        if (randomCharacterID > base64Characters.length - 1) {
+          // failsafe, in case the random number generator is a bit imprecisely programmed and gives too big of a number back
+          randomCharacterID = base64Characters.length - 1;
         }
-    };
-
-    xhr.ontimeout = function (e) {
-        // XMLHttpRequest timed out. Do something here.
-        const testResult: NetworkRequestTestResult = {
-            'type': 'uploadTest',
-            'size': requestedUploadSize,
-            'duration': -1 * xhr.timeout
-        };
-        callback(testResult);
-    };
-
-    let uploadedContent = '';
-    for (let i = 1; i <= requestedUploadSize; i++)  {
-      let randomCharacterID = Math.floor(Math.random() * 63);
-      if (randomCharacterID > base64Characters.length - 1) {
-        // failsafe, in case the random number generator is a bit imprecisely programmed and gives too big of a number back
-        randomCharacterID = base64Characters.length - 1;
+        uploadedContent += base64Characters[randomCharacterID];
       }
-      uploadedContent += base64Characters[randomCharacterID];
-    }
-    startingTime = new Date().getTime();
-    xhr.send('package=' + uploadedContent);
+      startingTime = new Date().getTime();
+      xhr.send('package=' + uploadedContent);
+    });
   }
-
 
 // end of network check functions
 // 7777777777777777777777777777777777777777777777777777777777777777777777
@@ -307,7 +307,7 @@ export interface FormDefEntry {
   options: string[];
 }
 
-export type RequestBenchmarkerFunction = (requestSize: number, timeout: number, callback: RequestBenchmarkerFunctionCallback) => void;
+export type RequestBenchmarkerFunction = (requestSize: number, callback: RequestBenchmarkerFunctionCallback) => void;
 export type RequestBenchmarkerFunctionCallback = (testResult: NetworkRequestTestResult) => void;
 
 export interface UnitData {
@@ -321,6 +321,7 @@ export interface NetworkRequestTestResult {
   'type': 'downloadTest' | 'uploadTest';
   'size': number;
   'duration': number;
+  'timeout': boolean;
 }
 
 export interface ReportEntry {
