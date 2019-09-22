@@ -7,6 +7,7 @@ import {
   RequestBenchmarkerFunction,
   RequestBenchmarkerFunctionCallback
 } from '../backend.service';
+import {of} from "rxjs";
 
 @Component({
   selector: 'iqb-network-check',
@@ -51,8 +52,9 @@ export class NetworkCheckComponent implements OnInit {
         this.status = newStatus;
     };
 
-    const benchmark = (isDownload: boolean, requestSize: number, testResults: Array<NetworkRequestTestResult>) => {
+    const benchmark = (isDownload: 'down'|'up', requestSize: number) => {
 
+      console.log("BENCHMARK " + requestSize);
       if (isDownload) {
         updateStatus(`Downloadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes; Test: /3)`);
         return this.bs.benchmarkDownloadRequest(requestSize);
@@ -62,13 +64,7 @@ export class NetworkCheckComponent implements OnInit {
       }
     };
 
-    // const testResults: Array<NetworkRequestTestResult> = [];
-
-    benchmark(true, 1, [])
-      .then(results => benchmark(true, 2, results))
-      .then(results => benchmark(false, 1, results))
-      .then(results => benchmark(false, 2, results))
-      .then((testResults) => {
+    const reportResults = (testResults) => {
         console.log('Test results:');
         console.log(testResults);
         console.log(this.averageSpeed);
@@ -101,8 +97,28 @@ export class NetworkCheckComponent implements OnInit {
           'label': 'Allgemeine Bewertung der Verbindung zum Server', 'value': this.networkRating.overallRating});
 
         this.ds.networkData$.next(myReport);
-      });
+     };
 
+    const downloadTestSizes = [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304]
+      .map(size => ({isDownload: true, size: size}));
+    const uploadTestSizes = [1024]
+      .map(size => ({isDownload: false, size: size}));
+    const allTests = []
+      .concat(downloadTestSizes)
+      .concat(downloadTestSizes)
+      .concat(downloadTestSizes)
+      .concat(uploadTestSizes)
+      .concat(uploadTestSizes)
+      .concat(uploadTestSizes);
+    console.log('tests', allTests);
+
+    allTests.reduce(
+        (sequence, test) => sequence.then(results => benchmark(test.isDownload, test.size)
+            .then(result => {results.push(result); return results; })
+          ),
+        Promise.resolve([])
+      )
+      .then(reportResults);
   }
 
   public calculateNetworkRating(nd: NetworkData): NetworkRating {
