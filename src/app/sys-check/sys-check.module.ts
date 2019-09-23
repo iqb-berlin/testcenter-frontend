@@ -24,6 +24,8 @@ import { ReportComponent } from './report/report.component';
 import { SaveReportComponent } from './report/save-report/save-report.component';
 import { TcNaviButtonsComponent } from './unit-check/tc-navi-buttons/tc-navi-buttons.component';
 
+import { TcSpeedChartComponent } from './network-check/tc-speed-chart.component';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -55,7 +57,8 @@ import { TcNaviButtonsComponent } from './unit-check/tc-navi-buttons/tc-navi-but
     ResizeIFrameChildDirective,
     ReportComponent,
     SaveReportComponent,
-    TcNaviButtonsComponent
+    TcNaviButtonsComponent,
+    TcSpeedChartComponent
   ],
   exports: [
     StartComponent
