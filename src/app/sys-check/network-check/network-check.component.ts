@@ -8,6 +8,7 @@ import {
   RequestBenchmarkerFunctionCallback
 } from '../backend.service';
 import {of} from "rxjs";
+import {any} from 'codelyzer/util/function';
 
 @Component({
   selector: 'iqb-network-check',
@@ -17,9 +18,9 @@ import {of} from "rxjs";
 export class NetworkCheckComponent implements OnInit {
   status = '';
   testDone = false;
-  averageSpeed: AverageSpeed = {
-    uploadTest: -1,
-    downloadTest: -1,
+  networkStats: NetworkData = {
+    avgUploadSpeed: -1,
+    avgDownloadSpeed: -1,
     pingTest: -1
   };
   networkRating: NetworkRating = {
@@ -42,9 +43,9 @@ export class NetworkCheckComponent implements OnInit {
 
     this.testDone = false;
 
-    this.averageSpeed = {
-        uploadTest: -1,
-        downloadTest: -1,
+    this.networkStats = {
+        avgUploadSpeed: -1,
+        avgDownloadSpeed: -1,
         pingTest: -1
       };
 
@@ -52,72 +53,68 @@ export class NetworkCheckComponent implements OnInit {
         this.status = newStatus;
     };
 
-    const benchmark = (isDownload: 'down'|'up', requestSize: number) => {
+    const benchmark = (benchmarkType: 'down'|'up', requestSize: number) => {
 
-      console.log("BENCHMARK " + requestSize);
-      if (isDownload) {
-        updateStatus(`Downloadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes; Test: /3)`);
+      console.log(`run benchmark ${benchmarkType} for ${requestSize}`);
+      if (benchmarkType) {
+        updateStatus(`Downloadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes`);
         return this.bs.benchmarkDownloadRequest(requestSize);
       } else {
-        updateStatus(`Uploadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes; Test: }/3)`);
+        updateStatus(`Uploadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes)`);
         return this.bs.benchmarkUploadRequest(requestSize);
       }
     };
 
-    const reportResults = (testResults) => {
-        console.log('Test results:');
-        console.log(testResults);
-        console.log(this.averageSpeed);
-        window['testResults'] = testResults;
+    const calculateStatistics = (testResults: Array<NetworkRequestTestResult>): number =>
+        testResults.reduce(
+          (sum, result) => sum + (result.size / result.duration * 1000),
+          0
+        ) / testResults.length;
 
-        this.networkRating = this.calculateNetworkRating(this.averageSpeed);
 
-        updateStatus(`Die folgenden Netzwerkeigenschaften wurden festgestellt:`);
-        this.testDone = true;
+    const reportResults = () => {
+      console.log('Test results:');
+      console.log(this.networkStats);
+      window['testResults'] = this.networkStats;
 
-        // send data for reporting
-        const myReport: ReportEntry[] = [];
+      this.networkRating = this.calculateNetworkRating(this.networkStats);
 
-        myReport.push({'id': '0', 'type': 'network',
-          'label': 'Downloadgeschwindigkeit', 'value': this.averageSpeed.downloadTest.toLocaleString()});
-        myReport.push({'id': '0', 'type': 'network',
-          'label': 'Downloadbewertung', 'value': this.networkRating.downloadRating});
+      updateStatus(`Die folgenden Netzwerkeigenschaften wurden festgestellt:`);
+      this.testDone = true;
 
-        myReport.push({'id': '0', 'type': 'network',
-          'label': 'Uploadgeschwindigkeit', 'value': this.averageSpeed.uploadTest.toLocaleString()});
-        myReport.push({'id': '0', 'type': 'network',
-          'label': 'Uploadbewertung', 'value': this.networkRating.uploadRating});
+      // send data for reporting
+      const reportEntry: ReportEntry[] = [];
+      reportEntry.push({id: '0', type: 'network', label: 'Downloadgeschwindigkeit',
+        value: this.networkStats.avgDownloadSpeed.toLocaleString()});
+      reportEntry.push({id: '0', type: 'network', label: 'Downloadbewertung', value: this.networkRating.downloadRating});
+      reportEntry.push({id: '0', type: 'network', label: 'Uploadgeschwindigkeit',
+        value: this.networkStats.avgUploadSpeed.toLocaleString()});
+      reportEntry.push({id: '0', type: 'network', label: 'Uploadbewertung', value: this.networkRating.uploadRating});
+      reportEntry.push({id: '0', type: 'network', label: 'Ping', value: this.networkStats.pingTest.toLocaleString()});
+      reportEntry.push({id: '0', type: 'network', label: 'Ping-Bewertung', value: this.networkRating.pingRating});
+      reportEntry.push({id: '0', type: 'network', label: 'Allgemeine Bewertung der Verbindung', value: this.networkRating.overallRating});
 
-        myReport.push({'id': '0', 'type': 'network',
-          'label': 'Ping', 'value': this.averageSpeed.pingTest.toLocaleString()});
-        myReport.push({'id': '0', 'type': 'network',
-          'label': 'Ping-Bewertung', 'value': this.networkRating.pingRating});
-
-        myReport.push({'id': '0', 'type': 'network',
-          'label': 'Allgemeine Bewertung der Verbindung zum Server', 'value': this.networkRating.overallRating});
-
-        this.ds.networkData$.next(myReport);
+      this.ds.networkData$.next(reportEntry);
      };
 
-    const downloadTestSizes = [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304]
-      .map(size => ({isDownload: true, size: size}));
-    const uploadTestSizes = [1024]
-      .map(size => ({isDownload: false, size: size}));
-    const allTests = []
-      .concat(downloadTestSizes)
-      .concat(downloadTestSizes)
-      .concat(downloadTestSizes)
-      .concat(uploadTestSizes)
-      .concat(uploadTestSizes)
-      .concat(uploadTestSizes);
-    console.log('tests', allTests);
 
-    allTests.reduce(
-        (sequence, test) => sequence.then(results => benchmark(test.isDownload, test.size)
-            .then(result => {results.push(result); return results; })
-          ),
-        Promise.resolve([])
-      )
+    const benchmarkSequence = (testSizes: Array<number>, type: 'down' | 'up') =>
+      testSizes.reduce(
+        (sequence, testSize) => sequence.then(results => benchmark(type, testSize)
+          .then(result => {results.push(result); return results; })
+        ),
+        Promise.resolve(new Array<NetworkRequestTestResult>())
+      );
+
+    const downloadTestSizes = [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304];
+    const uploadTestSizes = [];
+
+    benchmarkSequence(downloadTestSizes, 'down')
+      .then(calculateStatistics)
+      .then(avgDownSpeed => this.networkStats.avgDownloadSpeed = avgDownSpeed)
+      .then(() => benchmarkSequence(uploadTestSizes, 'up'))
+      .then(calculateStatistics)
+      .then(avgUpSpeed => this.networkStats.avgUploadSpeed = avgUpSpeed)
       .then(reportResults);
   }
 
@@ -139,18 +136,18 @@ export class NetworkCheckComponent implements OnInit {
     // the ratings are calculated individually, by a "how low can you go" approach
 
     awardedNetworkRating.downloadRating = 'good';
-    if (nd.downloadTest < testConfig.downloadGood) {
+    if (nd.avgDownloadSpeed < testConfig.downloadGood) {
         awardedNetworkRating.downloadRating = 'ok';
     }
-    if (nd.downloadTest < testConfig.downloadMinimum) {
+    if (nd.avgDownloadSpeed < testConfig.downloadMinimum) {
         awardedNetworkRating.downloadRating = 'insufficient';
     }
 
     awardedNetworkRating.uploadRating = 'good';
-    if (nd.uploadTest < testConfig.downloadGood) {
+    if (nd.avgUploadSpeed < testConfig.downloadGood) {
         awardedNetworkRating.uploadRating = 'ok';
     }
-    if (nd.uploadTest < testConfig.downloadMinimum) {
+    if (nd.avgUploadSpeed < testConfig.downloadMinimum) {
         awardedNetworkRating.uploadRating = 'insufficient';
     }
 
@@ -164,19 +161,19 @@ export class NetworkCheckComponent implements OnInit {
 
     awardedNetworkRating.overallRating = 'good';
     if (awardedNetworkRating.downloadRating === 'ok' ||
-        awardedNetworkRating.uploadRating === 'ok' ||
-        awardedNetworkRating.pingRating === 'ok') {
+      awardedNetworkRating.uploadRating === 'ok' ||
+      awardedNetworkRating.pingRating === 'ok') {
 
-        // if at least one rating is lower than good, then the overall network rating is also lower than good
-        awardedNetworkRating.overallRating = 'ok';
+      // if at least one rating is lower than good, then the overall network rating is also lower than good
+      awardedNetworkRating.overallRating = 'ok';
     }
 
     if (awardedNetworkRating.downloadRating === 'insufficient' ||
-        awardedNetworkRating.uploadRating === 'insufficient' ||
-        awardedNetworkRating.pingRating === 'insufficient') {
+      awardedNetworkRating.uploadRating === 'insufficient' ||
+      awardedNetworkRating.pingRating === 'insufficient') {
 
-        // if at least one rating is lower than good, then the overall rating is also lower than good
-        awardedNetworkRating.overallRating = 'insufficient';
+      // if at least one rating is lower than good, then the overall rating is also lower than good
+      awardedNetworkRating.overallRating = 'insufficient';
     }
 
     return awardedNetworkRating;
@@ -199,25 +196,18 @@ export class NetworkCheckComponent implements OnInit {
 
 }
 
-export interface AverageSpeed {
-  uploadTest: number;
-  downloadTest: number;
+export interface NetworkData {
+  avgUploadSpeed: number;
+  avgDownloadSpeed: number;
   pingTest: number;
 }
 
+export type TechCheckRating = 'N/A' | 'insufficient' | 'ok' | 'good';
 
-export interface NetworkData {
-    uploadTest: number;
-    downloadTest: number;
-    pingTest: number;
-  }
-
-  export type TechCheckRating = 'N/A' | 'insufficient' | 'ok' | 'good';
-
-  export interface NetworkRating {
-    uploadRating: TechCheckRating;
-    downloadRating: TechCheckRating;
-    pingRating: TechCheckRating;
-    overallRating: TechCheckRating;
- }
+export interface NetworkRating {
+  uploadRating: TechCheckRating;
+  downloadRating: TechCheckRating;
+  pingRating: TechCheckRating;
+  overallRating: TechCheckRating;
+}
 

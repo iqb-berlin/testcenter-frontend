@@ -18,24 +18,24 @@
   <mat-card>
     <mat-card-title>Geschwindigkeit Download</mat-card-title>
     <mat-card-content>
-      <p *ngIf="averageSpeed.downloadTest >= 0">{{ humanReadableBytes(averageSpeed.downloadTest) }} pro Sekunde</p>
-      <p *ngIf="averageSpeed.downloadTest < 0">bitte warten</p>
+      <p *ngIf="networkStats.avgDownloadSpeed >= 0">{{ humanReadableBytes(networkStats.avgDownloadSpeed) }} pro Sekunde</p>
+      <p *ngIf="networkStats.avgDownloadSpeed < 0">bitte warten</p>
     </mat-card-content>
   </mat-card>
 
   <mat-card>
     <mat-card-title>Geschwindigkeit Upload</mat-card-title>
     <mat-card-content>
-      <p *ngIf="averageSpeed.uploadTest >= 0">{{ humanReadableBytes(averageSpeed.uploadTest) }} pro Sekunde</p>
-      <p *ngIf="averageSpeed.uploadTest < 0">bitte warten</p>
+      <p *ngIf="networkStats.avgUploadSpeed >= 0">{{ humanReadableBytes(networkStats.avgUploadSpeed) }} pro Sekunde</p>
+      <p *ngIf="networkStats.avgUploadSpeed < 0">bitte warten</p>
     </mat-card-content>
   </mat-card>
 
   <mat-card>
     <mat-card-title>Ping</mat-card-title>
     <mat-card-content>
-      <p *ngIf="averageSpeed.pingTest >= 0">{{ averageSpeed.pingTest | number }} ms</p>
-      <p *ngIf="averageSpeed.pingTest < 0">bitte warten</p>
+      <p *ngIf="networkStats.pingTest >= 0">{{ networkStats.pingTest | number }} ms</p>
+      <p *ngIf="networkStats.pingTest < 0">bitte warten</p>
     </mat-card-content>
   </mat-card>
 </div>
