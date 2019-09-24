@@ -86,7 +86,6 @@ export class TcSpeedChartComponent implements OnInit {
 
     this.xScale = this.canvas.width / (xAxisMaxValue - xAxisMinValue);
     this.yScale = this.canvas.height / (yAxisMaxValue - yAxisMinValue);
-    console.log('y', yAxisMaxValue , yAxisMinValue, yAxisMaxValue - yAxisMinValue);
 
     this.drawGridColumns();
     this.drawGridRows();
@@ -115,10 +114,10 @@ export class TcSpeedChartComponent implements OnInit {
         this.canvas.height - xy[1] * this.yScale
       ]);
 
-    console.log(dataPoints, realPoints);
+    // console.log(dataPoints, realPoints);
     this.context.moveTo(realPoints[0][0], realPoints[0][1]);
     realPoints.forEach(xy => {
-      console.log(xy);
+      // console.log(xy);
       this.context.lineTo(xy[0], xy[1]);
     });
 

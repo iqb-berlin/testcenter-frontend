@@ -16,25 +16,32 @@ export class NetworkCheckComponent implements OnInit {
 
   @ViewChild(TcSpeedChartComponent) plotter;
 
-  status = '';
-  testDone = false;
-  networkStats: NetworkData = {
-    avgUploadSpeed: -1,
-    avgDownloadSpeed: -1,
-    pingTest: -1
-  };
+  private statusMessage = '';
+  private testDone = false;
 
-  networkRating: NetworkRating = {
+  private networkStats = new Map<BenchmarkType, number[]>([
+    [BenchmarkType.down, []],
+    [BenchmarkType.up, []],
+  ]);
+
+  private networkRating: NetworkRating = {
     downloadRating: 'N/A',
     uploadRating: 'N/A',
     pingRating: 'N/A',
     overallRating: 'N/A'
   };
 
+  private testSizes = new Map<BenchmarkType, number[]>([
+      [BenchmarkType.down, [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304]],
+      [BenchmarkType.up, []],
+  ]);
+
+
   constructor(
     private ds: SyscheckDataService,
     private bs: BackendService
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
   }
@@ -43,15 +50,9 @@ export class NetworkCheckComponent implements OnInit {
 
     this.testDone = false;
 
-    const downloadTestSizes = [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304];
-    // const uploadTestSizes = [];
-
     this.plotPrepare();
 
-    this.benchmarkSequence(downloadTestSizes, TestType.down)
-      .then(results => this.handleTestSequenceResults(TestType.down, results))
-      // .then(() => this.benchmarkSequence(uploadTestSizes, TestType.up))
-      // .then(results => this.handleTestSequenceResults(TestType.up, results))
+    this.loopBenchmarkSequence(BenchmarkType.down)
       .then(() => this.reportResults());
   }
 
@@ -61,17 +62,14 @@ export class NetworkCheckComponent implements OnInit {
       css: 'border: 0px solid black',
       width: 800,
       height: 240,
-      gridColor: 'silver',
-      axisColor: 'red',
-      labelFont: '20 pt Verdana',
       labelPadding: 4,
-      xAxisMaxValue: 5000000,
+      xAxisMaxValue: Math.max(...this.testSizes[BenchmarkType.down]),
       xAxisMinValue: 0,
-      yAxisMaxValue: 800,
+      yAxisMaxValue: 1000,
       yAxisMinValue: 0,
       xAxisStepSize: 524288,
       yAxisStepSize: 100,
-      lineWidth: 5,
+      lineWidth: 2,
       xProject: x => (x === 0 ) ? 0 : Math.sign(x) * Math.sqrt(Math.abs(x)),
       yProject: y => (y === 0 ) ? 0 : Math.sign(y) * Math.sqrt(Math.abs(y)),
       xAxisLabels: (x) => this.humanReadableBytes(x),
@@ -79,19 +77,38 @@ export class NetworkCheckComponent implements OnInit {
     });
   }
 
-  private benchmark(benchmarkType: TestType, requestSize: number) {
 
-    console.log(`run benchmark ${benchmarkType} for ${requestSize}`);
-    if (benchmarkType === TestType.down) {
-      this.updateStatus(`Downloadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes`);
-      return this.bs.benchmarkDownloadRequest(requestSize);
-    } else {
-      this.updateStatus(`Uploadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes)`);
-      return this.bs.benchmarkUploadRequest(requestSize);
-    }
+  private loopBenchmarkSequence(type: BenchmarkType): PromiseLike<void> {
+
+    console.log('do it again!', this.networkStats.get(type).length);
+    return new Promise((resolve, reject) => {
+      const allowedDeviance = 0.2;
+
+      this.benchmarkSequence(this.testSizes.get(type), type)
+        .then(results => {
+          const averageBytesPerSecond = this.handleBenchmarkSequenceResults(type, results);
+          this.networkStats.get(type).push(averageBytesPerSecond);
+
+          if (this.networkStats.get(type).length < 10) {
+            if (
+              (this.networkStats.get(type).length < 2) ||
+              (Math.abs(this.getAverageNetworkStat(type) - averageBytesPerSecond) > allowedDeviance)
+            ) {
+              return this.loopBenchmarkSequence(type).then(resolve);
+            }
+          }
+          resolve();
+        });
+    });
   }
 
-  private benchmarkSequence(testSizes: Array<number>, type: TestType) {
+  private getAverageNetworkStat(type: BenchmarkType): number {
+
+    return this.networkStats.get(type).reduce((a, x) => a + x, 0) / this.networkStats.get(type).length;
+  }
+
+
+  private benchmarkSequence(testSizes: Array<number>, type: BenchmarkType) {
 
     return testSizes.reduce(
       (sequence, testSize) => sequence.then(results => this.benchmark(type, testSize)
@@ -104,34 +121,52 @@ export class NetworkCheckComponent implements OnInit {
     );
   }
 
-  private handleTestSequenceResults(testType: TestType, testSequenceResults: Array<NetworkRequestTestResult>) {
 
-    const field = (testType === TestType.down) ? 'avgDownloadSpeed' : 'avgUploadSpeed';
-    this.networkStats[field] = this.calculateStatistics(testSequenceResults);
-    this.plotStatistics(testType, testSequenceResults);
+  private benchmark(benchmarkType: BenchmarkType, requestSize: number) {
+
+    console.log(`run benchmark ${benchmarkType} for ${requestSize}`);
+    if (benchmarkType === BenchmarkType.down) {
+      this.updateStatus(`Downloadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes`);
+      return this.bs.benchmarkDownloadRequest(requestSize);
+    } else {
+      this.updateStatus(`Uploadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes)`);
+      return this.bs.benchmarkUploadRequest(requestSize);
+    }
   }
 
+
+  private handleBenchmarkSequenceResults(benchmarkType: BenchmarkType, benchmarkSequenceResults: Array<NetworkRequestTestResult>) {
+
+    const averageBytesPerSecond = this.calculateStatistics(benchmarkSequenceResults);
+    const field = (benchmarkType === BenchmarkType.down) ? 'avgDownloadSpeed' : 'avgUploadSpeed';
+    this.networkStats[field] = averageBytesPerSecond;
+
+    this.plotStatistics(benchmarkType, benchmarkSequenceResults);
+
+    return averageBytesPerSecond;
+  }
+
+
   private calculateStatistics = (testResults: Array<NetworkRequestTestResult>): number =>
-    testResults.reduce((sum, result) => sum + (result.size / result.duration * 1000), 0) / testResults.length;
+    testResults.reduce((sum, result) => sum + (result.size / result.duration * 1000), 0) / testResults.length
 
-  private plotStatistics(testType: TestType, testSequenceResults: Array<NetworkRequestTestResult>) {
 
-    window['testResults'] = testSequenceResults;
-    const datapoints = testSequenceResults.map(measurement => {
+  private plotStatistics(testType: BenchmarkType, benchmarkSequenceResults: Array<NetworkRequestTestResult>) {
+
+    const datapoints = benchmarkSequenceResults.map(measurement => {
         // TODO handle timeouts
         return [measurement.size, measurement.duration];
     });
-    console.log(datapoints);
-
     this.plotter.plotData(datapoints);
-    return testSequenceResults;
+    return benchmarkSequenceResults;
   }
 
   private reportResults() {
+
     console.log('Test results:');
     console.log(this.networkStats);
 
-    this.networkRating = this.calculateNetworkRating(this.networkStats);
+    this.calculateNetworkRating();
 
     this.updateStatus(`Die folgenden Netzwerkeigenschaften wurden festgestellt:`);
     this.testDone = true;
@@ -139,24 +174,26 @@ export class NetworkCheckComponent implements OnInit {
     // send data for reporting
     const reportEntry: ReportEntry[] = [];
     reportEntry.push({id: '0', type: 'network', label: 'Downloadgeschwindigkeit',
-      value: this.networkStats.avgDownloadSpeed.toLocaleString()});
+      value: this.getAverageNetworkStat(BenchmarkType.down).toLocaleString()});
     reportEntry.push({id: '0', type: 'network', label: 'Downloadbewertung', value: this.networkRating.downloadRating});
     reportEntry.push({id: '0', type: 'network', label: 'Uploadgeschwindigkeit',
-      value: this.networkStats.avgUploadSpeed.toLocaleString()});
+      value: this.getAverageNetworkStat(BenchmarkType.up).toLocaleString()});
     reportEntry.push({id: '0', type: 'network', label: 'Uploadbewertung', value: this.networkRating.uploadRating});
-    reportEntry.push({id: '0', type: 'network', label: 'Ping', value: this.networkStats.pingTest.toLocaleString()});
-    reportEntry.push({id: '0', type: 'network', label: 'Ping-Bewertung', value: this.networkRating.pingRating});
+    // reportEntry.push({id: '0', type: 'network', label: 'Ping', value: this.networkStats.pingTest.toLocaleString()});
+    // reportEntry.push({id: '0', type: 'network', label: 'Ping-Bewertung', value: this.networkRating.pingRating});
     reportEntry.push({id: '0', type: 'network', label: 'Allgemeine Bewertung der Verbindung', value: this.networkRating.overallRating});
 
     this.ds.networkData$.next(reportEntry);
   }
 
+
   private updateStatus(newStatus: string) {
 
-    this.status = newStatus;
+    this.statusMessage = newStatus;
   }
 
-  public calculateNetworkRating(nd: NetworkData): NetworkRating {
+
+  public calculateNetworkRating(): void {
 
     // assumes that this.ds.checkConfig$ is already set;
 
@@ -169,6 +206,11 @@ export class NetworkCheckComponent implements OnInit {
         uploadRating: 'N/A',
         pingRating: 'N/A',
         overallRating: 'N/A'
+    };
+
+    const nd = {
+      avgDownloadSpeed: this.getAverageNetworkStat(BenchmarkType.down),
+      avgUploadSpeed: this.getAverageNetworkStat(BenchmarkType.up),
     };
 
     // the ratings are calculated individually, by a "how low can you go" approach
@@ -189,13 +231,13 @@ export class NetworkCheckComponent implements OnInit {
         awardedNetworkRating.uploadRating = 'insufficient';
     }
 
-    awardedNetworkRating.pingRating = 'good';
-    if (nd.pingTest > testConfig.downloadGood) {
-        awardedNetworkRating.pingRating = 'ok';
-    }
-    if (nd.pingTest > testConfig.downloadMinimum) {
-        awardedNetworkRating.pingRating = 'insufficient';
-    }
+    // awardedNetworkRating.pingRating = 'good';
+    // if (nd.pingTest > testConfig.downloadGood) {
+    //     awardedNetworkRating.pingRating = 'ok';
+    // }
+    // if (nd.pingTest > testConfig.downloadMinimum) {
+    //     awardedNetworkRating.pingRating = 'insufficient';
+    // }
 
     awardedNetworkRating.overallRating = 'good';
     if (awardedNetworkRating.downloadRating === 'ok' ||
@@ -214,8 +256,9 @@ export class NetworkCheckComponent implements OnInit {
       awardedNetworkRating.overallRating = 'insufficient';
     }
 
-    return awardedNetworkRating;
+    this.networkRating = awardedNetworkRating;
   }
+
 
   private humanReadableBytes = (bytes: number): string => {
 
@@ -229,13 +272,13 @@ export class NetworkCheckComponent implements OnInit {
 
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return (bytes / Math.pow(1024, Math.floor(i))).toFixed(1) +  ' ' + units[i];
-  };
+  }
 
   private humanReadableMilliseconds = (milliseconds: number): string => (milliseconds / 1000).toString() + ' sec';
 
 }
 
-enum TestType {
+enum BenchmarkType {
   up,
   down
 }
