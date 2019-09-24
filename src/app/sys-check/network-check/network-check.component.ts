@@ -1,14 +1,11 @@
 import { SyscheckDataService } from '../syscheck-data.service';
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {
   BackendService,
   NetworkRequestTestResult,
-  ReportEntry,
-  RequestBenchmarkerFunction,
-  RequestBenchmarkerFunctionCallback
+  ReportEntry
 } from '../backend.service';
-import {of} from "rxjs";
-import {any} from 'codelyzer/util/function';
+import {TcSpeedChartComponent} from './tc-speed-chart.component';
 
 @Component({
   selector: 'iqb-network-check',
@@ -16,6 +13,9 @@ import {any} from 'codelyzer/util/function';
   styleUrls: ['./network-check.component.css']
 })
 export class NetworkCheckComponent implements OnInit {
+
+  @ViewChild(TcSpeedChartComponent) plotter;
+
   status = '';
   testDone = false;
   networkStats: NetworkData = {
@@ -23,6 +23,7 @@ export class NetworkCheckComponent implements OnInit {
     avgDownloadSpeed: -1,
     pingTest: -1
   };
+
   networkRating: NetworkRating = {
     downloadRating: 'N/A',
     uploadRating: 'N/A',
@@ -36,86 +37,123 @@ export class NetworkCheckComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-
   }
 
   public startCheck() {
 
     this.testDone = false;
 
-    this.networkStats = {
-        avgUploadSpeed: -1,
-        avgDownloadSpeed: -1,
-        pingTest: -1
-      };
-
-    const updateStatus = (newStatus: string) => {
-        this.status = newStatus;
-    };
-
-    const benchmark = (benchmarkType: 'down'|'up', requestSize: number) => {
-
-      console.log(`run benchmark ${benchmarkType} for ${requestSize}`);
-      if (benchmarkType) {
-        updateStatus(`Downloadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes`);
-        return this.bs.benchmarkDownloadRequest(requestSize);
-      } else {
-        updateStatus(`Uploadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes)`);
-        return this.bs.benchmarkUploadRequest(requestSize);
-      }
-    };
-
-    const calculateStatistics = (testResults: Array<NetworkRequestTestResult>): number =>
-        testResults.reduce(
-          (sum, result) => sum + (result.size / result.duration * 1000),
-          0
-        ) / testResults.length;
-
-
-    const reportResults = () => {
-      console.log('Test results:');
-      console.log(this.networkStats);
-      window['testResults'] = this.networkStats;
-
-      this.networkRating = this.calculateNetworkRating(this.networkStats);
-
-      updateStatus(`Die folgenden Netzwerkeigenschaften wurden festgestellt:`);
-      this.testDone = true;
-
-      // send data for reporting
-      const reportEntry: ReportEntry[] = [];
-      reportEntry.push({id: '0', type: 'network', label: 'Downloadgeschwindigkeit',
-        value: this.networkStats.avgDownloadSpeed.toLocaleString()});
-      reportEntry.push({id: '0', type: 'network', label: 'Downloadbewertung', value: this.networkRating.downloadRating});
-      reportEntry.push({id: '0', type: 'network', label: 'Uploadgeschwindigkeit',
-        value: this.networkStats.avgUploadSpeed.toLocaleString()});
-      reportEntry.push({id: '0', type: 'network', label: 'Uploadbewertung', value: this.networkRating.uploadRating});
-      reportEntry.push({id: '0', type: 'network', label: 'Ping', value: this.networkStats.pingTest.toLocaleString()});
-      reportEntry.push({id: '0', type: 'network', label: 'Ping-Bewertung', value: this.networkRating.pingRating});
-      reportEntry.push({id: '0', type: 'network', label: 'Allgemeine Bewertung der Verbindung', value: this.networkRating.overallRating});
-
-      this.ds.networkData$.next(reportEntry);
-     };
-
-
-    const benchmarkSequence = (testSizes: Array<number>, type: 'down' | 'up') =>
-      testSizes.reduce(
-        (sequence, testSize) => sequence.then(results => benchmark(type, testSize)
-          .then(result => {results.push(result); return results; })
-        ),
-        Promise.resolve(new Array<NetworkRequestTestResult>())
-      );
-
     const downloadTestSizes = [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304];
-    const uploadTestSizes = [];
+    // const uploadTestSizes = [];
 
-    benchmarkSequence(downloadTestSizes, 'down')
-      .then(calculateStatistics)
-      .then(avgDownSpeed => this.networkStats.avgDownloadSpeed = avgDownSpeed)
-      .then(() => benchmarkSequence(uploadTestSizes, 'up'))
-      .then(calculateStatistics)
-      .then(avgUpSpeed => this.networkStats.avgUploadSpeed = avgUpSpeed)
-      .then(reportResults);
+    this.plotPrepare();
+
+    this.benchmarkSequence(downloadTestSizes, TestType.down)
+      .then(results => this.handleTestSequenceResults(TestType.down, results))
+      // .then(() => this.benchmarkSequence(uploadTestSizes, TestType.up))
+      // .then(results => this.handleTestSequenceResults(TestType.up, results))
+      .then(() => this.reportResults());
+  }
+
+  private plotPrepare() {
+
+    this.plotter.reset({
+      css: 'border: 0px solid black',
+      width: 800,
+      height: 240,
+      gridColor: 'silver',
+      axisColor: 'red',
+      labelFont: '20 pt Verdana',
+      labelPadding: 4,
+      xAxisMaxValue: 5000000,
+      xAxisMinValue: 0,
+      yAxisMaxValue: 800,
+      yAxisMinValue: 0,
+      xAxisStepSize: 524288,
+      yAxisStepSize: 100,
+      lineWidth: 5,
+      xProject: x => (x === 0 ) ? 0 : Math.sign(x) * Math.sqrt(Math.abs(x)),
+      yProject: y => (y === 0 ) ? 0 : Math.sign(y) * Math.sqrt(Math.abs(y)),
+      xAxisLabels: (x) => this.humanReadableBytes(x),
+      yAxisLabels: (y) => this.humanReadableMilliseconds(y),
+    });
+  }
+
+  private benchmark(benchmarkType: TestType, requestSize: number) {
+
+    console.log(`run benchmark ${benchmarkType} for ${requestSize}`);
+    if (benchmarkType === TestType.down) {
+      this.updateStatus(`Downloadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes`);
+      return this.bs.benchmarkDownloadRequest(requestSize);
+    } else {
+      this.updateStatus(`Uploadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes)`);
+      return this.bs.benchmarkUploadRequest(requestSize);
+    }
+  }
+
+  private benchmarkSequence(testSizes: Array<number>, type: TestType) {
+
+    return testSizes.reduce(
+      (sequence, testSize) => sequence.then(results => this.benchmark(type, testSize)
+        .then(result => {
+          results.push(result);
+          return results;
+        })
+      ),
+      Promise.resolve(new Array<NetworkRequestTestResult>())
+    );
+  }
+
+  private handleTestSequenceResults(testType: TestType, testSequenceResults: Array<NetworkRequestTestResult>) {
+
+    const field = (testType === TestType.down) ? 'avgDownloadSpeed' : 'avgUploadSpeed';
+    this.networkStats[field] = this.calculateStatistics(testSequenceResults);
+    this.plotStatistics(testType, testSequenceResults);
+  }
+
+  private calculateStatistics = (testResults: Array<NetworkRequestTestResult>): number =>
+    testResults.reduce((sum, result) => sum + (result.size / result.duration * 1000), 0) / testResults.length;
+
+  private plotStatistics(testType: TestType, testSequenceResults: Array<NetworkRequestTestResult>) {
+
+    window['testResults'] = testSequenceResults;
+    const datapoints = testSequenceResults.map(measurement => {
+        // TODO handle timeouts
+        return [measurement.size, measurement.duration];
+    });
+    console.log(datapoints);
+
+    this.plotter.plotData(datapoints);
+    return testSequenceResults;
+  }
+
+  private reportResults() {
+    console.log('Test results:');
+    console.log(this.networkStats);
+
+    this.networkRating = this.calculateNetworkRating(this.networkStats);
+
+    this.updateStatus(`Die folgenden Netzwerkeigenschaften wurden festgestellt:`);
+    this.testDone = true;
+
+    // send data for reporting
+    const reportEntry: ReportEntry[] = [];
+    reportEntry.push({id: '0', type: 'network', label: 'Downloadgeschwindigkeit',
+      value: this.networkStats.avgDownloadSpeed.toLocaleString()});
+    reportEntry.push({id: '0', type: 'network', label: 'Downloadbewertung', value: this.networkRating.downloadRating});
+    reportEntry.push({id: '0', type: 'network', label: 'Uploadgeschwindigkeit',
+      value: this.networkStats.avgUploadSpeed.toLocaleString()});
+    reportEntry.push({id: '0', type: 'network', label: 'Uploadbewertung', value: this.networkRating.uploadRating});
+    reportEntry.push({id: '0', type: 'network', label: 'Ping', value: this.networkStats.pingTest.toLocaleString()});
+    reportEntry.push({id: '0', type: 'network', label: 'Ping-Bewertung', value: this.networkRating.pingRating});
+    reportEntry.push({id: '0', type: 'network', label: 'Allgemeine Bewertung der Verbindung', value: this.networkRating.overallRating});
+
+    this.ds.networkData$.next(reportEntry);
+  }
+
+  private updateStatus(newStatus: string) {
+
+    this.status = newStatus;
   }
 
   public calculateNetworkRating(nd: NetworkData): NetworkRating {
@@ -179,8 +217,7 @@ export class NetworkCheckComponent implements OnInit {
     return awardedNetworkRating;
   }
 
-
-  public humanReadableBytes(bytes: number): string {
+  private humanReadableBytes = (bytes: number): string => {
 
     const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
     if (isNaN(parseFloat('' + bytes)) || !isFinite(bytes)) {
@@ -192,8 +229,15 @@ export class NetworkCheckComponent implements OnInit {
 
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return (bytes / Math.pow(1024, Math.floor(i))).toFixed(1) +  ' ' + units[i];
-  }
+  };
 
+  private humanReadableMilliseconds = (milliseconds: number): string => (milliseconds / 1000).toString() + ' sec';
+
+}
+
+enum TestType {
+  up,
+  down
 }
 
 export interface NetworkData {

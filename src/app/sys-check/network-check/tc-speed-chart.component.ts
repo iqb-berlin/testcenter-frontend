@@ -1,9 +1,29 @@
-import {Component, ElementRef, OnInit} from '@angular/core';
-import {el} from '@angular/platform-browser/testing/src/browser_util';
+import { Component, ElementRef, OnInit } from '@angular/core';
+
+export interface TcSpeedChartSettings {
+  lineWidth: number;
+  css: string;
+  height: number;
+  width: number;
+  gridColor: string;
+  axisColor: string;
+  labelFont: string;
+  labelPadding: number;
+  xAxisMaxValue: number;
+  xAxisMinValue: number;
+  yAxisMaxValue: number;
+  yAxisMinValue: number;
+  xAxisStepSize: number;
+  yAxisStepSize: number;
+  xAxisLabels: (x: number, col: number) => string;
+  yAxisLabels: (y: number, col: number) => string;
+  xProject(x: number): number;
+  yProject(y: number): number;
+}
 
 @Component({
   selector: 'tc-speed-chart',
-  template: '<canvas height="240" width="800" style="border: 1px solid black"></canvas>'
+  template: '<canvas></canvas>'
 })
 export class TcSpeedChartComponent implements OnInit {
 
@@ -13,20 +33,25 @@ export class TcSpeedChartComponent implements OnInit {
   private xScale;
   private yScale;
 
-  public config = {
+  private config: TcSpeedChartSettings = {
+    css: 'border: 1px solid black',
+    lineWidth: 5,
+    width: 800,
+    height: 240,
     gridColor: 'silver',
     axisColor: 'red',
-    backgroundColor: 'black',
-    font: '20 pt Verdana',
-    xAxisStepSize: 10,
-    yAxisStepSize: 20,
-    margin: 4,
-    xAxisLabels: (x, step) => '' + Math.round(x),
-    yAxisLabels: (y, step) => step + '|' + Math.round(y),
+    labelFont: '20 pt Verdana',
+    labelPadding: 4,
     xAxisMaxValue: 200,
     xAxisMinValue: -20,
     yAxisMaxValue: 200,
-    yAxisMinValue: -20
+    yAxisMinValue: -20,
+    xAxisStepSize: 10,
+    yAxisStepSize: 20,
+    xAxisLabels: (x) => '' + Math.round(x),
+    yAxisLabels: (y) => '' + Math.round(y),
+    xProject: (x) => x,
+    yProject: (y) => y
   };
 
   constructor(elem: ElementRef) {
@@ -38,41 +63,65 @@ export class TcSpeedChartComponent implements OnInit {
     this.canvas = this.el.querySelector('canvas');
     this.context = this.canvas.getContext('2d');
 
-    this.reset();
-
-    // const Apple = [[0, -10], [10, 0], [20, 10], [30, 50], [40, 100], [50, 200], [60, 0]];
-    // const Pi = [[100, -10], [90, 0], [80, 10], [70, 50], [60, 100], [50, 200], [40, 0]];
-    //
-    // this.plotData(Apple);
-    // this.plotData(Pi);
+    this.reset(this.config);
+    // this.xxx();
   }
 
-  public reset() {
+  public reset(config: TcSpeedChartSettings) {
 
-    this.context.fillStyle = this.config.backgroundColor;
+    this.config = {...this.config, ...config};
+
+    this.canvas.setAttribute('style', this.config.css);
+    this.canvas.setAttribute('height', this.config.height);
+    this.canvas.setAttribute('width', this.config.width);
+
     this.context.setTransform(1, 0, 0, 1, 0, 0);
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.context.font = this.config.font;
-    this.yScale = this.canvas.height / (this.config.yAxisMaxValue - this.config.yAxisMinValue);
-    this.xScale = this.canvas.width / (this.config.xAxisMaxValue - this.config.xAxisMinValue);
+    this.context.font = this.config.labelFont;
+
+    const xAxisMinValue = this.config.xProject(this.config.xAxisMinValue);
+    const xAxisMaxValue = this.config.xProject(this.config.xAxisMaxValue);
+    const yAxisMinValue = this.config.yProject(this.config.yAxisMinValue);
+    const yAxisMaxValue = this.config.yProject(this.config.yAxisMaxValue);
+
+    this.xScale = this.canvas.width / (xAxisMaxValue - xAxisMinValue);
+    this.yScale = this.canvas.height / (yAxisMaxValue - yAxisMinValue);
+    console.log('y', yAxisMaxValue , yAxisMinValue, yAxisMaxValue - yAxisMinValue);
+
     this.drawGridColumns();
     this.drawGridRows();
-    this.context.translate(this.config.xAxisMinValue * this.xScale, this.canvas.height + (this.config.yAxisMinValue * this.yScale));
-    this.context.scale(this.xScale, -1 * this.yScale);
+
+    this.context.lineWidth = this.config.lineWidth;
   }
 
-  public plotData(dataSet: Array<Array<number>>, color: string = null) {
+  public plotData(dataPoints: Array<[number, number]>, color: string = null) {
+
+    if (!dataPoints.length) {
+      return;
+    }
 
     color = color || this.randomColor();
     const oldColor = this.context.strokeStyle;
     this.context.strokeStyle = color;
     this.context.beginPath();
 
-    this.context.moveTo(dataSet[0][0], dataSet[0][1]);
-    for (let i = 1; i < dataSet.length; i++) {
-      console.log(dataSet[i]);
-      this.context.lineTo(dataSet[i][0], dataSet[i][1]);
-    }
+    const realPoints = dataPoints
+      .map(xy => [
+        this.config.xProject(xy[0]),
+        this.config.yProject(xy[1])
+      ])
+      .map(xy => [
+        xy[0] * this.xScale,
+        this.canvas.height - xy[1] * this.yScale
+      ]);
+
+    console.log(dataPoints, realPoints);
+    this.context.moveTo(realPoints[0][0], realPoints[0][1]);
+    realPoints.forEach(xy => {
+      console.log(xy);
+      this.context.lineTo(xy[0], xy[1]);
+    });
+
     this.context.stroke();
     this.context.strokeStyle = oldColor;
   }
@@ -83,13 +132,13 @@ export class TcSpeedChartComponent implements OnInit {
         let x = this.config.xAxisMinValue, count = 1;
         x < this.config.xAxisMaxValue;
         x = this.config.xAxisMinValue + count++ * this.config.xAxisStepSize) {
-      const realX = this.xScale * (x - this.config.xAxisMinValue);
-      console.log('x', x, realX);
-      this.context.fillText(this.config.xAxisLabels(x, count), realX, this.canvas.height - this.config.margin);
+      const transformedX = this.config.xProject(x);
+      const scaledX = this.xScale * (transformedX - this.config.xProject(this.config.xAxisMinValue));
+      this.context.fillText(this.config.xAxisLabels(x, count), scaledX, this.canvas.height - this.config.labelPadding);
       this.context.strokeStyle = (x === 0) ? this.config.axisColor : this.config.gridColor;
       this.context.beginPath();
-      this.context.moveTo(realX, 0);
-      this.context.lineTo(realX, this.canvas.height);
+      this.context.moveTo(scaledX, 0);
+      this.context.lineTo(scaledX, this.canvas.height);
       this.context.stroke();
       count++;
     }
@@ -101,16 +150,16 @@ export class TcSpeedChartComponent implements OnInit {
         let y = this.config.yAxisMinValue, count = 1;
         y < this.config.yAxisMaxValue;
         y = this.config.yAxisMinValue + count++ * this.config.yAxisStepSize) {
-      const realY = this.canvas.height - this.yScale * (y - this.config.yAxisMinValue);
-      this.context.fillText(this.config.yAxisLabels(y, count), this.config.margin, realY);
+      const transformedY = this.config.yProject(y);
+      const scaledY = this.canvas.height - this.yScale * (transformedY - this.config.yProject(this.config.yAxisMinValue));
+      this.context.fillText(this.config.yAxisLabels(y, count), this.config.labelPadding, scaledY);
       this.context.strokeStyle = (y === 0) ? this.config.axisColor : this.config.gridColor;
       this.context.beginPath();
-      this.context.moveTo(0, realY);
-      this.context.lineTo(this.canvas.width, realY);
+      this.context.moveTo(0, scaledY);
+      this.context.lineTo(this.canvas.width, scaledY);
       this.context.stroke();
     }
   }
-
 
   private randomColor() {
 
