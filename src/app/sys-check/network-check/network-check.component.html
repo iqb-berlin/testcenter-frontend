@@ -3,7 +3,7 @@
 </div>
 <div >
   <div *ngIf="!testDone" style="margin: 10px">
-    <p>{{this.statusMessage}}</p>
+    <p>{{this.status.message}}</p>
   </div>
 
   <div *ngIf="testDone" style="margin: 10px">
@@ -18,8 +18,8 @@
   <mat-card>
     <mat-card-title>Geschwindigkeit Download</mat-card-title>
     <mat-card-content>
-      <p *ngIf="networkStats.avgDownloadSpeed >= 0">{{ humanReadableBytes(networkStats.avgDownloadSpeed) }} pro Sekunde</p>
-      <p *ngIf="networkStats.avgDownloadSpeed < 0">bitte warten</p>
+      <p *ngIf="status.avgDownloadSpeed >= 0">{{ humanReadableBytes(status.avgDownloadSpeed) }} pro Sekunde</p>
+      <p *ngIf="status.avgDownloadSpeed < 0">bitte warten</p>
       <tc-speed-chart></tc-speed-chart>
     </mat-card-content>
   </mat-card>
@@ -27,16 +27,16 @@
   <mat-card>
     <mat-card-title>Geschwindigkeit Upload</mat-card-title>
     <mat-card-content>
-      <p *ngIf="networkStats.avgUploadSpeed >= 0">{{ humanReadableBytes(networkStats.avgUploadSpeed) }} pro Sekunde</p>
-      <p *ngIf="networkStats.avgUploadSpeed < 0">bitte warten</p>
+      <p *ngIf="status.avgUploadSpeed >= 0">{{ humanReadableBytes(status.avgUploadSpeed) }} pro Sekunde</p>
+      <p *ngIf="status.avgUploadSpeed < 0">bitte warten</p>
     </mat-card-content>
   </mat-card>
 
   <mat-card>
     <mat-card-title>Ping</mat-card-title>
     <mat-card-content>
-      <p *ngIf="networkStats.pingTest >= 0">{{ networkStats.pingTest | number }} ms</p>
-      <p *ngIf="networkStats.pingTest < 0">bitte warten</p>
+      <p *ngIf="status.pingTest >= 0">{{ status.pingTest | number }} ms</p>
+      <p *ngIf="status.pingTest < 0">bitte warten</p>
     </mat-card-content>
   </mat-card>
 </div>
