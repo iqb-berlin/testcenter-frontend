@@ -48,7 +48,7 @@ export class NetworkCheckComponent implements OnInit {
     overallRating: 'N/A'
   };
 
-  private testSizes = new Map<BenchmarkType, number[]>([
+  readonly testSizes = new Map<BenchmarkType, number[]>([
       [BenchmarkType.down, [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304]],
       [BenchmarkType.up, []],
   ]);
@@ -66,6 +66,18 @@ export class NetworkCheckComponent implements OnInit {
   public startCheck() {
 
     this.testDone = false;
+
+    this.status = {
+      message: 'Netzwerk-Analyse wird neu gestartet',
+      avgUploadSpeed: -1,
+      avgDownloadSpeed: -1,
+      pingTest: -1
+    };
+
+    this.networkStats = new Map<BenchmarkType, number[]>([
+      [BenchmarkType.down, []],
+      [BenchmarkType.up, []],
+    ]);
 
     this.plotPrepare();
 
@@ -86,7 +98,7 @@ export class NetworkCheckComponent implements OnInit {
       yAxisMinValue: 10,
       xAxisStepSize: 4,
       yAxisStepSize: 100,
-      lineWidth: 2,
+      lineWidth: 5,
       xProject: x => (x === 0 ) ? 0 : Math.sign(x) * Math.log2(Math.abs(x)),
       yProject: y => (y === 0 ) ? 0 : Math.sign(y) * Math.sqrt(Math.abs(y)),
       xAxisLabels: (x) => (this.testSizes.get(BenchmarkType.down).indexOf(x) > -1) ? this.humanReadableBytes(x) : '',
@@ -97,7 +109,7 @@ export class NetworkCheckComponent implements OnInit {
 
   private loopBenchmarkSequence(type: BenchmarkType): PromiseLike<void> {
 
-    console.log(`Benchmark Loop ${type} nr.:`  + this.networkStats.get(type).length);
+    this.updateStatus(`Benchmark Loop ${type} nr.:`  + this.networkStats.get(type).length);
     return new Promise((resolve, reject) => {
       const allowedDevianceBytesPerSecond = 50000;
 
@@ -123,6 +135,7 @@ export class NetworkCheckComponent implements OnInit {
     });
   }
 
+
   private getAverageNetworkStat(type: BenchmarkType): number {
 
     return this.networkStats.get(type).reduce((a, x) => a + x, 0) / this.networkStats.get(type).length;
@@ -145,7 +158,7 @@ export class NetworkCheckComponent implements OnInit {
 
   private benchmark(benchmarkType: BenchmarkType, requestSize: number) {
 
-    console.log(`run benchmark ${benchmarkType} for ${requestSize}`);
+    // console.log(`run benchmark ${benchmarkType} for ${requestSize}`);
     if (benchmarkType === BenchmarkType.down) {
       this.updateStatus(`Downloadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes)`);
       return this.bs.benchmarkDownloadRequest(requestSize);
@@ -179,7 +192,7 @@ export class NetworkCheckComponent implements OnInit {
         // TODO handle timeouts
         return [measurement.size, measurement.duration];
     });
-    this.plotter.plotData(datapoints);
+    this.plotter.plotData(datapoints, null, 'dots');
     return benchmarkSequenceResults;
   }
 

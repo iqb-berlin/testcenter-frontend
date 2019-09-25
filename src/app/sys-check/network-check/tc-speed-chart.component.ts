@@ -92,40 +92,68 @@ export class TcSpeedChartComponent implements OnInit {
     this.context.lineWidth = this.config.lineWidth;
   }
 
-  public plotData(dataPoints: Array<[number, number]>, color: string = null) {
+  public plotData(dataPoints: Array<[number, number]>, color: string = null, style: 'line' | 'dots' = 'line') {
 
     if (!dataPoints.length) {
       return;
     }
 
     color = color || this.randomColor();
-    const oldColor = this.context.strokeStyle;
-    this.context.strokeStyle = color;
-    this.context.beginPath();
 
-    const realPoints = dataPoints
-      .map(xy => [ // apply projection
+    const coordinates = this.dataPointsToCoordinates(dataPoints);
+
+    color = color || this.randomColor();
+    const oldStrokeColor = this.context.strokeStyle;
+    const oldFillColor = this.context.fillStyle;
+    this.context.strokeStyle = color;
+    this.context.fillStyle = color;
+
+    if (style === 'line') {
+      this.paintLine(coordinates);
+    }
+    if (style === 'dots') {
+      this.paintDots(coordinates);
+    }
+
+    this.context.strokeStyle = oldStrokeColor;
+    this.context.fillStyle = oldFillColor;
+  }
+
+  private dataPointsToCoordinates(dataPoints: Array<[number, number]>): Array<[number, number]> {
+
+    return dataPoints
+      .map((xy): [number, number] => [ // apply projection
         this.config.xProject(xy[0]),
         this.config.yProject(xy[1])
       ])
-      .map(xy => [ // apply viewport
+      .map((xy): [number, number] => [ // apply viewport
         xy[0] - this.config.xProject(this.config.xAxisMinValue),
         xy[1] - this.config.yProject(this.config.yAxisMinValue)
       ])
-      .map(xy => [ // scale to image size
+      .map((xy): [number, number] => [ // scale to image size
         xy[0] * this.xScale,
         this.canvas.height - xy[1] * this.yScale
       ]);
+  }
 
-    // console.log(dataPoints, realPoints);
-
-    this.context.moveTo(realPoints[0][0], realPoints[0][1]);
-    realPoints.forEach(xy => {
+  private paintLine(plotCoordinates: Array<[number, number]>) {
+console.log("LINEEEE");
+    this.context.beginPath();
+    this.context.moveTo(plotCoordinates[0][0], plotCoordinates[0][1]);
+    plotCoordinates.forEach(xy => {
       this.context.lineTo(xy[0], xy[1]);
     });
-
     this.context.stroke();
-    this.context.strokeStyle = oldColor;
+  }
+
+  private paintDots(plotCoordinates: Array<[number, number]>) {
+
+    plotCoordinates.forEach(xy => {
+      this.context.beginPath();
+      this.context.arc(xy[0], xy[1], this.config.lineWidth, 0, 2 * Math.PI);
+      this.context.fill();
+    });
+
   }
 
   private drawGridColumns() {

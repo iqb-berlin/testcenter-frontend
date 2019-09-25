@@ -194,7 +194,7 @@ export class BackendService {
           const testResult: NetworkRequestTestResult = {
               'type': 'downloadTest',
               'size': requestedDownloadSize,
-              'duration': -1 * xhr.timeout,
+              'duration': xhr.timeout,
               'timeout': true
           };
 
@@ -244,7 +244,7 @@ export class BackendService {
           const testResult: NetworkRequestTestResult = {
               'type': 'uploadTest',
               'size': requestedUploadSize,
-              'duration': -1 * xhr.timeout,
+              'duration': xhr.timeout,
               'timeout': false
           };
         resolve(testResult);
