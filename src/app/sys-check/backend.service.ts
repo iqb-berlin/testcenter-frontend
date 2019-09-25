@@ -180,13 +180,6 @@ export class BackendService {
 
       xhr.timeout = 2000;
 
-      xhr.onerror = () => {
-        const currentTime = new Date().getTime();
-        testResult.duration = currentTime - startingTime;
-        testResult.error = 'network error';
-        resolve(testResult);
-      };
-
       xhr.onload = () => {
         if (xhr.status !== 200) {
           testResult.error = `Error ${xhr.statusText} (${xhr.status}) `;
@@ -199,8 +192,14 @@ export class BackendService {
         resolve(testResult);
       };
 
-      xhr.ontimeout = () => {
+      xhr.onerror = () => {
         const currentTime = new Date().getTime();
+        testResult.duration = currentTime - startingTime;
+        testResult.error = 'network error';
+        resolve(testResult);
+      };
+
+      xhr.ontimeout = () => {
         testResult.duration = xhr.timeout;
         testResult.error = 'timeout';
         resolve(testResult);
@@ -215,58 +214,71 @@ export class BackendService {
   benchmarkUploadRequest (requestedUploadSize: number): Promise<NetworkRequestTestResult> {
 
     const serverUrl = this.serverUrl;
+    const randomContent = BackendService.generateRandomContent(requestedUploadSize);
+    const testResult: NetworkRequestTestResult = {
+      type: 'downloadTest',
+      size: requestedUploadSize,
+      duration: 2000,
+      error: null
+    };
+
     return new Promise(function(resolve, reject) {
 
-      const base64Characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz0123456789+/';
-
-      let startingTime;
       const xhr = new XMLHttpRequest();
       xhr.open('POST', serverUrl + 'doSysCheckUploadTest.php', true);
 
-      xhr.timeout = 1000;
+      xhr.timeout = 2000;
 
-      // Send the proper header information along with the request
-      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader('Content-Type', 'text/plain');
 
-      xhr.onreadystatechange = function() { // Call a function when the state changes.
-          if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-              // Request finished. Do processing here.
-              const currentTime = new Date().getTime();
+      xhr.onload = () => {
+        if (xhr.status !== 200) {
+          testResult.error = `Error ${xhr.statusText} (${xhr.status}) `;
+        }
 
-              const testResult: NetworkRequestTestResult = {
-                  'type': 'uploadTest',
-                  'size': requestedUploadSize,
-                  'duration': currentTime - startingTime,
-                  'error': null
-              };
-
-            resolve(testResult);
+        try {
+          const response = JSON.parse(xhr.response);
+          const arrivingTime = parseFloat(response['requestTime']) * 1000;
+          testResult.duration = arrivingTime - startingTime;
+          const arrivingSize = parseFloat(response['packageReceivedSize']);
+          if (arrivingSize !== requestedUploadSize) {
+            testResult.error = `Error: Data package has wrong size! ${requestedUploadSize} != ${arrivingSize}`;
           }
+        } catch (e) {
+          testResult.error = `bogus server response`;
+        }
+
+        resolve(testResult);
+
       };
 
-      xhr.ontimeout = function (e) {
-          // XMLHttpRequest timed out. Do something here.
-          const testResult: NetworkRequestTestResult = {
-              'type': 'uploadTest',
-              'size': requestedUploadSize,
-              'duration': xhr.timeout,
-              'error': 'timout'
-          };
+      xhr.onerror = () => {
+        testResult.error = 'network error';
         resolve(testResult);
       };
 
-      let uploadedContent = '';
-      for (let i = 1; i <= requestedUploadSize; i++)  {
-        let randomCharacterID = Math.floor(Math.random() * 63);
-        if (randomCharacterID > base64Characters.length - 1) {
-          // failsafe, in case the random number generator is a bit imprecisely programmed and gives too big of a number back
-          randomCharacterID = base64Characters.length - 1;
-        }
-        uploadedContent += base64Characters[randomCharacterID];
-      }
-      startingTime = new Date().getTime();
-      xhr.send('package=' + uploadedContent);
+      xhr.ontimeout = () => {
+        testResult.duration = xhr.timeout;
+        testResult.error = 'timeout';
+        resolve(testResult);
+      };
+
+      const startingTime = new Date().getTime();
+
+      xhr.send(randomContent);
     });
+  }
+
+  // tslint:disable-next-line:member-ordering
+  private static generateRandomContent(length: number): string {
+
+    const base64Characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz0123456789+/';
+    let randomString = '';
+    for (let i = 1; i <= length; i++)  {
+      const randomCharacterID = Math.floor(Math.random() * 63);
+      randomString += base64Characters[randomCharacterID];
+    }
+    return randomString;
   }
 
 // end of network check functions

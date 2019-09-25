@@ -21,7 +21,7 @@
     <mat-card-content>
       <p *ngIf="status.avgDownloadSpeed >= 0">{{ humanReadableBytes(status.avgDownloadSpeed) }} pro Sekunde</p>
       <p *ngIf="status.avgDownloadSpeed < 0">bitte warten</p>
-      <tc-speed-chart></tc-speed-chart>
+      <tc-speed-chart #downloadChart></tc-speed-chart>
     </mat-card-content>
   </mat-card>
 
@@ -30,6 +30,7 @@
     <mat-card-content>
       <p *ngIf="status.avgUploadSpeed >= 0">{{ humanReadableBytes(status.avgUploadSpeed) }} pro Sekunde</p>
       <p *ngIf="status.avgUploadSpeed < 0">bitte warten</p>
+      <tc-speed-chart #uploadChart></tc-speed-chart>
     </mat-card-content>
   </mat-card>
 

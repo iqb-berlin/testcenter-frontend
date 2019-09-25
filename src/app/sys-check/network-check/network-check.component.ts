@@ -5,7 +5,6 @@ import {
   NetworkRequestTestResult,
   ReportEntry
 } from '../backend.service';
-import { TcSpeedChartComponent } from './tc-speed-chart.component';
 
 enum BenchmarkType {
   up,
@@ -26,11 +25,12 @@ interface NetworkCheckStatus {
 })
 export class NetworkCheckComponent implements OnInit {
 
-  @ViewChild(TcSpeedChartComponent) plotter;
+  @ViewChild('downloadChart') downloadPlotter;
+  @ViewChild('uploadChart') uploadPlotter;
 
   readonly testSizes = new Map<BenchmarkType, number[]>([
     [BenchmarkType.down, [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304]],
-    [BenchmarkType.up, []],
+    [BenchmarkType.up, [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304]],
   ]);
 
   readonly allowedDevianceBytesPerSecond = 50000;
@@ -82,22 +82,24 @@ export class NetworkCheckComponent implements OnInit {
       [BenchmarkType.up, []],
     ]);
 
-    this.plotPrepare();
+    this.plotPrepare(BenchmarkType.down);
+    this.plotPrepare(BenchmarkType.up);
 
-    this.loopBenchmarkSequence(BenchmarkType.down)
+    this.loopBenchmarkSequence(BenchmarkType.up)
+      // .then(() => this.loopBenchmarkSequence(BenchmarkType.down))
       .then(() => this.reportResults())
       .catch(() => this.reportResults(true));
   }
 
-  private plotPrepare() {
+  private plotPrepare(benchmarkType: BenchmarkType) {
 
-    this.plotter.reset({
+    const plotterSettings = {
       css: 'border: 0px solid black; width: 100%; max-width: 800px',
       width: 800,
       height: 180,
       labelPadding: 4,
-      xAxisMaxValue: 16 + Math.max(...this.testSizes.get(BenchmarkType.down)),
-      xAxisMinValue: Math.min(...this.testSizes.get(BenchmarkType.down)),
+      xAxisMaxValue: 16 + Math.max(...this.testSizes.get(benchmarkType)),
+      xAxisMinValue: Math.min(...this.testSizes.get(benchmarkType)),
       yAxisMaxValue: 1000,
       yAxisMinValue: 10,
       xAxisStepSize: 4,
@@ -105,9 +107,16 @@ export class NetworkCheckComponent implements OnInit {
       lineWidth: 5,
       xProject: x => (x === 0 ) ? 0 : Math.sign(x) * Math.log2(Math.abs(x)),
       yProject: y => (y === 0 ) ? 0 : Math.sign(y) * Math.sqrt(Math.abs(y)),
-      xAxisLabels: (x) => (this.testSizes.get(BenchmarkType.down).indexOf(x) > -1) ? this.humanReadableBytes(x) : '',
+      xAxisLabels: (x) => (this.testSizes.get(benchmarkType).indexOf(x) > -1) ? this.humanReadableBytes(x) : '',
       yAxisLabels: (y, i) => (i < 10) ? this.humanReadableMilliseconds(y) : '',
-    });
+    };
+
+    if (benchmarkType === BenchmarkType.down) {
+      this.downloadPlotter.reset(plotterSettings);
+    }
+    if (benchmarkType === BenchmarkType.up) {
+      this.uploadPlotter.reset(plotterSettings);
+    }
   }
 
 
@@ -200,12 +209,20 @@ export class NetworkCheckComponent implements OnInit {
   }
 
 
-  private plotStatistics(testType: BenchmarkType, benchmarkSequenceResults: Array<NetworkRequestTestResult>) {
+  private plotStatistics(benchmarkType: BenchmarkType, benchmarkSequenceResults: Array<NetworkRequestTestResult>) {
 
     const datapoints = benchmarkSequenceResults
       .filter(measurement => (measurement.error === null))
       .map(measurement => ([measurement.size, measurement.duration]));
-    this.plotter.plotData(datapoints, null, 'dots');
+
+    if (benchmarkType === BenchmarkType.down) {
+      this.downloadPlotter.plotData(datapoints, null, 'dots');
+    }
+
+    if (benchmarkType === BenchmarkType.up) {
+      this.uploadPlotter.plotData(datapoints, null, 'dots');
+    }
+
     return benchmarkSequenceResults;
   }
 
