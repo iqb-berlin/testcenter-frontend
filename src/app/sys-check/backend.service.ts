@@ -165,43 +165,48 @@ export class BackendService {
   benchmarkDownloadRequest(requestedDownloadSize: number): PromiseLike<NetworkRequestTestResult> {
 
     const serverUrl = this.serverUrl;
+    const testResult: NetworkRequestTestResult = {
+      type: 'downloadTest',
+      size: requestedDownloadSize,
+      duration: 2000,
+      error: null
+    };
+
     return new Promise(function(resolve, reject) {
 
       const xhr = new XMLHttpRequest();
       xhr.open('GET',  serverUrl + 'doSysCheckDownloadTest.php?size=' +
                        requestedDownloadSize + '&uid=' + (new Date().getTime()), true);
 
-      xhr.timeout = 1000;
+      xhr.timeout = 2000;
 
-      let startingTime;
-
-      xhr.onload = function () {
-          // Request finished. Do processing here.
-          const currentTime = new Date().getTime();
-
-          const testResult: NetworkRequestTestResult = {
-              'type': 'downloadTest',
-              'size': requestedDownloadSize,
-              'duration': currentTime - startingTime,
-              'timeout': false
-          };
-
+      xhr.onerror = () => {
+        const currentTime = new Date().getTime();
+        testResult.duration = currentTime - startingTime;
+        testResult.error = 'network error';
         resolve(testResult);
       };
 
-      xhr.ontimeout = function (e) {
-          // XMLHttpRequest timed out. Do something here.
-          const testResult: NetworkRequestTestResult = {
-              'type': 'downloadTest',
-              'size': requestedDownloadSize,
-              'duration': xhr.timeout,
-              'timeout': true
-          };
-
+      xhr.onload = () => {
+        if (xhr.status !== 200) {
+          testResult.error = `Error ${xhr.statusText} (${xhr.status}) `;
+        }
+        if (xhr.response.toString().length !== requestedDownloadSize) {
+          testResult.error = `Error: Data package has wrong size! ${requestedDownloadSize} ` + xhr.response.toString().length;
+        }
+        const currentTime = new Date().getTime();
+        testResult.duration = currentTime - startingTime;
         resolve(testResult);
       };
 
-      startingTime = new Date().getTime();
+      xhr.ontimeout = () => {
+        const currentTime = new Date().getTime();
+        testResult.duration = xhr.timeout;
+        testResult.error = 'timeout';
+        resolve(testResult);
+      };
+
+      const startingTime = new Date().getTime();
 
       xhr.send(null);
     });
@@ -232,7 +237,7 @@ export class BackendService {
                   'type': 'uploadTest',
                   'size': requestedUploadSize,
                   'duration': currentTime - startingTime,
-                  'timeout': false
+                  'error': null
               };
 
             resolve(testResult);
@@ -245,7 +250,7 @@ export class BackendService {
               'type': 'uploadTest',
               'size': requestedUploadSize,
               'duration': xhr.timeout,
-              'timeout': false
+              'error': 'timout'
           };
         resolve(testResult);
       };
@@ -321,7 +326,7 @@ export interface NetworkRequestTestResult {
   'type': 'downloadTest' | 'uploadTest';
   'size': number;
   'duration': number;
-  'timeout': boolean;
+  'error': string | null;
 }
 
 export interface ReportEntry {

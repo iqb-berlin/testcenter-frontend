@@ -11,6 +11,7 @@
       <span *ngSwitchCase="'insufficient'" style="color: red; font-weight: bold;">unzureichend <i class="material-icons">error</i></span>
       <span *ngSwitchCase="'ok'" style="color: orange; font-weight: bold;">vorauss. ausreichend <i class="material-icons">warning</i></span>
       <span *ngSwitchCase="'good'" style="color: green; font-weight: bold;">gut <i class="material-icons">check</i></span>
+      <span *ngSwitchCase="'unstable'" style="color: orangered; font-weight: bold;">sehr instabil <i class="material-icons">check</i></span>
       &nbsp;<button mat-raised-button (click)="startCheck()">Netz erneut prüfen</button>
     </p>
   </div>
