@@ -43,11 +43,11 @@ export class TcSpeedChartComponent implements OnInit {
     labelFont: '20 pt Verdana',
     labelPadding: 4,
     xAxisMaxValue: 200,
-    xAxisMinValue: -20,
-    yAxisMaxValue: 200,
-    yAxisMinValue: -20,
-    xAxisStepSize: 10,
-    yAxisStepSize: 20,
+    xAxisMinValue: -10,
+    yAxisMaxValue: 100,
+    yAxisMinValue: -10,
+    xAxisStepSize: 20,
+    yAxisStepSize: 10,
     xAxisLabels: (x) => '' + Math.round(x),
     yAxisLabels: (y) => '' + Math.round(y),
     xProject: (x) => x,
@@ -64,7 +64,6 @@ export class TcSpeedChartComponent implements OnInit {
     this.context = this.canvas.getContext('2d');
 
     this.reset(this.config);
-    // this.xxx();
   }
 
   public reset(config: TcSpeedChartSettings) {
@@ -105,19 +104,23 @@ export class TcSpeedChartComponent implements OnInit {
     this.context.beginPath();
 
     const realPoints = dataPoints
-      .map(xy => [
+      .map(xy => [ // apply projection
         this.config.xProject(xy[0]),
         this.config.yProject(xy[1])
       ])
-      .map(xy => [
+      .map(xy => [ // apply viewport
+        xy[0] - this.config.xProject(this.config.xAxisMinValue),
+        xy[1] - this.config.yProject(this.config.yAxisMinValue)
+      ])
+      .map(xy => [ // scale to image size
         xy[0] * this.xScale,
         this.canvas.height - xy[1] * this.yScale
       ]);
 
     // console.log(dataPoints, realPoints);
+
     this.context.moveTo(realPoints[0][0], realPoints[0][1]);
     realPoints.forEach(xy => {
-      // console.log(xy);
       this.context.lineTo(xy[0], xy[1]);
     });
 
@@ -127,28 +130,35 @@ export class TcSpeedChartComponent implements OnInit {
 
   private drawGridColumns() {
 
+    const firstCol = Math.floor(this.config.xAxisMinValue / this.config.xAxisStepSize) * this.config.xAxisStepSize;
     for (
-        let x = this.config.xAxisMinValue, count = 1;
+        let x = firstCol, count = 1;
         x < this.config.xAxisMaxValue;
-        x = this.config.xAxisMinValue + count++ * this.config.xAxisStepSize) {
+        x = firstCol + count++ * this.config.xAxisStepSize
+    ) {
       const transformedX = this.config.xProject(x);
       const scaledX = this.xScale * (transformedX - this.config.xProject(this.config.xAxisMinValue));
-      this.context.fillText(this.config.xAxisLabels(x, count), scaledX, this.canvas.height - this.config.labelPadding);
+      const label = this.config.xAxisLabels(x, count);
+      if (label === '') {
+        continue;
+      }
+      this.context.fillText(label, scaledX, this.canvas.height - this.config.labelPadding);
       this.context.strokeStyle = (x === 0) ? this.config.axisColor : this.config.gridColor;
       this.context.beginPath();
       this.context.moveTo(scaledX, 0);
       this.context.lineTo(scaledX, this.canvas.height);
       this.context.stroke();
-      count++;
     }
   }
 
   private drawGridRows() {
 
+    const firstRow = Math.floor(this.config.yAxisMinValue / this.config.yAxisStepSize) * this.config.yAxisStepSize;
     for (
-        let y = this.config.yAxisMinValue, count = 1;
+        let y = firstRow, count = 1;
         y < this.config.yAxisMaxValue;
-        y = this.config.yAxisMinValue + count++ * this.config.yAxisStepSize) {
+        y = firstRow + count++ * this.config.yAxisStepSize
+    ) {
       const transformedY = this.config.yProject(y);
       const scaledY = this.canvas.height - this.yScale * (transformedY - this.config.yProject(this.config.yAxisMinValue));
       this.context.fillText(this.config.yAxisLabels(y, count), this.config.labelPadding, scaledY);
