@@ -162,7 +162,7 @@ export class BackendService {
   }
 
 
-  benchmarkDownloadRequest(requestedDownloadSize: number): PromiseLike<NetworkRequestTestResult> {
+  benchmarkDownloadRequest(requestedDownloadSize: number): Promise<NetworkRequestTestResult> {
 
     const serverUrl = this.serverUrl;
     const testResult: NetworkRequestTestResult = {
@@ -212,7 +212,7 @@ export class BackendService {
     });
   }
 
-  benchmarkUploadRequest (requestedUploadSize: number): PromiseLike<NetworkRequestTestResult> {
+  benchmarkUploadRequest (requestedUploadSize: number): Promise<NetworkRequestTestResult> {
 
     const serverUrl = this.serverUrl;
     return new Promise(function(resolve, reject) {

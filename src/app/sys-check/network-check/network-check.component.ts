@@ -117,7 +117,7 @@ export class NetworkCheckComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.benchmarkSequence(type)
         .then(results => {
-          const averageBytesPerSecond = this.calculateAverageSpeed(results);
+          const averageBytesPerSecond = NetworkCheckComponent.calculateAverageSpeed(results);
           const averageOfPreviousLoops = this.getAverageNetworkStat(type);
           const errors = results.reduce((a, r) => a + ((r.error !== null) ? 1 : 0), 0);
           this.networkStats.get(type).push(averageBytesPerSecond);
@@ -152,7 +152,7 @@ export class NetworkCheckComponent implements OnInit {
   }
 
 
-  private benchmarkSequence(type: BenchmarkType) {
+  private benchmarkSequence(type: BenchmarkType): Promise<Array<NetworkRequestTestResult>> {
 
     return this.testSizes.get(type).reduce(
       (sequence, testSize) => sequence.then(results => this.benchmark(type, testSize)
@@ -166,7 +166,7 @@ export class NetworkCheckComponent implements OnInit {
   }
 
 
-  private benchmark(benchmarkType: BenchmarkType, requestSize: number) {
+  private benchmark(benchmarkType: BenchmarkType, requestSize: number): Promise<NetworkRequestTestResult> {
 
     // console.log(`run benchmark ${benchmarkType} for ${requestSize}`);
     const testRound = this.networkStats.get(benchmarkType).length;
@@ -193,8 +193,11 @@ export class NetworkCheckComponent implements OnInit {
   }
 
 
-  private calculateAverageSpeed = (testResults: Array<NetworkRequestTestResult>): number =>
-    testResults.reduce((sum, result) => sum + (result.size / result.duration * 1000), 0) / testResults.length
+  // tslint:disable-next-line:member-ordering
+  private static calculateAverageSpeed(testResults: Array<NetworkRequestTestResult>): number {
+
+    return testResults.reduce((sum, result) => sum + (result.size / result.duration * 1000), 0) / testResults.length;
+  }
 
 
   private plotStatistics(testType: BenchmarkType, benchmarkSequenceResults: Array<NetworkRequestTestResult>) {
@@ -238,7 +241,7 @@ export class NetworkCheckComponent implements OnInit {
   }
 
 
-  private updateStatus(newStatus: string) {
+  private updateStatus(newStatus: string): void {
 
     this.status.message = newStatus;
   }
@@ -311,18 +314,18 @@ export class NetworkCheckComponent implements OnInit {
   }
 
 
-  private humanReadableBytes = (bytes: number): string => {
+  private humanReadableBytes(bytes: number): string {
 
     const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
     if (isNaN(parseFloat('' + bytes)) || !isFinite(bytes)) {
       return '-';
     }
-    if (bytes <= 0 ) {
+    if (bytes <= 0) {
       return '0';
     }
 
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return (bytes / Math.pow(1024, Math.floor(i))).toFixed(1) +  ' ' + units[i];
+    return (bytes / Math.pow(1024, Math.floor(i))).toFixed(1) + ' ' + units[i];
   }
 
   private humanReadableMilliseconds = (milliseconds: number): string => (milliseconds / 1000).toString() + ' sec';
