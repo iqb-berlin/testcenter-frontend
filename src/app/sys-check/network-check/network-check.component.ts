@@ -15,7 +15,6 @@ interface NetworkCheckStatus {
   message: string;
   avgUploadSpeed: number;
   avgDownloadSpeed: number;
-  pingTest: number;
 }
 
 interface BenchmarkDefinition {
@@ -23,6 +22,14 @@ interface BenchmarkDefinition {
   allowedDevianceBytesPerSecond: number;
   allowedErrorsPerSequence: number;
   allowedSequenceRepetitions: number;
+}
+
+type TechCheckRating = 'N/A' | 'insufficient' | 'ok' | 'good' | 'unstable';
+
+interface NetworkRating {
+  uploadRating: TechCheckRating;
+  downloadRating: TechCheckRating;
+  overallRating: TechCheckRating;
 }
 
 @Component({
@@ -53,8 +60,7 @@ export class NetworkCheckComponent implements OnInit {
   private status: NetworkCheckStatus = {
     message: 'Netzwerk-Analyse wird gestartet',
     avgUploadSpeed: -1,
-    avgDownloadSpeed: -1,
-    pingTest: -1
+    avgDownloadSpeed: -1
   };
   private testDone = false;
 
@@ -66,7 +72,6 @@ export class NetworkCheckComponent implements OnInit {
   private networkRating: NetworkRating = {
     downloadRating: 'N/A',
     uploadRating: 'N/A',
-    pingRating: 'N/A',
     overallRating: 'N/A'
   };
 
@@ -86,8 +91,7 @@ export class NetworkCheckComponent implements OnInit {
     this.status = {
       message: 'Netzwerk-Analyse wird neu gestartet',
       avgUploadSpeed: -1,
-      avgDownloadSpeed: -1,
-      pingTest: -1
+      avgDownloadSpeed: -1
     };
 
     this.networkStats = new Map<BenchmarkType, number[]>([
@@ -250,7 +254,6 @@ export class NetworkCheckComponent implements OnInit {
       this.networkRating = {
         downloadRating: 'unstable',
         uploadRating: 'unstable',
-        pingRating: 'unstable',
         overallRating: 'unstable'
       };
     }
@@ -266,8 +269,6 @@ export class NetworkCheckComponent implements OnInit {
     reportEntry.push({id: '0', type: 'network', label: 'Uploadgeschwindigkeit',
       value: this.getAverageNetworkStat(BenchmarkType.up).toLocaleString()});
     reportEntry.push({id: '0', type: 'network', label: 'Uploadbewertung', value: this.networkRating.uploadRating});
-    // reportEntry.push({id: '0', type: 'network', label: 'Ping', value: this.networkStats.pingTest.toLocaleString()});
-    // reportEntry.push({id: '0', type: 'network', label: 'Ping-Bewertung', value: this.networkRating.pingRating});
     reportEntry.push({id: '0', type: 'network', label: 'Allgemeine Bewertung der Verbindung', value: this.networkRating.overallRating});
 
     this.ds.networkData$.next(reportEntry);
@@ -291,7 +292,6 @@ export class NetworkCheckComponent implements OnInit {
     const awardedNetworkRating: NetworkRating = {
         downloadRating: 'N/A',
         uploadRating: 'N/A',
-        pingRating: 'N/A',
         overallRating: 'N/A'
     };
 
@@ -318,28 +318,12 @@ export class NetworkCheckComponent implements OnInit {
         awardedNetworkRating.uploadRating = 'insufficient';
     }
 
-    // awardedNetworkRating.pingRating = 'good';
-    // if (nd.pingTest > testConfig.downloadGood) {
-    //     awardedNetworkRating.pingRating = 'ok';
-    // }
-    // if (nd.pingTest > testConfig.downloadMinimum) {
-    //     awardedNetworkRating.pingRating = 'insufficient';
-    // }
-
     awardedNetworkRating.overallRating = 'good';
-    if (awardedNetworkRating.downloadRating === 'ok' ||
-      awardedNetworkRating.uploadRating === 'ok' ||
-      awardedNetworkRating.pingRating === 'ok') {
-
-      // if at least one rating is lower than good, then the overall network rating is also lower than good
+    if (awardedNetworkRating.downloadRating === 'ok' || awardedNetworkRating.uploadRating === 'ok') {
       awardedNetworkRating.overallRating = 'ok';
     }
 
-    if (awardedNetworkRating.downloadRating === 'insufficient' ||
-      awardedNetworkRating.uploadRating === 'insufficient' ||
-      awardedNetworkRating.pingRating === 'insufficient') {
-
-      // if at least one rating is lower than good, then the overall rating is also lower than good
+    if (awardedNetworkRating.downloadRating === 'insufficient' || awardedNetworkRating.uploadRating === 'insufficient') {
       awardedNetworkRating.overallRating = 'insufficient';
     }
 
@@ -364,15 +348,3 @@ export class NetworkCheckComponent implements OnInit {
   private humanReadableMilliseconds = (milliseconds: number): string => (milliseconds / 1000).toString() + ' sec';
 
 }
-
-
-
-export type TechCheckRating = 'N/A' | 'insufficient' | 'ok' | 'good' | 'unstable';
-
-export interface NetworkRating {
-  uploadRating: TechCheckRating;
-  downloadRating: TechCheckRating;
-  pingRating: TechCheckRating;
-  overallRating: TechCheckRating;
-}
-

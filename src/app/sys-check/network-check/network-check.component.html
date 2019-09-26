@@ -34,11 +34,4 @@
     </mat-card-content>
   </mat-card>
 
-  <mat-card>
-    <mat-card-title>Ping</mat-card-title>
-    <mat-card-content>
-      <p *ngIf="status.pingTest >= 0">{{ status.pingTest | number }} ms</p>
-      <p *ngIf="status.pingTest < 0">Test noch nicht gestartet</p>
-    </mat-card-content>
-  </mat-card>
 </div>
