@@ -81,8 +81,7 @@ export class NetworkCheckComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   public startCheck() {
 
@@ -114,7 +113,7 @@ export class NetworkCheckComponent implements OnInit {
     const plotterSettings = {
       css: 'border: 0px solid black; width: 100%; max-width: 800px',
       width: 800,
-      height: 180,
+      height: 140,
       labelPadding: 4,
       xAxisMaxValue: 16 + Math.max(...testSizes),
       xAxisMinValue: Math.min(...testSizes),
@@ -344,6 +343,7 @@ export class NetworkCheckComponent implements OnInit {
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return (bytes / Math.pow(1024, Math.floor(i))).toFixed(1) + ' ' + units[i];
   }
+
 
   private humanReadableMilliseconds = (milliseconds: number): string => (milliseconds / 1000).toString() + ' sec';
 
