@@ -13,8 +13,8 @@ enum BenchmarkType {
 
 interface NetworkCheckStatus {
   message: string;
-  avgUploadSpeed: number;
-  avgDownloadSpeed: number;
+  avgUploadSpeedBytesPerSecond: number;
+  avgDownloadSpeedBytesPerSecond: number;
 }
 
 interface BenchmarkDefinition {
@@ -67,8 +67,8 @@ export class NetworkCheckComponent implements OnInit {
 
   private status: NetworkCheckStatus = {
     message: 'Netzwerk-Analyse wird gestartet',
-    avgUploadSpeed: -1,
-    avgDownloadSpeed: -1
+    avgUploadSpeedBytesPerSecond: -1,
+    avgDownloadSpeedBytesPerSecond: -1
   };
   private testDone = false;
 
@@ -104,8 +104,8 @@ export class NetworkCheckComponent implements OnInit {
 
     this.status = {
       message: 'Netzwerk-Analyse wird neu gestartet',
-      avgUploadSpeed: -1,
-      avgDownloadSpeed: -1
+      avgUploadSpeedBytesPerSecond: -1,
+      avgDownloadSpeedBytesPerSecond: -1
     };
 
     this.networkStats = new Map<BenchmarkType, number[]>([
@@ -161,7 +161,7 @@ export class NetworkCheckComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.benchmarkSequence(type)
         .then(results => {
-          const averageBytesPerSecond = NetworkCheckComponent.calculateAverageSpeed(results);
+          const averageBytesPerSecond = NetworkCheckComponent.calculateAverageSpeedBytePerSecond(results);
           const averageOfPreviousLoops = this.getAverageNetworkStat(type);
           const errors = results.reduce((a, r) => a + ((r.error !== null) ? 1 : 0), 0);
           this.networkStats.get(type).push(averageBytesPerSecond);
@@ -228,10 +228,10 @@ export class NetworkCheckComponent implements OnInit {
   private showBenchmarkSequenceResults(type: BenchmarkType, avgBytesPerSecond: number, results: Array<NetworkRequestTestResult> = []) {
 
     if (type === BenchmarkType.down) {
-      this.status.avgDownloadSpeed = avgBytesPerSecond;
+      this.status.avgDownloadSpeedBytesPerSecond = avgBytesPerSecond;
     }
     if (type === BenchmarkType.up) {
-      this.status.avgUploadSpeed = avgBytesPerSecond;
+      this.status.avgUploadSpeedBytesPerSecond = avgBytesPerSecond;
     }
 
     this.plotStatistics(type, results);
@@ -239,7 +239,7 @@ export class NetworkCheckComponent implements OnInit {
 
 
   // tslint:disable-next-line:member-ordering
-  private static calculateAverageSpeed(testResults: Array<NetworkRequestTestResult>): number {
+  private static calculateAverageSpeedBytePerSecond(testResults: Array<NetworkRequestTestResult>): number {
 
     return testResults.reduce((sum, result) => sum + (result.size / result.duration * 1000), 0) / testResults.length;
   }
@@ -280,10 +280,10 @@ export class NetworkCheckComponent implements OnInit {
     // send data for reporting
     const reportEntry: ReportEntry[] = [];
     reportEntry.push({id: '0', type: 'network', label: 'Downloadgeschwindigkeit',
-      value: this.getAverageNetworkStat(BenchmarkType.down).toLocaleString()});
+      value: this.humanReadableBytes(this.getAverageNetworkStat(BenchmarkType.down), true).toLocaleString()});
     reportEntry.push({id: '0', type: 'network', label: 'Downloadbewertung', value: this.networkRating.downloadRating});
     reportEntry.push({id: '0', type: 'network', label: 'Uploadgeschwindigkeit',
-      value: this.getAverageNetworkStat(BenchmarkType.up).toLocaleString()});
+      value: this.humanReadableBytes(this.getAverageNetworkStat(BenchmarkType.up), true).toLocaleString()});
     reportEntry.push({id: '0', type: 'network', label: 'Uploadbewertung', value: this.networkRating.uploadRating});
     reportEntry.push({id: '0', type: 'network', label: 'Allgemeine Bewertung der Verbindung', value: this.networkRating.overallRating});
 
@@ -389,20 +389,19 @@ export class NetworkCheckComponent implements OnInit {
   }
 
 
-  private humanReadableBytes(bytes: number): string {
+  private humanReadableBytes(bytes: number, useBits: boolean = false): string {
 
-    const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
-    if (isNaN(parseFloat('' + bytes)) || !isFinite(bytes)) {
-      return '-';
-    }
-    if (bytes <= 0) {
-      return '0';
+    const units = useBits
+      ? ['b', 'kb', 'mb', 'gb', 'tb']
+      : ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+
+    if (useBits) {
+      bytes /= 8;
     }
 
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return (bytes / Math.pow(1024, Math.floor(i))).toFixed(1) + ' ' + units[i];
+    return (bytes / Math.pow(1024, Math.floor(i))).toFixed(2) + ' ' + units[i];
   }
-
 
   private humanReadableMilliseconds = (milliseconds: number): string => (milliseconds / 1000).toString() + ' sec';
 
