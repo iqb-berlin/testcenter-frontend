@@ -32,6 +32,14 @@ interface NetworkRating {
   overallRating: TechCheckRating;
 }
 
+interface DetectedNetworkInformations {
+  available: boolean;
+  downlinkMegabitPerSecond: number;
+  effectiveNetworkType: string;
+  roundTripTimeMs: number;
+  networkType: string;
+}
+
 @Component({
   selector: 'iqb-network-check',
   templateUrl: './network-check.component.html',
@@ -75,11 +83,18 @@ export class NetworkCheckComponent implements OnInit {
     overallRating: 'N/A'
   };
 
+  private detectedNetworkInformations: DetectedNetworkInformations = {
+    downlinkMegabitPerSecond: null,
+    effectiveNetworkType: null,
+    roundTripTimeMs: null,
+    networkType: null,
+    available: false
+  };
+
   constructor(
     private ds: SyscheckDataService,
     private bs: BackendService
-  ) {
-  }
+  ) {}
 
   ngOnInit() {}
 
@@ -100,6 +115,8 @@ export class NetworkCheckComponent implements OnInit {
 
     this.plotPrepare(BenchmarkType.down);
     this.plotPrepare(BenchmarkType.up);
+
+    this.getBrowsersNativeNetworkInformations();
 
     this.loopBenchmarkSequence(BenchmarkType.down)
       .then(() => this.loopBenchmarkSequence(BenchmarkType.up))
@@ -270,6 +287,32 @@ export class NetworkCheckComponent implements OnInit {
     reportEntry.push({id: '0', type: 'network', label: 'Uploadbewertung', value: this.networkRating.uploadRating});
     reportEntry.push({id: '0', type: 'network', label: 'Allgemeine Bewertung der Verbindung', value: this.networkRating.overallRating});
 
+    if (this.detectedNetworkInformations.available) {
+      if (this.detectedNetworkInformations.roundTripTimeMs) {
+        reportEntry.push({
+          id: '0', type: 'network', label: 'RoundTrip in Ms',
+          value: this.detectedNetworkInformations.roundTripTimeMs.toString()
+        });
+      }
+      if (this.detectedNetworkInformations.effectiveNetworkType) {
+        reportEntry.push({
+          id: '0', type: 'network', label: 'Netzwerktyp nach Leistung',
+          value: this.detectedNetworkInformations.effectiveNetworkType
+        });
+      }
+      if (this.detectedNetworkInformations.networkType) {
+        reportEntry.push({
+          id: '0', type: 'network', label: 'Netzwerktyp',
+          value: this.detectedNetworkInformations.networkType
+        });
+      }
+      if (this.detectedNetworkInformations.downlinkMegabitPerSecond) {
+        reportEntry.push({
+          id: '0', type: 'network', label: 'Downlink mbps',
+          value: this.detectedNetworkInformations.downlinkMegabitPerSecond.toString()
+        });
+      }
+    }
     this.ds.networkData$.next(reportEntry);
   }
 
@@ -327,6 +370,22 @@ export class NetworkCheckComponent implements OnInit {
     }
 
     this.networkRating = awardedNetworkRating;
+  }
+
+
+  private getBrowsersNativeNetworkInformations() {
+
+    const connection = navigator['connection'] || navigator['mozConnection'] || navigator['webkitConnection'];
+    console.log('connection', connection);
+    if (connection) {
+      this.detectedNetworkInformations = {
+        available: true,
+        downlinkMegabitPerSecond: connection.downlink || null,
+        effectiveNetworkType: connection.effectiveType || null,
+        roundTripTimeMs: connection.rtt || null,
+        networkType: connection.type || null,
+      };
+    }
   }
 
 

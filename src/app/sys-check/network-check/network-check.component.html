@@ -34,4 +34,14 @@
     </mat-card-content>
   </mat-card>
 
+  <mat-card>
+    <mat-card-title>Netzwerkeigenschaften</mat-card-title>
+    <mat-card-content>
+      <p *ngIf="!detectedNetworkInformations.available">Ihr Browser ist veraltet, daher konnten keine weiteren Netzwerkeigenschaften ermittelt werden.</p>
+      <p *ngIf="detectedNetworkInformations.available">Verbindung: {{detectedNetworkInformations.effectiveNetworkType}} {{detectedNetworkInformations.networkType}}</p>
+      <p *ngIf="detectedNetworkInformations.roundTripTimeMs">Network RoundTrip: {{detectedNetworkInformations.roundTripTimeMs}} Millisekunden</p>
+      <p *ngIf="detectedNetworkInformations.downlinkMegabitPerSecond">Network Downlink: {{detectedNetworkInformations.downlinkMegabitPerSecond}} mbps</p>
+    </mat-card-content>
+  </mat-card>
+
 </div>
