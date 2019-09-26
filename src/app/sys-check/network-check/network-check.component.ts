@@ -18,6 +18,13 @@ interface NetworkCheckStatus {
   pingTest: number;
 }
 
+interface BenchmarkDefinition {
+  testSizes: number[];
+  allowedDevianceBytesPerSecond: number;
+  allowedErrorsPerSequence: number;
+  allowedSequenceRepetitions: number;
+}
+
 @Component({
   selector: 'iqb-network-check',
   templateUrl: './network-check.component.html',
@@ -28,14 +35,20 @@ export class NetworkCheckComponent implements OnInit {
   @ViewChild('downloadChart') downloadPlotter;
   @ViewChild('uploadChart') uploadPlotter;
 
-  readonly testSizes = new Map<BenchmarkType, number[]>([
-    [BenchmarkType.down, [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304]],
-    [BenchmarkType.up, [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304]],
+  readonly benchmarkDefinitions = new Map<BenchmarkType, BenchmarkDefinition>([
+    [BenchmarkType.down, {
+      testSizes: [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304],
+      allowedDevianceBytesPerSecond: 100000,
+      allowedErrorsPerSequence: 0,
+      allowedSequenceRepetitions: 15
+    }],
+    [BenchmarkType.up, {
+      testSizes: [1024, 4096, 16384, 65536, 262144, 1048576, 4194304],
+      allowedDevianceBytesPerSecond: 10000000,
+      allowedErrorsPerSequence: 0,
+      allowedSequenceRepetitions: 15
+    }]
   ]);
-
-  readonly allowedDevianceBytesPerSecond = 50000;
-  readonly allowedErrorsPerSequence = 0;
-  readonly allowedSequenceRepetitions = 20;
 
   private status: NetworkCheckStatus = {
     message: 'Netzwerk-Analyse wird gestartet',
@@ -85,30 +98,31 @@ export class NetworkCheckComponent implements OnInit {
     this.plotPrepare(BenchmarkType.down);
     this.plotPrepare(BenchmarkType.up);
 
-    this.loopBenchmarkSequence(BenchmarkType.up)
-      // .then(() => this.loopBenchmarkSequence(BenchmarkType.down))
+    this.loopBenchmarkSequence(BenchmarkType.down)
+      .then(() => this.loopBenchmarkSequence(BenchmarkType.up))
       .then(() => this.reportResults())
       .catch(() => this.reportResults(true));
   }
 
   private plotPrepare(benchmarkType: BenchmarkType) {
 
+    const testSizes = this.benchmarkDefinitions.get(benchmarkType).testSizes;
     const plotterSettings = {
       css: 'border: 0px solid black; width: 100%; max-width: 800px',
       width: 800,
       height: 180,
       labelPadding: 4,
-      xAxisMaxValue: 16 + Math.max(...this.testSizes.get(benchmarkType)),
-      xAxisMinValue: Math.min(...this.testSizes.get(benchmarkType)),
+      xAxisMaxValue: 16 + Math.max(...testSizes),
+      xAxisMinValue: Math.min(...testSizes),
       yAxisMaxValue: 1000,
       yAxisMinValue: 10,
       xAxisStepSize: 4,
-      yAxisStepSize: 100,
+      yAxisStepSize: 50,
       lineWidth: 5,
       xProject: x => (x === 0 ) ? 0 : Math.sign(x) * Math.log2(Math.abs(x)),
-      yProject: y => (y === 0 ) ? 0 : Math.sign(y) * Math.sqrt(Math.abs(y)),
-      xAxisLabels: (x) => (this.testSizes.get(benchmarkType).indexOf(x) > -1) ? this.humanReadableBytes(x) : '',
-      yAxisLabels: (y, i) => (i < 10) ? this.humanReadableMilliseconds(y) : '',
+      yProject: y => (y === 0 ) ? 0 : Math.sign(y) * Math.log(Math.abs(y)),
+      xAxisLabels: (x) => (testSizes.indexOf(x) > -1) ? this.humanReadableBytes(x) : '',
+      yAxisLabels: (y, i) => (i < 10) ? this.humanReadableMilliseconds(y) : ' ',
     };
 
     if (benchmarkType === BenchmarkType.down) {
@@ -123,6 +137,7 @@ export class NetworkCheckComponent implements OnInit {
   private loopBenchmarkSequence(type: BenchmarkType): Promise<void> {
 
     this.updateStatus(`Benchmark Loop ${type} nr.:`  + this.networkStats.get(type).length);
+    const benchmarkDefinition = this.benchmarkDefinitions.get(type);
     return new Promise((resolve, reject) => {
       this.benchmarkSequence(type)
         .then(results => {
@@ -132,19 +147,19 @@ export class NetworkCheckComponent implements OnInit {
           this.networkStats.get(type).push(averageBytesPerSecond);
           this.showBenchmarkSequenceResults(type, this.getAverageNetworkStat(type), results);
 
-          if (errors > this.allowedErrorsPerSequence) {
+          if (errors > benchmarkDefinition.allowedErrorsPerSequence) {
             console.warn('some errors occured', results);
             return reject(errors);
           }
 
-          if (this.networkStats.get(type).length > this.allowedSequenceRepetitions) {
-            console.warn(`looped ${this.allowedSequenceRepetitions}, but could not get reliable average`, this.networkStats.get(type));
-            return reject(errors);
+          if (this.networkStats.get(type).length > benchmarkDefinition.allowedSequenceRepetitions) {
+            console.warn(`looped ${benchmarkDefinition.allowedSequenceRepetitions} times, but could not get reliable average`);
+            return resolve();
           }
 
           if (
             (this.networkStats.get(type).length < 3) ||
-            (Math.abs(averageOfPreviousLoops - averageBytesPerSecond) > this.allowedDevianceBytesPerSecond)
+            (Math.abs(averageOfPreviousLoops - averageBytesPerSecond) > benchmarkDefinition.allowedDevianceBytesPerSecond)
           ) {
             return this.loopBenchmarkSequence(type).then(resolve).catch(reject);
           }
@@ -163,7 +178,7 @@ export class NetworkCheckComponent implements OnInit {
 
   private benchmarkSequence(type: BenchmarkType): Promise<Array<NetworkRequestTestResult>> {
 
-    return this.testSizes.get(type).reduce(
+    return this.benchmarkDefinitions.get(type).testSizes.reduce(
       (sequence, testSize) => sequence.then(results => this.benchmark(type, testSize)
         .then(result => {
           results.push(result);
@@ -178,12 +193,13 @@ export class NetworkCheckComponent implements OnInit {
   private benchmark(benchmarkType: BenchmarkType, requestSize: number): Promise<NetworkRequestTestResult> {
 
     // console.log(`run benchmark ${benchmarkType} for ${requestSize}`);
-    const testRound = this.networkStats.get(benchmarkType).length;
+    const testRound = this.networkStats.get(benchmarkType).length + 1;
+    const testPackage = this.humanReadableBytes(requestSize);
     if (benchmarkType === BenchmarkType.down) {
-      this.updateStatus(`Testrunde ${testRound}: Downloadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes)`);
+      this.updateStatus(`Downloadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage} bytes`);
       return this.bs.benchmarkDownloadRequest(requestSize);
     } else {
-      this.updateStatus(`Testrunde ${testRound}: Uploadgeschwindigkeit wird getestet... (Testgröße: ${requestSize} bytes)`);
+      this.updateStatus(`Uploadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage} bytes)`);
       return this.bs.benchmarkUploadRequest(requestSize);
     }
   }
