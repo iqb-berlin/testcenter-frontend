@@ -175,8 +175,8 @@ export class BackendService {
     return new Promise(function(resolve, reject) {
 
       const xhr = new XMLHttpRequest();
-      xhr.open('GET',  serverUrl + 'doSysCheckDownloadTest.php?size=' +
-                       requestedDownloadSize + '&uid=' + (new Date().getTime()), true);
+      xhr.open('POST', serverUrl + 'doSysCheckDownloadTest.php?size=' +
+        requestedDownloadSize + '&uid=' + (new Date().getTime()), true);
 
       xhr.timeout = 2000;
 
@@ -187,14 +187,14 @@ export class BackendService {
         if (xhr.response.toString().length !== requestedDownloadSize) {
           testResult.error = `Error: Data package has wrong size! ${requestedDownloadSize} ` + xhr.response.toString().length;
         }
+        const arrivalTime = parseFloat(xhr.response.toString().split('/')[0]) * 1000;
+
         const currentTime = new Date().getTime();
-        testResult.duration = currentTime - startingTime;
+        testResult.duration = currentTime - arrivalTime;
         resolve(testResult);
       };
 
       xhr.onerror = () => {
-        const currentTime = new Date().getTime();
-        testResult.duration = currentTime - startingTime;
         testResult.error = 'network error';
         resolve(testResult);
       };
@@ -205,9 +205,8 @@ export class BackendService {
         resolve(testResult);
       };
 
-      const startingTime = new Date().getTime();
-
-      xhr.send(null);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(`{"size":"${requestedDownloadSize}"}`);
     });
   }
 
@@ -216,7 +215,7 @@ export class BackendService {
     const serverUrl = this.serverUrl;
     const randomContent = BackendService.generateRandomContent(requestedUploadSize);
     const testResult: NetworkRequestTestResult = {
-      type: 'downloadTest',
+      type: 'uploadTest',
       size: requestedUploadSize,
       duration: 2000,
       error: null
@@ -238,8 +237,8 @@ export class BackendService {
 
         try {
           const response = JSON.parse(xhr.response);
-          const arrivingTime = parseFloat(response['requestTime']) * 1000;
-          testResult.duration = arrivingTime - startingTime;
+          const arrivalTime = parseFloat(response['requestTime']) * 1000;
+          testResult.duration = arrivalTime - startingTime;
           const arrivingSize = parseFloat(response['packageReceivedSize']);
           if (arrivingSize !== requestedUploadSize) {
             testResult.error = `Error: Data package has wrong size! ${requestedUploadSize} != ${arrivingSize}`;
