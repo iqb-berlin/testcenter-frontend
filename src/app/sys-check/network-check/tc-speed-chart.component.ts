@@ -137,7 +137,7 @@ export class TcSpeedChartComponent implements OnInit {
   }
 
   private paintLine(plotCoordinates: Array<[number, number]>) {
-console.log("LINEEEE");
+
     this.context.beginPath();
     this.context.moveTo(plotCoordinates[0][0], plotCoordinates[0][1]);
     plotCoordinates.forEach(xy => {
@@ -189,7 +189,11 @@ console.log("LINEEEE");
     ) {
       const transformedY = this.config.yProject(y);
       const scaledY = this.canvas.height - this.yScale * (transformedY - this.config.yProject(this.config.yAxisMinValue));
-      this.context.fillText(this.config.yAxisLabels(y, count), this.config.labelPadding, scaledY);
+      const label = this.config.yAxisLabels(y, count);
+      if (label === '') {
+        continue;
+      }
+      this.context.fillText(label, this.config.labelPadding, scaledY);
       this.context.strokeStyle = (y === 0) ? this.config.axisColor : this.config.gridColor;
       this.context.beginPath();
       this.context.moveTo(0, scaledY);
