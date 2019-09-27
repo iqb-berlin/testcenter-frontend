@@ -7,6 +7,7 @@
   width: 100%;
   overflow: hidden;
   bottom: -4px;
+  overflow-y: auto;
 }
 
 .scrollable {
