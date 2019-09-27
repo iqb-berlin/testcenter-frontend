@@ -190,6 +190,7 @@ export class BackendService {
         const arrivalTime = parseFloat(xhr.response.toString().split('/')[0]) * 1000;
 
         const currentTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
+        console.log({'c': currentTime, 'a': arrivalTime});
         testResult.duration = currentTime - arrivalTime;
         resolve(testResult);
       };
@@ -273,7 +274,8 @@ export class BackendService {
 
     if (typeof performance !== 'undefined') {
       const timeOrigin = (typeof performance.timeOrigin !== 'undefined') ? performance.timeOrigin : performance.timing.navigationStart;
-      if (typeof timeOrigin && timeOrigin) {
+      console.log({'timeOrigin': performance.timeOrigin, 'navigationStart': performance.timing.navigationStart, 'now': timeOrigin + performance.now()});
+      if (typeof timeOrigin !== 'undefined' && timeOrigin) {
         return timeOrigin + performance.now();
       }
     }

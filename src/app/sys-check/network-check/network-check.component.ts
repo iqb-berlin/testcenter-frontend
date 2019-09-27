@@ -65,12 +65,12 @@ export class NetworkCheckComponent implements OnInit {
     }]
   ]);
 
-  private status: NetworkCheckStatus = {
+  public status: NetworkCheckStatus = {
     message: 'Netzwerk-Analyse wird gestartet',
     avgUploadSpeedBytesPerSecond: -1,
     avgDownloadSpeedBytesPerSecond: -1
   };
-  private testDone = false;
+  public testDone = false;
 
   private networkStats = new Map<BenchmarkType, number[]>([
     [BenchmarkType.down, []],
@@ -83,7 +83,7 @@ export class NetworkCheckComponent implements OnInit {
     overallRating: 'N/A'
   };
 
-  private detectedNetworkInformations: DetectedNetworkInformations = {
+  public detectedNetworkInformations: DetectedNetworkInformations = {
     downlinkMegabitPerSecond: null,
     effectiveNetworkType: null,
     roundTripTimeMs: null,
@@ -163,6 +163,7 @@ export class NetworkCheckComponent implements OnInit {
         .then(results => {
           const averageBytesPerSecond = NetworkCheckComponent.calculateAverageSpeedBytePerSecond(results);
           const averageOfPreviousLoops = this.getAverageNetworkStat(type);
+          console.log({results: results, avg: averageBytesPerSecond});
           const errors = results.reduce((a, r) => a + ((r.error !== null) ? 1 : 0), 0);
           this.networkStats.get(type).push(averageBytesPerSecond);
           this.showBenchmarkSequenceResults(type, this.getAverageNetworkStat(type), results);
@@ -341,6 +342,7 @@ export class NetworkCheckComponent implements OnInit {
       avgDownloadSpeed: this.getAverageNetworkStat(BenchmarkType.down),
       avgUploadSpeed: this.getAverageNetworkStat(BenchmarkType.up),
     };
+    console.log('measured averages', nd);
 
     // the ratings are calculated individually, by a "how low can you go" approach
 
