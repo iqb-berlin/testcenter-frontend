@@ -187,11 +187,9 @@ export class BackendService {
         if (xhr.response.toString().length !== requestedDownloadSize) {
           testResult.error = `Error: Data package has wrong size! ${requestedDownloadSize} ` + xhr.response.toString().length;
         }
-        const arrivalTime = parseFloat(xhr.response.toString().split('/')[0]) * 1000;
-
-        const currentTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
-        console.log({'c': currentTime, 'a': arrivalTime});
-        testResult.duration = currentTime - arrivalTime;
+        const currentTime = testResult.duration = BackendService.getMostPreciseTimestampBrowserCanProvide();
+        console.log({'c': currentTime, 's': startingTime});
+        testResult.duration = currentTime - startingTime;
         resolve(testResult);
       };
 
@@ -205,6 +203,8 @@ export class BackendService {
         testResult.error = 'timeout';
         resolve(testResult);
       };
+
+      const startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
 
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.send(`{"size":"${requestedDownloadSize}"}`);
@@ -238,8 +238,7 @@ export class BackendService {
 
         try {
           const response = JSON.parse(xhr.response);
-          const arrivalTime = parseFloat(response['requestTime']) * 1000;
-          testResult.duration = arrivalTime - startingTime;
+          testResult.duration = BackendService.getMostPreciseTimestampBrowserCanProvide() - startingTime;
           const arrivingSize = parseFloat(response['packageReceivedSize']);
           if (arrivingSize !== requestedUploadSize) {
             testResult.error = `Error: Data package has wrong size! ${requestedUploadSize} != ${arrivingSize}`;
@@ -247,6 +246,10 @@ export class BackendService {
         } catch (e) {
           testResult.error = `bogus server response`;
         }
+
+        const currentTime = testResult.duration = BackendService.getMostPreciseTimestampBrowserCanProvide();
+        console.log({'c': currentTime, 's': startingTime});
+        testResult.duration = currentTime - startingTime;
 
         resolve(testResult);
 
@@ -263,7 +266,7 @@ export class BackendService {
         resolve(testResult);
       };
 
-      const startingTime = new Date().getTime();
+      const startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
 
       xhr.send(randomContent);
     });
@@ -274,7 +277,6 @@ export class BackendService {
 
     if (typeof performance !== 'undefined') {
       const timeOrigin = (typeof performance.timeOrigin !== 'undefined') ? performance.timeOrigin : performance.timing.navigationStart;
-      console.log({'timeOrigin': performance.timeOrigin, 'navigationStart': performance.timing.navigationStart, 'now': timeOrigin + performance.now()});
       if (typeof timeOrigin !== 'undefined' && timeOrigin) {
         return timeOrigin + performance.now();
       }
