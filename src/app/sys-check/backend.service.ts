@@ -168,7 +168,7 @@ export class BackendService {
     const testResult: NetworkRequestTestResult = {
       type: 'downloadTest',
       size: requestedDownloadSize,
-      duration: 2000,
+      duration: 5000,
       error: null
     };
 
@@ -178,7 +178,7 @@ export class BackendService {
       xhr.open('POST', serverUrl + 'doSysCheckDownloadTest.php?size=' +
         requestedDownloadSize + '&uid=' + (new Date().getTime()), true);
 
-      xhr.timeout = 2000;
+      xhr.timeout = 5000;
 
       xhr.onload = () => {
         if (xhr.status !== 200) {
@@ -189,13 +189,13 @@ export class BackendService {
         }
         const arrivalTime = parseFloat(xhr.response.toString().split('/')[0]) * 1000;
 
-        const currentTime = new Date().getTime();
+        const currentTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
         testResult.duration = currentTime - arrivalTime;
         resolve(testResult);
       };
 
       xhr.onerror = () => {
-        testResult.error = 'network error';
+        testResult.error = `Network Error ${xhr.statusText} (${xhr.status}) `;
         resolve(testResult);
       };
 
@@ -217,7 +217,7 @@ export class BackendService {
     const testResult: NetworkRequestTestResult = {
       type: 'uploadTest',
       size: requestedUploadSize,
-      duration: 2000,
+      duration: 10000,
       error: null
     };
 
@@ -226,7 +226,7 @@ export class BackendService {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', serverUrl + 'doSysCheckUploadTest.php', true);
 
-      xhr.timeout = 2000;
+      xhr.timeout = 10000;
 
       xhr.setRequestHeader('Content-Type', 'text/plain');
 
@@ -252,7 +252,7 @@ export class BackendService {
       };
 
       xhr.onerror = () => {
-        testResult.error = 'network error';
+        testResult.error = `Network Error ${xhr.statusText} (${xhr.status}) `;
         resolve(testResult);
       };
 
@@ -266,6 +266,18 @@ export class BackendService {
 
       xhr.send(randomContent);
     });
+  }
+
+  // tslint:disable-next-line:member-ordering
+  private static getMostPreciseTimestampBrowserCanProvide(): number {
+
+    if (typeof performance !== 'undefined') {
+      const timeOrigin = (typeof performance.timeOrigin !== 'undefined') ? performance.timeOrigin : performance.timing.navigationStart;
+      if (typeof timeOrigin && timeOrigin) {
+        return timeOrigin + performance.now();
+      }
+    }
+    return Date.now();
   }
 
   // tslint:disable-next-line:member-ordering
