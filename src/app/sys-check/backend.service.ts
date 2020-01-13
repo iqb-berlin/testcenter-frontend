@@ -1,7 +1,7 @@
 import { CheckConfig } from './backend.service';
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { TaggedString } from '../test-controller/test-controller.interfaces';
 import { ServerError } from '../test-controller/test-controller.classes';
@@ -162,112 +162,83 @@ export class BackendService {
   }
 
 
-  benchmarkDownloadRequest(requestedDownloadSize: number): Promise<NetworkRequestTestResult> {
-
-    const serverUrl = this.serverUrl;
+  public benchmarkDownloadRequest(requestedDownloadSize: number, KBPSReporter: BehaviorSubject<number>): Promise<NetworkRequestTestResult> {
+    const fileuri = this.serverUrl + 'doSysCheckDownloadTest.php?size=' + requestedDownloadSize + '&uid=' + Date.now().toString();
     const testResult: NetworkRequestTestResult = {
       type: 'downloadTest',
       size: requestedDownloadSize,
       duration: 5000,
-      error: null
+      error: null,
+      speedInBPS: 0
     };
+    return new Promise((resolve, reject) => {
+      let lastTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
+      let receivedBytes: number = 0;
+      let startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
+      const responseData: Array<{ bytes: number, milliseconds: number }> = [];
+      this.http.get(fileuri, {
+        observe: 'events',
+        reportProgress: true,
+        responseType: 'text'
+      }).subscribe((event: HttpEvent<any>) => {
+        switch (event.type) {
+          case HttpEventType.Sent:
+            console.log('Request sent!' + fileuri);
+            // ab jetzt beginnt die Messung
+            startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
+            lastTime = startingTime;
+            break;
+          case HttpEventType.DownloadProgress:
+            const currTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
 
-    return new Promise(function(resolve, reject) {
-
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', serverUrl + 'doSysCheckDownloadTest.php?size=' +
-        requestedDownloadSize + '&uid=' + (new Date().getTime()), true);
-
-      xhr.timeout = 5000;
-
-      xhr.onload = () => {
-        if (xhr.status !== 200) {
-          testResult.error = `Error ${xhr.statusText} (${xhr.status}) `;
+            //Zeit für bis jetzt heruntergeladene Bytes
+            // const timespan = currTime - startingTime;
+            // Alternativ Betrachtung der Differenz in den Events
+            const differenceBytes = event.loaded - receivedBytes;
+            const timespan = currTime - lastTime;
+            // Zeit seit dem letzten Event
+            lastTime = currTime;
+            // Bytes die schon empfangen wurden
+            receivedBytes = event.loaded;
+            // */
+            // Abgleich mit angeforderter Größe möglich
+            const percentComplete = Math.round((event.loaded / event.total) * 100);
+            responseData.push({bytes: differenceBytes, milliseconds: timespan});
+            // Nutzung von BS um aktuelle Geschwindigkeit darzustellen KB/s
+            KBPSReporter.next((differenceBytes / 1024) / (timespan / 1000));
+            break;
+          case HttpEventType.Response:
+            // Download fertig
+            testResult.duration = BackendService.getMostPreciseTimestampBrowserCanProvide() -
+              startingTime;
+            const responseBytes = responseData.reduce((sum, result) => sum + result.bytes, 0);
+            const responseTimeInSeconds = responseData.reduce((sum, result) => sum + result.milliseconds, 0) / 1000;
+            // Gewichtete Gerschwindigkeit
+            const responseBytesPerSecond = (responseData.reduce((sum, result) => sum + (result
+              .bytes / (result.milliseconds / 1000)) * result.bytes, 0)) / responseBytes;
+            console.log("Zeitspanne testresult")
+            console.log(testResult.duration)
+            console.log("Zeitspanne Summe der Einzelresponse")
+            console.log(responseTimeInSeconds * 1000)
+            console.log("Bytes testresult")
+            console.log(testResult.size)
+            console.log("Bytes Summe der Einzelresponse")
+            console.log(responseBytes)
+            console.log('Durchschnittsgeschwindigkeit des Downloads');
+            console.log(responseBytes / responseTimeInSeconds);
+            console.log(testResult.size / (testResult.duration / 1000));
+            console.log('gewichtete Durchschnittsgeschwindigkeit des Downloads');
+            console.log(responseBytesPerSecond);
+            testResult.speedInBPS = responseBytesPerSecond;
+            resolve(testResult);
         }
-        if (xhr.response.toString().length !== requestedDownloadSize) {
-          testResult.error = `Error: Data package has wrong size! ${requestedDownloadSize} ` + xhr.response.toString().length;
-        }
-        const arrivalTime = parseFloat(xhr.response.toString().split('/')[0]) * 1000;
-
-        const currentTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
-        console.log({'c': currentTime, 'a': arrivalTime});
-        testResult.duration = currentTime - arrivalTime;
-        resolve(testResult);
-      };
-
-      xhr.onerror = () => {
-        testResult.error = `Network Error ${xhr.statusText} (${xhr.status}) `;
-        resolve(testResult);
-      };
-
-      xhr.ontimeout = () => {
-        testResult.duration = xhr.timeout;
-        testResult.error = 'timeout';
-        resolve(testResult);
-      };
-
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.send(`{"size":"${requestedDownloadSize}"}`);
+      }, error => {
+        console.log('onerror');
+        console.log(error);
+        reject();
+      });
     });
-  }
-
-  benchmarkUploadRequest (requestedUploadSize: number): Promise<NetworkRequestTestResult> {
-
-    const serverUrl = this.serverUrl;
-    const randomContent = BackendService.generateRandomContent(requestedUploadSize);
-    const testResult: NetworkRequestTestResult = {
-      type: 'uploadTest',
-      size: requestedUploadSize,
-      duration: 10000,
-      error: null
-    };
-
-    return new Promise(function(resolve, reject) {
-
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', serverUrl + 'doSysCheckUploadTest.php', true);
-
-      xhr.timeout = 10000;
-
-      xhr.setRequestHeader('Content-Type', 'text/plain');
-
-      xhr.onload = () => {
-        if (xhr.status !== 200) {
-          testResult.error = `Error ${xhr.statusText} (${xhr.status}) `;
-        }
-
-        try {
-          const response = JSON.parse(xhr.response);
-          const arrivalTime = parseFloat(response['requestTime']) * 1000;
-          testResult.duration = arrivalTime - startingTime;
-          const arrivingSize = parseFloat(response['packageReceivedSize']);
-          if (arrivingSize !== requestedUploadSize) {
-            testResult.error = `Error: Data package has wrong size! ${requestedUploadSize} != ${arrivingSize}`;
-          }
-        } catch (e) {
-          testResult.error = `bogus server response`;
-        }
-
-        resolve(testResult);
-
-      };
-
-      xhr.onerror = () => {
-        testResult.error = `Network Error ${xhr.statusText} (${xhr.status}) `;
-        resolve(testResult);
-      };
-
-      xhr.ontimeout = () => {
-        testResult.duration = xhr.timeout;
-        testResult.error = 'timeout';
-        resolve(testResult);
-      };
-
-      const startingTime = new Date().getTime();
-
-      xhr.send(randomContent);
-    });
-  }
+  });
 
   // tslint:disable-next-line:member-ordering
   private static getMostPreciseTimestampBrowserCanProvide(): number {
