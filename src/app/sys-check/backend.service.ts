@@ -1,6 +1,6 @@
 import { CheckConfig } from './backend.service';
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
+import {HttpClient, HttpParams, HttpHeaders, HttpEvent, HttpErrorResponse, HttpEventType} from '@angular/common/http';
 import {BehaviorSubject, Observable, of} from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { TaggedString } from '../test-controller/test-controller.interfaces';
@@ -323,6 +323,7 @@ export interface NetworkRequestTestResult {
   'size': number;
   'duration': number;
   'error': string | null;
+  'speedInBPS': number;
 }
 
 export interface ReportEntry {
