@@ -1,0 +1,24 @@
+language: node_js
+node_js:
+  - "10.16.3"
+
+sudo: true
+dist: bionic
+
+addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
+
+install:
+  - npm install
+  - cd ./node_modules/protractor && npm i --save webdriver-manager@latest && cd ../.. && ./node_modules/.bin/webdriver-manager update
+  - cp src/environments/environment.prod.ts src/environments/environment.ts
+  - cp e2e/travis.protractor.conf.js e2e/protractor.conf.js
+
+script:
+  - google-chrome --version
+  # ng e2e
+  # ng test --watch=false --browsers=ChromeHeadless
