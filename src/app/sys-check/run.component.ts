@@ -18,11 +18,11 @@ import { StepperSelectionEvent } from '@angular/cdk/stepper';
 })
 export class RunComponent implements OnInit {
   @ViewChild('stepper', {static: true}) stepper: MatStepper;
-  @ViewChild('stepEnv', {static: true}) stepEnv: MatStep;
-  @ViewChild('stepNetwork', {static: true}) stepNetwork: MatStep;
-  @ViewChild('compNetwork', {static: true}) compNetwork: NetworkCheckComponent;
-  @ViewChild('stepUnit', {static: true}) stepUnit: MatStep;
-  @ViewChild('compUnit', {static: true}) compUnit: UnitCheckComponent;
+  @ViewChild('stepEnv', {static: false}) stepEnv: MatStep;
+  @ViewChild('stepNetwork', {static: false}) stepNetwork: MatStep;
+  @ViewChild('compNetwork', {static: false}) compNetwork: NetworkCheckComponent;
+  @ViewChild('stepUnit', {static: false}) stepUnit: MatStep;
+  @ViewChild('compUnit', {static: false}) compUnit: UnitCheckComponent;
 
   paramId: string;
   unitcheckAvailable = false;
