@@ -1,10 +1,6 @@
 import { SyscheckDataService } from '../syscheck-data.service';
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {
-  BackendService,
-  NetworkRequestTestResult,
-  ReportEntry
-} from '../backend.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { BackendService, NetworkRequestTestResult, ReportEntry } from '../backend.service';
 import { BehaviorSubject } from 'rxjs';
 
 enum BenchmarkType {
@@ -41,6 +37,7 @@ interface DetectedNetworkInformations {
   networkType: string;
 }
 
+
 @Component({
   selector: 'iqb-network-check',
   templateUrl: './network-check.component.html',
@@ -50,6 +47,8 @@ export class NetworkCheckComponent implements OnInit {
 
   @ViewChild('downloadChart', {static: true}) downloadPlotter;
   @ViewChild('uploadChart', {static: true}) uploadPlotter;
+
+  KBPSReporter: BehaviorSubject<number> = new BehaviorSubject(0);
 
   readonly benchmarkDefinitions = new Map<BenchmarkType, BenchmarkDefinition>([
     [BenchmarkType.down, {
@@ -113,12 +112,12 @@ export class NetworkCheckComponent implements OnInit {
       [BenchmarkType.down, []],
       [BenchmarkType.up, []],
     ]);
-
+    console.log('start the loop');
     this.plotPrepare(BenchmarkType.down);
     this.plotPrepare(BenchmarkType.up);
 
     this.getBrowsersNativeNetworkInformations();
-
+    console.log('start the loop2');
     this.loopBenchmarkSequence(BenchmarkType.down)
       .then(() => this.loopBenchmarkSequence(BenchmarkType.up))
       .then(() => this.reportResults())
@@ -154,7 +153,6 @@ export class NetworkCheckComponent implements OnInit {
     }
   }
 
-  KBPSReporter:BehaviorSubject<number>=new BehaviorSubject(0);
   private loopBenchmarkSequence(type: BenchmarkType): Promise<void> {
 
     this.updateStatus(`Benchmark Loop ${type} nr.:`  + this.networkStats.get(type).length);
@@ -219,7 +217,7 @@ export class NetworkCheckComponent implements OnInit {
     const testPackage = this.humanReadableBytes(requestSize);
     if (benchmarkType === BenchmarkType.down) {
       this.updateStatus(`Downloadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage} bytes`);
-      return this.bs.benchmarkDownloadRequest2(requestSize,this.KBPSReporter);
+      return this.bs.benchmarkDownloadRequest(requestSize, this.KBPSReporter);
     } else {
       this.updateStatus(`Uploadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage} bytes)`);
       return this.bs.benchmarkUploadRequest(requestSize);
@@ -242,27 +240,27 @@ export class NetworkCheckComponent implements OnInit {
 
   // tslint:disable-next-line:member-ordering
   private static calculateAverageSpeedBytePerSecond(testResults: Array<NetworkRequestTestResult>): number {
-    const averageSpeedInBPS  =  testResults.reduce((sum,result)=>sum + result.speedInBPS,0)/ testResults.length;
+    const averageSpeedInBPS  =  testResults.reduce((sum, result) => sum + result.speedInBPS, 0) / testResults.length;
     console.log('Durchschnittsgeschwindigkeit der gewichtetet Einzelgeschwindigkeiten');
     console.log(averageSpeedInBPS);
-    const averageSpeedInBPS2 = testResults.reduce((sum, result) => sum + (result.size/(result.duration / 1000)), 0) / testResults.length;
+    const averageSpeedInBPS2 = testResults.reduce((sum, result) => sum + (result.size / (result.duration / 1000)), 0) / testResults.length;
     console.log('(alte Berechnung) Durchschnitt der Summe der einzelnen Geschwindigkeiten');
     console.log(averageSpeedInBPS2);
 
-    const timeInSeconds = testResults.reduce((sum, result) => sum + (result.duration / 1000), 0);// / testResults.length;
+    const timeInSeconds = testResults.reduce((sum, result) => sum + (result.duration / 1000), 0); // / testResults.length;
     const sizeInBytes = testResults.reduce((sum, result) => sum + (result.size), 0);
     console.log('Durchschnitt der Summe der einzelnen Bytes/Zeiten');
     console.log(sizeInBytes / timeInSeconds);
 
-   
 
-    const weightedMed = testResults.reduce((sum, result) => sum + ((result.size / result.duration * 1000)*result.size), 0) / sizeInBytes;
+
+    const weightedMed = testResults.reduce((sum, result) => sum + ((result.size / result.duration * 1000) * result.size), 0) / sizeInBytes;
     console.log('Gewichteter Durchschnitt der einzelnen Durchschnittsgeschwindigkeiten ');
     console.log(weightedMed);
 
-    const weightedMed2 = testResults.reduce((sum, result) => sum + (result.speedInBPS*result.size), 0) / sizeInBytes;
+    const weightedMed2 = testResults.reduce((sum, result) => sum + (result.speedInBPS * result.size), 0) / sizeInBytes;
     console.log('Gewichteter Durchschnitt der gewichteten Durchschnittsgeschwindigkeiten ');
-    console.log(weightedMed2)
+    console.log(weightedMed2);
 
     return averageSpeedInBPS2;
   }
@@ -424,15 +422,10 @@ export class NetworkCheckComponent implements OnInit {
     }
 
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    const ba =  (bytes / Math.pow(1024, Math.floor(i))).toFixed(2) + ' ' + units[i];
 
     const sufixes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    
-      //const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    const bb = !bytes && '0 Bytes' || (bytes / Math.pow(1024, i)).toFixed(2) + " " + sufixes[i];
-   // console.log(ba)
-   // console.log(bb)
-    return bb;
+
+    return !bytes && '0 Bytes' || (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sufixes[i];
   }
 
   private humanReadableMilliseconds = (milliseconds: number): string => (milliseconds / 1000).toString() + ' sec';
