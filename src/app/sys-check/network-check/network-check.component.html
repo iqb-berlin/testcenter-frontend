@@ -1,5 +1,7 @@
 <div class="spinner-container" *ngIf="!testDone">
     <mat-spinner></mat-spinner>
+    <label>{{KBPSReporter | async}} KBPS</label>
+    
 </div>
 <div >
   <div *ngIf="!testDone" style="margin: 10px">
@@ -19,7 +21,7 @@
   <mat-card>
     <mat-card-title>Geschwindigkeit Download</mat-card-title>
     <mat-card-content>
-      <p *ngIf="status.avgDownloadSpeedBytesPerSecond >= 0">&#8960; {{ humanReadableBytes(status.avgDownloadSpeedBytesPerSecond, true) }}ps</p>
+      <p *ngIf="status.avgDownloadSpeedBytesPerSecond >= 0">&#8960; {{ humanReadableBytes(status.avgDownloadSpeedBytesPerSecond, false) }}ps</p>
       <p *ngIf="status.avgDownloadSpeedBytesPerSecond < 0">Test noch nicht gestartet</p>
       <tc-speed-chart #downloadChart></tc-speed-chart>
     </mat-card-content>
@@ -28,7 +30,7 @@
   <mat-card>
     <mat-card-title>Geschwindigkeit Upload</mat-card-title>
     <mat-card-content>
-      <p *ngIf="status.avgUploadSpeedBytesPerSecond >= 0">&#8960; {{ humanReadableBytes(status.avgUploadSpeedBytesPerSecond, true) }}ps</p>
+      <p *ngIf="status.avgUploadSpeedBytesPerSecond >= 0">&#8960; {{ humanReadableBytes(status.avgUploadSpeedBytesPerSecond, false) }}ps</p>
       <p *ngIf="status.avgUploadSpeedBytesPerSecond < 0">Test noch nicht gestartet</p>
       <tc-speed-chart #uploadChart></tc-speed-chart>
     </mat-card-content>

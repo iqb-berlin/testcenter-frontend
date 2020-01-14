@@ -38,8 +38,9 @@ export class BackendService {
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
-      this.serverUrl = this.serverUrl + 'php_tc/';
-      this.serverSlimUrl_GET = this.serverUrl + 'tc_get.php/';
+
+    this.serverUrl = this.serverUrl + 'php_tc/';
+    this.serverSlimUrl_GET = this.serverUrl + 'tc_get.php/';
   }
 
   // uppercase and add extension if not part
@@ -79,13 +80,13 @@ export class BackendService {
   getCheckConfigs(): Observable<CheckConfig[]> {
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json'
+        'Content-Type': 'application/json'
       })
     };
     return this.http
       .post<CheckConfig[]>(this.serverUrl + 'getSysCheckConfigs.php', {}, httpOptions)
-        .pipe(
-          catchError(problem_data => {
+      .pipe(
+        catchError(problem_data => {
           const myreturn: CheckConfig[] = [];
           return of(myreturn);
         })
@@ -96,7 +97,7 @@ export class BackendService {
   getCheckConfigData(cid: string): Observable<CheckConfigData> {
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json'
+        'Content-Type': 'application/json'
       })
     };
     return this.http
@@ -149,7 +150,7 @@ export class BackendService {
   getResource(internalKey: string, resId: string, versionning = false): Observable<TaggedString | ServerError> {
     const myHttpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json'
+        'Content-Type': 'application/json'
       }),
       responseType: 'text' as 'json'
     };
@@ -258,7 +259,7 @@ export class BackendService {
 
     const base64Characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz0123456789+/';
     let randomString = '';
-    for (let i = 1; i <= length; i++)  {
+    for (let i = 1; i <= length; i++) {
       const randomCharacterID = Math.floor(Math.random() * 63);
       randomString += base64Characters[randomCharacterID];
     }

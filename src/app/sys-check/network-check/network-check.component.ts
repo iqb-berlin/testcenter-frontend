@@ -5,6 +5,7 @@ import {
   NetworkRequestTestResult,
   ReportEntry
 } from '../backend.service';
+import { BehaviorSubject } from 'rxjs';
 
 enum BenchmarkType {
   up,
@@ -134,10 +135,10 @@ export class NetworkCheckComponent implements OnInit {
       labelPadding: 4,
       xAxisMaxValue: 16 + Math.max(...testSizes),
       xAxisMinValue: Math.min(...testSizes),
-      yAxisMaxValue: 1000,
-      yAxisMinValue: 10,
+      yAxisMaxValue: (BenchmarkType.down === benchmarkType) ? 1000 : 2500,
+      yAxisMinValue: (BenchmarkType.down === benchmarkType) ? 10 : 100,
       xAxisStepSize: 4,
-      yAxisStepSize: 50,
+      yAxisStepSize: (BenchmarkType.down === benchmarkType) ? 50 : 100,
       lineWidth: 5,
       xProject: x => (x === 0 ) ? 0 : Math.sign(x) * Math.log2(Math.abs(x)),
       yProject: y => (y === 0 ) ? 0 : Math.sign(y) * Math.log(Math.abs(y)),
@@ -153,7 +154,7 @@ export class NetworkCheckComponent implements OnInit {
     }
   }
 
-
+  KBPSReporter:BehaviorSubject<number>=new BehaviorSubject(0);
   private loopBenchmarkSequence(type: BenchmarkType): Promise<void> {
 
     this.updateStatus(`Benchmark Loop ${type} nr.:`  + this.networkStats.get(type).length);
@@ -218,7 +219,7 @@ export class NetworkCheckComponent implements OnInit {
     const testPackage = this.humanReadableBytes(requestSize);
     if (benchmarkType === BenchmarkType.down) {
       this.updateStatus(`Downloadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage} bytes`);
-      return this.bs.benchmarkDownloadRequest(requestSize);
+      return this.bs.benchmarkDownloadRequest2(requestSize,this.KBPSReporter);
     } else {
       this.updateStatus(`Uploadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage} bytes)`);
       return this.bs.benchmarkUploadRequest(requestSize);
@@ -241,8 +242,29 @@ export class NetworkCheckComponent implements OnInit {
 
   // tslint:disable-next-line:member-ordering
   private static calculateAverageSpeedBytePerSecond(testResults: Array<NetworkRequestTestResult>): number {
+    const averageSpeedInBPS  =  testResults.reduce((sum,result)=>sum + result.speedInBPS,0)/ testResults.length;
+    console.log('Durchschnittsgeschwindigkeit der gewichtetet Einzelgeschwindigkeiten');
+    console.log(averageSpeedInBPS);
+    const averageSpeedInBPS2 = testResults.reduce((sum, result) => sum + (result.size/(result.duration / 1000)), 0) / testResults.length;
+    console.log('(alte Berechnung) Durchschnitt der Summe der einzelnen Geschwindigkeiten');
+    console.log(averageSpeedInBPS2);
 
-    return testResults.reduce((sum, result) => sum + (result.size / result.duration * 1000), 0) / testResults.length;
+    const timeInSeconds = testResults.reduce((sum, result) => sum + (result.duration / 1000), 0);// / testResults.length;
+    const sizeInBytes = testResults.reduce((sum, result) => sum + (result.size), 0);
+    console.log('Durchschnitt der Summe der einzelnen Bytes/Zeiten');
+    console.log(sizeInBytes / timeInSeconds);
+
+   
+
+    const weightedMed = testResults.reduce((sum, result) => sum + ((result.size / result.duration * 1000)*result.size), 0) / sizeInBytes;
+    console.log('Gewichteter Durchschnitt der einzelnen Durchschnittsgeschwindigkeiten ');
+    console.log(weightedMed);
+
+    const weightedMed2 = testResults.reduce((sum, result) => sum + (result.speedInBPS*result.size), 0) / sizeInBytes;
+    console.log('Gewichteter Durchschnitt der gewichteten Durchschnittsgeschwindigkeiten ');
+    console.log(weightedMed2)
+
+    return averageSpeedInBPS2;
   }
 
 
@@ -402,7 +424,15 @@ export class NetworkCheckComponent implements OnInit {
     }
 
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return (bytes / Math.pow(1024, Math.floor(i))).toFixed(2) + ' ' + units[i];
+    const ba =  (bytes / Math.pow(1024, Math.floor(i))).toFixed(2) + ' ' + units[i];
+
+    const sufixes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    
+      //const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    const bb = !bytes && '0 Bytes' || (bytes / Math.pow(1024, i)).toFixed(2) + " " + sufixes[i];
+   // console.log(ba)
+   // console.log(bb)
+    return bb;
   }
 
   private humanReadableMilliseconds = (milliseconds: number): string => (milliseconds / 1000).toString() + ' sec';
