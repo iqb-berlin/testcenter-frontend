@@ -238,7 +238,7 @@ export class BackendService {
         reject();
       });
     });
-  });
+  }
 
   // tslint:disable-next-line:member-ordering
   private static getMostPreciseTimestampBrowserCanProvide(): number {
