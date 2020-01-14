@@ -1,8 +1,8 @@
 import { map } from 'rxjs/operators';
 import { BackendService, ServerError } from '../backend.service';
 import { BookletStatus } from '../app.interfaces';
-import { of } from 'rxjs';
-import { pipe } from '@angular/core/src/render3';
+// import { of } from 'rxjs';
+// import { pipe } from '@angular/core/src/render3';
 
 export class StartButtonData {
     id: string;

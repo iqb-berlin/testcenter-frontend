@@ -2,7 +2,7 @@ import { MainDataService } from '../../maindata.service';
 import { BackendService, UnitData } from '../backend.service';
 import { SyscheckDataService } from '../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
+import { OnDestroy } from '@angular/core';
 import { Subscription, BehaviorSubject, Observable } from 'rxjs';
 import { delay, flatMap, map } from 'rxjs/operators';
 import { ServerError } from '../../backend.service';
@@ -14,7 +14,7 @@ import { TaggedString } from '../../test-controller/test-controller.interfaces';
   styleUrls: ['./unit-check.component.css']
 })
 export class UnitCheckComponent implements OnInit, OnDestroy {
-  @ViewChild('iFrameHost') iFrameHostElement: ElementRef;
+  @ViewChild('iFrameHost', {static: true}) iFrameHostElement: ElementRef;
   unitcheckEnabled = false;
 
   private iFrameItemplayer: HTMLIFrameElement = null;
