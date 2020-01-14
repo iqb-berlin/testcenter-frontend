@@ -1,6 +1,6 @@
 import { FormControl, FormGroup } from '@angular/forms';
-import { FormDefEntry, ReportEntry } from './../backend.service';
-import { SyscheckDataService } from './../syscheck-data.service';
+import { FormDefEntry, ReportEntry } from '../backend.service';
+import { SyscheckDataService } from '../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
@@ -9,7 +9,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
   styleUrls: ['./questionnaire.component.css']
 })
 export class QuestionnaireComponent implements OnInit {
-  @ViewChild('questionnaireBody') questionnaireBody: ElementRef;
+  @ViewChild('questionnaireBody', { static: true }) questionnaireBody: ElementRef;
   questionnaireEnabled = false;
   questions: FormDefEntry[] = [];
   form: FormGroup;

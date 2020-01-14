@@ -48,8 +48,8 @@ interface DetectedNetworkInformations {
 })
 export class NetworkCheckComponent implements OnInit {
 
-  @ViewChild('downloadChart') downloadPlotter;
-  @ViewChild('uploadChart') uploadPlotter;
+  @ViewChild('downloadChart', {static: true}) downloadPlotter;
+  @ViewChild('uploadChart', {static: true}) uploadPlotter;
 
   readonly benchmarkDefinitions = new Map<BenchmarkType, BenchmarkDefinition>([
     [BenchmarkType.down, {

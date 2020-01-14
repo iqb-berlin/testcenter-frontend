@@ -246,7 +246,6 @@ export class BackendService {
 
     if (typeof performance !== 'undefined') {
       const timeOrigin = (typeof performance.timeOrigin !== 'undefined') ? performance.timeOrigin : performance.timing.navigationStart;
-      console.log({'timeOrigin': performance.timeOrigin, 'navigationStart': performance.timing.navigationStart, 'now': timeOrigin + performance.now()});
       if (typeof timeOrigin !== 'undefined' && timeOrigin) {
         return timeOrigin + performance.now();
       }

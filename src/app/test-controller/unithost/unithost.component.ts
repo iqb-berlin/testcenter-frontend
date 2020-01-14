@@ -1,11 +1,9 @@
-import { MainDataService } from './../../maindata.service';
-import { debounceTime, bufferTime, switchMap, takeWhile, timeout } from 'rxjs/operators';
-import { TestControllerService } from './../test-controller.service';
-import { Subscription, Subject, interval, Observable } from 'rxjs';
+import { MainDataService } from '../../maindata.service';
+import { TestControllerService } from '../test-controller.service';
+import { Subscription} from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
-import { Location } from '@angular/common';
+import { OnDestroy } from '@angular/core';
 import { TaggedString, PageData, LastStateKey, LogEntryKey } from '../test-controller.interfaces';
 
 declare var srcDoc: any;
