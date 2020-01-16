@@ -1,7 +1,10 @@
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { BackendService } from './../backend.service';
-import { MatSnackBar, MatSort, MatTableDataSource, MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 import { SysCheckStatistics } from '../workspace.interfaces';
@@ -19,7 +22,7 @@ export class SyscheckComponent implements OnInit {
   public tableselectionCheckbox = new SelectionModel<SysCheckStatistics>(true, []);
   public dataLoading = false;
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
     private bs: BackendService,

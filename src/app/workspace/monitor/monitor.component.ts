@@ -2,7 +2,9 @@ import { BookletsStarted } from './../workspace.interfaces';
 import { WorkspaceDataService } from './../workspacedata.service';
 import { BackendService } from './../backend.service';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { MatSnackBar, MatSort, MatTableDataSource } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 import { MonitorData } from '../workspace.interfaces';
@@ -22,7 +24,7 @@ export class MonitorComponent implements OnInit, OnDestroy {
   public tableselectionCheckbox = new SelectionModel<MonitorData>(true, []);
   private workspaceIdSubscription: Subscription = null;
   public dataLoading = false;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
     private bs: BackendService,

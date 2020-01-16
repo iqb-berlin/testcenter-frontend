@@ -16,6 +16,7 @@
 *.launch
 .settings/
 *.sublime-workspace
+testcenter-admin-iqb-ng.iml
 
 # IDE - VSCode
 .vscode/*

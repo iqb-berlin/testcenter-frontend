@@ -3,7 +3,10 @@ import { WorkspaceDataService } from './../workspacedata.service';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { BackendService } from './../backend.service';
-import { MatSnackBar, MatSort, MatTableDataSource, MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 import { ResultData, UnitResponse, ReviewData } from '../workspace.interfaces';
@@ -22,7 +25,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   public dataLoading = false;
   private workspaceIdSubscription: Subscription = null;
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
     private bs: BackendService,
