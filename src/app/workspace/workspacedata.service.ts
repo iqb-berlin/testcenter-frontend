@@ -4,7 +4,7 @@ import { MainDataService } from './../maindata.service';
 import { BehaviorSubject } from 'rxjs';
 import { FormGroup } from '@angular/forms';
 import { Injectable, Component, Input, Output, EventEmitter } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { BackendService } from './backend.service';

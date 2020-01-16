@@ -5,7 +5,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ViewChild, OnDestroy } from '@angular/core';
 
 import { Component, OnInit } from '@angular/core';
-import { MatSort, MatDialog, MatSnackBar } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort } from '@angular/material/sort';
 import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,

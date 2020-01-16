@@ -8,11 +8,12 @@ import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
 import { DataSource } from '@angular/cdk/collections';
 import { Observable, BehaviorSubject, Subscription, merge } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { BackendService } from '../backend.service';
 import { Input, Output, EventEmitter, Component, OnInit, Inject, ElementRef, OnDestroy } from '@angular/core';
 import { NgModule, ViewChild } from '@angular/core';
-import { MatSort, MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSort } from '@angular/material/sort';
 import { HttpEventType, HttpErrorResponse, HttpEvent } from '@angular/common/http';
 import { IqbFilesUploadQueueComponent, IqbFilesUploadInputForDirective } from '../../iqb-files';
 
