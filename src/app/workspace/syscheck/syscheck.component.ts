@@ -22,7 +22,7 @@ export class SyscheckComponent implements OnInit {
   public tableselectionCheckbox = new SelectionModel<SysCheckStatistics>(true, []);
   public dataLoading = false;
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
     private bs: BackendService,

@@ -34,7 +34,7 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
   public UserlistDatasource: MatTableDataSource<IdRoleData>;
   public displayedUserColumns = ['selectCheckbox', 'name'];
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
 
   constructor(
     private bs: BackendService,

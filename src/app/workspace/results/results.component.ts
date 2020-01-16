@@ -25,7 +25,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   public dataLoading = false;
   private workspaceIdSubscription: Subscription = null;
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
     private bs: BackendService,

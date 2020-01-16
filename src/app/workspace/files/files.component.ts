@@ -37,7 +37,7 @@ export class FilesComponent implements OnInit, OnDestroy {
   public checkWarnings = [];
   public checkInfos = [];
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,

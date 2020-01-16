@@ -34,7 +34,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   public displayedWorkspaceColumns = ['selectCheckbox', 'label'];
   private logindataSubscription: Subscription = null;
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
 
   constructor(
     private bs: BackendService,

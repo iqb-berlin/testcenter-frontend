@@ -24,7 +24,7 @@ export class MonitorComponent implements OnInit, OnDestroy {
   public tableselectionCheckbox = new SelectionModel<MonitorData>(true, []);
   private workspaceIdSubscription: Subscription = null;
   public dataLoading = false;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
     private bs: BackendService,
