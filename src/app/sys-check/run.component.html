@@ -7,66 +7,59 @@
 <tc-navi-buttons></tc-navi-buttons>
 <div class="page-body">
 
-    <mat-horizontal-stepper labelPosition="bottom" #stepper class="sheetofpaper">
+  <iqb-environment-check></iqb-environment-check>
 
-      <mat-step #stepEnv *ngIf="!questionsonlymode">
-        <ng-template matStepLabel>Computer</ng-template>
+  <mat-card *ngIf="skipnetwork">
 
-        <div class="step-body">
-          <iqb-environment-check></iqb-environment-check>
+    <mat-card-header>
+      <mat-card-title>Netzwerk</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <p class="card-body">Review-Modus: Netzwerktest wird nicht durchgeführt.</p>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button color="primary">Messung starten</button>
+    </mat-card-actions>
+
+  </mat-card>
+
+  <iqb-network-check #compNetwork *ngIf="!skipnetwork" class="card-body"></iqb-network-check>
+
+    <mat-card>
+
+      <mat-card-header>
+        <mat-card-title>Aufgabe / Fragen</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content fxLayout="row">
+        <div fxFlex="50%" *ngIf="unitcheckAvailable">
+          <iqb-unit-check #compUnit></iqb-unit-check>
         </div>
-
-        <button mat-mini-fab matStepperNext class="navi_button_next">
-          <i class="material-icons">chevron_right</i>
-        </button>
-      </mat-step>
-
-      <mat-step #stepNetwork *ngIf="!questionsonlymode">
-        <ng-template matStepLabel>Netzwerk</ng-template>
-        <p *ngIf="skipnetwork" class="step-body" style="margin: 10px">Review-Modus: Netzwerktest wird nicht durchgeführt.</p>
-        <iqb-network-check #compNetwork *ngIf="!skipnetwork" class="step-body"></iqb-network-check>
-        <button mat-mini-fab matStepperPrevious class="navi_button_prev">
-          <i class="material-icons">chevron_left</i>
-        </button>
-        <button mat-mini-fab matStepperNext class="navi_button_next">
-          <i class="material-icons">chevron_right</i>
-        </button>
-      </mat-step>
-
-      <mat-step #stepUnit >
-        <ng-template matStepLabel>Aufgabe / Fragen</ng-template>
-
-        <div class="step-body" fxLayout="row">
-          <div fxFlex="50%" *ngIf="unitcheckAvailable">
-            <iqb-unit-check #compUnit></iqb-unit-check>
-          </div>
-          <div fxFlex="{questiononlymode ? '100%' : '50%'}" *ngIf="questionnaireAvailable" class="scrollable">
-            <iqb-questionnaire></iqb-questionnaire>
-
-          </div>
+        <div fxFlex="{questiononlymode ? '100%' : '50%'}" *ngIf="questionnaireAvailable" class="scrollable">
+          <iqb-questionnaire></iqb-questionnaire>
         </div>
+      </mat-card-content>
 
-        <button mat-mini-fab matStepperPrevious *ngIf="!questionsonlymode" class="navi_button_prev">
-          <i class="material-icons">chevron_left</i>
-        </button>
-        <button mat-mini-fab matStepperNext class="navi_button_next">
-          <i class="material-icons">chevron_right</i>
-        </button>
-      </mat-step>
+    </mat-card>
 
-      <mat-step>
+    <mat-card>
 
-        <ng-template matStepLabel>Bericht</ng-template>
+      <mat-card-header>
+        <mat-card-title>Bericht</mat-card-title>
+      </mat-card-header>
 
-        <iqb-report class="step-body"></iqb-report>
+      <mat-card-content>
+        <iqb-report></iqb-report>
+      </mat-card-content>
 
-        <button mat-mini-fab matStepperPrevious class="navi_button_prev">
-          <i class="material-icons">chevron_left</i>
-        </button>
-
+      <mat-card-actions>
         <button *ngIf="saveEnabled" mat-raised-button (click)="saveReport()" class="save_button">Bericht senden</button>
-      </mat-step>
+      </mat-card-actions>
 
-    </mat-horizontal-stepper>
+    </mat-card>
+
+
 
 </div>

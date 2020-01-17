@@ -42,8 +42,7 @@ interface DetectedNetworkInformations {
 
 @Component({
   selector: 'iqb-network-check',
-  templateUrl: './network-check.component.html',
-  styleUrls: ['./network-check.component.css']
+  templateUrl: './network-check.component.html'
 })
 export class NetworkCheckComponent implements OnInit {
 
@@ -66,7 +65,7 @@ export class NetworkCheckComponent implements OnInit {
   ]);
 
   public status: NetworkCheckStatus = {
-    message: 'Netzwerk-Analyse wird gestartet',
+    message: 'Messung noch nicht gestartet',
     avgUploadSpeedBytesPerSecond: -1,
     avgDownloadSpeedBytesPerSecond: -1
   };
@@ -128,8 +127,8 @@ export class NetworkCheckComponent implements OnInit {
 
     const testSizes = this.benchmarkDefinitions.get(benchmarkType).testSizes;
     const plotterSettings = {
-      css: 'border: 0px solid black; width: 100%; max-width: 800px',
-      width: 800,
+      css: 'border: 0px solid black; width: 100%; max-width: 400px',
+      width: 400,
       height: 140,
       labelPadding: 4,
       xAxisMaxValue: 16 + Math.max(...testSizes),

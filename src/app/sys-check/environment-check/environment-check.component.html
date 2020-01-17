@@ -1,20 +1,26 @@
 <mat-card>
-  <mat-card-title>Betriebssystem</mat-card-title>
-  <mat-card-content>
-    <p>{{ osName }}</p>
-  </mat-card-content>
-</mat-card>
 
-<mat-card>
-  <mat-card-title>Bildschirm-Auflösung</mat-card-title>
-  <mat-card-content>
-    <p>{{ screenSizeText }} px</p>
-  </mat-card-content>
-</mat-card>
+  <mat-card-header>
+    <mat-card-title>Computer</mat-card-title>
+  </mat-card-header>
 
-<mat-card>
-  <mat-card-title>Browser</mat-card-title>
   <mat-card-content>
-    <p>{{ browser }}</p>
+
+    <table>
+      <tr>
+        <td>Betriebssystem</td>
+        <td>{{ osName }}</td>
+      </tr>
+      <tr>
+        <td>Bildschirm-Auflösung</td>
+        <td>{{ screenSizeText }}</td>
+      </tr>
+      <tr>
+        <td>Browser</td>
+        <td>{{ browser }}</td>
+      </tr>
+    </table>
+
   </mat-card-content>
+
 </mat-card>

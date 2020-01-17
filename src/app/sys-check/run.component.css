@@ -1,15 +1,3 @@
-.step-body {
-  position: absolute;
-  background-color: white;
-  /*border: 1px solid darkgreen;*/
-  left: 0;
-  top: 103px;
-  width: 100%;
-  overflow: hidden;
-  bottom: -4px;
-  overflow-y: auto;
-}
-
 .scrollable {
   overflow: auto;
 }
@@ -26,18 +14,10 @@
   min-height: 90%;
 }
 
-.navi_button_prev {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
+::ng-deep mat-card {
+  margin: 1em;
 }
-.navi_button_next {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-}
-.save_button {
-  position: absolute;
-  bottom: 10px;
-  right: 70px;
-}
+
+/*mat-card-content {*/
+/*  padding: 16px*/
+/*}*/

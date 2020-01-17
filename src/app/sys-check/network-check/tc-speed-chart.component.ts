@@ -63,7 +63,7 @@ export class TcSpeedChartComponent implements OnInit {
     this.canvas = this.el.querySelector('canvas');
     this.context = this.canvas.getContext('2d');
 
-    this.reset(this.config);
+    // this.reset(this.config);
   }
 
   public reset(config: TcSpeedChartSettings) {
