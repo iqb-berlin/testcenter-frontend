@@ -2,13 +2,13 @@
   overflow: auto;
 }
 
-.mat-mini-fab {
-  margin-right: 4px
-}
+/*.mat-mini-fab {*/
+/*  margin-right: 4px*/
+/*}*/
 
-.mat-mini-fab[disabled] {
-  background-color: grey;
-}
+/*.mat-mini-fab[disabled] {*/
+/*  background-color: grey;*/
+/*}*/
 
 .fullheight {
   min-height: 90%;
@@ -16,6 +16,10 @@
 
 ::ng-deep mat-card {
   margin: 1em;
+}
+
+::ng-deep .mat-card-header-text {
+  margin-left: 0 !important;
 }
 
 /*mat-card-content {*/

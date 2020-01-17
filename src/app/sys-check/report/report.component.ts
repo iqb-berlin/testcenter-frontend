@@ -4,8 +4,7 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'iqb-report',
-  templateUrl: './report.component.html',
-  styleUrls: ['./report.component.css']
+  templateUrl: './report.component.html'
 })
 export class ReportComponent implements OnInit {
   reportEnabled = false;
@@ -19,7 +18,7 @@ export class ReportComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.ds.environmentData$.subscribe(rd => ); too early!
+    // this.ds.environmentData$.subscribe(rd => this.environmentData ); //too early!
     this.ds.networkData$.subscribe(rd => {
       this.networkData = rd;
       this.environmentData = this.ds.environmentData$.getValue();
