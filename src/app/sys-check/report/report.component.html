@@ -1,8 +1,54 @@
-<div style="margin: 10px">
-  <h2>Computer-Info</h2>
-  <p *ngFor="let rd of environmentData">{{ rd.label }}: {{ rd.value }}</p>
-  <h2 *ngIf="networkData.length > 0">Netzwerk-Info</h2>
-  <p *ngFor="let rd of networkData">{{ rd.label }}: {{ rd.value }}</p>
-  <h2 *ngIf="questionnaireData.length > 0">Fragen</h2>
-  <p *ngFor="let rd of questionnaireData">{{ rd.label }}: {{ rd.value }}</p>
-</div>
+
+<mat-card>
+
+  <mat-card-header>
+    <mat-card-title>Bericht</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <table>
+      <thead>
+      <tr>
+        <td colspan="2">Computer-Info</td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let rd of environmentData">
+        <td>{{rd.label}}</td>
+        <td>{{rd.value}}</td>
+      </tr>
+      </tbody>
+      <thead *ngIf="networkData.length > 0">
+      <tr>
+        <td colspan="2">Netzwerk-Info</td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let rd of networkData">
+        <td>{{rd.label}}</td>
+        <td>{{rd.value}}</td>
+      </tr>
+      </tbody>
+      <thead *ngIf="questionnaireData.length > 0">
+      <tr>
+        <td colspan="2">Fragen</td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let rd of questionnaireData">
+        <td>{{rd.label}}</td>
+        <td>{{rd.value}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button *ngIf="canSave" mat-raised-button (click)="saveReport()" class="save_button">Bericht senden</button>
+  </mat-card-actions>
+
+</mat-card>
+
+
+
+

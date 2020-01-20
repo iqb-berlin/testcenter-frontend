@@ -38,9 +38,7 @@ export class RunComponent implements OnInit {
   constructor(
     private bs: BackendService,
     private ds: SyscheckDataService,
-    private route: ActivatedRoute,
-    private saveDialog: MatDialog,
-    private snackBar: MatSnackBar
+    private route: ActivatedRoute
   ) {
   }
 
@@ -167,31 +165,7 @@ export class RunComponent implements OnInit {
   //   }
   // }
 
-  saveReport() {
-    const dialogRef = this.saveDialog.open(SaveReportComponent, {
-      width: '500px',
-      height: '600px',
-      data: 'jojo'
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result !== false) {
-        const reportKey = result.get('key').value as string;
-        const reportTitle = result.get('title').value as string;
-        const cd = this.ds.checkConfig$.getValue();
-        this.bs.saveReport(cd.id, reportKey, reportTitle,
-          this.ds.environmentData$.getValue(),
-          this.ds.networkData$.getValue(),
-          this.ds.questionnaireData$.getValue()
-        ).subscribe((saveOK: boolean) => {
-          if (saveOK) {
-            this.snackBar.open('Bericht gespeichert.', '', {duration: 3000});
-          } else {
-            this.snackBar.open('Konnte Bericht nicht speichern.', '', {duration: 3000});
-          }
-        });
-      }
-    });
-  }
+
 
 
 }

@@ -1,5 +1,5 @@
 import { SyscheckDataService } from '../syscheck-data.service';
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {
   BackendService,
   NetworkRequestTestResult,
@@ -50,15 +50,17 @@ export class NetworkCheckComponent implements OnInit {
   @ViewChild('downloadChart', {static: true}) downloadPlotter;
   @ViewChild('uploadChart', {static: true}) uploadPlotter;
 
+  @Input() measureNetwork: boolean;
+
   readonly benchmarkDefinitions = new Map<BenchmarkType, BenchmarkDefinition>([
     [BenchmarkType.down, {
-      testSizes: [1024], //, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304],
+      testSizes: [1024], // , 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304],
       allowedDevianceBytesPerSecond: 100000,
       allowedErrorsPerSequence: 0,
       allowedSequenceRepetitions: 15
     }],
     [BenchmarkType.up, {
-      testSizes: [1024],// 4096, 16384, 65536, 262144, 1048576, 4194304],
+      testSizes: [1024], // 4096, 16384, 65536, 262144, 1048576, 4194304],
       allowedDevianceBytesPerSecond: 10000000,
       allowedErrorsPerSequence: 0,
       allowedSequenceRepetitions: 15
@@ -96,7 +98,14 @@ export class NetworkCheckComponent implements OnInit {
     private bs: BackendService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+
+    this.getBrowsersNativeNetworkInformation();
+    const report: ReportEntry[] = [];
+    this.addBrowsersNativeNetworkInformationToReport(report);
+    this.ds.networkData$.next(report);
+    console.log("stuff reported");
+  }
 
   public startCheck() {
 
@@ -114,8 +123,6 @@ export class NetworkCheckComponent implements OnInit {
 
     this.plotPrepare(BenchmarkType.down);
     this.plotPrepare(BenchmarkType.up);
-
-    this.getBrowsersNativeNetworkInformations();
 
     this.loopBenchmarkSequence(BenchmarkType.down)
       .then(() => this.loopBenchmarkSequence(BenchmarkType.up))
@@ -278,42 +285,18 @@ export class NetworkCheckComponent implements OnInit {
     this.status.done = true;
 
     // send data for reporting
-    const reportEntry: ReportEntry[] = [];
-    reportEntry.push({id: '0', type: 'network', label: 'Downloadgeschwindigkeit',
+    const report: ReportEntry[] = [];
+    report.push({id: '0', type: 'network', label: 'Downloadgeschwindigkeit',
       value: this.humanReadableBytes(this.getAverageNetworkStat(BenchmarkType.down), true).toLocaleString()});
-    reportEntry.push({id: '0', type: 'network', label: 'Downloadbewertung', value: this.networkRating.downloadRating});
-    reportEntry.push({id: '0', type: 'network', label: 'Uploadgeschwindigkeit',
+    report.push({id: '0', type: 'network', label: 'Downloadbewertung', value: this.networkRating.downloadRating});
+    report.push({id: '0', type: 'network', label: 'Uploadgeschwindigkeit',
       value: this.humanReadableBytes(this.getAverageNetworkStat(BenchmarkType.up), true).toLocaleString()});
-    reportEntry.push({id: '0', type: 'network', label: 'Uploadbewertung', value: this.networkRating.uploadRating});
-    reportEntry.push({id: '0', type: 'network', label: 'Allgemeine Bewertung der Verbindung', value: this.networkRating.overallRating});
+    report.push({id: '0', type: 'network', label: 'Uploadbewertung', value: this.networkRating.uploadRating});
+    report.push({id: '0', type: 'network', label: 'Allgemeine Bewertung der Verbindung', value: this.networkRating.overallRating});
 
-    if (this.detectedNetworkInformations.available) {
-      if (this.detectedNetworkInformations.roundTripTimeMs) {
-        reportEntry.push({
-          id: '0', type: 'network', label: 'RoundTrip in Ms',
-          value: this.detectedNetworkInformations.roundTripTimeMs.toString()
-        });
-      }
-      if (this.detectedNetworkInformations.effectiveNetworkType) {
-        reportEntry.push({
-          id: '0', type: 'network', label: 'Netzwerktyp nach Leistung',
-          value: this.detectedNetworkInformations.effectiveNetworkType
-        });
-      }
-      if (this.detectedNetworkInformations.networkType) {
-        reportEntry.push({
-          id: '0', type: 'network', label: 'Netzwerktyp',
-          value: this.detectedNetworkInformations.networkType
-        });
-      }
-      if (this.detectedNetworkInformations.downlinkMegabitPerSecond) {
-        reportEntry.push({
-          id: '0', type: 'network', label: 'Downlink mbps',
-          value: this.detectedNetworkInformations.downlinkMegabitPerSecond.toString()
-        });
-      }
-    }
-    this.ds.networkData$.next(reportEntry);
+    this.addBrowsersNativeNetworkInformationToReport(report);
+
+    this.ds.networkData$.next(report);
   }
 
 
@@ -374,7 +357,7 @@ export class NetworkCheckComponent implements OnInit {
   }
 
 
-  private getBrowsersNativeNetworkInformations() {
+  private getBrowsersNativeNetworkInformation() {
 
     const connection = navigator['connection'] || navigator['mozConnection'] || navigator['webkitConnection'];
     console.log('connection', connection);
@@ -387,6 +370,42 @@ export class NetworkCheckComponent implements OnInit {
         networkType: connection.type || null,
       };
     }
+  }
+
+  private addBrowsersNativeNetworkInformationToReport(report: ReportEntry[]): ReportEntry[] {
+
+    if (this.detectedNetworkInformations.available) {
+      if (this.detectedNetworkInformations.roundTripTimeMs) {
+        report.push({
+         id: '0', type: 'network', label: 'RoundTrip in Ms',
+         value: this.detectedNetworkInformations.roundTripTimeMs.toString()
+      });
+      }
+      if (this.detectedNetworkInformations.effectiveNetworkType) {
+        report.push({
+          id: '0', type: 'network', label: 'Netzwerktyp nach Leistung',
+          value: this.detectedNetworkInformations.effectiveNetworkType
+        });
+      }
+      if (this.detectedNetworkInformations.networkType) {
+        report.push({
+          id: '0', type: 'network', label: 'Netzwerktyp',
+          value: this.detectedNetworkInformations.networkType
+        });
+      }
+      if (this.detectedNetworkInformations.downlinkMegabitPerSecond) {
+        report.push({
+          id: '0', type: 'network', label: 'Downlink mbps',
+          value: this.detectedNetworkInformations.downlinkMegabitPerSecond.toString()
+        });
+      }
+    } else {
+      report.push({
+        id: '0', type: 'network', label: 'Netzwerkprofil des Browsers',
+        value: 'nicht verfügbar'
+      });
+    }
+    return report;
   }
 
 

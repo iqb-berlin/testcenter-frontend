@@ -25,8 +25,8 @@ export class SyscheckDataService {
 
   constructor() {
     this.checkConfig$.subscribe(cDef => {
-      this.networkData$.next([]);
-      this.questionnaireData$.next([]);
+      // this.networkData$.next([]);
+      // this.questionnaireData$.next([]);
     });
   }
 }

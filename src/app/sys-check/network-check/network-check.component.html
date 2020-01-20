@@ -22,40 +22,46 @@
       <mat-spinner></mat-spinner>
     </div>
 
-    <div fxLayout="row">
+    <div [ngStyle]="{display: (status.done && (networkRating.overallRating === 'N/A')) ? 'none' : 'block' }">
+      <div fxLayout="row">
 
-      <div fxFlex="50%">
-        <h4>Geschwindigkeit Download</h4>
-        <p *ngIf="status.avgDownloadSpeedBytesPerSecond >= 0">&#8960; {{ humanReadableBytes(status.avgDownloadSpeedBytesPerSecond, true) }}ps</p>
-        <p *ngIf="status.avgDownloadSpeedBytesPerSecond < 0">Test noch nicht gestartet</p>
-        <tc-speed-chart #downloadChart></tc-speed-chart>
+        <div fxFlex="50%">
+          <h4>Geschwindigkeit Download</h4>
+          <p *ngIf="status.avgDownloadSpeedBytesPerSecond >= 0">&#8960; {{ humanReadableBytes(status.avgDownloadSpeedBytesPerSecond, true) }}ps</p>
+          <p *ngIf="status.avgDownloadSpeedBytesPerSecond < 0">Test noch nicht gestartet</p>
+          <tc-speed-chart #downloadChart></tc-speed-chart>
+        </div>
+
+        <div fxFlex="50%">
+          <h4>Geschwindigkeit Upload</h4>
+          <p *ngIf="status.avgUploadSpeedBytesPerSecond >= 0">&#8960; {{ humanReadableBytes(status.avgUploadSpeedBytesPerSecond, true) }}ps</p>
+          <p *ngIf="status.avgUploadSpeedBytesPerSecond < 0">Test noch nicht gestartet</p>
+          <tc-speed-chart #uploadChart></tc-speed-chart>
+        </div>
+
       </div>
 
-      <div fxFlex="50%">
-        <h4>Geschwindigkeit Upload</h4>
-        <p *ngIf="status.avgUploadSpeedBytesPerSecond >= 0">&#8960; {{ humanReadableBytes(status.avgUploadSpeedBytesPerSecond, true) }}ps</p>
-        <p *ngIf="status.avgUploadSpeedBytesPerSecond < 0">Test noch nicht gestartet</p>
-        <tc-speed-chart #uploadChart></tc-speed-chart>
-      </div>
-
+      <mat-divider></mat-divider>
     </div>
 
-    <mat-divider></mat-divider>
-
     <div>
-      <h4>Netzwerkeigenschaften</h4>
+      <h4>Netzwerkprofil des Browsers</h4>
       <table *ngIf="detectedNetworkInformations.available">
-        <tr>
-          <td>Verbindung</td>
+        <tr *ngIf="detectedNetworkInformations.networkType">
+          <td>Verbindungstyp</td>
           <td>{{detectedNetworkInformations.networkType}}</td>
         </tr>
-        <tr>
-          <td>Network RoundTrip</td>
-          <td>{{detectedNetworkInformations.roundTripTimeMs}}</td>
+        <tr *ngIf="detectedNetworkInformations.effectiveNetworkType">
+          <td>Verbindungstyp (geschätzt)</td>
+          <td>{{detectedNetworkInformations.effectiveNetworkType}}</td>
         </tr>
-        <tr>
+        <tr *ngIf="detectedNetworkInformations.roundTripTimeMs">
+          <td>Network RoundTrip</td>
+          <td>{{detectedNetworkInformations.roundTripTimeMs}}Ms</td>
+        </tr>
+        <tr *ngIf="detectedNetworkInformations.downlinkMegabitPerSecond">
           <td>Network Downlink: </td>
-          <td>{{detectedNetworkInformations.downlinkMegabitPerSecond}}</td>
+          <td>{{detectedNetworkInformations.downlinkMegabitPerSecond}}mbs</td>
         </tr>
       </table>
       <div *ngIf="!detectedNetworkInformations.available">Ihr Browser ist veraltet, daher konnten keine weiteren Netzwerkeigenschaften ermittelt werden.</div>

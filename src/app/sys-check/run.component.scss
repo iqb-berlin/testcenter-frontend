@@ -32,3 +32,9 @@
 ::ng-deep .cardbox :last-child mat-card {
   margin: 0
 }
+
+::ng-deep table thead td {
+  font-size: 14px;
+  border-bottom: 1px solid silver;
+  padding-top: 0.4em
+}

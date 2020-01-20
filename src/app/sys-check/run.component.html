@@ -12,6 +12,8 @@
 
   <iqb-environment-check *ngIf="checks.environment"></iqb-environment-check>
 
+  <iqb-network-check [measureNetwork]="checks.network" class="card-body"></iqb-network-check>
+
   <div fxLayout="row" class="cardbox">
 
     <iqb-unit-check [ngStyle]="{'width': (checks.unit && checks.questions) ? '75%' : '100%'}" *ngIf="checks.unit"></iqb-unit-check>
@@ -20,24 +22,6 @@
 
   </div>
 
-  <iqb-network-check *ngIf="checks.network" class="card-body"></iqb-network-check>
-
-  <mat-card>
-
-    <mat-card-header>
-      <mat-card-title>Bericht</mat-card-title>
-    </mat-card-header>
-
-    <mat-card-content>
-      <iqb-report></iqb-report>
-    </mat-card-content>
-
-    <mat-card-actions>
-      <button *ngIf="checks.report" mat-raised-button (click)="saveReport()" class="save_button">Bericht senden</button>
-    </mat-card-actions>
-
-  </mat-card>
-
-
+  <iqb-report [canSave]="checks.report"></iqb-report>
 
 </div>
