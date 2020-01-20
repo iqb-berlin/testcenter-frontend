@@ -4,35 +4,34 @@ import { HttpClient, HttpParams, HttpHeaders, HttpEvent, HttpErrorResponse } fro
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { TaggedString } from '../test-controller/test-controller.interfaces';
-import { ServerError } from '../test-controller/test-controller.classes';
+import { ServerError } from '../backend.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BackendService {
-  public basicTestConfig: CheckConfig =
-    {
-      id: 'Basistest',
-      label: 'Basistest',
-      description: 'Es wird nur ein Bericht zu grundlegenden Systemeigenschaften und zur Netzverbindung gegeben.'
-    };
-  public basicTestConfigData: CheckConfigData =
-    {
-      id: 'Basistest',
-      label: 'Basistest',
-      questions: [],
-      hasunit: false,
-      cansave: false,
-      questionsonlymode: false,
-      ratings: [],
-      skipnetwork: false,
-      downloadMinimum: 1024 * 1024,
-      downloadGood: 1024 * 1024 * 10,
-      uploadMinimum: 1024 * 512,
-      uploadGood: 1024 * 1024 * 5,
-      pingMinimum: 5000,
-      pingGood: 1000
-    };
+  public basicTestConfig: CheckConfig = {
+    id: 'Basistest',
+    label: 'Basistest',
+    description: 'Es wird nur ein Bericht zu grundlegenden Systemeigenschaften und zur Netzverbindung gegeben.'
+  };
+  public basicTestConfigData: CheckConfigData = {
+    id: 'Basistest',
+    label: 'Basistest',
+    questions: [],
+    hasunit: false,
+    cansave: false,
+    questionsonlymode: false,
+    ratings: [],
+    skipnetwork: false,
+    downloadMinimum: 1024 * 1024,
+    downloadGood: 1024 * 1024 * 10,
+    uploadMinimum: 1024 * 512,
+    uploadGood: 1024 * 1024 * 5,
+    pingMinimum: 5000,
+    pingGood: 1000
+  };
+
   private serverSlimUrl_GET: string;
 
   constructor(
@@ -60,7 +59,7 @@ export class BackendService {
   }
 
   // TODO there is a copy of this in testController/backendService -> move to common ancestor
-  static handle(errorObj: HttpErrorResponse): Observable<ServerError> {
+  static errorHandle(errorObj: HttpErrorResponse): Observable<ServerError> {
     let myreturn: ServerError = null;
     if (errorObj.error instanceof ErrorEvent) {
       myreturn = new ServerError(500, 'Verbindungsproblem', (<ErrorEvent>errorObj.error).message);
@@ -157,7 +156,7 @@ export class BackendService {
     return this.http.get<string>(this.serverSlimUrl_GET + 'resource/' + resId + urlSuffix, myHttpOptions)
       .pipe(
         map(def => <TaggedString>{tag: internalKey, value: def}),
-        catchError(BackendService.handle)
+        catchError(BackendService.errorHandle)
       );
   }
 

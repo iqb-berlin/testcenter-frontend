@@ -1,6 +1,22 @@
-<div class="spinner-container" *ngIf="dataLoading">
-  <mat-spinner></mat-spinner>
-</div>
-<div #iFrameHost iqbResizeIFrameChild fxFill>
+<mat-card style="height: 90%" class="scrollable-content">
 
-</div>
+  <mat-card-header>
+    <mat-card-title>Test-Aufgabe</mat-card-title>
+    <mat-card-subtitle>Hier können Sie eine Aufgabe ausprobieren</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content style="height: 100%; xxbackground-color: rosybrown">
+    <div class="spinner-container-local" *ngIf="dataLoading">
+      <mat-spinner></mat-spinner>
+    </div>
+    <div #iFrameHost iqbResizeIFrameChild style="height:99%; xxbackground-color: greenyellow"></div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-raised-button color="primary" (click)="loadUnitAndPlayer()">Test-Unit Laden</button>
+  </mat-card-actions>
+
+</mat-card>
+
+
+

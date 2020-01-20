@@ -1,10 +1,10 @@
 import { MainDataService } from '../../maindata.service';
-import { BackendService, UnitData } from '../backend.service';
+import { BackendService, CheckConfigData, UnitData } from '../backend.service';
 import { SyscheckDataService } from '../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { Subscription, BehaviorSubject, Observable } from 'rxjs';
-import { delay, flatMap, map } from 'rxjs/operators';
+import { flatMap, map } from 'rxjs/operators';
 import { ServerError } from '../../backend.service';
 import { TaggedString } from '../../test-controller/test-controller.interfaces';
 
@@ -15,7 +15,6 @@ import { TaggedString } from '../../test-controller/test-controller.interfaces';
 })
 export class UnitCheckComponent implements OnInit, OnDestroy {
   @ViewChild('iFrameHost', {static: true}) iFrameHostElement: ElementRef;
-  unitcheckEnabled = false;
 
   private iFrameItemplayer: HTMLIFrameElement = null;
   private postMessageSubscription: Subscription = null;
@@ -34,6 +33,16 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    this.mds.loginData$.subscribe(loginData => {
+      console.log("login" ,loginData);
+      this.ds.checkConfig$.subscribe((checkConfig: CheckConfigData) => {
+        if (loginData.loginname !== '' && loginData.logintoken !== '') {
+          this.loadUnitAndPlayer(checkConfig.id);
+        }
+      });
+    });
+
     this.ds.itemplayerPageRequest$.subscribe((newPage: string) => {
       if (newPage.length > 0) {
         this.postMessageTarget.postMessage({
@@ -43,6 +52,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
         }, '*');
       }
     });
+
     this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData['type'];
@@ -51,8 +61,8 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
       if ((msgType !== undefined) && (msgType !== null)) {
         switch (msgType) {
 
-          // // // // // // //
           case 'vo.FromPlayer.ReadyNotification':
+            this.iFrameItemplayer.setAttribute('height', String(Math.trunc(this.iFrameHostElement.nativeElement.clientHeight)));
             let hasData = false;
             const initParams = {};
 
@@ -73,7 +83,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
             }
             break;
 
-          // // // // // // //
           case 'vo.FromPlayer.StartedNotification':
             this.iFrameItemplayer.setAttribute('height', String(Math.trunc(this.iFrameHostElement.nativeElement.clientHeight)));
             const validPages = msgData['validPages'];
@@ -90,7 +99,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
             }
             break;
 
-          // // // // // // //
           case 'vo.FromPlayer.ChangedDataTransfer':
             const validPagesChanged = msgData['validPages'];
             let currentPageChanged = msgData['currentPage'];
@@ -105,7 +113,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
             }
             break;
 
-          // // // // // // //
           default:
             console.log('processMessagePost ignored message: ' + msgType);
             break;
@@ -115,7 +122,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   }
 
 
-  public loadUnitandPlayer(checkId: string): void{
+  public loadUnitAndPlayer(checkId: string): void {
 
     this.clearPlayerElement();
     this.bs.getUnitData(checkId).pipe(

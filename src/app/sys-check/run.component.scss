@@ -1,0 +1,34 @@
+::ng-deep .mat-card.scrollable-content {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  > .mat-card-title-group {
+    display: block;
+  }
+
+  > .mat-card-content {
+    overflow-y: auto;
+    //background: blueviolet;
+  }
+}
+
+::ng-deep mat-card {
+  margin: 1em;
+}
+
+::ng-deep .mat-card-header-text {
+  margin-left: 0 !important;
+}
+
+.cardbox {
+  margin: 1em
+}
+
+::ng-deep .cardbox mat-card {
+  margin: 0 1em 0 0
+}
+
+::ng-deep .cardbox :last-child mat-card {
+  margin: 0
+}

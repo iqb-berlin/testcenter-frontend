@@ -3,62 +3,40 @@
     <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
   </a>
 </div>
-<div class="pagetitle">{{ pagetitle }}</div>
-<tc-navi-buttons></tc-navi-buttons>
+
+<div class="pagetitle">{{title}}</div>
+
+<tc-navi-buttons></tc-navi-buttons><!-- TODO needed? -->
+
 <div class="page-body">
 
-  <iqb-environment-check></iqb-environment-check>
+  <iqb-environment-check *ngIf="checks.environment"></iqb-environment-check>
 
-  <mat-card *ngIf="skipnetwork">
+  <div fxLayout="row" class="cardbox">
+
+    <iqb-unit-check [ngStyle]="{'width': (checks.unit && checks.questions) ? '75%' : '100%'}" *ngIf="checks.unit"></iqb-unit-check>
+
+    <iqb-questionnaire [ngStyle]="{'width': checks.unit && checks.questions ? '25%' : '100%'}" *ngIf="checks.questions"></iqb-questionnaire>
+
+  </div>
+
+  <iqb-network-check *ngIf="checks.network" class="card-body"></iqb-network-check>
+
+  <mat-card>
 
     <mat-card-header>
-      <mat-card-title>Netzwerk</mat-card-title>
+      <mat-card-title>Bericht</mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
-      <p class="card-body">Review-Modus: Netzwerktest wird nicht durchgeführt.</p>
+      <iqb-report></iqb-report>
     </mat-card-content>
 
     <mat-card-actions>
-      <button mat-raised-button color="primary">Messung starten</button>
+      <button *ngIf="checks.report" mat-raised-button (click)="saveReport()" class="save_button">Bericht senden</button>
     </mat-card-actions>
 
   </mat-card>
-
-  <iqb-network-check #compNetwork *ngIf="!skipnetwork" class="card-body"></iqb-network-check>
-
-    <mat-card>
-
-      <mat-card-header>
-        <mat-card-title>Aufgabe / Fragen</mat-card-title>
-      </mat-card-header>
-
-      <mat-card-content fxLayout="row">
-        <div fxFlex="50%" *ngIf="unitcheckAvailable">
-          <iqb-unit-check #compUnit></iqb-unit-check>
-        </div>
-        <div fxFlex="{questiononlymode ? '100%' : '50%'}" *ngIf="questionnaireAvailable" class="scrollable">
-          <iqb-questionnaire></iqb-questionnaire>
-        </div>
-      </mat-card-content>
-
-    </mat-card>
-
-    <mat-card>
-
-      <mat-card-header>
-        <mat-card-title>Bericht</mat-card-title>
-      </mat-card-header>
-
-      <mat-card-content>
-        <iqb-report></iqb-report>
-      </mat-card-content>
-
-      <mat-card-actions>
-        <button *ngIf="saveEnabled" mat-raised-button (click)="saveReport()" class="save_button">Bericht senden</button>
-      </mat-card-actions>
-
-    </mat-card>
 
 
 

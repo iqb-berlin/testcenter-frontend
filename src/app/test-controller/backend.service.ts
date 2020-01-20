@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap, switchMap } from 'rxjs/operators';
 import { BookletData, UnitData, TaggedString } from './test-controller.interfaces';
-import { ServerError } from './test-controller.classes';
+import { ServerError } from '../backend.service';
 
 
 @Injectable({

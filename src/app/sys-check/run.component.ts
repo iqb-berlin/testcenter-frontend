@@ -3,30 +3,37 @@ import { NetworkCheckComponent } from './network-check/network-check.component';
 import { SyscheckDataService } from './syscheck-data.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { BackendService} from './backend.service';
+import {BackendService, CheckConfig, CheckConfigData, FormDefEntry, Rating} from './backend.service';
 import { UnitCheckComponent } from './unit-check/unit-check.component';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { map, skip, zip } from 'rxjs/operators';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 
 
+interface Checks { // a cleaned version of CheckConfigData .. TODO maybe merge them togeether
+  environment: boolean;
+  unit: boolean;
+  questions: boolean;
+  network: boolean;
+  report: boolean;
+}
+
 @Component({
   selector: 'app-run',
   templateUrl: './run.component.html',
-  styleUrls: ['./run.component.css']
+  styleUrls: ['./run.component.scss']
 })
 export class RunComponent implements OnInit {
-  @ViewChild('compNetwork', {static: false}) compNetwork: NetworkCheckComponent;
-  @ViewChild('compUnit', {static: false}) compUnit: UnitCheckComponent;
 
-  paramId: string;
-  unitcheckAvailable = false;
-  questionnaireAvailable = false;
-  saveEnabled = false;
-  questionsonlymode = false;
-  skipnetwork = false;
-  pagetitle = 'IQB-Testcenter: System-Check';
+  checks: Checks = {
+    environment: true,
+    unit: false,
+    questions: false,
+    network: false,
+    report: true
+  };
 
+  title: String = '';
 
   constructor(
     private bs: BackendService,
@@ -39,7 +46,31 @@ export class RunComponent implements OnInit {
 
   ngOnInit() {
 
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      const paramId = params.get('c');
+      if (paramId === this.bs.basicTestConfig.id) {
+        this.loadTestConfig(this.bs.basicTestConfigData);
+      } else {
+        this.bs.getCheckConfigData(paramId).subscribe(config => this.loadTestConfig(config));
+      }
+    });
   }
+
+  loadTestConfig(checkConfig: CheckConfigData) {
+
+    console.log('loading', checkConfig);
+
+    this.title = 'IQB-Testcenter: ' + checkConfig.label;
+    this.checks.environment = !checkConfig.questionsonlymode;
+    this.checks.unit = checkConfig.hasunit && !checkConfig.questionsonlymode;
+    this.checks.network = !checkConfig.skipnetwork && !checkConfig.questionsonlymode;
+    this.checks.questions = checkConfig.questions.length > 0;
+    this.checks.report = checkConfig.cansave;
+
+    console.log('this.checks', this.checks);
+    this.ds.checkConfig$.next(checkConfig);
+  }
+
     // this.ds.networkData$.subscribe(nd => {
     //   // if (typeof this.stepNetwork !== 'undefined') {
     //   //   this.stepNetwork.completed = nd.length > 0;
