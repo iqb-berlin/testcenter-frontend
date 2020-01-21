@@ -36,7 +36,6 @@ export class EnvironmentCheckComponent implements OnInit {
   getBrowser() {
 
     const userAgent = window.navigator.userAgent;
-    console.log(userAgent);
     // tslint:disable-next-line:max-line-length
     const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/;
     // credit due to: https://gist.github.com/ticky/3909462#gistcomment-2245669

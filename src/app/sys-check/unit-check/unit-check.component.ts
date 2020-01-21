@@ -40,13 +40,11 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
       this.mds.loginData$,
       this.ds.checkConfig$
     ).subscribe(([task, loginData, checkConfig]) => {
-      console.log('called zipper', task, loginData, checkConfig);
       if (task === 'loadunit') {
         if (loginData.loginname !== '' && loginData.logintoken !== '') {
           this.loadUnitAndPlayer(checkConfig.id);
           this.errorMessage = '';
         } else {
-          console.log('loginData', loginData);
           this.errorMessage = 'Login-Credentials fehlen';
           this.ds.nextTask();
         }
@@ -139,7 +137,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
       flatMap((data: UnitData) => this.loadPlayerCode(data)),
       map((playerCode: string) => this.createPlayerElement(playerCode)),
     ).subscribe(finale => {
-      console.log('loadeth', finale);
       this.ds.nextTask();
     });
   }

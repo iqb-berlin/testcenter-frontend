@@ -107,7 +107,6 @@ export class NetworkCheckComponent implements OnInit {
     this.ds.networkData$.next(report);
 
     combineLatest(this.ds.task$, this.ds.checkConfig$).subscribe(([task, checkConfig]) => {
-      console.log('called zipper speedtest', task, checkConfig);
       if (task === 'speedtest') {
         this.startCheck();
       }
@@ -316,11 +315,7 @@ export class NetworkCheckComponent implements OnInit {
 
   public calculateNetworkRating(): void {
 
-    // assumes that this.ds.checkConfig$ is already set;
-
     const testConfig = this.ds.checkConfig$.getValue();
-    console.log('Test configuration used to calculate network compatibility with the Test Center:');
-    console.log(testConfig);
 
     const awardedNetworkRating: NetworkRating = {
         downloadRating: 'N/A',
