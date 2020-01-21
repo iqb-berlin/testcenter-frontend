@@ -12,7 +12,6 @@ export class ReportComponent implements OnInit {
 
   @Input() canSave: boolean;
 
-  reportEnabled = false;
   environmentData: ReportEntry[] = [];
   networkData: ReportEntry[] = [];
   questionnaireData: ReportEntry[] = [];
@@ -28,7 +27,6 @@ export class ReportComponent implements OnInit {
     this.ds.networkData$.subscribe(rd => {this.networkData = rd; });
     this.ds.questionnaireData$.subscribe(rd => this.questionnaireData = rd);
     this.ds.unitData$.subscribe(rd => this.unitData = rd);
-    console.log('subscriptions done');
   }
 
   ngOnInit() {
@@ -64,4 +62,7 @@ export class ReportComponent implements OnInit {
     });
   }
 
+  isReady() {
+    return (typeof this.ds.task$.getValue() === 'undefined') && !this.ds.taskQueue.length;
+  }
 }

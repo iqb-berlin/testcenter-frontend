@@ -5,12 +5,12 @@
     <mat-card-subtitle>Hier können Sie eine Aufgabe ausprobieren</mat-card-subtitle>
   </mat-card-header>
 
-  <mat-card-content style="height: 100%; xxbackground-color: rosybrown">
+  <mat-card-content style="height: 100%">
     <div class="spinner-container-local" *ngIf="dataLoading">
       <mat-spinner></mat-spinner>
     </div>
     <div style="color:red; position: absolute" *ngIf="errorMessage">{{errorMessage}}</div>
-    <div #iFrameHost iqbResizeIFrameChild style="height:99%; xxbackground-color: greenyellow"></div>
+    <div #iFrameHost iqbResizeIFrameChild style="height:99%"></div>
   </mat-card-content>
 
 </mat-card>

@@ -195,6 +195,7 @@ export class StartComponent implements OnInit, OnDestroy {
           this.mds.refreshCostumTexts = false;
           this.mds.setCostumTextsLogin(loginData.costumTexts);
           this.mds.refreshCostumTexts = true;
+          console.log("LOGINXXXX", loginData);
           this.mds.setNewLoginData(loginData);
         }
         this.dataLoading = false;

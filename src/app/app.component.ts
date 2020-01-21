@@ -65,6 +65,7 @@ export class AppComponent implements OnInit {
                 loginData.code = code;
                 loginData.booklet = 0;
               }
+              console.log("LOGINNNNN", loginData);
               this.mds.setNewLoginData(loginData);
               this.mds.setCostumTextsLogin(loginData.costumTexts);
             }
