@@ -41,31 +41,9 @@
 
       </div>
 
-      <mat-divider></mat-divider>
     </div>
 
-    <div>
-      <h4>Netzwerkprofil des Browsers</h4>
-      <table *ngIf="detectedNetworkInformations.available">
-        <tr *ngIf="detectedNetworkInformations.networkType">
-          <td>Verbindungstyp</td>
-          <td>{{detectedNetworkInformations.networkType}}</td>
-        </tr>
-        <tr *ngIf="detectedNetworkInformations.effectiveNetworkType">
-          <td>Verbindungstyp (geschätzt)</td>
-          <td>{{detectedNetworkInformations.effectiveNetworkType}}</td>
-        </tr>
-        <tr *ngIf="detectedNetworkInformations.roundTripTimeMs">
-          <td>Network RoundTrip</td>
-          <td>{{detectedNetworkInformations.roundTripTimeMs}}Ms</td>
-        </tr>
-        <tr *ngIf="detectedNetworkInformations.downlinkMegabitPerSecond">
-          <td>Network Downlink: </td>
-          <td>{{detectedNetworkInformations.downlinkMegabitPerSecond}}mbs</td>
-        </tr>
-      </table>
-      <div *ngIf="!detectedNetworkInformations.available">Ihr Browser ist veraltet, daher konnten keine weiteren Netzwerkeigenschaften ermittelt werden.</div>
-    </div>
+    <div *ngIf="!detectedNetworkInformations.available" style="color:red">Ihr Browser ist veraltet und verfügt über kein erweitertes Netzwerk-Profil.</div>
 
   </mat-card-content>
 

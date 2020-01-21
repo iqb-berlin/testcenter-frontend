@@ -29,7 +29,6 @@ export class SyscheckDataService {
 
     this.checkConfig$.subscribe(cDef => {
       this.networkData$.next([]);
-      this.questionnaireData$.next([]);
       this.unitData$.next([]);
     });
     this.taskQueue = [];
@@ -37,7 +36,5 @@ export class SyscheckDataService {
 
   nextTask() {
     this.task$.next(this.taskQueue.pop());
-    console.log("NEXT TASK", this.task$.getValue());
-    console.log("REMAINING", this.taskQueue);
   }
 }
