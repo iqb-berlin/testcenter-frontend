@@ -56,7 +56,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     this.ds.itemplayerPageRequest$.subscribe((newPage: string) => {
       if (newPage.length > 0) {
         this.postMessageTarget.postMessage({
-          type: 'vo.ToPlayer.PageNavigationRequest',
+          type: 'vo.ToPlayer.NavigateToPage',
           sessionId: this.itemplayerSessionId,
           newPage: newPage
         }, '*');
