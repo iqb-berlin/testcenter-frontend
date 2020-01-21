@@ -10,8 +10,6 @@
 
 <div class="page-body">
 
-  <iqb-environment-check *ngIf="checks.environment"></iqb-environment-check>
-
   <iqb-network-check [measureNetwork]="checks.network" class="card-body"></iqb-network-check>
 
   <div fxLayout="row" class="cardbox">
@@ -21,6 +19,8 @@
     <iqb-questionnaire [ngStyle]="{'width': checks.unit && checks.questions ? '25%' : '100%'}" *ngIf="checks.questions"></iqb-questionnaire>
 
   </div>
+
+  <iqb-environment-check *ngIf="checks.environment"></iqb-environment-check>
 
   <iqb-report [canSave]="checks.report"></iqb-report>
 

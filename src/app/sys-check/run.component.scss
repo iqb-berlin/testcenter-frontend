@@ -28,3 +28,8 @@
 ::ng-deep .cardbox :last-child mat-card {
   margin: 0
 }
+
+::ng-deep .page-body :first-child,
+::ng-deep .page-body :first-child mat-card {
+  margin-top: 0
+}
