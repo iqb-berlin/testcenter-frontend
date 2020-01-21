@@ -10,7 +10,6 @@
 
 ::ng-deep mat-card {
   margin: 1em;
-  //flex: 1 1 auto;
 }
 
 ::ng-deep .mat-card-header-text {
@@ -29,7 +28,9 @@
   margin: 0
 }
 
-::ng-deep .page-body :first-child,
-::ng-deep .page-body :first-child mat-card {
-  margin-top: 0
+::ng-deep .toprow,
+::ng-deep .toprow mat-card {
+  margin-top: 0 !important
 }
+
+

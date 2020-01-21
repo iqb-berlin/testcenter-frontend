@@ -10,9 +10,9 @@
 
 <div class="page-body">
 
-  <iqb-network-check [measureNetwork]="checks.network" class="card-body"></iqb-network-check>
+  <iqb-network-check [measureNetwork]="checks.network" [ngClass]="{toprow: checks.network}"></iqb-network-check>
 
-  <div fxLayout="row" class="cardbox">
+  <div fxLayout="row" class="cardbox" [ngClass]="{toprow: !checks.network}">
 
     <iqb-unit-check [ngStyle]="{'width': (checks.unit && checks.questions) ? '75%' : '100%'}" *ngIf="checks.unit"></iqb-unit-check>
 
