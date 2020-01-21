@@ -1,11 +1,11 @@
-<mat-card style="height: 90%" class="scrollable-content">
+<mat-card>
 
   <mat-card-header>
     <mat-card-title>Fragen</mat-card-title>
     <mat-card-subtitle>Bitte füllen Sie die folgenden Fragen aus</mat-card-subtitle>
   </mat-card-header>
 
-  <mat-card-content>
+  <mat-card-content style="height: 600px; overflow: auto">
     <div #questionnaireBody>
       <div [formGroup]="form" class="formList" fxLayout="column">
         <div *ngFor="let q of questions">
@@ -47,5 +47,3 @@
   </mat-card-content>
 
 </mat-card>
-
-
