@@ -12,10 +12,11 @@ export class ReportComponent implements OnInit {
 
   @Input() canSave: boolean;
 
-  // reportEnabled = false;
+  reportEnabled = false;
   environmentData: ReportEntry[] = [];
   networkData: ReportEntry[] = [];
   questionnaireData: ReportEntry[] = [];
+  unitData: ReportEntry[] = [];
 
   constructor(
     private bs: BackendService,
@@ -26,6 +27,7 @@ export class ReportComponent implements OnInit {
     this.ds.environmentData$.subscribe(rd => {this.environmentData = rd; });
     this.ds.networkData$.subscribe(rd => {this.networkData = rd; });
     this.ds.questionnaireData$.subscribe(rd => this.questionnaireData = rd);
+    this.ds.unitData$.subscribe(rd => this.unitData = rd);
     console.log('subscriptions done');
   }
 
@@ -49,7 +51,8 @@ export class ReportComponent implements OnInit {
         this.bs.saveReport(cd.id, reportKey, reportTitle,
           this.ds.environmentData$.getValue(),
           this.ds.networkData$.getValue(),
-          this.ds.questionnaireData$.getValue()
+          this.ds.questionnaireData$.getValue(),
+          this.ds.unitData$.getValue()
         ).subscribe((saveOK: boolean) => {
           if (saveOK) {
             this.snackBar.open('Bericht gespeichert.', '', {duration: 3000});

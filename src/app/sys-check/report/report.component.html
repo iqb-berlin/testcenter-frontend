@@ -18,6 +18,7 @@
         <td>{{rd.value}}</td>
       </tr>
       </tbody>
+
       <thead *ngIf="networkData.length > 0">
       <tr>
         <td colspan="2">Netzwerk-Info</td>
@@ -29,6 +30,7 @@
         <td>{{rd.value}}</td>
       </tr>
       </tbody>
+
       <thead *ngIf="questionnaireData.length > 0">
       <tr>
         <td colspan="2">Fragen</td>
@@ -36,6 +38,18 @@
       </thead>
       <tbody>
       <tr *ngFor="let rd of questionnaireData">
+        <td>{{rd.label}}</td>
+        <td>{{rd.value}}</td>
+      </tr>
+      </tbody>
+
+      <thead *ngIf="unitData.length > 0">
+      <tr>
+        <td colspan="2">Test-Unit</td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let rd of unitData">
         <td>{{rd.label}}</td>
         <td>{{rd.value}}</td>
       </tr>

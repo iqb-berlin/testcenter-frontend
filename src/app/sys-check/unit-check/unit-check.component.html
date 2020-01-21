@@ -9,7 +9,7 @@
     <div class="spinner-container-local" *ngIf="dataLoading">
       <mat-spinner></mat-spinner>
     </div>
-    <div style="color:red" *ngIf="errorMessage">{{errorMessage}}</div>
+    <div style="color:red; position: absolute" *ngIf="errorMessage">{{errorMessage}}</div>
     <div #iFrameHost iqbResizeIFrameChild style="height:99%; xxbackground-color: greenyellow"></div>
   </mat-card-content>
 

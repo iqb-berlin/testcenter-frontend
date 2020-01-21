@@ -1,9 +1,9 @@
 import { MainDataService } from '../../maindata.service';
-import { BackendService, CheckConfigData, UnitData } from '../backend.service';
+import {BackendService, CheckConfigData, ReportEntry, ResourcePackage, UnitData} from '../backend.service';
 import { SyscheckDataService } from '../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { OnDestroy } from '@angular/core';
-import {Subscription, BehaviorSubject, Observable, zip, forkJoin, combineLatest} from 'rxjs';
+import { Subscription, BehaviorSubject, Observable, combineLatest} from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
 import { ServerError } from '../../backend.service';
 import { TaggedString } from '../../test-controller/test-controller.interfaces';
@@ -52,17 +52,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
         }
       }
     });
-
-    // this.ds.task$.subscribe(task => {
-    //   this.mds.loginData$.subscribe(loginData => {
-    //     this.ds.checkConfig$.subscribe((checkConfig: CheckConfigData) => {
-    //       if (loginData.loginname !== '' && loginData.logintoken !== '') {
-    //         this.loadUnitAndPlayer(checkConfig.id);
-    //       }
-    //     });
-    //   });
-    // });
-
 
     this.ds.itemplayerPageRequest$.subscribe((newPage: string) => {
       if (newPage.length > 0) {
@@ -143,11 +132,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   }
 
 
-  public queueReload() {
-
-    this.ds.taskQueue.push('loadunit');
-  }
-
   public loadUnitAndPlayer(checkId: string): void {
 
     this.clearPlayerElement();
@@ -164,15 +148,32 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
 
     return this.bs.getResource('', BackendService.normaliseId(data.player, 'html'), true)
       .pipe(
-        map((player: TaggedString | ServerError) => {
+        map((player: ResourcePackage | ServerError) => {
+
+          const errorText = 'Loading Player: `' + BackendService.normaliseId(data.player, 'html') + '`';
 
           if (player instanceof ServerError) {
-            throw new Error(player.labelNice);
+            this.errorMessage = 'Konnte Unit-Player nicht laden: ' + player.labelNice;
+            this.ds.unitData$.next([
+              {id: '0', type: 'unit/player', label: 'loading error', value: errorText + '\n' + player.labelSystem}
+            ]);
+            this.dataLoading = false;
+            throw new Error(player.labelSystem);
           }
 
           if (player.value.length === 0) {
-            throw new Error('## size of player "' + data.player + '" = 0');
+            this.errorMessage = 'Konnte Unit-Player nicht laden';
+            this.ds.unitData$.next([
+              {id: '0', type: 'unit/player', label: 'loading error', value: errorText + 'Response invalid\n' + JSON.stringify(player)},
+              {id: '0', type: 'unit/player', label: 'loading time', value: player.duration.toString()}
+            ]);
+            this.dataLoading = false;
+            throw new Error('Error at: ' + errorText);
           }
+
+          this.ds.unitData$.next([
+            {id: '0', type: 'unit/player', label: 'loading time', value: player.duration.toString()}
+          ]);
 
           this.pendingItemDefinition$.next(data.def);
           return player.value;

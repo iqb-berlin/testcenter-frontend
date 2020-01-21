@@ -17,6 +17,7 @@ export class SyscheckDataService {
   public environmentData$ = new BehaviorSubject<ReportEntry[]>([]);
   public networkData$ = new BehaviorSubject<ReportEntry[]>([]);
   public questionnaireData$ = new BehaviorSubject<ReportEntry[]>([]);
+  public unitData$ = new BehaviorSubject<ReportEntry[]>([]);
 
   // for Navi-Buttons:
   public showNaviButtons$ = new BehaviorSubject<boolean>(false);
@@ -29,7 +30,7 @@ export class SyscheckDataService {
     this.checkConfig$.subscribe(cDef => {
       this.networkData$.next([]);
       this.questionnaireData$.next([]);
-      this.environmentData$.next([]);
+      this.unitData$.next([]);
     });
     this.taskQueue = [];
   }
