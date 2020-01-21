@@ -9,14 +9,8 @@
     <div class="spinner-container-local" *ngIf="dataLoading">
       <mat-spinner></mat-spinner>
     </div>
+    <div style="color:red" *ngIf="errorMessage">{{errorMessage}}</div>
     <div #iFrameHost iqbResizeIFrameChild style="height:99%; xxbackground-color: greenyellow"></div>
   </mat-card-content>
 
-  <mat-card-actions>
-    <button mat-raised-button color="primary" (click)="loadUnitAndPlayer()">Test-Unit Laden</button>
-  </mat-card-actions>
-
 </mat-card>
-
-
-

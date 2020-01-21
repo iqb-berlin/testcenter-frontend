@@ -5,6 +5,7 @@ import {
   NetworkRequestTestResult,
   ReportEntry
 } from '../backend.service';
+import {combineLatest, forkJoin, zip} from 'rxjs';
 
 enum BenchmarkType {
   up,
@@ -104,7 +105,13 @@ export class NetworkCheckComponent implements OnInit {
     const report: ReportEntry[] = [];
     this.addBrowsersNativeNetworkInformationToReport(report);
     this.ds.networkData$.next(report);
-    console.log("stuff reported");
+
+    combineLatest(this.ds.task$, this.ds.checkConfig$).subscribe(([task, checkConfig]) => {
+      console.log('called zipper speedtest', task, checkConfig);
+      if (task === 'speedtest') {
+        this.startCheck();
+      }
+    });
   }
 
   public startCheck() {
@@ -296,6 +303,7 @@ export class NetworkCheckComponent implements OnInit {
 
     this.addBrowsersNativeNetworkInformationToReport(report);
 
+    this.ds.nextTask();
     this.ds.networkData$.next(report);
   }
 

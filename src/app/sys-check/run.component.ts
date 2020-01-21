@@ -67,6 +67,10 @@ export class RunComponent implements OnInit {
 
     console.log('this.checks', this.checks);
     this.ds.checkConfig$.next(checkConfig);
+
+    if (this.checks.unit) { this.ds.taskQueue.push('loadunit'); }
+    if (this.checks.network) { this.ds.taskQueue.push('speedtest'); }
+    this.ds.nextTask();
   }
 
     // this.ds.networkData$.subscribe(nd => {

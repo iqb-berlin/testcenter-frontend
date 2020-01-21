@@ -20,7 +20,6 @@ export class QuestionnaireComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.ds.questionnaireEnabled$.subscribe(is => this.questionnaireEnabled = is);
     this.ds.checkConfig$.subscribe(cc => {
       if (cc === null) {
         this.questions = [];

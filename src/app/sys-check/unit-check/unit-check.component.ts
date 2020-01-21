@@ -3,7 +3,7 @@ import { BackendService, CheckConfigData, UnitData } from '../backend.service';
 import { SyscheckDataService } from '../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { OnDestroy } from '@angular/core';
-import { Subscription, BehaviorSubject, Observable } from 'rxjs';
+import {Subscription, BehaviorSubject, Observable, zip, forkJoin, combineLatest} from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
 import { ServerError } from '../../backend.service';
 import { TaggedString } from '../../test-controller/test-controller.interfaces';
@@ -24,6 +24,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   private pendingItemDefinition$ = new BehaviorSubject(null);
 
   public dataLoading = false;
+  public errorMessage = '';
 
   constructor(
     private ds: SyscheckDataService,
@@ -34,14 +35,34 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.mds.loginData$.subscribe(loginData => {
-      console.log("login" ,loginData);
-      this.ds.checkConfig$.subscribe((checkConfig: CheckConfigData) => {
+    combineLatest(
+      this.ds.task$,
+      this.mds.loginData$,
+      this.ds.checkConfig$
+    ).subscribe(([task, loginData, checkConfig]) => {
+      console.log('called zipper', task, loginData, checkConfig);
+      if (task === 'loadunit') {
         if (loginData.loginname !== '' && loginData.logintoken !== '') {
           this.loadUnitAndPlayer(checkConfig.id);
+          this.errorMessage = '';
+        } else {
+          console.log('loginData', loginData);
+          this.errorMessage = 'Login-Credentials fehlen';
+          this.ds.nextTask();
         }
-      });
+      }
     });
+
+    // this.ds.task$.subscribe(task => {
+    //   this.mds.loginData$.subscribe(loginData => {
+    //     this.ds.checkConfig$.subscribe((checkConfig: CheckConfigData) => {
+    //       if (loginData.loginname !== '' && loginData.logintoken !== '') {
+    //         this.loadUnitAndPlayer(checkConfig.id);
+    //       }
+    //     });
+    //   });
+    // });
+
 
     this.ds.itemplayerPageRequest$.subscribe((newPage: string) => {
       if (newPage.length > 0) {
@@ -122,13 +143,21 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   }
 
 
+  public queueReload() {
+
+    this.ds.taskQueue.push('loadunit');
+  }
+
   public loadUnitAndPlayer(checkId: string): void {
 
     this.clearPlayerElement();
     this.bs.getUnitData(checkId).pipe(
       flatMap((data: UnitData) => this.loadPlayerCode(data)),
       map((playerCode: string) => this.createPlayerElement(playerCode)),
-    ).subscribe();
+    ).subscribe(finale => {
+      console.log('loadeth', finale);
+      this.ds.nextTask();
+    });
   }
 
   private loadPlayerCode(data: UnitData): Observable<string> {
