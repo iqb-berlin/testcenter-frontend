@@ -25,7 +25,7 @@ export interface TcSpeedChartSettings {
   selector: 'tc-speed-chart',
   template: '<canvas></canvas>'
 })
-export class TcSpeedChartComponent implements OnInit {
+export class TcSpeedChartComponent {
 
   private canvas;
   private context;
@@ -58,15 +58,10 @@ export class TcSpeedChartComponent implements OnInit {
     this.el = elem.nativeElement;
   }
 
-  ngOnInit() {
+  public reset(config: TcSpeedChartSettings) {
 
     this.canvas = this.el.querySelector('canvas');
     this.context = this.canvas.getContext('2d');
-
-    // this.reset(this.config);
-  }
-
-  public reset(config: TcSpeedChartSettings) {
 
     this.config = {...this.config, ...config};
 
