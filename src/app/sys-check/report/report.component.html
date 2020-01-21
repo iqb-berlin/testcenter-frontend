@@ -6,7 +6,7 @@
     <mat-card-subtitle>Folgende Informationen über Ihr System wurden gesammelt</mat-card-subtitle>
   </mat-card-header>
 
-  <mat-card-content>
+  <mat-card-content id="report-cointainer">
     <table>
       <thead>
       <tr>
@@ -19,7 +19,9 @@
         <td>{{rd.value}}</td>
       </tr>
       </tbody>
+    </table>
 
+    <table>
       <thead *ngIf="networkData.length > 0">
       <tr>
         <td colspan="2">Netzwerk-Info</td>
@@ -31,7 +33,9 @@
         <td>{{rd.value}}</td>
       </tr>
       </tbody>
+    </table>
 
+    <table>
       <thead *ngIf="questionnaireData.length > 0">
       <tr>
         <td colspan="2">Fragen</td>
@@ -43,7 +47,9 @@
         <td>{{rd.value}}</td>
       </tr>
       </tbody>
+    </table>
 
+    <table>
       <thead *ngIf="unitData.length > 0">
       <tr>
         <td colspan="2">Test-Unit</td>

@@ -6,7 +6,8 @@ import {MatDialog, MatSnackBar} from '@angular/material';
 
 @Component({
   selector: 'iqb-report',
-  templateUrl: './report.component.html'
+  templateUrl: './report.component.html',
+  styleUrls: ['./report.component.css']
 })
 export class ReportComponent implements OnInit {
 
