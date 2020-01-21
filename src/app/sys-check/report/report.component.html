@@ -21,8 +21,8 @@
       </tbody>
     </table>
 
-    <table>
-      <thead *ngIf="networkData.length > 0">
+    <table *ngIf="networkData.length > 0">
+      <thead>
       <tr>
         <td colspan="2">Netzwerk-Info</td>
       </tr>
@@ -35,8 +35,8 @@
       </tbody>
     </table>
 
-    <table>
-      <thead *ngIf="questionnaireData.length > 0">
+    <table *ngIf="questionnaireData.length > 0">
+      <thead>
       <tr>
         <td colspan="2">Fragen</td>
       </tr>
@@ -49,8 +49,8 @@
       </tbody>
     </table>
 
-    <table>
-      <thead *ngIf="unitData.length > 0">
+    <table *ngIf="unitData.length > 0">
+      <thead>
       <tr>
         <td colspan="2">Test-Unit</td>
       </tr>
