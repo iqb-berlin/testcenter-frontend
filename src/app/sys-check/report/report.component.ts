@@ -1,6 +1,6 @@
 import {BackendService, ReportEntry} from '../backend.service';
 import { SyscheckDataService } from '../syscheck-data.service';
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {SaveReportComponent} from './save-report/save-report.component';
 import {MatDialog, MatSnackBar} from '@angular/material';
 
@@ -9,7 +9,7 @@ import {MatDialog, MatSnackBar} from '@angular/material';
   templateUrl: './report.component.html',
   styleUrls: ['./report.component.css']
 })
-export class ReportComponent implements OnInit {
+export class ReportComponent {
 
   @Input() canSave: boolean;
 
@@ -17,6 +17,8 @@ export class ReportComponent implements OnInit {
   networkData: ReportEntry[] = [];
   questionnaireData: ReportEntry[] = [];
   unitData: ReportEntry[] = [];
+
+  csvReport = '';
 
   constructor(
     private bs: BackendService,
@@ -28,12 +30,6 @@ export class ReportComponent implements OnInit {
     this.ds.networkData$.subscribe(rd => {this.networkData = rd; });
     this.ds.questionnaireData$.subscribe(rd => this.questionnaireData = rd);
     this.ds.unitData$.subscribe(rd => this.unitData = rd);
-  }
-
-  ngOnInit() {
-
-
-    // this.ds.reportEnabled$.subscribe(is => this.reportEnabled = is);
   }
 
   saveReport() {
@@ -61,6 +57,17 @@ export class ReportComponent implements OnInit {
         });
       }
     });
+  }
+
+  exportReport() {
+
+    const stripQuotes = (string: String) => string.replace(/[\""]/g, '\\"');
+    this.csvReport = this.ds.environmentData$.getValue()
+      .concat(this.ds.networkData$.getValue())
+      .concat(this.ds.questionnaireData$.getValue())
+      .concat(this.ds.unitData$.getValue())
+      .map((e: ReportEntry) => '"' + stripQuotes(e.label) + '", "' + stripQuotes(e.value) + '"')
+      .join('\n');
   }
 
   isReady() {
