@@ -15,8 +15,6 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import { ReactiveFormsModule } from '@angular/forms';
 
-// import { UAParser } from 'ua-parser-js';
-
 import { EnvironmentCheckComponent } from './environment-check/environment-check.component';
 import { NetworkCheckComponent } from './network-check/network-check.component';
 import { UnitCheckComponent } from './unit-check/unit-check.component';
@@ -46,8 +44,7 @@ import { TcSpeedChartComponent } from './network-check/tc-speed-chart.component'
     MatRadioModule,
     MatSnackBarModule,
     MatDialogModule,
-    ReactiveFormsModule,
-    // UAParser
+    ReactiveFormsModule
   ],
   declarations: [
     StartComponent,
