@@ -194,60 +194,41 @@ export class BackendService {
         responseType: 'text'
       }).subscribe((event: HttpEvent<any>) => {
         switch (event.type) {
+
           case HttpEventType.Sent:
             console.log('Request sent!' + fileuri);
             // ab jetzt beginnt die Messung
             startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
             lastTime = startingTime;
             break;
+
           case HttpEventType.DownloadProgress:
             const currTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
 
-            // Zeit für bis jetzt heruntergeladene Bytes
-            // const timespan = currTime - startingTime;
-            // Alternativ Betrachtung der Differenz in den Events
             const differenceBytes = event.loaded - receivedBytes;
             const timespan = currTime - lastTime;
-            // Zeit seit dem letzten Event
+
             lastTime = currTime;
-            // Bytes die schon empfangen wurden
             receivedBytes = event.loaded;
-            // */
-            // Abgleich mit angeforderter Größe möglich
-            const percentComplete = Math.round((event.loaded / event.total) * 100);
+
             responseData.push({bytes: differenceBytes, milliseconds: timespan});
             // Nutzung von BS um aktuelle Geschwindigkeit darzustellen KB/s
             KBPSReporter.next((differenceBytes / 1024) / (timespan / 1000));
             break;
+
           case HttpEventType.Response:
-            // Download fertig
-            testResult.duration = BackendService.getMostPreciseTimestampBrowserCanProvide() -
-              startingTime;
+            testResult.duration = BackendService.getMostPreciseTimestampBrowserCanProvide() - startingTime;
             const responseBytes = responseData.reduce((sum, result) => sum + result.bytes, 0);
-            const responseTimeInSeconds = responseData.reduce((sum, result) => sum + result.milliseconds, 0) / 1000;
-            // Gewichtete Gerschwindigkeit
-            const responseBytesPerSecond = (responseData.reduce((sum, result) => sum + (result
-              .bytes / (result.milliseconds / 1000)) * result.bytes, 0)) / responseBytes;
-            console.log('Zeitspanne testresult');
-            console.log(testResult.duration);
-            console.log('Zeitspanne Summe der Einzelresponse');
-            console.log(responseTimeInSeconds * 1000);
-            console.log('Bytes testresult');
-            console.log(testResult.size);
-            console.log('Bytes Summe der Einzelresponse');
-            console.log(responseBytes);
-            console.log('Durchschnittsgeschwindigkeit des Downloads');
-            console.log(responseBytes / responseTimeInSeconds);
-            console.log(testResult.size / (testResult.duration / 1000));
-            console.log('gewichtete Durchschnittsgeschwindigkeit des Downloads');
-            console.log(responseBytesPerSecond);
+
+            const responseBytesPerSecond = (responseData.reduce((sum, result) => sum + (result.bytes / (result.milliseconds / 1000)) * result.bytes, 0)) / responseBytes;
+
+
             testResult.speedInBPS = responseBytesPerSecond;
             resolve(testResult);
         }
       }, error => {
-        console.log('onerror');
-        console.log(error);
-        reject();
+        testResult.error = `Network Error ${error.statusText} (${error.status}) `;
+        resolve(testResult);
       });
     });
   }
