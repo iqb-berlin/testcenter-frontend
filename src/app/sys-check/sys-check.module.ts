@@ -1,4 +1,3 @@
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ResizeIFrameChildDirective } from './unit-check/resize-IFrameChild/resize-IFrameChild.directive';
 import { SyscheckDataService } from './syscheck-data.service';
 import { BackendService } from './backend.service';
@@ -9,12 +8,14 @@ import { SysCheckRoutingModule } from './sys-check-routing.module';
 import { StartComponent } from './start.component';
 import { RunComponent } from './run.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule, MatCardModule, MatStepperModule,
-  MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-  MatTabsModule, MatProgressSpinnerModule, MatSnackBarModule, MatRadioModule } from '@angular/material';
+import { MatButtonModule, MatCheckboxModule, MatCardModule, MatStepperModule,
+  MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule,
+  MatProgressSpinnerModule, MatSnackBarModule, MatRadioModule } from '@angular/material';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import { ReactiveFormsModule } from '@angular/forms';
+
+// import { UAParser } from 'ua-parser-js';
 
 import { EnvironmentCheckComponent } from './environment-check/environment-check.component';
 import { NetworkCheckComponent } from './network-check/network-check.component';
@@ -45,7 +46,8 @@ import { TcSpeedChartComponent } from './network-check/tc-speed-chart.component'
     MatRadioModule,
     MatSnackBarModule,
     MatDialogModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    // UAParser
   ],
   declarations: [
     StartComponent,
