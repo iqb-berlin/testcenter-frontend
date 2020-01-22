@@ -1,10 +1,10 @@
 import { MainDataService } from '../../maindata.service';
-import { BackendService, UnitData } from '../backend.service';
+import {BackendService, CheckConfigData, ReportEntry, ResourcePackage, UnitData} from '../backend.service';
 import { SyscheckDataService } from '../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { OnDestroy } from '@angular/core';
-import { Subscription, BehaviorSubject, Observable } from 'rxjs';
-import { delay, flatMap, map } from 'rxjs/operators';
+import { Subscription, BehaviorSubject, Observable, combineLatest} from 'rxjs';
+import { flatMap, map } from 'rxjs/operators';
 import { ServerError } from '../../backend.service';
 import { TaggedString } from '../../test-controller/test-controller.interfaces';
 
@@ -15,7 +15,6 @@ import { TaggedString } from '../../test-controller/test-controller.interfaces';
 })
 export class UnitCheckComponent implements OnInit, OnDestroy {
   @ViewChild('iFrameHost', {static: true}) iFrameHostElement: ElementRef;
-  unitcheckEnabled = false;
 
   private iFrameItemplayer: HTMLIFrameElement = null;
   private postMessageSubscription: Subscription = null;
@@ -25,6 +24,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   private pendingItemDefinition$ = new BehaviorSubject(null);
 
   public dataLoading = false;
+  public errorMessage = '';
 
   constructor(
     private ds: SyscheckDataService,
@@ -34,15 +34,33 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    combineLatest(
+      this.ds.task$,
+      this.mds.loginData$,
+      this.ds.checkConfig$
+    ).subscribe(([task, loginData, checkConfig]) => {
+      if (task === 'loadunit') {
+        if (loginData.loginname !== '' && loginData.logintoken !== '') {
+          this.loadUnitAndPlayer(checkConfig.id);
+          this.errorMessage = '';
+        } else {
+          this.errorMessage = 'Login-Credentials fehlen';
+          this.ds.nextTask();
+        }
+      }
+    });
+
     this.ds.itemplayerPageRequest$.subscribe((newPage: string) => {
       if (newPage.length > 0) {
         this.postMessageTarget.postMessage({
-          type: 'vo.ToPlayer.PageNavigationRequest',
+          type: 'vo.ToPlayer.NavigateToPage',
           sessionId: this.itemplayerSessionId,
           newPage: newPage
         }, '*');
       }
     });
+
     this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData['type'];
@@ -51,8 +69,8 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
       if ((msgType !== undefined) && (msgType !== null)) {
         switch (msgType) {
 
-          // // // // // // //
           case 'vo.FromPlayer.ReadyNotification':
+            this.iFrameItemplayer.setAttribute('height', String(Math.trunc(this.iFrameHostElement.nativeElement.clientHeight)));
             let hasData = false;
             const initParams = {};
 
@@ -73,7 +91,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
             }
             break;
 
-          // // // // // // //
           case 'vo.FromPlayer.StartedNotification':
             this.iFrameItemplayer.setAttribute('height', String(Math.trunc(this.iFrameHostElement.nativeElement.clientHeight)));
             const validPages = msgData['validPages'];
@@ -90,7 +107,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
             }
             break;
 
-          // // // // // // //
           case 'vo.FromPlayer.ChangedDataTransfer':
             const validPagesChanged = msgData['validPages'];
             let currentPageChanged = msgData['currentPage'];
@@ -105,7 +121,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
             }
             break;
 
-          // // // // // // //
           default:
             console.log('processMessagePost ignored message: ' + msgType);
             break;
@@ -115,28 +130,47 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   }
 
 
-  public loadUnitandPlayer(checkId: string): void{
+  public loadUnitAndPlayer(checkId: string): void {
 
     this.clearPlayerElement();
     this.bs.getUnitData(checkId).pipe(
       flatMap((data: UnitData) => this.loadPlayerCode(data)),
       map((playerCode: string) => this.createPlayerElement(playerCode)),
-    ).subscribe();
+    ).subscribe(finale => {
+      this.ds.nextTask();
+    });
   }
 
   private loadPlayerCode(data: UnitData): Observable<string> {
 
     return this.bs.getResource('', BackendService.normaliseId(data.player, 'html'), true)
       .pipe(
-        map((player: TaggedString | ServerError) => {
+        map((player: ResourcePackage | ServerError) => {
+
+          const errorText = 'Loading Player: `' + BackendService.normaliseId(data.player, 'html') + '`';
 
           if (player instanceof ServerError) {
-            throw new Error(player.labelNice);
+            this.errorMessage = 'Konnte Unit-Player nicht laden: ' + player.labelNice;
+            this.ds.unitData$.next([
+              {id: '0', type: 'unit/player', label: 'loading error', value: errorText + '\n' + player.labelSystem}
+            ]);
+            this.dataLoading = false;
+            throw new Error(player.labelSystem);
           }
 
           if (player.value.length === 0) {
-            throw new Error('## size of player "' + data.player + '" = 0');
+            this.errorMessage = 'Konnte Unit-Player nicht laden';
+            this.ds.unitData$.next([
+              {id: '0', type: 'unit/player', label: 'loading error', value: errorText + 'Response invalid\n' + JSON.stringify(player)},
+              {id: '0', type: 'unit/player', label: 'loading time', value: player.duration.toString()}
+            ]);
+            this.dataLoading = false;
+            throw new Error('Error at: ' + errorText);
           }
+
+          this.ds.unitData$.next([
+            {id: '0', type: 'unit/player', label: 'loading time', value: player.duration.toString()}
+          ]);
 
           this.pendingItemDefinition$.next(data.def);
           return player.value;

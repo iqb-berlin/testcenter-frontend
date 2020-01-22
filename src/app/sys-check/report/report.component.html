@@ -1,8 +1,78 @@
-<div style="margin: 10px">
-  <h2>Computer-Info</h2>
-  <p *ngFor="let rd of environmentData">{{ rd.label }}: {{ rd.value }}</p>
-  <h2 *ngIf="networkData.length > 0">Netzwerk-Info</h2>
-  <p *ngFor="let rd of networkData">{{ rd.label }}: {{ rd.value }}</p>
-  <h2 *ngIf="questionnaireData.length > 0">Fragen</h2>
-  <p *ngFor="let rd of questionnaireData">{{ rd.label }}: {{ rd.value }}</p>
-</div>
+
+<mat-card>
+
+  <mat-card-header>
+    <mat-card-title>Bericht</mat-card-title>
+    <mat-card-subtitle>Folgende Informationen über Ihr System wurden gesammelt</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content id="report-cointainer">
+    <table>
+      <thead>
+      <tr>
+        <td colspan="2">Computer-Info</td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let rd of environmentData">
+        <td>{{rd.label}}</td>
+        <td>{{rd.value}}</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <table *ngIf="networkData.length > 0">
+      <thead>
+      <tr>
+        <td colspan="2">Netzwerk-Info</td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let rd of networkData">
+        <td>{{rd.label}}</td>
+        <td>{{rd.value}}</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <table *ngIf="questionnaireData.length > 0">
+      <thead>
+      <tr>
+        <td colspan="2">Fragen</td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let rd of questionnaireData">
+        <td>{{rd.label}}</td>
+        <td>{{rd.value}}</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <table *ngIf="unitData.length > 0">
+      <thead>
+      <tr>
+        <td colspan="2">Test-Unit</td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let rd of unitData">
+        <td>{{rd.label}}</td>
+        <td>{{rd.value}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </mat-card-content>
+
+  <textarea style="width:100%; height: 8em" *ngIf="csvReport">{{csvReport}}</textarea>
+
+  <mat-card-actions>
+    <button *ngIf="canSave && isReady()" mat-raised-button color="primary" (click)="saveReport()" class="save_button">Senden</button>
+    <button *ngIf="canSave && isReady()" mat-raised-button (click)="exportReport()" class="save_button">Als CSV zum kopieren</button>
+  </mat-card-actions>
+
+</mat-card>
+
+
+
+

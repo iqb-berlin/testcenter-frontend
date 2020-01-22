@@ -20,7 +20,6 @@ export class QuestionnaireComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.ds.questionnaireEnabled$.subscribe(is => this.questionnaireEnabled = is);
     this.ds.checkConfig$.subscribe(cc => {
       if (cc === null) {
         this.questions = [];
@@ -35,20 +34,24 @@ export class QuestionnaireComponent implements OnInit {
           group[question.id] = new FormControl('');
         });
         this.form = new FormGroup(group);
-        this.form.valueChanges.subscribe(f => {
-          const myReportEntries: ReportEntry[] = [];
-          this.questions.forEach(element => {
-            if (element.type === 'header') {
-              myReportEntries.push({'id': element.id, 'type': element.type, 'label': element.value, 'value': ''});
-            } else {
-              const myValue = this.form.controls[element.id].value;
-              myReportEntries.push({'id': element.id, 'type': element.type, 'label': element.prompt, 'value': myValue});
-            }
-          });
-          this.ds.questionnaireData$.next(myReportEntries);
-        });
+        this.form.valueChanges.subscribe(f => {this.updateReport(); });
+        this.updateReport();
       }
     });
+  }
+
+  private updateReport() {
+
+    const myReportEntries: ReportEntry[] = [];
+    this.questions.forEach(element => {
+      if (element.type === 'header') {
+        myReportEntries.push({'id': element.id, 'type': element.type, 'label': element.value, 'value': ''});
+      } else {
+        const myValue = this.form.controls[element.id].value;
+        myReportEntries.push({'id': element.id, 'type': element.type, 'label': element.prompt, 'value': myValue});
+      }
+    });
+    this.ds.questionnaireData$.next(myReportEntries);
   }
 
 }

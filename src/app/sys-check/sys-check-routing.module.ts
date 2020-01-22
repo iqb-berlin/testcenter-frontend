@@ -1,4 +1,4 @@
-import { RunComponent } from './run.component';
+import { SysCheckComponent } from './sys-check.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { StartComponent } from './start.component';
@@ -14,7 +14,7 @@ const routes: Routes = [
   },
   {
     path: 'run/:c',
-    component: RunComponent
+    component: SysCheckComponent
   }];
 
 @NgModule({

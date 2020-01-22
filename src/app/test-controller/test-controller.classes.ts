@@ -1,25 +1,5 @@
-import { BackendService } from './backend.service';
-import { TestControllerService } from './test-controller.service';
-import { Observable, of, BehaviorSubject, forkJoin } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-import { UnitData, BookletData, LastStateKey, MaxTimerDataType, TaggedString, LogEntryKey } from './test-controller.interfaces';
-import { KeyValuePair } from '../app.interfaces';
+import { MaxTimerDataType } from './test-controller.interfaces';
 
-// .....................................................................
-// .....................................................................
-export class ServerError {
-    public code: number;
-    public labelNice: string;
-    public labelSystem: string;
-    constructor(code: number, labelNice: string, labelSystem = '') {
-      this.code = code;
-      this.labelNice = labelNice;
-      this.labelSystem = labelSystem;
-    }
-}
-
-// .....................................................................
-// .....................................................................
 export class TestletContentElement {
   readonly sequenceId: number;
   readonly id: string;

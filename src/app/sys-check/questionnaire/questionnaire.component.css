@@ -1,9 +1,5 @@
-.formList {
-  margin: 30px;
-  max-width: 800px;
-}
-
-.formEntry {
-  margin: 5px 0 0 10px;
+mat-radio-group mat-radio-button {
+  margin-right: 1em;
+  margin-bottom: 1em;
 }
 

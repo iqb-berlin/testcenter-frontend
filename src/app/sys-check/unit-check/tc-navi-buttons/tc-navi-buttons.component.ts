@@ -11,9 +11,9 @@ export class TcNaviButtonsComponent {
   private pagePrevEnabled = false;
   private pageNextEnabled = false;
 
-  constructor( private ds: SyscheckDataService) {
-    this.ds.showNaviButtons$.subscribe(show => this.showPageNaviButtons = show);
-    // this.ds.itemplayerValidPages$.subscribe((pages: string[]) => this.showPageNaviButtons = pages.length  > 1);
+  constructor(private ds: SyscheckDataService) {
+    // this.ds.showNaviButtons$.subscribe(show => this.showPageNaviButtons = show);
+    this.ds.itemplayerValidPages$.subscribe((pages: string[]) => this.showPageNaviButtons = pages.length  > 1);
     this.ds.itemplayerCurrentPage$.subscribe((p: string) => {
       const validPages = this.ds.itemplayerValidPages$.getValue();
       const pagePos = validPages.indexOf(p);

@@ -1,49 +1,51 @@
-<div class="spinner-container" *ngIf="!testDone">
-    <mat-spinner></mat-spinner>
-    <label>{{KBPSReporter | async}} KBPS</label>
-    
-</div>
-<div >
-  <div *ngIf="!testDone" style="margin: 10px">
-    <p>{{this.status.message}}</p>
-  </div>
+<mat-card [ngStyle]="{display: measureNetwork ? 'block' : 'none'}">
 
-  <div *ngIf="testDone" style="margin: 10px">
-    <p [ngSwitch]="networkRating.overallRating">Ihre Verbindung zum Testserver ist
-      <span *ngSwitchCase="'insufficient'" style="color: red; font-weight: bold;">unzureichend <i class="material-icons">error</i></span>
-      <span *ngSwitchCase="'ok'" style="color: orange; font-weight: bold;">vorauss. ausreichend <i class="material-icons">warning</i></span>
-      <span *ngSwitchCase="'good'" style="color: green; font-weight: bold;">gut <i class="material-icons">check</i></span>
-      <span *ngSwitchCase="'unstable'" style="color: orangered; font-weight: bold;">sehr instabil <i class="material-icons">check</i></span>
-      &nbsp;<button mat-raised-button (click)="startCheck()">Netz erneut prüfen</button>
-    </p>
-  </div>
+  <mat-card-header>
+    <mat-card-title>Netzwerk</mat-card-title>
+    <mat-card-subtitle>
+      {{status.message}}
 
-  <mat-card>
-    <mat-card-title>Geschwindigkeit Download</mat-card-title>
-    <mat-card-content>
-      <p *ngIf="status.avgDownloadSpeedBytesPerSecond >= 0">&#8960; {{ humanReadableBytes(status.avgDownloadSpeedBytesPerSecond, false) }}ps</p>
-      <p *ngIf="status.avgDownloadSpeedBytesPerSecond < 0">Test noch nicht gestartet</p>
-      <tc-speed-chart #downloadChart></tc-speed-chart>
-    </mat-card-content>
-  </mat-card>
+      <span *ngIf="status.done && (networkRating.overallRating !== 'N/A')">
+        <span [ngSwitch]="networkRating.overallRating">Ihre Verbindung zum Testserver ist
+          <span *ngSwitchCase="'insufficient'" style="color: red; font-weight: bold;">unzureichend</span>
+          <span *ngSwitchCase="'ok'" style="color: orange; font-weight: bold;">vorauss. ausreichend</span>
+          <span *ngSwitchCase="'good'" style="color: green; font-weight: bold;">gut</span>
+          <span *ngSwitchCase="'unstable'" style="color: orangered; font-weight: bold;">sehr instabil</span>
+        </span>.
+      </span>
+    </mat-card-subtitle>
+  </mat-card-header>
 
-  <mat-card>
-    <mat-card-title>Geschwindigkeit Upload</mat-card-title>
-    <mat-card-content>
-      <p *ngIf="status.avgUploadSpeedBytesPerSecond >= 0">&#8960; {{ humanReadableBytes(status.avgUploadSpeedBytesPerSecond, false) }}ps</p>
-      <p *ngIf="status.avgUploadSpeedBytesPerSecond < 0">Test noch nicht gestartet</p>
-      <tc-speed-chart #uploadChart></tc-speed-chart>
-    </mat-card-content>
-  </mat-card>
+  <mat-card-content>
 
-  <mat-card>
-    <mat-card-title>Netzwerkeigenschaften</mat-card-title>
-    <mat-card-content>
-      <p *ngIf="!detectedNetworkInformations.available">Ihr Browser ist veraltet, daher konnten keine weiteren Netzwerkeigenschaften ermittelt werden.</p>
-      <p *ngIf="detectedNetworkInformations.available">Verbindung: {{detectedNetworkInformations.effectiveNetworkType}} {{detectedNetworkInformations.networkType}}</p>
-      <p *ngIf="detectedNetworkInformations.roundTripTimeMs">Network RoundTrip: {{detectedNetworkInformations.roundTripTimeMs}} Millisekunden</p>
-      <p *ngIf="detectedNetworkInformations.downlinkMegabitPerSecond">Network Downlink: {{detectedNetworkInformations.downlinkMegabitPerSecond}} mbps</p>
-    </mat-card-content>
-  </mat-card>
+    <div class="spinner-container-local" *ngIf="!status.done">
+      <mat-spinner></mat-spinner>
+    </div>
 
-</div>
+    <div fxLayout="row">
+
+      <div fxFlex="50%">
+        <h4>
+          <span style="font-weight: normal">Geschwindigkeit Download: </span>
+          <span *ngIf="status.avgDownloadSpeedBytesPerSecond >= 0">&#8960; {{ humanReadableBytes(status.avgDownloadSpeedBytesPerSecond, true) }}ps</span>
+          <span *ngIf="status.avgDownloadSpeedBytesPerSecond < 0">Test noch nicht gestartet</span>
+        </h4>
+        <tc-speed-chart #downloadChart></tc-speed-chart>
+      </div>
+
+      <div fxFlex="50%">
+        <h4>
+          <span style="font-weight: normal">Geschwindigkeit Upload: </span>
+          <span *ngIf="status.avgUploadSpeedBytesPerSecond >= 0">&#8960; {{ humanReadableBytes(status.avgUploadSpeedBytesPerSecond, true) }}ps</span>
+          <span *ngIf="status.avgUploadSpeedBytesPerSecond < 0">Test noch nicht gestartet</span>
+        </h4>
+        <tc-speed-chart #uploadChart></tc-speed-chart>
+      </div>
+
+    </div>
+
+    <div *ngIf="!detectedNetworkInformations.available" style="color:red">Ihr Browser ist veraltet und verfügt über kein erweitertes Netzwerk-Profil.</div>
+
+  </mat-card-content>
+
+</mat-card>

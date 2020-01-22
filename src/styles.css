@@ -36,7 +36,6 @@
   z-index: 999;
   height: 2em;
   width: 2em;
-  overflow: show;
   margin: auto;
   top: 0;
   left: 0;
@@ -44,11 +43,26 @@
   right: 0;
 }
 
+.spinner-container-local {
+  z-index: 999;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  position: absolute;
+}
+
 iframe.unitHost {
   width: 100%;
   background-color: white;
   border: none;
-  margin: 0px;
+  margin: 0;
 }
 
 p.unitMessage {

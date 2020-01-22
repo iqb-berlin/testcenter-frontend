@@ -1,7 +1,11 @@
 import { SyscheckDataService } from '../syscheck-data.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { BackendService, NetworkRequestTestResult, ReportEntry } from '../backend.service';
-import { BehaviorSubject } from 'rxjs';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import {
+  BackendService,
+  NetworkRequestTestResult,
+  ReportEntry
+} from '../backend.service';
+import { BehaviorSubject, combineLatest } from 'rxjs';
 
 enum BenchmarkType {
   up,
@@ -12,6 +16,7 @@ interface NetworkCheckStatus {
   message: string;
   avgUploadSpeedBytesPerSecond: number;
   avgDownloadSpeedBytesPerSecond: number;
+  done: boolean;
 }
 
 interface BenchmarkDefinition {
@@ -40,25 +45,28 @@ interface DetectedNetworkInformations {
 
 @Component({
   selector: 'iqb-network-check',
-  templateUrl: './network-check.component.html',
-  styleUrls: ['./network-check.component.css']
+  templateUrl: './network-check.component.html'
 })
 export class NetworkCheckComponent implements OnInit {
 
   @ViewChild('downloadChart', {static: true}) downloadPlotter;
   @ViewChild('uploadChart', {static: true}) uploadPlotter;
 
+
   KBPSReporter: BehaviorSubject<number> = new BehaviorSubject(0);
+
+  @Input() measureNetwork: boolean;
+
 
   readonly benchmarkDefinitions = new Map<BenchmarkType, BenchmarkDefinition>([
     [BenchmarkType.down, {
-      testSizes: [1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304],
+      testSizes: [1024], // , 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304],
       allowedDevianceBytesPerSecond: 100000,
       allowedErrorsPerSequence: 0,
       allowedSequenceRepetitions: 15
     }],
     [BenchmarkType.up, {
-      testSizes: [1024, 4096, 16384, 65536, 262144, 1048576, 4194304],
+      testSizes: [1024], // 4096, 16384, 65536, 262144, 1048576, 4194304],
       allowedDevianceBytesPerSecond: 10000000,
       allowedErrorsPerSequence: 0,
       allowedSequenceRepetitions: 15
@@ -66,11 +74,11 @@ export class NetworkCheckComponent implements OnInit {
   ]);
 
   public status: NetworkCheckStatus = {
-    message: 'Netzwerk-Analyse wird gestartet',
+    done: true,
+    message: 'Messung noch nicht gestartet',
     avgUploadSpeedBytesPerSecond: -1,
     avgDownloadSpeedBytesPerSecond: -1
   };
-  public testDone = false;
 
   private networkStats = new Map<BenchmarkType, number[]>([
     [BenchmarkType.down, []],
@@ -96,14 +104,25 @@ export class NetworkCheckComponent implements OnInit {
     private bs: BackendService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+
+    this.getBrowsersNativeNetworkInformation();
+    const report: ReportEntry[] = [];
+    this.addBrowsersNativeNetworkInformationToReport(report);
+    this.ds.networkData$.next(report);
+
+    combineLatest(this.ds.task$, this.ds.checkConfig$).subscribe(([task, checkConfig]) => {
+      if (task === 'speedtest') {
+        this.startCheck();
+      }
+    });
+  }
 
   public startCheck() {
 
-    this.testDone = false;
-
     this.status = {
-      message: 'Netzwerk-Analyse wird neu gestartet',
+      done: false,
+      message: 'Netzwerk-Analyse wird gestartet',
       avgUploadSpeedBytesPerSecond: -1,
       avgDownloadSpeedBytesPerSecond: -1
     };
@@ -116,8 +135,6 @@ export class NetworkCheckComponent implements OnInit {
     this.plotPrepare(BenchmarkType.down);
     this.plotPrepare(BenchmarkType.up);
 
-    this.getBrowsersNativeNetworkInformations();
-    console.log('start the loop2');
     this.loopBenchmarkSequence(BenchmarkType.down)
       .then(() => this.loopBenchmarkSequence(BenchmarkType.up))
       .then(() => this.reportResults())
@@ -128,7 +145,7 @@ export class NetworkCheckComponent implements OnInit {
 
     const testSizes = this.benchmarkDefinitions.get(benchmarkType).testSizes;
     const plotterSettings = {
-      css: 'border: 0px solid black; width: 100%; max-width: 800px',
+      css: 'border: 1px solid silver; margin: 2px; width: 100%;',
       width: 800,
       height: 140,
       labelPadding: 4,
@@ -219,7 +236,7 @@ export class NetworkCheckComponent implements OnInit {
       this.updateStatus(`Downloadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage} bytes`);
       return this.bs.benchmarkDownloadRequest(requestSize, this.KBPSReporter);
     } else {
-      this.updateStatus(`Uploadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage} bytes)`);
+      this.updateStatus(`Uploadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage})`);
       return this.bs.benchmarkUploadRequest(requestSize);
     }
   }
@@ -296,45 +313,22 @@ export class NetworkCheckComponent implements OnInit {
     }
 
     this.updateStatus(`Die folgenden Netzwerkeigenschaften wurden festgestellt:`);
-    this.testDone = true;
+    this.status.done = true;
 
     // send data for reporting
-    const reportEntry: ReportEntry[] = [];
-    reportEntry.push({id: '0', type: 'network', label: 'Downloadgeschwindigkeit',
+    const report: ReportEntry[] = [];
+    report.push({id: '0', type: 'network', label: 'Downloadgeschwindigkeit',
       value: this.humanReadableBytes(this.getAverageNetworkStat(BenchmarkType.down), true).toLocaleString()});
-    reportEntry.push({id: '0', type: 'network', label: 'Downloadbewertung', value: this.networkRating.downloadRating});
-    reportEntry.push({id: '0', type: 'network', label: 'Uploadgeschwindigkeit',
+    report.push({id: '0', type: 'network', label: 'Downloadbewertung', value: this.networkRating.downloadRating});
+    report.push({id: '0', type: 'network', label: 'Uploadgeschwindigkeit',
       value: this.humanReadableBytes(this.getAverageNetworkStat(BenchmarkType.up), true).toLocaleString()});
-    reportEntry.push({id: '0', type: 'network', label: 'Uploadbewertung', value: this.networkRating.uploadRating});
-    reportEntry.push({id: '0', type: 'network', label: 'Allgemeine Bewertung der Verbindung', value: this.networkRating.overallRating});
+    report.push({id: '0', type: 'network', label: 'Uploadbewertung', value: this.networkRating.uploadRating});
+    report.push({id: '0', type: 'network', label: 'Allgemeine Bewertung der Verbindung', value: this.networkRating.overallRating});
 
-    if (this.detectedNetworkInformations.available) {
-      if (this.detectedNetworkInformations.roundTripTimeMs) {
-        reportEntry.push({
-          id: '0', type: 'network', label: 'RoundTrip in Ms',
-          value: this.detectedNetworkInformations.roundTripTimeMs.toString()
-        });
-      }
-      if (this.detectedNetworkInformations.effectiveNetworkType) {
-        reportEntry.push({
-          id: '0', type: 'network', label: 'Netzwerktyp nach Leistung',
-          value: this.detectedNetworkInformations.effectiveNetworkType
-        });
-      }
-      if (this.detectedNetworkInformations.networkType) {
-        reportEntry.push({
-          id: '0', type: 'network', label: 'Netzwerktyp',
-          value: this.detectedNetworkInformations.networkType
-        });
-      }
-      if (this.detectedNetworkInformations.downlinkMegabitPerSecond) {
-        reportEntry.push({
-          id: '0', type: 'network', label: 'Downlink mbps',
-          value: this.detectedNetworkInformations.downlinkMegabitPerSecond.toString()
-        });
-      }
-    }
-    this.ds.networkData$.next(reportEntry);
+    this.addBrowsersNativeNetworkInformationToReport(report);
+
+    this.ds.nextTask();
+    this.ds.networkData$.next(report);
   }
 
 
@@ -346,11 +340,7 @@ export class NetworkCheckComponent implements OnInit {
 
   public calculateNetworkRating(): void {
 
-    // assumes that this.ds.checkConfig$ is already set;
-
     const testConfig = this.ds.checkConfig$.getValue();
-    console.log('Test configuration used to calculate network compatibility with the Test Center:');
-    console.log(testConfig);
 
     const awardedNetworkRating: NetworkRating = {
         downloadRating: 'N/A',
@@ -395,7 +385,7 @@ export class NetworkCheckComponent implements OnInit {
   }
 
 
-  private getBrowsersNativeNetworkInformations() {
+  private getBrowsersNativeNetworkInformation() {
 
     const connection = navigator['connection'] || navigator['mozConnection'] || navigator['webkitConnection'];
     console.log('connection', connection);
@@ -408,6 +398,42 @@ export class NetworkCheckComponent implements OnInit {
         networkType: connection.type || null,
       };
     }
+  }
+
+  private addBrowsersNativeNetworkInformationToReport(report: ReportEntry[]): ReportEntry[] {
+
+    if (this.detectedNetworkInformations.available) {
+      if (this.detectedNetworkInformations.roundTripTimeMs) {
+        report.push({
+         id: '0', type: 'network', label: 'RoundTrip in Ms',
+         value: this.detectedNetworkInformations.roundTripTimeMs.toString()
+      });
+      }
+      if (this.detectedNetworkInformations.effectiveNetworkType) {
+        report.push({
+          id: '0', type: 'network', label: 'Netzwerktyp nach Leistung',
+          value: this.detectedNetworkInformations.effectiveNetworkType
+        });
+      }
+      if (this.detectedNetworkInformations.networkType) {
+        report.push({
+          id: '0', type: 'network', label: 'Netzwerktyp',
+          value: this.detectedNetworkInformations.networkType
+        });
+      }
+      if (this.detectedNetworkInformations.downlinkMegabitPerSecond) {
+        report.push({
+          id: '0', type: 'network', label: 'Downlink mbps',
+          value: this.detectedNetworkInformations.downlinkMegabitPerSecond.toString()
+        });
+      }
+    } else {
+      report.push({
+        id: '0', type: 'network', label: 'Netzwerkprofil des Browsers',
+        value: 'nicht verfügbar'
+      });
+    }
+    return report;
   }
 
 

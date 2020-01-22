@@ -1,4 +1,3 @@
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ResizeIFrameChildDirective } from './unit-check/resize-IFrameChild/resize-IFrameChild.directive';
 import { SyscheckDataService } from './syscheck-data.service';
 import { BackendService } from './backend.service';
@@ -7,11 +6,11 @@ import { CommonModule } from '@angular/common';
 
 import { SysCheckRoutingModule } from './sys-check-routing.module';
 import { StartComponent } from './start.component';
-import { RunComponent } from './run.component';
+import { SysCheckComponent } from './sys-check.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule, MatCardModule, MatStepperModule,
-  MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-  MatTabsModule, MatProgressSpinnerModule, MatSnackBarModule, MatRadioModule } from '@angular/material';
+import { MatButtonModule, MatCheckboxModule, MatCardModule, MatStepperModule,
+  MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule,
+  MatProgressSpinnerModule, MatSnackBarModule, MatRadioModule } from '@angular/material';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -49,7 +48,7 @@ import { TcSpeedChartComponent } from './network-check/tc-speed-chart.component'
   ],
   declarations: [
     StartComponent,
-    RunComponent,
+    SysCheckComponent,
     EnvironmentCheckComponent,
     NetworkCheckComponent,
     UnitCheckComponent,
