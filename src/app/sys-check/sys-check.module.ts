@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 
 import { SysCheckRoutingModule } from './sys-check-routing.module';
 import { StartComponent } from './start.component';
-import { RunComponent } from './run.component';
+import { SysCheckComponent } from './sys-check.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonModule, MatCheckboxModule, MatCardModule, MatStepperModule,
   MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule,
@@ -48,7 +48,7 @@ import { TcSpeedChartComponent } from './network-check/tc-speed-chart.component'
   ],
   declarations: [
     StartComponent,
-    RunComponent,
+    SysCheckComponent,
     EnvironmentCheckComponent,
     NetworkCheckComponent,
     UnitCheckComponent,
