@@ -1,18 +1,14 @@
-import { ReportEntry } from '../backend.service';
 import { Component, OnInit } from '@angular/core';
 import { SyscheckDataService } from '../syscheck-data.service';
+import {ReportEntry} from '../backend.service';
 
 @Component({
   selector: 'iqb-environment-check',
   templateUrl: './environment-check.component.html'
 })
 export class EnvironmentCheckComponent implements OnInit {
-  screenSizeText = 'bitte warten';
-  osName = 'bitte warten';
-  browser = 'bitte warten';
-  browserVersion = '';
-  browserName = '';
 
+  private report: Map<string, ReportEntry> = new Map<string, ReportEntry>();
 
   constructor(
     private ds: SyscheckDataService
@@ -20,17 +16,23 @@ export class EnvironmentCheckComponent implements OnInit {
 
   ngOnInit() {
 
-    this.getBrowser();
-    this.getOS();
+    this.getBrowser(); // fallback if UAParser does not work
+    this.getOS(); // fallback if UAParser does not work
+
     this.getResolution();
+    this.getFromUAParser();
+    this.getFromNavigator();
+    this.getBrowserPlugins();
 
-    const myReport: ReportEntry[] = [];
-    myReport.push({'id': '0', 'type': 'environment', 'label': 'Betriebssystem', 'value': this.osName});
-    myReport.push({'id': '0', 'type': 'environment', 'label': 'Browser Name', 'value': this.browserName});
-    myReport.push({'id': '0', 'type': 'environment', 'label': 'Browser Version', 'value': this.browserVersion});
-    myReport.push({'id': '0', 'type': 'environment', 'label': 'Bildschirm-Auflösung', 'value': this.screenSizeText});
+    const report = Array.from(this.report.values())
+      .sort((item1: ReportEntry, item2: ReportEntry) => (item1.label > item2.label) ? 1 : -1);
 
-    this.ds.environmentData$.next(myReport);
+    this.ds.environmentData$.next(Object.values(report));
+  }
+
+  private reportPush(key: string, value: string) {
+
+    this.report.set(key, {'id': '0', 'type': 'environment', 'label': key, 'value': value});
   }
 
   getBrowser() {
@@ -43,42 +45,93 @@ export class EnvironmentCheckComponent implements OnInit {
     const helperRegex = /[^.]*/;
     const browserInfo = helperRegex.exec(deviceInfoSplits[0]);
     const browserInfoSplits = browserInfo[0].split('/');
-    this.browserVersion = browserInfoSplits[1];
-    this.browserName = browserInfoSplits[0];
-    this.browser = this.browserName + ' Version ' + this.browserVersion;
+    this.reportPush('Browser', browserInfoSplits[0]);
+    this.reportPush('Browser-Version', browserInfoSplits[1]);
+  }
+
+  getFromUAParser() {
+
+    if (typeof window['UAParser'] === 'undefined') {
+      return;
+    }
+    const uaInfos = window['UAParser']();
+    [
+      ['cpu', 'architecture', 'CPU-Architektur'],
+      ['device', 'model', 'Gerätemodell'],
+      ['device', 'type', 'Gerätetyp'],
+      ['device', 'vendor', 'Gerätehersteller'],
+      ['browser', 'name', 'Browser'],
+      ['browser', 'major', 'Browser-Version'],
+      ['os', 'name', 'Betriebsystem'],
+      ['os', 'version', 'Betriebsystem-Version']
+    ].forEach((item: Array<string>) => {
+      if ((typeof uaInfos[item[0]] !== 'undefined') && (typeof uaInfos[item[0]][item[1]] !== 'undefined')) {
+        this.reportPush(item[2], uaInfos[item[0]][item[1]]);
+      }
+    });
+  }
+
+  getFromNavigator() {
+
+    [
+      ['hardwareConcurrency', 'CPU-Kerne'],
+      ['cookieEnabled', 'Browser-Cookies aktiviert'],
+      ['language', 'Browser-Sprache']
+    ].forEach((item: string[]) => {
+      if (typeof navigator[item[0]] !== 'undefined') {
+        this.reportPush(item[1], navigator[item[0]]);
+      }
+    });
+  }
+
+  getBrowserPlugins() {
+
+    if ((typeof navigator.plugins === 'undefined') || (!navigator.plugins.length)) {
+      return;
+    }
+    const pluginNames = Array<String>();
+    for (let i = 0; i < navigator.plugins.length; i++) {
+      pluginNames.push(navigator.plugins[i].name);
+    }
+    this.reportPush('Browser-Plugins:', pluginNames.join(', '));
   }
 
   getOS() {
 
     const userAgent = window.navigator.userAgent;
+    let osName = '';
     if (userAgent.indexOf('Windows') !== -1) {
       if (userAgent.indexOf('Windows NT 10.0') !== -1) {
-        this.osName = 'Windows 10';
+        osName = 'Windows 10';
       } else if (userAgent.indexOf('Windows NT 6.2') !== -1) {
-        this.osName = 'Windows 8';
+        osName = 'Windows 8';
       } else if (userAgent.indexOf('Windows NT 6.1') !== -1) {
-        this.osName = 'Windows 7';
+        osName = 'Windows 7';
       } else if (userAgent.indexOf('Windows NT 6.0') !== -1) {
-        this.osName = 'Windows Vista';
+        osName = 'Windows Vista';
       } else if (userAgent.indexOf('Windows NT 5.1') !== -1) {
-        this.osName = 'Windows XP';
+        osName = 'Windows XP';
       } else if (userAgent.indexOf('Windows NT 5.0') !== -1) {
-        this.osName = 'Windows 2000';
+        osName = 'Windows 2000';
       } else {
-        this.osName = 'Windows, unbekannte Version';
+        osName = 'Windows, unbekannte Version';
       }
     } else if (userAgent.indexOf('Mac') !== -1) {
-      this.osName = 'Mac/iOS';
+      osName = 'Mac/iOS';
     } else if (userAgent.indexOf('Linux') !== -1) {
-      this.osName = 'Linux';
+      osName = 'Linux';
     } else {
-      this.osName = window.navigator.platform;
+      osName = window.navigator.platform;
     }
+    this.reportPush('Betriebsystem', osName);
   }
 
   getResolution() {
 
-    this.screenSizeText = window.screen.width + ' x ' + window.screen.height;
+    this.reportPush('Bildschirm-Auflösung', window.screen.width + ' x ' + window.screen.height);
+    const windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.offsetWidth;
+    const windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.offsetHeight;
+    this.reportPush('Fenster-Größe', windowWidth + ' x ' + windowHeight);
   }
 
 }

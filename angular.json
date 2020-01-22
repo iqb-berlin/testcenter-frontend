@@ -44,7 +44,9 @@
               "src/assets/material-icons.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/ua-parser-js/dist/ua-parser.min.js"
+            ]
           },
           "configurations": {
             "production": {
