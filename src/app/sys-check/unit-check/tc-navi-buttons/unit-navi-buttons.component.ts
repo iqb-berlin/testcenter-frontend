@@ -1,18 +1,18 @@
-import { SyscheckDataService } from './../../syscheck-data.service';
+import { SyscheckDataService } from '../../syscheck-data.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'tc-navi-buttons',
-  templateUrl: './tc-navi-buttons.component.html',
-  styleUrls: ['./tc-navi-buttons.component.css']
+  templateUrl: './unit-navi-buttons.component.html',
+  styleUrls: ['./unit-navi-buttons.component.css']
 })
-export class TcNaviButtonsComponent {
+export class UnitNaviButtonsComponent {
   public showPageNaviButtons = true;
   private pagePrevEnabled = false;
   private pageNextEnabled = false;
 
   constructor(private ds: SyscheckDataService) {
-    // this.ds.showNaviButtons$.subscribe(show => this.showPageNaviButtons = show);
+
     this.ds.itemplayerValidPages$.subscribe((pages: string[]) => this.showPageNaviButtons = pages.length  > 1);
     this.ds.itemplayerCurrentPage$.subscribe((p: string) => {
       const validPages = this.ds.itemplayerValidPages$.getValue();
@@ -23,8 +23,8 @@ export class TcNaviButtonsComponent {
     });
   }
 
-  // *******************************************************************************************************
   prevPageNaviButtonClick() {
+
     const validPages = this.ds.itemplayerValidPages$.getValue();
     const p = this.ds.itemplayerCurrentPage$.getValue();
     const pagePos = validPages.indexOf(p);
@@ -33,6 +33,7 @@ export class TcNaviButtonsComponent {
     }
   }
   nextPageNaviButtonClick() {
+
     const validPages = this.ds.itemplayerValidPages$.getValue();
     const p = this.ds.itemplayerCurrentPage$.getValue();
     const pagePos = validPages.indexOf(p);

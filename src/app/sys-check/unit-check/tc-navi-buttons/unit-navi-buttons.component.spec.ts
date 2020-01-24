@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TcNaviButtonsComponent } from './tc-navi-buttons.component';
+import { UnitNaviButtonsComponent } from './unit-navi-buttons.component';
 
 describe('TcNaviButtonsComponent', () => {
-  let component: TcNaviButtonsComponent;
-  let fixture: ComponentFixture<TcNaviButtonsComponent>;
+  let component: UnitNaviButtonsComponent;
+  let fixture: ComponentFixture<UnitNaviButtonsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TcNaviButtonsComponent ]
+      declarations: [ UnitNaviButtonsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TcNaviButtonsComponent);
+    fixture = TestBed.createComponent(UnitNaviButtonsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

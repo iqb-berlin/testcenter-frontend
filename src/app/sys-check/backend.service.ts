@@ -1,6 +1,6 @@
 import { CheckConfig } from './backend.service';
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ServerError } from '../backend.service';
@@ -29,12 +29,10 @@ export class BackendService {
     questionsonlymode: false,
     ratings: [],
     skipnetwork: false,
-    downloadMinimum: 1024 * 1024,
-    downloadGood: 1024 * 1024 * 10,
-    uploadMinimum: 1024 * 512,
-    uploadGood: 1024 * 1024 * 5,
-    pingMinimum: 5000,
-    pingGood: 1000
+    downloadMinimum: 1.875e+6, // 15Mbit/s ~> typical dl speed 4G CAT4
+    downloadGood: 3.75e+6, // 30Mbit/s ~> typical dl speed 4G+ CAT6
+    uploadMinimum: 250000, // 5Mbit/s
+    uploadGood: 1.25e+6, // 10Mbit/s
   };
 
   private serverSlimUrl_GET: string;
@@ -42,8 +40,9 @@ export class BackendService {
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
-      this.serverUrl = this.serverUrl + 'php_tc/';
-      this.serverSlimUrl_GET = this.serverUrl + 'tc_get.php/';
+
+    this.serverUrl = this.serverUrl + 'php_tc/';
+    this.serverSlimUrl_GET = this.serverUrl + 'tc_get.php/';
   }
 
   // uppercase and add extension if not part
@@ -83,13 +82,13 @@ export class BackendService {
   getCheckConfigs(): Observable<CheckConfig[]> {
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json'
+        'Content-Type': 'application/json'
       })
     };
     return this.http
       .post<CheckConfig[]>(this.serverUrl + 'getSysCheckConfigs.php', {}, httpOptions)
-        .pipe(
-          catchError(problem_data => {
+      .pipe(
+        catchError(problem_data => {
           const myreturn: CheckConfig[] = [];
           return of(myreturn);
         })
@@ -100,7 +99,7 @@ export class BackendService {
   getCheckConfigData(cid: string): Observable<CheckConfigData> {
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json'
+        'Content-Type': 'application/json'
       })
     };
     return this.http
@@ -153,7 +152,7 @@ export class BackendService {
   getResource(internalKey: string, resId: string, versionning = false): Observable<ResourcePackage | ServerError> {
     const myHttpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json'
+        'Content-Type': 'application/json'
       }),
       responseType: 'text' as 'json'
     };
@@ -172,7 +171,6 @@ export class BackendService {
       );
   }
 
-
   benchmarkDownloadRequest(requestedDownloadSize: number): Promise<NetworkRequestTestResult> {
 
     const serverUrl = this.serverUrl;
@@ -180,7 +178,8 @@ export class BackendService {
       type: 'downloadTest',
       size: requestedDownloadSize,
       duration: 5000,
-      error: null
+      error: null,
+      speedInBPS: 0
     };
 
     return new Promise(function(resolve, reject) {
@@ -189,7 +188,7 @@ export class BackendService {
       xhr.open('POST', serverUrl + 'doSysCheckDownloadTest.php?size=' +
         requestedDownloadSize + '&uid=' + (new Date().getTime()), true);
 
-      xhr.timeout = 5000;
+      xhr.timeout = 45000;
 
       xhr.onload = () => {
         if (xhr.status !== 200) {
@@ -222,7 +221,7 @@ export class BackendService {
     });
   }
 
-  benchmarkUploadRequest (requestedUploadSize: number): Promise<NetworkRequestTestResult> {
+  benchmarkUploadRequest(requestedUploadSize: number): Promise<NetworkRequestTestResult> {
 
     const serverUrl = this.serverUrl;
     const randomContent = BackendService.generateRandomContent(requestedUploadSize);
@@ -230,10 +229,11 @@ export class BackendService {
       type: 'uploadTest',
       size: requestedUploadSize,
       duration: 10000,
-      error: null
+      error: null,
+      speedInBPS: 0
     };
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
       const xhr = new XMLHttpRequest();
       xhr.open('POST', serverUrl + 'doSysCheckUploadTest.php', true);
@@ -243,13 +243,18 @@ export class BackendService {
       xhr.setRequestHeader('Content-Type', 'text/plain');
 
       xhr.onload = () => {
+
         if (xhr.status !== 200) {
           testResult.error = `Error ${xhr.statusText} (${xhr.status}) `;
         }
 
+        const currentTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
+        testResult.duration = currentTime - startingTime;
+
         try {
+
           const response = JSON.parse(xhr.response);
-          testResult.duration = BackendService.getMostPreciseTimestampBrowserCanProvide() - startingTime;
+
           const arrivingSize = parseFloat(response['packageReceivedSize']);
           if (arrivingSize !== requestedUploadSize) {
             testResult.error = `Error: Data package has wrong size! ${requestedUploadSize} != ${arrivingSize}`;
@@ -258,10 +263,7 @@ export class BackendService {
           testResult.error = `bogus server response`;
         }
 
-        const currentTime = testResult.duration = BackendService.getMostPreciseTimestampBrowserCanProvide();
-        console.log({'c': currentTime, 's': startingTime});
-        testResult.duration = currentTime - startingTime;
-
+        console.log({ 'c': currentTime, 's': startingTime });
         resolve(testResult);
 
       };
@@ -292,7 +294,7 @@ export class BackendService {
         return timeOrigin + performance.now();
       }
     }
-    return Date.now();
+    return Date.now(); // milliseconds
   }
 
   // tslint:disable-next-line:member-ordering
@@ -300,7 +302,7 @@ export class BackendService {
 
     const base64Characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz0123456789+/';
     let randomString = '';
-    for (let i = 1; i <= length; i++)  {
+    for (let i = 1; i <= length; i++) {
       const randomCharacterID = Math.floor(Math.random() * 63);
       randomString += base64Characters[randomCharacterID];
     }
@@ -338,8 +340,6 @@ export interface CheckConfigData {
   uploadGood: number;
   downloadMinimum: number;
   downloadGood: number;
-  pingMinimum: number;
-  pingGood: number;
 }
 
 export interface FormDefEntry {
@@ -349,9 +349,6 @@ export interface FormDefEntry {
   value: string;
   options: string[];
 }
-
-export type RequestBenchmarkerFunction = (requestSize: number, callback: RequestBenchmarkerFunctionCallback) => void;
-export type RequestBenchmarkerFunctionCallback = (testResult: NetworkRequestTestResult) => void;
 
 export interface UnitData {
   key: string;
@@ -365,6 +362,7 @@ export interface NetworkRequestTestResult {
   'size': number;
   'duration': number;
   'error': string | null;
+  'speedInBPS': number;
 }
 
 export interface ReportEntry {

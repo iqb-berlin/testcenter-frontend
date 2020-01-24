@@ -27,7 +27,7 @@
       <div fxFlex="50%">
         <h4>
           <span style="font-weight: normal">Geschwindigkeit Download: </span>
-          <span *ngIf="status.avgDownloadSpeedBytesPerSecond >= 0">&#8960; {{ humanReadableBytes(status.avgDownloadSpeedBytesPerSecond, true) }}ps</span>
+          <span *ngIf="status.avgDownloadSpeedBytesPerSecond >= 0">&#8960; {{humanReadableBytes(status.avgDownloadSpeedBytesPerSecond, true, false)}}/s</span>
           <span *ngIf="status.avgDownloadSpeedBytesPerSecond < 0">Test noch nicht gestartet</span>
         </h4>
         <tc-speed-chart #downloadChart></tc-speed-chart>
@@ -36,7 +36,7 @@
       <div fxFlex="50%">
         <h4>
           <span style="font-weight: normal">Geschwindigkeit Upload: </span>
-          <span *ngIf="status.avgUploadSpeedBytesPerSecond >= 0">&#8960; {{ humanReadableBytes(status.avgUploadSpeedBytesPerSecond, true) }}ps</span>
+          <span *ngIf="status.avgUploadSpeedBytesPerSecond >= 0">&#8960; {{humanReadableBytes(status.avgUploadSpeedBytesPerSecond, true)}}/s</span>
           <span *ngIf="status.avgUploadSpeedBytesPerSecond < 0">Test noch nicht gestartet</span>
         </h4>
         <tc-speed-chart #uploadChart></tc-speed-chart>
