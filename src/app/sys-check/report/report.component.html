@@ -64,13 +64,13 @@
     </table>
   </mat-card-content>
 
-  <label>Export Your Report
-    <textarea style="width:100%; height: 8em" *ngIf="csvReport">{{csvReport}}</textarea>
+  <label *ngIf="csvReport">Export als CSV für Copy&Paste
+    <textarea style="width:100%; height: 8em">{{csvReport}}</textarea>
   </label>
 
   <mat-card-actions>
     <button *ngIf="canSave && isReady()" mat-raised-button color="primary" (click)="saveReport()" class="save_button">Senden</button>
-    <button *ngIf="canSave && isReady()" mat-raised-button (click)="exportReport()" class="save_button">Als CSV zum kopieren</button>
+    <button *ngIf="isReady()" mat-raised-button (click)="exportReport()" class="save_button">Als CSV zum kopieren</button>
   </mat-card-actions>
 
 </mat-card>

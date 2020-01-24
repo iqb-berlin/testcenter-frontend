@@ -153,7 +153,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
               {id: '0', type: 'unit/player', label: 'loading error', value: errorText + '\n' + player.labelSystem, warning: true}
             ]);
             this.dataLoading = false;
-            throw new Error(player.labelSystem);
+            return '';
           }
 
           if (player.value.length === 0) {
@@ -165,7 +165,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
               {id: '0', type: 'unit/player', label: 'loading time', value: player.duration.toString(), warning: false}
             ]);
             this.dataLoading = false;
-            throw new Error('Error at: ' + errorText);
+            return '';
           }
 
           this.ds.unitData$.next([
