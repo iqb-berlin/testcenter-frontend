@@ -173,9 +173,9 @@ export class BackendService {
       );
   }
 
+  benchmarkDownloadRequest(requestedDownloadSize: number): Promise<NetworkRequestTestResult> {
 
-  public benchmarkDownloadRequest(requestedDownloadSize: number, KBPSReporter: BehaviorSubject<number>): Promise<NetworkRequestTestResult> {
-    const fileuri = this.serverUrl + 'doSysCheckDownloadTest.php?size=' + requestedDownloadSize + '&uid=' + Date.now().toString();
+    const serverUrl = this.serverUrl;
     const testResult: NetworkRequestTestResult = {
       type: 'downloadTest',
       size: requestedDownloadSize,
@@ -183,53 +183,43 @@ export class BackendService {
       error: null,
       speedInBPS: 0
     };
-    return new Promise((resolve, reject) => {
-      let lastTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
-      let receivedBytes = 0;
-      let startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
-      const responseData: Array<{ bytes: number, milliseconds: number }> = [];
-      this.http.get(fileuri, {
-        observe: 'events',
-        reportProgress: true,
-        responseType: 'text'
-      }).subscribe((event: HttpEvent<any>) => {
-        switch (event.type) {
 
-          case HttpEventType.Sent:
-            console.log('Request sent!' + fileuri);
-            // ab jetzt beginnt die Messung
-            startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
-            lastTime = startingTime;
-            break;
+    return new Promise(function(resolve, reject) {
 
-          case HttpEventType.DownloadProgress:
-            const currTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', serverUrl + 'doSysCheckDownloadTest.php?size=' +
+        requestedDownloadSize + '&uid=' + (new Date().getTime()), true);
 
-            const differenceBytes = event.loaded - receivedBytes;
-            const timespan = currTime - lastTime;
+      xhr.timeout = 45000;
 
-            lastTime = currTime;
-            receivedBytes = event.loaded;
-
-            responseData.push({bytes: differenceBytes, milliseconds: timespan});
-            // Nutzung von BS um aktuelle Geschwindigkeit darzustellen KB/s
-            KBPSReporter.next((differenceBytes / 1024) / (timespan / 1000));
-            break;
-
-          case HttpEventType.Response:
-            testResult.duration = BackendService.getMostPreciseTimestampBrowserCanProvide() - startingTime;
-            const responseBytes = responseData.reduce((sum, result) => sum + result.bytes, 0);
-
-            const responseBytesPerSecond = (responseData.reduce((sum, result) => sum + (result.bytes / (result.milliseconds / 1000)) * result.bytes, 0)) / responseBytes;
-
-
-            testResult.speedInBPS = responseBytesPerSecond;
-            resolve(testResult);
+      xhr.onload = () => {
+        if (xhr.status !== 200) {
+          testResult.error = `Error ${xhr.statusText} (${xhr.status}) `;
         }
-      }, error => {
-        testResult.error = `Network Error ${error.statusText} (${error.status}) `;
+        if (xhr.response.toString().length !== requestedDownloadSize) {
+          testResult.error = `Error: Data package has wrong size! ${requestedDownloadSize} ` + xhr.response.toString().length;
+        }
+        const currentTime = testResult.duration = BackendService.getMostPreciseTimestampBrowserCanProvide();
+        console.log({'c': currentTime, 's': startingTime});
+        testResult.duration = currentTime - startingTime;
         resolve(testResult);
-      });
+      };
+
+      xhr.onerror = () => {
+        testResult.error = `Network Error ${xhr.statusText} (${xhr.status}) `;
+        resolve(testResult);
+      };
+
+      xhr.ontimeout = () => {
+        testResult.duration = xhr.timeout;
+        testResult.error = 'timeout';
+        resolve(testResult);
+      };
+
+      const startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
+
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(`{"size":"${requestedDownloadSize}"}`);
     });
   }
 
@@ -306,7 +296,7 @@ export class BackendService {
         return timeOrigin + performance.now();
       }
     }
-    return Date.now();
+    return Date.now(); // milliseconds
   }
 
   // tslint:disable-next-line:member-ordering
@@ -363,9 +353,6 @@ export interface FormDefEntry {
   value: string;
   options: string[];
 }
-
-export type RequestBenchmarkerFunction = (requestSize: number, callback: RequestBenchmarkerFunctionCallback) => void;
-export type RequestBenchmarkerFunctionCallback = (testResult: NetworkRequestTestResult) => void;
 
 export interface UnitData {
   key: string;

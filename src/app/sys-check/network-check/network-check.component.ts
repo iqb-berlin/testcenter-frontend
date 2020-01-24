@@ -60,7 +60,7 @@ export class NetworkCheckComponent implements OnInit {
 
   readonly benchmarkDefinitions = new Map<BenchmarkType, BenchmarkDefinition>([
     [BenchmarkType.down, {
-      testSizes: [1024], // , 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304],
+      testSizes: [400000, 800000, 1600000, 3200000], // [131072, 524288, 2097152, 8388608],
       allowedDevianceBytesPerSecond: 100000,
       allowedErrorsPerSequence: 0,
       allowedSequenceRepetitions: 15
@@ -151,8 +151,8 @@ export class NetworkCheckComponent implements OnInit {
       labelPadding: 4,
       xAxisMaxValue: 16 + Math.max(...testSizes),
       xAxisMinValue: Math.min(...testSizes),
-      yAxisMaxValue: (BenchmarkType.down === benchmarkType) ? 1000 : 2500,
-      yAxisMinValue: (BenchmarkType.down === benchmarkType) ? 10 : 100,
+      yAxisMaxValue: (BenchmarkType.down === benchmarkType) ? 1200 : 2500,
+      yAxisMinValue: (BenchmarkType.down === benchmarkType) ? 20 : 100,
       xAxisStepSize: 4,
       yAxisStepSize: (BenchmarkType.down === benchmarkType) ? 50 : 100,
       lineWidth: 5,
@@ -234,7 +234,7 @@ export class NetworkCheckComponent implements OnInit {
     const testPackage = this.humanReadableBytes(requestSize);
     if (benchmarkType === BenchmarkType.down) {
       this.updateStatus(`Downloadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage} bytes`);
-      return this.bs.benchmarkDownloadRequest(requestSize, this.KBPSReporter);
+      return this.bs.benchmarkDownloadRequest(requestSize);
     } else {
       this.updateStatus(`Uploadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage})`);
       return this.bs.benchmarkUploadRequest(requestSize);
@@ -257,29 +257,8 @@ export class NetworkCheckComponent implements OnInit {
 
   // tslint:disable-next-line:member-ordering
   private static calculateAverageSpeedBytePerSecond(testResults: Array<NetworkRequestTestResult>): number {
-    const averageSpeedInBPS  =  testResults.reduce((sum, result) => sum + result.speedInBPS, 0) / testResults.length;
-    console.log('Durchschnittsgeschwindigkeit der gewichtetet Einzelgeschwindigkeiten');
-    console.log(averageSpeedInBPS);
-    const averageSpeedInBPS2 = testResults.reduce((sum, result) => sum + (result.size / (result.duration / 1000)), 0) / testResults.length;
-    console.log('(alte Berechnung) Durchschnitt der Summe der einzelnen Geschwindigkeiten');
-    console.log(averageSpeedInBPS2);
 
-    const timeInSeconds = testResults.reduce((sum, result) => sum + (result.duration / 1000), 0); // / testResults.length;
-    const sizeInBytes = testResults.reduce((sum, result) => sum + (result.size), 0);
-    console.log('Durchschnitt der Summe der einzelnen Bytes/Zeiten');
-    console.log(sizeInBytes / timeInSeconds);
-
-
-
-    const weightedMed = testResults.reduce((sum, result) => sum + ((result.size / result.duration * 1000) * result.size), 0) / sizeInBytes;
-    console.log('Gewichteter Durchschnitt der einzelnen Durchschnittsgeschwindigkeiten ');
-    console.log(weightedMed);
-
-    const weightedMed2 = testResults.reduce((sum, result) => sum + (result.speedInBPS * result.size), 0) / sizeInBytes;
-    console.log('Gewichteter Durchschnitt der gewichteten Durchschnittsgeschwindigkeiten ');
-    console.log(weightedMed2);
-
-    return averageSpeedInBPS2;
+    return testResults.reduce((sum, result) => sum + (result.size / (result.duration / 1000)), 0) / testResults.length;
   }
 
 
@@ -437,21 +416,28 @@ export class NetworkCheckComponent implements OnInit {
   }
 
 
-  private humanReadableBytes(bytes: number, useBits: boolean = false): string {
+  private humanReadableBytes(bytes: number, useBits: boolean = false, base1024: boolean = false): string {
 
-    const units = useBits
-      ? ['b', 'kb', 'mb', 'gb', 'tb']
-      : ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    const suffix = {
+      B: {
+        1000: ['B', 'kB', 'MB', 'GB', 'TB'],
+        1024: ['B', 'KiB', 'MiB', 'GiB', 'TiB']
+      },
+      bit: {
+        1000: ['bit', 'kbit', 'Mbit', 'Gbit', 'Tbit'],
+        1024: ['bit', 'kibit', 'Mibit', 'Gibit', 'Tibit']
+      }
+    };
 
     if (useBits) {
-      bytes /= 8;
+      bytes *= 8;
     }
 
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    const base = base1024 ? 1024 : 1000;
 
-    const sufixes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(base));
 
-    return !bytes && '0 Bytes' || (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sufixes[i];
+    return !bytes && '0' || (bytes / Math.pow(base, i)).toFixed(2) + ' ' + suffix[!useBits ? 'B' : 'bit'][base][i];
   }
 
   private humanReadableMilliseconds = (milliseconds: number): string => (milliseconds / 1000).toString() + ' sec';
