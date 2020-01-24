@@ -33,6 +33,7 @@ export class ReportComponent {
   }
 
   saveReport() {
+
     const dialogRef = this.saveDialog.open(SaveReportComponent, {
       width: '500px',
       height: '600px',
@@ -61,12 +62,8 @@ export class ReportComponent {
 
   exportReport() {
 
-    const stripQuotes = (string: String) => {
-      // if (typeof string.replace !== 'function') {
-      //   console.warn('strip', string);return;
-      // }
-      return (string.toString() || '').replace(/[\\"]/g, '\\"');
-    }
+    const stripQuotes = (string: String) => (string.toString() || '').replace(/[\\"]/g, '\\"');
+
     this.csvReport = this.ds.environmentData$.getValue()
       .concat(this.ds.networkData$.getValue())
       .concat(this.ds.questionnaireData$.getValue())

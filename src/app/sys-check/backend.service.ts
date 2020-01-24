@@ -370,4 +370,5 @@ export interface ReportEntry {
   type: string;
   label: string;
   value: string;
+  warning: boolean;
 }

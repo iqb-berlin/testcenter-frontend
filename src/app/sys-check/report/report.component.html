@@ -14,7 +14,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let rd of environmentData">
+      <tr *ngFor="let rd of environmentData" [ngStyle]="{color: (rd.warning ? 'red' : 'black')}">
         <td>{{rd.label}}</td>
         <td>{{rd.value}}</td>
       </tr>
@@ -28,7 +28,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let rd of networkData">
+      <tr *ngFor="let rd of networkData" [ngStyle]="{color: (rd.warning ? 'red' : 'black')}">
         <td>{{rd.label}}</td>
         <td>{{rd.value}}</td>
       </tr>
@@ -42,7 +42,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let rd of questionnaireData">
+      <tr *ngFor="let rd of questionnaireData" [ngStyle]="{color: (rd.warning ? 'red' : 'black')}">
         <td>{{rd.label}}</td>
         <td>{{rd.value}}</td>
       </tr>
@@ -56,7 +56,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let rd of unitData">
+      <tr *ngFor="let rd of unitData" [ngStyle]="{color: (rd.warning ? 'red' : 'black')}">
         <td>{{rd.label}}</td>
         <td>{{rd.value}}</td>
       </tr>

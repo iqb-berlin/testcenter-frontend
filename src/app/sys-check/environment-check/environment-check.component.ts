@@ -10,6 +10,21 @@ export class EnvironmentCheckComponent implements OnInit {
 
   private report: Map<string, ReportEntry> = new Map<string, ReportEntry>();
 
+  private rating = {
+    browser: {
+      'Chrome': 79,
+      'Safari': 13,
+      'Edge': 79,
+      'Firefox': 72,
+      'Internet Explorer': 11,
+      'Opera': 64
+    },
+    screen: {
+      width: 800,
+      height: 600
+    }
+  };
+
   constructor(
     private ds: SyscheckDataService
   ) { }
@@ -24,15 +39,17 @@ export class EnvironmentCheckComponent implements OnInit {
     this.getFromNavigator();
     this.getBrowserPlugins();
 
+    this.rateBrowser();
+
     const report = Array.from(this.report.values())
       .sort((item1: ReportEntry, item2: ReportEntry) => (item1.label > item2.label) ? 1 : -1);
 
     this.ds.environmentData$.next(Object.values(report));
   }
 
-  private reportPush(key: string, value: string) {
+  private reportPush(key: string, value: string, warning: boolean = false) {
 
-    this.report.set(key, {'id': '0', 'type': 'environment', 'label': key, 'value': value});
+    this.report.set(key, {'id': '0', 'type': 'environment', 'label': key, 'value': value, 'warning': warning});
   }
 
   getBrowser() {
@@ -69,6 +86,21 @@ export class EnvironmentCheckComponent implements OnInit {
         this.reportPush(item[2], uaInfos[item[0]][item[1]]);
       }
     });
+  }
+
+  rateBrowser() {
+
+    const browser = this.report.get('Browser').value;
+    const browserVersion = this.report.get('Browser-Version').value;
+
+    if ((typeof this.rating.browser[browser] !== 'undefined') && (browserVersion < this.rating.browser[browser])) {
+      this.report.get('Browser-Version').warning = true;
+    }
+
+    if (browser === 'Internet Explorer') {
+      this.report.get('Browser').warning = true;
+    }
+
   }
 
   getFromNavigator() {
@@ -128,7 +160,8 @@ export class EnvironmentCheckComponent implements OnInit {
 
   getResolution() {
 
-    this.reportPush('Bildschirm-Auflösung', window.screen.width + ' x ' + window.screen.height);
+    const isLargeEnough = (window.screen.width >= this.rating.screen.width) && (window.screen.height >= this.rating.screen.height);
+    this.reportPush('Bildschirm-Auflösung', window.screen.width + ' x ' + window.screen.height, !isLargeEnough);
     const windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.offsetWidth;
     const windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.offsetHeight;
     this.reportPush('Fenster-Größe', windowWidth + ' x ' + windowHeight);

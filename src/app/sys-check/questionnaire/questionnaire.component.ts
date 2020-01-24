@@ -45,10 +45,11 @@ export class QuestionnaireComponent implements OnInit {
     const myReportEntries: ReportEntry[] = [];
     this.questions.forEach(element => {
       if (element.type === 'header') {
-        myReportEntries.push({'id': element.id, 'type': element.type, 'label': element.value, 'value': ''});
+        myReportEntries.push({'id': element.id, 'type': element.type, 'label': element.value, 'value': '', warning: false});
       } else {
-        const myValue = this.form.controls[element.id].value;
-        myReportEntries.push({'id': element.id, 'type': element.type, 'label': element.prompt, 'value': myValue});
+        const value = this.form.controls[element.id].value;
+        const warning = (['string', 'select', 'text', 'radio'].indexOf(element.type) > -1) && (value === '');
+        myReportEntries.push({'id': element.id, 'type': element.type, 'label': element.prompt, 'value': value, warning: warning});
       }
     });
     this.ds.questionnaireData$.next(myReportEntries);

@@ -152,7 +152,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
           if (player instanceof ServerError) {
             this.errorMessage = 'Konnte Unit-Player nicht laden: ' + player.labelNice;
             this.ds.unitData$.next([
-              {id: '0', type: 'unit/player', label: 'loading error', value: errorText + '\n' + player.labelSystem}
+              {id: '0', type: 'unit/player', label: 'loading error', value: errorText + '\n' + player.labelSystem, warning: true}
             ]);
             this.dataLoading = false;
             throw new Error(player.labelSystem);
@@ -161,15 +161,15 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
           if (player.value.length === 0) {
             this.errorMessage = 'Konnte Unit-Player nicht laden';
             this.ds.unitData$.next([
-              {id: '0', type: 'unit/player', label: 'loading error', value: errorText + 'Response invalid\n' + JSON.stringify(player)},
-              {id: '0', type: 'unit/player', label: 'loading time', value: player.duration.toString()}
+              {id: '0', type: 'unit/player', label: 'loading error', value: errorText + 'Response invalid\n' + JSON.stringify(player), warning: true},
+              {id: '0', type: 'unit/player', label: 'loading time', value: player.duration.toString(), warning: false}
             ]);
             this.dataLoading = false;
             throw new Error('Error at: ' + errorText);
           }
 
           this.ds.unitData$.next([
-            {id: '0', type: 'unit/player', label: 'loading time', value: player.duration.toString()}
+            {id: '0', type: 'unit/player', label: 'loading time', value: player.duration.toString(), warning: false}
           ]);
 
           this.pendingItemDefinition$.next(data.def);

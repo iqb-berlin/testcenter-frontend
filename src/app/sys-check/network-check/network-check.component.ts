@@ -295,22 +295,23 @@ export class NetworkCheckComponent implements OnInit {
     const testConfig = this.ds.checkConfig$.getValue();
 
     const report: ReportEntry[] = [];
-    const reportEntry = (key: string, value: string): void => {
+    const reportEntry = (key: string, value: string, warning: boolean = false): void => {
       report.push({
         id: '0',
         type: 'network',
         label: key,
-        value: value
+        value: value,
+        warning: warning
       });
     };
 
     reportEntry('Downloadgeschwindigkeit', this.humanReadableBytes(downAvg, true) + '/s');
     reportEntry('Downloadgeschwindigkeit benötigt', this.humanReadableBytes(testConfig.downloadMinimum, true) + '/s');
-    reportEntry('Downloadbewertung', this.networkRating.downloadRating);
+    reportEntry('Downloadbewertung', this.networkRating.downloadRating, this.networkRating.downloadRating === 'insufficient');
     reportEntry('Uploadgeschwindigkeit', this.humanReadableBytes(upAvg, true) + '/s');
     reportEntry('Uploadgeschwindigkeit benötigt', this.humanReadableBytes(testConfig.uploadMinimum, true) + '/s');
-    reportEntry('Uploadbewertung', this.networkRating.uploadRating);
-    reportEntry('Allgemeine Bewertung der Verbindung', this.networkRating.overallRating);
+    reportEntry('Uploadbewertung', this.networkRating.uploadRating, this.networkRating.uploadRating === 'insufficient');
+    reportEntry('Gesamtbewertung', this.networkRating.overallRating, this.networkRating.overallRating === 'insufficient');
 
     this.addBrowsersNativeNetworkInformationToReport(report);
 
@@ -391,31 +392,31 @@ export class NetworkCheckComponent implements OnInit {
     if (this.detectedNetworkInformations.available) {
       if (this.detectedNetworkInformations.roundTripTimeMs) {
         report.push({
-         id: '0', type: 'network', label: 'RoundTrip in Ms',
+         id: '0', type: 'network', label: 'RoundTrip in Ms', warning: false,
          value: this.detectedNetworkInformations.roundTripTimeMs.toString()
       });
       }
       if (this.detectedNetworkInformations.effectiveNetworkType) {
         report.push({
-          id: '0', type: 'network', label: 'Netzwerktyp nach Leistung',
+          id: '0', type: 'network', label: 'Netzwerktyp nach Leistung', warning: false,
           value: this.detectedNetworkInformations.effectiveNetworkType
         });
       }
       if (this.detectedNetworkInformations.networkType) {
         report.push({
-          id: '0', type: 'network', label: 'Netzwerktyp',
+          id: '0', type: 'network', label: 'Netzwerktyp', warning: false,
           value: this.detectedNetworkInformations.networkType
         });
       }
       if (this.detectedNetworkInformations.downlinkMegabitPerSecond) {
         report.push({
-          id: '0', type: 'network', label: 'Downlink MB/s',
+          id: '0', type: 'network', label: 'Downlink MB/s', warning: false,
           value: this.detectedNetworkInformations.downlinkMegabitPerSecond.toString()
         });
       }
     } else {
       report.push({
-        id: '0', type: 'network', label: 'Netzwerkprofil des Browsers',
+        id: '0', type: 'network', label: 'Netzwerkprofil des Browsers', warning: true,
         value: 'nicht verfügbar'
       });
     }
