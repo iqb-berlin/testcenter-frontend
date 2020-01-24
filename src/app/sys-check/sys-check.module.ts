@@ -21,7 +21,7 @@ import { UnitCheckComponent } from './unit-check/unit-check.component';
 import { QuestionnaireComponent } from './questionnaire/questionnaire.component';
 import { ReportComponent } from './report/report.component';
 import { SaveReportComponent } from './report/save-report/save-report.component';
-import { TcNaviButtonsComponent } from './unit-check/tc-navi-buttons/tc-navi-buttons.component';
+import { UnitNaviButtonsComponent } from './unit-check/tc-navi-buttons/unit-navi-buttons.component';
 
 import { TcSpeedChartComponent } from './network-check/tc-speed-chart.component';
 
@@ -56,7 +56,7 @@ import { TcSpeedChartComponent } from './network-check/tc-speed-chart.component'
     ResizeIFrameChildDirective,
     ReportComponent,
     SaveReportComponent,
-    TcNaviButtonsComponent,
+    UnitNaviButtonsComponent,
     TcSpeedChartComponent
   ],
   exports: [

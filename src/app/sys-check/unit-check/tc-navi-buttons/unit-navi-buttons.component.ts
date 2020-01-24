@@ -3,10 +3,10 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'tc-navi-buttons',
-  templateUrl: './tc-navi-buttons.component.html',
-  styleUrls: ['./tc-navi-buttons.component.css']
+  templateUrl: './unit-navi-buttons.component.html',
+  styleUrls: ['./unit-navi-buttons.component.css']
 })
-export class TcNaviButtonsComponent {
+export class UnitNaviButtonsComponent {
   public showPageNaviButtons = true;
   private pagePrevEnabled = false;
   private pageNextEnabled = false;
