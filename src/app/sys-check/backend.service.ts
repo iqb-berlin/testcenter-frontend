@@ -31,7 +31,7 @@ export class BackendService {
     skipnetwork: false,
     downloadMinimum: 1.875e+6, // 15Mbit/s ~> typical dl speed 4G CAT4
     downloadGood: 3.75e+6, // 30Mbit/s ~> typical dl speed 4G+ CAT6
-    uploadMinimum: 250000, // 5Mbit/s
+    uploadMinimum: 250000, // 2Mbit/s
     uploadGood: 1.25e+6, // 10Mbit/s
   };
 
