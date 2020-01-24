@@ -22,7 +22,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
 
   private pendingItemDefinition$ = new BehaviorSubject(null);
 
-  public dataLoading = false;
+  public dataLoading = true;
   public errorMessage = '';
 
   constructor(

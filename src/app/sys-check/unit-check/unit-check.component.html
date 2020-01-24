@@ -1,7 +1,10 @@
 <mat-card>
 
   <mat-card-header>
-    <mat-card-title>Test-Aufgabe</mat-card-title>
+    <mat-card-title>
+      Test-Aufgabe
+      <span *ngIf="dataLoading" style="color:red"> - wird gleich geladen, bitte warten.</span>
+    </mat-card-title>
     <mat-card-subtitle>Hier können Sie eine Aufgabe ausprobieren</mat-card-subtitle>
 
     <tc-navi-buttons></tc-navi-buttons><!-- TODO needed? -->

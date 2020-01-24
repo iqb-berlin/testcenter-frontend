@@ -1,7 +1,10 @@
 <mat-card [ngStyle]="{display: measureNetwork ? 'block' : 'none'}">
 
   <mat-card-header>
-    <mat-card-title>Netzwerk</mat-card-title>
+    <mat-card-title>
+      Netzwerk
+      <span *ngIf="!status.done" style="color:red"> - Test läuft, bitte warten.</span>
+    </mat-card-title>
     <mat-card-subtitle>
       {{status.message}}
 
