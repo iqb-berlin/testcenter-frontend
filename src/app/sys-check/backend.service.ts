@@ -29,12 +29,10 @@ export class BackendService {
     questionsonlymode: false,
     ratings: [],
     skipnetwork: false,
-    downloadMinimum: 1024 * 1024,
-    downloadGood: 1024 * 1024 * 10,
-    uploadMinimum: 1024 * 512,
-    uploadGood: 1024 * 1024 * 5,
-    pingMinimum: 5000,
-    pingGood: 1000
+    downloadMinimum: 1.875e+6, // 15Mbit/s ~> typical dl speed 4G CAT4
+    downloadGood: 3.75e+6, // 30Mbit/s ~> typical dl speed 4G+ CAT6
+    uploadMinimum: 250000, // 5Mbit/s
+    uploadGood: 1.25e+6, // 10Mbit/s
   };
 
   private serverSlimUrl_GET: string;
@@ -342,8 +340,6 @@ export interface CheckConfigData {
   uploadGood: number;
   downloadMinimum: number;
   downloadGood: number;
-  pingMinimum: number;
-  pingGood: number;
 }
 
 export interface FormDefEntry {

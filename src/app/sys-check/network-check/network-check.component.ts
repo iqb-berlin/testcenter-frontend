@@ -49,25 +49,26 @@ interface DetectedNetworkInformations {
 })
 export class NetworkCheckComponent implements OnInit {
 
+  constructor(
+    private ds: SyscheckDataService,
+    private bs: BackendService
+  ) {}
+
   @ViewChild('downloadChart', {static: true}) downloadPlotter;
   @ViewChild('uploadChart', {static: true}) uploadPlotter;
 
-
-  KBPSReporter: BehaviorSubject<number> = new BehaviorSubject(0);
-
   @Input() measureNetwork: boolean;
-
 
   readonly benchmarkDefinitions = new Map<BenchmarkType, BenchmarkDefinition>([
     [BenchmarkType.down, {
-      testSizes: [400000, 800000, 1600000, 3200000], // [131072, 524288, 2097152, 8388608],
+      testSizes: [400000, 800000, 1600000, 3200000],
       allowedDevianceBytesPerSecond: 100000,
       allowedErrorsPerSequence: 0,
       allowedSequenceRepetitions: 15
     }],
     [BenchmarkType.up, {
-      testSizes: [1024], // 4096, 16384, 65536, 262144, 1048576, 4194304],
-      allowedDevianceBytesPerSecond: 10000000,
+      testSizes: [100000, 200000, 400000, 800000],
+      allowedDevianceBytesPerSecond: 5000,
       allowedErrorsPerSequence: 0,
       allowedSequenceRepetitions: 15
     }]
@@ -99,10 +100,11 @@ export class NetworkCheckComponent implements OnInit {
     available: false
   };
 
-  constructor(
-    private ds: SyscheckDataService,
-    private bs: BackendService
-  ) {}
+  // tslint:disable-next-line:member-ordering
+  private static calculateAverageSpeedBytePerSecond(testResults: Array<NetworkRequestTestResult>): number {
+
+    return testResults.reduce((sum, result) => sum + (result.size / (result.duration / 1000)), 0) / testResults.length;
+  }
 
   ngOnInit() {
 
@@ -158,7 +160,7 @@ export class NetworkCheckComponent implements OnInit {
       lineWidth: 5,
       xProject: x => (x === 0 ) ? 0 : Math.sign(x) * Math.log2(Math.abs(x)),
       yProject: y => (y === 0 ) ? 0 : Math.sign(y) * Math.log(Math.abs(y)),
-      xAxisLabels: (x) => (testSizes.indexOf(x) > -1) ? this.humanReadableBytes(x) : '',
+      xAxisLabels: (x) => (testSizes.indexOf(x) > -1) ? this.humanReadableBytes(x, false, true) : '',
       yAxisLabels: (y, i) => (i < 10) ? this.humanReadableMilliseconds(y) : ' ',
     };
 
@@ -179,13 +181,13 @@ export class NetworkCheckComponent implements OnInit {
         .then(results => {
           const averageBytesPerSecond = NetworkCheckComponent.calculateAverageSpeedBytePerSecond(results);
           const averageOfPreviousLoops = this.getAverageNetworkStat(type);
-          console.log({results: results, avg: averageBytesPerSecond});
+          console.log({type: `${type}`, results: results, avg: averageBytesPerSecond});
           const errors = results.reduce((a, r) => a + ((r.error !== null) ? 1 : 0), 0);
           this.networkStats.get(type).push(averageBytesPerSecond);
           this.showBenchmarkSequenceResults(type, this.getAverageNetworkStat(type), results);
 
           if (errors > benchmarkDefinition.allowedErrorsPerSequence) {
-            console.warn('some errors occured', results);
+            console.warn('some errors occurred', results);
             return reject(errors);
           }
 
@@ -255,13 +257,6 @@ export class NetworkCheckComponent implements OnInit {
   }
 
 
-  // tslint:disable-next-line:member-ordering
-  private static calculateAverageSpeedBytePerSecond(testResults: Array<NetworkRequestTestResult>): number {
-
-    return testResults.reduce((sum, result) => sum + (result.size / (result.duration / 1000)), 0) / testResults.length;
-  }
-
-
   private plotStatistics(benchmarkType: BenchmarkType, benchmarkSequenceResults: Array<NetworkRequestTestResult>) {
 
     const datapoints = benchmarkSequenceResults
@@ -282,7 +277,7 @@ export class NetworkCheckComponent implements OnInit {
   private reportResults(isInstable: boolean = false): void {
 
     if (!isInstable) {
-      this.calculateNetworkRating();
+      this.updateNetworkRating();
     } else {
       this.networkRating = {
         downloadRating: 'unstable',
@@ -294,15 +289,28 @@ export class NetworkCheckComponent implements OnInit {
     this.updateStatus(`Die folgenden Netzwerkeigenschaften wurden festgestellt:`);
     this.status.done = true;
 
-    // send data for reporting
+    const downAvg = this.getAverageNetworkStat(BenchmarkType.down);
+    const upAvg = this.getAverageNetworkStat(BenchmarkType.up);
+
+    const testConfig = this.ds.checkConfig$.getValue();
+
     const report: ReportEntry[] = [];
-    report.push({id: '0', type: 'network', label: 'Downloadgeschwindigkeit',
-      value: this.humanReadableBytes(this.getAverageNetworkStat(BenchmarkType.down), true).toLocaleString()});
-    report.push({id: '0', type: 'network', label: 'Downloadbewertung', value: this.networkRating.downloadRating});
-    report.push({id: '0', type: 'network', label: 'Uploadgeschwindigkeit',
-      value: this.humanReadableBytes(this.getAverageNetworkStat(BenchmarkType.up), true).toLocaleString()});
-    report.push({id: '0', type: 'network', label: 'Uploadbewertung', value: this.networkRating.uploadRating});
-    report.push({id: '0', type: 'network', label: 'Allgemeine Bewertung der Verbindung', value: this.networkRating.overallRating});
+    const reportEntry = (key: string, value: string): void => {
+      report.push({
+        id: '0',
+        type: 'network',
+        label: key,
+        value: value
+      });
+    };
+
+    reportEntry('Downloadgeschwindigkeit', this.humanReadableBytes(downAvg, true) + '/s');
+    reportEntry('Downloadgeschwindigkeit benötigt', this.humanReadableBytes(testConfig.downloadMinimum, true) + '/s');
+    reportEntry('Downloadbewertung', this.networkRating.downloadRating);
+    reportEntry('Uploadgeschwindigkeit', this.humanReadableBytes(upAvg, true) + '/s');
+    reportEntry('Uploadgeschwindigkeit benötigt', this.humanReadableBytes(testConfig.uploadMinimum, true) + '/s');
+    reportEntry('Uploadbewertung', this.networkRating.uploadRating);
+    reportEntry('Allgemeine Bewertung der Verbindung', this.networkRating.overallRating);
 
     this.addBrowsersNativeNetworkInformationToReport(report);
 
@@ -310,14 +318,13 @@ export class NetworkCheckComponent implements OnInit {
     this.ds.networkData$.next(report);
   }
 
-
   private updateStatus(newStatus: string): void {
 
     this.status.message = newStatus;
   }
 
 
-  public calculateNetworkRating(): void {
+  public updateNetworkRating(): void {
 
     const testConfig = this.ds.checkConfig$.getValue();
 
@@ -344,10 +351,10 @@ export class NetworkCheckComponent implements OnInit {
     }
 
     awardedNetworkRating.uploadRating = 'good';
-    if (nd.avgUploadSpeed < testConfig.downloadGood) {
+    if (nd.avgUploadSpeed < testConfig.uploadGood) {
         awardedNetworkRating.uploadRating = 'ok';
     }
-    if (nd.avgUploadSpeed < testConfig.downloadMinimum) {
+    if (nd.avgUploadSpeed < testConfig.uploadMinimum) {
         awardedNetworkRating.uploadRating = 'insufficient';
     }
 
@@ -402,7 +409,7 @@ export class NetworkCheckComponent implements OnInit {
       }
       if (this.detectedNetworkInformations.downlinkMegabitPerSecond) {
         report.push({
-          id: '0', type: 'network', label: 'Downlink mbps',
+          id: '0', type: 'network', label: 'Downlink MB/s',
           value: this.detectedNetworkInformations.downlinkMegabitPerSecond.toString()
         });
       }
