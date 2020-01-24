@@ -1,4 +1,4 @@
-import { SyscheckDataService } from './../../syscheck-data.service';
+import { SyscheckDataService } from '../../syscheck-data.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -12,7 +12,7 @@ export class TcNaviButtonsComponent {
   private pageNextEnabled = false;
 
   constructor(private ds: SyscheckDataService) {
-    // this.ds.showNaviButtons$.subscribe(show => this.showPageNaviButtons = show);
+
     this.ds.itemplayerValidPages$.subscribe((pages: string[]) => this.showPageNaviButtons = pages.length  > 1);
     this.ds.itemplayerCurrentPage$.subscribe((p: string) => {
       const validPages = this.ds.itemplayerValidPages$.getValue();
@@ -23,8 +23,8 @@ export class TcNaviButtonsComponent {
     });
   }
 
-  // *******************************************************************************************************
   prevPageNaviButtonClick() {
+
     const validPages = this.ds.itemplayerValidPages$.getValue();
     const p = this.ds.itemplayerCurrentPage$.getValue();
     const pagePos = validPages.indexOf(p);
@@ -33,6 +33,7 @@ export class TcNaviButtonsComponent {
     }
   }
   nextPageNaviButtonClick() {
+
     const validPages = this.ds.itemplayerValidPages$.getValue();
     const p = this.ds.itemplayerCurrentPage$.getValue();
     const pagePos = validPages.indexOf(p);
