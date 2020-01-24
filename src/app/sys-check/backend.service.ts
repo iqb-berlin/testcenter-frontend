@@ -1,7 +1,7 @@
 import { CheckConfig } from './backend.service';
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpEvent, HttpErrorResponse, HttpEventType } from '@angular/common/http';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ServerError } from '../backend.service';
 
