@@ -5,7 +5,7 @@ import {
   NetworkRequestTestResult,
   ReportEntry
 } from '../backend.service';
-import { BehaviorSubject, combineLatest } from 'rxjs';
+import { combineLatest } from 'rxjs';
 
 enum BenchmarkType {
   up,

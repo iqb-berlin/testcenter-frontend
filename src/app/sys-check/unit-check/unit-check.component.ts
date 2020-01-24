@@ -1,12 +1,11 @@
 import { MainDataService } from '../../maindata.service';
-import {BackendService, CheckConfigData, ReportEntry, ResourcePackage, UnitData} from '../backend.service';
+import {BackendService, ResourcePackage, UnitData} from '../backend.service';
 import { SyscheckDataService } from '../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { Subscription, BehaviorSubject, Observable, combineLatest} from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
 import { ServerError } from '../../backend.service';
-import { TaggedString } from '../../test-controller/test-controller.interfaces';
 
 @Component({
   selector: 'iqb-unit-check',
@@ -72,7 +71,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
           case 'vo.FromPlayer.ReadyNotification':
             this.iFrameItemplayer.setAttribute('height', String(Math.trunc(this.iFrameHostElement.nativeElement.clientHeight)));
             let hasData = false;
-            const initParams = {};
 
             const pendingSpec = this.pendingItemDefinition$.getValue();
             if ((pendingSpec !== null) && (pendingSpec.length > 0)) {
@@ -136,7 +134,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     this.bs.getUnitData(checkId).pipe(
       flatMap((data: UnitData) => this.loadPlayerCode(data)),
       map((playerCode: string) => this.createPlayerElement(playerCode)),
-    ).subscribe(finale => {
+    ).subscribe(() => {
       this.ds.nextTask();
     });
   }
@@ -161,7 +159,9 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
           if (player.value.length === 0) {
             this.errorMessage = 'Konnte Unit-Player nicht laden';
             this.ds.unitData$.next([
-              {id: '0', type: 'unit/player', label: 'loading error', value: errorText + 'Response invalid\n' + JSON.stringify(player), warning: true},
+              {id: '0', type: 'unit/player', label: 'loading error', warning: true,
+                value: errorText + 'Response invalid\n' + JSON.stringify(player)
+              },
               {id: '0', type: 'unit/player', label: 'loading time', value: player.duration.toString(), warning: false}
             ]);
             this.dataLoading = false;
