@@ -2,14 +2,9 @@ import { CheckConfig } from './backend.service';
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 import { ServerError } from '../backend.service';
 
-export interface ResourcePackage {
-  value: string;
-  tag: string;
-  duration: number;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -45,22 +40,6 @@ export class BackendService {
     this.serverSlimUrl_GET = this.serverUrl + 'tc_get.php/';
   }
 
-  // uppercase and add extension if not part
-  // TODO there is a copy of this in testController/backendService -> move to common ancestor
-  static normaliseId(s: string, standardext = ''): string {
-    s = s.trim().toUpperCase();
-    s.replace(/\s/g, '_');
-    if (standardext.length > 0) {
-      standardext = standardext.trim().toUpperCase();
-      standardext.replace(/\s/g, '_');
-      standardext = '.' + standardext.replace('.', '');
-
-      if (s.slice(-(standardext.length)) !== standardext) {
-        s = s + standardext;
-      }
-    }
-    return s;
-  }
 
   // TODO there is a copy of this in testController/backendService -> move to common ancestor
   static errorHandle(errorObj: HttpErrorResponse): Observable<ServerError> {
@@ -78,7 +57,7 @@ export class BackendService {
     return of(myreturn);
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
+
   getCheckConfigs(): Observable<CheckConfig[]> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -95,7 +74,7 @@ export class BackendService {
       );
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
+
   getCheckConfigData(cid: string): Observable<CheckConfigData> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -112,7 +91,7 @@ export class BackendService {
       );
   }
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+
   public saveReport (cid: string, keyphrase: string, title: string, envResults: ReportEntry[], networkResults: ReportEntry[],
                      questionnaireResults: ReportEntry[], unitResults: ReportEntry[]): Observable<Boolean> {
     const httpOptions = {
@@ -130,46 +109,26 @@ export class BackendService {
         );
   }
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  public getUnitData (configId: string): Observable<UnitData> {
+
+  public getUnitAndPlayer(configId: string): Observable<UnitData|ServerError> {
+
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json'
       })
     };
+    const startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
     return this.http
       .post<UnitData>(this.serverUrl + 'getSysCheckUnitData.php', {c: configId}, httpOptions)
-        .pipe(
-          catchError(problem_data => {
-            const myreturn: UnitData = null;
-            return of(myreturn);
-          })
-        );
-  }
-
-
-  // TODO there is a copy of this in testController -> move to common service
-  getResource(internalKey: string, resId: string, versionning = false): Observable<ResourcePackage | ServerError> {
-    const myHttpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      }),
-      responseType: 'text' as 'json'
-    };
-    const urlSuffix = versionning ? '?v=1' : '';
-    const startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
-    return this.http.get<string>(this.serverSlimUrl_GET + 'resource/' + resId + urlSuffix, myHttpOptions)
-      .pipe(
-        map(def => {
-          return {
-            tag: internalKey,
-            value: def,
-            duration: BackendService.getMostPreciseTimestampBrowserCanProvide() - startingTime
-          };
+      .pipe(tap(val => console.log('############## UNIT DATA', val)))
+      .pipe(map(data => {
+          data.duration = BackendService.getMostPreciseTimestampBrowserCanProvide() - startingTime;
+          return data;
         }),
         catchError(BackendService.errorHandle)
       );
   }
+
 
   benchmarkDownloadRequest(requestedDownloadSize: number): Promise<NetworkRequestTestResult> {
 
@@ -355,6 +314,8 @@ export interface UnitData {
   label: string;
   def: string;
   player: string;
+  player_id: string;
+  duration: number;
 }
 
 export interface NetworkRequestTestResult {

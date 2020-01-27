@@ -1,10 +1,9 @@
 import { MainDataService } from '../../maindata.service';
-import {BackendService, ResourcePackage, UnitData} from '../backend.service';
+import { BackendService, UnitData } from '../backend.service';
 import { SyscheckDataService } from '../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { OnDestroy } from '@angular/core';
-import { Subscription, BehaviorSubject, Observable, combineLatest} from 'rxjs';
-import { flatMap, map } from 'rxjs/operators';
+import { Subscription, BehaviorSubject, combineLatest} from 'rxjs';
 import { ServerError } from '../../backend.service';
 
 @Component({
@@ -36,17 +35,10 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
 
     combineLatest(
       this.ds.task$,
-      this.mds.loginData$,
       this.ds.checkConfig$
-    ).subscribe(([task, loginData, checkConfig]) => {
+    ).subscribe(([task, checkConfig]) => {
       if (task === 'loadunit') {
-        if (loginData.loginname !== '' && loginData.logintoken !== '') {
           this.loadUnitAndPlayer(checkConfig.id);
-          this.errorMessage = '';
-        } else {
-          this.errorMessage = 'Login-Credentials fehlen';
-          this.ds.nextTask();
-        }
       }
     });
 
@@ -131,53 +123,39 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   public loadUnitAndPlayer(checkId: string): void {
 
     this.clearPlayerElement();
-    this.bs.getUnitData(checkId).pipe(
-      flatMap((data: UnitData) => this.loadPlayerCode(data)),
-      map((playerCode: string) => this.createPlayerElement(playerCode)),
-    ).subscribe(() => {
+    this.bs.getUnitAndPlayer(checkId).subscribe((unitAndPlayer: UnitData | ServerError) => {
+
+      if (unitAndPlayer instanceof ServerError) {
+        this.errorMessage = 'Konnte Unit-Player nicht laden: ' + unitAndPlayer.labelNice;
+        this.ds.unitData$.next([
+          {id: '0', type: 'unit/player', label: 'loading error', value: 'Error: ' + unitAndPlayer.labelSystem, warning: true}
+        ]);
+        this.dataLoading = false;
+        return '';
+      }
+
+      if (unitAndPlayer.player.length === 0) {
+        this.errorMessage = 'Konnte Unit-Player nicht laden';
+        this.ds.unitData$.next([
+          {id: '0', type: 'unit/player', label: 'loading error', warning: true, value: 'Response invalid'},
+          {id: '0', type: 'unit/player', label: 'loading time', value: unitAndPlayer.duration.toString(), warning: false}
+        ]);
+        console.warn(unitAndPlayer);
+        this.dataLoading = false;
+        return '';
+      }
+
+      this.ds.unitData$.next([
+        {id: '0', type: 'unit/player', label: 'loading time', value: unitAndPlayer.duration.toString(), warning: false}
+      ]);
+
+      this.pendingItemDefinition$.next(unitAndPlayer.def);
+      this.createPlayerElement(unitAndPlayer.player);
+
       this.ds.nextTask();
-    });
+  });
   }
 
-  private loadPlayerCode(data: UnitData): Observable<string> {
-
-    return this.bs.getResource('', BackendService.normaliseId(data.player, 'html'), true)
-      .pipe(
-        map((player: ResourcePackage | ServerError) => {
-
-          const errorText = 'Loading Player: `' + BackendService.normaliseId(data.player, 'html') + '`';
-
-          if (player instanceof ServerError) {
-            this.errorMessage = 'Konnte Unit-Player nicht laden: ' + player.labelNice;
-            this.ds.unitData$.next([
-              {id: '0', type: 'unit/player', label: 'loading error', value: errorText + '\n' + player.labelSystem, warning: true}
-            ]);
-            this.dataLoading = false;
-            return '';
-          }
-
-          if (player.value.length === 0) {
-            this.errorMessage = 'Konnte Unit-Player nicht laden';
-            this.ds.unitData$.next([
-              {id: '0', type: 'unit/player', label: 'loading error', warning: true,
-                value: errorText + 'Response invalid\n' + JSON.stringify(player)
-              },
-              {id: '0', type: 'unit/player', label: 'loading time', value: player.duration.toString(), warning: false}
-            ]);
-            this.dataLoading = false;
-            return '';
-          }
-
-          this.ds.unitData$.next([
-            {id: '0', type: 'unit/player', label: 'loading time', value: player.duration.toString(), warning: false}
-          ]);
-
-          this.pendingItemDefinition$.next(data.def);
-          return player.value;
-        })
-      );
-
-  }
 
   private clearPlayerElement(): void  {
 
