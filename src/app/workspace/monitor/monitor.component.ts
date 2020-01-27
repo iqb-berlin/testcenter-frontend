@@ -1,6 +1,6 @@
-import { BookletsStarted } from './../workspace.interfaces';
-import { WorkspaceDataService } from './../workspacedata.service';
-import { BackendService } from './../backend.service';
+import { BookletsStarted } from '../workspace.interfaces';
+import { WorkspaceDataService } from '../workspacedata.service';
+import { BackendService } from '../backend.service';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
@@ -9,7 +9,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 import { MonitorData } from '../workspace.interfaces';
 import { Subscription } from 'rxjs';
-import { ServerError } from 'src/app/backend.service';
+import { ServerError } from 'iqb-components';
 
 
 @Component({
@@ -33,7 +33,7 @@ export class MonitorComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.workspaceIdSubscription = this.wds.workspaceId$.subscribe(ws => {
+    this.workspaceIdSubscription = this.wds.workspaceId$.subscribe(() => {
       this.updateTable();
     });
   }
@@ -83,7 +83,7 @@ export class MonitorComponent implements OnInit, OnDestroy {
                myCsvData += '"' + b.groupname + '"' + columnDelimiter + '"' + b.loginname + '"' + columnDelimiter + '"' + b.code + '"' + columnDelimiter +
                 '"' + b.bookletname + '"' + columnDelimiter + '"' + (b.locked ? 'X' : '-') + '"' + columnDelimiter + '"' + b.laststart + '"' + lineDelimiter;
             });
-            var blob = new Blob([myCsvData], {type: "text/csv;charset=utf-8"});
+            const blob = new Blob([myCsvData], {type: "text/csv;charset=utf-8"});
             saveAs(blob, "iqb-testcenter-bookletsStarted.csv");
           } else {
             this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});

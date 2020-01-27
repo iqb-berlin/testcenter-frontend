@@ -1,22 +1,17 @@
-import { LoginData } from './../../app.interfaces';
-import { MainDataService } from './../../maindata.service';
-import { ServerError } from './../../backend.service';
-import { WorkspaceDataService } from './../workspacedata.service';
-import { GetFileResponseData, CheckWorkspaceResponseData } from './../workspace.interfaces';
+import { MainDataService } from '../../maindata.service';
+import { ServerError } from "iqb-components";
+import { WorkspaceDataService } from '../workspacedata.service';
+import { GetFileResponseData, CheckWorkspaceResponseData } from '../workspace.interfaces';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
   MessageDialogData, MessageType } from 'iqb-components';
-import { DataSource } from '@angular/cdk/collections';
-import { Observable, BehaviorSubject, Subscription, merge } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BackendService } from '../backend.service';
-import { Input, Output, EventEmitter, Component, OnInit, Inject, ElementRef, OnDestroy } from '@angular/core';
-import { NgModule, ViewChild } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
+import { ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
-import { HttpEventType, HttpErrorResponse, HttpEvent } from '@angular/common/http';
-import { IqbFilesUploadQueueComponent, IqbFilesUploadInputForDirective } from '../../iqb-files';
-
 
 @Component({
   templateUrl: './files.component.html',
@@ -52,7 +47,7 @@ export class FilesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.workspaceIdSubscription = this.wds.workspaceId$.subscribe(ws => {
+    this.workspaceIdSubscription = this.wds.workspaceId$.subscribe(() => {
       this.updateFileList((this.wds.ws <= 0) || (this.mds.adminToken.length === 0));
     });
   }

@@ -1,5 +1,6 @@
 import { LoginData } from './app.interfaces';
-import { BackendService, ServerError } from './backend.service';
+import { BackendService } from './backend.service';
+import { ServerError } from 'iqb-components';
 import { Component, OnInit } from '@angular/core';
 import { MainDataService } from './maindata.service';
 
