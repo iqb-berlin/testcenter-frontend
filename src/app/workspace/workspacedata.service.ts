@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { ServerError } from "iqb-components";
+import { ServerError } from 'iqb-components';
 
 @Injectable({
   providedIn: 'root'
@@ -10,15 +10,15 @@ export class WorkspaceDataService {
   public workspaceId$ = new BehaviorSubject<number>(-1);
   public globalErrorMsg$ = new BehaviorSubject<ServerError>(null);
 
-  public get ws() : number {
+  public get ws(): number {
     return this.workspaceId$.getValue();
   }
   private _wsRole = '';
-  public get wsRole() : string {
+  public get wsRole(): string {
     return this._wsRole;
   }
   private _wsName = '';
-  public get wsName() : string {
+  public get wsName(): string {
     return this._wsName;
   }
   public navLinks = [];

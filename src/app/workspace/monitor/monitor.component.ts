@@ -47,8 +47,7 @@ export class MonitorComponent implements OnInit, OnDestroy {
         this.monitorDataSource = new MatTableDataSource<MonitorData>(monitorData);
         this.monitorDataSource.sort = this.sort;
       }
-    )
-
+    );
   }
 
   isAllSelected() {
@@ -80,11 +79,16 @@ export class MonitorComponent implements OnInit, OnDestroy {
             let myCsvData = 'groupname' + columnDelimiter + 'loginname' + columnDelimiter + 'code' + columnDelimiter +
                 'bookletname' + columnDelimiter + 'locked' + columnDelimiter + 'laststart' + lineDelimiter;
             bookletList.forEach((b: BookletsStarted) => {
-               myCsvData += '"' + b.groupname + '"' + columnDelimiter + '"' + b.loginname + '"' + columnDelimiter + '"' + b.code + '"' + columnDelimiter +
-                '"' + b.bookletname + '"' + columnDelimiter + '"' + (b.locked ? 'X' : '-') + '"' + columnDelimiter + '"' + b.laststart + '"' + lineDelimiter;
+               myCsvData += '"'
+                 + b.groupname + '"' + columnDelimiter + '"'
+                 + b.loginname + '"' + columnDelimiter + '"'
+                 + b.code + '"' + columnDelimiter + '"'
+                 + b.bookletname + '"' + columnDelimiter
+                 + '"' + (b.locked ? 'X' : '-') + '"' + columnDelimiter + '"'
+                 + b.laststart + '"' + lineDelimiter;
             });
-            const blob = new Blob([myCsvData], {type: "text/csv;charset=utf-8"});
-            saveAs(blob, "iqb-testcenter-bookletsStarted.csv");
+            const blob = new Blob([myCsvData], {type: 'text/csv;charset=utf-8'});
+            saveAs(blob, 'iqb-testcenter-bookletsStarted.csv');
           } else {
             this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
           }
