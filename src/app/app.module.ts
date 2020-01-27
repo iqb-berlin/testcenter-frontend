@@ -23,12 +23,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-import { IqbComponents } from 'iqb-components';
 import { WorkspaceModule } from './workspace';
 import { StartComponent } from './start/start.component';
 import { SuperadminModule } from './superadmin';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { httpInterceptorProviders } from './app.interceptor';
+import {IqbComponents} from "iqb-components";
 
 @NgModule({
   declarations: [

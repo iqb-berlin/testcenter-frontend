@@ -1,15 +1,6 @@
-import { MainDataService } from './../maindata.service';
-// import { Observable } from 'rxjs/Observable';
-// import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { BehaviorSubject } from 'rxjs';
-import { FormGroup } from '@angular/forms';
-import { Injectable, Component, Input, Output, EventEmitter } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { Router, ActivatedRoute } from '@angular/router';
-
-import { BackendService } from './backend.service';
-import { WorkspaceData } from '../app.interfaces';
-import { ServerError } from '../backend.service';
+import { Injectable } from '@angular/core';
+import { ServerError } from 'iqb-components';
 
 @Injectable({
   providedIn: 'root'
@@ -19,15 +10,15 @@ export class WorkspaceDataService {
   public workspaceId$ = new BehaviorSubject<number>(-1);
   public globalErrorMsg$ = new BehaviorSubject<ServerError>(null);
 
-  public get ws() : number {
+  public get ws(): number {
     return this.workspaceId$.getValue();
   }
   private _wsRole = '';
-  public get wsRole() : string {
+  public get wsRole(): string {
     return this._wsRole;
   }
   private _wsName = '';
-  public get wsName() : string {
+  public get wsName(): string {
     return this._wsName;
   }
   public navLinks = [];
@@ -49,47 +40,10 @@ export class WorkspaceDataService {
     {path: 'monitor', label: 'Monitor'}
   ];
 
-  // ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-  constructor (
-    public confirmDialog: MatDialog,
-    private bs: BackendService,
-    private mds: MainDataService,
-    private route: ActivatedRoute,
-    private router: Router
-  ) { }
-
-  // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   setNewErrorMsg(err: ServerError = null) {
     this.globalErrorMsg$.next(err);
   }
 
-  // *******************************************************************************************************
-  logout() {
-    // const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
-    //   width: '400px',
-    //   height: '300px',
-    //   data:  <ConfirmDialogData>{
-    //     title: 'Abmelden',
-    //     content: 'Möchten Sie sich abmelden?',
-    //     confirmbuttonlabel: 'Abmelden'
-    //   }
-    // });
-    // dialogRef.afterClosed().subscribe(result => {
-    //   if (result !== false) {
-    //     this.bs.logout(this.adminToken$.getValue()).subscribe(
-    //       logoutresponse => {
-    //         this.updateAdminStatus('', '', [], false, '');
-    //         this.router.navigateByUrl('/');
-    //       }, (err: ServerError) => {
-    //         this.updateAdminStatus('', '', [], false, err.label);
-    //         this.router.navigateByUrl('/');
-    //       }
-    //     );
-    //   }
-    // });
-  }
-
-  // *******************************************************************************************************
   setWorkspace(newId: number, newRole: string, newName: string) {
     this._wsName = newName;
     this._wsRole = newRole;

@@ -1,9 +1,10 @@
-import { LoginData, WorkspaceData } from './../app.interfaces';
-import { BackendService, ServerError } from './../backend.service';
-import { MainDataService } from './../maindata.service';
+import { LoginData, WorkspaceData } from '../app.interfaces';
+import { BackendService } from '../backend.service';
+import { ServerError } from 'iqb-components';
+import { MainDataService } from '../maindata.service';
 import { Router } from '@angular/router';
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, FormArray, FormControl, Validators } from '@angular/forms';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 
@@ -31,7 +32,6 @@ export class StartComponent implements OnInit, OnDestroy {
     });
   }
 
-  // *******************************************************************************************************
   login() {
     if (this.adminloginform.valid) {
       this.bs.login(
@@ -56,7 +56,6 @@ export class StartComponent implements OnInit, OnDestroy {
     }
   }
 
-  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   ngOnDestroy() {
     if (this.loginDataSubscription !== null) {
       this.loginDataSubscription.unsubscribe();

@@ -1,7 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
 import { LoginData } from './app.interfaces';
 import { Injectable } from '@angular/core';
-import { ServerError } from './backend.service';
+import { ServerError } from 'iqb-components';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,7 @@ export class MainDataService {
     is_superadmin: false
   };
 
-  public get adminToken() : string {
+  public get adminToken(): string {
     const myLoginData = this.loginData$.getValue();
     if (myLoginData) {
       return myLoginData.admintoken;
@@ -28,7 +28,6 @@ export class MainDataService {
   public globalErrorMsg$ = new BehaviorSubject<ServerError>(null);
 
 
-  // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   setNewLoginData(logindata?: LoginData) {
     const myLoginData: LoginData = {
       admintoken: MainDataService.defaultLoginData.admintoken,
@@ -51,12 +50,10 @@ export class MainDataService {
     localStorage.setItem('at', myLoginData.admintoken);
   }
 
-  // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   setNewErrorMsg(err: ServerError = null) {
     this.globalErrorMsg$.next(err);
   }
 
-  // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   getWorkspaceName(ws: number): string {
     let myreturn = '';
     if (ws > 0) {
@@ -73,7 +70,6 @@ export class MainDataService {
     return myreturn;
   }
 
-  // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   getWorkspaceRole(ws: number): string {
     let myreturn = '';
     if (ws > 0) {
