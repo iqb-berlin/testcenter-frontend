@@ -16,21 +16,24 @@
   margin-left: 0 !important;
 }
 
-.cardbox {
-  margin: 1em
+$mat-gt-md: "screen and (min-width: 1280px)";
+@media #{$mat-gt-md} {
+
+  .cardbox {
+    margin: 1em
+  }
+
+  ::ng-deep .cardbox mat-card {
+    margin: 0 1em 0 0
+  }
+
+  ::ng-deep .cardbox :last-child mat-card {
+    margin: 0
+  }
+
+  ::ng-deep .toprow,
+  ::ng-deep .toprow mat-card {
+    margin-top: 0 !important
+  }
+
 }
-
-::ng-deep .cardbox mat-card {
-  margin: 0 1em 0 0
-}
-
-::ng-deep .cardbox :last-child mat-card {
-  margin: 0
-}
-
-::ng-deep .toprow,
-::ng-deep .toprow mat-card {
-  margin-top: 0 !important
-}
-
-

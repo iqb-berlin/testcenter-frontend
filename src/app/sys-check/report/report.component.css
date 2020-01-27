@@ -1,10 +1,10 @@
 table {
-  width: 400px;
-  flex-direction: column;
+  /*width: 400px;*/
+  /*flex-direction: column;*/
 }
 
 #report-cointainer {
-  display: flex;
+  /*display: flex;*/
 }
 
 table thead td {

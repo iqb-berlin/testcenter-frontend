@@ -6,8 +6,8 @@
     <mat-card-subtitle>Folgende Informationen über Ihr System wurden gesammelt</mat-card-subtitle>
   </mat-card-header>
 
-  <mat-card-content id="report-cointainer">
-    <table>
+  <mat-card-content id="report-cointainer" fxLayout.gt-md="row" fxLayout="column">
+    <table fxFlex.gt-md="25%" fxFlex="100%">
       <thead>
       <tr>
         <td colspan="2">Computer-Info</td>
@@ -21,7 +21,7 @@
       </tbody>
     </table>
 
-    <table *ngIf="networkData.length > 0">
+    <table *ngIf="networkData.length > 0"  fxFlex.gt-md="25%" fxFlex="100%">
       <thead>
       <tr>
         <td colspan="2">Netzwerk-Info</td>
@@ -35,7 +35,7 @@
       </tbody>
     </table>
 
-    <table *ngIf="questionnaireData.length > 0">
+    <table *ngIf="questionnaireData.length > 0"  fxFlex.gt-md="25%" fxFlex="100%">
       <thead>
       <tr>
         <td colspan="2">Fragen</td>
@@ -49,7 +49,7 @@
       </tbody>
     </table>
 
-    <table *ngIf="unitData.length > 0">
+    <table *ngIf="unitData.length > 0"  fxFlex.gt-md="25%" fxFlex="100%">
       <thead>
       <tr>
         <td colspan="2">Test-Unit</td>

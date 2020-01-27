@@ -10,11 +10,11 @@
 
   <iqb-network-check [measureNetwork]="checks.network" [ngClass]="{toprow: checks.network}"></iqb-network-check>
 
-  <div fxLayout="row" class="cardbox" [ngClass]="{toprow: !checks.network}">
+  <div fxLayout="column" fxLayout.gt-md="row" class="cardbox" [ngClass]="{toprow: !checks.network}">
 
-    <iqb-unit-check [ngStyle]="{'width': (checks.unit && checks.questions) ? '75%' : '100%'}" *ngIf="checks.unit"></iqb-unit-check>
+    <iqb-unit-check fxFlex="100%" [fxFlex.gt-md]="(checks.unit && checks.questions) ? '75%' : '100%'" *ngIf="checks.unit"></iqb-unit-check>
 
-    <iqb-questionnaire [ngStyle]="{'width': checks.unit && checks.questions ? '25%' : '100%'}" *ngIf="checks.questions"></iqb-questionnaire>
+    <iqb-questionnaire fxFlex="100%" [fxFlex.gt-md]="(checks.unit && checks.questions) ? '25%' : '100%'" *ngIf="checks.questions"></iqb-questionnaire>
 
   </div>
 

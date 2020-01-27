@@ -50,7 +50,7 @@ export class SysCheckComponent implements OnInit {
 
   loadTestConfig(checkConfig: CheckConfigData) {
 
-    this.title = 'IQB-Testcenter: ' + checkConfig.label;
+    this.title = checkConfig.label;
     this.checks.environment = !checkConfig.questionsonlymode;
     this.checks.unit = checkConfig.hasunit && !checkConfig.questionsonlymode;
     this.checks.network = !checkConfig.skipnetwork && !checkConfig.questionsonlymode;
