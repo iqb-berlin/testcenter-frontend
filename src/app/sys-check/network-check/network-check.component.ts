@@ -86,7 +86,7 @@ export class NetworkCheckComponent implements OnInit {
     [BenchmarkType.up, []],
   ]);
 
-  private networkRating: NetworkRating = {
+  public networkRating: NetworkRating = {
     downloadRating: 'N/A',
     uploadRating: 'N/A',
     overallRating: 'N/A'
