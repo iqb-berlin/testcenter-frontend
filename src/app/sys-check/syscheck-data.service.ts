@@ -20,7 +20,6 @@ export class SyscheckDataService {
   public unitData$ = new BehaviorSubject<ReportEntry[]>([]);
 
   // for Navi-Buttons:
-  public showNaviButtons$ = new BehaviorSubject<boolean>(false);
   public itemplayerValidPages$ = new BehaviorSubject<string[]>([]);
   public itemplayerCurrentPage$ = new BehaviorSubject<string>('');
   public itemplayerPageRequest$ = new BehaviorSubject<string>('');
