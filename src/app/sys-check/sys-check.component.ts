@@ -57,6 +57,17 @@ export class SysCheckComponent implements OnInit {
     this.checks.questions = checkConfig.questions.length > 0;
     this.checks.report = checkConfig.cansave;
 
+    (checkConfig.ratings || []).forEach(rating => {
+      if (rating.type === 'download') {
+        checkConfig.downloadGood = rating.good;
+        checkConfig.downloadMinimum = rating.min;
+      }
+      if (rating.type === 'upload') {
+        checkConfig.uploadGood = rating.good;
+        checkConfig.uploadMinimum = rating.min;
+      }
+    });
+
     this.ds.checkConfig$.next(checkConfig);
 
     if (this.checks.unit) { this.ds.taskQueue.push('loadunit'); }
