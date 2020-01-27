@@ -10,7 +10,7 @@
       <div [formGroup]="form" class="formList" fxLayout="column">
         <div *ngFor="let q of questions">
           <div [ngSwitch]="q.type" class="formEntry" fxLayout="column" fxLayoutGap="5px">
-            <h5 *ngSwitchCase="'header'">{{ q.prompt }}</h5>
+            <h3 *ngSwitchCase="'header'">{{ q.prompt }}{{ q.value }}</h3>
             <mat-form-field *ngSwitchCase="'text'">
               <p>{{q.prompt}}</p>
               <textarea matInput [formControlName]="q.id" [id]="q.id" cdkTextareaAutosize cdkAutosizeMinRows="2" class="formEntry"></textarea>
