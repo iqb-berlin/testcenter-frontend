@@ -1,6 +1,6 @@
 import { GetFileResponseData, CheckWorkspaceResponseData, BookletsStarted, SysCheckStatistics,
   ReviewData, LogData, UnitResponse, ResultData, MonitorData } from './workspace.interfaces';
-import { Injectable, Inject } from '@angular/core';
+import {Injectable, Inject, SkipSelf} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -12,7 +12,7 @@ export class BackendService {
 
   constructor(
     @Inject('SERVER_URL') private readonly serverUrl: string,
-    private http: HttpClient) {
+    @SkipSelf() private http: HttpClient) {
 
     this.serverUrlSlim = this.serverUrl + 'php/ws.php/';
     this.serverUrl = this.serverUrl + 'php/';

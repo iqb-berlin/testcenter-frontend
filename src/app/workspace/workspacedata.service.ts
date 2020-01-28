@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { ServerError } from "iqb-components";
+import { ServerError } from 'iqb-components';
 
 @Injectable({
   providedIn: 'root'

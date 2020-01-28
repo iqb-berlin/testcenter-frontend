@@ -9,7 +9,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 import { MonitorData } from '../workspace.interfaces';
 import { Subscription } from 'rxjs';
-import { ServerError } from 'iqb-components';
+import {ServerError} from "iqb-components";
 
 
 @Component({

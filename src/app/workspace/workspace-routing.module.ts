@@ -1,14 +1,14 @@
 import { SyscheckComponent } from './syscheck/syscheck.component';
 import { MonitorComponent } from './monitor/monitor.component';
 import { ResultsComponent } from './results/results.component';
-import { NgModule, Component } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { FilesComponent } from './files/files.component';
 import { WorkspaceComponent } from './workspace.component';
 
 const routes: Routes = [
   {
-    path: 'ws/:ws',
+    path: ':ws',
     component: WorkspaceComponent,
     children: [
       {path: '', redirectTo: 'monitor', pathMatch: 'full'},

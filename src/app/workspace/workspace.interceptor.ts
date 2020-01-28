@@ -1,10 +1,13 @@
 import { WorkspaceDataService } from './workspacedata.service';
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import { HttpInterceptor, HttpRequest,
   HttpHandler, HttpEvent, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
+
 export class WorkspaceInterceptor implements HttpInterceptor {
   constructor(public wds: WorkspaceDataService) {}
 
@@ -25,6 +28,7 @@ export class WorkspaceInterceptor implements HttpInterceptor {
       }
     });
 
+    console.log('WorkspaceInterceptor');
     return next.handle(requestA);
   }
 }

@@ -23,12 +23,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-import { WorkspaceModule } from './workspace';
 import { StartComponent } from './start/start.component';
-import { SuperadminModule } from './superadmin';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { httpInterceptorProviders } from './app.interceptor';
-import {IqbComponents} from "iqb-components";
+import {IqbComponentsModule} from "iqb-components";
 
 @NgModule({
   declarations: [
@@ -53,10 +51,8 @@ import {IqbComponents} from "iqb-components";
     MatTabsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    WorkspaceModule,
-    SuperadminModule,
     AppRoutingModule,
-    IqbComponents,
+    IqbComponentsModule,
     MatCardModule,
     MatProgressSpinnerModule,
     FlexLayoutModule

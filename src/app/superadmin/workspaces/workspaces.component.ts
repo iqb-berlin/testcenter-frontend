@@ -11,7 +11,7 @@ import { MatSort } from '@angular/material/sort';
 import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType } from 'iqb-components';
+  MessageDialogData, MessageType } from "iqb-components";
 import { Subscription } from 'rxjs';
 import { MainDataService } from 'src/app/maindata.service';
 
