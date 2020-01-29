@@ -5,17 +5,23 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ErrorHandler, ServerError } from "iqb-components";
+import {WorkspaceDataService} from "./workspacedata.service";
+import {MainDataService} from "../maindata.service";
 
 @Injectable()
 
 export class BackendService {
   private serverUrlSlim = '';
+  private serverUrlSysCheck = '';
 
   constructor(
     @Inject('SERVER_URL') private readonly serverUrl: string,
-    private http: HttpClient) {
+    private http: HttpClient,
+    private wds: WorkspaceDataService,
+    private mds: MainDataService) {
 
     this.serverUrlSlim = this.serverUrl + 'php/ws.php/';
+    this.serverUrlSysCheck = this.serverUrl + 'php_admin/';
     this.serverUrl = this.serverUrl + 'php/';
   }
 
@@ -117,8 +123,9 @@ export class BackendService {
   }
 
   getSysCheckReportList(): Observable<SysCheckStatistics[] | ServerError> {
+    const loginData = this.mds.loginData$.getValue();
     return this.http
-      .post<SysCheckStatistics[]>(this.serverUrl + 'getSysCheckReportList.php', {})
+      .post<SysCheckStatistics[]>(this.serverUrlSysCheck + 'getSysCheckReportList.php', {ws: this.wds.workspaceId$.getValue(), at: loginData.admintoken})
         .pipe(
           catchError(ErrorHandler.handle)
         );
@@ -126,18 +133,20 @@ export class BackendService {
 
   getSysCheckReport(reports: string[], columnDelimiter: string,
                     quoteChar: string): Observable<string[] | ServerError> {
+    const loginData = this.mds.loginData$.getValue();
     return this.http
-      .post<string[]>(this.serverUrl + 'getSysCheckReport.php',
-        {r: reports, cd: columnDelimiter, q: quoteChar})
+      .post<string[]>(this.serverUrlSysCheck + 'getSysCheckReport.php',
+        {r: reports, cd: columnDelimiter, q: quoteChar, ws: this.wds.workspaceId$.getValue(), at: loginData.admintoken})
           .pipe(
             catchError(ErrorHandler.handle)
           );
   }
 
   deleteSysCheckReports(reports: string[]): Observable<boolean | ServerError> {
+    const loginData = this.mds.loginData$.getValue();
     return this.http
-      .post<boolean>(this.serverUrl + 'deleteSysCheckReports.php',
-        {r: reports})
+      .post<boolean>(this.serverUrlSysCheck + 'deleteSysCheckReports.php',
+        {r: reports, ws: this.wds.workspaceId$.getValue(), at: loginData.admintoken})
           .pipe(
             catchError(ErrorHandler.handle)
           );

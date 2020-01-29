@@ -2,7 +2,9 @@ import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { ServerError } from 'iqb-components';
 
-@Injectable()
+@Injectable({
+  providedIn: "root"
+})
 
 export class WorkspaceDataService {
   public workspaceId$ = new BehaviorSubject<number>(-1);
@@ -24,13 +26,13 @@ export class WorkspaceDataService {
   // .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. ..
   private navLinksRW = [
     {path: 'files', label: 'Dateien'},
-    //  {path: 'syscheck', label: 'System-Check Berichte'},
+    {path: 'syscheck', label: 'System-Check Berichte'},
     {path: 'monitor', label: 'Monitor'},
     {path: 'results', label: 'Ergebnisse'}
   ];
   private navLinksRO = [
     {path: 'files', label: 'Dateien'},
-    // {path: 'syscheck', label: 'System-Check Berichte'},
+    {path: 'syscheck', label: 'System-Check Berichte'},
     {path: 'monitor', label: 'Monitor'},
     {path: 'results', label: 'Ergebnisse'}
   ];
