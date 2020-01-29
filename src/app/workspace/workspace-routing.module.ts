@@ -8,7 +8,7 @@ import { WorkspaceComponent } from './workspace.component';
 
 const routes: Routes = [
   {
-    path: ':ws',
+    path: 'ws/:ws',
     component: WorkspaceComponent,
     children: [
       {path: '', redirectTo: 'monitor', pathMatch: 'full'},

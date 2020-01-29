@@ -2,7 +2,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { BackendService } from './backend.service';
 import { IqbFilesModule } from '../iqb-files';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NgModule } from '@angular/core';
+import { NgModule} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WorkspaceDataService } from './workspacedata.service';
 
@@ -30,8 +30,9 @@ import { MonitorComponent } from './monitor/monitor.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import {MatGridListModule} from '@angular/material/grid-list';
 import { SyscheckComponent } from './syscheck/syscheck.component';
-import { httpInterceptorProviders } from './workspace.interceptor';
 import {IqbComponentsModule} from 'iqb-components';
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
+import {WorkspaceInterceptor} from "./workspace.interceptor";
 
 @NgModule({
   imports: [
@@ -72,8 +73,14 @@ import {IqbComponentsModule} from 'iqb-components';
     SyscheckComponent
   ],
   providers: [
+    // interceptor adds ws to AuthToken
+    // not working when module is lazy loaded!
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: WorkspaceInterceptor,
+      multi: true
+    },
     BackendService,
-    httpInterceptorProviders,
     WorkspaceDataService
   ],
 })

@@ -1,7 +1,7 @@
 import { AboutComponent } from './about/about.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { NgModule} from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -25,8 +25,9 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { StartComponent } from './start/start.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { httpInterceptorProviders } from './app.interceptor';
 import {IqbComponentsModule} from "iqb-components";
+import {AuthInterceptor} from "./app.interceptor";
+import {WorkspaceModule} from "./workspace";
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import {IqbComponentsModule} from "iqb-components";
     IqbComponentsModule,
     MatCardModule,
     MatProgressSpinnerModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    WorkspaceModule
   ],
   providers: [
     {
@@ -63,7 +65,11 @@ import {IqbComponentsModule} from "iqb-components";
       useClass: HashLocationStrategy
     },
     BackendService,
-    httpInterceptorProviders
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

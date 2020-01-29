@@ -1,17 +1,16 @@
-import {Injectable, Inject, SkipSelf} from '@angular/core';
+import {Injectable, Inject} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
+
 export class BackendService {
 
   constructor(
     @Inject('SERVER_URL') private readonly serverUrl: string,
-    @SkipSelf() private http: HttpClient) {
+    private http: HttpClient) {
       this.serverUrl = this.serverUrl + 'php/sys.php/';
     }
 

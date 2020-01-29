@@ -6,9 +6,7 @@ import { catchError } from 'rxjs/operators';
 import {ErrorHandler, ServerError} from "iqb-components";
 
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class BackendService {
 
   constructor(

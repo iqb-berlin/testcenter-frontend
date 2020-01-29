@@ -1,18 +1,19 @@
 import { GetFileResponseData, CheckWorkspaceResponseData, BookletsStarted, SysCheckStatistics,
   ReviewData, LogData, UnitResponse, ResultData, MonitorData } from './workspace.interfaces';
-import {Injectable, Inject, SkipSelf} from '@angular/core';
+import {Injectable, Inject} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ErrorHandler, ServerError } from "iqb-components";
 
 @Injectable()
+
 export class BackendService {
   private serverUrlSlim = '';
 
   constructor(
     @Inject('SERVER_URL') private readonly serverUrl: string,
-    @SkipSelf() private http: HttpClient) {
+    private http: HttpClient) {
 
     this.serverUrlSlim = this.serverUrl + 'php/ws.php/';
     this.serverUrl = this.serverUrl + 'php/';
