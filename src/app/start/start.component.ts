@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import {ServerError} from "iqb-components";
+import { ServerError } from 'iqb-components';
 
 
 @Component({

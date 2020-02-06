@@ -13,14 +13,12 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription = null;
   private logindataSubscription: Subscription = null;
 
-  // CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
   constructor(
     private route: ActivatedRoute,
     public mds: MainDataService,
     public wds: WorkspaceDataService
   ) { }
 
-  // CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
   ngOnInit() {
     this.routingSubscription = this.route.params.subscribe(params => {
       const ws = Number(params['ws']);
@@ -32,7 +30,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     });
   }
 
-  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
   ngOnDestroy() {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();

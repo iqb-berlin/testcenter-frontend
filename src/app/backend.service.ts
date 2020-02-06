@@ -3,7 +3,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import {ErrorHandler, ServerError} from "iqb-components";
+import { ErrorHandler, ServerError } from 'iqb-components';
 
 
 @Injectable()

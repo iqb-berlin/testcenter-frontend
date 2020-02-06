@@ -4,7 +4,7 @@ import {Injectable, Inject} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ErrorHandler, ServerError } from "iqb-components";
+import { ErrorHandler, ServerError } from 'iqb-components';
 
 @Injectable()
 
@@ -44,7 +44,7 @@ export class BackendService {
         );
   }
 
-  getBookletsStarted(groups: string[]): Observable<BookletsStarted[] | ServerError>{
+  getBookletsStarted(groups: string[]): Observable<BookletsStarted[] | ServerError> {
     return this.http
       .post<BookletsStarted[]>(this.serverUrl + 'getBookletsStarted.php', {g: groups})
         .pipe(
@@ -52,7 +52,7 @@ export class BackendService {
         );
   }
 
-  lockBooklets(groups: string[]): Observable<boolean | ServerError>{
+  lockBooklets(groups: string[]): Observable<boolean | ServerError> {
     return this.http
       .post<boolean>(this.serverUrlSlim + 'lock', {g: groups})
         .pipe(
@@ -60,7 +60,7 @@ export class BackendService {
         );
   }
 
-  unlockBooklets(groups: string[]): Observable<boolean | ServerError>{
+  unlockBooklets(groups: string[]): Observable<boolean | ServerError> {
     return this.http
       .post<boolean>(this.serverUrlSlim + 'unlock', {g: groups})
         .pipe(
@@ -68,7 +68,7 @@ export class BackendService {
           );
 }
 
-  getMonitorData(): Observable<MonitorData[] | ServerError>{
+  getMonitorData(): Observable<MonitorData[] | ServerError> {
     return this.http
       .post<MonitorData[]>(this.serverUrl + 'getMonitorData.php', {})
         .pipe(
@@ -76,7 +76,7 @@ export class BackendService {
         );
 }
 
-  getResultData(): Observable<ResultData[]>{
+  getResultData(): Observable<ResultData[]> {
     return this.http
       .post<ResultData[]>(this.serverUrl + 'getResultData.php', {})
         .pipe(
@@ -84,7 +84,7 @@ export class BackendService {
         );
   }
 
-  getResponses(groups: string[]): Observable<UnitResponse[]>{
+  getResponses(groups: string[]): Observable<UnitResponse[]> {
     return this.http
       .post<UnitResponse[]>(this.serverUrl + 'getResponses.php', {g: groups})
         .pipe(
@@ -92,7 +92,7 @@ export class BackendService {
         );
   }
 
-  getLogs(groups: string[]): Observable<LogData[]>{
+  getLogs(groups: string[]): Observable<LogData[]> {
     return this.http
       .post<LogData[]>(this.serverUrl + 'getLogs.php', {g: groups})
         .pipe(
@@ -100,7 +100,7 @@ export class BackendService {
         );
   }
 
-  getReviews(groups: string[]): Observable<ReviewData[]>{
+  getReviews(groups: string[]): Observable<ReviewData[]> {
     return this.http
       .post<ReviewData[]>(this.serverUrl + 'getReviews.php', {g: groups})
         .pipe(
@@ -108,7 +108,7 @@ export class BackendService {
         );
   }
 
-  deleteData(groups: string[]): Observable<boolean | ServerError>{
+  deleteData(groups: string[]): Observable<boolean | ServerError> {
     return this.http
       .post<boolean>(this.serverUrl + 'deleteData.php', {g: groups})
         .pipe(
