@@ -2,6 +2,10 @@ import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { ServerError } from 'iqb-components';
 
+@Injectable({
+  providedIn: 'root'
+})
+
 @Injectable()
 export class WorkspaceDataService {
   public workspaceId$ = new BehaviorSubject<number>(-1);
