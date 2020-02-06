@@ -1,6 +1,6 @@
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { BackendService } from './../backend.service';
+import { BackendService } from '../backend.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
@@ -17,7 +17,6 @@ import { SysCheckStatistics } from '../workspace.interfaces';
 export class SyscheckComponent implements OnInit {
   displayedColumns: string[] = ['selectCheckbox', 'syscheckLabel', 'number', 'details'];
   public resultDataSource = new MatTableDataSource<SysCheckStatistics>([]);
-  private isAdmin = false;
   // prepared for selection if needed sometime
   public tableselectionCheckbox = new SelectionModel<SysCheckStatistics>(true, []);
   public dataLoading = false;
@@ -44,7 +43,7 @@ export class SyscheckComponent implements OnInit {
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);
         this.resultDataSource.sort = this.sort;
       }
-    )
+    );
   }
 
   isAllSelected() {
@@ -75,14 +74,14 @@ export class SyscheckComponent implements OnInit {
           reportData.forEach((repLine: string) => {
             myCsvData += repLine + lineDelimiter;
           });
-          var blob = new Blob([myCsvData], {type: "text/csv;charset=utf-8"});
-          saveAs(blob, "iqb-testcenter-syscheckreports.csv");
+          const blob = new Blob([myCsvData], {type: 'text/csv;charset=utf-8'});
+          saveAs(blob, 'iqb-testcenter-syscheckreports.csv');
         } else {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
         this.dataLoading = false;
-    })
+    });
     }
   }
 
@@ -114,7 +113,7 @@ export class SyscheckComponent implements OnInit {
         if (result !== false) {
           // =========================================================
           this.dataLoading = true;
-          this.bs.deleteSysCheckReports(selectedReports).subscribe((deleteOk: boolean) => {
+          this.bs.deleteSysCheckReports(selectedReports).subscribe(() => {
                   this.tableselectionCheckbox.clear();
                   this.dataLoading = false;
                 });

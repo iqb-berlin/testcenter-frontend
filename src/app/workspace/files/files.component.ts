@@ -1,9 +1,8 @@
 import { MainDataService } from '../../maindata.service';
-import { ServerError } from "iqb-components";
 import { WorkspaceDataService } from '../workspacedata.service';
 import { GetFileResponseData, CheckWorkspaceResponseData } from '../workspace.interfaces';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType } from 'iqb-components';
+  MessageDialogData, MessageType, ServerError } from 'iqb-components';
 import { Subscription } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';

@@ -1,11 +1,11 @@
 import { LoginData, WorkspaceData } from '../app.interfaces';
 import { BackendService } from '../backend.service';
-import { ServerError } from 'iqb-components';
 import { MainDataService } from '../maindata.service';
 import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { ServerError } from 'iqb-components';
 
 
 @Component({

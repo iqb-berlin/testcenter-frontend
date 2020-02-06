@@ -1,4 +1,3 @@
-import { IqbComponents } from 'iqb-components';
 import { NgModule } from '@angular/core';
 import { IqbFilesUploadComponent } from './iqbFilesUpload/iqbFilesUpload.component';
 import { IqbFilesUploadQueueComponent } from './iqbFilesUploadQueue/iqbFilesUploadQueue.component';
@@ -8,8 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
-import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { IqbComponentsModule } from 'iqb-components';
 
 
 @NgModule({
@@ -18,8 +17,7 @@ import { CommonModule } from '@angular/common';
     MatProgressBarModule,
     MatIconModule,
     MatCardModule,
-    HttpClientModule,
-    IqbComponents,
+    IqbComponentsModule,
     CommonModule
   ],
   declarations: [

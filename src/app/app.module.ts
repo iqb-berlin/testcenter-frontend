@@ -1,7 +1,7 @@
 import { AboutComponent } from './about/about.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule} from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -23,12 +23,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-import { WorkspaceModule } from './workspace';
 import { StartComponent } from './start/start.component';
-import { SuperadminModule } from './superadmin';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { httpInterceptorProviders } from './app.interceptor';
-import {IqbComponents} from "iqb-components";
+import { IqbComponentsModule } from 'iqb-components';
+import { AuthInterceptor } from './app.interceptor';
+import { WorkspaceModule } from './workspace';
 
 @NgModule({
   declarations: [
@@ -53,13 +52,12 @@ import {IqbComponents} from "iqb-components";
     MatTabsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    WorkspaceModule,
-    SuperadminModule,
     AppRoutingModule,
-    IqbComponents,
+    IqbComponentsModule,
     MatCardModule,
     MatProgressSpinnerModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    WorkspaceModule
   ],
   providers: [
     {
@@ -67,7 +65,11 @@ import {IqbComponents} from "iqb-components";
       useClass: HashLocationStrategy
     },
     BackendService,
-    httpInterceptorProviders
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

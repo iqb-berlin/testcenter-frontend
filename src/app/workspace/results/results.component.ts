@@ -1,8 +1,8 @@
-import { LogData } from './../workspace.interfaces';
-import { WorkspaceDataService } from './../workspacedata.service';
+import { LogData } from '../workspace.interfaces';
+import { WorkspaceDataService } from '../workspacedata.service';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { BackendService } from './../backend.service';
+import { BackendService } from '../backend.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
@@ -35,7 +35,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.workspaceIdSubscription = this.wds.workspaceId$.subscribe(ws => {
+    this.workspaceIdSubscription = this.wds.workspaceId$.subscribe(() => {
       this.updateTable();
     });
   }
@@ -52,7 +52,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
           this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
           this.resultDataSource.sort = this.sort;
         }
-      )
+      );
     }
   }
 
@@ -81,13 +81,23 @@ export class ResultsComponent implements OnInit, OnDestroy {
         if (responseData.length > 0) {
           const columnDelimiter = ';';
           const lineDelimiter = '\n';
-          let myCsvData = 'groupname' + columnDelimiter + 'loginname' + columnDelimiter + 'code' + columnDelimiter +
-              'bookletname' + columnDelimiter + 'unitname' + columnDelimiter + 'responses' + columnDelimiter +
-              'restorePoint' + columnDelimiter + 'responseType' + columnDelimiter + 'response-ts' + columnDelimiter +
-              'restorePoint-ts' + columnDelimiter + 'laststate' + lineDelimiter;
+          let myCsvData = 'groupname' + columnDelimiter
+              + 'loginname' + columnDelimiter
+              + 'code' + columnDelimiter
+              + 'bookletname' + columnDelimiter
+              + 'unitname' + columnDelimiter
+              + 'responses' + columnDelimiter
+              + 'restorePoint' + columnDelimiter
+              + 'responseType' + columnDelimiter
+              + 'response-ts' + columnDelimiter
+              + 'restorePoint-ts' + columnDelimiter
+              + 'laststate' + lineDelimiter;
           responseData.forEach((resp: UnitResponse) => {
-            myCsvData += '"' + resp.groupname + '"' + columnDelimiter + '"' + resp.loginname + '"' + columnDelimiter + '"' + resp.code + '"' + columnDelimiter +
-                '"' + resp.bookletname + '"' + columnDelimiter + '"' + resp.unitname + '"' + columnDelimiter;
+            myCsvData += '"' + resp.groupname + '"' + columnDelimiter
+                + '"' + resp.loginname + '"' + columnDelimiter
+                + '"' + resp.code + '"' + columnDelimiter
+                + '"' + resp.bookletname + '"' + columnDelimiter
+                + '"' + resp.unitname + '"' + columnDelimiter;
             if ((resp.responses !== null) && (resp.responses.length > 0)) {
               myCsvData += resp.responses.replace(/\\"/g, '""') + columnDelimiter;
             } else {
@@ -110,14 +120,14 @@ export class ResultsComponent implements OnInit, OnDestroy {
               myCsvData += lineDelimiter;
             }
           });
-          var blob = new Blob([myCsvData], {type: "text/csv;charset=utf-8"});
-          saveAs(blob, "iqb-testcenter-responses.csv");
+          const blob = new Blob([myCsvData], {type: 'text/csv;charset=utf-8'});
+          saveAs(blob, 'iqb-testcenter-responses.csv');
         } else {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
         this.dataLoading = false;
-    })
+    });
     }
   }
 
@@ -142,7 +152,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
                   allCategories.push(s_trimmed);
                 }
               }
-            })
+            });
           });
 
           const columnDelimiter = ';';
@@ -157,8 +167,10 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
           responseData.forEach((resp: ReviewData) => {
             if ((resp.entry !== null) && (resp.entry.length > 0)) {
-              myCsvData += '"' + resp.groupname + '"' + columnDelimiter + '"' + resp.loginname + '"' + columnDelimiter + '"' + resp.code + '"' + columnDelimiter +
-                '"' + resp.bookletname + '"' + columnDelimiter + '"' + resp.unitname + '"' + columnDelimiter  + '"' +  resp.priority  + '"' + columnDelimiter;
+              myCsvData += '"' + resp.groupname + '"' + columnDelimiter + '"' + resp.loginname + '"' +
+                columnDelimiter + '"' + resp.code + '"' + columnDelimiter + '"' + resp.bookletname + '"' +
+                columnDelimiter + '"' + resp.unitname + '"' + columnDelimiter  + '"' +
+                resp.priority  + '"' + columnDelimiter;
               const resp_categories = resp.categories.split(' ');
               allCategories.forEach(s => {
                 if (resp_categories.includes(s)) {
@@ -170,14 +182,14 @@ export class ResultsComponent implements OnInit, OnDestroy {
               myCsvData += '"' + resp.reviewtime + '"' + columnDelimiter  + '"' +  resp.entry  + '"' + lineDelimiter;
             }
           });
-          var blob = new Blob([myCsvData], {type: "text/csv;charset=utf-8"});
-          saveAs(blob, "iqb-testcenter-reviews.csv");
+          const blob = new Blob([myCsvData], {type: 'text/csv;charset=utf-8'});
+          saveAs(blob, 'iqb-testcenter-reviews.csv');
         } else {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
         this.dataLoading = false;
-      })
+      });
     }
   }
 
@@ -204,14 +216,14 @@ export class ResultsComponent implements OnInit, OnDestroy {
               resp.timestamp.toString() + '"' + columnDelimiter  + resp.logentry.replace(/\\"/g, '""')  + lineDelimiter;
             }
           });
-          var blob = new Blob([myCsvData], {type: "text/csv;charset=utf-8"});
-          saveAs(blob, "iqb-testcenter-logs.csv");
+          const blob = new Blob([myCsvData], {type: 'text/csv;charset=utf-8'});
+          saveAs(blob, 'iqb-testcenter-logs.csv');
         } else {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
         this.dataLoading = false;
-      })
+      });
     }
   }
 
@@ -243,7 +255,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
         if (result !== false) {
           // =========================================================
           this.dataLoading = true;
-          this.bs.deleteData(selectedGroups).subscribe((deleteOk: boolean) => {
+          this.bs.deleteData(selectedGroups).subscribe(() => {
                   this.tableselectionCheckbox.clear();
                   this.dataLoading = false;
                 });

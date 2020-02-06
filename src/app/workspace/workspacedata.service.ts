@@ -6,6 +6,7 @@ import { ServerError } from 'iqb-components';
   providedIn: 'root'
 })
 
+@Injectable()
 export class WorkspaceDataService {
   public workspaceId$ = new BehaviorSubject<number>(-1);
   public globalErrorMsg$ = new BehaviorSubject<ServerError>(null);
@@ -23,7 +24,7 @@ export class WorkspaceDataService {
   }
   public navLinks = [];
 
-  // .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. ..
+
   private navLinksRW = [
     {path: 'files', label: 'Dateien'},
     //  {path: 'syscheck', label: 'System-Check Berichte'},

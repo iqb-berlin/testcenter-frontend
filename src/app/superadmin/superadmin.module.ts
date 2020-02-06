@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -15,20 +14,20 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-  import {FlexLayoutModule} from '@angular/flex-layout';
-  import { ReactiveFormsModule } from '@angular/forms';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { SuperadminRoutingModule } from './superadmin-routing.module';
 import { WorkspacesComponent } from './workspaces/workspaces.component';
 import { UsersComponent } from './users/users.component';
 import { SuperadminComponent } from './superadmin.component';
 import { BackendService } from './backend.service';
-import { IqbFilesModule } from '../iqb-files/iqb-files.module';
-import { IqbComponents } from 'iqb-components';
+import { IqbFilesModule } from '../iqb-files';
 import { NewuserComponent } from './users/newuser/newuser.component';
 import { NewpasswordComponent } from './users/newpassword/newpassword.component';
 import { NewworkspaceComponent } from './workspaces/newworkspace/newworkspace.component';
 import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace.component';
+import { IqbComponentsModule } from 'iqb-components';
 
 
 @NgModule({
@@ -36,14 +35,13 @@ import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace
     CommonModule,
     SuperadminRoutingModule,
     IqbFilesModule,
-    IqbComponents,
+    IqbComponentsModule,
     MatTableModule,
     MatTabsModule,
     MatIconModule,
     MatSelectModule,
     MatCheckboxModule,
     MatSortModule,
-    HttpClientModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
     MatDialogModule,

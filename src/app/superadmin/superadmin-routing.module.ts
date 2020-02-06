@@ -8,7 +8,7 @@ import { SuperadminComponent } from './superadmin.component';
 
 const routes: Routes = [
   {
-    path: 'superadmin',
+    path: '',
     component: SuperadminComponent,
     children: [
       {path: '', redirectTo: 'users', pathMatch: 'full'},
