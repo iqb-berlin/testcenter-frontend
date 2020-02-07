@@ -1,25 +1,22 @@
 <div class="logo">
   <a [routerLink]="['/']">
-    <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
+    <img src="assets/IQB-LogoA.png" matTooltip="Startseite" alt="iqb-logo"/>
   </a>
 </div>
 
 <div class="pagetitle">{{title}}</div>
 
 <div class="page-body">
-
-  <iqb-network-check [measureNetwork]="checks.network" [ngClass]="{toprow: checks.network}"></iqb-network-check>
-
-  <div fxLayout="column" fxLayout.gt-md="row" class="cardbox" [ngClass]="{toprow: !checks.network}">
-
-    <iqb-unit-check fxFlex="100%" [fxFlex.gt-md]="(checks.unit && checks.questions) ? '75%' : '100%'" *ngIf="checks.unit"></iqb-unit-check>
-
-    <iqb-questionnaire fxFlex="100%" [fxFlex.gt-md]="(checks.unit && checks.questions) ? '25%' : '100%'" *ngIf="checks.questions"></iqb-questionnaire>
-
+  <div fxLayout="row wrap" fxLayoutAlign="center stretch">
+    <iqb-environment-check fxFlex="0 0 25%"></iqb-environment-check>
+    <iqb-network-check fxFlex="0 0 75%" [measureNetwork]="checks.network"></iqb-network-check>
   </div>
 
-  <iqb-environment-check *ngIf="checks.environment"></iqb-environment-check>
+
+  <div fxLayout="column" fxLayout.gt-md="row" class="cardbox" [ngClass]="{toprow: !checks.network}">
+    <iqb-unit-check fxFlex="100%" [fxFlex.gt-md]="(checks.unit && checks.questions) ? '75%' : '100%'" *ngIf="checks.unit"></iqb-unit-check>
+    <iqb-questionnaire fxFlex="100%" [fxFlex.gt-md]="(checks.unit && checks.questions) ? '25%' : '100%'" *ngIf="checks.questions"></iqb-questionnaire>
+  </div>
 
   <iqb-report [canSave]="checks.report"></iqb-report>
-
 </div>

@@ -4,6 +4,7 @@ import {Component, Input} from '@angular/core';
 import {SaveReportComponent} from './save-report/save-report.component';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {ReportEntry} from "../sys-check.interfaces";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'iqb-report',
@@ -21,16 +22,21 @@ export class ReportComponent {
 
   csvReport = '';
 
+  private eDataSubscription: Subscription;
+  private nDataSubscription: Subscription;
+  private qDataSubscription: Subscription;
+  private uDataSubscription: Subscription;
+
   constructor(
     private bs: BackendService,
     private ds: SyscheckDataService,
     private saveDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
-    this.ds.environmentData$.subscribe(rd => {this.environmentData = rd; });
-    this.ds.networkData$.subscribe(rd => {this.networkData = rd; });
-    this.ds.questionnaireData$.subscribe(rd => this.questionnaireData = rd);
-    this.ds.unitData$.subscribe(rd => this.unitData = rd);
+    this.eDataSubscription = this.ds.environmentData$.subscribe(rd => {this.environmentData = rd; });
+    this.nDataSubscription = this.ds.networkData$.subscribe(rd => {this.networkData = rd; });
+    this.qDataSubscription = this.ds.questionnaireData$.subscribe(rd => this.questionnaireData = rd);
+    this.uDataSubscription = this.ds.unitData$.subscribe(rd => this.unitData = rd);
   }
 
   saveReport() {
@@ -75,5 +81,20 @@ export class ReportComponent {
 
   isReady() {
     return (typeof this.ds.task$.getValue() === 'undefined') && !this.ds.taskQueue.length;
+  }
+
+  ngOnDestroy() {
+    if (this.eDataSubscription) {
+      this.eDataSubscription.unsubscribe();
+    }
+    if (this.nDataSubscription) {
+      this.nDataSubscription.unsubscribe();
+    }
+    if (this.qDataSubscription) {
+      this.qDataSubscription.unsubscribe();
+    }
+    if (this.uDataSubscription) {
+      this.uDataSubscription.unsubscribe();
+    }
   }
 }

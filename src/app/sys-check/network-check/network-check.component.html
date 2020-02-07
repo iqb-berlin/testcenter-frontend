@@ -1,5 +1,4 @@
-<mat-card [ngStyle]="{display: measureNetwork ? 'block' : 'none'}">
-
+<mat-card>
   <mat-card-header>
     <mat-card-title>
       Netzwerk
@@ -20,11 +19,6 @@
   </mat-card-header>
 
   <mat-card-content>
-
-    <div class="spinner-container-local" *ngIf="!status.done">
-      <mat-spinner></mat-spinner>
-    </div>
-
     <div fxLayout="row">
 
       <div fxFlex="50%">
@@ -46,9 +40,6 @@
       </div>
 
     </div>
-
-    <div *ngIf="!detectedNetworkInformations.available" style="color:red">Ihr Browser ist veraltet und verfügt über kein erweitertes Netzwerk-Profil.</div>
-
   </mat-card-content>
 
 </mat-card>

@@ -9,6 +9,7 @@ import { ReportEntry } from '../sys-check.interfaces';
 export class EnvironmentCheckComponent implements OnInit {
 
   private report: Map<string, ReportEntry> = new Map<string, ReportEntry>();
+  private data: ReportEntry[] = [];
 
   private rating = {
     browser: {
@@ -44,7 +45,8 @@ export class EnvironmentCheckComponent implements OnInit {
     const report = Array.from(this.report.values())
       .sort((item1: ReportEntry, item2: ReportEntry) => (item1.label > item2.label) ? 1 : -1);
 
-    this.ds.environmentData$.next(Object.values(report));
+    this.data = Object.values(report);
+    this.ds.environmentData$.next(this.data);
   }
 
   private reportPush(key: string, value: string, warning: boolean = false) {
@@ -56,7 +58,7 @@ export class EnvironmentCheckComponent implements OnInit {
 
     const userAgent = window.navigator.userAgent;
     // tslint:disable-next-line:max-line-length
-    const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: \/)([\d.apre]+)/;
+    const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/;
     // credit due to: https://gist.github.com/ticky/3909462#gistcomment-2245669
     const deviceInfoSplits = regex.exec(userAgent);
     const helperRegex = /[^.]*/;
