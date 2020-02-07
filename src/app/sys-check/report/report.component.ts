@@ -1,8 +1,9 @@
-import {BackendService, ReportEntry} from '../backend.service';
+import {BackendService} from '../backend.service';
 import { SyscheckDataService } from '../syscheck-data.service';
 import {Component, Input} from '@angular/core';
 import {SaveReportComponent} from './save-report/save-report.component';
 import {MatDialog, MatSnackBar} from '@angular/material';
+import {ReportEntry} from "../sys-check.interfaces";
 
 @Component({
   selector: 'iqb-report',

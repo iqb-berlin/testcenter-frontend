@@ -1,12 +1,12 @@
-import { MainDataService } from './../maindata.service';
-import { Subscription, BehaviorSubject, forkJoin } from 'rxjs';
-import { MessageDialogComponent, MessageDialogData, MessageType } from 'iqb-components';
+import { MainDataService } from '../maindata.service';
+import { Subscription, forkJoin } from 'rxjs';
+import { MessageDialogComponent, MessageDialogData, MessageType, ServerError } from 'iqb-components';
 import { MatDialog } from '@angular/material';
-import { BackendService, ServerError } from '../backend.service';
-import { PersonTokenAndBookletDbId, BookletDataListByCode, LoginData, BookletStatus } from '../app.interfaces';
+import { BackendService } from '../backend.service';
+import { PersonTokenAndBookletDbId, LoginData } from '../app.interfaces';
 import { Router } from '@angular/router';
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
-import { FormGroup, FormBuilder, FormArray, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { StartButtonData } from './start-button-data.class';
 
 @Component({
@@ -193,9 +193,9 @@ export class StartComponent implements OnInit, OnDestroy {
         } else {
           this.mds.globalErrorMsg$.next(null);
           this.mds.refreshCostumTexts = false;
-          this.mds.setCostumTextsLogin(loginData.costumTexts);
+          this.mds.setCostumTextsLogin((loginData as LoginData).costumTexts);
           this.mds.refreshCostumTexts = true;
-          this.mds.setNewLoginData(loginData);
+          this.mds.setNewLoginData(loginData as LoginData);
         }
         this.dataLoading = false;
       }

@@ -1,7 +1,8 @@
 import { SyscheckDataService } from './syscheck-data.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Component, OnInit} from '@angular/core';
-import {BackendService, CheckConfigData, FormDefEntry, Rating} from './backend.service';
+import {BackendService} from './backend.service';
+import {CheckConfigData} from "./sys-check.interfaces";
 
 
 interface Checks {
@@ -37,38 +38,28 @@ export class SysCheckComponent implements OnInit {
   }
 
   ngOnInit() {
-
     this.route.paramMap.subscribe((params: ParamMap) => {
       const paramId = params.get('c');
       if (paramId === this.bs.basicTestConfig.id) {
-        this.loadTestConfig(this.bs.basicTestConfigData);
+        this.loadTestConfig();
       } else {
         this.bs.getCheckConfigData(paramId).subscribe(config => this.loadTestConfig(config));
       }
     });
   }
 
-  loadTestConfig(checkConfig: CheckConfigData) {
+  loadTestConfig(checkConfig: CheckConfigData = null) {
+    if (checkConfig) {
+      this.ds.checkConfig$.next(checkConfig);
+    } else {
+      checkConfig = this.ds.checkConfig$.getValue();
+    }
 
     this.title = checkConfig.label;
-    this.checks.environment = !checkConfig.questionsonlymode;
-    this.checks.unit = checkConfig.hasunit && !checkConfig.questionsonlymode;
-    this.checks.network = !checkConfig.skipnetwork && !checkConfig.questionsonlymode;
+    this.checks.unit = checkConfig.hasunit;
+    this.checks.network = !checkConfig.skipnetwork;
     this.checks.questions = checkConfig.questions.length > 0;
     this.checks.report = checkConfig.cansave;
-
-    (checkConfig.ratings || []).forEach(rating => {
-      if (rating.type === 'download') {
-        checkConfig.downloadGood = rating.good;
-        checkConfig.downloadMinimum = rating.min;
-      }
-      if (rating.type === 'upload') {
-        checkConfig.uploadGood = rating.good;
-        checkConfig.uploadMinimum = rating.min;
-      }
-    });
-
-    this.ds.checkConfig$.next(checkConfig);
 
     if (this.checks.unit) { this.ds.taskQueue.push('loadunit'); }
     if (this.checks.network) { this.ds.taskQueue.push('speedtest'); }

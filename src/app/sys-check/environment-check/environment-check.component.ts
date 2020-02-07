@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SyscheckDataService } from '../syscheck-data.service';
-import {ReportEntry} from '../backend.service';
+import { ReportEntry } from '../sys-check.interfaces';
 
 @Component({
   selector: 'iqb-environment-check',
@@ -56,7 +56,7 @@ export class EnvironmentCheckComponent implements OnInit {
 
     const userAgent = window.navigator.userAgent;
     // tslint:disable-next-line:max-line-length
-    const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/;
+    const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: \/)([\d.apre]+)/;
     // credit due to: https://gist.github.com/ticky/3909462#gistcomment-2245669
     const deviceInfoSplits = regex.exec(userAgent);
     const helperRegex = /[^.]*/;
@@ -131,7 +131,7 @@ export class EnvironmentCheckComponent implements OnInit {
   getOS() {
 
     const userAgent = window.navigator.userAgent;
-    let osName = '';
+    let osName;
     if (userAgent.indexOf('Windows') !== -1) {
       if (userAgent.indexOf('Windows NT 10.0') !== -1) {
         osName = 'Windows 10';

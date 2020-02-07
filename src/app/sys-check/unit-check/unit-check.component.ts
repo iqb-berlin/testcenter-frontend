@@ -1,10 +1,11 @@
 import { MainDataService } from '../../maindata.service';
-import { BackendService, UnitData } from '../backend.service';
+import { BackendService } from '../backend.service';
 import { SyscheckDataService } from '../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { Subscription, BehaviorSubject, combineLatest} from 'rxjs';
-import { ServerError } from '../../backend.service';
+import {UnitData} from "../sys-check.interfaces";
+import {ServerError} from "iqb-components";
 
 @Component({
   selector: 'iqb-unit-check',

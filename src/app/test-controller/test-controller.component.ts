@@ -2,16 +2,16 @@ import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MainDataService } from './../maindata.service';
-import { ServerError } from '../backend.service';
+import { MainDataService } from '../maindata.service';
 import { BackendService } from './backend.service';
 
 import { TestControllerService } from './test-controller.service';
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
-import { UnitDef, Testlet, UnitControllerData, EnvironmentData, MaxTimerData, UnitDefLoadQueue } from './test-controller.classes';
+import { UnitDef, Testlet, EnvironmentData, MaxTimerData } from './test-controller.classes';
 import { LastStateKey, LogEntryKey, BookletData, UnitData, MaxTimerDataType, TaggedString } from './test-controller.interfaces';
-import { Subscription, Observable, of, forkJoin, interval, timer, from } from 'rxjs';
-import { switchMap, takeUntil, map, concatMap } from 'rxjs/operators';
+import { Subscription, Observable, of, from } from 'rxjs';
+import { switchMap, concatMap } from 'rxjs/operators';
+import {ServerError} from "iqb-components";
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -55,7 +55,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
-  private getChildElements(element) {
+  private static getChildElements(element) {
     return Array.prototype.slice.call(element.childNodes)
     .filter(function (e) { return e.nodeType === 1; });
   }
@@ -63,7 +63,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   // private: recursive reading testlets/units from xml
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   private addTestletContentFromBookletXml(targetTestlet: Testlet, node: Element) {
-    const childElements = this.getChildElements(node);
+    const childElements = TestControllerComponent.getChildElements(node);
     if (childElements.length > 0) {
       let codeToEnter = '';
       let codePrompt = '';
@@ -77,7 +77,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
       }
       if (restrictionElement !== null) {
-        const restrictionElements = this.getChildElements(restrictionElement);
+        const restrictionElements = TestControllerComponent.getChildElements(restrictionElement);
         for (let childIndex = 0; childIndex < restrictionElements.length; childIndex++) {
           if (restrictionElements[childIndex].nodeName === 'CodeToEnter') {
             const restrictionParameter = restrictionElements[childIndex].getAttribute('parameter');
@@ -123,9 +123,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           }
           this.allUnitIds.push(myUnitAliasClear);
 
-          const newUnit = targetTestlet.addUnit(this.lastUnitSequenceId, myUnitId,
-                childElements[childIndex].getAttribute('label'), myUnitAliasClear,
-                childElements[childIndex].getAttribute('labelshort'));
+          // const newUnit = targetTestlet.addUnit(this.lastUnitSequenceId, myUnitId,
+          //       childElements[childIndex].getAttribute('label'), myUnitAliasClear,
+          //       childElements[childIndex].getAttribute('labelshort'));
           this.lastUnitSequenceId += 1;
 
         } else if (childElements[childIndex].nodeName === 'Testlet') {
@@ -166,7 +166,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           if (unitsElements.length > 0) {
             const costumTextsElements = oDOM.documentElement.getElementsByTagName('CustomTexts');
             if (costumTextsElements.length > 0) {
-              const costumTexts = this.getChildElements(costumTextsElements[0]);
+              const costumTexts = TestControllerComponent.getChildElements(costumTextsElements[0]);
               const costumTextsForBooklet = {};
               for (let childIndex = 0; childIndex < costumTexts.length; childIndex++) {
                 if (costumTexts[childIndex].nodeName === 'Text') {
@@ -182,10 +182,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
 
             if (bookletConfigElements.length > 0) {
-              const bookletConfigs = this.getChildElements(bookletConfigElements[0]);
+              const bookletConfigs = TestControllerComponent.getChildElements(bookletConfigElements[0]);
               for (let childIndex = 0; childIndex < bookletConfigs.length; childIndex++) {
                 const configParameter = bookletConfigs[childIndex].getAttribute('parameter');
-                const configValue = bookletConfigs[childIndex].textContent;
+                // const configValue = bookletConfigs[childIndex].textContent;
 
                 switch (bookletConfigs[childIndex].nodeName) {
                   // ----------------------
@@ -430,7 +430,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         switch (navString) {
           case '#next':
-            if (this.tcs.rootTestlet !== null) {
+            if (this.tcs.rootTestlet) {
               let startWith = this.tcs.currentUnitSequenceId;
               if (startWith < this.tcs.minUnitSequenceId) {
                 startWith = this.tcs.minUnitSequenceId - 1;
@@ -442,17 +442,17 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             }
             break;
           case '#previous':
-            if (this.tcs.rootTestlet !== null) {
+            if (this.tcs.rootTestlet) {
               this.router.navigateByUrl('/t/u/' + (this.tcs.currentUnitSequenceId - 1).toString());
             }
             break;
           case '#first':
-            if (this.tcs.rootTestlet !== null) {
+            if (this.tcs.rootTestlet) {
               this.router.navigateByUrl('/t/u/' + this.tcs.minUnitSequenceId.toString());
             }
             break;
           case '#last':
-            if (this.tcs.rootTestlet !== null) {
+            if (this.tcs.rootTestlet) {
               this.router.navigateByUrl('/t/u/' + this.tcs.maxUnitSequenceId.toString());
             }
             break;
@@ -461,7 +461,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             break;
 
           default:
-            if (this.tcs.rootTestlet !== null) {
+            if (this.tcs.rootTestlet) {
               this.router.navigateByUrl('/t/u/' + navString);
             }
             break;

@@ -1,7 +1,8 @@
 import { SyscheckDataService } from './syscheck-data.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BackendService, CheckConfig } from './backend.service';
+import { BackendService } from './backend.service';
 import { Component, OnInit } from '@angular/core';
+import {CheckConfig} from "./sys-check.interfaces";
 
 
 

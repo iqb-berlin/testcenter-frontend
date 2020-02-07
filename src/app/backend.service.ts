@@ -1,42 +1,10 @@
 
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpEvent, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { LoginData, BookletStatus, PersonTokenAndBookletDbId, BookletData, BookletDataListByCode,
-  KeyValuePair } from './app.interfaces';
-
-// ============================================================================
-// class instead of interface to be able to use instanceof to check type
-export class ServerError {
-  public code: number;
-  public labelNice: string;
-  public labelSystem: string;
-  constructor(code: number, labelNice: string, labelSystem: string) {
-    this.code = code;
-    this.labelNice = labelNice;
-    this.labelSystem = labelSystem;
-  }
-}
-
-// ============================================================================
-export class ErrorHandler {
-  public static handle(errorObj: HttpErrorResponse): Observable<ServerError> {
-    let myreturn: ServerError = null;
-    if (errorObj.error instanceof ErrorEvent) {
-      myreturn = new ServerError(500, 'Verbindungsproblem', (<ErrorEvent>errorObj.error).message);
-    } else {
-      myreturn = new ServerError(errorObj.status, 'Verbindungsproblem', errorObj.message);
-      if (errorObj.status === 401) {
-        myreturn.labelNice = 'Zugriff verweigert - bitte (neu) anmelden!';
-      } else if (errorObj.status === 503) {
-        myreturn.labelNice = 'Achtung: Server meldet Datenbankproblem.';
-      }
-    }
-
-    return of(myreturn);
-  }
-}
+import { LoginData, BookletStatus, PersonTokenAndBookletDbId, KeyValuePair } from './app.interfaces';
+import {ErrorHandler, ServerError} from "iqb-components";
 
 // ============================================================================
 @Injectable()
@@ -45,7 +13,7 @@ export class BackendService {
   private serverSlimUrl_Close = '';
 
   constructor(
-    @Inject('SERVER_URL') private serverUrl: string,
+    @Inject('SERVER_URL') private readonly serverUrl: string,
     private http: HttpClient) {
       this.serverSlimUrl = this.serverUrl + 'php_tc/login.php/';
       this.serverSlimUrl_Close = this.serverUrl + 'php_tc/tc_post.php/';
@@ -75,7 +43,7 @@ export class BackendService {
   getSysConfig(): Observable<KeyValuePair> {
     return this.http.get<KeyValuePair>(this.serverSlimUrl + 'sysconfig')
         .pipe(
-          catchError(e => of(null))
+          catchError(() => of(null))
         );
   }
 

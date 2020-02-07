@@ -1,8 +1,9 @@
 import { KeyValuePair } from './test-controller/test-controller.interfaces';
-import { ServerError, BackendService } from './backend.service';
+import { BackendService } from './backend.service';
 import { BehaviorSubject, Subject, forkJoin } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { LoginData } from './app.interfaces';
+import {ServerError} from "iqb-components";
 
 @Injectable({
   providedIn: 'root'
@@ -152,7 +153,7 @@ export class MainDataService {
       forkJoin(
         this.bs.addBookletLogClose(myLoginData.booklet),
         this.bs.lockBooklet(myLoginData.booklet)
-      ).subscribe(ok => {
+      ).subscribe(() => {
         myLoginData.booklet = 0;
         myLoginData.bookletlabel = '';
         this.setNewLoginData(myLoginData);

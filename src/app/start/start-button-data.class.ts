@@ -1,6 +1,7 @@
 import { map } from 'rxjs/operators';
-import { BackendService, ServerError } from '../backend.service';
+import { BackendService } from '../backend.service';
 import { BookletStatus } from '../app.interfaces';
+import { ServerError } from 'iqb-components';
 // import { of } from 'rxjs';
 // import { pipe } from '@angular/core/src/render3';
 

@@ -1,7 +1,8 @@
 import { MainDataService } from './maindata.service';
 import { Component, OnInit } from '@angular/core';
-import { BackendService, ServerError } from './backend.service';
+import { BackendService } from './backend.service';
 import { LoginData } from './app.interfaces';
+import { ServerError } from 'iqb-components';
 
 @Component({
   selector: 'tc-root',
