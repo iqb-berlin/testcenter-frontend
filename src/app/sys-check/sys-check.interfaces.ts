@@ -19,7 +19,7 @@ export interface CheckConfigData {
   questions: FormDefEntry[];
   hasunit: boolean;
   cansave: boolean;
-  questionsintro: string;
+  customtexts: CustomText[];
   skipnetwork: boolean;
   downloadspeed: SpeedParameters;
   uploadspeed: SpeedParameters;
@@ -31,6 +31,12 @@ export interface FormDefEntry {
   prompt: string;
   value: string;
   options: string[];
+  required: boolean;
+}
+
+export interface CustomText {
+  key: string;
+  value: string;
 }
 
 export interface UnitData {

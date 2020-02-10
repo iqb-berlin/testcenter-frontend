@@ -17,12 +17,14 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
 
   private iFrameItemplayer: HTMLIFrameElement = null;
   private postMessageSubscription: Subscription = null;
+  private taskSubscription: Subscription = null;
+  private itemplayerPageRequestSubscription = null;
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
 
   private pendingItemDefinition$ = new BehaviorSubject(null);
+  waitforloading = true;
 
-  public dataLoading = true;
   public errorMessage = '';
 
   constructor(
@@ -34,16 +36,16 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    combineLatest(
+    this.taskSubscription = combineLatest(
       this.ds.task$,
       this.ds.checkConfig$
-    ).subscribe(([task, checkConfig]) => {
-      if (task === 'loadunit') {
-          this.loadUnitAndPlayer(checkConfig.id);
-      }
+      ).subscribe(([task, checkConfig]) => {
+        if (task === 'loadunit') {
+            this.loadUnitAndPlayer(checkConfig.id);
+        }
     });
 
-    this.ds.itemplayerPageRequest$.subscribe((newPage: string) => {
+    this.itemplayerPageRequestSubscription = this.ds.itemplayerPageRequest$.subscribe((newPage: string) => {
       if (newPage.length > 0) {
         this.postMessageTarget.postMessage({
           type: 'vo.ToPlayer.NavigateToPage',
@@ -96,6 +98,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
               this.ds.itemplayerValidPages$.next([]);
               this.ds.itemplayerCurrentPage$.next('');
             }
+            this.waitforloading = false;
             break;
 
           case 'vo.FromPlayer.ChangedDataTransfer':
@@ -131,7 +134,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
         this.ds.unitData$.next([
           {id: '0', type: 'unit/player', label: 'loading error', value: 'Error: ' + unitAndPlayer.labelSystem, warning: true}
         ]);
-        this.dataLoading = false;
         return '';
       }
 
@@ -142,7 +144,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
           {id: '0', type: 'unit/player', label: 'loading time', value: unitAndPlayer.duration.toString(), warning: false}
         ]);
         console.warn(unitAndPlayer);
-        this.dataLoading = false;
         return '';
       }
 
@@ -159,9 +160,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
 
 
   private clearPlayerElement(): void  {
-
-    this.dataLoading = true;
-
     while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
       this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
     }
@@ -175,10 +173,17 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.iFrameItemplayer.setAttribute('height', '100');
     this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
-    this.dataLoading = false;
   }
 
   ngOnDestroy() {
-    this.postMessageSubscription.unsubscribe();
+    if (this.taskSubscription !== null) {
+      this.taskSubscription.unsubscribe();
+    }
+    if (this.itemplayerPageRequestSubscription !== null) {
+      this.itemplayerPageRequestSubscription.unsubscribe();
+    }
+    if (this.postMessageSubscription !== null) {
+      this.postMessageSubscription.unsubscribe();
+    }
   }
 }

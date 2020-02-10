@@ -10,12 +10,6 @@ import {ErrorHandler, ServerError} from "iqb-components";
   providedIn: 'root'
 })
 export class BackendService {
-  public basicTestConfig: CheckConfig = {
-    id: 'Basistest',
-    label: 'Basistest',
-    description: 'Es wird nur ein Bericht zu grundlegenden Systemeigenschaften und zur Netzverbindung gegeben.'
-  };
-
   private serverSlimUrl_GET: string;
 
   constructor(

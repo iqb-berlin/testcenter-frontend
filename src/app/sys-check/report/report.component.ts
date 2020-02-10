@@ -18,6 +18,7 @@ export class ReportComponent {
   environmentData: ReportEntry[] = [];
   networkData: ReportEntry[] = [];
   questionnaireData: ReportEntry[] = [];
+  questionnaireDataWarnings: ReportEntry[] = [];
   unitData: ReportEntry[] = [];
 
   csvReport = '';
@@ -35,7 +36,15 @@ export class ReportComponent {
   ) {
     this.eDataSubscription = this.ds.environmentData$.subscribe(rd => {this.environmentData = rd; });
     this.nDataSubscription = this.ds.networkData$.subscribe(rd => {this.networkData = rd; });
-    this.qDataSubscription = this.ds.questionnaireData$.subscribe(rd => this.questionnaireData = rd);
+    this.qDataSubscription = this.ds.questionnaireData$.subscribe(rd => {
+      this.questionnaireData = rd;
+      this.questionnaireDataWarnings = [];
+      this.questionnaireData.forEach(re => {
+        if (re.warning) {
+          this.questionnaireDataWarnings.push(re);
+        }
+      })
+    });
     this.uDataSubscription = this.ds.unitData$.subscribe(rd => this.unitData = rd);
   }
 

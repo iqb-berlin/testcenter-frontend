@@ -9,7 +9,7 @@ import { ReportEntry } from '../sys-check.interfaces';
 export class EnvironmentCheckComponent implements OnInit {
 
   private report: Map<string, ReportEntry> = new Map<string, ReportEntry>();
-  private data: ReportEntry[] = [];
+  data: ReportEntry[] = [];
 
   private rating = {
     browser: {

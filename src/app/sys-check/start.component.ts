@@ -25,7 +25,6 @@ export class StartComponent implements OnInit {
     this.dataLoading = true;
     this.bs.getCheckConfigs().subscribe(myConfigs => {
       this.checkConfigList = myConfigs;
-      this.checkConfigList.push(this.bs.basicTestConfig);
       this.dataLoading = false;
     });
   }
@@ -33,5 +32,8 @@ export class StartComponent implements OnInit {
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   buttonStartCheck(c: CheckConfig) {
     this.router.navigate(['../run/' + c.id], {relativeTo: this.route});
+  }
+  goBack() {
+    this.router.navigate(['/']);
   }
 }

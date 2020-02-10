@@ -96,7 +96,7 @@ export class NetworkCheckComponent implements OnInit {
     const plotterSettings = {
       css: 'border: 1px solid silver; margin: 2px; width: 100%;',
       width: 800,
-      height: 140,
+      height: 240,
       labelPadding: 4,
       xAxisMaxValue: 16 + Math.max(...testSizes),
       xAxisMinValue: Math.min(...testSizes),

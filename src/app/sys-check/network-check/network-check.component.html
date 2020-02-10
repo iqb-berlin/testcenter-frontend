@@ -1,45 +1,42 @@
-<mat-card>
-  <mat-card-header>
-    <mat-card-title>
-      Netzwerk
-      <span *ngIf="!status.done" style="color:red"> - Test läuft, bitte warten.</span>
-    </mat-card-title>
-    <mat-card-subtitle>
-      {{status.message}}
+<mat-card-header>
+  <mat-card-title>
+    Netzwerk
+    <span *ngIf="!status.done" style="color:red"> - Test läuft, bitte warten.</span>
+  </mat-card-title>
+  <mat-card-subtitle>
+    {{status.message}}
 
-      <span *ngIf="status.done && (networkRating.overallRating !== 'N/A')">
-        <span [ngSwitch]="networkRating.overallRating">Ihre Verbindung zum Testserver ist
-          <span *ngSwitchCase="'insufficient'" style="color: red; font-weight: bold;">unzureichend</span>
-          <span *ngSwitchCase="'ok'" style="color: orange; font-weight: bold;">vorauss. ausreichend</span>
-          <span *ngSwitchCase="'good'" style="color: green; font-weight: bold;">gut</span>
-          <span *ngSwitchCase="'unstable'" style="color: orangered; font-weight: bold;">sehr instabil</span>
-        </span>.
-      </span>
-    </mat-card-subtitle>
-  </mat-card-header>
+    <span *ngIf="status.done && (networkRating.overallRating !== 'N/A')">
+      <span [ngSwitch]="networkRating.overallRating">Ihre Verbindung zum Testserver ist
+        <span *ngSwitchCase="'insufficient'" style="color: red; font-weight: bold;">unzureichend</span>
+        <span *ngSwitchCase="'ok'" style="color: orange; font-weight: bold;">vorauss. ausreichend</span>
+        <span *ngSwitchCase="'good'" style="color: green; font-weight: bold;">gut</span>
+        <span *ngSwitchCase="'unstable'" style="color: orangered; font-weight: bold;">sehr instabil</span>
+      </span>.
+    </span>
+  </mat-card-subtitle>
+</mat-card-header>
 
-  <mat-card-content>
-    <div fxLayout="row">
+<mat-card-content>
+  <div fxLayout="row">
 
-      <div fxFlex="50%">
-        <h4>
-          <span style="font-weight: normal">Geschwindigkeit Download: </span>
-          <span *ngIf="status.avgDownloadSpeedBytesPerSecond >= 0">&#8960; {{humanReadableBytes(status.avgDownloadSpeedBytesPerSecond, true, false)}}/s</span>
-          <span *ngIf="status.avgDownloadSpeedBytesPerSecond < 0">Test noch nicht gestartet</span>
-        </h4>
-        <tc-speed-chart #downloadChart></tc-speed-chart>
-      </div>
-
-      <div fxFlex="50%">
-        <h4>
-          <span style="font-weight: normal">Geschwindigkeit Upload: </span>
-          <span *ngIf="status.avgUploadSpeedBytesPerSecond >= 0">&#8960; {{humanReadableBytes(status.avgUploadSpeedBytesPerSecond, true)}}/s</span>
-          <span *ngIf="status.avgUploadSpeedBytesPerSecond < 0">Test noch nicht gestartet</span>
-        </h4>
-        <tc-speed-chart #uploadChart></tc-speed-chart>
-      </div>
-
+    <div fxFlex="50%">
+      <h4>
+        <span style="font-weight: normal">Geschwindigkeit Download: </span>
+        <span *ngIf="status.avgDownloadSpeedBytesPerSecond >= 0">&#8960; {{humanReadableBytes(status.avgDownloadSpeedBytesPerSecond, true, false)}}/s</span>
+        <span *ngIf="status.avgDownloadSpeedBytesPerSecond < 0">Test noch nicht gestartet</span>
+      </h4>
+      <tc-speed-chart #downloadChart></tc-speed-chart>
     </div>
-  </mat-card-content>
 
-</mat-card>
+    <div fxFlex="50%">
+      <h4>
+        <span style="font-weight: normal">Geschwindigkeit Upload: </span>
+        <span *ngIf="status.avgUploadSpeedBytesPerSecond >= 0">&#8960; {{humanReadableBytes(status.avgUploadSpeedBytesPerSecond, true)}}/s</span>
+        <span *ngIf="status.avgUploadSpeedBytesPerSecond < 0">Test noch nicht gestartet</span>
+      </h4>
+      <tc-speed-chart #uploadChart></tc-speed-chart>
+    </div>
+
+  </div>
+</mat-card-content>

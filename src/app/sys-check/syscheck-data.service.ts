@@ -16,7 +16,7 @@ export class SyscheckDataService {
       questions: [],
       hasunit: false,
       cansave: false,
-      questionsintro: 'Bitte bearbeiten Sie die nachfolgenden Fragen.',
+      customtexts: [],
       skipnetwork: false,
       downloadspeed : {
         min: 1.875e+6, // 15Mbit/s ~> typical dl speed 4G CAT4

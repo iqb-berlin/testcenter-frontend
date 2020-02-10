@@ -4,12 +4,19 @@
   </a>
 </div>
 
-<div class="pagetitle">{{title}}</div>
+<div class="pagetitle">System-Check: {{title}}</div>
 
 <div class="page-body">
+  <div class="spinner-container-local" *ngIf="dataLoading">
+    <mat-spinner></mat-spinner>
+  </div>
   <div fxLayout="row wrap" fxLayoutAlign="center stretch">
-    <iqb-environment-check fxFlex="0 0 25%"></iqb-environment-check>
-    <iqb-network-check fxFlex="0 0 75%" [measureNetwork]="checks.network"></iqb-network-check>
+    <mat-card fxFlex="0 0 400px">
+      <iqb-environment-check></iqb-environment-check>
+    </mat-card>
+    <mat-card fxFlex="2 0 800px">
+      <iqb-network-check [measureNetwork]="checks.network"></iqb-network-check>
+    </mat-card>
   </div>
 
 
