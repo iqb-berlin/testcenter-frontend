@@ -3,65 +3,17 @@
 
   <mat-card-header>
     <mat-card-title>Bericht</mat-card-title>
-    <mat-card-subtitle>Folgende Informationen über Ihr System wurden gesammelt</mat-card-subtitle>
+    <mat-card-subtitle *ngIf="canSave">Dieser System-Check wurde so konfiguriert, dass nach Abschluss ein Bericht geschickt werden kann. Hierfür ist ein Kennwort erforderlich.</mat-card-subtitle>
+    <mat-card-subtitle *ngIf="!canSave">Für diesen System-Check ist nicht vorgesehen, dass nach Abschluss ein Bericht geschickt wird.</mat-card-subtitle>
   </mat-card-header>
 
-  <mat-card-content id="report-cointainer" fxLayout.gt-md="row" fxLayout="column">
-    <table fxFlex.gt-md="25%" fxFlex="100%">
-      <thead>
-      <tr>
-        <td colspan="2">Computer-Info</td>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let rd of environmentData" [ngStyle]="{color: (rd.warning ? 'red' : 'black')}">
-        <td>{{rd.label}}</td>
-        <td>{{rd.value}}</td>
-      </tr>
-      </tbody>
-    </table>
-
-    <table *ngIf="networkData.length > 0"  fxFlex.gt-md="25%" fxFlex="100%">
-      <thead>
-      <tr>
-        <td colspan="2">Netzwerk-Info</td>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let rd of networkData" [ngStyle]="{color: (rd.warning ? 'red' : 'black')}">
-        <td>{{rd.label}}</td>
-        <td>{{rd.value}}</td>
-      </tr>
-      </tbody>
-    </table>
-
-    <table *ngIf="questionnaireData.length > 0"  fxFlex.gt-md="25%" fxFlex="100%">
-      <thead>
-      <tr>
-        <td colspan="2">Fragen</td>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let rd of questionnaireData" [ngStyle]="{color: (rd.warning ? 'red' : 'black')}">
-        <td>{{rd.label}}</td>
-        <td>{{rd.value}}</td>
-      </tr>
-      </tbody>
-    </table>
-
-    <table *ngIf="unitData.length > 0"  fxFlex.gt-md="25%" fxFlex="100%">
-      <thead>
-      <tr>
-        <td colspan="2">Test-Unit</td>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let rd of unitData" [ngStyle]="{color: (rd.warning ? 'red' : 'black')}">
-        <td>{{rd.label}}</td>
-        <td>{{rd.value}}</td>
-      </tr>
-      </tbody>
-    </table>
+  <mat-card-content id="report-cointainer" fxLayout.gt-md="row" fxLayout="column" *ngIf="canSave">
+    <p *ngIf="questionnaireDataWarnings.length > 0">Bitte prüfen Sie die Eingaben:</p>
+    <ul>
+        <li *ngFor="let qd of questionnaireDataWarnings">
+          {{qd.label}}
+        </li>
+    </ul>
   </mat-card-content>
 
   <label *ngIf="csvReport">Export als CSV für Copy&Paste
@@ -69,7 +21,7 @@
   </label>
 
   <mat-card-actions>
-    <button *ngIf="canSave && isReady()" mat-raised-button color="primary" (click)="saveReport()" class="save_button">Senden</button>
+    <button [disabled]="!isReady() || !canSave" mat-raised-button color="primary" (click)="saveReport()" class="save_button">Bericht senden</button>
 <!--    <button *ngIf="isReady()" mat-raised-button (click)="exportReport()" class="save_button">Als CSV zum kopieren</button>-->
   </mat-card-actions>
 
