@@ -4,8 +4,8 @@ import { SyscheckDataService } from '../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { Subscription, BehaviorSubject, combineLatest} from 'rxjs';
-import {UnitData} from "../sys-check.interfaces";
-import {ServerError} from "iqb-components";
+import { UnitData } from '../sys-check.interfaces';
+import { ServerError } from 'iqb-components';
 
 @Component({
   selector: 'iqb-unit-check',

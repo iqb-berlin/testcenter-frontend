@@ -1,6 +1,6 @@
 import { MainDataService } from 'src/app/maindata.service';
 import { Component, Inject } from '@angular/core';
-import {Router} from "@angular/router";
+import { Router } from '@angular/router';
 
 @Component({
   templateUrl: './about.component.html'

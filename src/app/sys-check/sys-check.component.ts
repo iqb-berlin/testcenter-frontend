@@ -1,8 +1,8 @@
 import { SyscheckDataService } from './syscheck-data.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Component, OnInit} from '@angular/core';
-import {BackendService} from './backend.service';
-import {Subscription} from "rxjs";
+import { BackendService } from './backend.service';
+import { Subscription } from 'rxjs';
 
 
 interface Checks {

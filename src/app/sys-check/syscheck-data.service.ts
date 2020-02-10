@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
-import {CheckConfigData, ReportEntry} from "./sys-check.interfaces";
+import { CheckConfigData, ReportEntry } from './sys-check.interfaces';
 
 type Task = 'loadunit' | 'speedtest' | null;
 

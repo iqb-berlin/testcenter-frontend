@@ -1,7 +1,7 @@
 import { FormControl, FormGroup } from '@angular/forms';
 import { SyscheckDataService } from '../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import {FormDefEntry, ReportEntry} from "../sys-check.interfaces";
+import { FormDefEntry, ReportEntry } from '../sys-check.interfaces';
 
 @Component({
   selector: 'iqb-questionnaire',
