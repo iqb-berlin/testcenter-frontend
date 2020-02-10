@@ -19,7 +19,7 @@
         <iqb-network-check [measureNetwork]="checks.network"></iqb-network-check>
       </mat-card>
     </div>
-    <div fxLayout="row wrap" fxLayoutAlign="center stretch">
+    <div fxLayout="row" fxLayoutAlign="center stretch">
       <mat-card [fxFlex]="(checks.questions) ? '2 0 800px' : ''" *ngIf="checks.unit">
         <iqb-unit-check></iqb-unit-check>
       </mat-card>
