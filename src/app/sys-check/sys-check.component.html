@@ -10,20 +10,26 @@
   <div class="spinner-container-local" *ngIf="dataLoading">
     <mat-spinner></mat-spinner>
   </div>
-  <div fxLayout="row wrap" fxLayoutAlign="center stretch">
-    <mat-card fxFlex="0 0 400px">
-      <iqb-environment-check></iqb-environment-check>
-    </mat-card>
-    <mat-card fxFlex="2 0 800px">
-      <iqb-network-check [measureNetwork]="checks.network"></iqb-network-check>
+  <div fxLayout="column" fxLayoutAlign="center stretch" class="cardhost">
+    <div fxLayout="raw wrap" fxLayoutAlign="center stretch" fxFlex>
+      <mat-card fxFlex>
+        <iqb-environment-check></iqb-environment-check>
+      </mat-card>
+      <mat-card fxFlex="2 0 800px">
+        <iqb-network-check [measureNetwork]="checks.network"></iqb-network-check>
+      </mat-card>
+    </div>
+    <div fxLayout="row wrap" fxLayoutAlign="center stretch">
+      <mat-card [fxFlex]="(checks.questions) ? '2 0 800px' : ''" *ngIf="checks.unit">
+        <iqb-unit-check></iqb-unit-check>
+      </mat-card>
+      <mat-card fxFlex *ngIf="checks.questions">
+        <iqb-questionnaire></iqb-questionnaire>
+      </mat-card>
+    </div>
+    <mat-card>
+      <iqb-report [canSave]="checks.report"></iqb-report>
     </mat-card>
   </div>
 
-
-  <div fxLayout="column" fxLayout.gt-md="row" class="cardbox" [ngClass]="{toprow: !checks.network}">
-    <iqb-unit-check fxFlex="100%" [fxFlex.gt-md]="(checks.unit && checks.questions) ? '75%' : '100%'" *ngIf="checks.unit"></iqb-unit-check>
-    <iqb-questionnaire fxFlex="100%" [fxFlex.gt-md]="(checks.unit && checks.questions) ? '25%' : '100%'" *ngIf="checks.questions"></iqb-questionnaire>
-  </div>
-
-  <iqb-report [canSave]="checks.report"></iqb-report>
 </div>
