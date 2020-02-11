@@ -14,7 +14,7 @@ export class MainDataService {
     is_superadmin: false
   };
 
-  public get adminToken() : string {
+  public get adminToken(): string {
     const myLoginData = this.loginData$.getValue();
     if (myLoginData) {
       return myLoginData.admintoken;

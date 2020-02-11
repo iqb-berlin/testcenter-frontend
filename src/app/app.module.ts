@@ -1,7 +1,7 @@
 import { AboutComponent } from './about/about.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule} from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -25,9 +25,9 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { StartComponent } from './start/start.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import {IqbComponentsModule} from "iqb-components";
-import {AuthInterceptor} from "./app.interceptor";
-import {WorkspaceModule} from "./workspace";
+import { IqbComponentsModule } from 'iqb-components';
+import { AuthInterceptor } from './app.interceptor';
+import { WorkspaceModule } from './workspace';
 
 @NgModule({
   declarations: [

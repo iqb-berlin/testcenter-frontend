@@ -28,11 +28,11 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MonitorComponent } from './monitor/monitor.component';
 import { MatExpansionModule } from '@angular/material/expansion';
-import {MatGridListModule} from '@angular/material/grid-list';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { SyscheckComponent } from './syscheck/syscheck.component';
-import {IqbComponentsModule} from 'iqb-components';
-import {HTTP_INTERCEPTORS} from "@angular/common/http";
-import {WorkspaceInterceptor} from "./workspace.interceptor";
+import { IqbComponentsModule } from 'iqb-components';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { WorkspaceInterceptor } from './workspace.interceptor';
 
 @NgModule({
   imports: [
