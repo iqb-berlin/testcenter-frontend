@@ -1,7 +1,8 @@
 import { SyscheckDataService } from './syscheck-data.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Component, OnInit} from '@angular/core';
-import {BackendService, CheckConfigData, FormDefEntry, Rating} from './backend.service';
+import { BackendService } from './backend.service';
+import { Subscription } from 'rxjs';
 
 
 interface Checks {
@@ -18,6 +19,8 @@ interface Checks {
   styleUrls: ['./sys-check.component.scss']
 })
 export class SysCheckComponent implements OnInit {
+  private taskSubscription: Subscription = null;
+  dataLoading = false;
 
   checks: Checks = {
     environment: true,
@@ -37,41 +40,35 @@ export class SysCheckComponent implements OnInit {
   }
 
   ngOnInit() {
-
     this.route.paramMap.subscribe((params: ParamMap) => {
       const paramId = params.get('c');
-      if (paramId === this.bs.basicTestConfig.id) {
-        this.loadTestConfig(this.bs.basicTestConfigData);
-      } else {
-        this.bs.getCheckConfigData(paramId).subscribe(config => this.loadTestConfig(config));
-      }
+      this.bs.getCheckConfigData(paramId).subscribe(checkConfig => {
+        this.ds.checkConfig$.next(checkConfig);
+
+        this.title = checkConfig.label;
+        this.checks.unit = checkConfig.hasunit;
+        this.checks.network = !checkConfig.skipnetwork;
+        this.checks.questions = checkConfig.questions.length > 0;
+        this.checks.report = checkConfig.cansave;
+
+        if (this.checks.unit) {
+          this.ds.taskQueue.push('loadunit');
+        }
+        if (this.checks.network) {
+          this.ds.taskQueue.push('speedtest');
+        }
+        this.ds.nextTask();
+        this.taskSubscription = this.ds.task$.subscribe(task => {
+          this.dataLoading = (typeof task !== 'undefined') && (this.ds.taskQueue.length > 0);
+        });
+
+      });
     });
   }
 
-  loadTestConfig(checkConfig: CheckConfigData) {
-
-    this.title = checkConfig.label;
-    this.checks.environment = !checkConfig.questionsonlymode;
-    this.checks.unit = checkConfig.hasunit && !checkConfig.questionsonlymode;
-    this.checks.network = !checkConfig.skipnetwork && !checkConfig.questionsonlymode;
-    this.checks.questions = checkConfig.questions.length > 0;
-    this.checks.report = checkConfig.cansave;
-
-    (checkConfig.ratings || []).forEach(rating => {
-      if (rating.type === 'download') {
-        checkConfig.downloadGood = rating.good;
-        checkConfig.downloadMinimum = rating.min;
-      }
-      if (rating.type === 'upload') {
-        checkConfig.uploadGood = rating.good;
-        checkConfig.uploadMinimum = rating.min;
-      }
-    });
-
-    this.ds.checkConfig$.next(checkConfig);
-
-    if (this.checks.unit) { this.ds.taskQueue.push('loadunit'); }
-    if (this.checks.network) { this.ds.taskQueue.push('speedtest'); }
-    this.ds.nextTask();
+  ngOnDestroy() {
+    if (this.taskSubscription !== null) {
+      this.taskSubscription.unsubscribe();
+    }
   }
 }

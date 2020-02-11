@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef } from '@angular/core';
 
 export interface TcSpeedChartSettings {
   lineWidth: number;
@@ -37,14 +37,14 @@ export class TcSpeedChartComponent {
     css: 'border: 1px solid black',
     lineWidth: 5,
     width: 800,
-    height: 240,
+    height: 400,
     gridColor: 'silver',
     axisColor: 'red',
     labelFont: '20 pt Verdana',
     labelPadding: 4,
     xAxisMaxValue: 200,
     xAxisMinValue: -10,
-    yAxisMaxValue: 100,
+    yAxisMaxValue: 300,
     yAxisMinValue: -10,
     xAxisStepSize: 20,
     yAxisStepSize: 10,
@@ -64,7 +64,6 @@ export class TcSpeedChartComponent {
     this.context = this.canvas.getContext('2d');
 
     this.config = {...this.config, ...config};
-
     this.canvas.setAttribute('style', this.config.css);
     this.canvas.setAttribute('height', this.config.height);
     this.canvas.setAttribute('width', this.config.width);

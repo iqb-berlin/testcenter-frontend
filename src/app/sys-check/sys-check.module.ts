@@ -24,6 +24,7 @@ import { SaveReportComponent } from './report/save-report/save-report.component'
 import { UnitNaviButtonsComponent } from './unit-check/tc-navi-buttons/unit-navi-buttons.component';
 
 import { TcSpeedChartComponent } from './network-check/tc-speed-chart.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   imports: [
@@ -42,6 +43,7 @@ import { TcSpeedChartComponent } from './network-check/tc-speed-chart.component'
     MatIconModule,
     MatSelectModule,
     MatRadioModule,
+    MatTooltipModule,
     MatSnackBarModule,
     MatDialogModule,
     ReactiveFormsModule

@@ -1,25 +1,35 @@
 <div class="logo">
   <a [routerLink]="['/']">
-    <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
+    <img src="assets/IQB-LogoA.png" matTooltip="Startseite" alt="iqb-logo"/>
   </a>
 </div>
 
-<div class="pagetitle">{{title}}</div>
+<div class="pagetitle">System-Check: {{title}}</div>
 
 <div class="page-body">
-
-  <iqb-network-check [measureNetwork]="checks.network" [ngClass]="{toprow: checks.network}"></iqb-network-check>
-
-  <div fxLayout="column" fxLayout.gt-md="row" class="cardbox" [ngClass]="{toprow: !checks.network}">
-
-    <iqb-unit-check fxFlex="100%" [fxFlex.gt-md]="(checks.unit && checks.questions) ? '75%' : '100%'" *ngIf="checks.unit"></iqb-unit-check>
-
-    <iqb-questionnaire fxFlex="100%" [fxFlex.gt-md]="(checks.unit && checks.questions) ? '25%' : '100%'" *ngIf="checks.questions"></iqb-questionnaire>
-
+  <div class="spinner-container-local" *ngIf="dataLoading">
+    <mat-spinner></mat-spinner>
   </div>
-
-  <iqb-environment-check *ngIf="checks.environment"></iqb-environment-check>
-
-  <iqb-report [canSave]="checks.report"></iqb-report>
+  <div fxLayout="column" fxLayoutAlign="center stretch" class="cardhost">
+    <div fxLayout="raw wrap" fxLayoutAlign="center stretch" fxFlex>
+      <mat-card fxFlex>
+        <iqb-environment-check></iqb-environment-check>
+      </mat-card>
+      <mat-card fxFlex="2 0 800px">
+        <iqb-network-check [measureNetwork]="checks.network"></iqb-network-check>
+      </mat-card>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="center stretch">
+      <mat-card [fxFlex]="(checks.questions) ? '2 0 800px' : ''" *ngIf="checks.unit">
+        <iqb-unit-check></iqb-unit-check>
+      </mat-card>
+      <mat-card fxFlex *ngIf="checks.questions">
+        <iqb-questionnaire></iqb-questionnaire>
+      </mat-card>
+    </div>
+    <mat-card>
+      <iqb-report [canSave]="checks.report"></iqb-report>
+    </mat-card>
+  </div>
 
 </div>

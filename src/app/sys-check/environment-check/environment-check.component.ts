@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SyscheckDataService } from '../syscheck-data.service';
-import {ReportEntry} from '../backend.service';
+import { ReportEntry } from '../sys-check.interfaces';
 
 @Component({
   selector: 'iqb-environment-check',
@@ -9,6 +9,7 @@ import {ReportEntry} from '../backend.service';
 export class EnvironmentCheckComponent implements OnInit {
 
   private report: Map<string, ReportEntry> = new Map<string, ReportEntry>();
+  data: ReportEntry[] = [];
 
   private rating = {
     browser: {
@@ -44,7 +45,8 @@ export class EnvironmentCheckComponent implements OnInit {
     const report = Array.from(this.report.values())
       .sort((item1: ReportEntry, item2: ReportEntry) => (item1.label > item2.label) ? 1 : -1);
 
-    this.ds.environmentData$.next(Object.values(report));
+    this.data = Object.values(report);
+    this.ds.environmentData$.next(this.data);
   }
 
   private reportPush(key: string, value: string, warning: boolean = false) {
@@ -131,7 +133,7 @@ export class EnvironmentCheckComponent implements OnInit {
   getOS() {
 
     const userAgent = window.navigator.userAgent;
-    let osName = '';
+    let osName;
     if (userAgent.indexOf('Windows') !== -1) {
       if (userAgent.indexOf('Windows NT 10.0') !== -1) {
         osName = 'Windows 10';

@@ -1,21 +1,14 @@
-<mat-card>
+<mat-card-header>
+  <mat-card-title>
+    Test-Aufgabe
+    <span *ngIf="waitforloading" style="color:red"> - wird geladen, bitte warten.</span>
+  </mat-card-title>
+  <mat-card-subtitle>Bitte beachten Sie die Anweisungen in den einzelnen Aufgaben und bearbeiten Sie hierzu die Fragen auf der rechten Seite.</mat-card-subtitle>
 
-  <mat-card-header>
-    <mat-card-title>
-      Test-Aufgabe
-      <span *ngIf="dataLoading" style="color:red"> - wird gleich geladen, bitte warten.</span>
-    </mat-card-title>
-    <mat-card-subtitle>Hier können Sie eine Aufgabe ausprobieren</mat-card-subtitle>
+  <tc-navi-buttons></tc-navi-buttons><!-- TODO needed? -->
+</mat-card-header>
 
-    <tc-navi-buttons></tc-navi-buttons><!-- TODO needed? -->
-  </mat-card-header>
-
-  <mat-card-content style="height: 610px; overflow: auto">
-    <div class="spinner-container-local" *ngIf="dataLoading">
-      <mat-spinner></mat-spinner>
-    </div>
-    <div style="color:red; position: absolute" *ngIf="errorMessage">{{errorMessage}}</div>
-    <div #iFrameHost iqbResizeIFrameChild style="height:99%"></div>
-  </mat-card-content>
-
-</mat-card>
+<mat-card-content style="height: 610px; overflow: auto">
+  <div style="color:red; position: absolute" *ngIf="errorMessage">{{errorMessage}}</div>
+  <div #iFrameHost iqbResizeIFrameChild style="height:99%"></div>
+</mat-card-content>

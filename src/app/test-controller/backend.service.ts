@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, map, tap, switchMap } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { BookletData, UnitData, TaggedString } from './test-controller.interfaces';
-import { ServerError } from '../backend.service';
+import {ServerError} from "iqb-components";
 
 
 @Injectable({
@@ -133,7 +133,7 @@ export class BackendService {
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
   handle(errorObj: HttpErrorResponse): Observable<ServerError> {
-    let myreturn: ServerError = null;
+    let myreturn;
     if (errorObj.error instanceof ErrorEvent) {
       myreturn = new ServerError(500, 'Verbindungsproblem', (<ErrorEvent>errorObj.error).message);
     } else {

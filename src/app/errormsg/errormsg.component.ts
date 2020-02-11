@@ -1,4 +1,4 @@
-import { ServerError } from '../backend.service';
+import { ServerError } from 'iqb-components';
 import { MainDataService } from '../maindata.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';

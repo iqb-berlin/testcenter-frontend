@@ -1,7 +1,7 @@
 import { FormControl, FormGroup } from '@angular/forms';
-import { FormDefEntry, ReportEntry } from '../backend.service';
 import { SyscheckDataService } from '../syscheck-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { FormDefEntry, ReportEntry } from '../sys-check.interfaces';
 
 @Component({
   selector: 'iqb-questionnaire',
@@ -34,7 +34,7 @@ export class QuestionnaireComponent implements OnInit {
           group[question.id] = new FormControl('');
         });
         this.form = new FormGroup(group);
-        this.form.valueChanges.subscribe(f => {this.updateReport(); });
+        this.form.valueChanges.subscribe(() => {this.updateReport(); });
         this.updateReport();
       }
     });
@@ -46,7 +46,7 @@ export class QuestionnaireComponent implements OnInit {
     this.questions.forEach(element => {
       if (element.type !== 'header') {
         const value = this.form.controls[element.id].value;
-        const warning = (['string', 'select', 'radio'].indexOf(element.type) > -1) && (value === '');
+        const warning = (['string', 'select', 'radio', 'text'].indexOf(element.type) > -1) && (value === '') && (element.required);
         myReportEntries.push({'id': element.id, 'type': element.type, 'label': element.prompt, 'value': value, warning: warning});
       }
     });

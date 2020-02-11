@@ -1,12 +1,12 @@
 import { debounceTime, takeUntil, map } from 'rxjs/operators';
-import { BehaviorSubject, of, Observable, Subject, Subscription, interval, timer } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription, interval, timer } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Testlet, BookletConfig, MaxTimerData } from './test-controller.classes';
 import { LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData,
     MaxTimerDataType, UnitNaviButtonData } from './test-controller.interfaces';
 import { BackendService } from './backend.service';
-import { ServerError } from '../backend.service';
 import { KeyValuePair, KeyValuePairNumber } from '../app.interfaces';
+import {ServerError} from "iqb-components";
 
 @Injectable({
   providedIn: 'root'

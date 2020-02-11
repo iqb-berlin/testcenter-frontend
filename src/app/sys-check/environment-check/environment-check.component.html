@@ -1,0 +1,16 @@
+<mat-card-header>
+  <mat-card-title>
+    Computer/Browser
+  </mat-card-title>
+</mat-card-header>
+
+<mat-card-content>
+  <table fxFlex="100%">
+    <tbody>
+    <tr *ngFor="let ed of data">
+      <td>{{ed.label}}</td>
+      <td>&nbsp;{{ed.value}}</td>
+    </tr>
+    </tbody>
+  </table>
+</mat-card-content>

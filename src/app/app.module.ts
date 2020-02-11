@@ -2,7 +2,7 @@ import { AboutComponent } from './about/about.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule, MatCardModule,
@@ -11,7 +11,6 @@ import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule, Ma
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { IqbComponents } from 'iqb-components';
 import { BackendService } from './backend.service';
 import { StartComponent } from './start/start.component';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
@@ -50,8 +49,7 @@ import { CustomTextPipe } from './custom-text.pipe';
     ReactiveFormsModule,
     HttpClientModule,
     MatToolbarModule,
-    AppRoutingModule,
-    IqbComponents
+    AppRoutingModule
   ],
   providers: [
     BackendService,
