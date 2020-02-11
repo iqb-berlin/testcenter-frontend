@@ -123,9 +123,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           }
           this.allUnitIds.push(myUnitAliasClear);
 
-          // const newUnit = targetTestlet.addUnit(this.lastUnitSequenceId, myUnitId,
-          //       childElements[childIndex].getAttribute('label'), myUnitAliasClear,
-          //       childElements[childIndex].getAttribute('labelshort'));
+          targetTestlet.addUnit(this.lastUnitSequenceId, myUnitId,
+                childElements[childIndex].getAttribute('label'), myUnitAliasClear,
+                childElements[childIndex].getAttribute('labelshort'));
           this.lastUnitSequenceId += 1;
 
         } else if (childElements[childIndex].nodeName === 'Testlet') {
