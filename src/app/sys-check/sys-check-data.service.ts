@@ -7,7 +7,7 @@ type Task = 'loadunit' | 'speedtest' | null;
 @Injectable({
   providedIn: 'root'
 })
-export class SyscheckDataService {
+export class SysCheckDataService {
 
   public checkConfig$ = new BehaviorSubject<CheckConfigData>(
     {

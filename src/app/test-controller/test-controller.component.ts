@@ -11,7 +11,7 @@ import { UnitDef, Testlet, EnvironmentData, MaxTimerData } from './test-controll
 import { LastStateKey, LogEntryKey, BookletData, UnitData, MaxTimerDataType, TaggedString } from './test-controller.interfaces';
 import { Subscription, Observable, of, from } from 'rxjs';
 import { switchMap, concatMap } from 'rxjs/operators';
-import {ServerError} from "iqb-components";
+import {CustomtextService, ServerError} from "iqb-components";
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -42,7 +42,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private bs: BackendService,
     private reviewDialog: MatDialog,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private cts: CustomtextService
   ) { }
 
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -51,7 +52,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (value.length > 0) {
       return value;
     } else {
-      return this.mds.getCostumText(key);
+      return this.cts.getCustomText(key, key);
     }
   }
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''

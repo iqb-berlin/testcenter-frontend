@@ -1,4 +1,4 @@
-import { SyscheckDataService } from '../syscheck-data.service';
+import { SysCheckDataService } from '../sys-check-data.service';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import {BackendService} from '../backend.service';
 import { combineLatest } from 'rxjs';
@@ -16,7 +16,7 @@ import {
 export class NetworkCheckComponent implements OnInit {
 
   constructor(
-    private ds: SyscheckDataService,
+    private ds: SysCheckDataService,
     private bs: BackendService
   ) {}
 

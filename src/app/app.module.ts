@@ -17,7 +17,7 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ErrormsgComponent } from './errormsg/errormsg.component';
 import { httpInterceptorProviders } from './app.interceptor';
-import { CustomTextPipe } from './custom-text.pipe';
+import {IqbComponentsModule} from "iqb-components";
 
 
 @NgModule({
@@ -25,8 +25,7 @@ import { CustomTextPipe } from './custom-text.pipe';
     AppComponent,
     StartComponent,
     AboutComponent,
-    ErrormsgComponent,
-    CustomTextPipe
+    ErrormsgComponent
   ],
   imports: [
     BrowserModule,
@@ -49,7 +48,8 @@ import { CustomTextPipe } from './custom-text.pipe';
     ReactiveFormsModule,
     HttpClientModule,
     MatToolbarModule,
-    AppRoutingModule
+    AppRoutingModule,
+    IqbComponentsModule
   ],
   providers: [
     BackendService,

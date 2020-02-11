@@ -2,7 +2,8 @@ import { MainDataService } from './maindata.service';
 import { Component, OnInit } from '@angular/core';
 import { BackendService } from './backend.service';
 import { LoginData } from './app.interfaces';
-import { ServerError } from 'iqb-components';
+import {CustomtextService, ServerError} from 'iqb-components';
+import {appconfig} from "./app.config";
 
 @Component({
   selector: 'tc-root',
@@ -15,11 +16,14 @@ export class AppComponent implements OnInit {
 
   constructor (
     private mds: MainDataService,
-    private bs: BackendService
+    private bs: BackendService,
+    private cts: CustomtextService
   ) { }
 
   ngOnInit() {
+    this.setDefaultCustomTexts();
     // give a message to the central message broadcast
+
     window.addEventListener('message', (event: MessageEvent) => {
       const msgData = event.data;
       const msgType = msgData['type'];
@@ -31,7 +35,7 @@ export class AppComponent implements OnInit {
     });
 
     this.bs.getSysConfig().subscribe(sc => {
-      this.mds.setCostumTextsApp(sc);
+      this.cts.addCustomTexts(sc);
       // restore login status if stored in localStorage
       const loginToken = localStorage.getItem('lt');
       if (loginToken !== null) {
@@ -57,7 +61,6 @@ export class AppComponent implements OnInit {
           this.bs.getLoginData(loginToken, personToken, bookletDbId).subscribe(ld => {
             if (ld instanceof ServerError) {
               this.mds.setNewLoginData();
-              this.mds.setCostumTextsLogin();
             } else {
               const loginData = ld as LoginData;
               loginData.logintoken = loginToken;
@@ -67,17 +70,23 @@ export class AppComponent implements OnInit {
                 loginData.booklet = 0;
               }
               this.mds.setNewLoginData(loginData);
-              this.mds.setCostumTextsLogin(loginData.costumTexts);
+              this.cts.addCustomTexts(loginData.costumTexts);
             }
           });
         } else {
           this.mds.setNewLoginData();
-          this.mds.setCostumTextsLogin();
         }
       } else {
         this.mds.setNewLoginData();
-        this.mds.setCostumTextsLogin();
       }
     });
+  }
+
+  private setDefaultCustomTexts() {
+    const myCustomTexts: {[key: string]: string} = {};
+    for (const ct of Object.keys(appconfig.customtexts)) {
+      myCustomTexts[ct] = appconfig.customtexts[ct].defaultvalue;
+    }
+    this.cts.addCustomTexts(myCustomTexts);
   }
 }

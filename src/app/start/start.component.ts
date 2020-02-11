@@ -1,6 +1,6 @@
 import { MainDataService } from '../maindata.service';
 import { Subscription, forkJoin } from 'rxjs';
-import { MessageDialogComponent, MessageDialogData, MessageType, ServerError } from 'iqb-components';
+import {CustomtextService, MessageDialogComponent, MessageDialogData, MessageType, ServerError} from 'iqb-components';
 import { MatDialog } from '@angular/material';
 import { BackendService } from '../backend.service';
 import { PersonTokenAndBookletDbId, LoginData } from '../app.interfaces';
@@ -44,8 +44,8 @@ export class StartComponent implements OnInit, OnDestroy {
     public mds: MainDataService,
     public messsageDialog: MatDialog,
     private router: Router,
-    private bs: BackendService) {
-
+    private bs: BackendService,
+    private cts: CustomtextService) {
   }
 
   ngOnInit() {
@@ -60,7 +60,7 @@ export class StartComponent implements OnInit, OnDestroy {
         this.loginStatusText.push('Gruppe: ' + logindata.groupname);
 
         if (logindata.mode === 'trial') {
-          const tmt = this.mds.getCostumText('login_trialmodeText');
+          const tmt = this.cts.getCostumText('login_trialmodeText');
           if (tmt.length > 0) {
             this.loginStatusText.push(tmt);
           }

@@ -1,4 +1,4 @@
-import { SyscheckDataService } from './syscheck-data.service';
+import { SysCheckDataService } from './sys-check-data.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BackendService } from './backend.service';
 import { Component, OnInit } from '@angular/core';
@@ -17,7 +17,7 @@ export class StartComponent implements OnInit {
 
   constructor(
     private bs: BackendService,
-    private ds: SyscheckDataService,
+    private ds: SysCheckDataService,
     private route: ActivatedRoute,
     private router: Router) { }
 

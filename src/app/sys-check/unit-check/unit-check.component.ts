@@ -1,6 +1,6 @@
 import { MainDataService } from '../../maindata.service';
 import { BackendService } from '../backend.service';
-import { SyscheckDataService } from '../syscheck-data.service';
+import { SysCheckDataService } from '../sys-check-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { Subscription, BehaviorSubject, combineLatest} from 'rxjs';
@@ -28,7 +28,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   public errorMessage = '';
 
   constructor(
-    private ds: SyscheckDataService,
+    private ds: SysCheckDataService,
     private bs: BackendService,
     private mds: MainDataService
   ) {

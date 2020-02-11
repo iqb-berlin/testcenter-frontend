@@ -1,5 +1,5 @@
 import { ResizeIFrameChildDirective } from './unit-check/resize-IFrameChild/resize-IFrameChild.directive';
-import { SyscheckDataService } from './syscheck-data.service';
+import { SysCheckDataService } from './sys-check-data.service';
 import { BackendService } from './backend.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -25,6 +25,7 @@ import { UnitNaviButtonsComponent } from './unit-check/tc-navi-buttons/unit-navi
 
 import { TcSpeedChartComponent } from './network-check/tc-speed-chart.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
+import {IqbComponentsModule} from "iqb-components";
 
 @NgModule({
   imports: [
@@ -46,7 +47,8 @@ import {MatTooltipModule} from "@angular/material/tooltip";
     MatTooltipModule,
     MatSnackBarModule,
     MatDialogModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    IqbComponentsModule
   ],
   declarations: [
     StartComponent,
@@ -69,7 +71,7 @@ import {MatTooltipModule} from "@angular/material/tooltip";
   ],
   providers: [
     BackendService,
-    SyscheckDataService
+    SysCheckDataService
   ]
 })
 export class SysCheckModule { }

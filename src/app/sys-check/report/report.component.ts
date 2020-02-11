@@ -1,5 +1,5 @@
 import {BackendService} from '../backend.service';
-import { SyscheckDataService } from '../syscheck-data.service';
+import { SysCheckDataService } from '../sys-check-data.service';
 import {Component, Input} from '@angular/core';
 import {SaveReportComponent} from './save-report/save-report.component';
 import {MatDialog, MatSnackBar} from '@angular/material';
@@ -30,7 +30,7 @@ export class ReportComponent {
 
   constructor(
     private bs: BackendService,
-    private ds: SyscheckDataService,
+    private ds: SysCheckDataService,
     private saveDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {

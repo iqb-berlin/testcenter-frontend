@@ -34,7 +34,7 @@
     <!-- - - - - - - - - - - - - - - - - -->
     <mat-card fxFlex="0 0 400px" *ngIf="showCodeForm">
       <form [formGroup]="codeinputform" (ngSubmit)="codeinput()">
-        <mat-card-title>{{ showCodeForm | customText:'login_codeInputTitle' }}</mat-card-title>
+        <mat-card-title>{{ 'login_codeInputTitle' | customtext:'login_codeInputTitle':cts.updateCount }}</mat-card-title>
         <mat-card-content>
           <mat-form-field>
             <input matInput formControlName="code" (keyup.enter)="codeinput()"> <!-- no placeholder! -->

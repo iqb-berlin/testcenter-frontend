@@ -1,15 +1,15 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { SyscheckDataService } from './syscheck-data.service';
+import { SysCheckDataService } from './sys-check-data.service';
 
 describe('SyscheckDataService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [SyscheckDataService]
+      providers: [SysCheckDataService]
     });
   });
 
-  it('should be created', inject([SyscheckDataService], (service: SyscheckDataService) => {
+  it('should be created', inject([SysCheckDataService], (service: SysCheckDataService) => {
     expect(service).toBeTruthy();
   }));
 });
