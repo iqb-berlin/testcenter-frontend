@@ -43,7 +43,7 @@ export class ReportComponent {
         if (re.warning) {
           this.questionnaireDataWarnings.push(re);
         }
-      })
+      });
     });
     this.uDataSubscription = this.ds.unitData$.subscribe(rd => this.unitData = rd);
   }

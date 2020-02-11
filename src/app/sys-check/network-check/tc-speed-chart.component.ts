@@ -64,11 +64,9 @@ export class TcSpeedChartComponent {
     this.context = this.canvas.getContext('2d');
 
     this.config = {...this.config, ...config};
-    console.log("1: " + this.config.css);
     this.canvas.setAttribute('style', this.config.css);
     this.canvas.setAttribute('height', this.config.height);
     this.canvas.setAttribute('width', this.config.width);
-    console.log("2: " + this.canvas.height);
 
     this.context.setTransform(1, 0, 0, 1, 0, 0);
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -81,7 +79,6 @@ export class TcSpeedChartComponent {
 
     this.xScale = this.canvas.width / (xAxisMaxValue - xAxisMinValue);
     this.yScale = this.canvas.height / (yAxisMaxValue - yAxisMinValue);
-    console.log("3: " + this.config.css);
 
     this.drawGridColumns();
     this.drawGridRows();

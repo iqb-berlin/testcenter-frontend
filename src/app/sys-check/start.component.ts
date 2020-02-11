@@ -2,7 +2,7 @@ import { SysCheckDataService } from './sys-check-data.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BackendService } from './backend.service';
 import { Component, OnInit } from '@angular/core';
-import {CheckConfig} from "./sys-check.interfaces";
+import { CheckConfig } from './sys-check.interfaces';
 
 
 
@@ -29,10 +29,10 @@ export class StartComponent implements OnInit {
     });
   }
 
-  // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   buttonStartCheck(c: CheckConfig) {
     this.router.navigate(['../run/' + c.id], {relativeTo: this.route});
   }
+
   goBack() {
     this.router.navigate(['/']);
   }

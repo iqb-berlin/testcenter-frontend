@@ -2,8 +2,8 @@ import {CheckConfig, CheckConfigData, NetworkRequestTestResult, ReportEntry, Uni
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import {catchError, map, tap} from 'rxjs/operators';
-import {ErrorHandler, ServerError} from "iqb-components";
+import { catchError, map, tap } from 'rxjs/operators';
+import { ErrorHandler, ServerError } from 'iqb-components';
 
 
 @Injectable({
@@ -104,7 +104,7 @@ export class BackendService {
 
     return new Promise(function(resolve, reject) {
       if (reject) {
-        console.log("reject is set");
+        console.log('reject is set');
       }
 
       const xhr = new XMLHttpRequest();
@@ -117,6 +117,7 @@ export class BackendService {
         if (xhr.status !== 200) {
           testResult.error = `Error ${xhr.statusText} (${xhr.status}) `;
         }
+        // tslint:disable-next-line:triple-equals
         if (xhr.response.toString().length != requestedDownloadSize) {
           testResult.error = `Error: Data package has wrong size! ${requestedDownloadSize} ` + xhr.response.toString().length;
         }
@@ -158,7 +159,7 @@ export class BackendService {
 
     return new Promise(function (resolve, reject) {
       if (reject) {
-        console.log("reject is set");
+        console.log('reject is set');
       }
 
       const xhr = new XMLHttpRequest();
@@ -182,6 +183,7 @@ export class BackendService {
           const response = JSON.parse(xhr.response);
 
           const arrivingSize = parseFloat(response['packageReceivedSize']);
+          // tslint:disable-next-line:triple-equals
           if (arrivingSize != requestedUploadSize) {
             testResult.error = `Error: Data package has wrong size! ${requestedUploadSize} != ${arrivingSize}`;
           }
