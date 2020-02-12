@@ -1,5 +1,5 @@
 import { StartLockInputComponent } from '../start-lock-input/start-lock-input.component';
-import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
+import {ConfirmDialogComponent, ConfirmDialogData, CustomtextService} from 'iqb-components';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { TestControllerService } from '../test-controller.service';
 import { switchMap, map, takeWhile, ignoreElements, filter, take } from 'rxjs/operators';
@@ -18,7 +18,8 @@ export class UnitActivateGuard implements CanActivate {
     private mds: MainDataService,
     public startLockDialog: MatDialog,
     public confirmDialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private cts: CustomtextService
   ) {}
 
   private getCostumText(key: string): string {
@@ -26,7 +27,8 @@ export class UnitActivateGuard implements CanActivate {
     if (value.length > 0) {
       return value;
     } else {
-      return this.mds.getCostumText(key);
+      // @ts-ignore
+      return this.cts.getCustomText(key);
     }
   }
 

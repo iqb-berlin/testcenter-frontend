@@ -1,3 +1,5 @@
+import { CustomTextDefs } from "iqb-components";
+
 export const appconfig = {
   customtexts: <CustomTextDefs>{
     'app_title': {

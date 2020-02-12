@@ -60,12 +60,14 @@ export class StartComponent implements OnInit, OnDestroy {
         this.loginStatusText.push('Gruppe: ' + logindata.groupname);
 
         if (logindata.mode === 'trial') {
-          const tmt = this.cts.getCostumText('login_trialmodeText');
+          // @ts-ignore
+          const tmt = this.cts.getCustomText('login_trialmodeText');
           if (tmt.length > 0) {
             this.loginStatusText.push(tmt);
           }
         } else if (logindata.mode === 'review') {
-          const tmt = this.mds.getCostumText('login_reviewmodeText');
+          // @ts-ignore
+          const tmt = this.cts.getCustomText('login_reviewmodeText');
           if (tmt.length > 0) {
             this.loginStatusText.push(tmt);
           }
@@ -143,15 +145,18 @@ export class StartComponent implements OnInit, OnDestroy {
 
               if (numberOfOpenBooklets === 0) {
                 this.bookletSelectTitle = 'Beendet';
-                this.bookletSelectPrompt = this.mds.getCostumText('login_bookletSelectPromptNull');
+                // @ts-ignore
+                this.bookletSelectPrompt = this.cts.getCustomText('login_bookletSelectPromptNull');
               } else if (numberOfOpenBooklets === 1) {
                 this.bookletSelectPrompt = 'Bitte links auf den Testheft-Schalter klicken!';
                 this.bookletSelectTitle = 'Bitte starten';
-                this.bookletSelectPrompt = this.mds.getCostumText('login_bookletSelectPromptOne');
+                // @ts-ignore
+                this.bookletSelectPrompt = this.cts.getCustomText('login_bookletSelectPromptOne');
               } else {
                 this.bookletSelectPrompt = 'Bitte links ein Testheft wählen und klicken!';
                 this.bookletSelectTitle = 'Bitte wählen';
-                this.bookletSelectPrompt = this.mds.getCostumText('login_bookletSelectPromptMany');
+                // @ts-ignore
+                this.bookletSelectPrompt = this.cts.getCustomText('login_bookletSelectPromptMany');
               }
             });
           } else {
@@ -193,7 +198,7 @@ export class StartComponent implements OnInit, OnDestroy {
         } else {
           this.mds.globalErrorMsg$.next(null);
           this.mds.refreshCostumTexts = false;
-          this.mds.setCostumTextsLogin((loginData as LoginData).costumTexts);
+          this.cts.addCustomTexts((loginData as LoginData).costumTexts);
           this.mds.refreshCostumTexts = true;
           this.mds.setNewLoginData(loginData as LoginData);
         }
@@ -209,8 +214,10 @@ export class StartComponent implements OnInit, OnDestroy {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
         data: <MessageDialogData>{
-          title: this.mds.getCostumText('login_codeInputTitle') + ': Leer',
-          content: this.mds.getCostumText('login_codeInputPrompt'),
+          // @ts-ignore
+          title: this.cts.getCustomText('login_codeInputTitle') + ': Leer',
+          // @ts-ignore
+          content: this.cts.getCustomText('login_codeInputPrompt'),
           type: MessageType.error
         }
       });
@@ -218,8 +225,10 @@ export class StartComponent implements OnInit, OnDestroy {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
         data: <MessageDialogData>{
-          title: this.mds.getCostumText('login_codeInputTitle') + ': Ungültig',
-          content: this.mds.getCostumText('login_codeInputPrompt'),
+          // @ts-ignore
+          title: this.cts.getCustomText('login_codeInputTitle') + ': Ungültig',
+          // @ts-ignore
+          content: this.cts.getCustomText('login_codeInputPrompt'),
           type: MessageType.error
         }
       });
@@ -253,7 +262,6 @@ export class StartComponent implements OnInit, OnDestroy {
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   resetLogin() {
-    this.mds.setCostumTextsLogin();
     this.mds.setNewLoginData();
   }
 
