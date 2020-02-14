@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { StartButtonData } from './start-button-data.class';
+import {appconfig} from "../app.config";
 
 @Component({
   templateUrl: './start.component.html',
@@ -194,12 +195,11 @@ export class StartComponent implements OnInit, OnDestroy {
         if (loginData instanceof ServerError) {
           const e = loginData as ServerError;
           this.mds.globalErrorMsg$.next(e);
+          this.mds.setCustomtextsFromDefList(appconfig.customtextsLogin);
           // no change in other data
         } else {
           this.mds.globalErrorMsg$.next(null);
-          this.mds.refreshCostumTexts = false;
-          this.cts.addCustomTexts((loginData as LoginData).costumTexts);
-          this.mds.refreshCostumTexts = true;
+          this.cts.addCustomTexts((loginData as LoginData).customTexts);
           this.mds.setNewLoginData(loginData as LoginData);
         }
         this.dataLoading = false;

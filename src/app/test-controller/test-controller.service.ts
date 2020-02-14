@@ -5,7 +5,7 @@ import { Testlet, BookletConfig, MaxTimerData } from './test-controller.classes'
 import { LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData,
     MaxTimerDataType, UnitNaviButtonData } from './test-controller.interfaces';
 import { BackendService } from './backend.service';
-import { KeyValuePair, KeyValuePairNumber } from '../app.interfaces';
+import { KeyValuePairNumber } from '../app.interfaces';
 import {ServerError} from "iqb-components";
 
 @Injectable({
@@ -78,7 +78,6 @@ export class TestControllerService {
 
   private restorePointsToSave$ = new Subject<UnitRestorePointData>();
   private responsesToSave$ = new Subject<UnitResponseData>();
-  private _costumTexts: KeyValuePair = {};
 
   constructor (
     private bs: BackendService
@@ -136,7 +135,6 @@ export class TestControllerService {
     this.navArrows = true;
     this.pageNav = true;
     this.lazyloading = true;
-    this._costumTexts = {};
     this.dataLoading = false;
     this.bookletLoadComplete = false;
   }
@@ -312,18 +310,5 @@ export class TestControllerService {
       this.minUnitSequenceId = this.rootTestlet.getFirstUnlockedUnitSequenceId(startWith);
       this.maxUnitSequenceId = this.rootTestlet.getLastUnlockedUnitSequenceId(startWith);
     }
-  }
-
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
-  public setCostumTexts(sc: KeyValuePair = {}) {
-    this._costumTexts = sc;
-  }
-  public getCostumText(key: string): string {
-    if (this._costumTexts) {
-      if (this._costumTexts.hasOwnProperty(key)) {
-        return this._costumTexts[key];
-      }
-    }
-    return '';
   }
 }

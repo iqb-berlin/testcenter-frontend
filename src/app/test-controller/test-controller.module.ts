@@ -1,3 +1,5 @@
+import {IqbComponentsModule} from "iqb-components";
+
 export { TestControllerService } from './test-controller.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -12,7 +14,7 @@ import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameCh
 import { unitRoutingGuards } from './unithost/unit-routing-guards';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
-import { ReactiveFormsModule } from '../../../node_modules/@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { StartLockInputComponent } from './start-lock-input/start-lock-input.component';
 
 
@@ -35,7 +37,8 @@ import { StartLockInputComponent } from './start-lock-input/start-lock-input.com
     MatMenuModule,
     MatButtonModule,
     MatToolbarModule,
-    MatIconModule
+    MatIconModule,
+    IqbComponentsModule.forChild()
   ],
   declarations: [
     UnithostComponent,

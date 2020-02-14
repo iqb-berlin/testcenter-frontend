@@ -48,7 +48,7 @@ import {IqbComponentsModule} from "iqb-components";
     MatSnackBarModule,
     MatDialogModule,
     ReactiveFormsModule,
-    IqbComponentsModule
+    IqbComponentsModule.forChild()
   ],
   declarations: [
     StartComponent,

@@ -49,7 +49,7 @@ import {IqbComponentsModule} from "iqb-components";
     HttpClientModule,
     MatToolbarModule,
     AppRoutingModule,
-    IqbComponentsModule
+    IqbComponentsModule.forRoot()
   ],
   providers: [
     BackendService,

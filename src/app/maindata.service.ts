@@ -1,9 +1,9 @@
-import { KeyValuePair } from './test-controller/test-controller.interfaces';
 import { BackendService } from './backend.service';
 import { BehaviorSubject, Subject, forkJoin } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { LoginData } from './app.interfaces';
-import {ServerError} from "iqb-components";
+import {CustomtextService, ServerError} from "iqb-components";
+import {appconfig, customtextKeySeparator, CustomTextsDefList} from "./app.config";
 
 @Injectable({
   providedIn: 'root'
@@ -20,19 +20,19 @@ export class MainDataService {
     code: '',
     booklet: 0,
     bookletlabel: '',
-    costumTexts: {}
+    customTexts: {}
   };
 
   public loginData$ = new BehaviorSubject<LoginData>(MainDataService.defaultLoginData);
   public globalErrorMsg$ = new BehaviorSubject<ServerError>(null);
-  public refreshCostumTexts = false;
-  private _costumTextsApp: KeyValuePair = {};
-  private _costumTextsLogin: KeyValuePair = {};
 
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();
 
-  constructor(private bs: BackendService) {}
+  constructor(
+    private bs: BackendService,
+    private cts: CustomtextService
+  ) {}
 
   // ensures consistency
   setNewLoginData(logindata?: LoginData) {
@@ -47,7 +47,7 @@ export class MainDataService {
       code: MainDataService.defaultLoginData.code,
       booklet: MainDataService.defaultLoginData.booklet,
       bookletlabel: MainDataService.defaultLoginData.bookletlabel,
-      costumTexts: MainDataService.defaultLoginData.costumTexts // always ignored except right after getting from backend!
+      customTexts: MainDataService.defaultLoginData.customTexts // always ignored except right after getting from backend!
     };
 
     if (logindata) {
@@ -140,5 +140,38 @@ export class MainDataService {
   getPersonToken(): string {
     const myLoginData = this.loginData$.getValue();
     return myLoginData.persontoken;
+  }
+
+  public setCustomtextsFromDefList(customtextList: CustomTextsDefList) {
+    const myCustomTexts: {[key: string]: string} = {};
+    for (const ct of Object.keys(customtextList)) {
+      myCustomTexts[customtextList.keyPrefix + customtextKeySeparator + ct] = customtextList[ct].defaultvalue;
+    }
+    this.cts.addCustomTexts(myCustomTexts);
+  }
+
+  public setDefaultCustomtexts(newTexts: {[key: string]: string;}) {
+    for (const ctKey of Object.keys(newTexts)) {
+      const sepIndex = ctKey.indexOf(customtextKeySeparator);
+      if (sepIndex > 1) {
+        const keyPrefix = ctKey.slice(0 , sepIndex-1);
+        const keyId = ctKey.slice(sepIndex+1);
+
+        switch(keyPrefix) {
+          case 'app': {
+            appconfig.customtextsApp.defList[keyId].defaultvalue = newTexts[ctKey];
+            break;
+          }
+          case 'login': {
+            appconfig.customtextsLogin.defList[keyId].defaultvalue = newTexts[ctKey];
+            break;
+          }
+          case 'booklet': {
+            appconfig.customtextsBooklet.defList[keyId].defaultvalue = newTexts[ctKey];
+            break;
+          }
+        }
+      }
+    }
   }
 }

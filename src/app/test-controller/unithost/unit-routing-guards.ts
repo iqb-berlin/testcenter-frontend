@@ -2,7 +2,7 @@ import { StartLockInputComponent } from '../start-lock-input/start-lock-input.co
 import {ConfirmDialogComponent, ConfirmDialogData, CustomtextService} from 'iqb-components';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { TestControllerService } from '../test-controller.service';
-import { switchMap, map, takeWhile, ignoreElements, filter, take } from 'rxjs/operators';
+import { switchMap, map, filter, take } from 'rxjs/operators';
 import { UnithostComponent } from './unithost.component';
 import { Injectable } from '@angular/core';
 import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
@@ -22,17 +22,7 @@ export class UnitActivateGuard implements CanActivate {
     private cts: CustomtextService
   ) {}
 
-  private getCostumText(key: string): string {
-    const value = this.tcs.getCostumText(key);
-    if (value.length > 0) {
-      return value;
-    } else {
-      // @ts-ignore
-      return this.cts.getCustomText(key);
-    }
-  }
 
-  // ****************************************************************************************
   checkAndSolve_PresentationCompleteCode(newUnit: UnitControllerData): Observable<Boolean> {
     if (this.tcs.navPolicyNextOnlyIfPresentationComplete && this.tcs.currentUnitSequenceId > 0) {
       if (this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
@@ -60,14 +50,14 @@ export class UnitActivateGuard implements CanActivate {
               width: '500px',
               // height: '300px',
               data:  <ConfirmDialogData>{
-                title: this.getCostumText('booklet_msgPresentationNotCompleteTitleNext'),
-                content: this.getCostumText('booklet_msgPresentationNotCompleteTextNext'),
+                title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitleNext'),
+                content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextNext'),
                 confirmbuttonlabel: 'OK',
                 confirmbuttonreturn: false,
                 showcancel: false
               }
             });
-            return dialogCDRef.afterClosed().pipe(map(ok => false));
+            return dialogCDRef.afterClosed().pipe(map(() => false));
           } else {
             this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden (PresentationNotComplete).',
                 'Weiterblättern', {duration: 3000});
@@ -92,8 +82,8 @@ export class UnitActivateGuard implements CanActivate {
               width: '500px',
               // height: '300px',
               data:  <ConfirmDialogData>{
-                title: this.getCostumText('booklet_msgPresentationNotCompleteTitlePrev'),
-                content: this.getCostumText('booklet_msgPresentationNotCompleteTextPrev'),
+                title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitlePrev'),
+                content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextPrev'),
                 confirmbuttonlabel: 'Trotzdem zurück',
                 confirmbuttonreturn: true,
                 showcancel: true
@@ -130,8 +120,8 @@ export class UnitActivateGuard implements CanActivate {
           width: '500px',
           autoFocus: true,
           data: <StartLockData>{
-            title: this.getCostumText('booklet_codeToEnterTitle'),
-            prompt: this.getCostumText('booklet_codeToEnterPrompt'),
+            title: this.cts.getCustomText('booklet_codeToEnterTitle'),
+            prompt: this.cts.getCustomText('booklet_codeToEnterPrompt'),
             codes: myCodes
           }
         });
@@ -156,7 +146,7 @@ export class UnitActivateGuard implements CanActivate {
                   return of(true);
 
                 } else {
-                  this.snackBar.open('Die Eingabe war nicht korrekt.', this.getCostumText('booklet_codeToEnterTitle'), {duration: 3000});
+                  this.snackBar.open('Die Eingabe war nicht korrekt.', this.cts.getCustomText('booklet_codeToEnterTitle'), {duration: 3000});
                   return of(false);
                 }
               }
@@ -189,8 +179,8 @@ export class UnitActivateGuard implements CanActivate {
             this.tcs.dataLoading = true;
             return interval(1000)
               .pipe(
-                filter(intervalvalue => this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)),
-                map(v => true),
+                filter(() => this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)),
+                map(() => true),
                 take(1)
               );
           }
@@ -216,7 +206,7 @@ export class UnitActivateGuard implements CanActivate {
             this.tcs.dataLoading = true;
             return interval(1000)
               .pipe(
-                filter(intervalvalue => {
+                filter(() => {
                   let localOk = true;
                   allUnitsSequenceIdsToCheck.forEach(u => {
                     if (!this.tcs.hasUnitDefinition(u)) {
@@ -225,7 +215,7 @@ export class UnitActivateGuard implements CanActivate {
                   });
                   return localOk;
                 }),
-                map(v => true),
+                map(() => true),
                 take(1)
               );
           }
@@ -254,8 +244,8 @@ export class UnitActivateGuard implements CanActivate {
           width: '500px',
           // height: '300px',
           data:  <ConfirmDialogData>{
-            title: this.getCostumText('booklet_warningLeaveTimerBlockTitle'),
-            content: this.getCostumText('booklet_warningLeaveTimerBlockPrompt'),
+            title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
+            content: this.cts.getCustomText('booklet_warningLeaveTimerBlockPrompt'),
             confirmbuttonlabel: 'Trotzdem weiter',
             confirmbuttonreturn: true,
             showcancel: true
@@ -295,8 +285,8 @@ export class UnitActivateGuard implements CanActivate {
         const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
           width: '500px',
           data:  <ConfirmDialogData>{
-            title: this.getCostumText('booklet_warningLeaveTimerBlockTitle'),
-            content: this.getCostumText('booklet_warningLeaveTimerBlockTextPrompt'),
+            title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
+            content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
             confirmbuttonlabel: 'Trotzdem weiter',
             confirmbuttonreturn: true,
             showcancel: true
@@ -408,8 +398,7 @@ export class UnitActivateGuard implements CanActivate {
 @Injectable()
 export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   constructor(
-    private tcs: TestControllerService,
-    public confirmDialog: MatDialog
+    private tcs: TestControllerService
   ) {}
 
   canDeactivate(

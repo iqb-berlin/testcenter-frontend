@@ -21,7 +21,10 @@ export class AppComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.setDefaultCustomTexts();
+    this.mds.setCustomtextsFromDefList(appconfig.customtextsApp);
+    this.mds.setCustomtextsFromDefList(appconfig.customtextsLogin);
+    this.mds.setCustomtextsFromDefList(appconfig.customtextsBooklet);
+
     // give a message to the central message broadcast
 
     window.addEventListener('message', (event: MessageEvent) => {
@@ -35,7 +38,8 @@ export class AppComponent implements OnInit {
     });
 
     this.bs.getSysConfig().subscribe(sc => {
-      this.cts.addCustomTexts(sc);
+      this.mds.setDefaultCustomtexts(sc);
+      this.mds.setCustomtextsFromDefList(appconfig.customtextsApp);
       // restore login status if stored in localStorage
       const loginToken = localStorage.getItem('lt');
       if (loginToken !== null) {
@@ -70,23 +74,19 @@ export class AppComponent implements OnInit {
                 loginData.booklet = 0;
               }
               this.mds.setNewLoginData(loginData);
-              this.cts.addCustomTexts(loginData.costumTexts);
+              this.cts.addCustomTexts(loginData.customTexts);
             }
           });
         } else {
           this.mds.setNewLoginData();
+          this.mds.setCustomtextsFromDefList(appconfig.customtextsLogin);
+          this.mds.setCustomtextsFromDefList(appconfig.customtextsBooklet);
         }
       } else {
         this.mds.setNewLoginData();
+        this.mds.setCustomtextsFromDefList(appconfig.customtextsLogin);
+        this.mds.setCustomtextsFromDefList(appconfig.customtextsBooklet);
       }
     });
-  }
-
-  private setDefaultCustomTexts() {
-    const myCustomTexts: {[key: string]: string} = {};
-    for (const ct of Object.keys(appconfig.customtexts)) {
-      myCustomTexts[ct] = appconfig.customtexts[ct].defaultvalue;
-    }
-    this.cts.addCustomTexts(myCustomTexts);
   }
 }

@@ -23,7 +23,7 @@ export interface LoginData {
   code: string;
   booklet: number;
   bookletlabel: string;
-  costumTexts: KeyValuePair;
+  customTexts: KeyValuePair;
 }
 
 export interface BookletStatus {
