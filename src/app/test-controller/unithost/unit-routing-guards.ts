@@ -1,5 +1,5 @@
 import { StartLockInputComponent } from '../start-lock-input/start-lock-input.component';
-import {ConfirmDialogComponent, ConfirmDialogData, CustomtextService} from 'iqb-components';
+import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from 'iqb-components';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { TestControllerService } from '../test-controller.service';
 import { switchMap, map, filter, take } from 'rxjs/operators';
@@ -146,7 +146,10 @@ export class UnitActivateGuard implements CanActivate {
                   return of(true);
 
                 } else {
-                  this.snackBar.open('Die Eingabe war nicht korrekt.', this.cts.getCustomText('booklet_codeToEnterTitle'), {duration: 3000});
+                  this.snackBar.open(
+                    'Die Eingabe war nicht korrekt.', this.cts.getCustomText('booklet_codeToEnterTitle'),
+                    {duration: 3000}
+                  );
                   return of(false);
                 }
               }

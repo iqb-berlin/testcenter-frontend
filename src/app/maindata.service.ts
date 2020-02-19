@@ -2,8 +2,8 @@ import { BackendService } from './backend.service';
 import { BehaviorSubject, Subject, forkJoin } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { LoginData } from './app.interfaces';
-import {CustomtextService, ServerError} from "iqb-components";
-import {appconfig, customtextKeySeparator, CustomTextsDefList} from "./app.config";
+import { CustomtextService, ServerError } from 'iqb-components';
+import { appconfig, customtextKeySeparator, CustomTextsDefList } from './app.config';
 
 @Injectable({
   providedIn: 'root'
@@ -152,14 +152,14 @@ export class MainDataService {
     this.cts.addCustomTexts(myCustomTexts);
   }
 
-  public setDefaultCustomtexts(newTexts: {[key: string]: string;}) {
+  public setDefaultCustomtexts(newTexts: {[key: string]: string; }) {
     for (const ctKey of Object.keys(newTexts)) {
       const sepIndex = ctKey.indexOf(customtextKeySeparator);
       if (sepIndex > 1) {
-        const keyPrefix = ctKey.slice(0 , sepIndex-1);
-        const keyId = ctKey.slice(sepIndex+1);
+        const keyPrefix = ctKey.slice(0 , sepIndex - 1);
+        const keyId = ctKey.slice(sepIndex + 1);
 
-        switch(keyPrefix) {
+        switch (keyPrefix) {
           case 'app': {
             appconfig.customtextsApp.defList[keyId].defaultvalue = newTexts[ctKey];
             break;

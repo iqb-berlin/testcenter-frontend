@@ -1,9 +1,9 @@
 import { SysCheckDataService } from './sys-check-data.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BackendService } from './backend.service';
-import {Component, OnInit, SkipSelf} from '@angular/core';
+import { Component, OnInit, SkipSelf } from '@angular/core';
 import { CheckConfig } from './sys-check.interfaces';
-import {CustomtextService} from "iqb-components";
+import { CustomtextService } from 'iqb-components';
 
 
 
@@ -27,8 +27,7 @@ export class StartComponent implements OnInit {
     this.dataLoading = true;
     this.bs.getCheckConfigs().subscribe(myConfigs => {
       this.checkConfigList = myConfigs;
-      // @ts-ignore
-      console.log(this.cts.getCustomText('app_title', 'tütü'))
+      console.log(this.cts.getCustomText('app_title', 'the app-title'));
       this.dataLoading = false;
     });
   }

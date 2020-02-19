@@ -1,4 +1,4 @@
-import {IqbComponentsModule} from "iqb-components";
+import { IqbComponentsModule } from 'iqb-components';
 
 export { TestControllerService } from './test-controller.service';
 import { NgModule } from '@angular/core';
