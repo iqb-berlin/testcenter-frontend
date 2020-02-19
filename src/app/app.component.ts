@@ -44,6 +44,7 @@ export class AppComponent implements OnInit {
       const loginToken = localStorage.getItem('lt');
       if (loginToken !== null) {
         if (loginToken.length > 0) {
+          let adminToken = localStorage.getItem('at');
           let personToken = localStorage.getItem('pt');
           let bookletDbId = 0;
           if (personToken !== null) {

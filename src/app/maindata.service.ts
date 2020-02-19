@@ -15,12 +15,16 @@ export class MainDataService {
     mode: '',
     groupname: '',
     loginname: '',
+    name: '',
     workspaceName: '',
     booklets: null,
     code: '',
     booklet: 0,
     bookletlabel: '',
     customTexts: {},
+    admintoken: '',
+    workspaces: [],
+    is_superadmin: false,
     costumTexts: {}
   };
 
@@ -29,6 +33,15 @@ export class MainDataService {
 
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();
+
+  public get adminToken(): string {
+    const myLoginData = this.loginData$.getValue();
+    if (myLoginData) {
+      return myLoginData.admintoken;
+    } else {
+      return '';
+    }
+  }
 
   constructor(
     private bs: BackendService,
@@ -43,17 +56,26 @@ export class MainDataService {
       mode: MainDataService.defaultLoginData.mode,
       groupname: MainDataService.defaultLoginData.groupname,
       loginname: MainDataService.defaultLoginData.loginname,
+      name: MainDataService.defaultLoginData.name,
       workspaceName: MainDataService.defaultLoginData.workspaceName,
       booklets: MainDataService.defaultLoginData.booklets,
       code: MainDataService.defaultLoginData.code,
       booklet: MainDataService.defaultLoginData.booklet,
       bookletlabel: MainDataService.defaultLoginData.bookletlabel,
       customTexts: {}, // always ignored except right after getting from backend!
+      admintoken: '',
+      workspaces: [],
+      is_superadmin: false,
       costumTexts: {} // always ignored except right after getting from backend!
     };
 
     if (logindata) {
-      if (
+      if ((logindata.admintoken)) { //.length > 0) && (logindata.name.length > 0)) {
+        myLoginData.admintoken = logindata.admintoken;
+        myLoginData.loginname = logindata.name;
+        myLoginData.workspaces = logindata.workspaces;
+        myLoginData.is_superadmin = logindata.is_superadmin;
+      } else if (
         (logindata.logintoken.length > 0) &&
         (logindata.loginname.length > 0) &&
         (logindata.mode.length > 0) &&
@@ -87,6 +109,7 @@ export class MainDataService {
     }
     this.loginData$.next(myLoginData);
     localStorage.setItem('lt', myLoginData.logintoken);
+    localStorage.setItem('at', myLoginData.admintoken);
     localStorage.setItem('pt', myLoginData.persontoken);
     localStorage.setItem('bi', myLoginData.booklet.toString());
   }

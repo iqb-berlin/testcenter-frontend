@@ -3,7 +3,7 @@ import { Subscription, forkJoin } from 'rxjs';
 import {CustomtextService, MessageDialogComponent, MessageDialogData, MessageType, ServerError} from 'iqb-components';
 import { MatDialog } from '@angular/material';
 import { BackendService } from '../backend.service';
-import { PersonTokenAndBookletDbId, LoginData } from '../app.interfaces';
+import {PersonTokenAndBookletDbId, LoginData, WorkspaceData} from '../app.interfaces';
 import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -21,6 +21,7 @@ export class StartComponent implements OnInit, OnDestroy {
   public showBookletButtons = false;
   public bookletlist: StartButtonData[] = [];
   public showTestRunningButtons = false;
+  public showAdminSelection = false;
 
   private loginDataSubscription: Subscription = null;
 
@@ -52,7 +53,11 @@ export class StartComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loginDataSubscription = this.mds.loginData$.subscribe(logindata => {
       this.bookletlist = [];
-      if (logindata.logintoken.length > 0) {
+      if (logindata.admintoken.length > 0) {
+        this.showLoginForm = false;
+        this.showAdminSelection = true;
+
+      } else if (logindata.logintoken.length > 0) {
         // Statustext box
         this.loginStatusText = [];
         this.loginStatusText.push('Studie: ' + logindata.workspaceName);
@@ -188,7 +193,7 @@ export class StartComponent implements OnInit, OnDestroy {
   }
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  testtakerlogin() {
+  login() {
     this.dataLoading = true;
     this.bs.login(this.testtakerloginform.get('testname').value, this.testtakerloginform.get('testpw').value).subscribe(
       loginData => {
@@ -273,6 +278,15 @@ export class StartComponent implements OnInit, OnDestroy {
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   stopBooklet() {
     this.mds.endBooklet();
+  }
+
+  buttonGotoWorkspace(ws: WorkspaceData) {
+    console.log(ws);
+    if (ws.role === 'MO') {
+      this.router.navigateByUrl('/admin/' + ws.id.toString() + '/monitor');
+    } else {
+      this.router.navigateByUrl('/admin/' + ws.id.toString() + '/files');
+    }
   }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

@@ -15,6 +15,7 @@ export interface BookletListByCode {
 export interface LoginData {
   logintoken: string;
   loginname: string;
+  name: string; // TODO is loginname, but backend sends name if admin login
   mode: string;
   groupname: string;
   workspaceName: string;
@@ -25,6 +26,9 @@ export interface LoginData {
   bookletlabel: string;
   customTexts: KeyValuePair;
   costumTexts: KeyValuePair; // TODO when backend fixed then change here
+  admintoken: string;
+  workspaces: WorkspaceData[];
+  is_superadmin: boolean
 }
 
 export interface BookletStatus {
@@ -46,4 +50,10 @@ export interface KeyValuePair {
 
 export interface KeyValuePairNumber {
   [K: string]: number;
+}
+
+export interface WorkspaceData {
+  id: number;
+  name: string;
+  role: string;
 }
