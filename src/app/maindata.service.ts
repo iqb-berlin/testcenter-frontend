@@ -20,7 +20,8 @@ export class MainDataService {
     code: '',
     booklet: 0,
     bookletlabel: '',
-    customTexts: {}
+    customTexts: {},
+    costumTexts: {}
   };
 
   public loginData$ = new BehaviorSubject<LoginData>(MainDataService.defaultLoginData);
@@ -47,7 +48,8 @@ export class MainDataService {
       code: MainDataService.defaultLoginData.code,
       booklet: MainDataService.defaultLoginData.booklet,
       bookletlabel: MainDataService.defaultLoginData.bookletlabel,
-      customTexts: MainDataService.defaultLoginData.customTexts // always ignored except right after getting from backend!
+      customTexts: {}, // always ignored except right after getting from backend!
+      costumTexts: {} // always ignored except right after getting from backend!
     };
 
     if (logindata) {
