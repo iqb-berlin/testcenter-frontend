@@ -144,8 +144,8 @@ export class MainDataService {
 
   public setCustomtextsFromDefList(customtextList: CustomTextsDefList) {
     const myCustomTexts: {[key: string]: string} = {};
-    for (const ct of Object.keys(customtextList)) {
-      myCustomTexts[customtextList.keyPrefix + customtextKeySeparator + ct] = customtextList[ct].defaultvalue;
+    for (const ct of Object.keys(customtextList.defList)) {
+      myCustomTexts[customtextList.keyPrefix + customtextKeySeparator + ct] = customtextList.defList[ct].defaultvalue;
     }
     this.cts.addCustomTexts(myCustomTexts);
   }

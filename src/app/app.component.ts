@@ -74,7 +74,9 @@ export class AppComponent implements OnInit {
                 loginData.booklet = 0;
               }
               this.mds.setNewLoginData(loginData);
-              this.cts.addCustomTexts(loginData.customTexts);
+              if (loginData.customTexts) {
+                this.cts.addCustomTexts(loginData.customTexts);
+              }
             }
           });
         } else {

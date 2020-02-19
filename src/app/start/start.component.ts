@@ -199,7 +199,12 @@ export class StartComponent implements OnInit, OnDestroy {
           // no change in other data
         } else {
           this.mds.globalErrorMsg$.next(null);
-          this.cts.addCustomTexts((loginData as LoginData).customTexts);
+          if ((loginData as LoginData).customTexts) {
+            this.cts.addCustomTexts((loginData as LoginData).customTexts);
+          }
+          if ((loginData as LoginData).costumTexts) { // TODO fix typo in backend!
+            this.cts.addCustomTexts((loginData as LoginData).costumTexts);
+          }
           this.mds.setNewLoginData(loginData as LoginData);
         }
         this.dataLoading = false;

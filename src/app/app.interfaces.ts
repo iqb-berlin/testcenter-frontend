@@ -24,6 +24,7 @@ export interface LoginData {
   booklet: number;
   bookletlabel: string;
   customTexts: KeyValuePair;
+  costumTexts: KeyValuePair; // TODO when backend fixed then change here
 }
 
 export interface BookletStatus {
