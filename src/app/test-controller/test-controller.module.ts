@@ -1,4 +1,4 @@
-import {ConfirmDialogComponent, IqbComponentsModule, MessageDialogComponent} from "iqb-components";
+import { ConfirmDialogComponent, IqbComponentsModule, MessageDialogComponent } from 'iqb-components';
 
 export { TestControllerService } from './test-controller.service';
 import { NgModule } from '@angular/core';

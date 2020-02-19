@@ -18,7 +18,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { ErrormsgComponent } from './errormsg/errormsg.component';
 import { httpInterceptorProviders } from './app.interceptor';
 import { CustomTextPipe } from './custom-text.pipe';
-import {ConfirmDialogComponent, IqbComponentsModule, MessageDialogComponent} from "iqb-components";
+import { ConfirmDialogComponent, IqbComponentsModule, MessageDialogComponent } from 'iqb-components';
 
 
 @NgModule({
