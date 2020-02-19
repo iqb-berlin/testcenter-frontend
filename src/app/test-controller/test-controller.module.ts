@@ -39,6 +39,7 @@ import { StartLockInputComponent } from './start-lock-input/start-lock-input.com
     MatToolbarModule,
     MatIconModule,
     IqbComponentsModule.forChild()
+
   ],
   declarations: [
     UnithostComponent,
@@ -49,7 +50,9 @@ import { StartLockInputComponent } from './start-lock-input/start-lock-input.com
   ],
   entryComponents: [
     ReviewDialogComponent,
-    StartLockInputComponent
+    StartLockInputComponent,
+    MessageDialogComponent,
+    ConfirmDialogComponent
   ],
   providers: [
     unitRoutingGuards
