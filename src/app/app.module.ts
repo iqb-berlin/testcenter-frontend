@@ -18,6 +18,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { ErrormsgComponent } from './errormsg/errormsg.component';
 import { httpInterceptorProviders } from './app.interceptor';
 import { CustomTextPipe } from './custom-text.pipe';
+import { ConfirmDialogComponent, IqbComponentsModule, MessageDialogComponent } from 'iqb-components';
 
 
 @NgModule({
@@ -49,7 +50,8 @@ import { CustomTextPipe } from './custom-text.pipe';
     ReactiveFormsModule,
     HttpClientModule,
     MatToolbarModule,
-    AppRoutingModule
+    AppRoutingModule,
+    IqbComponentsModule
   ],
   providers: [
     BackendService,
@@ -58,6 +60,10 @@ import { CustomTextPipe } from './custom-text.pipe';
       provide: LocationStrategy,
       useClass: HashLocationStrategy
     }
+  ],
+  entryComponents: [
+    MessageDialogComponent,
+    ConfirmDialogComponent
   ],
   bootstrap: [AppComponent]
 })
