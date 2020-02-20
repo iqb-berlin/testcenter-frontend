@@ -1,6 +1,6 @@
 <div class="logo">
   <a [routerLink]="['/']">
-    <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
+    <img src="assets/IQB-LogoA.png" matTooltip="Startseite" alt=""IQB-Logo/>
   </a>
 </div>
 <div class="page-body">
@@ -51,7 +51,7 @@
     <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showBookletButtons">
       <mat-card-title>{{ bookletSelectTitle }}</mat-card-title>
       <mat-card-content>
-        <div fxLayout="row" fxLayoutGap="10px" fxLayout="column">
+        <div fxLayoutGap="10px" fxLayout="column">
           <p *ngIf="bookletlist.length === 0">
             Für diese Anmeldung wurde kein Test gefunden.
           </p>
@@ -82,7 +82,7 @@
       <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showAdminSelection">
         <mat-card-title>Studie wählen</mat-card-title>
         <mat-card-content>
-          <div fxLayout="row" fxLayoutGap="10px" fxLayout="column">
+          <div fxLayoutGap="10px" fxLayout="column">
             <p *ngIf="(mds.loginData$ | async)?.workspaces.length === 0">
               Sie sind mit Administrator-Funktionen angemeldet. Aktuell sind keine Studien für Sie freigegeben.
             </p>
@@ -94,7 +94,7 @@
         </mat-card-content>
         <mat-card-actions>
           <button mat-raised-button color="foreground" *ngIf="(mds.loginData$ | async)?.is_superadmin" [routerLink]="['/superadmin']">Nutzer/Arbeitsbereiche</button>
-          <button mat-raised-button color="foreground" (click)="mds.setNewLoginData()">Anmeldung ändern</button>
+          <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
         </mat-card-actions>
       </mat-card>
 

@@ -29,7 +29,7 @@ export class BackendService {
     return this.http
       .post<CheckConfig[]>(this.serverUrl + 'getSysCheckConfigs.php', {}, httpOptions)
       .pipe(
-        catchError(() => {
+        catchError(err => {
           const myreturn: CheckConfig[] = [];
           return of(myreturn);
         })

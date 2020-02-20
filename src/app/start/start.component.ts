@@ -56,9 +56,18 @@ export class StartComponent implements OnInit, OnDestroy {
       if (logindata.admintoken.length > 0) {
         this.showLoginForm = false;
         this.showAdminSelection = true;
-
+        this.showCodeForm = false;
+        this.showBookletButtons = false;
+        this.showTestRunningButtons = false;
+        this.loginStatusText = [];
+        this.loginStatusText.push('Admin-Bereich ');
+        this.loginStatusText.push('angemeldet als ' + logindata.loginname);
+        if (logindata.is_superadmin) {
+          this.loginStatusText.push('Rechte auch für Anlegen/Löschen von Nutzern und Workspaces');
+        }
       } else if (logindata.logintoken.length > 0) {
         // Statustext box
+        this.showAdminSelection = false;
         this.loginStatusText = [];
         this.loginStatusText.push('Studie: ' + logindata.workspaceName);
         this.loginStatusText.push('angemeldet als "' +
@@ -176,6 +185,7 @@ export class StartComponent implements OnInit, OnDestroy {
         this.loginStatusText = ['nicht angemeldet'];
         this.showBookletButtons = false;
         this.showCodeForm = false;
+        this.showAdminSelection = false;
         this.showLoginForm = true;
         this.showTestRunningButtons = false;
       }
@@ -200,7 +210,7 @@ export class StartComponent implements OnInit, OnDestroy {
         if (loginData instanceof ServerError) {
           const e = loginData as ServerError;
           this.mds.globalErrorMsg$.next(e);
-          this.mds.setCustomtextsFromDefList(appconfig.customtextsLogin);
+          this.mds.addCustomtextsFromDefList(appconfig.customtextsLogin);
           // no change in other data
         } else {
           this.mds.globalErrorMsg$.next(null);
@@ -281,7 +291,6 @@ export class StartComponent implements OnInit, OnDestroy {
   }
 
   buttonGotoWorkspace(ws: WorkspaceData) {
-    console.log(ws);
     if (ws.role === 'MO') {
       this.router.navigateByUrl('/admin/' + ws.id.toString() + '/monitor');
     } else {

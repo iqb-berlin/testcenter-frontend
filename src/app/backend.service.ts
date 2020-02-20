@@ -56,6 +56,14 @@ export class BackendService {
         );
   }
 
+  getLoginDataAdmin(adminToken: string): Observable<LoginData | ServerError> {
+    return this.http
+      .post<LoginData>(this.serverSlimAdminUrl + 'login', {at: adminToken})
+      .pipe(
+        catchError(ErrorHandler.handle)
+      );
+  }
+
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
   getSysConfig(): Observable<KeyValuePair> {
     return this.http.get<KeyValuePair>(this.serverSlimUrl + 'sysconfig')

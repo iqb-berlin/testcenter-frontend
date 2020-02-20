@@ -150,7 +150,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
       this.ds.unitData$.next([
         {id: '0', type: 'unit/player', label: 'loading time', value: unitAndPlayer.duration.toString(), warning: false}
       ]);
-
+console.log(unitAndPlayer);
       this.pendingItemDefinition$.next(unitAndPlayer.def);
       this.createPlayerElement(unitAndPlayer.player);
 
