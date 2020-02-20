@@ -21,7 +21,7 @@ export class StartComponent implements OnInit {
     private ds: SysCheckDataService,
     private route: ActivatedRoute,
     private router: Router,
-    @SkipSelf() private cts: CustomtextService) { }
+    @SkipSelf() public cts: CustomtextService) { }
 
   ngOnInit() {
     this.dataLoading = true;

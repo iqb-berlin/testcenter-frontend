@@ -46,7 +46,7 @@ export class StartComponent implements OnInit, OnDestroy {
     public messsageDialog: MatDialog,
     private router: Router,
     private bs: BackendService,
-    private cts: CustomtextService) {
+    public cts: CustomtextService) {
   }
 
   ngOnInit() {
