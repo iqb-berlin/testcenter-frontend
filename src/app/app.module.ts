@@ -17,8 +17,8 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ErrormsgComponent } from './errormsg/errormsg.component';
 import { httpInterceptorProviders } from './app.interceptor';
-import { CustomTextPipe } from './custom-text.pipe';
-import { ConfirmDialogComponent, IqbComponentsModule, MessageDialogComponent } from 'iqb-components';
+import { IqbComponentsModule } from 'iqb-components';
+
 
 
 @NgModule({
@@ -26,8 +26,7 @@ import { ConfirmDialogComponent, IqbComponentsModule, MessageDialogComponent } f
     AppComponent,
     StartComponent,
     AboutComponent,
-    ErrormsgComponent,
-    CustomTextPipe
+    ErrormsgComponent
   ],
   imports: [
     BrowserModule,
@@ -51,7 +50,7 @@ import { ConfirmDialogComponent, IqbComponentsModule, MessageDialogComponent } f
     HttpClientModule,
     MatToolbarModule,
     AppRoutingModule,
-    IqbComponentsModule
+    IqbComponentsModule.forRoot()
   ],
   providers: [
     BackendService,
@@ -62,8 +61,6 @@ import { ConfirmDialogComponent, IqbComponentsModule, MessageDialogComponent } f
     }
   ],
   entryComponents: [
-    MessageDialogComponent,
-    ConfirmDialogComponent
   ],
   bootstrap: [AppComponent]
 })

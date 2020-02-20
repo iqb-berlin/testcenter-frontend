@@ -1,5 +1,5 @@
-import { SyscheckDataService } from '../../syscheck-data.service';
-import { Component, OnInit } from '@angular/core';
+import { SysCheckDataService } from '../../sys-check-data.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'tc-navi-buttons',
@@ -11,7 +11,7 @@ export class UnitNaviButtonsComponent {
   private pagePrevEnabled = false;
   private pageNextEnabled = false;
 
-  constructor(private ds: SyscheckDataService) {
+  constructor(private ds: SysCheckDataService) {
 
     this.ds.itemplayerValidPages$.subscribe((pages: string[]) => this.showPageNaviButtons = pages.length  > 1);
     this.ds.itemplayerCurrentPage$.subscribe((p: string) => {

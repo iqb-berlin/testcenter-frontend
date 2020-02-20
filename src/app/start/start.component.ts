@@ -1,6 +1,6 @@
 import { MainDataService } from '../maindata.service';
 import { Subscription, forkJoin } from 'rxjs';
-import { MessageDialogComponent, MessageDialogData, MessageType, ServerError } from 'iqb-components';
+import {CustomtextService, MessageDialogComponent, MessageDialogData, MessageType, ServerError} from 'iqb-components';
 import { MatDialog } from '@angular/material';
 import { BackendService } from '../backend.service';
 import { PersonTokenAndBookletDbId, LoginData } from '../app.interfaces';
@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { StartButtonData } from './start-button-data.class';
+import { appconfig } from '../app.config';
 
 @Component({
   templateUrl: './start.component.html',
@@ -44,8 +45,8 @@ export class StartComponent implements OnInit, OnDestroy {
     public mds: MainDataService,
     public messsageDialog: MatDialog,
     private router: Router,
-    private bs: BackendService) {
-
+    private bs: BackendService,
+    public cts: CustomtextService) {
   }
 
   ngOnInit() {
@@ -60,12 +61,14 @@ export class StartComponent implements OnInit, OnDestroy {
         this.loginStatusText.push('Gruppe: ' + logindata.groupname);
 
         if (logindata.mode === 'trial') {
-          const tmt = this.mds.getCostumText('login_trialmodeText');
+          // @ts-ignore
+          const tmt = this.cts.getCustomText('login_trialmodeText');
           if (tmt.length > 0) {
             this.loginStatusText.push(tmt);
           }
         } else if (logindata.mode === 'review') {
-          const tmt = this.mds.getCostumText('login_reviewmodeText');
+          // @ts-ignore
+          const tmt = this.cts.getCustomText('login_reviewmodeText');
           if (tmt.length > 0) {
             this.loginStatusText.push(tmt);
           }
@@ -143,15 +146,18 @@ export class StartComponent implements OnInit, OnDestroy {
 
               if (numberOfOpenBooklets === 0) {
                 this.bookletSelectTitle = 'Beendet';
-                this.bookletSelectPrompt = this.mds.getCostumText('login_bookletSelectPromptNull');
+                // @ts-ignore
+                this.bookletSelectPrompt = this.cts.getCustomText('login_bookletSelectPromptNull');
               } else if (numberOfOpenBooklets === 1) {
                 this.bookletSelectPrompt = 'Bitte links auf den Testheft-Schalter klicken!';
                 this.bookletSelectTitle = 'Bitte starten';
-                this.bookletSelectPrompt = this.mds.getCostumText('login_bookletSelectPromptOne');
+                // @ts-ignore
+                this.bookletSelectPrompt = this.cts.getCustomText('login_bookletSelectPromptOne');
               } else {
                 this.bookletSelectPrompt = 'Bitte links ein Testheft wählen und klicken!';
                 this.bookletSelectTitle = 'Bitte wählen';
-                this.bookletSelectPrompt = this.mds.getCostumText('login_bookletSelectPromptMany');
+                // @ts-ignore
+                this.bookletSelectPrompt = this.cts.getCustomText('login_bookletSelectPromptMany');
               }
             });
           } else {
@@ -189,12 +195,16 @@ export class StartComponent implements OnInit, OnDestroy {
         if (loginData instanceof ServerError) {
           const e = loginData as ServerError;
           this.mds.globalErrorMsg$.next(e);
+          this.mds.setCustomtextsFromDefList(appconfig.customtextsLogin);
           // no change in other data
         } else {
           this.mds.globalErrorMsg$.next(null);
-          this.mds.refreshCostumTexts = false;
-          this.mds.setCostumTextsLogin((loginData as LoginData).costumTexts);
-          this.mds.refreshCostumTexts = true;
+          if ((loginData as LoginData).customTexts) {
+            this.cts.addCustomTexts((loginData as LoginData).customTexts);
+          }
+          if ((loginData as LoginData).costumTexts) { // TODO fix typo in backend!
+            this.cts.addCustomTexts((loginData as LoginData).costumTexts);
+          }
           this.mds.setNewLoginData(loginData as LoginData);
         }
         this.dataLoading = false;
@@ -209,8 +219,10 @@ export class StartComponent implements OnInit, OnDestroy {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
         data: <MessageDialogData>{
-          title: this.mds.getCostumText('login_codeInputTitle') + ': Leer',
-          content: this.mds.getCostumText('login_codeInputPrompt'),
+          // @ts-ignore
+          title: this.cts.getCustomText('login_codeInputTitle') + ': Leer',
+          // @ts-ignore
+          content: this.cts.getCustomText('login_codeInputPrompt'),
           type: MessageType.error
         }
       });
@@ -218,8 +230,10 @@ export class StartComponent implements OnInit, OnDestroy {
       this.messsageDialog.open(MessageDialogComponent, {
         width: '400px',
         data: <MessageDialogData>{
-          title: this.mds.getCostumText('login_codeInputTitle') + ': Ungültig',
-          content: this.mds.getCostumText('login_codeInputPrompt'),
+          // @ts-ignore
+          title: this.cts.getCustomText('login_codeInputTitle') + ': Ungültig',
+          // @ts-ignore
+          content: this.cts.getCustomText('login_codeInputPrompt'),
           type: MessageType.error
         }
       });
@@ -253,7 +267,6 @@ export class StartComponent implements OnInit, OnDestroy {
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   resetLogin() {
-    this.mds.setCostumTextsLogin();
     this.mds.setNewLoginData();
   }
 

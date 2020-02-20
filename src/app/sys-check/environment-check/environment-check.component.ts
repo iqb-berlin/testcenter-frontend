@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SyscheckDataService } from '../syscheck-data.service';
+import { SysCheckDataService } from '../sys-check-data.service';
 import { ReportEntry } from '../sys-check.interfaces';
 
 @Component({
@@ -27,7 +27,7 @@ export class EnvironmentCheckComponent implements OnInit {
   };
 
   constructor(
-    private ds: SyscheckDataService
+    private ds: SysCheckDataService
   ) { }
 
   ngOnInit() {

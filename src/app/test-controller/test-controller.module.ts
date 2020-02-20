@@ -1,4 +1,4 @@
-import { ConfirmDialogComponent, IqbComponentsModule, MessageDialogComponent } from 'iqb-components';
+import { IqbComponentsModule } from 'iqb-components';
 
 export { TestControllerService } from './test-controller.service';
 import { NgModule } from '@angular/core';
@@ -38,7 +38,8 @@ import { StartLockInputComponent } from './start-lock-input/start-lock-input.com
     MatButtonModule,
     MatToolbarModule,
     MatIconModule,
-    IqbComponentsModule
+    IqbComponentsModule.forChild()
+
   ],
   declarations: [
     UnithostComponent,
@@ -49,9 +50,7 @@ import { StartLockInputComponent } from './start-lock-input/start-lock-input.com
   ],
   entryComponents: [
     ReviewDialogComponent,
-    StartLockInputComponent,
-    MessageDialogComponent,
-    ConfirmDialogComponent
+    StartLockInputComponent
   ],
   providers: [
     unitRoutingGuards

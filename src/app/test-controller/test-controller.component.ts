@@ -11,7 +11,8 @@ import { UnitDef, Testlet, EnvironmentData, MaxTimerData } from './test-controll
 import { LastStateKey, LogEntryKey, BookletData, UnitData, MaxTimerDataType, TaggedString } from './test-controller.interfaces';
 import { Subscription, Observable, of, from } from 'rxjs';
 import { switchMap, concatMap } from 'rxjs/operators';
-import {ServerError} from "iqb-components";
+import {CustomtextService, ServerError} from "iqb-components";
+import {appconfig} from "../app.config";
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -42,23 +43,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private bs: BackendService,
     private reviewDialog: MatDialog,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private cts: CustomtextService
   ) { }
 
-  // ''''''''''''''''''''''''''''''''''''''''''''''''''''
-  private getCostumText(key: string): string {
-    const value = this.tcs.getCostumText(key);
-    if (value.length > 0) {
-      return value;
-    } else {
-      return this.mds.getCostumText(key);
-    }
-  }
-  // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   private static getChildElements(element) {
     return Array.prototype.slice.call(element.childNodes)
     .filter(function (e) { return e.nodeType === 1; });
   }
+
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   // private: recursive reading testlets/units from xml
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -164,19 +157,19 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           rootTestlet = new Testlet(0, IdElement.textContent, LabelElement.textContent);
           const unitsElements = oDOM.documentElement.getElementsByTagName('Units');
           if (unitsElements.length > 0) {
-            const costumTextsElements = oDOM.documentElement.getElementsByTagName('CustomTexts');
-            if (costumTextsElements.length > 0) {
-              const costumTexts = TestControllerComponent.getChildElements(costumTextsElements[0]);
-              const costumTextsForBooklet = {};
-              for (let childIndex = 0; childIndex < costumTexts.length; childIndex++) {
-                if (costumTexts[childIndex].nodeName === 'Text') {
-                  const costumTextKey = costumTexts[childIndex].getAttribute('key');
-                  if ((typeof costumTextKey !== 'undefined') && (costumTextKey !== null)) {
-                    costumTextsForBooklet[costumTextKey] = costumTexts[childIndex].textContent;
+            const customTextsElements = oDOM.documentElement.getElementsByTagName('CustomTexts');
+            if (customTextsElements.length > 0) {
+              const customTexts = TestControllerComponent.getChildElements(customTextsElements[0]);
+              const customTextsForBooklet = {};
+              for (let childIndex = 0; childIndex < customTexts.length; childIndex++) {
+                if (customTexts[childIndex].nodeName === 'Text') {
+                  const customTextKey = customTexts[childIndex].getAttribute('key');
+                  if ((typeof customTextKey !== 'undefined') && (customTextKey !== null)) {
+                    customTextsForBooklet[customTextKey] = customTexts[childIndex].textContent;
                   }
                 }
               }
-              this.tcs.setCostumTexts(costumTextsForBooklet);
+              this.cts.addCustomTexts(customTextsForBooklet);
             }
 
             const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
@@ -387,10 +380,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
     this.maxTimerSubscription = this.tcs.maxTimeTimer$.subscribe(maxTimerData => {
       if (maxTimerData.type === MaxTimerDataType.STARTED) {
-        this.snackBar.open(this.getCostumText('booklet_msgTimerStarted') + maxTimerData.timeLeftMinString, '', {duration: 3000});
+        this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') + maxTimerData.timeLeftMinString, '', {duration: 3000});
         this.timerValue = maxTimerData;
       } else if (maxTimerData.type === MaxTimerDataType.ENDED) {
-        this.snackBar.open(this.getCostumText('booklet_msgTimeOver'), '', {duration: 3000});
+        this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', {duration: 3000});
         this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
         this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
         this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
@@ -400,7 +393,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.tcs.setUnitNavigationRequest('#next');
         }
       } else if (maxTimerData.type === MaxTimerDataType.CANCELLED) {
-        this.snackBar.open(this.getCostumText('booklet_msgTimerCancelled'), '', {duration: 3000});
+        this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', {duration: 3000});
         this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
         this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
         this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
@@ -412,9 +405,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
         }
         if ((maxTimerData.timeLeftSeconds / 60) === 5) {
-          this.snackBar.open(this.getCostumText('booklet_msgSoonTimeOver5Minutes'), '', {duration: 3000});
+          this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver5Minutes'), '', {duration: 3000});
         } else if ((maxTimerData.timeLeftSeconds / 60) === 1) {
-          this.snackBar.open(this.getCostumText('booklet_msgSoonTimeOver1Minute'), '', {duration: 3000});
+          this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver1Minute'), '', {duration: 3000});
         }
       }
     });
@@ -487,6 +480,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           if (myData instanceof ServerError) {
             const e = myData as ServerError;
             this.mds.globalErrorMsg$.next(e);
+            this.mds.setCustomtextsFromDefList(appconfig.customtextsBooklet);
             this.tcs.dataLoading = false;
           } else {
             const bookletData = myData as BookletData;

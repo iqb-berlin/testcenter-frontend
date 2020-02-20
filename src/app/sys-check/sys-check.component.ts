@@ -1,8 +1,9 @@
-import { SyscheckDataService } from './syscheck-data.service';
+import { SysCheckDataService } from './sys-check-data.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { BackendService } from './backend.service';
 import { Subscription } from 'rxjs';
+import { CustomtextService } from 'iqb-components';
 
 
 interface Checks {
@@ -18,7 +19,7 @@ interface Checks {
   templateUrl: './sys-check.component.html',
   styleUrls: ['./sys-check.component.scss']
 })
-export class SysCheckComponent implements OnInit {
+export class SysCheckComponent implements OnInit, OnDestroy {
   private taskSubscription: Subscription = null;
   dataLoading = false;
 
@@ -34,8 +35,9 @@ export class SysCheckComponent implements OnInit {
 
   constructor(
     private bs: BackendService,
-    private ds: SyscheckDataService,
-    private route: ActivatedRoute
+    private ds: SysCheckDataService,
+    private route: ActivatedRoute,
+    private cts: CustomtextService
   ) {
   }
 
@@ -56,6 +58,13 @@ export class SysCheckComponent implements OnInit {
         }
         if (this.checks.network) {
           this.ds.taskQueue.push('speedtest');
+        }
+        if (checkConfig.customtexts.length > 0) {
+          const myCustomTexts: {[key: string]: string} = {};
+          checkConfig.customtexts.forEach(ct => {
+            myCustomTexts[ct.key] = ct.value;
+          });
+          this.cts.addCustomTexts(myCustomTexts);
         }
         this.ds.nextTask();
         this.taskSubscription = this.ds.task$.subscribe(task => {

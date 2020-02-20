@@ -1,9 +1,9 @@
-import { KeyValuePair } from './test-controller/test-controller.interfaces';
 import { BackendService } from './backend.service';
 import { BehaviorSubject, Subject, forkJoin } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { LoginData } from './app.interfaces';
-import {ServerError} from "iqb-components";
+import { CustomtextService, ServerError } from 'iqb-components';
+import { appconfig, customtextKeySeparator, CustomTextsDefList } from './app.config';
 
 @Injectable({
   providedIn: 'root'
@@ -20,60 +20,20 @@ export class MainDataService {
     code: '',
     booklet: 0,
     bookletlabel: '',
+    customTexts: {},
     costumTexts: {}
-  };
-  private static defaultCostumTexts: KeyValuePair = {
-    'app_title': 'IQB-Testcenter',
-    'app_intro1': 'betreibt auf diesen Seiten eine Pilotanwendung für das computerbasierte Leistungstesten von ' +
-        'Schülerinnen und Schülern. Der Zugang zu einem Test ist nur möglich, wenn Sie von Testverantwortlichen ' +
-        'Zugangsdaten erhalten haben, die Sie bitte links eingeben. Es sind keine weiteren Seiten öffentlich verfügbar.',
-    'login_testRunningText': 'Ein Testheft ist gestartet',
-    'login_testRunningLongText': 'Es wird gerade ein Test ausgeführt. Bitte durch Klicken auf eine der beiden Schaltflächen ' +
-              'links wählen, ob der Test fortgesetzt oder beendet werden soll!',
-    'login_testEndButtonText': 'Test beenden',
-    'login_testReturnButtonText': 'Zum Test zurückkehren',
-    'login_bookletSelectPromptNull': 'Beendet. Es können keine weiteren Testhefte gestartet werden.',
-    'login_bookletSelectPromptOne': 'Bitte klicke auf die Schaltfläche auf der linken Seite, um den Test zu starten!',
-    'login_bookletSelectPromptMany': 'Bitte klicke auf eine der Schaltflächen auf der linken Seite, um einen Test zu starten!',
-    'login_codeInputPrompt': 'Bitte Log-in eingeben, der auf dem Zettel steht!',
-    'login_codeInputTitle': 'Log-in eingeben',
-    'booklet_msgPresentationNotCompleteTitleNext':
-        'Weiterblättern nicht möglich!',
-    'booklet_msgPresentationNotCompleteTextNext':
-        'Du kannst erst weiterblättern, wenn Audio-Dateien vollständig abgespielt wurden '
-        + 'und wenn du in allen Fenstern bis ganz nach unten gescrollt hast.',
-    'booklet_msgPresentationNotCompleteTitlePrev':
-        'Zurückblättern - Warnung',
-    'booklet_msgPresentationNotCompleteTextPrev':
-        'Eine Audio-Datei ist noch nicht bis zu Ende abgespielt oder Seiten wurden noch nicht vollständig gezeigt. '
-        + 'Wenn du jetzt zurückblätterst, kannst Du später Audio-Dateien nicht nocheinmal starten.',
-    'booklet_codeToEnterTitle': 'Freigabewort',
-    'booklet_codeToEnterPrompt': 'Bitte gib das Freigabewort ein, das angesagt wurde!',
-    'booklet_msgSoonTimeOver5Minutes': 'Du hast noch 5 Minuten Zeit für die Bearbeitung der Aufgaben in diesem Abschnitt.',
-    'booklet_msgSoonTimeOver1Minute': 'Du hast noch 1 Minute Zeit für die Bearbeitung der Aufgaben in diesem Abschnitt.',
-    'booklet_msgTimerStarted': 'Die Bearbeitungszeit für diesen Abschnitt hat begonnen: ',
-    'booklet_msgTimerCancelled': 'Die Bearbeitung des Abschnittes wurde abgebrochen.',
-    'booklet_msgTimeOver': 'Die Bearbeitung des Abschnittes ist beendet.',
-    'booklet_warningLeaveTimerBlockTitle': 'Aufgabenabschnitt verlassen?',
-    'booklet_warningLeaveTimerBlockPrompt': 'Wenn du jetzt weiterblätterst, beendest ' +
-        'du vorzeitig die Bearbeitung dieses Aufgabenabschnitts und du kannst nicht mehr zurück.',
-    'login_trialmodeText': 'Ausführungsmodus "trial": Navigationsbeschränkungen sowie Zeit-Beschränkungen, ' +
-        'die eventuell für das Testheft oder bestimmte Aufgaben festgelegt wurden, gelten nicht.',
-    'login_reviewmodeText': 'Ausführungsmodus "review": Beschränkungen für Zeit und Navigation sind nicht wirksam. Antworten werden ' +
-            'nicht gespeichert. Sie können Kommentare über das Menü oben rechts speichern.'
-
   };
 
   public loginData$ = new BehaviorSubject<LoginData>(MainDataService.defaultLoginData);
   public globalErrorMsg$ = new BehaviorSubject<ServerError>(null);
-  public refreshCostumTexts = false;
-  private _costumTextsApp: KeyValuePair = {};
-  private _costumTextsLogin: KeyValuePair = {};
 
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();
 
-  constructor(private bs: BackendService) {}
+  constructor(
+    private bs: BackendService,
+    private cts: CustomtextService
+  ) {}
 
   // ensures consistency
   setNewLoginData(logindata?: LoginData) {
@@ -88,7 +48,8 @@ export class MainDataService {
       code: MainDataService.defaultLoginData.code,
       booklet: MainDataService.defaultLoginData.booklet,
       bookletlabel: MainDataService.defaultLoginData.bookletlabel,
-      costumTexts: MainDataService.defaultLoginData.costumTexts // always ignored except right after getting from backend!
+      customTexts: {}, // always ignored except right after getting from backend!
+      costumTexts: {} // always ignored except right after getting from backend!
     };
 
     if (logindata) {
@@ -183,31 +144,36 @@ export class MainDataService {
     return myLoginData.persontoken;
   }
 
-  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  setCostumTextsApp(sc: KeyValuePair = {}) {
-    this.refreshCostumTexts = false;
-    this._costumTextsApp = sc;
-    this.refreshCostumTexts = true;
+  public setCustomtextsFromDefList(customtextList: CustomTextsDefList) {
+    const myCustomTexts: {[key: string]: string} = {};
+    for (const ct of Object.keys(customtextList.defList)) {
+      myCustomTexts[customtextList.keyPrefix + customtextKeySeparator + ct] = customtextList.defList[ct].defaultvalue;
+    }
+    this.cts.addCustomTexts(myCustomTexts);
   }
-  setCostumTextsLogin(sc: KeyValuePair = {}) {
-    this.refreshCostumTexts = false;
-    this._costumTextsLogin = sc;
-    this.refreshCostumTexts = true;
-  }
-  getCostumText(key: string): string {
-    if (this._costumTextsLogin) {
-      if (this._costumTextsLogin.hasOwnProperty(key)) {
-        return this._costumTextsLogin[key];
+
+  public setDefaultCustomtexts(newTexts: {[key: string]: string; }) {
+    for (const ctKey of Object.keys(newTexts)) {
+      const sepIndex = ctKey.indexOf(customtextKeySeparator);
+      if (sepIndex > 1) {
+        const keyPrefix = ctKey.slice(0 , sepIndex - 1);
+        const keyId = ctKey.slice(sepIndex + 1);
+
+        switch (keyPrefix) {
+          case 'app': {
+            appconfig.customtextsApp.defList[keyId].defaultvalue = newTexts[ctKey];
+            break;
+          }
+          case 'login': {
+            appconfig.customtextsLogin.defList[keyId].defaultvalue = newTexts[ctKey];
+            break;
+          }
+          case 'booklet': {
+            appconfig.customtextsBooklet.defList[keyId].defaultvalue = newTexts[ctKey];
+            break;
+          }
+        }
       }
     }
-    if (this._costumTextsApp) {
-      if (this._costumTextsApp.hasOwnProperty(key)) {
-        return this._costumTextsApp[key];
-      }
-    }
-    if (MainDataService.defaultCostumTexts.hasOwnProperty(key)) {
-      return MainDataService.defaultCostumTexts[key];
-    }
-    return key;
   }
 }

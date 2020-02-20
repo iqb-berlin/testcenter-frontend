@@ -103,9 +103,6 @@ export class BackendService {
     };
 
     return new Promise(function(resolve, reject) {
-      if (reject) {
-        console.log('reject is set');
-      }
 
       const xhr = new XMLHttpRequest();
       xhr.open('POST', serverUrl + 'doSysCheckDownloadTest.php?size=' +

@@ -1,4 +1,4 @@
-import { SyscheckDataService } from '../syscheck-data.service';
+import { SysCheckDataService } from '../sys-check-data.service';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import {BackendService} from '../backend.service';
 import { combineLatest } from 'rxjs';
@@ -6,7 +6,7 @@ import {
   DetectedNetworkInformation,
   NetworkCheckStatus,
   NetworkRating, NetworkRequestTestResult, ReportEntry
-} from "../sys-check.interfaces";
+} from '../sys-check.interfaces';
 
 @Component({
   selector: 'iqb-network-check',
@@ -16,7 +16,7 @@ import {
 export class NetworkCheckComponent implements OnInit {
 
   constructor(
-    private ds: SyscheckDataService,
+    private ds: SysCheckDataService,
     private bs: BackendService
   ) {}
 
@@ -137,10 +137,10 @@ export class NetworkCheckComponent implements OnInit {
           let statsLength;
           if (isDownloadPart) {
             this.networkStatsDownload.push(averageBytesPerSecond);
-            statsLength = this.networkStatsDownload.length
+            statsLength = this.networkStatsDownload.length;
           } else {
             this.networkStatsUpload.push(averageBytesPerSecond);
-            statsLength = this.networkStatsUpload.length
+            statsLength = this.networkStatsUpload.length;
           }
           this.showBenchmarkSequenceResults(isDownloadPart, this.getAverageNetworkStat(isDownloadPart), results);
 
@@ -154,7 +154,6 @@ export class NetworkCheckComponent implements OnInit {
             return resolve();
           }
 
-          console.log("mmmmmm " + statsLength.toString());
           if (
             (statsLength < 3) ||
             (Math.abs(averageOfPreviousLoops - averageBytesPerSecond) > benchmarkDefinition.maxDevianceBytesPerSecond)
