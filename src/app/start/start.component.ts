@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { StartButtonData } from './start-button-data.class';
-import {appconfig} from "../app.config";
+import { appconfig } from '../app.config';
 
 @Component({
   templateUrl: './start.component.html',
@@ -47,7 +47,7 @@ export class StartComponent implements OnInit, OnDestroy {
     public messsageDialog: MatDialog,
     private router: Router,
     private bs: BackendService,
-    private cts: CustomtextService) {
+    public cts: CustomtextService) {
   }
 
   ngOnInit() {

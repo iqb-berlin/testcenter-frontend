@@ -1,9 +1,9 @@
 import { SysCheckDataService } from './sys-check-data.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Component, OnInit} from '@angular/core';
-import {BackendService} from './backend.service';
-import {Subscription} from "rxjs";
-import {CustomtextService} from "iqb-components";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import { BackendService } from './backend.service';
+import { Subscription } from 'rxjs';
+import { CustomtextService } from 'iqb-components';
 
 
 interface Checks {
@@ -19,7 +19,7 @@ interface Checks {
   templateUrl: './sys-check.component.html',
   styleUrls: ['./sys-check.component.scss']
 })
-export class SysCheckComponent implements OnInit {
+export class SysCheckComponent implements OnInit, OnDestroy {
   private taskSubscription: Subscription = null;
   dataLoading = false;
 
@@ -63,7 +63,7 @@ export class SysCheckComponent implements OnInit {
           const myCustomTexts: {[key: string]: string} = {};
           checkConfig.customtexts.forEach(ct => {
             myCustomTexts[ct.key] = ct.value;
-          })
+          });
           this.cts.addCustomTexts(myCustomTexts);
         }
         this.ds.nextTask();

@@ -1,8 +1,8 @@
-import {CustomTextDefs} from "iqb-components";
+import { CustomTextDefs } from 'iqb-components';
 
 export interface CustomTextsDefList {
   keyPrefix: string;
-  description : string;
+  description: string;
   defList: CustomTextDefs;
 }
 

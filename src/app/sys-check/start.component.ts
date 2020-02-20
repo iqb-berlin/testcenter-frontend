@@ -1,9 +1,9 @@
 import { SysCheckDataService } from './sys-check-data.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BackendService } from './backend.service';
-import {Component, OnInit, SkipSelf} from '@angular/core';
+import { Component, OnInit, SkipSelf } from '@angular/core';
 import { CheckConfig } from './sys-check.interfaces';
-import {CustomtextService} from "iqb-components";
+import { CustomtextService } from 'iqb-components';
 
 
 
@@ -21,7 +21,7 @@ export class StartComponent implements OnInit {
     private ds: SysCheckDataService,
     private route: ActivatedRoute,
     private router: Router,
-    @SkipSelf() private cts: CustomtextService) { }
+    @SkipSelf() public cts: CustomtextService) { }
 
   ngOnInit() {
     this.dataLoading = true;

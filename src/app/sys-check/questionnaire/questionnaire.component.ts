@@ -1,8 +1,8 @@
 import { FormControl, FormGroup } from '@angular/forms';
 import { SysCheckDataService } from '../sys-check-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import {FormDefEntry, ReportEntry} from "../sys-check.interfaces";
-import {CustomtextService} from "iqb-components";
+import { FormDefEntry, ReportEntry } from '../sys-check.interfaces';
+import { CustomtextService } from 'iqb-components';
 
 @Component({
   selector: 'iqb-questionnaire',
@@ -11,13 +11,12 @@ import {CustomtextService} from "iqb-components";
 })
 export class QuestionnaireComponent implements OnInit {
   @ViewChild('questionnaireBody', { static: true }) questionnaireBody: ElementRef;
-  questionnaireEnabled = false;
   questions: FormDefEntry[] = [];
   form: FormGroup;
 
   constructor(
     private ds: SysCheckDataService,
-    private cts: CustomtextService
+    public cts: CustomtextService
   ) {
   }
 

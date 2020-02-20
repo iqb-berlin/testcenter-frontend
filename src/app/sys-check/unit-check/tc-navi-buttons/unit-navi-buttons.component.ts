@@ -1,5 +1,5 @@
 import { SysCheckDataService } from '../../sys-check-data.service';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'tc-navi-buttons',

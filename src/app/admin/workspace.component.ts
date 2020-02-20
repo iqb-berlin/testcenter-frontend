@@ -9,7 +9,7 @@ import {Subscription} from "rxjs";
 })
 export class WorkspaceComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription = null;
-  private myWorkspace = -1;
+  public myWorkspace = -1;
 
   constructor(
     private route: ActivatedRoute,

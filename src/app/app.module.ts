@@ -17,7 +17,8 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ErrormsgComponent } from './errormsg/errormsg.component';
 import { httpInterceptorProviders } from './app.interceptor';
-import {IqbComponentsModule} from "iqb-components";
+import { IqbComponentsModule } from 'iqb-components';
+
 
 
 @NgModule({
@@ -58,6 +59,8 @@ import {IqbComponentsModule} from "iqb-components";
       provide: LocationStrategy,
       useClass: HashLocationStrategy
     }
+  ],
+  entryComponents: [
   ],
   bootstrap: [AppComponent]
 })

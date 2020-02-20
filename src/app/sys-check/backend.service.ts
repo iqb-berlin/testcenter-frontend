@@ -29,7 +29,7 @@ export class BackendService {
     return this.http
       .post<CheckConfig[]>(this.serverUrl + 'getSysCheckConfigs.php', {}, httpOptions)
       .pipe(
-        catchError(err => {
+        catchError(() => {
           const myreturn: CheckConfig[] = [];
           return of(myreturn);
         })
@@ -103,9 +103,6 @@ export class BackendService {
     };
 
     return new Promise(function(resolve, reject) {
-      if (reject) {
-        console.log('reject is set');
-      }
 
       const xhr = new XMLHttpRequest();
       xhr.open('POST', serverUrl + 'doSysCheckDownloadTest.php?size=' +

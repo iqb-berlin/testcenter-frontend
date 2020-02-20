@@ -1,4 +1,4 @@
-import {IqbComponentsModule} from "iqb-components";
+import { IqbComponentsModule } from 'iqb-components';
 
 export { TestControllerService } from './test-controller.service';
 import { NgModule } from '@angular/core';
@@ -39,6 +39,7 @@ import { StartLockInputComponent } from './start-lock-input/start-lock-input.com
     MatToolbarModule,
     MatIconModule,
     IqbComponentsModule.forChild()
+
   ],
   declarations: [
     UnithostComponent,

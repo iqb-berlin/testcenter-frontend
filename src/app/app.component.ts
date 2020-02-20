@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { BackendService } from './backend.service';
 import { LoginData } from './app.interfaces';
 import {CustomtextService, ServerError} from 'iqb-components';
-import {appconfig} from "./app.config";
+import { appconfig } from './app.config';
 
 @Component({
   selector: 'tc-root',
