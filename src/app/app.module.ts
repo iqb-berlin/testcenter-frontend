@@ -20,6 +20,7 @@ import { httpInterceptorProviders } from './app.interceptor';
 import { IqbComponentsModule } from 'iqb-components';
 
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -58,6 +59,10 @@ import { IqbComponentsModule } from 'iqb-components';
       provide: LocationStrategy,
       useClass: HashLocationStrategy
     }
+  ],
+  entryComponents: [
+    MessageDialogComponent,
+    ConfirmDialogComponent
   ],
   bootstrap: [AppComponent]
 })
