@@ -50,9 +50,7 @@ import { StartLockInputComponent } from './start-lock-input/start-lock-input.com
   ],
   entryComponents: [
     ReviewDialogComponent,
-    StartLockInputComponent,
-    MessageDialogComponent,
-    ConfirmDialogComponent
+    StartLockInputComponent
   ],
   providers: [
     unitRoutingGuards

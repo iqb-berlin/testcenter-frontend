@@ -61,8 +61,6 @@ import { IqbComponentsModule } from 'iqb-components';
     }
   ],
   entryComponents: [
-    MessageDialogComponent,
-    ConfirmDialogComponent
   ],
   bootstrap: [AppComponent]
 })
