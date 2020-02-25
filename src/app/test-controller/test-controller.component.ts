@@ -11,8 +11,8 @@ import { UnitDef, Testlet, EnvironmentData, MaxTimerData } from './test-controll
 import { LastStateKey, LogEntryKey, BookletData, UnitData, MaxTimerDataType, TaggedString } from './test-controller.interfaces';
 import { Subscription, Observable, of, from } from 'rxjs';
 import { switchMap, concatMap } from 'rxjs/operators';
-import {CustomtextService, ServerError} from "iqb-components";
-import {appconfig} from "../app.config";
+import { CustomtextService, ServerError } from 'iqb-components';
+import { appconfig } from '../app.config';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -299,8 +299,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   private loadUnitOk (myUnit: UnitDef, sequenceId: number): Observable<boolean> {
     myUnit.setCanEnter('n', 'Fehler beim Laden');
-
-    return this.bs.getUnitData(myUnit.id)
+    return this.bs.getUnitData(this.mds.getBookletDbId(), myUnit.id)
       .pipe(
         switchMap(myData => {
           if (myData instanceof ServerError) {
@@ -476,7 +475,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.loginname = loginData.loginname;
 
         this.tcs.dataLoading = true;
-        this.bs.getBookletData().subscribe(myData => {
+        this.bs.getBookletData(this.mds.getBookletDbId()).subscribe(myData => {
           if (myData instanceof ServerError) {
             const e = myData as ServerError;
             this.mds.globalErrorMsg$.next(e);
@@ -614,41 +613,31 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             const targetSelection = (<FormGroup>result).get('target').value;
             if (targetSelection === 'u') {
               this.bs.saveUnitReview(
+                  this.mds.getBookletDbId(),
                   this.tcs.currentUnitDbKey,
                   (<FormGroup>result).get('priority').value,
                   dialogRef.componentInstance.getCategories(),
                   (<FormGroup>result).get('entry').value
                 ).subscribe(myData => {
                   if (myData instanceof ServerError) {
-                    const e = myData as ServerError;
                     this.snackBar.open('Konnte Kommentar nicht speichern (' +
-                                e.code.toString() + ': ' + e.labelNice, '', {duration: 3000});
+                      myData.code.toString() + ': ' + myData.labelNice, '', {duration: 3000});
                   } else {
-                    const ok = myData as boolean;
-                    if (ok) {
-                      this.snackBar.open('Kommentar gespeichert', '', {duration: 1000});
-                    } else {
-                      this.snackBar.open('Konnte Kommentar nicht speichern.', '', {duration: 3000});
-                    }
+                    this.snackBar.open('Kommentar gespeichert', '', {duration: 1000});
                   }
                 });
             } else {
               this.bs.saveBookletReview(
-              (<FormGroup>result).get('priority').value,
+                this.mds.getBookletDbId(),
+                (<FormGroup>result).get('priority').value,
                 dialogRef.componentInstance.getCategories(),
                 (<FormGroup>result).get('entry').value
               ).subscribe(myData => {
                 if (myData instanceof ServerError) {
-                  const e = myData as ServerError;
-                  this.snackBar.open('Konnte Kommentar nicht speichern (' + e.code.toString()
-              + ': ' + e.labelNice, '', {duration: 3000});
+                  this.snackBar.open('Konnte Kommentar nicht speichern (' + myData.code.toString()
+                    + ': ' + myData.labelNice, '', {duration: 3000});
                 } else {
-                  const ok = myData as boolean;
-                  if (ok) {
-                    this.snackBar.open('Kommentar gespeichert', '', {duration: 1000});
-                  } else {
-                    this.snackBar.open('Konnte Kommentar nicht speichern.', '', {duration: 3000});
-                  }
+                  this.snackBar.open('Kommentar gespeichert', '', {duration: 1000});
                 }
               });
             }

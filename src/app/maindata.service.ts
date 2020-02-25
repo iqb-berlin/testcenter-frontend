@@ -107,6 +107,13 @@ export class MainDataService {
     this.setNewLoginData(myLoginData);
   }
 
+
+  getBookletDbId(): number {
+
+    return this.loginData$.getValue().booklet;
+  }
+
+
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   endBooklet () {
     const myLoginData = this.loginData$.getValue();

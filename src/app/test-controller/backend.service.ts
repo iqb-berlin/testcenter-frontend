@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { BookletData, UnitData, TaggedString } from './test-controller.interfaces';
-import {ServerError} from "iqb-components";
+import { ServerError } from 'iqb-components';
 
 
 @Injectable({
@@ -13,6 +13,8 @@ export class BackendService {
   private serverSlimUrl_GET = '';
   private serverSlimUrl_POST = '';
 
+  private serverUrl2 = 'http://localhost/testcenter-iqb-php/';
+
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient) {
@@ -21,56 +23,49 @@ export class BackendService {
       this.serverUrl = this.serverUrl + 'php_tc/';
     }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
-  // send reviews
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
-  saveUnitReview(unit: string, priority: number,
-      categories: string, entry: string): Observable<boolean | ServerError> {
+
+  saveUnitReview(testId: number, unitName: string, priority: number, categories: string, entry: string)
+    : Observable<boolean | ServerError> {
+
     return this.http
-      .post<boolean>(this.serverSlimUrl_POST + 'review', {u: unit, p: priority, c: categories, e: entry})
-        .pipe(
-          catchError(this.handle)
-        );
+      .put<boolean>(this.serverUrl2 + `test/${testId}/unit/${unitName}/review`, {priority, categories, entry})
+      .pipe(catchError(this.handle));
   }
 
-  // ------------------------------
-  saveBookletReview(priority: number, categories: string, entry: string): Observable<boolean | ServerError> {
+
+  saveBookletReview(testId: number, priority: number, categories: string, entry: string): Observable<boolean | ServerError> {
+
     return this.http
-      .post<boolean>(this.serverSlimUrl_POST + 'review', {p: priority, c: categories, e: entry})
-        .pipe(
-          catchError(this.handle)
-        );
+      .put<boolean>(this.serverUrl2 + `test/${testId}/review`, {priority, categories, entry})
+      .pipe(catchError(this.handle));
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
-  // get
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
 
-  getBookletData(): Observable<BookletData | ServerError> {
-    return this.http.get<BookletData>(this.serverSlimUrl_GET + 'bookletdata')
-        .pipe(
-          catchError(this.handle)
-        );
+  getBookletData(testId: number): Observable<BookletData | ServerError> {
+
+    return this.http
+      .get<BookletData>(this.serverUrl2 + 'test/' + testId)
+      .pipe(catchError(this.handle));
   }
 
-  // ------------------------------
-  getUnitData(unitid: string): Observable<UnitData | ServerError> {
-    return this.http.get<UnitData>(this.serverSlimUrl_GET + 'unitdata/' + unitid)
-      .pipe(
-        catchError(this.handle)
-      );
+
+  getUnitData(testId: number, unitid: string): Observable<UnitData | ServerError> {
+
+    return this.http
+      .get<UnitData>(this.serverUrl2 + 'test/' + testId + '/unit/' + unitid)
+      .pipe(catchError(this.handle));
   }
 
-  // ------------------------------
+
   getResource(internalKey: string, resId: string, versionning = false): Observable<TaggedString | ServerError> {
-    const myHttpOptions = {
-        headers: new HttpHeaders({
-          'Content-Type':  'application/json'
-        }),
-        responseType: 'text' as 'json'
-    };
-    const urlSuffix = versionning ? '?v=1' : '';
-    return this.http.get<string>(this.serverSlimUrl_GET + 'resource/' + resId + urlSuffix, myHttpOptions)
+
+    return this.http
+      .get(
+        this.serverUrl2 + 'resource/' + resId,
+        {
+          params: new HttpParams().set('v', versionning ? '1' : 'f'),
+          responseType: 'text'
+        })
       .pipe(
         map(def => <TaggedString>{tag: internalKey, value: def}),
         catchError(this.handle)
@@ -112,21 +107,21 @@ export class BackendService {
         );
   }
 
-  newUnitResponse(bookletDbId: number, timestamp: number,
-            unitDbKey: string, response: string, responseType: string): Observable<boolean | ServerError> {
+
+  newUnitResponse(testId: number, timestamp: number, unitName: string, response: string, responseType: string)
+    : Observable<boolean | ServerError> {
+
     return this.http
-      .post<boolean>(this.serverSlimUrl_POST + 'response', {b: bookletDbId, u: unitDbKey, t: timestamp, r: response, rt: responseType})
-        .pipe(
-          catchError(this.handle)
-        );
+      .put<boolean>(this.serverUrl2 + `test/${testId}/unit/${unitName}/response`, {timestamp, response, responseType})
+      .pipe(catchError(this.handle));
   }
 
-  newUnitRestorePoint(bookletDbId: number, unitDbKey: string, timestamp: number, restorePoint: string): Observable<boolean | ServerError> {
+
+  newUnitRestorePoint(testId: number, unitName: string, timestamp: number, restorePoint: string): Observable<boolean | ServerError> {
+
     return this.http
-      .post<boolean>(this.serverSlimUrl_POST + 'restorepoint', {b: bookletDbId, u: unitDbKey, t: timestamp, r: restorePoint})
-        .pipe(
-          catchError(this.handle)
-        );
+      .put<boolean>(this.serverUrl2 + `test/${testId}/unit/${unitName}/restorepoint`, {timestamp, restorePoint})
+      .pipe(catchError(this.handle));
   }
 
 
@@ -148,42 +143,3 @@ export class BackendService {
     return of(myreturn);
   }
 }
-
-
-  // ------------------------------
-  // getUnitResource(sessiontoken: string, resId: string): Observable<string | ServerError> {
-  //   const myHttpOptions = {
-  //         headers: new HttpHeaders({
-  //           'Content-Type':  'application/json'
-  //         }),
-  //         responseType: 'arraybuffer' as 'json'
-  //     };
-
-  //   return this.http
-  //   .post<ArrayBuffer>(this.serverUrl + 'getUnitResource.php', {st: sessiontoken, r: resId}, myHttpOptions)
-  //     .pipe(
-  //       map((r: ArrayBuffer) => {
-  //         let str64 = '';
-  //         const alen = r.byteLength;
-  //         for (let i = 0; i < alen; i++) {
-  //           str64 += String.fromCharCode(r[i]);
-  //         }
-  //         return window.btoa(str64);
-  //       }),
-  //       catchError(this.handle)
-  //   );
-  // }
-  // getUnitResource64(sessiontoken: string, resId: string): Observable<string | ServerError> {
-  //   const myHttpOptions = {
-  //         headers: new HttpHeaders({
-  //           'Content-Type':  'application/json'
-  //         }),
-  //         responseType: 'text' as 'json'
-  //     };
-
-  //     return this.http
-  //     .post<string>(this.serverUrl + 'getUnitResource64.php', {st: sessiontoken, r: resId}, myHttpOptions)
-  //       .pipe(
-  //         catchError(this.handle)
-  //       );
-  // }
