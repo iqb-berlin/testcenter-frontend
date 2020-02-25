@@ -83,20 +83,18 @@ export class BackendService {
         );
   }
 
-  setBookletState(bookletDbId: number, stateKey: string, state: string): Observable<boolean | ServerError> {
+  setBookletState(testId: number, stateKey: string, state: string): Observable<boolean | ServerError> {
+
     return this.http
-      .post<boolean>(this.serverSlimUrl_POST + 'state', {b: bookletDbId, sk: stateKey, s: state})
-        .pipe(
-          catchError(this.handle)
-        );
+      .patch<boolean>(this.serverUrl2 + `test/${testId}/state`, {key: stateKey, value: state})
+      .pipe(catchError(this.handle));
   }
 
-  setUnitState(unitDbKey: string, stateKey: string, state: string): Observable<boolean | ServerError> {
+  setUnitState(testId: number, unitName: string, stateKey: string, state: string): Observable<boolean | ServerError> {
+
     return this.http
-      .post<boolean>(this.serverSlimUrl_POST + 'state', {u: unitDbKey, sk: stateKey, s: state})
-        .pipe(
-          catchError(this.handle)
-        );
+      .patch<boolean>(this.serverUrl2 + `test/${testId}/unit/${unitName}/state`, {key: stateKey, value: state})
+      .pipe(catchError(this.handle));
   }
 
   addUnitLog(bookletDbId: number, timestamp: number, unitDbKey: string, entry: string): Observable<boolean | ServerError> {
@@ -120,7 +118,7 @@ export class BackendService {
   newUnitRestorePoint(testId: number, unitName: string, timestamp: number, restorePoint: string): Observable<boolean | ServerError> {
 
     return this.http
-      .put<boolean>(this.serverUrl2 + `test/${testId}/unit/${unitName}/restorepoint`, {timestamp, restorePoint})
+      .patch<boolean>(this.serverUrl2 + `test/${testId}/unit/${unitName}/restorepoint`, {timestamp, restorePoint})
       .pipe(catchError(this.handle));
   }
 

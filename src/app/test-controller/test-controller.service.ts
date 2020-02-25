@@ -258,7 +258,7 @@ export class TestControllerService {
     this.unitPresentationCompleteStates[unitSequenceId] = presentationComplete;
     if (this.mode !== 'review') {
       this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationComplete);
-      this.bs.setUnitState(unitDbKey, LastStateKey.PRESENTATIONCOMPLETE, presentationComplete).subscribe(ok => {
+      this.bs.setUnitState(this.bookletDbId, unitDbKey, LastStateKey.PRESENTATIONCOMPLETE, presentationComplete).subscribe(ok => {
         if (ok instanceof ServerError) {
           console.log('((((((((((((((((setUnitState');
         }
