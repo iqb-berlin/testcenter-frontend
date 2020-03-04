@@ -2,20 +2,22 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import {catchError, switchMap} from 'rxjs/operators';
 import { LoginData, BookletStatus, PersonTokenAndBookletDbId, KeyValuePair } from './app.interfaces';
-import {ErrorHandler, ServerError} from "iqb-components";
+import {ErrorHandler, ServerError} from 'iqb-components';
 
 // ============================================================================
 @Injectable()
 export class BackendService {
   private serverSlimUrl = '';
+  private serverSlimAdminUrl = '';
   private serverSlimUrl_Close = '';
 
   constructor(
     @Inject('SERVER_URL') private readonly serverUrl: string,
     private http: HttpClient) {
       this.serverSlimUrl = this.serverUrl + 'php_tc/login.php/';
+      this.serverSlimAdminUrl = this.serverUrl + 'admin/php/login.php/';
       this.serverSlimUrl_Close = this.serverUrl + 'php_tc/tc_post.php/';
       this.serverUrl = this.serverUrl + 'php_start/';
     }
@@ -24,9 +26,24 @@ export class BackendService {
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
   login(name: string, password: string): Observable<LoginData | ServerError> {
     return this.http
-      .post<LoginData>(this.serverSlimUrl + 'login', {n: name, p: password})
+        .post<LoginData>(this.serverSlimAdminUrl + 'login', {n: name, p: password})
         .pipe(
-          catchError(ErrorHandler.handle)
+          catchError(ErrorHandler.handle),
+          switchMap(myLoginData => {
+            if (myLoginData instanceof ServerError) {
+              if ((myLoginData as ServerError).code === 401) {
+                return this.http
+                  .post<LoginData>(this.serverSlimUrl + 'login', {n: name, p: password})
+                    .pipe(
+                      catchError(ErrorHandler.handle)
+                    );
+              } else {
+                return of(myLoginData);
+              }
+            } else {
+              return of(myLoginData);
+            }
+          })
         );
   }
 
@@ -37,6 +54,14 @@ export class BackendService {
         .pipe(
           catchError(ErrorHandler.handle)
         );
+  }
+
+  getLoginDataAdmin(adminToken: string): Observable<LoginData | ServerError> {
+    return this.http
+      .post<LoginData>(this.serverSlimAdminUrl + 'login', {at: adminToken})
+      .pipe(
+        catchError(ErrorHandler.handle)
+      );
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB

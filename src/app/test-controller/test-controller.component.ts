@@ -479,7 +479,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           if (myData instanceof ServerError) {
             const e = myData as ServerError;
             this.mds.globalErrorMsg$.next(e);
-            this.mds.setCustomtextsFromDefList(appconfig.customtextsBooklet);
+            this.mds.addCustomtextsFromDefList(appconfig.customtextsBooklet);
             this.tcs.dataLoading = false;
           } else {
             const bookletData = myData as BookletData;

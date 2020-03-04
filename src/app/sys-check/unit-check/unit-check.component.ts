@@ -7,6 +7,8 @@ import { Subscription, BehaviorSubject, combineLatest} from 'rxjs';
 import { UnitData } from '../sys-check.interfaces';
 import { ServerError } from 'iqb-components';
 
+declare var srcDoc: any;
+
 @Component({
   selector: 'iqb-unit-check',
   templateUrl: './unit-check.component.html',
@@ -168,11 +170,13 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   private createPlayerElement(playerCode: string): void {
 
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-    this.iFrameItemplayer.setAttribute('srcdoc', playerCode);
+    // this.iFrameItemplayer.setAttribute('srcdoc', playerCode);
     this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.iFrameItemplayer.setAttribute('height', '100');
     this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
+    srcDoc.set(this.iFrameItemplayer, playerCode);
+
   }
 
   ngOnDestroy() {

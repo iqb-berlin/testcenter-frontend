@@ -20,10 +20,20 @@ export class AppComponent implements OnInit {
     private cts: CustomtextService
   ) { }
 
+  private static getStringFromLocalStorage(key: string) {
+    const storageEntry = localStorage.getItem(key);
+    if (storageEntry !== null) {
+      if (storageEntry.length > 0) {
+        return (storageEntry as string);
+      }
+    }
+    return ''
+  }
+
   ngOnInit() {
-    this.mds.setCustomtextsFromDefList(appconfig.customtextsApp);
-    this.mds.setCustomtextsFromDefList(appconfig.customtextsLogin);
-    this.mds.setCustomtextsFromDefList(appconfig.customtextsBooklet);
+    this.mds.addCustomtextsFromDefList(appconfig.customtextsApp);
+    this.mds.addCustomtextsFromDefList(appconfig.customtextsLogin);
+    this.mds.addCustomtextsFromDefList(appconfig.customtextsBooklet);
 
     // give a message to the central message broadcast
 
@@ -39,27 +49,31 @@ export class AppComponent implements OnInit {
 
     this.bs.getSysConfig().subscribe(sc => {
       this.mds.setDefaultCustomtexts(sc);
-      this.mds.setCustomtextsFromDefList(appconfig.customtextsApp);
+      this.mds.addCustomtextsFromDefList(appconfig.customtextsApp);
       // restore login status if stored in localStorage
-      const loginToken = localStorage.getItem('lt');
-      if (loginToken !== null) {
-        if (loginToken.length > 0) {
-          let personToken = localStorage.getItem('pt');
-          let bookletDbId = 0;
-          if (personToken !== null) {
-            if (personToken.length > 0) {
-              const bookletDbIdStr = localStorage.getItem('bi');
-              if (bookletDbIdStr !== null) {
-                bookletDbId = Number(bookletDbIdStr);
-              }
+      const adminToken = AppComponent.getStringFromLocalStorage('at');
+      if (adminToken) {
+        this.bs.getLoginDataAdmin(adminToken).subscribe(
+          (admindata: LoginData) => {
+            if (admindata instanceof ServerError) {
+              this.mds.setNewLoginData();
+            } else {
+              this.mds.setNewLoginData(admindata);
             }
-          } else {
-            personToken = '';
           }
-          let code = localStorage.getItem('c');
-          if (code === null) {
-            code = '';
+        );
+      } else {
+        const loginToken = AppComponent.getStringFromLocalStorage('lt');
+        if (loginToken) {
+          let personToken = AppComponent.getStringFromLocalStorage('pt');
+          let bookletDbId = 0;
+          if (personToken) {
+            const bookletDbIdStr = AppComponent.getStringFromLocalStorage('bi');
+            if (bookletDbIdStr) {
+              bookletDbId = Number(bookletDbIdStr);
+            }
           }
+          const code = AppComponent.getStringFromLocalStorage('c');
 
           // bookletDbId is not yet checked by getLoginData, only passed-through
           this.bs.getLoginData(loginToken, personToken, bookletDbId).subscribe(ld => {
@@ -81,13 +95,9 @@ export class AppComponent implements OnInit {
           });
         } else {
           this.mds.setNewLoginData();
-          this.mds.setCustomtextsFromDefList(appconfig.customtextsLogin);
-          this.mds.setCustomtextsFromDefList(appconfig.customtextsBooklet);
+          this.mds.addCustomtextsFromDefList(appconfig.customtextsLogin);
+          this.mds.addCustomtextsFromDefList(appconfig.customtextsBooklet);
         }
-      } else {
-        this.mds.setNewLoginData();
-        this.mds.setCustomtextsFromDefList(appconfig.customtextsLogin);
-        this.mds.setCustomtextsFromDefList(appconfig.customtextsBooklet);
       }
     });
   }
