@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {SuperadminComponent} from "./superadmin.component";
+import {SuperadminComponent} from './superadmin.component';
 
 
 const routes: Routes = [

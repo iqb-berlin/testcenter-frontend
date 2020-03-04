@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {WorkspaceComponent} from "./workspace.component";
-import {DummyComponent} from "./dummy/dummy.component";
+import { WorkspaceComponent } from './workspace.component';
+import { DummyComponent } from './dummy/dummy.component';
 
 
 const routes: Routes = [
