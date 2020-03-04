@@ -1,4 +1,3 @@
-import { TestControllerComponent } from './test-controller';
 import { AboutComponent } from './about/about.component';
 import { StartComponent } from './start/start.component';
 import { NgModule } from '@angular/core';
@@ -10,6 +9,8 @@ const routes: Routes = [
   {path: 'start', component: StartComponent},
   {path: 'about', component: AboutComponent},
   {path: 'check', loadChildren: './sys-check/sys-check.module#SysCheckModule'},
+  {path: 'admin', loadChildren: './admin/admin.module#AdminModule'},
+  {path: 'superadmin', loadChildren: './superadmin/superadmin.module#SuperadminModule'},
   {path: 't', loadChildren: './test-controller/test-controller.module#TestControllerModule'}
 ];
 

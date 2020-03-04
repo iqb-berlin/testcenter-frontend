@@ -27,7 +27,6 @@ export class StartComponent implements OnInit {
     this.dataLoading = true;
     this.bs.getCheckConfigs().subscribe(myConfigs => {
       this.checkConfigList = myConfigs;
-      console.log(this.cts.getCustomText('app_title', 'the app-title'));
       this.dataLoading = false;
     });
   }

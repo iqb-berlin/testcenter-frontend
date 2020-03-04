@@ -1,6 +1,6 @@
 <div class="logo">
   <a [routerLink]="['/']">
-    <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
+    <img src="assets/IQB-LogoA.png" matTooltip="Startseite" alt=""IQB-Logo/>
   </a>
 </div>
 <div class="page-body">
@@ -13,14 +13,14 @@
     <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
     <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showLoginForm">
       <!-- - - - - - - - - - - - - - - - - -->
-      <form [formGroup]="testtakerloginform" (ngSubmit)="testtakerlogin()">
+      <form [formGroup]="testtakerloginform" (ngSubmit)="login()">
         <mat-card-title>Anmelden</mat-card-title>
         <mat-card-content fxLayout="column">
           <mat-form-field>
             <input matInput formControlName="testname" placeholder="Anmeldename" (keyup.enter)="pw.focus()">
           </mat-form-field>
           <mat-form-field>
-            <input matInput #pw type="password" formControlName="testpw" placeholder="Kennwort" (keyup.enter)="testtakerlogin()">
+            <input matInput #pw type="password" formControlName="testpw" placeholder="Kennwort" (keyup.enter)="login()">
           </mat-form-field>
         </mat-card-content>
         <mat-card-actions>
@@ -51,7 +51,7 @@
     <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showBookletButtons">
       <mat-card-title>{{ bookletSelectTitle }}</mat-card-title>
       <mat-card-content>
-        <div fxLayout="row" fxLayoutGap="10px" fxLayout="column">
+        <div fxLayoutGap="10px" fxLayout="column">
           <p *ngIf="bookletlist.length === 0">
             Für diese Anmeldung wurde kein Test gefunden.
           </p>
@@ -79,7 +79,26 @@
       </mat-card-content>
     </mat-card>
 
-    <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+      <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="showAdminSelection">
+        <mat-card-title>Studie wählen</mat-card-title>
+        <mat-card-content>
+          <div fxLayoutGap="10px" fxLayout="column">
+            <p *ngIf="(mds.loginData$ | async)?.workspaces.length === 0">
+              Sie sind mit Administrator-Funktionen angemeldet. Aktuell sind keine Studien für Sie freigegeben.
+            </p>
+            <button mat-raised-button color="primary" (click)="buttonGotoWorkspace(ws)"
+                    *ngFor="let ws of (mds.loginData$ | async)?.workspaces">
+              {{ws.name}}
+            </button>
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="foreground" *ngIf="(mds.loginData$ | async)?.is_superadmin" [routerLink]="['/superadmin']">Nutzer/Arbeitsbereiche</button>
+          <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
+        </mat-card-actions>
+      </mat-card>
+
+      <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
     <!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
     <mat-card fxFlex="0 2 400px" fxLayout="column" class="status">
       <mat-card-title>{{ 'app_title' | customtext:'app_title':cts.updateCount }}</mat-card-title>
