@@ -6,7 +6,7 @@ import { LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData,
     MaxTimerDataType, UnitNaviButtonData } from './test-controller.interfaces';
 import { BackendService } from './backend.service';
 import { KeyValuePairNumber } from '../app.interfaces';
-import {ServerError} from "iqb-components";
+import { ServerError } from 'iqb-components';
 
 @Injectable({
   providedIn: 'root'
@@ -207,10 +207,12 @@ export class TestControllerService {
 
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  public addBookletLog(logKey: LogEntryKey, entry = '') {
+  public addBookletLog(logKey: LogEntryKey, entry = '', overwriteBookletDbId = -1) {
     if ((this.mode !== 'review') && this.logging) {
-      this.bs.addBookletLog(this.bookletDbId, Date.now(),
-            entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey).subscribe(ok => {
+
+      const entryData =  entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey;
+      const bookletDbId = overwriteBookletDbId > -1 ? overwriteBookletDbId : this.bookletDbId;
+      this.bs.addBookletLog(bookletDbId, Date.now(), entryData).subscribe(ok => {
         if (ok instanceof ServerError) {
           console.log('((((((((((((((((addBookletLog');
         }

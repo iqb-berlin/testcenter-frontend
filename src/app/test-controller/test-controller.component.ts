@@ -469,7 +469,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       this.tcs.resetDataStore();
       if ((loginData.persontoken.length > 0) && (loginData.booklet > 0)) {
         const envData = new EnvironmentData(this.appVersion);
-        this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADSTART, JSON.stringify(envData));
+
+        // we have to provide bookletDbId (testId) here manually, because this.tcs.bookletDbId is set after bs.getBookletData is resolved
+        // TODO instead, prove if this.tcs.bookletDbId could be set here without side effects, which would be a more consistent solution
+        this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADSTART, JSON.stringify(envData), this.mds.getBookletDbId());
 
         this.tcs.mode = loginData.mode;
         this.tcs.loginname = loginData.loginname;

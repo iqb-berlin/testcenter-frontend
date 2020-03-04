@@ -17,11 +17,13 @@ export class BackendService {
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
-    private http: HttpClient) {
-      this.serverSlimUrl_GET = this.serverUrl + 'php_tc/tc_get.php/';
-      this.serverSlimUrl_POST = this.serverUrl + 'php_tc/tc_post.php/';
-      this.serverUrl = this.serverUrl + 'php_tc/';
-    }
+    private http: HttpClient
+  ) {
+
+    this.serverSlimUrl_GET = this.serverUrl + 'php_tc/tc_get.php/';
+    this.serverSlimUrl_POST = this.serverUrl + 'php_tc/tc_post.php/';
+    this.serverUrl = this.serverUrl + 'php_tc/';
+  }
 
 
   saveUnitReview(testId: number, unitName: string, priority: number, categories: string, entry: string)
@@ -76,7 +78,7 @@ export class BackendService {
   addUnitLog(testId: number, timestamp: number, unitName: string, entry: string): Observable<boolean | ServerError> {
 
     return this.http
-      .put<boolean>(this.serverUrl2 + `test/${testId}/unit/${unitName}/log`, {testId, timestamp, entry})
+      .put<boolean>(this.serverUrl2 + `test/${testId}/unit/${unitName}/log`, {timestamp, entry})
       .pipe(catchError(this.handle));
   }
 
@@ -84,7 +86,7 @@ export class BackendService {
   addBookletLog(testId: number, timestamp: number, entry: string): Observable<boolean | ServerError> {
 
     return this.http
-      .put<boolean>(this.serverUrl2 + `test/${testId}/log`, {testId, timestamp, entry})
+      .put<boolean>(this.serverUrl2 + `test/${testId}/log`, {timestamp, entry})
       .pipe(catchError(this.handle));
   }
 
