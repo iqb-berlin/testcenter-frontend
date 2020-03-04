@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {MainDataService} from "../maindata.service";
+import {MainDataService} from '../maindata.service';
 
 @Component({
   templateUrl: './superadmin.component.html',

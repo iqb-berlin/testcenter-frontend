@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import {catchError, switchMap} from 'rxjs/operators';
 import { LoginData, BookletStatus, PersonTokenAndBookletDbId, KeyValuePair } from './app.interfaces';
-import {ErrorHandler, ServerError} from "iqb-components";
+import {ErrorHandler, ServerError} from 'iqb-components';
 
 // ============================================================================
 @Injectable()
@@ -31,20 +31,20 @@ export class BackendService {
           catchError(ErrorHandler.handle),
           switchMap(myLoginData => {
             if (myLoginData instanceof ServerError) {
-              if ((myLoginData as ServerError).code == 401) {
+              if ((myLoginData as ServerError).code === 401) {
                 return this.http
                   .post<LoginData>(this.serverSlimUrl + 'login', {n: name, p: password})
                     .pipe(
                       catchError(ErrorHandler.handle)
                     );
               } else {
-                return of(myLoginData)
+                return of(myLoginData);
               }
             } else {
               return of(myLoginData);
             }
           })
-        )
+        );
   }
 
   // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB

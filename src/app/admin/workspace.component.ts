@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MainDataService} from "../maindata.service";
-import {ActivatedRoute} from "@angular/router";
-import {Subscription} from "rxjs";
+import {MainDataService} from '../maindata.service';
+import {ActivatedRoute} from '@angular/router';
+import {Subscription} from 'rxjs';
 
 @Component({
   templateUrl: './workspace.component.html',
