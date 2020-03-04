@@ -10,19 +10,13 @@ import { ServerError } from 'iqb-components';
   providedIn: 'root'
 })
 export class BackendService {
-  private serverSlimUrl_GET = '';
-  private serverSlimUrl_POST = '';
 
-  private serverUrl2 = 'http://localhost/testcenter-iqb-php/';
+  private serverUrl2 = 'http://localhost/testcenter-iqb-php/'; // TODO (BEFORE-MERGE) REMOVE
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient
   ) {
-
-    this.serverSlimUrl_GET = this.serverUrl + 'php_tc/tc_get.php/';
-    this.serverSlimUrl_POST = this.serverUrl + 'php_tc/tc_post.php/';
-    this.serverUrl = this.serverUrl + 'php_tc/';
   }
 
 

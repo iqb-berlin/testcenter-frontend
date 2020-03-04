@@ -13,6 +13,8 @@ export class BackendService {
   private serverSlimAdminUrl = '';
   private serverSlimUrl_Close = '';
 
+  private serverUrl2 = 'http://localhost/testcenter-iqb-php/'; // TODO (BEFORE-MERGE) REMOVE
+
   constructor(
     @Inject('SERVER_URL') private readonly serverUrl: string,
     private http: HttpClient) {
@@ -103,12 +105,11 @@ export class BackendService {
         );
   }
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  lockBooklet(bookletDbId: number): Observable<boolean | ServerError> {
+
+  lockBooklet(testId: number): Observable<boolean | ServerError> {
+
     return this.http
-      .post<boolean>(this.serverSlimUrl_Close + 'lock', {b: bookletDbId})
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
+      .post<boolean>(this.serverUrl2 + `test/${testId}/lock`, {})
+      .pipe(catchError(ErrorHandler.handle));
   }
 }
