@@ -72,23 +72,22 @@ export class BackendService {
       );
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
-  // send responses, status, logs
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
-  addBookletLog(bookletDbId: number, timestamp: number, entry: string): Observable<boolean | ServerError> {
-    return this.http
-      .post<boolean>(this.serverSlimUrl_POST + 'log', {b: bookletDbId, t: timestamp, e: entry})
-        .pipe(
-          catchError(this.handle)
-        );
-  }
 
-  setBookletState(testId: number, stateKey: string, state: string): Observable<boolean | ServerError> {
+  addUnitLog(testId: number, timestamp: number, unitName: string, entry: string): Observable<boolean | ServerError> {
 
     return this.http
-      .patch<boolean>(this.serverUrl2 + `test/${testId}/state`, {key: stateKey, value: state})
+      .put<boolean>(this.serverUrl2 + `test/${testId}/unit/${unitName}/log`, {testId, timestamp, entry})
       .pipe(catchError(this.handle));
   }
+
+
+  addBookletLog(testId: number, timestamp: number, entry: string): Observable<boolean | ServerError> {
+
+    return this.http
+      .put<boolean>(this.serverUrl2 + `test/${testId}/log`, {testId, timestamp, entry})
+      .pipe(catchError(this.handle));
+  }
+
 
   setUnitState(testId: number, unitName: string, stateKey: string, state: string): Observable<boolean | ServerError> {
 
@@ -97,12 +96,12 @@ export class BackendService {
       .pipe(catchError(this.handle));
   }
 
-  addUnitLog(bookletDbId: number, timestamp: number, unitDbKey: string, entry: string): Observable<boolean | ServerError> {
+
+  setBookletState(testId: number, stateKey: string, state: string): Observable<boolean | ServerError> {
+
     return this.http
-      .post<boolean>(this.serverSlimUrl_POST + 'log', {b: bookletDbId, u: unitDbKey, t: timestamp, e: entry})
-        .pipe(
-          catchError(this.handle)
-        );
+      .patch<boolean>(this.serverUrl2 + `test/${testId}/state`, {key: stateKey, value: state})
+      .pipe(catchError(this.handle));
   }
 
 
