@@ -3,7 +3,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import {catchError, switchMap} from 'rxjs/operators';
-import { LoginData, BookletStatus, PersonTokenAndBookletDbId, KeyValuePair } from './app.interfaces';
+import { LoginData, BookletStatus, PersonTokenAndTestId, KeyValuePair } from './app.interfaces';
 import {ErrorHandler, ServerError} from 'iqb-components';
 
 // ============================================================================
@@ -87,22 +87,20 @@ export class BackendService {
         );
   }
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  startBooklet(code: string, bookletid: string, bookletLabel: string): Observable<PersonTokenAndBookletDbId | ServerError> {
+
+  startBooklet(code: string, bookletName: string, bookletLabel: string): Observable<PersonTokenAndTestId | ServerError> {
+
     return this.http
-      .post<PersonTokenAndBookletDbId>(this.serverSlimUrl + 'startbooklet', {c: code, b: bookletid, bl: bookletLabel})
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
+      .put<PersonTokenAndTestId>(this.serverUrl2 + `test_tmp`, {code, bookletName, bookletLabel})
+      .pipe(catchError(ErrorHandler.handle));
   }
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  addBookletLogClose(bookletDbId: number): Observable<boolean | ServerError> {
+
+  addBookletLogClose(testId: number): Observable<boolean | ServerError> {
+
     return this.http
-      .post<boolean>(this.serverSlimUrl_Close + 'log', {b: bookletDbId, t: Date.now(), e: 'BOOKLETLOCKEDbyTESTEE'})
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
+      .put<boolean>(this.serverUrl2 + `test/${testId}/log`, {timestamp: Date.now(), entry: 'BOOKLETLOCKEDbyTESTEE'})
+      .pipe(catchError(ErrorHandler.handle));
   }
 
 

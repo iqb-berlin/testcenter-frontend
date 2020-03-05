@@ -3,7 +3,7 @@ import { Subscription, forkJoin } from 'rxjs';
 import {CustomtextService, MessageDialogComponent, MessageDialogData, MessageType, ServerError} from 'iqb-components';
 import { MatDialog } from '@angular/material';
 import { BackendService } from '../backend.service';
-import {PersonTokenAndBookletDbId, LoginData, WorkspaceData} from '../app.interfaces';
+import {PersonTokenAndTestId, LoginData, WorkspaceData} from '../app.interfaces';
 import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -265,13 +265,13 @@ export class StartComponent implements OnInit, OnDestroy {
           const e = startReturnUntyped as ServerError;
           this.mds.globalErrorMsg$.next(e);
         } else {
-          const startReturn = startReturnUntyped as PersonTokenAndBookletDbId;
+          const startReturn = startReturnUntyped as PersonTokenAndTestId;
           this.mds.globalErrorMsg$.next(null);
           // ************************************************
 
           // by setting bookletDbId$ the test-controller will load the booklet
           this.dataLoading = true;
-          this.mds.setBookletDbId(startReturn.persontoken, startReturn.bookletDbId, b.label);
+          this.mds.setBookletDbId(startReturn.personToken, startReturn.testId, b.label);
           this.router.navigateByUrl('/t');
 
           // ************************************************

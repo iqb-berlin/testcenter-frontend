@@ -28,7 +28,7 @@ export interface LoginData {
   costumTexts: KeyValuePair; // TODO when backend fixed then change here
   admintoken: string;
   workspaces: WorkspaceData[];
-  is_superadmin: boolean
+  is_superadmin: boolean;
 }
 
 export interface BookletStatus {
@@ -39,9 +39,9 @@ export interface BookletStatus {
   label: string;
 }
 
-export interface PersonTokenAndBookletDbId {
-  persontoken: string;
-  bookletDbId: number;
+export interface PersonTokenAndTestId {
+  personToken: string;
+  testId: number;
 }
 
 export interface KeyValuePair {
