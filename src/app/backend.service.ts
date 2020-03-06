@@ -2,8 +2,8 @@
 import { Injectable, Inject } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import {catchError, switchMap} from 'rxjs/operators';
-import { LoginData, BookletStatus, PersonTokenAndTestId, KeyValuePair } from './app.interfaces';
+import {catchError, map, switchMap} from 'rxjs/operators';
+import {LoginData, BookletStatus, PersonTokenAndTestId, KeyValuePair, SysConfig} from './app.interfaces';
 import {ErrorHandler, ServerError} from 'iqb-components';
 
 // ============================================================================
@@ -66,12 +66,16 @@ export class BackendService {
       );
   }
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+
   getSysConfig(): Observable<KeyValuePair> {
-    return this.http.get<KeyValuePair>(this.serverSlimUrl + 'sysconfig')
-        .pipe(
-          catchError(() => of(null))
-        );
+
+    return this.http
+      .get<SysConfig>(this.serverUrl2 + `system/config`)
+      .pipe(catchError(() => of(null)))
+      .pipe(map((sysConfig: SysConfig): KeyValuePair => {
+        console.log(sysConfig.version); // check for system version missmatch https://github.com/iqb-berlin/testcenter-iqb-ng/issues/53
+        return sysConfig.customTexts;
+      }));
   }
 
 

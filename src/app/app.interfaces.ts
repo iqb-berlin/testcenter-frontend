@@ -44,6 +44,11 @@ export interface PersonTokenAndTestId {
   testId: number;
 }
 
+export interface SysConfig {
+  customTexts: KeyValuePair;
+  version: string;
+}
+
 export interface KeyValuePair {
   [K: string]: string;
 }
