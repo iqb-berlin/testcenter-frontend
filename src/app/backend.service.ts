@@ -25,17 +25,17 @@ export class BackendService {
     }
 
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
   login(name: string, password: string): Observable<LoginData | ServerError> {
+
     return this.http
-        .post<LoginData>(this.serverSlimAdminUrl + 'login', {n: name, p: password})
+        .post<LoginData>(this.serverUrl2 + '/login/group', {name, password})
         .pipe(
           catchError(ErrorHandler.handle),
           switchMap(myLoginData => {
             if (myLoginData instanceof ServerError) {
               if ((myLoginData as ServerError).code === 401) {
                 return this.http
-                  .post<LoginData>(this.serverSlimUrl + 'login', {n: name, p: password})
+                  .post<LoginData>(this.serverUrl2 + '/login/admin', {n: name, p: password})
                     .pipe(
                       catchError(ErrorHandler.handle)
                     );
