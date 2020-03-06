@@ -24,7 +24,7 @@ export class StartButtonData {
     }
 
     public getBookletStatus(bs: BackendService, code = '') {
-      return bs.getBookletStatus(this.id, code)
+      return bs.getBookletState(this.id, code)
       .pipe(
         map(respDataUntyped => {
           let myreturn = false;

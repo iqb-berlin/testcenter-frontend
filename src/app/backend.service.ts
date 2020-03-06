@@ -1,6 +1,6 @@
 
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import {catchError, switchMap} from 'rxjs/operators';
 import { LoginData, BookletStatus, PersonTokenAndTestId, KeyValuePair } from './app.interfaces';
@@ -74,17 +74,14 @@ export class BackendService {
         );
   }
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  getBookletStatus(bookletid: string, code = ''): Observable<BookletStatus | ServerError> {
-    let urlString = '?b=' + bookletid;
-    if (code.length > 0) {
-      urlString += '&c=' + code;
-    }
 
-    return this.http.get<BookletStatus>(this.serverSlimUrl + 'bookletstatus' + urlString)
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
+  getBookletState(bookletName: string, code = ''): Observable<BookletStatus | ServerError> {
+
+    const params = new HttpParams().set('code', code);
+
+    return this.http
+      .get<BookletStatus>(this.serverUrl2 + `booklet/${bookletName}/state`, {params})
+      .pipe(catchError(ErrorHandler.handle));
   }
 
 
