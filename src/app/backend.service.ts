@@ -88,7 +88,7 @@ export class BackendService {
   startBooklet(code: string, bookletName: string, bookletLabel: string): Observable<PersonTokenAndTestId | ServerError> {
 
     return this.http
-      .put<PersonTokenAndTestId>(this.serverUrl2 + `test_tmp`, {code, bookletName, bookletLabel})
+      .put<PersonTokenAndTestId>(this.serverUrl2 + `test`, {code, bookletName, bookletLabel})
       .pipe(catchError(ErrorHandler.handle));
   }
 
