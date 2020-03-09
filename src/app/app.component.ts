@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
         return (storageEntry as string);
       }
     }
-    return ''
+    return '';
   }
 
   ngOnInit() {
@@ -65,7 +65,7 @@ export class AppComponent implements OnInit {
       } else {
         const loginToken = AppComponent.getStringFromLocalStorage('lt');
         if (loginToken) {
-          let personToken = AppComponent.getStringFromLocalStorage('pt');
+          const personToken = AppComponent.getStringFromLocalStorage('pt');
           let bookletDbId = 0;
           if (personToken) {
             const bookletDbIdStr = AppComponent.getStringFromLocalStorage('bi');
@@ -76,16 +76,16 @@ export class AppComponent implements OnInit {
           const code = AppComponent.getStringFromLocalStorage('c');
 
           // bookletDbId is not yet checked by getLoginData, only passed-through
-          this.bs.getLoginData(loginToken, personToken, bookletDbId).subscribe(ld => {
+          this.bs.getSession(loginToken, personToken).subscribe(ld => {
             if (ld instanceof ServerError) {
               this.mds.setNewLoginData();
             } else {
               const loginData = ld as LoginData;
-              loginData.logintoken = loginToken;
-              loginData.persontoken = personToken;
+              loginData.loginToken = loginToken;
+              loginData.personToken = personToken;
               if (personToken.length === 0) {
                 loginData.code = code;
-                loginData.booklet = 0;
+                loginData.testId = 0;
               }
               this.mds.setNewLoginData(loginData);
               if (loginData.customTexts) {

@@ -1,6 +1,6 @@
 <div class="logo">
   <a [routerLink]="['/']">
-    <img src="assets/IQB-LogoA.png" matTooltip="Startseite" alt=""IQB-Logo/>
+    <img src="assets/IQB-LogoA.png" matTooltip="Startseite" alt="IQB-Logo"/>
   </a>
 </div>
 <div class="page-body">
@@ -93,7 +93,7 @@
           </div>
         </mat-card-content>
         <mat-card-actions>
-          <button mat-raised-button color="foreground" *ngIf="(mds.loginData$ | async)?.is_superadmin" [routerLink]="['/superadmin']">Nutzer/Arbeitsbereiche</button>
+          <button mat-raised-button color="foreground" *ngIf="(mds.loginData$ | async)?.isSuperadmin" [routerLink]="['/superadmin']">Nutzer/Arbeitsbereiche</button>
           <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
         </mat-card-actions>
       </mat-card>

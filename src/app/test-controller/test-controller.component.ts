@@ -467,7 +467,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     // navigation to first unit
     this.loginDataSubscription = this.mds.loginData$.subscribe(loginData => {
       this.tcs.resetDataStore();
-      if ((loginData.persontoken.length > 0) && (loginData.booklet > 0)) {
+      if ((loginData.personToken.length > 0) && (loginData.testId > 0)) {
         const envData = new EnvironmentData(this.appVersion);
 
         // we have to provide bookletDbId (testId) here manually, because this.tcs.bookletDbId is set after bs.getBookletData is resolved
@@ -475,7 +475,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADSTART, JSON.stringify(envData), this.mds.getBookletDbId());
 
         this.tcs.mode = loginData.mode;
-        this.tcs.loginname = loginData.loginname;
+        this.tcs.loginname = loginData.loginName;
 
         this.tcs.dataLoading = true;
         this.bs.getBookletData(this.mds.getBookletDbId()).subscribe(myData => {
@@ -536,7 +536,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     () => {
 
                       // =====================
-                      this.tcs.bookletDbId = loginData.booklet;
+                      this.tcs.bookletDbId = loginData.testId;
                       this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
                       this.tcs.updateMinMaxUnitSequenceId(navTarget);
                       this.loadedUnitCount = 0;

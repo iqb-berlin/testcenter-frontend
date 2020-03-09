@@ -28,17 +28,15 @@ export class BackendService {
   login(name: string, password: string): Observable<LoginData | ServerError> {
 
     return this.http
-        .post<LoginData>(this.serverUrl2 + '/login/group', {name, password})
+        .put<LoginData>(this.serverUrl2 + '/session/group', {name, password})
         .pipe(
           catchError(ErrorHandler.handle),
           switchMap(myLoginData => {
             if (myLoginData instanceof ServerError) {
               if ((myLoginData as ServerError).code === 401) {
                 return this.http
-                  .post<LoginData>(this.serverUrl2 + '/login/admin', {n: name, p: password})
-                    .pipe(
-                      catchError(ErrorHandler.handle)
-                    );
+                  .post<LoginData>(this.serverUrl2 + 'login/admin', {n: name, p: password})
+                  .pipe(catchError(ErrorHandler.handle));
               } else {
                 return of(myLoginData);
               }
@@ -49,18 +47,20 @@ export class BackendService {
         );
   }
 
-  // BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-  getLoginData(loginToken: string, personToken: string, bookletDbId: number): Observable<LoginData | ServerError> {
+
+  getSession(loginToken: string, personToken: string): Observable<LoginData | ServerError> {
+
+    const authToken = JSON.stringify({l: loginToken, p: personToken});
     return this.http
-      .post<LoginData>(this.serverSlimUrl + 'login', {lt: loginToken, pt: personToken, b: bookletDbId})
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
+      .get<LoginData>(this.serverUrl2 + 'session', {headers: {'AuthToken': authToken}})
+      .pipe(catchError(ErrorHandler.handle));
   }
 
+
   getLoginDataAdmin(adminToken: string): Observable<LoginData | ServerError> {
+
     return this.http
-      .post<LoginData>(this.serverSlimAdminUrl + 'login', {at: adminToken})
+      .post<LoginData>(this.serverUrl2 + 'login/admin', {at: adminToken})
       .pipe(
         catchError(ErrorHandler.handle)
       );
@@ -73,7 +73,7 @@ export class BackendService {
       .get<SysConfig>(this.serverUrl2 + `system/config`)
       .pipe(catchError(() => of(null)))
       .pipe(map((sysConfig: SysConfig): KeyValuePair => {
-        console.log(sysConfig.version); // check for system version missmatch https://github.com/iqb-berlin/testcenter-iqb-ng/issues/53
+        console.log(sysConfig.version); // TODO check for system version mismatch https://github.com/iqb-berlin/testcenter-iqb-ng/issues/53
         return sysConfig.customTexts;
       }));
   }
@@ -81,6 +81,8 @@ export class BackendService {
 
   getBookletState(bookletName: string, code = ''): Observable<BookletStatus | ServerError> {
 
+    // TODO after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52 is resolved,
+    //  this must be removed, we would have a personToken here
     const params = new HttpParams().set('code', code);
 
     return this.http

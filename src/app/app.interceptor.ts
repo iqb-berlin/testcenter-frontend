@@ -9,6 +9,11 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(public mds: MainDataService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+
+    if (request.headers.get('AuthToken') !== null) {
+      return  next.handle(request);
+    }
+
     const loginData = this.mds.loginData$.getValue();
     let authData = {};
     if (loginData === null) {
@@ -19,9 +24,9 @@ export class AuthInterceptor implements HttpInterceptor {
       };
     } else {
       authData = {
-        l: loginData.logintoken,
-        p: loginData.persontoken,
-        b: loginData.booklet
+        l: loginData.loginToken,
+        p: loginData.personToken,
+        b: loginData.testId
       };
     }
     const requestA = request.clone({

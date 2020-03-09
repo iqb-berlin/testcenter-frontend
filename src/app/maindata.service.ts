@@ -11,23 +11,22 @@ import { appconfig, customtextKeySeparator, CustomTextsDefList } from './app.con
 export class MainDataService {
   private static get defaultLoginData(): LoginData {
     return {
-      logintoken: '',
-      persontoken: '',
+      loginToken: '',
+      personToken: '',
       mode: '',
-      groupname: '',
-      loginname: '',
+      groupName: '',
+      loginName: '',
       name: '',
       workspaceName: '',
       booklets: null,
       code: '',
-      booklet: 0,
-      bookletlabel: '',
+      testId: 0,
+      bookletLabel: '',
       customTexts: {},
-      admintoken: '',
+      adminToken: '',
       workspaces: [],
-      is_superadmin: false,
-      costumTexts: {}
-    }
+      isSuperadmin: false
+    };
   }
 
   public loginData$ = new BehaviorSubject<LoginData>(MainDataService.defaultLoginData);
@@ -39,7 +38,7 @@ export class MainDataService {
   public get adminToken(): string {
     const myLoginData = this.loginData$.getValue();
     if (myLoginData) {
-      return myLoginData.admintoken;
+      return myLoginData.adminToken;
     } else {
       return '';
     }
@@ -57,29 +56,29 @@ export class MainDataService {
       logindata = MainDataService.defaultLoginData;
     }
 
-    if ((logindata.admintoken)) { //.length > 0) && (logindata.name.length > 0)) {
-      myLoginData.admintoken = logindata.admintoken;
+    if ((logindata.adminToken)) { // .length > 0) && (logindata.name.length > 0)) {
+      myLoginData.adminToken = logindata.adminToken;
       if (logindata.name) {
-        myLoginData.loginname = logindata.name;
+        myLoginData.loginName = logindata.name;
       } else {
-        myLoginData.loginname = logindata.loginname;
+        myLoginData.loginName = logindata.loginName;
       }
       myLoginData.workspaces = logindata.workspaces;
-      myLoginData.is_superadmin = logindata.is_superadmin;
+      myLoginData.isSuperadmin = logindata.isSuperadmin;
     } else if (
-      (logindata.logintoken.length > 0) &&
-      (logindata.loginname.length > 0) &&
+      (logindata.loginToken.length > 0) &&
+      (logindata.loginName.length > 0) &&
       (logindata.mode.length > 0) &&
-      (logindata.groupname.length > 0) &&
+      (logindata.groupName.length > 0) &&
       (logindata.workspaceName.length > 0) &&
       (logindata.booklets)) {
 
         const validCodes = Object.keys(logindata.booklets);
         if (validCodes.length > 0) {
-          myLoginData.logintoken = logindata.logintoken;
-          myLoginData.loginname = logindata.loginname;
+          myLoginData.loginToken = logindata.loginToken;
+          myLoginData.loginName = logindata.loginName;
           myLoginData.mode = logindata.mode;
-          myLoginData.groupname = logindata.groupname;
+          myLoginData.groupName = logindata.groupName;
           myLoginData.workspaceName = logindata.workspaceName;
           myLoginData.booklets = logindata.booklets;
           if (logindata.code.length > 0) {
@@ -87,21 +86,21 @@ export class MainDataService {
               myLoginData.code = logindata.code;
             }
           }
-          if (logindata.persontoken.length > 0) {
-            myLoginData.persontoken = logindata.persontoken;
-            myLoginData.booklet = logindata.booklet;
-            if (myLoginData.booklet > 0) {
-              myLoginData.bookletlabel = logindata.bookletlabel;
+          if (logindata.personToken.length > 0) {
+            myLoginData.personToken = logindata.personToken;
+            myLoginData.testId = logindata.testId;
+            if (myLoginData.testId > 0) {
+              myLoginData.bookletLabel = logindata.bookletLabel;
             }
           }
         }
     }
 
     this.loginData$.next(myLoginData);
-    localStorage.setItem('lt', myLoginData.logintoken);
-    localStorage.setItem('at', myLoginData.admintoken);
-    localStorage.setItem('pt', myLoginData.persontoken);
-    localStorage.setItem('bi', myLoginData.booklet.toString());
+    localStorage.setItem('lt', myLoginData.loginToken);
+    localStorage.setItem('at', myLoginData.adminToken);
+    localStorage.setItem('pt', myLoginData.personToken);
+    localStorage.setItem('bi', myLoginData.testId.toString());
   }
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -114,34 +113,34 @@ export class MainDataService {
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   setBookletDbId ( personToken: string, bId: number, bLabel: string) {
     const myLoginData = this.loginData$.getValue();
-    myLoginData.persontoken = personToken;
-    myLoginData.booklet = bId;
-    myLoginData.bookletlabel = bLabel;
+    myLoginData.personToken = personToken;
+    myLoginData.testId = bId;
+    myLoginData.bookletLabel = bLabel;
     this.setNewLoginData(myLoginData);
   }
 
 
   getBookletDbId(): number {
 
-    return this.loginData$.getValue().booklet;
+    return this.loginData$.getValue().testId;
   }
 
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   endBooklet () {
     const myLoginData = this.loginData$.getValue();
-    if (myLoginData.booklet > 0 && myLoginData.mode === 'hot') {
+    if (myLoginData.testId > 0 && myLoginData.mode === 'hot') {
       forkJoin(
-        this.bs.addBookletLogClose(myLoginData.booklet),
-        this.bs.lockBooklet(myLoginData.booklet)
+        this.bs.addBookletLogClose(myLoginData.testId),
+        this.bs.lockBooklet(myLoginData.testId)
       ).subscribe(() => {
-        myLoginData.booklet = 0;
-        myLoginData.bookletlabel = '';
+        myLoginData.testId = 0;
+        myLoginData.bookletLabel = '';
         this.setNewLoginData(myLoginData);
       });
     } else {
-      myLoginData.booklet = 0;
-      myLoginData.bookletlabel = '';
+      myLoginData.testId = 0;
+      myLoginData.bookletLabel = '';
       this.setNewLoginData(myLoginData);
     }
   }
@@ -155,13 +154,13 @@ export class MainDataService {
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   getBookletLabel(): string {
     const myLoginData = this.loginData$.getValue();
-    return myLoginData.bookletlabel;
+    return myLoginData.bookletLabel;
   }
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   getPersonToken(): string {
     const myLoginData = this.loginData$.getValue();
-    return myLoginData.persontoken;
+    return myLoginData.personToken;
   }
 
   public addCustomtextsFromDefList(customtextList: CustomTextsDefList) {
@@ -172,7 +171,7 @@ export class MainDataService {
     this.cts.addCustomTexts(myCustomTexts);
   }
 
- public setDefaultCustomtexts(newTexts: {[key: string]: string;}) {
+ public setDefaultCustomtexts(newTexts: {[key: string]: string}) {
     if (newTexts) {
       for (const ctKey of Object.keys(newTexts)) {
         const sepIndex = ctKey.indexOf(customtextKeySeparator);

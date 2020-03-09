@@ -53,7 +53,7 @@ export class StartComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loginDataSubscription = this.mds.loginData$.subscribe(logindata => {
       this.bookletlist = [];
-      if (logindata.admintoken.length > 0) {
+      if (logindata.adminToken.length > 0) {
         this.showLoginForm = false;
         this.showAdminSelection = true;
         this.showCodeForm = false;
@@ -61,18 +61,18 @@ export class StartComponent implements OnInit, OnDestroy {
         this.showTestRunningButtons = false;
         this.loginStatusText = [];
         this.loginStatusText.push('Admin-Bereich ');
-        this.loginStatusText.push('angemeldet als ' + logindata.loginname);
-        if (logindata.is_superadmin) {
+        this.loginStatusText.push('angemeldet als ' + logindata.loginName);
+        if (logindata.isSuperadmin) {
           this.loginStatusText.push('Rechte auch für Anlegen/Löschen von Nutzern und Workspaces');
         }
-      } else if (logindata.logintoken.length > 0) {
+      } else if (logindata.loginToken.length > 0) {
         // Statustext box
         this.showAdminSelection = false;
         this.loginStatusText = [];
         this.loginStatusText.push('Studie: ' + logindata.workspaceName);
         this.loginStatusText.push('angemeldet als "' +
-          logindata.loginname + (logindata.code.length > 0 ? ('/' + logindata.code + '"') : '"'));
-        this.loginStatusText.push('Gruppe: ' + logindata.groupname);
+          logindata.loginName + (logindata.code.length > 0 ? ('/' + logindata.code + '"') : '"'));
+        this.loginStatusText.push('Gruppe: ' + logindata.groupName);
 
         if (logindata.mode === 'trial') {
           // @ts-ignore
@@ -90,12 +90,12 @@ export class StartComponent implements OnInit, OnDestroy {
 
         this.showLoginForm = false;
         let createBookletSelectButtons = false;
-        if (logindata.persontoken.length > 0) {
+        if (logindata.personToken.length > 0) {
           // test started or just finished
           this.showBookletButtons = false;
           this.showCodeForm = false;
           this.showLoginForm = false;
-          if (logindata.booklet === 0) {
+          if (logindata.testId === 0) {
             this.showBookletButtons = true;
             this.showTestRunningButtons = false;
             // booklet finished
@@ -108,7 +108,7 @@ export class StartComponent implements OnInit, OnDestroy {
             this.showBookletButtons = false;
             this.showTestRunningButtons = true;
 
-            this.loginStatusText.push('Gestartet: "' + logindata.bookletlabel + '"');
+            this.loginStatusText.push('Gestartet: "' + logindata.bookletLabel + '"');
           }
 
         } else {
@@ -194,7 +194,7 @@ export class StartComponent implements OnInit, OnDestroy {
 
     this.testtakerloginform = this.fb.group({
       testname: this.fb.control(this.lastloginname, [Validators.required, Validators.minLength(3)]),
-      testpw: this.fb.control('', [Validators.required, Validators.minLength(3)])
+      testpw: this.fb.control('', [])
     });
 
     this.codeinputform = this.fb.group({
@@ -216,9 +216,6 @@ export class StartComponent implements OnInit, OnDestroy {
           this.mds.globalErrorMsg$.next(null);
           if ((loginData as LoginData).customTexts) {
             this.cts.addCustomTexts((loginData as LoginData).customTexts);
-          }
-          if ((loginData as LoginData).costumTexts) { // TODO fix typo in backend!
-            this.cts.addCustomTexts((loginData as LoginData).costumTexts);
           }
           this.mds.setNewLoginData(loginData as LoginData);
         }

@@ -13,22 +13,28 @@ export interface BookletListByCode {
 }
 
 export interface LoginData {
-  logintoken: string;
-  loginname: string;
-  name: string; // TODO is loginname, but backend sends name if admin login
-  mode: string;
-  groupname: string;
-  workspaceName: string;
-  booklets: BookletListByCode;
-  persontoken: string;
+  loginToken: string;
+  personToken: string;
   code: string;
-  booklet: number;
-  bookletlabel: string;
+  loginName: string;
+  name: string; // TODO is loginname, but backend sends name if admin login
+
+  mode: string;
+
+  groupName: string;
+
+  workspaceName: string;
+
+  booklets: BookletListByCode;
+
+  testId: number;
+  bookletLabel: string;
+
   customTexts: KeyValuePair;
-  costumTexts: KeyValuePair; // TODO when backend fixed then change here
-  admintoken: string;
+
+  adminToken: string;
   workspaces: WorkspaceData[];
-  is_superadmin: boolean;
+  isSuperadmin: boolean;
 }
 
 export interface BookletStatus {
