@@ -11,8 +11,6 @@ import { ServerError } from 'iqb-components';
 })
 export class BackendService {
 
-  private serverUrl2 = 'http://localhost/testcenter-iqb-php/'; // TODO (BEFORE-MERGE) REMOVE
-
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient
@@ -24,7 +22,7 @@ export class BackendService {
     : Observable<boolean | ServerError> {
 
     return this.http
-      .put<boolean>(this.serverUrl2 + `test/${testId}/unit/${unitName}/review`, {priority, categories, entry})
+      .put<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/review`, {priority, categories, entry})
       .pipe(catchError(this.handle));
   }
 
@@ -32,7 +30,7 @@ export class BackendService {
   saveBookletReview(testId: number, priority: number, categories: string, entry: string): Observable<boolean | ServerError> {
 
     return this.http
-      .put<boolean>(this.serverUrl2 + `test/${testId}/review`, {priority, categories, entry})
+      .put<boolean>(this.serverUrl + `test/${testId}/review`, {priority, categories, entry})
       .pipe(catchError(this.handle));
   }
 
@@ -40,7 +38,7 @@ export class BackendService {
   getBookletData(testId: number): Observable<BookletData | ServerError> {
 
     return this.http
-      .get<BookletData>(this.serverUrl2 + 'test/' + testId)
+      .get<BookletData>(this.serverUrl + 'test/' + testId)
       .pipe(catchError(this.handle));
   }
 
@@ -48,7 +46,7 @@ export class BackendService {
   getUnitData(testId: number, unitid: string): Observable<UnitData | ServerError> {
 
     return this.http
-      .get<UnitData>(this.serverUrl2 + 'test/' + testId + '/unit/' + unitid)
+      .get<UnitData>(this.serverUrl + 'test/' + testId + '/unit/' + unitid)
       .pipe(catchError(this.handle));
   }
 
@@ -57,7 +55,7 @@ export class BackendService {
 
     return this.http
       .get(
-        this.serverUrl2 + `test/${testId}/resource/${resId}`,
+        this.serverUrl + `test/${testId}/resource/${resId}`,
         {
           params: new HttpParams().set('v', versionning ? '1' : 'f'),
           responseType: 'text'
@@ -72,7 +70,7 @@ export class BackendService {
   addUnitLog(testId: number, timestamp: number, unitName: string, entry: string): Observable<boolean | ServerError> {
 
     return this.http
-      .put<boolean>(this.serverUrl2 + `test/${testId}/unit/${unitName}/log`, {timestamp, entry})
+      .put<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/log`, {timestamp, entry})
       .pipe(catchError(this.handle));
   }
 
@@ -80,7 +78,7 @@ export class BackendService {
   addBookletLog(testId: number, timestamp: number, entry: string): Observable<boolean | ServerError> {
 
     return this.http
-      .put<boolean>(this.serverUrl2 + `test/${testId}/log`, {timestamp, entry})
+      .put<boolean>(this.serverUrl + `test/${testId}/log`, {timestamp, entry})
       .pipe(catchError(this.handle));
   }
 
@@ -88,7 +86,7 @@ export class BackendService {
   setUnitState(testId: number, unitName: string, stateKey: string, state: string): Observable<boolean | ServerError> {
 
     return this.http
-      .patch<boolean>(this.serverUrl2 + `test/${testId}/unit/${unitName}/state`, {key: stateKey, value: state})
+      .patch<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/state`, {key: stateKey, value: state})
       .pipe(catchError(this.handle));
   }
 
@@ -96,7 +94,7 @@ export class BackendService {
   setBookletState(testId: number, stateKey: string, state: string): Observable<boolean | ServerError> {
 
     return this.http
-      .patch<boolean>(this.serverUrl2 + `test/${testId}/state`, {key: stateKey, value: state})
+      .patch<boolean>(this.serverUrl + `test/${testId}/state`, {key: stateKey, value: state})
       .pipe(catchError(this.handle));
   }
 
@@ -105,7 +103,7 @@ export class BackendService {
     : Observable<boolean | ServerError> {
 
     return this.http
-      .put<boolean>(this.serverUrl2 + `test/${testId}/unit/${unitName}/response`, {timestamp, response, responseType})
+      .put<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/response`, {timestamp, response, responseType})
       .pipe(catchError(this.handle));
   }
 
@@ -113,7 +111,7 @@ export class BackendService {
   newUnitRestorePoint(testId: number, unitName: string, timestamp: number, restorePoint: string): Observable<boolean | ServerError> {
 
     return this.http
-      .patch<boolean>(this.serverUrl2 + `test/${testId}/unit/${unitName}/restorepoint`, {timestamp, restorePoint})
+      .patch<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/restorepoint`, {timestamp, restorePoint})
       .pipe(catchError(this.handle));
   }
 

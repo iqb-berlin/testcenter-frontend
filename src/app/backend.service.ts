@@ -28,7 +28,7 @@ export class BackendService {
   login(name: string, password: string): Observable<LoginData | ServerError> {
 
     return this.http
-        .put<LoginData>(this.serverUrl2 + '/session/group', {name, password})
+        .put<LoginData>(this.serverUrl2 + 'session/group', {name, password})
         .pipe(
           catchError(ErrorHandler.handle),
           switchMap(myLoginData => {
