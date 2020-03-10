@@ -53,7 +53,7 @@ export class AppComponent implements OnInit {
       // restore login status if stored in localStorage
       const adminToken = AppComponent.getStringFromLocalStorage('at');
       if (adminToken) {
-        this.bs.getLoginDataAdmin(adminToken).subscribe(
+        this.bs.getAdminSession(adminToken).subscribe(
           (admindata: LoginData) => {
             if (admindata instanceof ServerError) {
               this.mds.setNewLoginData();

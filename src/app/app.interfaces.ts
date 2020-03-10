@@ -17,7 +17,6 @@ export interface LoginData {
   personToken: string;
   code: string; // TODO after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52 remove
   loginName: string;
-  name: string; // TODO is loginname, but backend sends name if admin login
 
   mode: string;
 

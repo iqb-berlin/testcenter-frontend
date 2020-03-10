@@ -26,7 +26,7 @@ export class BackendService {
             if (myLoginData instanceof ServerError) {
               if ((myLoginData as ServerError).code === 401) {
                 return this.http
-                  .post<LoginData>(this.serverUrl + 'login/admin', {n: name, p: password})
+                  .put<LoginData>(this.serverUrl + 'session/admin', {name, password})
                   .pipe(catchError(ErrorHandler.handle));
               } else {
                 return of(myLoginData);
@@ -48,13 +48,12 @@ export class BackendService {
   }
 
 
-  getLoginDataAdmin(adminToken: string): Observable<LoginData | ServerError> {
+  getAdminSession(adminToken: string): Observable<LoginData | ServerError> {
 
+    const authToken = JSON.stringify({at: adminToken});
     return this.http
-      .post<LoginData>(this.serverUrl + 'login/admin', {at: adminToken})
-      .pipe(
-        catchError(ErrorHandler.handle)
-      );
+      .get<LoginData>(this.serverUrl + 'session', {headers: {'AuthToken': authToken}})
+      .pipe(catchError(ErrorHandler.handle));
   }
 
 

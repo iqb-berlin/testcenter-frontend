@@ -16,7 +16,6 @@ export class MainDataService {
       mode: '',
       groupName: '',
       loginName: '',
-      name: '',
       workspaceName: '',
       booklets: null,
       code: '',
@@ -58,11 +57,7 @@ export class MainDataService {
 
     if ((logindata.adminToken)) { // .length > 0) && (logindata.name.length > 0)) {
       myLoginData.adminToken = logindata.adminToken;
-      if (logindata.name) {
-        myLoginData.loginName = logindata.name;
-      } else {
-        myLoginData.loginName = logindata.loginName;
-      }
+      myLoginData.loginName = logindata.loginName;
       myLoginData.workspaces = logindata.workspaces;
       myLoginData.isSuperadmin = logindata.isSuperadmin;
     } else if (
