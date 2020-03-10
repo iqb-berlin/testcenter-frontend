@@ -172,7 +172,7 @@ export class UnitActivateGuard implements CanActivate {
 
         // 1 going forwards
 
-        if ((newUnit.maxTimerRequiringTestlet === null) || (this.tcs.mode === 'review')) {
+        if ((newUnit.maxTimerRequiringTestlet === null) || (this.tcs.mode === 'run-review')) {
 
           // 1 a) target is not in timed block or review mode --> check only target unit
 

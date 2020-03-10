@@ -21,7 +21,7 @@
         (click)="tcs.setUnitNavigationRequest('#next')" matTooltip="Weiter" fxFlex="none">
       <i class="material-icons">chevron_right</i>
     </button>
-    <button mat-button (click)="showReviewDialog()" *ngIf="tcs.mode === 'review'" matTooltip="Kommentar senden" fxFlex="none">
+    <button mat-button (click)="showReviewDialog()" *ngIf="tcs.mode === 'run-review'" matTooltip="Kommentar senden" fxFlex="none">
       <mat-icon>rate_review</mat-icon>
     </button>
     <button mat-button (click)="tcs.setUnitNavigationRequest('#end')"  *ngIf="tcs.mode !== 'hot'"

@@ -388,7 +388,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
         this.timerRunning = false;
         this.timerValue = null;
-        if (this.tcs.mode !== 'review') {
+        if (this.tcs.mode !== 'run-review') {
           this.tcs.setUnitNavigationRequest('#next');
         }
       } else if (maxTimerData.type === MaxTimerDataType.CANCELLED) {

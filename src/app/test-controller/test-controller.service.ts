@@ -208,7 +208,7 @@ export class TestControllerService {
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
   public addBookletLog(logKey: LogEntryKey, entry = '', overwriteBookletDbId = -1) {
-    if ((this.mode !== 'review') && this.logging) {
+    if ((this.mode !== 'run-review') && this.logging) {
 
       const entryData =  entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey;
       const bookletDbId = overwriteBookletDbId > -1 ? overwriteBookletDbId : this.bookletDbId;
@@ -220,7 +220,7 @@ export class TestControllerService {
     }
   }
   public setBookletState(stateKey: LastStateKey, state: string) {
-    if (this.mode !== 'review') {
+    if (this.mode !== 'run-review') {
       this.bs.setBookletState(this.bookletDbId, stateKey, state).subscribe(ok => {
         if (ok instanceof ServerError) {
           console.log('((((((((((((((((setBookletState');
@@ -229,7 +229,7 @@ export class TestControllerService {
     }
   }
   public addUnitLog(unitDbKey: string, logKey: LogEntryKey, entry = '') {
-    if ((this.mode !== 'review') && this.logging) {
+    if ((this.mode !== 'run-review') && this.logging) {
       this.bs.addUnitLog(this.bookletDbId, Date.now(), unitDbKey,
             entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey).subscribe(ok => {
         if (ok instanceof ServerError) {
@@ -239,7 +239,7 @@ export class TestControllerService {
     }
   }
   public newUnitResponse(unitDbKey: string, response: string, responseType: string) {
-    if (this.mode !== 'review') {
+    if (this.mode !== 'run-review') {
       this.responsesToSave$.next({
         unitDbKey: unitDbKey,
         response: response,
@@ -249,7 +249,7 @@ export class TestControllerService {
   }
   public newUnitRestorePoint(unitDbKey: string, unitSequenceId: number, restorePoint: string, postToServer: boolean) {
     this.unitRestorePoints[unitSequenceId] = restorePoint;
-    if (postToServer && this.mode !== 'review') {
+    if (postToServer && this.mode !== 'run-review') {
       this.restorePointsToSave$.next({
         unitDbKey: unitDbKey,
         restorePoint: restorePoint
@@ -258,7 +258,7 @@ export class TestControllerService {
   }
   public newUnitStatePresentationComplete(unitDbKey: string, unitSequenceId: number, presentationComplete: string) {
     this.unitPresentationCompleteStates[unitSequenceId] = presentationComplete;
-    if (this.mode !== 'review') {
+    if (this.mode !== 'run-review') {
       this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationComplete);
       this.bs.setUnitState(this.bookletDbId, unitDbKey, LastStateKey.PRESENTATIONCOMPLETE, presentationComplete).subscribe(ok => {
         if (ok instanceof ServerError) {
@@ -268,7 +268,7 @@ export class TestControllerService {
     }
   }
   public newUnitStateResponsesGiven(unitDbKey: string, unitSequenceId: number, responsesGiven: string) {
-    if (this.mode !== 'review') {
+    if (this.mode !== 'run-review') {
       this.addUnitLog(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
     }
   }

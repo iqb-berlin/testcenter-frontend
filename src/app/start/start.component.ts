@@ -74,13 +74,13 @@ export class StartComponent implements OnInit, OnDestroy {
           logindata.loginName + (logindata.code.length > 0 ? ('/' + logindata.code + '"') : '"'));
         this.loginStatusText.push('Gruppe: ' + logindata.groupName);
 
-        if (logindata.mode === 'trial') {
+        if (logindata.mode === 'run-trial') {
           // @ts-ignore
           const tmt = this.cts.getCustomText('login_trialmodeText');
           if (tmt.length > 0) {
             this.loginStatusText.push(tmt);
           }
-        } else if (logindata.mode === 'review') {
+        } else if (logindata.mode === 'run-review') {
           // @ts-ignore
           const tmt = this.cts.getCustomText('login_reviewmodeText');
           if (tmt.length > 0) {
