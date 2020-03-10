@@ -9,33 +9,24 @@ import {ErrorHandler, ServerError} from 'iqb-components';
 // ============================================================================
 @Injectable()
 export class BackendService {
-  private serverSlimUrl = '';
-  private serverSlimAdminUrl = '';
-  private serverSlimUrl_Close = '';
-
-  private serverUrl2 = 'http://localhost/testcenter-iqb-php/'; // TODO (BEFORE-MERGE) REMOVE
 
   constructor(
     @Inject('SERVER_URL') private readonly serverUrl: string,
-    private http: HttpClient) {
-      this.serverSlimUrl = this.serverUrl + 'php_tc/login.php/';
-      this.serverSlimAdminUrl = this.serverUrl + 'admin/php/login.php/';
-      this.serverSlimUrl_Close = this.serverUrl + 'php_tc/tc_post.php/';
-      this.serverUrl = this.serverUrl + 'php_start/';
-    }
+    private http: HttpClient
+  ) {}
 
 
   login(name: string, password: string): Observable<LoginData | ServerError> {
 
     return this.http
-        .put<LoginData>(this.serverUrl2 + 'session/group', {name, password})
+        .put<LoginData>(this.serverUrl + 'session/login', {name, password})
         .pipe(
           catchError(ErrorHandler.handle),
           switchMap(myLoginData => {
             if (myLoginData instanceof ServerError) {
               if ((myLoginData as ServerError).code === 401) {
                 return this.http
-                  .post<LoginData>(this.serverUrl2 + 'login/admin', {n: name, p: password})
+                  .post<LoginData>(this.serverUrl + 'login/admin', {n: name, p: password})
                   .pipe(catchError(ErrorHandler.handle));
               } else {
                 return of(myLoginData);
@@ -52,7 +43,7 @@ export class BackendService {
 
     const authToken = JSON.stringify({l: loginToken, p: personToken});
     return this.http
-      .get<LoginData>(this.serverUrl2 + 'session', {headers: {'AuthToken': authToken}})
+      .get<LoginData>(this.serverUrl + 'session', {headers: {'AuthToken': authToken}})
       .pipe(catchError(ErrorHandler.handle));
   }
 
@@ -60,7 +51,7 @@ export class BackendService {
   getLoginDataAdmin(adminToken: string): Observable<LoginData | ServerError> {
 
     return this.http
-      .post<LoginData>(this.serverUrl2 + 'login/admin', {at: adminToken})
+      .post<LoginData>(this.serverUrl + 'login/admin', {at: adminToken})
       .pipe(
         catchError(ErrorHandler.handle)
       );
@@ -70,7 +61,7 @@ export class BackendService {
   getSysConfig(): Observable<KeyValuePair> {
 
     return this.http
-      .get<SysConfig>(this.serverUrl2 + `system/config`)
+      .get<SysConfig>(this.serverUrl + `system/config`)
       .pipe(catchError(() => of(null)))
       .pipe(map((sysConfig: SysConfig): KeyValuePair => {
         console.log(sysConfig.version); // TODO check for system version mismatch https://github.com/iqb-berlin/testcenter-iqb-ng/issues/53
@@ -86,7 +77,7 @@ export class BackendService {
     const params = new HttpParams().set('code', code);
 
     return this.http
-      .get<BookletStatus>(this.serverUrl2 + `booklet/${bookletName}/state`, {params})
+      .get<BookletStatus>(this.serverUrl + `booklet/${bookletName}/state`, {params})
       .pipe(catchError(ErrorHandler.handle));
   }
 
@@ -94,7 +85,7 @@ export class BackendService {
   startBooklet(code: string, bookletName: string, bookletLabel: string): Observable<PersonTokenAndTestId | ServerError> {
 
     return this.http
-      .put<PersonTokenAndTestId>(this.serverUrl2 + `test`, {code, bookletName, bookletLabel})
+      .put<PersonTokenAndTestId>(this.serverUrl + `test`, {code, bookletName, bookletLabel})
       .pipe(catchError(ErrorHandler.handle));
   }
 
@@ -102,7 +93,7 @@ export class BackendService {
   addBookletLogClose(testId: number): Observable<boolean | ServerError> {
 
     return this.http
-      .put<boolean>(this.serverUrl2 + `test/${testId}/log`, {timestamp: Date.now(), entry: 'BOOKLETLOCKEDbyTESTEE'})
+      .put<boolean>(this.serverUrl + `test/${testId}/log`, {timestamp: Date.now(), entry: 'BOOKLETLOCKEDbyTESTEE'})
       .pipe(catchError(ErrorHandler.handle));
   }
 
@@ -110,7 +101,7 @@ export class BackendService {
   lockBooklet(testId: number): Observable<boolean | ServerError> {
 
     return this.http
-      .post<boolean>(this.serverUrl2 + `test/${testId}/lock`, {})
+      .post<boolean>(this.serverUrl + `test/${testId}/lock`, {})
       .pipe(catchError(ErrorHandler.handle));
   }
 }
