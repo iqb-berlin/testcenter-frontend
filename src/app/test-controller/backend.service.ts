@@ -53,11 +53,11 @@ export class BackendService {
   }
 
 
-  getResource(internalKey: string, resId: string, versionning = false): Observable<TaggedString | ServerError> {
+  getResource(testId: number, internalKey: string, resId: string, versionning = false): Observable<TaggedString | ServerError> {
 
     return this.http
       .get(
-        this.serverUrl2 + 'resource/' + resId,
+        this.serverUrl2 + `test/${testId}/resource/${resId}`,
         {
           params: new HttpParams().set('v', versionning ? '1' : 'f'),
           responseType: 'text'

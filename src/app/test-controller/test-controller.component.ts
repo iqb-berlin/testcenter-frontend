@@ -269,7 +269,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     } else {
       // to avoid multiple calls before returning:
       this.tcs.addPlayer(playerId, '');
-      return this.bs.getResource('', this.tcs.normaliseId(playerId, 'html'), true)
+      return this.bs.getResource(this.tcs.bookletDbId, '', this.tcs.normaliseId(playerId, 'html'), true)
           .pipe(
             switchMap(myData => {
               if (myData instanceof ServerError) {
@@ -552,7 +552,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                           if (unitSequ < this.tcs.minUnitSequenceId) {
                             return of({tag: unitSequ.toString(), value: ''});
                           } else {
-                            return this.bs.getResource(queueEntry.tag, queueEntry.value);
+                            return this.bs.getResource(this.mds.getBookletDbId(), queueEntry.tag, queueEntry.value);
                           }
                         })
                       ).subscribe(
