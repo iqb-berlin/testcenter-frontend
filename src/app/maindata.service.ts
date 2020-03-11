@@ -15,7 +15,7 @@ export class MainDataService {
       personToken: '',
       mode: '',
       groupName: '',
-      loginName: '',
+      name: '',
       workspaceName: '',
       booklets: null,
       code: '',
@@ -57,12 +57,12 @@ export class MainDataService {
 
     if ((logindata.adminToken)) { // .length > 0) && (logindata.name.length > 0)) {
       myLoginData.adminToken = logindata.adminToken;
-      myLoginData.loginName = logindata.loginName;
+      myLoginData.name = logindata.name;
       myLoginData.workspaces = logindata.workspaces;
       myLoginData.isSuperadmin = logindata.isSuperadmin;
     } else if (
       (logindata.loginToken.length > 0) &&
-      (logindata.loginName.length > 0) &&
+      (logindata.name.length > 0) &&
       (logindata.mode.length > 0) &&
       (logindata.groupName.length > 0) &&
       (logindata.workspaceName.length > 0) &&
@@ -71,7 +71,7 @@ export class MainDataService {
         const validCodes = Object.keys(logindata.booklets);
         if (validCodes.length > 0) {
           myLoginData.loginToken = logindata.loginToken;
-          myLoginData.loginName = logindata.loginName;
+          myLoginData.name = logindata.name;
           myLoginData.mode = logindata.mode;
           myLoginData.groupName = logindata.groupName;
           myLoginData.workspaceName = logindata.workspaceName;

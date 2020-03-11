@@ -475,7 +475,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADSTART, JSON.stringify(envData), this.mds.getBookletDbId());
 
         this.tcs.mode = loginData.mode;
-        this.tcs.loginname = loginData.loginName;
+        this.tcs.loginname = loginData.name;
 
         this.tcs.dataLoading = true;
         this.bs.getBookletData(this.mds.getBookletDbId()).subscribe(myData => {

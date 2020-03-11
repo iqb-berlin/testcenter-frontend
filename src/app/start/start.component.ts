@@ -61,7 +61,8 @@ export class StartComponent implements OnInit, OnDestroy {
         this.showTestRunningButtons = false;
         this.loginStatusText = [];
         this.loginStatusText.push('Admin-Bereich ');
-        this.loginStatusText.push('angemeldet als ' + logindata.loginName);
+        console.log(logindata);
+        this.loginStatusText.push('angemeldet als ' + logindata.name);
         if (logindata.isSuperadmin) {
           this.loginStatusText.push('Rechte auch für Anlegen/Löschen von Nutzern und Workspaces');
         }
@@ -71,7 +72,7 @@ export class StartComponent implements OnInit, OnDestroy {
         this.loginStatusText = [];
         this.loginStatusText.push('Studie: ' + logindata.workspaceName);
         this.loginStatusText.push('angemeldet als "' +
-          logindata.loginName + (logindata.code.length > 0 ? ('/' + logindata.code + '"') : '"'));
+          logindata.name + (logindata.code.length > 0 ? ('/' + logindata.code + '"') : '"'));
         this.loginStatusText.push('Gruppe: ' + logindata.groupName);
 
         if (logindata.mode === 'run-trial') {

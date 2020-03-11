@@ -16,7 +16,7 @@ export interface LoginData {
   loginToken: string;
   personToken: string;
   code: string; // TODO after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52 remove
-  loginName: string;
+  name: string;
 
   mode: string;
 
