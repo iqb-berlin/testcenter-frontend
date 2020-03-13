@@ -100,7 +100,7 @@ export class BackendService {
   lockBooklet(testId: number): Observable<boolean | ServerError> {
 
     return this.http
-      .post<boolean>(this.serverUrl + `test/${testId}/lock`, {})
+      .patch<boolean>(this.serverUrl + `test/${testId}/lock`, {})
       .pipe(catchError(ErrorHandler.handle));
   }
 }
