@@ -4,7 +4,7 @@ import { SysCheckDataService } from '../sys-check-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { Subscription, BehaviorSubject, combineLatest} from 'rxjs';
-import { UnitData } from '../sys-check.interfaces';
+import {CheckConfig, UnitAndPlayerContainer} from '../sys-check.interfaces';
 import { ServerError } from 'iqb-components';
 
 declare var srcDoc: any;
@@ -43,7 +43,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
       this.ds.checkConfig$
       ).subscribe(([task, checkConfig]) => {
         if (task === 'loadunit') {
-            this.loadUnitAndPlayer(checkConfig.id);
+            this.loadUnitAndPlayer(checkConfig);
         }
     });
 
@@ -126,10 +126,10 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   }
 
 
-  public loadUnitAndPlayer(checkId: string): void {
+  public loadUnitAndPlayer(checkConfig: CheckConfig): void {
 
     this.clearPlayerElement();
-    this.bs.getUnitAndPlayer(checkId).subscribe((unitAndPlayer: UnitData | ServerError) => {
+    this.bs.getUnitAndPlayer(checkConfig.workspaceId, checkConfig.name).subscribe((unitAndPlayer: UnitAndPlayerContainer | ServerError) => {
 
       if (unitAndPlayer instanceof ServerError) {
         this.errorMessage = 'Konnte Unit-Player nicht laden: ' + unitAndPlayer.labelNice;

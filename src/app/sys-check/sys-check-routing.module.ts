@@ -13,7 +13,7 @@ const routes: Routes = [
     component: StartComponent
   },
   {
-    path: 'run/:c',
+    path: 'run/:workspace-id/:sys-check-name',
     component: SysCheckComponent
   }];
 

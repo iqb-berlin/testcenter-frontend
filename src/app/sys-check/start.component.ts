@@ -2,7 +2,7 @@ import { SysCheckDataService } from './sys-check-data.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BackendService } from './backend.service';
 import { Component, OnInit, SkipSelf } from '@angular/core';
-import { CheckConfig } from './sys-check.interfaces';
+import { CheckConfigAbstract } from './sys-check.interfaces';
 import { CustomtextService } from 'iqb-components';
 
 
@@ -13,7 +13,7 @@ import { CustomtextService } from 'iqb-components';
 })
 
 export class StartComponent implements OnInit {
-  checkConfigList: CheckConfig[] = [];
+  checkConfigList: CheckConfigAbstract[] = [];
   public dataLoading = false;
 
   constructor(
@@ -31,8 +31,13 @@ export class StartComponent implements OnInit {
     });
   }
 
-  buttonStartCheck(c: CheckConfig) {
-    this.router.navigate(['../run/' + c.id], {relativeTo: this.route});
+  buttonStartCheck(checkConfigAbstract: CheckConfigAbstract) {
+
+    console.log('checkConfigAbstract', checkConfigAbstract);
+    this.router.navigate(
+        [`../run/${checkConfigAbstract.workspaceId}/${checkConfigAbstract.name}`],
+        {relativeTo: this.route}
+    );
   }
 
   goBack() {

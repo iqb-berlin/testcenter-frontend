@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { CheckConfigData, ReportEntry } from './sys-check.interfaces';
+import { CheckConfig, ReportEntry } from './sys-check.interfaces';
 
 type Task = 'loadunit' | 'speedtest' | null;
 
@@ -9,16 +9,16 @@ type Task = 'loadunit' | 'speedtest' | null;
 })
 export class SysCheckDataService {
 
-  public checkConfig$ = new BehaviorSubject<CheckConfigData>(
+  public checkConfig$ = new BehaviorSubject<CheckConfig>(
     {
-      id: 'Basistest',
+      name: 'Basistest',
       label: 'Basistest',
       questions: [],
-      hasunit: false,
-      cansave: false,
-      customtexts: [],
-      skipnetwork: false,
-      downloadspeed : {
+      hasUnit: false,
+      canSave: false,
+      customTexts: [],
+      skipNetwork: false,
+      downloadSpeed : {
         min: 1.875e+6, // 15Mbit/s ~> typical dl speed 4G CAT4
         good: 3.75e+6, // 30Mbit/s ~> typical dl speed 4G+ CAT6
         maxDevianceBytesPerSecond: 100000,
@@ -26,14 +26,15 @@ export class SysCheckDataService {
         maxSequenceRepetitions: 15,
         sequenceSizes: [400000, 800000, 1600000, 3200000]
       },
-      uploadspeed : {
+      uploadSpeed : {
         min: 250000, // 2Mbit/s
         good: 1.25e+6, // 10Mbit/s
         maxDevianceBytesPerSecond: 5000,
         maxErrorsPerSequence: 0,
         maxSequenceRepetitions: 15,
         sequenceSizes: [100000, 200000, 400000, 800000]
-      }
+      },
+      workspaceId: 0
     }
   );
 

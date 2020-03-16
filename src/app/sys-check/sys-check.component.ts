@@ -43,15 +43,17 @@ export class SysCheckComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.paramMap.subscribe((params: ParamMap) => {
-      const paramId = params.get('c');
-      this.bs.getCheckConfigData(paramId).subscribe(checkConfig => {
+
+      const sysCheckName = params.get('sys-check-name');
+      const workspaceId = parseInt(params.get('workspace-id'));
+      this.bs.getCheckConfigData(workspaceId, sysCheckName).subscribe(checkConfig => {
         this.ds.checkConfig$.next(checkConfig);
 
         this.title = checkConfig.label;
-        this.checks.unit = checkConfig.hasunit;
-        this.checks.network = !checkConfig.skipnetwork;
+        this.checks.unit = checkConfig.hasUnit;
+        this.checks.network = !checkConfig.skipNetwork;
         this.checks.questions = checkConfig.questions.length > 0;
-        this.checks.report = checkConfig.cansave;
+        this.checks.report = checkConfig.canSave;
 
         if (this.checks.unit) {
           this.ds.taskQueue.push('loadunit');
@@ -59,9 +61,9 @@ export class SysCheckComponent implements OnInit, OnDestroy {
         if (this.checks.network) {
           this.ds.taskQueue.push('speedtest');
         }
-        if (checkConfig.customtexts.length > 0) {
+        if (checkConfig.customTexts.length > 0) {
           const myCustomTexts: {[key: string]: string} = {};
-          checkConfig.customtexts.forEach(ct => {
+          checkConfig.customTexts.forEach(ct => {
             myCustomTexts[ct.key] = ct.value;
           });
           this.cts.addCustomTexts(myCustomTexts);

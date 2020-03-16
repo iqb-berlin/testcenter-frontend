@@ -92,7 +92,7 @@ export class NetworkCheckComponent implements OnInit {
 
   private plotPrepare(isDownloadPart: boolean) {
     const myConfig = this.ds.checkConfig$.getValue();
-    const testSizes = (isDownloadPart) ? myConfig.downloadspeed.sequenceSizes : myConfig.uploadspeed.sequenceSizes;
+    const testSizes = (isDownloadPart) ? myConfig.downloadSpeed.sequenceSizes : myConfig.uploadSpeed.sequenceSizes;
     const plotterSettings = {
       css: 'border: 1px solid silver; margin: 2px; width: 100%;',
       width: 800,
@@ -125,7 +125,7 @@ export class NetworkCheckComponent implements OnInit {
       this.updateStatus(`Benchmark Loop Upload nr.:`  + this.networkStatsUpload.length);
     }
     const myConfig = this.ds.checkConfig$.getValue();
-    const benchmarkDefinition = (isDownloadPart) ? myConfig.downloadspeed : myConfig.uploadspeed;
+    const benchmarkDefinition = (isDownloadPart) ? myConfig.downloadSpeed : myConfig.uploadSpeed;
     return new Promise((resolve, reject) => {
       this.benchmarkSequence(isDownloadPart)
         .then(results => {
@@ -174,7 +174,7 @@ export class NetworkCheckComponent implements OnInit {
 
   private benchmarkSequence(isDownloadPart: boolean): Promise<Array<NetworkRequestTestResult>> {
     const myConfig = this.ds.checkConfig$.getValue();
-    const benchmarkDefinition = (isDownloadPart) ? myConfig.downloadspeed : myConfig.uploadspeed;
+    const benchmarkDefinition = (isDownloadPart) ? myConfig.downloadSpeed : myConfig.uploadSpeed;
 
     return benchmarkDefinition.sequenceSizes.reduce(
       (sequence, testSize) => sequence.then(results => this.benchmark(isDownloadPart, testSize)
@@ -262,10 +262,10 @@ export class NetworkCheckComponent implements OnInit {
     };
 
     reportEntry('Downloadgeschwindigkeit', this.humanReadableBytes(downAvg, true) + '/s');
-    reportEntry('Downloadgeschwindigkeit benötigt', this.humanReadableBytes(testConfig.downloadspeed.min, true) + '/s');
+    reportEntry('Downloadgeschwindigkeit benötigt', this.humanReadableBytes(testConfig.downloadSpeed.min, true) + '/s');
     reportEntry('Downloadbewertung', this.networkRating.downloadRating, this.networkRating.downloadRating === 'insufficient');
     reportEntry('Uploadgeschwindigkeit', this.humanReadableBytes(upAvg, true) + '/s');
-    reportEntry('Uploadgeschwindigkeit benötigt', this.humanReadableBytes(testConfig.uploadspeed.min, true) + '/s');
+    reportEntry('Uploadgeschwindigkeit benötigt', this.humanReadableBytes(testConfig.uploadSpeed.min, true) + '/s');
     reportEntry('Uploadbewertung', this.networkRating.uploadRating, this.networkRating.uploadRating === 'insufficient');
     reportEntry('Gesamtbewertung', this.networkRating.overallRating, this.networkRating.overallRating === 'insufficient');
 
@@ -300,18 +300,18 @@ export class NetworkCheckComponent implements OnInit {
     // the ratings are calculated individually, by a "how low can you go" approach
 
     awardedNetworkRating.downloadRating = 'good';
-    if (nd.avgDownloadSpeed < testConfig.downloadspeed.good) {
+    if (nd.avgDownloadSpeed < testConfig.downloadSpeed.good) {
         awardedNetworkRating.downloadRating = 'ok';
     }
-    if (nd.avgDownloadSpeed < testConfig.downloadspeed.min) {
+    if (nd.avgDownloadSpeed < testConfig.downloadSpeed.min) {
         awardedNetworkRating.downloadRating = 'insufficient';
     }
 
     awardedNetworkRating.uploadRating = 'good';
-    if (nd.avgUploadSpeed < testConfig.uploadspeed.good) {
+    if (nd.avgUploadSpeed < testConfig.uploadSpeed.good) {
         awardedNetworkRating.uploadRating = 'ok';
     }
-    if (nd.avgUploadSpeed < testConfig.uploadspeed.min) {
+    if (nd.avgUploadSpeed < testConfig.uploadSpeed.min) {
         awardedNetworkRating.uploadRating = 'insufficient';
     }
 

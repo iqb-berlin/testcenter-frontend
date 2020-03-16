@@ -5,6 +5,7 @@ import { SaveReportComponent } from './save-report/save-report.component';
 import { MatDialog, MatSnackBar } from '@angular/material';
 import { ReportEntry } from '../sys-check.interfaces';
 import { Subscription } from 'rxjs';
+import {ServerError} from 'iqb-components';
 
 @Component({
   selector: 'iqb-report',
@@ -60,16 +61,23 @@ export class ReportComponent {
         const reportKey = result.get('key').value as string;
         const reportTitle = result.get('title').value as string;
         const cd = this.ds.checkConfig$.getValue();
-        this.bs.saveReport(cd.id, reportKey, reportTitle,
-          this.ds.environmentData$.getValue(),
-          this.ds.networkData$.getValue(),
-          this.ds.questionnaireData$.getValue(),
-          this.ds.unitData$.getValue()
-        ).subscribe((saveOK: boolean) => {
-          if (saveOK) {
-            this.snackBar.open('Bericht gespeichert.', '', {duration: 3000});
-          } else {
+        console.log('result', result);
+        this.bs.saveReport(
+            cd.workspaceId,
+            cd.name,
+            {
+              keyPhrase: reportKey,
+              title: reportTitle,
+              environment: this.ds.environmentData$.getValue(),
+              network: this.ds.networkData$.getValue(),
+              questionnaire: this.ds.questionnaireData$.getValue(),
+              unit: this.ds.unitData$.getValue()
+            }
+        ).subscribe((result: boolean|ServerError) => {
+          if (result instanceof ServerError) {
             this.snackBar.open('Konnte Bericht nicht speichern.', '', {duration: 3000});
+          } else {
+            this.snackBar.open('Bericht gespeichert.', '', {duration: 3000});
           }
         });
       }

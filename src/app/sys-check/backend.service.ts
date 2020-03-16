@@ -1,8 +1,14 @@
-import {CheckConfig, CheckConfigData, NetworkRequestTestResult, ReportEntry, UnitData} from './sys-check.interfaces';
+import {
+  CheckConfigAbstract,
+  CheckConfig,
+  NetworkRequestTestResult,
+  UnitAndPlayerContainer,
+  SysCheckReport
+} from './sys-check.interfaces';
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { ErrorHandler, ServerError } from 'iqb-components';
 
 
@@ -10,78 +16,49 @@ import { ErrorHandler, ServerError } from 'iqb-components';
   providedIn: 'root'
 })
 export class BackendService {
-  private serverSlimUrl_GET: string;
 
   constructor(
     @Inject('SERVER_URL') private readonly serverUrl: string,
-    private http: HttpClient) {
+    private http: HttpClient
+  ) {}
 
-    this.serverUrl = this.serverUrl + 'php_tc/';
-    this.serverSlimUrl_GET = this.serverUrl + 'tc_get.php/';
-  }
+  getCheckConfigs(): Observable<CheckConfigAbstract[]> {
 
-  getCheckConfigs(): Observable<CheckConfig[]> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
     return this.http
-      .post<CheckConfig[]>(this.serverUrl + 'getSysCheckConfigs.php', {}, httpOptions)
+      .get<CheckConfigAbstract[]>(this.serverUrl + 'sys-checks')
       .pipe(
         catchError(() => {
-          const myreturn: CheckConfig[] = [];
+          const myreturn: CheckConfigAbstract[] = [];
           return of(myreturn);
         })
       );
   }
 
-  getCheckConfigData(cid: string): Observable<CheckConfigData> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+  getCheckConfigData(workspaceId: number, sysCheckName: string): Observable<CheckConfig> {
+
     return this.http
-      .post<CheckConfigData>(this.serverUrl + 'getSysCheckConfigData.php', {c: cid}, httpOptions)
-        .pipe(
-          catchError(() => {
-          const myreturn: CheckConfigData = null;
+      .get<CheckConfig>(this.serverUrl + `workspace/${workspaceId}/sys-check/${sysCheckName}`)
+      .pipe(
+        catchError(() => {
+          const myreturn: CheckConfig = null;
           return of(myreturn);
         })
       );
   }
 
 
-  public saveReport (cid: string, keyphrase: string, title: string, envResults: ReportEntry[], networkResults: ReportEntry[],
-                     questionnaireResults: ReportEntry[], unitResults: ReportEntry[]): Observable<Boolean> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
+  public saveReport(workspaceId: number, sysCheckName: string, sysCheckReport: SysCheckReport): Observable<Boolean|ServerError> {
+
     return this.http
-      .post<boolean>(this.serverUrl + 'saveSysCheckReport.php',
-          {c: cid, k: keyphrase, t: title, e: envResults, n: networkResults, q: questionnaireResults, u: unitResults}, httpOptions)
-        .pipe(
-          catchError(() => {
-            return of(false);
-          })
-        );
+      .put<boolean>(this.serverUrl + `workspace/${workspaceId}/sys-check/${sysCheckName}/report`, {...sysCheckReport})
   }
 
 
-  public getUnitAndPlayer(configId: string): Observable<UnitData|ServerError> {
+  public getUnitAndPlayer(workspaceId: number, sysCheckName: string): Observable<UnitAndPlayerContainer|ServerError> {
 
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
     const startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
     return this.http
-      .post<UnitData>(this.serverUrl + 'getSysCheckUnitData.php', {c: configId}, httpOptions)
-      .pipe(tap(val => console.log('############## UNIT DATA', val)))
+      .get<UnitAndPlayerContainer>(this.serverUrl + `workspace/${workspaceId}/sys-check/${sysCheckName}/unit-and-player`)
       .pipe(map(data => {
           data.duration = BackendService.getMostPreciseTimestampBrowserCanProvide() - startingTime;
           return data;
@@ -94,6 +71,7 @@ export class BackendService {
   benchmarkDownloadRequest(requestedDownloadSize: number): Promise<NetworkRequestTestResult> {
 
     const serverUrl = this.serverUrl;
+    const cacheKiller = '&uid=' + (new Date().getTime());
     const testResult: NetworkRequestTestResult = {
       type: 'downloadTest',
       size: requestedDownloadSize,
@@ -102,11 +80,10 @@ export class BackendService {
       speedInBPS: 0
     };
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
 
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', serverUrl + 'doSysCheckDownloadTest.php?size=' +
-        requestedDownloadSize + '&uid=' + (new Date().getTime()), true);
+      xhr.open('GET', serverUrl + `sys-check/speed-test/random-package/${requestedDownloadSize}${cacheKiller}`, true);
 
       xhr.timeout = 45000;
 
@@ -119,7 +96,7 @@ export class BackendService {
           testResult.error = `Error: Data package has wrong size! ${requestedDownloadSize} ` + xhr.response.toString().length;
         }
         const currentTime = testResult.duration = BackendService.getMostPreciseTimestampBrowserCanProvide();
-        console.log({'c': currentTime, 's': startingTime});
+        // console.log({'c': currentTime, 's': startingTime});
         testResult.duration = currentTime - startingTime;
         resolve(testResult);
       };
@@ -154,13 +131,10 @@ export class BackendService {
       speedInBPS: 0
     };
 
-    return new Promise(function (resolve, reject) {
-      if (reject) {
-        console.log('reject is set');
-      }
+    return new Promise(function(resolve) {
 
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', serverUrl + 'doSysCheckUploadTest.php', true);
+      xhr.open('POST', serverUrl + 'sys-check/speed-test/random-package', true);
 
       xhr.timeout = 10000;
 
@@ -188,7 +162,7 @@ export class BackendService {
           testResult.error = `bogus server response`;
         }
 
-        console.log({ 'c': currentTime, 's': startingTime });
+        // console.log({ 'c': currentTime, 's': startingTime });
         resolve(testResult);
 
       };

@@ -1,5 +1,6 @@
-export interface CheckConfig {
-  id: string;
+export interface CheckConfigAbstract {
+  workspaceId: string;
+  name: string;
   label: string;
   description: string;
 }
@@ -13,16 +14,17 @@ export interface SpeedParameters {
   sequenceSizes: number[];
 }
 
-export interface CheckConfigData {
-  id: string;
+export interface CheckConfig {
+  name: string;
   label: string;
   questions: FormDefEntry[];
-  hasunit: boolean;
-  cansave: boolean;
-  customtexts: CustomText[];
-  skipnetwork: boolean;
-  downloadspeed: SpeedParameters;
-  uploadspeed: SpeedParameters;
+  hasUnit: boolean;
+  canSave: boolean;
+  customTexts: CustomText[];
+  skipNetwork: boolean;
+  downloadSpeed: SpeedParameters;
+  uploadSpeed: SpeedParameters;
+  workspaceId: number;
 }
 
 export interface FormDefEntry {
@@ -39,7 +41,7 @@ export interface CustomText {
   value: string;
 }
 
-export interface UnitData {
+export interface UnitAndPlayerContainer {
   key: string;
   label: string;
   def: string;
@@ -85,4 +87,13 @@ export interface DetectedNetworkInformation {
   effectiveNetworkType: string;
   roundTripTimeMs: number;
   networkType: string;
+}
+
+export interface SysCheckReport {
+  keyPhrase: string;
+  title: string;
+  environment: ReportEntry[];
+  network: ReportEntry[];
+  questionnaire: ReportEntry[];
+  unit: ReportEntry[]
 }
