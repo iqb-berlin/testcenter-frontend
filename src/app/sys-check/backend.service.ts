@@ -22,7 +22,8 @@ export class BackendService {
     private http: HttpClient
   ) {}
 
-  getCheckConfigs(): Observable<CheckConfigAbstract[]> {
+
+  public getCheckConfigs(): Observable<CheckConfigAbstract[]> {
 
     return this.http
       .get<CheckConfigAbstract[]>(this.serverUrl + 'sys-checks')
@@ -34,7 +35,8 @@ export class BackendService {
       );
   }
 
-  getCheckConfigData(workspaceId: number, sysCheckName: string): Observable<CheckConfig> {
+
+  public getCheckConfigData(workspaceId: number, sysCheckName: string): Observable<CheckConfig> {
 
     return this.http
       .get<CheckConfig>(this.serverUrl + `workspace/${workspaceId}/sys-check/${sysCheckName}`)
@@ -68,7 +70,7 @@ export class BackendService {
   }
 
 
-  benchmarkDownloadRequest(requestedDownloadSize: number): Promise<NetworkRequestTestResult> {
+  public benchmarkDownloadRequest(requestedDownloadSize: number): Promise<NetworkRequestTestResult> {
 
     const serverUrl = this.serverUrl;
     const cacheKiller = '&uid=' + (new Date().getTime());
@@ -119,7 +121,8 @@ export class BackendService {
     });
   }
 
-  benchmarkUploadRequest(requestedUploadSize: number): Promise<NetworkRequestTestResult> {
+
+  public benchmarkUploadRequest(requestedUploadSize: number): Promise<NetworkRequestTestResult> {
 
     const serverUrl = this.serverUrl;
     const randomContent = BackendService.generateRandomContent(requestedUploadSize);
@@ -184,6 +187,7 @@ export class BackendService {
     });
   }
 
+
   // tslint:disable-next-line:member-ordering
   private static getMostPreciseTimestampBrowserCanProvide(): number {
 
@@ -195,6 +199,7 @@ export class BackendService {
     }
     return Date.now(); // milliseconds
   }
+
 
   // tslint:disable-next-line:member-ordering
   private static generateRandomContent(length: number): string {
