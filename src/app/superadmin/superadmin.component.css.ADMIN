@@ -1,0 +1,18 @@
+.adminbackground {
+  flex:  10 0 900px;
+  box-shadow: 5px 10px 20px black;
+  background-color: white;
+  min-height: 85%;
+  margin: 15px;
+  padding: 25px;
+}
+
+#buttonsContainer {
+  color: rgb(253, 249, 196);
+  padding: 0 10px 0 0;
+  font-weight: bold;
+}
+
+#buttonsContainer img {
+  width: 100px;
+}

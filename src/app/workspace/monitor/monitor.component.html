@@ -1,0 +1,75 @@
+<div class="columnhost" fxLayout="column">
+  <div class="spinner-container" *ngIf="dataLoading">
+    <mat-spinner></mat-spinner>
+  </div>
+  <div fxLayout="row">
+    <button mat-raised-button (click)="downloadCSV()" [disabled]="!tableselectionCheckbox.hasValue()"
+        matTooltip="Download markierte Gruppen als CSV für Excel" matTooltipPosition="above">
+      <mat-icon>cloud_download</mat-icon>
+    </button>
+    <button mat-raised-button (click)="lock()" [disabled]="!tableselectionCheckbox.hasValue() || (wds.wsRole !== 'RW')"
+        matTooltip="Sperre gestartete Testhefte für markierte Gruppen" matTooltipPosition="above">
+      <mat-icon>lock</mat-icon>
+    </button>
+
+    <button mat-raised-button (click)="unlock()" [disabled]="!tableselectionCheckbox.hasValue() || (wds.wsRole !== 'RW')"
+        matTooltip="Gesperrte Testhefte für markierte Gruppen freigeben" matTooltipPosition="above">
+      <mat-icon>lock_open</mat-icon>
+    </button>
+  </div>
+
+  <mat-table [dataSource]="monitorDataSource" matSort>
+    <ng-container matColumnDef="selectCheckbox">
+      <mat-header-cell *matHeaderCellDef fxFlex="70px">
+        <mat-checkbox (change)="$event ? masterToggle() : null"
+                      [checked]="tableselectionCheckbox.hasValue() && isAllSelected()"
+                      [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()">
+        </mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" fxFlex="70px">
+        <mat-checkbox (click)="$event.stopPropagation()"
+                      (change)="$event ? tableselectionCheckbox.toggle(row) : null"
+                      [checked]="tableselectionCheckbox.isSelected(row)">
+        </mat-checkbox>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="groupname">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxFlex="300px">Login-Gruppe</mat-header-cell>
+      <mat-cell *matCellDef="let element" fxFlex="300px">{{element.groupname}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="loginsPrepared">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Logins</mat-header-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.loginsPrepared}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="personsPrepared">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Personen</mat-header-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center"> {{element.personsPrepared}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="bookletsPrepared">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Testhefte insges.</mat-header-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center"> {{element.bookletsPrepared}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="bookletsStarted">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Testhefte gestartet</mat-header-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center"> {{element.bookletsStarted}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="bookletsLocked">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">gesperrte Testhefte</mat-header-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center"> {{ element.bookletsLocked }} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="laststart">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Letzter Start</mat-header-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center"> {{ element.laststartStr }} </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+</div>

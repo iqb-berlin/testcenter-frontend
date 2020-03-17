@@ -1,0 +1,50 @@
+.columnhost {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: left;
+}
+
+.filelist {
+  flex:  10 0 400px;
+}
+
+.checkboxcell {
+  overflow: visible;
+  flex: 0 0 30px;
+}
+
+.namecell {
+  flex: 3 3 60px;
+}
+
+.datecell {
+  flex: 1 1 5px;
+}
+
+.uploads {
+  flex:  10 0 200px;
+}
+
+
+.checkerror, .checkwarning, .checkinfo  {
+  margin: 20px;
+  font-size: 0.8em;
+}
+
+.checkerror {
+  color: brown;
+}
+.checkwarning {
+  color: goldenrod;
+}
+.checkinfo {
+  color: darkgreen;
+}
+
+.mat-raised-button {
+  min-width: 100px;
+  margin: 2px;
+}

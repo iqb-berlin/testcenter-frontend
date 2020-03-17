@@ -17,6 +17,7 @@
 .settings/
 *.sublime-workspace
 
+
 # IDE - VSCode
 .vscode/*
 !.vscode/settings.json
@@ -41,3 +42,4 @@ Thumbs.db
 
 src/environments/environment.ts
 .gitignore
+
