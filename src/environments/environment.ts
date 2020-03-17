@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  testcenterUrl: 'https://ocba.iqb.hu-berlin.de/',
+  testcenterUrl: 'https://ocba.iqb.hu-berlin.de/api/',
   // testcenterUrl: 'https://www.iqb-testcenter.de/',
   // testcenterUrl: 'http://localhost/2020/testcenter-iqb-php/',
   appName: 'IQB-Testcenter',

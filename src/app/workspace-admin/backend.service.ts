@@ -1,5 +1,5 @@
-import { GetFileResponseData, CheckWorkspaceResponseData, BookletsStarted, SysCheckStatistics,
-  ReviewData, LogData, UnitResponse, ResultData, MonitorData } from './workspace.interfaces';
+import { GetFileResponseData, CheckWorkspaceResponseData, SysCheckStatistics,
+  ReviewData, LogData, UnitResponse, ResultData } from './workspace.interfaces';
 import {Injectable, Inject} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -47,38 +47,6 @@ export class BackendService {
           catchError(ErrorHandler.handle)
         );
   }
-
-  getBookletsStarted(groups: string[]): Observable<BookletsStarted[] | ServerError> {
-    return this.http
-      .post<BookletsStarted[]>(this.serverUrl + 'getBookletsStarted.php', {g: groups})
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
-  }
-
-  lockBooklets(groups: string[]): Observable<boolean | ServerError> {
-    return this.http
-      .post<boolean>(this.serverUrlSlim + 'lock', {g: groups})
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
-  }
-
-  unlockBooklets(groups: string[]): Observable<boolean | ServerError> {
-    return this.http
-      .post<boolean>(this.serverUrlSlim + 'unlock', {g: groups})
-        .pipe(
-            catchError(ErrorHandler.handle)
-          );
-}
-
-  getMonitorData(): Observable<MonitorData[] | ServerError> {
-    return this.http
-      .post<MonitorData[]>(this.serverUrl + 'getMonitorData.php', {})
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
-}
 
   getResultData(): Observable<ResultData[]> {
     return this.http

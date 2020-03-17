@@ -1,39 +1,44 @@
-import { BookletsStarted } from '../workspaceadmin/workspace.interfaces';
-import { WorkspaceDataService } from '../workspaceadmin';
-import { BackendService } from '../workspaceadmin/backend.service';
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { SelectionModel } from '@angular/cdk/collections';
-import { saveAs } from 'file-saver';
-import { MonitorData } from '../workspaceadmin/workspace.interfaces';
-import { Subscription } from 'rxjs';
-import { ServerError } from 'iqb-components';
-
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {MatTableDataSource} from "@angular/material/table";
+import {SelectionModel} from "@angular/cdk/collections";
+import {BookletsStarted, MonitorData} from "./workspace-monitor.interfaces";
+import {Subscription} from "rxjs";
+import {MatSort} from "@angular/material/sort";
+import {BackendService} from "./backend.service";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {MainDataService} from "../maindata.service";
+import {ActivatedRoute} from "@angular/router";
+import {ServerError} from "iqb-components";
 
 @Component({
-  templateUrl: './monitor.component.html',
-  styleUrls: ['./monitor.component.css']
+  selector: 'app-workspace-monitor',
+  templateUrl: './workspace-monitor.component.html',
+  styleUrls: ['./workspace-monitor.component.css']
 })
-export class MonitorComponent implements OnInit, OnDestroy {
+export class WorkspaceMonitorComponent implements OnInit, OnDestroy {
+  private routingSubscription: Subscription = null;
+  workspaceId = 0;
+  workspaceName = '';
 
   displayedColumns: string[] = ['selectCheckbox', 'groupname', 'loginsPrepared',
-          'personsPrepared', 'bookletsPrepared', 'bookletsStarted', 'bookletsLocked', 'laststart'];
+    'personsPrepared', 'bookletsPrepared', 'bookletsStarted', 'bookletsLocked', 'laststart'];
   public monitorDataSource = new MatTableDataSource<MonitorData>([]);
   public tableselectionCheckbox = new SelectionModel<MonitorData>(true, []);
-  private workspaceIdSubscription: Subscription = null;
   public dataLoading = false;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
+    private route: ActivatedRoute,
     private bs: BackendService,
-    public wds: WorkspaceDataService,
+    public mds: MainDataService,
     public snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
-    this.workspaceIdSubscription = this.wds.workspaceId$.subscribe(() => {
+    this.routingSubscription = this.route.params.subscribe(params => {
+      this.workspaceId = Number(params['ws']);
+      const ld = this.mds.loginData$.getValue();
+      this.workspaceName = ld.workspaceName;
       this.updateTable();
     });
   }
@@ -41,7 +46,7 @@ export class MonitorComponent implements OnInit, OnDestroy {
   updateTable() {
     this.dataLoading = true;
     this.tableselectionCheckbox.clear();
-    this.bs.getMonitorData().subscribe(
+    this.bs.getMonitorData(this.workspaceId).subscribe(
       (monitorData: MonitorData[]) => {
         this.dataLoading = false;
         this.monitorDataSource = new MatTableDataSource<MonitorData>(monitorData);
@@ -58,8 +63,8 @@ export class MonitorComponent implements OnInit, OnDestroy {
 
   masterToggle() {
     this.isAllSelected() ?
-        this.tableselectionCheckbox.clear() :
-        this.monitorDataSource.data.forEach(row => this.tableselectionCheckbox.select(row));
+      this.tableselectionCheckbox.clear() :
+      this.monitorDataSource.data.forEach(row => this.tableselectionCheckbox.select(row));
   }
 
   downloadCSV() {
@@ -69,7 +74,7 @@ export class MonitorComponent implements OnInit, OnDestroy {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.getBookletsStarted(selectedGroups).subscribe(bData => {
+      this.bs.getBookletsStarted(this.workspaceId, selectedGroups).subscribe(bData => {
 
           const bookletList = bData as BookletsStarted[];
           if (bookletList.length > 0) {
@@ -77,15 +82,15 @@ export class MonitorComponent implements OnInit, OnDestroy {
             const lineDelimiter = '\n';
 
             let myCsvData = 'groupname' + columnDelimiter + 'loginname' + columnDelimiter + 'code' + columnDelimiter +
-                'bookletname' + columnDelimiter + 'locked' + columnDelimiter + 'laststart' + lineDelimiter;
+              'bookletname' + columnDelimiter + 'locked' + columnDelimiter + 'laststart' + lineDelimiter;
             bookletList.forEach((b: BookletsStarted) => {
-               myCsvData += '"'
-                 + b.groupname + '"' + columnDelimiter + '"'
-                 + b.loginname + '"' + columnDelimiter + '"'
-                 + b.code + '"' + columnDelimiter + '"'
-                 + b.bookletname + '"' + columnDelimiter
-                 + '"' + (b.locked ? 'X' : '-') + '"' + columnDelimiter + '"'
-                 + b.laststart + '"' + lineDelimiter;
+              myCsvData += '"'
+                + b.groupname + '"' + columnDelimiter + '"'
+                + b.loginname + '"' + columnDelimiter + '"'
+                + b.code + '"' + columnDelimiter + '"'
+                + b.bookletname + '"' + columnDelimiter
+                + '"' + (b.locked ? 'X' : '-') + '"' + columnDelimiter + '"'
+                + b.laststart + '"' + lineDelimiter;
             });
             const blob = new Blob([myCsvData], {type: 'text/csv;charset=utf-8'});
             saveAs(blob, 'iqb-testcenter-bookletsStarted.csv');
@@ -107,9 +112,9 @@ export class MonitorComponent implements OnInit, OnDestroy {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.lockBooklets(selectedGroups).subscribe(success => {
+      this.bs.lockBooklets(this.workspaceId, selectedGroups).subscribe(success => {
         if (success instanceof ServerError) {
-          this.wds.setNewErrorMsg(success as ServerError);
+          this.mds.globalErrorMsg$.next(success as ServerError);
           this.snackBar.open('Testhefte konnten nicht gesperrt werden.', 'Systemfehler', {duration: 3000});
         } else {
           const ok = success as boolean;
@@ -132,9 +137,9 @@ export class MonitorComponent implements OnInit, OnDestroy {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.unlockBooklets(selectedGroups).subscribe(success => {
+      this.bs.unlockBooklets(this.workspaceId, selectedGroups).subscribe(success => {
         if (success instanceof ServerError) {
-          this.wds.setNewErrorMsg(success as ServerError);
+          this.mds.globalErrorMsg$.next(success as ServerError);
           this.snackBar.open('Testhefte konnten nicht freigegeben werden.', 'Systemfehler', {duration: 3000});
         } else {
           const ok = success as boolean;
@@ -152,14 +157,8 @@ export class MonitorComponent implements OnInit, OnDestroy {
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   ngOnDestroy() {
-    if (this.workspaceIdSubscription !== null) {
-      this.workspaceIdSubscription.unsubscribe();
+    if (this.routingSubscription !== null) {
+      this.routingSubscription.unsubscribe();
     }
   }
-}
-export interface GroupResponse {
-  name: string;
-  testsTotal: number;
-  testsStarted: number;
-  responsesGiven: number;
 }

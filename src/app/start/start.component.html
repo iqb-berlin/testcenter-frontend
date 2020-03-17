@@ -86,7 +86,7 @@
             <p *ngIf="(mds.loginData$ | async)?.workspaces.length === 0">
               Sie sind mit Administrator-Funktionen angemeldet. Aktuell sind keine Studien für Sie freigegeben.
             </p>
-            <button mat-raised-button color="primary" (click)="buttonGotoWorkspace(ws)"
+            <button mat-raised-button color="primary" (click)="buttonGotoWorkspaceAdmin(ws)"
                     *ngFor="let ws of (mds.loginData$ | async)?.workspaces">
               {{ws.name}}
             </button>

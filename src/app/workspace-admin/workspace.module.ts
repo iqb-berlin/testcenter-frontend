@@ -57,7 +57,6 @@ import { WorkspaceInterceptor } from './workspace.interceptor';
     MatSnackBarModule,
     MatGridListModule,
     IqbComponentsModule,
-    FlexLayoutModule,
     MatCardModule,
     FlexLayoutModule
   ],

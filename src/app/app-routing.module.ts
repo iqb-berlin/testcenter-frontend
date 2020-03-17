@@ -9,8 +9,9 @@ const routes: Routes = [
   {path: 'start', component: StartComponent},
   {path: 'about', component: AboutComponent},
   {path: 'check', loadChildren: './sys-check/sys-check.module#SysCheckModule'},
-  {path: 'admin', loadChildren: './workspaceadmin/workspace.module#WorkspaceModule'},
+  {path: 'admin', loadChildren: './workspace-admin/workspace.module#WorkspaceModule'},
   {path: 'superadmin', loadChildren: './superadmin/superadmin.module#SuperadminModule'},
+  {path: 'wsmonitor', loadChildren: './workspace-monitor/workspace-monitor.module#WorkspaceMonitorModule'},
   {path: 't', loadChildren: './test-controller/test-controller.module#TestControllerModule'}
 ];
 
