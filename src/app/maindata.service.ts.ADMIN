@@ -3,6 +3,8 @@ import { LoginData } from './app.interfaces';
 import { Injectable } from '@angular/core';
 import { ServerError } from 'iqb-components';
 
+// TODO check ob getWorkspaceRole oder getWorkspaceName gebraucht werden
+
 @Injectable({
   providedIn: 'root'
 })

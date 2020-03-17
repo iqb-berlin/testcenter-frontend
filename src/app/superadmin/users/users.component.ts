@@ -60,7 +60,7 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.logindataSubscription = this.mds.loginData$.subscribe(ld => {
-      this.isSuperadmin = ld.is_superadmin;
+      this.isSuperadmin = ld.isSuperadmin;
       this.updateObjectList();
     });
   }
