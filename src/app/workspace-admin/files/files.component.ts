@@ -6,11 +6,12 @@ import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
 import { Subscription } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BackendService } from '../backend.service';
+import {BackendService, FileDeletionReport} from '../backend.service';
 import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
+import { saveAs } from 'file-saver';
 
 @Component({
   templateUrl: './files.component.html',
@@ -42,7 +43,10 @@ export class FilesComponent implements OnInit, OnDestroy {
     public messsageDialog: MatDialog,
     public snackBar: MatSnackBar
   ) {
-    this.uploadUrl = this.serverUrl + 'php/uploadFile.php';
+    this.wds.workspaceId$.subscribe(workspaceId => {
+      this.uploadUrl = this.serverUrl + `workspace/${workspaceId}/file`;
+    });
+    this.uploadUrl = this.serverUrl + this.wds.ws + '/file';
   }
 
   ngOnInit() {
@@ -68,7 +72,7 @@ export class FilesComponent implements OnInit, OnDestroy {
       const filesToDelete = [];
       this.serverfiles.data.forEach(element => {
         if (element.isChecked) {
-          filesToDelete.push(element.type + '::' + element.filename);
+          filesToDelete.push(element.type + '/' + element.filename);
         }
       });
 
@@ -93,17 +97,22 @@ export class FilesComponent implements OnInit, OnDestroy {
           if (result !== false) {
             // =========================================================
             this.dataLoading = true;
-            this.bs.deleteFiles(filesToDelete).subscribe(deletefilesresponse => {
-              if (deletefilesresponse instanceof ServerError) {
-                this.wds.setNewErrorMsg(deletefilesresponse as ServerError);
+            this.bs.deleteFiles(this.wds.ws, filesToDelete).subscribe((fileDeletionReport: FileDeletionReport|ServerError) => {
+              if (fileDeletionReport instanceof ServerError) {
+                this.wds.setNewErrorMsg(fileDeletionReport as ServerError);
               } else {
-                const deletefilesresponseOk = deletefilesresponse as string;
-                if ((deletefilesresponseOk.length > 5) && (deletefilesresponseOk.substr(0, 2) === 'e:')) {
-                  this.snackBar.open(deletefilesresponseOk.substr(2), 'Fehler', {duration: 1000});
-                } else {
-                  this.snackBar.open(deletefilesresponseOk, '', {duration: 1000});
-                  this.updateFileList();
+
+                const message = [];
+                if (fileDeletionReport.deleted.length > 0) {
+                  message.push(fileDeletionReport.deleted.length + ' Dateien erfolgreich gelöscht.');
                 }
+                if (fileDeletionReport.not_allowed.length > 0) {
+                  message.push(fileDeletionReport.not_allowed.length + ' Dateien konnten nicht gelöscht werden.');
+                }
+
+                this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '',  {duration: 1000});
+
+                this.updateFileList();
                 this.wds.setNewErrorMsg();
               }
             });
@@ -133,7 +142,7 @@ export class FilesComponent implements OnInit, OnDestroy {
       this.serverfiles = new MatTableDataSource([]);
     } else {
       this.dataLoading = true;
-      this.bs.getFiles().subscribe(
+      this.bs.getFiles(this.wds.ws).subscribe(
         (filedataresponse: GetFileResponseData[]) => {
           this.serverfiles = new MatTableDataSource(filedataresponse);
           this.serverfiles.sort = this.sort;
@@ -147,14 +156,25 @@ export class FilesComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ***********************************************************************************
-  getDownloadRef(element: GetFileResponseData): string {
-    return this.serverUrl
-        + 'php/getFile.php?t=' + element.type
-        + '&fn=' + element.filename
-        + '&at=' + this.mds.adminToken
-        + '&ws=' + this.wds.ws.toString();
+
+  download(element: GetFileResponseData): void {
+
+    this.dataLoading = true;
+    this.bs.downloadFile(this.wds.ws, element.type, element.filename)
+      .subscribe(
+        (fileData: Blob|ServerError) => {
+          if (fileData instanceof ServerError) {
+            this.wds.setNewErrorMsg(fileData);
+            this.dataLoading = false;
+          } else {
+            saveAs(fileData, element.filename);
+            this.wds.setNewErrorMsg();
+            this.dataLoading = false;
+          }
+        }
+      );
   }
+
 
   checkWorkspace() {
     this.checkErrors = [];
@@ -162,7 +182,7 @@ export class FilesComponent implements OnInit, OnDestroy {
     this.checkInfos = [];
 
     this.dataLoading = true;
-    this.bs.checkWorkspace().subscribe(
+    this.bs.checkWorkspace(this.wds.ws).subscribe(
       (checkResponse: CheckWorkspaceResponseData) => {
         this.checkErrors = checkResponse.errors;
         this.checkWarnings = checkResponse.warnings;

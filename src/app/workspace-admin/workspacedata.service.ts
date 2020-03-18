@@ -1,7 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
-import { Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ServerError } from 'iqb-components';
-import {MainDataService} from "../maindata.service";
+import { MainDataService } from "../maindata.service";
 
 @Injectable({
   providedIn: 'root'
@@ -42,28 +42,16 @@ export class WorkspaceDataService {
     {path: 'monitor', label: 'Monitor'}
   ];
 
-  constructor(private mds: MainDataService) {}
+  constructor() {}
 
   setNewErrorMsg(err: ServerError = null) {
     this.globalErrorMsg$.next(err);
   }
 
-  setWorkspace(newId: number) {
-    this._wsName = '';
-    this._wsRole = '';
-    if (newId > 0) {
-      const myLoginData = this.mds.loginData$.getValue();
-      if ((myLoginData !== null) && (myLoginData.workspaces.length > 0)) {
-        for (let i = 0; i < myLoginData.workspaces.length; i++) {
-          if (myLoginData.workspaces[i].id == newId) {
-            this._wsName = myLoginData.workspaces[i].name;
-            this._wsRole = myLoginData.workspaces[i].role;
-            break;
-          }
-        }
-      }
-    }
-    switch (this._wsRole.toUpperCase()) {
+  setWorkspace(newId: number, newRole: string, newName: string) {
+    this._wsName = newName;
+    this._wsRole = newRole;
+    switch (newRole.toUpperCase()) {
       case 'RW': {
         this.navLinks = this.navLinksRW;
         break;

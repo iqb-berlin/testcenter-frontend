@@ -17,12 +17,12 @@
 
       <ng-container matColumnDef="typelabel">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Typ </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.typelabel}} </mat-cell>
+        <mat-cell *matCellDef="let element">{{element.typelabel}}</mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="filename">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="namecell"> Name </mat-header-cell>
-        <mat-cell *matCellDef="let element" class="namecell"><a target="_blank" [href]="getDownloadRef(element)">{{element.filename}}</a> </mat-cell>
+        <mat-cell *matCellDef="let element" class="namecell"><button mat-button (click)="download(element)">{{element.filename}}</button> </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="filedatetime">

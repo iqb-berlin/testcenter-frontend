@@ -1,6 +1,6 @@
 import { NewpasswordComponent } from './newpassword/newpassword.component';
 import { NewuserComponent } from './newuser/newuser.component';
-import { BackendService, NameOnly, IdRoleData } from '../backend.service';
+import { BackendService, IdRoleData, IdAndName } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { ViewChild, OnDestroy } from '@angular/core';
 
@@ -25,11 +25,11 @@ import { MainDataService } from 'src/app/maindata.service';
 export class UsersComponent implements OnInit, OnDestroy {
   public isSuperadmin = false;
   public dataLoading = false;
-  public objectsDatasource: MatTableDataSource<NameOnly>;
+  public objectsDatasource: MatTableDataSource<IdAndName>;
   public displayedColumns = ['selectCheckbox', 'name'];
-  private tableselectionCheckbox = new SelectionModel <NameOnly>(true, []);
-  private tableselectionRow = new SelectionModel <NameOnly>(false, []);
-  private selectedUser = '';
+  private tableselectionCheckbox = new SelectionModel<IdAndName>(true, []);
+  private tableselectionRow = new SelectionModel<IdAndName>(false, []);
+  private selectedUser = -1;
 
   private pendingWorkspaceChanges = false;
   public WorkspacelistDatasource: MatTableDataSource<IdRoleData>;
@@ -50,9 +50,9 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.tableselectionRow.changed.subscribe(
       r => {
         if (r.added.length > 0) {
-          this.selectedUser = r.added[0].name;
+          this.selectedUser = r.added[0].id;
         } else {
-          this.selectedUser = '';
+          this.selectedUser = -1;
         }
         this.updateWorkspaceList();
       });
@@ -80,7 +80,7 @@ export class UsersComponent implements OnInit, OnDestroy {
           this.bs.addUser((<FormGroup>result).get('name').value,
               (<FormGroup>result).get('pw').value).subscribe(
                 respOk => {
-                  if (respOk) {
+                  if (respOk !== false) {
                     this.snackBar.open('Nutzer hinzugefügt', '', {duration: 1000});
                     this.updateObjectList();
                   } else {
@@ -118,10 +118,10 @@ export class UsersComponent implements OnInit, OnDestroy {
         if (typeof result !== 'undefined') {
           if (result !== false) {
             this.dataLoading = true;
-            this.bs.changePassword(selectedRows[0]['name'],
+            this.bs.changePassword(selectedRows[0]['id'],
                 (<FormGroup>result).get('pw').value).subscribe(
                   respOk => {
-                    if (respOk) {
+                    if (respOk !== false) {
                       this.snackBar.open('Kennwort geändert', '', {duration: 1000});
                     } else {
                       this.snackBar.open('Konnte Kennwort nicht ändern', 'Fehler', {duration: 1000});
@@ -170,10 +170,10 @@ export class UsersComponent implements OnInit, OnDestroy {
           // =========================================================
           this.dataLoading = true;
           const usersToDelete = [];
-          selectedRows.forEach((r: NameOnly) => usersToDelete.push(r.name));
+          selectedRows.forEach((r: IdAndName) => usersToDelete.push(r.id));
           this.bs.deleteUsers(usersToDelete).subscribe(
             respOk => {
-              if (respOk) {
+              if (respOk !== false) {
                 this.snackBar.open('Nutzer gelöscht', '', {duration: 1000});
                 this.updateObjectList();
                 this.dataLoading = false;
@@ -190,7 +190,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   // ***********************************************************************************
   updateWorkspaceList() {
     this.pendingWorkspaceChanges = false;
-    if (this.selectedUser.length > 0) {
+    if (this.selectedUser > -1) {
       this.dataLoading = true;
       this.bs.getWorkspacesByUser(this.selectedUser).subscribe(dataresponse => {
           this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
@@ -212,11 +212,11 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   saveWorkspaces() {
     this.pendingWorkspaceChanges = false;
-    if (this.selectedUser.length > 0) {
+    if (this.selectedUser > -1) {
       this.dataLoading = true;
       this.bs.setWorkspacesByUser(this.selectedUser, this.WorkspacelistDatasource.data).subscribe(
         respOk => {
-          if (respOk) {
+          if (respOk !== false) {
             this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
           } else {
             this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 2000});

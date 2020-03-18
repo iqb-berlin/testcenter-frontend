@@ -44,10 +44,17 @@
       <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.count}} </mat-cell>
     </ng-container>
 
-    <ng-container matColumnDef="details">
-      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Betriebssysteme und Browser</mat-header-cell>
+    <ng-container matColumnDef="details-os">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Betriebssysteme</mat-header-cell>
       <mat-cell *matCellDef="let element" fxLayout="column" fxLayoutAlign="center start">
-        <div *ngFor="let d of element.details">{{d}}</div>
+        <div *ngFor="let d of element.details.os | keyvalue">{{d.key}}: {{d.value}}</div>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="details-browser">
+      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Browser</mat-header-cell>
+      <mat-cell *matCellDef="let element" fxLayout="column" fxLayoutAlign="center start">
+        <div *ngFor="let d of element.details.browser | keyvalue">{{d.key}}: {{d.value}}</div>
       </mat-cell>
     </ng-container>
 

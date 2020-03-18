@@ -15,6 +15,23 @@ export interface CheckWorkspaceResponseData {
   warnings: string[];
 }
 
+
+export interface GroupResponse {
+  name: string;
+  testsTotal: number;
+  testsStarted: number;
+  responsesGiven: number;
+}
+
+export interface BookletsStarted {
+  groupname: string;
+  loginname: string;
+  code: string;
+  bookletname: string;
+  locked: boolean;
+  laststart: Date;
+}
+
 export interface UnitResponse {
   groupname: string;
   loginname: string;
@@ -27,6 +44,17 @@ export interface UnitResponse {
   responses_ts: number;
   restorepoint_ts: number;
   laststate: string;
+}
+
+export interface MonitorData {
+  groupname: string;
+  loginsPrepared: number;
+  personsPrepared: number;
+  bookletsPrepared: number;
+  bookletsStarted: number;
+  bookletsLocked: number;
+  laststart: Date;
+  laststartStr: string;
 }
 
 export interface ResultData {

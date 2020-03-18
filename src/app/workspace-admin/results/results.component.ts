@@ -46,7 +46,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
       this.resultDataSource = new MatTableDataSource<ResultData>([]);
     } else {
       this.dataLoading = true;
-      this.bs.getResultData().subscribe(
+      this.bs.getResultData(this.wds.ws).subscribe(
         (resultData: ResultData[]) => {
           this.dataLoading = false;
           this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
@@ -76,7 +76,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.getResponses(selectedGroups).subscribe(
+      this.bs.getResponses(this.wds.ws, selectedGroups).subscribe(
       (responseData: UnitResponse[]) => {
         if (responseData.length > 0) {
           const columnDelimiter = ';';
@@ -139,7 +139,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.getReviews(selectedGroups).subscribe(
+      this.bs.getReviews(this.wds.ws, selectedGroups).subscribe(
       (responseData: ReviewData[]) => {
         if (responseData.length > 0) {
           // collect categories
@@ -201,7 +201,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.getLogs(selectedGroups).subscribe(
+      this.bs.getLogs(this.wds.ws, selectedGroups).subscribe(
       (responseData: LogData[]) => {
         if (responseData.length > 0) {
           const columnDelimiter = ';';
@@ -255,10 +255,11 @@ export class ResultsComponent implements OnInit, OnDestroy {
         if (result !== false) {
           // =========================================================
           this.dataLoading = true;
-          this.bs.deleteData(selectedGroups).subscribe(() => {
-                  this.tableselectionCheckbox.clear();
-                  this.dataLoading = false;
-                });
+          this.bs.deleteData(this.wds.ws, selectedGroups).subscribe(() => {
+              this.tableselectionCheckbox.clear();
+              this.dataLoading = false;
+              // TODO refresh list!
+            });
           }
         });
     }

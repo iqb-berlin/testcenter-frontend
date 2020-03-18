@@ -85,7 +85,7 @@ export class BackendService {
     return new Promise(function(resolve) {
 
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', serverUrl + `sys-check/speed-test/random-package/${requestedDownloadSize}${cacheKiller}`, true);
+      xhr.open('GET', serverUrl + `speed-test/random-package/${requestedDownloadSize}${cacheKiller}`, true);
 
       xhr.timeout = 45000;
 
@@ -137,7 +137,7 @@ export class BackendService {
     return new Promise(function(resolve) {
 
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', serverUrl + 'sys-check/speed-test/random-package', true);
+      xhr.open('POST', serverUrl + 'speed-test/random-package', true);
 
       xhr.timeout = 10000;
 

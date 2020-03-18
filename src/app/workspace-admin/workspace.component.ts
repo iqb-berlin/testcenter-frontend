@@ -22,11 +22,11 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.routingSubscription = this.route.params.subscribe(params => {
       const ws = Number(params['ws']);
-      this.wds.setWorkspace(ws);
+      this.wds.setWorkspace(ws, this.mds.getWorkspaceRole(ws), this.mds.getWorkspaceName(ws));
     });
 
     this.logindataSubscription = this.mds.loginData$.subscribe(() => {
-      this.wds.setWorkspace(this.wds.ws);
+      this.wds.setWorkspace(this.wds.ws, this.mds.getWorkspaceRole(this.wds.ws), this.mds.getWorkspaceName(this.wds.ws));
     });
   }
 

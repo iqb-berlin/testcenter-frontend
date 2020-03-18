@@ -82,7 +82,7 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
           this.dataLoading = true;
           this.bs.addWorkspace((<FormGroup>result).get('name').value).subscribe(
                 respOk => {
-                  if (respOk) {
+                  if (respOk !== false) {
                     this.snackBar.open('Arbeitsbereich hinzugefügt', '', {duration: 1000});
                     this.updateObjectList();
                   } else {

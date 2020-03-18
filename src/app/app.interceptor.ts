@@ -20,13 +20,13 @@ export class AuthInterceptor implements HttpInterceptor {
       authData = {
         l: '',
         p: '',
-        b: 0
+        at: ''
       };
     } else {
       authData = {
         l: loginData.loginToken,
         p: loginData.personToken,
-        b: loginData.testId
+        at: loginData.adminToken
       };
     }
     const requestA = request.clone({

@@ -1,117 +1,151 @@
-import { GetFileResponseData, CheckWorkspaceResponseData, SysCheckStatistics,
-  ReviewData, LogData, UnitResponse, ResultData } from './workspace.interfaces';
+import { GetFileResponseData, CheckWorkspaceResponseData, BookletsStarted, SysCheckStatistics,
+  ReviewData, LogData, UnitResponse, ResultData, MonitorData } from './workspace.interfaces';
 import {Injectable, Inject} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import {WorkspaceDataService} from "./workspacedata.service";
 import { ErrorHandler, ServerError } from 'iqb-components';
 
 @Injectable()
-
 export class BackendService {
-  private serverUrlSlim = '';
-  private serverUrlSysCheck = '';
+
 
   constructor(
     @Inject('SERVER_URL') private readonly serverUrl: string,
-    private http: HttpClient,
-    private wds: WorkspaceDataService) {
-
-    this.serverUrlSlim = this.serverUrl + 'php/ws.php/';
-    this.serverUrlSysCheck = this.serverUrl + 'php_admin/';
-    this.serverUrl = this.serverUrl + 'php/';
+    private http: HttpClient
+  ) {
   }
 
 
-  getFiles(): Observable<GetFileResponseData[] | ServerError> {
+  getFiles(workspaceId: number): Observable<GetFileResponseData[] | ServerError> {
+
     return this.http
-      .get<GetFileResponseData[]>(this.serverUrlSlim + 'filelist')
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
+      .get<GetFileResponseData[]>(this.serverUrl + `workspace/${workspaceId}/files`)
+      .pipe(catchError(ErrorHandler.handle));
   }
 
-  deleteFiles(filesToDelete: Array<string>): Observable<string | ServerError> {
+  deleteFiles(workspaceId: number, filesToDelete: Array<string>): Observable<FileDeletionReport | ServerError> {
+
     return this.http
-      .post<string>(this.serverUrlSlim + 'delete', {f: filesToDelete})
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
+      .request<FileDeletionReport>('delete', this.serverUrl + `workspace/${workspaceId}/files`, {body: {f: filesToDelete}})
+      .pipe(catchError(ErrorHandler.handle));
   }
 
-  checkWorkspace(): Observable<CheckWorkspaceResponseData | ServerError> {
+  checkWorkspace(workspaceId: number): Observable<CheckWorkspaceResponseData | ServerError> {
+
     return this.http
-      .post<CheckWorkspaceResponseData>(this.serverUrl + 'checkWorkspace.php', {})
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
+      .get<CheckWorkspaceResponseData>(this.serverUrl + `workspace/${workspaceId}/validation`, {})
+      .pipe(catchError(ErrorHandler.handle));
   }
 
-  getResultData(): Observable<ResultData[]> {
+  getBookletsStarted(workspaceId: number, groups: string[]): Observable<BookletsStarted[] | ServerError> {
+
     return this.http
-      .post<ResultData[]>(this.serverUrl + 'getResultData.php', {})
-        .pipe(
-          catchError(() => [])
-        );
+      .get<BookletsStarted[]>(this.serverUrl + `workspace/${workspaceId}/booklets/started`, {params: {groups: groups.join(',')}})
+      .pipe(catchError(ErrorHandler.handle));
   }
 
-  getResponses(groups: string[]): Observable<UnitResponse[]> {
+  lockBooklets(workspaceId: number, groups: string[]): Observable<boolean | ServerError> {
+
     return this.http
-      .post<UnitResponse[]>(this.serverUrl + 'getResponses.php', {g: groups})
-        .pipe(
-          catchError(() => [])
-        );
+      .patch<boolean>(this.serverUrl + `workspace/${workspaceId}/tests/lock`, {groups: groups})
+      .pipe(catchError(ErrorHandler.handle));
   }
 
-  getLogs(groups: string[]): Observable<LogData[]> {
+  unlockBooklets(workspaceId: number, groups: string[]): Observable<boolean | ServerError> {
+
     return this.http
-      .post<LogData[]>(this.serverUrl + 'getLogs.php', {g: groups})
-        .pipe(
-          catchError(() => [])
-        );
+      .patch<boolean>(this.serverUrl + `workspace/${workspaceId}/tests/unlock`, {groups: groups})
+      .pipe(catchError(ErrorHandler.handle));
   }
 
-  getReviews(groups: string[]): Observable<ReviewData[]> {
+
+  getMonitorData(workspaceId: number): Observable<MonitorData[] | ServerError> {
+
     return this.http
-      .post<ReviewData[]>(this.serverUrl + 'getReviews.php', {g: groups})
-        .pipe(
-          catchError(() => [])
-        );
+      .get<MonitorData[]>(this.serverUrl + `workspace/${workspaceId}/status`, {})
+      .pipe(catchError(ErrorHandler.handle));
   }
 
-  deleteData(groups: string[]): Observable<boolean | ServerError> {
+  getResultData(workspaceId: number): Observable<ResultData[]> {
+
     return this.http
-      .post<boolean>(this.serverUrl + 'deleteData.php', {g: groups})
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
+      .get<ResultData[]>(this.serverUrl + `workspace/${workspaceId}/results`, {})
+      .pipe(catchError(() => []));
   }
 
-  getSysCheckReportList(): Observable<SysCheckStatistics[] | ServerError> {
+  getResponses(workspaceId: number, groups: string[]): Observable<UnitResponse[]> {
+
     return this.http
-      .post<SysCheckStatistics[]>(this.serverUrlSysCheck + 'getSysCheckReportList.php', {ws: this.wds.workspaceId$.getValue()})
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
+      .get<UnitResponse[]>(this.serverUrl + `workspace/${workspaceId}/responses`, {params: {groups: groups.join(',')}})
+      .pipe(catchError(() => []));
   }
 
-  getSysCheckReport(reports: string[], columnDelimiter: string,
-                    quoteChar: string): Observable<string[] | ServerError> {
+  getLogs(workspaceId: number, groups: string[]): Observable<LogData[]> {
+
     return this.http
-      .post<string[]>(this.serverUrlSysCheck + 'getSysCheckReport.php',
-        {r: reports, cd: columnDelimiter, q: quoteChar, ws: this.wds.workspaceId$.getValue()})
-          .pipe(
-            catchError(ErrorHandler.handle)
-          );
+      .get<LogData[]>(this.serverUrl + `workspace/${workspaceId}/logs`, {params: {groups: groups.join(',')}})
+      .pipe(catchError(() => []));
   }
 
-  deleteSysCheckReports(reports: string[]): Observable<boolean | ServerError> {
+  getReviews(workspaceId: number, groups: string[]): Observable<ReviewData[]> {
+
     return this.http
-      .post<boolean>(this.serverUrlSysCheck + 'deleteSysCheckReports.php',
-        {r: reports, ws: this.wds.workspaceId$.getValue()})
-          .pipe(
-            catchError(ErrorHandler.handle)
-          );
+      .get<ReviewData[]>(this.serverUrl + `workspace/${workspaceId}/reviews`, {params: {groups: groups.join(',')}})
+      .pipe(catchError(() => []));
   }
+
+  deleteData(workspaceId: number, groups: string[]): Observable<boolean | ServerError> {
+
+    return this.http
+      .request<boolean>('delete', this.serverUrl + `workspace/${workspaceId}/responses`, {body: {groups: groups}})
+      .pipe(catchError(ErrorHandler.handle));
+  }
+
+  getSysCheckReportList(workspaceId: number): Observable<SysCheckStatistics[] | ServerError> {
+
+    return this.http
+      .get<ReviewData[]>(this.serverUrl + `workspace/${workspaceId}/sys-check/reports/overview`)
+      .pipe(catchError(() => []));
+  }
+
+  getSysCheckReport(workspaceId: number, reports: string[], enclosure: string, columnDelimiter: string, lineEnding: string)
+    : Observable<Blob|ServerError> {
+
+    return this.http
+      .get(this.serverUrl + `workspace/${workspaceId}/sys-check/reports`,
+        {
+          params: {
+            checkIds: reports.join(','),
+            delimiter: columnDelimiter,
+            enclosure: enclosure,
+            lineEnding: lineEnding
+          },
+          headers: {
+            'Accept': 'text/csv'
+          },
+          responseType: 'blob'
+        })
+      .pipe(catchError(ErrorHandler.handle));
+  }
+
+  deleteSysCheckReports(workspaceId: number, checkIds: string[]): Observable <FileDeletionReport|ServerError> {
+
+    return this.http
+      .request<FileDeletionReport>('delete', this.serverUrl + `workspace/${workspaceId}/sys-check/reports`, {body: {checkIds: checkIds}})
+      .pipe(catchError(ErrorHandler.handle));
+  }
+
+  downloadFile(workspaceId: number, fileType: string, fileName: string): Observable<Blob|ServerError> {
+
+    return this.http
+      .get(this.serverUrl + `workspace/${workspaceId}/file/${fileType}/${fileName}`, {responseType: 'blob'})
+      .pipe(catchError(ErrorHandler.handle));
+  }
+}
+
+export interface FileDeletionReport {
+  deleted: string[];
+  not_allowed: string[];
+  did_not_exist: string[];
 }

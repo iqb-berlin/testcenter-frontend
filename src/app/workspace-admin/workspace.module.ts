@@ -1,6 +1,5 @@
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { BackendService } from './backend.service';
-import { IqbFilesModule } from './files/iqb-files';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgModule} from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -32,10 +31,10 @@ import { SyscheckComponent } from './syscheck/syscheck.component';
 import { IqbComponentsModule } from 'iqb-components';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { WorkspaceInterceptor } from './workspace.interceptor';
+import {IqbFilesModule} from './files/iqb-files';
 
 @NgModule({
   imports: [
-    IqbFilesModule,
     CommonModule,
     WorkspaceRoutingModule,
     MatTableModule,
@@ -58,7 +57,8 @@ import { WorkspaceInterceptor } from './workspace.interceptor';
     MatGridListModule,
     IqbComponentsModule,
     MatCardModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    IqbFilesModule
   ],
   exports: [
     WorkspaceComponent
