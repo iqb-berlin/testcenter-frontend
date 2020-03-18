@@ -30,6 +30,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   private tableselectionCheckbox = new SelectionModel<IdAndName>(true, []);
   private tableselectionRow = new SelectionModel<IdAndName>(false, []);
   private selectedUser = -1;
+  private selectedUserName = '';
 
   private pendingWorkspaceChanges = false;
   public WorkspacelistDatasource: MatTableDataSource<IdRoleData>;
@@ -51,8 +52,10 @@ export class UsersComponent implements OnInit, OnDestroy {
       r => {
         if (r.added.length > 0) {
           this.selectedUser = r.added[0].id;
+          this.selectedUserName = r.added[0].name
         } else {
           this.selectedUser = -1;
+          this.selectedUserName = '';
         }
         this.updateWorkspaceList();
       });

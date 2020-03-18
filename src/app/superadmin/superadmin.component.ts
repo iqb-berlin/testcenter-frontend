@@ -1,17 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import {MainDataService} from '../maindata.service';
+import { Component } from '@angular/core';
+import { MainDataService } from '../maindata.service';
+
+
 
 @Component({
   templateUrl: './superadmin.component.html',
   styleUrls: ['./superadmin.component.css']
 })
-export class SuperadminComponent implements OnInit {
-
+export class SuperadminComponent {
   constructor(
     public mds: MainDataService
   ) { }
 
-  ngOnInit() {
-  }
-
+  public navLinks = [
+    {path: 'users', label: 'Users'},
+    {path: 'workspaces', label: 'Arbeitsbereiche'}
+  ];
 }

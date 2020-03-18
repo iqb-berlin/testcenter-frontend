@@ -11,8 +11,7 @@ export class BackendService {
   constructor(
     @Inject('SERVER_URL') private readonly serverUrl: string,
     private http: HttpClient) {
-      this.serverUrl = this.serverUrl + 'php/sys.php/';
-    }
+  }
 
   getUsers(): Observable<IdAndName[]> {
 

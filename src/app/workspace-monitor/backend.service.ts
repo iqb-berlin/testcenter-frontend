@@ -20,35 +20,32 @@ export class BackendService {
     this.serverUrl = this.serverUrl + 'php/';
   }
 
-  getBookletsStarted(ws: number, groups: string[]): Observable<BookletsStarted[] | ServerError> {
+  getBookletsStarted(workspaceId: number, groups: string[]): Observable<BookletsStarted[] | ServerError> {
+
     return this.http
-      .post<BookletsStarted[]>(this.serverUrl + 'getBookletsStarted.php', {g: groups})
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
+      .get<BookletsStarted[]>(this.serverUrl + `workspace/${workspaceId}/booklets/started`, {params: {groups: groups.join(',')}})
+      .pipe(catchError(ErrorHandler.handle));
   }
 
-  lockBooklets(ws: number, groups: string[]): Observable<boolean | ServerError> {
+  lockBooklets(workspaceId: number, groups: string[]): Observable<boolean | ServerError> {
+
     return this.http
-      .post<boolean>(this.serverUrlSlim + 'lock', {g: groups})
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
+      .patch<boolean>(this.serverUrl + `workspace/${workspaceId}/tests/lock`, {groups: groups})
+      .pipe(catchError(ErrorHandler.handle));
   }
 
-  unlockBooklets(ws: number, groups: string[]): Observable<boolean | ServerError> {
-    return this.http
-      .post<boolean>(this.serverUrlSlim + 'unlock', {g: groups})
-        .pipe(
-            catchError(ErrorHandler.handle)
-          );
-}
+  unlockBooklets(workspaceId: number, groups: string[]): Observable<boolean | ServerError> {
 
-  getMonitorData(ws: number): Observable<MonitorData[] | ServerError> {
     return this.http
-      .post<MonitorData[]>(this.serverUrl + 'getMonitorData.php', {})
-        .pipe(
-          catchError(ErrorHandler.handle)
-        );
+      .patch<boolean>(this.serverUrl + `workspace/${workspaceId}/tests/unlock`, {groups: groups})
+      .pipe(catchError(ErrorHandler.handle));
+  }
+
+
+  getMonitorData(workspaceId: number): Observable<MonitorData[] | ServerError> {
+
+    return this.http
+      .get<MonitorData[]>(this.serverUrl + `workspace/${workspaceId}/status`, {})
+      .pipe(catchError(ErrorHandler.handle));
   }
 }

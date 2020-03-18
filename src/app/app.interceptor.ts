@@ -1,7 +1,7 @@
 import { MainDataService } from './maindata.service';
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest,
-  HttpHandler, HttpEvent, HTTP_INTERCEPTORS } from '@angular/common/http';
+  HttpHandler, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable()
@@ -38,7 +38,3 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(requestA);
   }
 }
-
-export const httpInterceptorProviders = [
-  { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-];

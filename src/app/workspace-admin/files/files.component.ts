@@ -46,7 +46,7 @@ export class FilesComponent implements OnInit, OnDestroy {
     this.wds.workspaceId$.subscribe(workspaceId => {
       this.uploadUrl = this.serverUrl + `workspace/${workspaceId}/file`;
     });
-    this.uploadUrl = this.serverUrl + this.wds.ws + '/file';
+    this.uploadUrl = this.serverUrl + "workspace/" + this.wds.ws + '/file';
   }
 
   ngOnInit() {

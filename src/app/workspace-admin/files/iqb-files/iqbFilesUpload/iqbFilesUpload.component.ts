@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, HostBinding } from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, HostBinding, OnDestroy} from '@angular/core';
 import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
   HttpErrorResponse, HttpEvent } from '@angular/common/http';
 
@@ -10,7 +10,7 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
     styleUrls: ['../iqb-files.scss'],
   })
 
-  export class IqbFilesUploadComponent implements OnInit {
+  export class IqbFilesUploadComponent implements OnInit, OnDestroy {
     @HostBinding('class') myclass = 'iqb-files-upload';
 
     constructor(
@@ -30,7 +30,7 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
     // ''''''''''''''''''''''''
     private requestResponseText: string;
     get statustext(): string {
-      let myreturn = '';
+      let myreturn;
       switch (this._status) {
         case UploadStatus.busy: {
           myreturn = 'Bitte warten';
@@ -180,6 +180,11 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
       this.removeFileRequestEvent.emit(this);
     }
 
+    ngOnDestroy(): void {
+      if (this.fileUploadSubscription) {
+        this.fileUploadSubscription.unsubscribe();
+      }
+    }
 }
 
 export enum UploadStatus {

@@ -23,52 +23,36 @@ export class WorkspaceDataService {
   public get wsName(): string {
     return this._wsName;
   }
-  public navLinks = [];
-
-
-  private navLinksRW = [
+  public navLinks = [
     {path: 'files', label: 'Dateien'},
     {path: 'syscheck', label: 'System-Check Berichte'},
-    {path: 'monitor', label: 'Monitor'},
-    {path: 'results', label: 'Ergebnisse'}
-  ];
-  private navLinksRO = [
-    {path: 'files', label: 'Dateien'},
-    {path: 'syscheck', label: 'System-Check Berichte'},
-    {path: 'monitor', label: 'Monitor'},
-    {path: 'results', label: 'Ergebnisse'}
-  ];
-  private navLinksMO = [
-    {path: 'monitor', label: 'Monitor'}
+    {path: 'results', label: 'Ergebnisse/Antworten'}
   ];
 
-  constructor() {}
+  constructor(
+    private mds: MainDataService
+  ) {}
 
   setNewErrorMsg(err: ServerError = null) {
     this.globalErrorMsg$.next(err);
   }
 
-  setWorkspace(newId: number, newRole: string, newName: string) {
-    this._wsName = newName;
-    this._wsRole = newRole;
-    switch (newRole.toUpperCase()) {
-      case 'RW': {
-        this.navLinks = this.navLinksRW;
-        break;
-      }
-      case 'RO': {
-        this.navLinks = this.navLinksRO;
-        break;
-      }
-      case 'MO': {
-        this.navLinks = this.navLinksMO;
-        break;
-      }
-      default: {
-        this.navLinks = [];
-        break;
+  setWorkspace(newId: number) {
+    this._wsName = '';
+    this._wsRole = '';
+    if (newId > 0) {
+      const myLoginData = this.mds.loginData$.getValue();
+      if ((myLoginData !== null) && (myLoginData.workspaces.length > 0)) {
+        for (let i = 0; i < myLoginData.workspaces.length; i++) {
+          if (myLoginData.workspaces[i].id == newId) {
+            this._wsName = myLoginData.workspaces[i].name;
+            this._wsRole = myLoginData.workspaces[i].role;
+            break;
+          }
+        }
       }
     }
+
     this.workspaceId$.next(newId);
   }
 }

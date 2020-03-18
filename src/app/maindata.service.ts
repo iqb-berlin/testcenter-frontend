@@ -120,42 +120,6 @@ export class MainDataService {
     return this.loginData$.getValue().testId;
   }
 
-
-  getWorkspaceName(ws: number): string {
-    let myreturn = '';
-    if (ws > 0) {
-      const myLoginData = this.loginData$.getValue();
-      if ((myLoginData !== null) && (myLoginData.workspaces.length > 0)) {
-        for (let i = 0; i < myLoginData.workspaces.length; i++) {
-          // tslint:disable-next-line:triple-equals - one is float, other is int
-          if (myLoginData.workspaces[i].id == ws) {
-            myreturn = myLoginData.workspaces[i].name;
-            break;
-          }
-        }
-      }
-    }
-    return myreturn;
-  }
-
-  getWorkspaceRole(ws: number): string {
-    let myreturn = '';
-    if (ws > 0) {
-      const myLoginData = this.loginData$.getValue();
-      if ((myLoginData !== null) && (myLoginData.workspaces.length > 0)) {
-        for (let i = 0; i < myLoginData.workspaces.length; i++) {
-          // tslint:disable-next-line:triple-equals - one is float, other is int
-          if (myLoginData.workspaces[i].id == ws) {
-            myreturn = myLoginData.workspaces[i].role;
-            break;
-          }
-        }
-      }
-    }
-    return myreturn;
-  }
-
-
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   endBooklet () {
     const myLoginData = this.loginData$.getValue();

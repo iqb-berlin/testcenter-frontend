@@ -39,7 +39,6 @@ import { StartLockInputComponent } from './start-lock-input/start-lock-input.com
     MatToolbarModule,
     MatIconModule,
     IqbComponentsModule.forChild()
-
   ],
   declarations: [
     UnithostComponent,

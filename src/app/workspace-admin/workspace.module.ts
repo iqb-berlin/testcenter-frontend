@@ -29,8 +29,6 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { SyscheckComponent } from './syscheck/syscheck.component';
 import { IqbComponentsModule } from 'iqb-components';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { WorkspaceInterceptor } from './workspace.interceptor';
 import {IqbFilesModule} from './files/iqb-files';
 
 @NgModule({
@@ -70,13 +68,6 @@ import {IqbFilesModule} from './files/iqb-files';
     SyscheckComponent
   ],
   providers: [
-    // interceptor adds ws to AuthToken
-    // not working when module is lazy loaded!
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: WorkspaceInterceptor,
-      multi: true
-    },
     BackendService,
     WorkspaceDataService
   ],
