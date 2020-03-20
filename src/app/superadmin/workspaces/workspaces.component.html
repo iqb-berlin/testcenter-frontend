@@ -63,13 +63,11 @@
 
     <mat-table [dataSource]="UserlistDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>RO | RW | MO</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header>RO | RW</mat-header-cell>
         <mat-cell *matCellDef="let row" fxFlex="100px">
           <mat-checkbox (change)="selectUser(row, 'RO')" [checked]="row.role === 'RO'" matTooltip="RO">
           </mat-checkbox>
           <mat-checkbox (change)="selectUser(row, 'RW')" [checked]="row.role === 'RW'" matTooltip="RW">
-          </mat-checkbox>
-          <mat-checkbox (change)="selectUser(row, 'MO')" [checked]="row.role === 'MO'" matTooltip="MO">
           </mat-checkbox>
         </mat-cell>
       </ng-container>

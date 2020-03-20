@@ -125,7 +125,7 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
             this.bs.renameWorkspace(selectedRows[0].id,
                 (<FormGroup>result).get('name').value).subscribe(
                   respOk => {
-                    if (respOk) {
+                    if (respOk !== false) {
                       this.snackBar.open('Arbeitsbereich geändert', '', {duration: 1000});
                       this.updateObjectList();
                     } else {
@@ -178,7 +178,7 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
           selectedRows.forEach((r: IdAndName) => workspacesToDelete.push(r.id));
           this.bs.deleteWorkspaces(workspacesToDelete).subscribe(
             respOk => {
-              if (respOk) {
+              if (respOk !== false) {
                 this.snackBar.open('Arbeitsbereich/e gelöscht', '', {duration: 1000});
                 this.updateObjectList();
                 this.dataLoading = false;
@@ -221,7 +221,7 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
       this.dataLoading = true;
       this.bs.setUsersByWorkspace(this.selectedWorkspaceId, this.UserlistDatasource.data).subscribe(
         respOk => {
-          if (respOk) {
+          if (respOk !== false) {
             this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
           } else {
             this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 2000});
