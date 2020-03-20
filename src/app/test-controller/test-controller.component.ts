@@ -1,5 +1,4 @@
 import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
-import { MatDialog, MatSnackBar } from '@angular/material';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MainDataService } from '../maindata.service';
@@ -13,6 +12,8 @@ import { Subscription, Observable, of, from } from 'rxjs';
 import { switchMap, concatMap } from 'rxjs/operators';
 import { CustomtextService, ServerError } from 'iqb-components';
 import { appconfig } from '../app.config';
+import {MatDialog} from "@angular/material/dialog";
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -20,7 +21,7 @@ import { appconfig } from '../app.config';
 })
 export class TestControllerComponent implements OnInit, OnDestroy {
   private loginDataSubscription: Subscription = null;
-  private navigationRequestSubsription: Subscription = null;
+  private navigationRequestSubscription: Subscription = null;
   private maxTimerSubscription: Subscription = null;
   private unitLoadQueueSubscription1: Subscription = null;
   private unitLoadQueueSubscription2: Subscription = null;
@@ -413,7 +414,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
     // ==========================================================
     // navigation between units and end booklet
-    this.navigationRequestSubsription = this.tcs.navigationRequest$.subscribe((navString: string) => {
+    this.navigationRequestSubscription = this.tcs.navigationRequest$.subscribe((navString: string) => {
       if (this.tcs.rootTestlet === null) {
         this.snackBar.open('Kein Testheft verfügbar.', '', {duration: 3000});
       } else {
@@ -660,8 +661,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (this.loginDataSubscription !== null) {
       this.loginDataSubscription.unsubscribe();
     }
-    if (this.navigationRequestSubsription !== null) {
-      this.navigationRequestSubsription.unsubscribe();
+    if (this.navigationRequestSubscription !== null) {
+      this.navigationRequestSubscription.unsubscribe();
     }
     if (this.maxTimerSubscription !== null) {
       this.maxTimerSubscription.unsubscribe();

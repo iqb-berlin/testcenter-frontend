@@ -1,7 +1,6 @@
 import { MainDataService } from '../maindata.service';
 import { Subscription, forkJoin } from 'rxjs';
 import {CustomtextService, MessageDialogComponent, MessageDialogData, MessageType, ServerError} from 'iqb-components';
-import { MatDialog } from '@angular/material';
 import { BackendService } from '../backend.service';
 import {PersonTokenAndTestId, LoginData, WorkspaceData} from '../app.interfaces';
 import { Router } from '@angular/router';
@@ -9,6 +8,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { StartButtonData } from './start-button-data.class';
 import { appconfig } from '../app.config';
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   templateUrl: './start.component.html',

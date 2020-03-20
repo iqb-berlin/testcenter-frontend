@@ -4,10 +4,6 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-
-import { MatButtonModule, MatCheckboxModule, MatMenuModule, MatTooltipModule, MatCardModule,
-  MatToolbarModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule,
-  MatTabsModule, MatProgressSpinnerModule, MatRadioModule, MatProgressBarModule } from '@angular/material';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -18,6 +14,20 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { ErrormsgComponent } from './errormsg/errormsg.component';
 import {AuthInterceptor} from './app.interceptor';
 import { IqbComponentsModule } from 'iqb-components';
+import {MatButtonModule} from "@angular/material/button";
+import {MatCardModule} from "@angular/material/card";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import { MatDialogModule } from '@angular/material/dialog';
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatIconModule} from "@angular/material/icon";
+import {MatInputModule} from "@angular/material/input";
+import {MatMenuModule} from "@angular/material/menu";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {MatRadioModule} from "@angular/material/radio";
+import {MatTabsModule} from "@angular/material/tabs";
+import {MatToolbarModule} from "@angular/material/toolbar";
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 
 
@@ -32,23 +42,22 @@ import { IqbComponentsModule } from 'iqb-components';
     BrowserModule,
     BrowserAnimationsModule,
     MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDialogModule,
     MatFormFieldModule,
-    MatMenuModule,
-    MatToolbarModule,
-    MatProgressBarModule,
     MatIconModule,
     MatInputModule,
-    MatTooltipModule,
-    MatCheckboxModule,
-    MatRadioModule,
-    MatDialogModule,
-    MatTabsModule,
+    MatMenuModule,
+    MatProgressBarModule,
     MatProgressSpinnerModule,
-    MatCardModule,
+    MatRadioModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MatTooltipModule,
     FlexLayoutModule,
     ReactiveFormsModule,
     HttpClientModule,
-    MatToolbarModule,
     AppRoutingModule,
     IqbComponentsModule.forRoot()
   ],

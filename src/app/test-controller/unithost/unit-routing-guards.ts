@@ -1,6 +1,5 @@
 import { StartLockInputComponent } from '../start-lock-input/start-lock-input.component';
 import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from 'iqb-components';
-import { MatDialog, MatSnackBar } from '@angular/material';
 import { TestControllerService } from '../test-controller.service';
 import { switchMap, map, filter, take } from 'rxjs/operators';
 import { UnithostComponent } from './unithost.component';
@@ -10,6 +9,8 @@ import { Observable, of, interval } from 'rxjs';
 import { UnitControllerData } from '../test-controller.classes';
 import { CodeInputData, LogEntryKey, StartLockData } from '../test-controller.interfaces';
 import { MainDataService } from 'src/app/maindata.service';
+import {MatDialog} from "@angular/material/dialog";
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
