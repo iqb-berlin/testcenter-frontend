@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditworkspaceComponent } from './editworkspace.component';
+import {ReactiveFormsModule} from "@angular/forms";
+import {MatDialogModule} from "@angular/material/dialog";
 
 describe('EditworkspaceComponent', () => {
   let component: EditworkspaceComponent;
@@ -8,7 +10,8 @@ describe('EditworkspaceComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EditworkspaceComponent ]
+      declarations: [ EditworkspaceComponent ],
+      imports: [ReactiveFormsModule, MatDialogModule]
     })
     .compileComponents();
   }));

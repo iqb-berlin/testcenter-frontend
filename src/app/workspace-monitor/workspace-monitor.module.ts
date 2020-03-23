@@ -14,6 +14,8 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatButtonModule} from "@angular/material/button";
+import {HttpClientModule} from "@angular/common/http";
+import {BackendService} from "./backend.service";
 
 
 @NgModule({
@@ -31,7 +33,11 @@ import {MatButtonModule} from "@angular/material/button";
     ReactiveFormsModule,
     MatTooltipModule,
     MatCheckboxModule,
-    MatButtonModule
+    MatButtonModule,
+    HttpClientModule
+  ],
+  providers: [
+    BackendService
   ]
 })
 export class WorkspaceMonitorModule { }

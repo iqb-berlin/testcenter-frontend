@@ -1,13 +1,16 @@
 import { SaveReportComponent } from './save-report.component';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {ReactiveFormsModule} from "@angular/forms";
+import {MatDialogModule} from "@angular/material/dialog";
 
-describe('EmailComponent', () => {
+describe('SaveReportComponent', () => {
   let component: SaveReportComponent;
   let fixture: ComponentFixture<SaveReportComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SaveReportComponent ]
+      declarations: [ SaveReportComponent ],
+      imports: [ReactiveFormsModule, MatDialogModule]
     })
     .compileComponents();
   }));

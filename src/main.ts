@@ -1,4 +1,4 @@
-import { enableProdMode } from '@angular/core';
+import {enableProdMode, StaticProvider} from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
@@ -8,7 +8,7 @@ if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic([
+platformBrowserDynamic(<StaticProvider[]>[
   {
     provide: 'SERVER_URL',
     useValue: environment.testcenterUrl

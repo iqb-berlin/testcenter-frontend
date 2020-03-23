@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NewuserComponent } from './newuser.component';
+import {ReactiveFormsModule} from "@angular/forms";
+import {MatDialogModule} from "@angular/material/dialog";
 
 describe('NewuserComponent', () => {
   let component: NewuserComponent;
@@ -8,7 +10,8 @@ describe('NewuserComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NewuserComponent ]
+      declarations: [ NewuserComponent ],
+      imports: [ReactiveFormsModule, MatDialogModule]
     })
     .compileComponents();
   }));

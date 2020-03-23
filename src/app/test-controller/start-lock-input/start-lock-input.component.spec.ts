@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StartLockInputComponent } from './start-lock-input.component';
+import {ReactiveFormsModule} from "@angular/forms";
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 
 describe('StartLockInputComponent', () => {
   let component: StartLockInputComponent;
@@ -8,7 +10,8 @@ describe('StartLockInputComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ StartLockInputComponent ]
+      imports: [ReactiveFormsModule, MatDialogModule],
+      declarations: [ StartLockInputComponent, MatDialogRef, MAT_DIALOG_DATA ]
     })
     .compileComponents();
   }));

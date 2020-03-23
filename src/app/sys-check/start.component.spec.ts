@@ -1,6 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StartComponent } from './start.component';
+import {HttpClientModule} from "@angular/common/http";
+import {BackendService} from "./backend.service";
+import {AppRoutingModule} from "../app-routing.module";
+import {IqbComponentsModule} from "iqb-components";
 
 describe('StartComponent', () => {
   let component: StartComponent;
@@ -8,7 +12,15 @@ describe('StartComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ StartComponent ]
+      declarations: [ StartComponent ],
+      imports: [
+        HttpClientModule,
+        AppRoutingModule,
+        IqbComponentsModule
+      ],
+      providers: [
+        BackendService
+      ]
     })
     .compileComponents();
   }));

@@ -28,6 +28,7 @@ import {MatRadioModule} from "@angular/material/radio";
 import {MatTabsModule} from "@angular/material/tabs";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatTooltipModule} from "@angular/material/tooltip";
+import {RouterModule} from "@angular/router";
 
 
 
@@ -59,6 +60,7 @@ import {MatTooltipModule} from "@angular/material/tooltip";
     FlexLayoutModule,
     ReactiveFormsModule,
     HttpClientModule,
+    RouterModule,
     AppRoutingModule,
     IqbComponentsModule.forRoot()
   ],

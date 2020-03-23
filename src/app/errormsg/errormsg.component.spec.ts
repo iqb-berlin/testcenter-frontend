@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ErrormsgComponent } from './errormsg.component';
+import {HttpClientModule} from "@angular/common/http";
 
 describe('ErrormsgComponent', () => {
   let component: ErrormsgComponent;
@@ -8,7 +9,8 @@ describe('ErrormsgComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ErrormsgComponent ]
+      declarations: [ ErrormsgComponent ],
+      imports: [HttpClientModule]
     })
     .compileComponents();
   }));

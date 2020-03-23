@@ -1,6 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TestControllerComponent } from './test-controller.component';
+import {HttpClientModule} from "@angular/common/http";
+import {BackendService} from "./backend.service";
+import {MatDialogModule} from "@angular/material/dialog";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {AppRoutingModule} from "../app-routing.module";
 
 describe('TestControllerComponent', () => {
   let component: TestControllerComponent;
@@ -8,7 +13,16 @@ describe('TestControllerComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TestControllerComponent ]
+      declarations: [ TestControllerComponent ],
+      imports: [
+        HttpClientModule,
+        MatDialogModule,
+        MatSnackBarModule,
+        AppRoutingModule
+      ],
+      providers: [
+        BackendService
+      ]
     })
     .compileComponents();
   }));
