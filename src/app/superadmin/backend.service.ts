@@ -4,7 +4,9 @@ import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 
 export class BackendService {
 

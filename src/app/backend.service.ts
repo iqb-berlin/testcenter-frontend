@@ -7,7 +7,9 @@ import {LoginData, BookletStatus, PersonTokenAndTestId, KeyValuePair, SysConfig}
 import {ErrorHandler, ServerError} from 'iqb-components';
 
 // ============================================================================
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class BackendService {
 
   constructor(

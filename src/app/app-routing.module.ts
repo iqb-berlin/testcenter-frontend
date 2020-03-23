@@ -8,11 +8,11 @@ const routes: Routes = [
   {path: '', component: StartComponent, pathMatch: 'full'},
   {path: 'start', component: StartComponent},
   {path: 'about', component: AboutComponent},
-  {path: 'check', loadChildren: './sys-check/sys-check.module#SysCheckModule'},
-  {path: 'admin', loadChildren: './workspace-admin/workspace.module#WorkspaceModule'},
-  {path: 'superadmin', loadChildren: './superadmin/superadmin.module#SuperadminModule'},
-  {path: 'wsmonitor', loadChildren: './workspace-monitor/workspace-monitor.module#WorkspaceMonitorModule'},
-  {path: 't', loadChildren: './test-controller/test-controller.module#TestControllerModule'}
+  {path: 'check', loadChildren: () => import('./sys-check/sys-check.module').then(m => m.SysCheckModule)},
+  {path: 'admin', loadChildren: () => import('./workspace-admin/workspace.module').then(m => m.WorkspaceModule)},
+  {path: 'superadmin', loadChildren: () => import('./superadmin/superadmin.module').then(m => m.SuperadminModule)},
+  {path: 'wsmonitor', loadChildren: () => import('./workspace-monitor/workspace-monitor.module').then(m => m.WorkspaceMonitorModule)},
+  {path: 't', loadChildren: () => import('./test-controller/test-controller.module').then(m => m.TestControllerModule)}
 ];
 
 @NgModule({
