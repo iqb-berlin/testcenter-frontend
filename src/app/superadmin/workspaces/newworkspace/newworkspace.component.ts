@@ -1,20 +1,12 @@
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Component, OnInit, Inject } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import {FormGroup, Validators, FormControl} from '@angular/forms';
 
 @Component({
   templateUrl: './newworkspace.component.html',
   styleUrls: ['./newworkspace.component.css']
 })
-export class NewworkspaceComponent implements OnInit {
-  newworkspaceform: FormGroup;
-
-  constructor(private fb: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: any) { }
-
-  ngOnInit() {
-    this.newworkspaceform = this.fb.group({
-      name: this.fb.control('', [Validators.required, Validators.minLength(3)])
-    });
-  }
+export class NewworkspaceComponent {
+  newworkspaceform = new FormGroup({
+    name: new FormControl('', [Validators.required, Validators.minLength(3)])
+  })
 }

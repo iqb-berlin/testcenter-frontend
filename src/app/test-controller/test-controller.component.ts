@@ -7,7 +7,15 @@ import { BackendService } from './backend.service';
 import { TestControllerService } from './test-controller.service';
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { UnitDef, Testlet, EnvironmentData, MaxTimerData } from './test-controller.classes';
-import { LastStateKey, LogEntryKey, BookletData, UnitData, MaxTimerDataType, TaggedString } from './test-controller.interfaces';
+import {
+  LastStateKey,
+  LogEntryKey,
+  BookletData,
+  UnitData,
+  MaxTimerDataType,
+  TaggedString,
+  ReviewDialogData
+} from './test-controller.interfaces';
 import { Subscription, Observable, of, from } from 'rxjs';
 import { switchMap, concatMap } from 'rxjs/operators';
 import { CustomtextService, ServerError } from 'iqb-components';
@@ -603,7 +611,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     } else {
       const dialogRef = this.reviewDialog.open(ReviewDialogComponent, {
         width: '700px',
-        data: {
+        data: <ReviewDialogData>{
           loginname: this.tcs.loginname,
           bookletname: this.tcs.rootTestlet.title,
           unitTitle: this.tcs.currentUnitTitle,

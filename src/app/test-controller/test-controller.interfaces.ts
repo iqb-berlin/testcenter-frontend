@@ -105,3 +105,10 @@ export interface PageData {
     type: '#next' | '#previous' | '#goto';
     disabled: boolean;
 }
+
+export interface ReviewDialogData {
+  loginname: string;
+  bookletname: string;
+  unitDbKey: string;
+  unitTitle: string;
+}

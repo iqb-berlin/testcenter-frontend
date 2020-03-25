@@ -112,10 +112,7 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
     } else {
       const dialogRef = this.editworkspaceDialog.open(EditworkspaceComponent, {
         width: '600px',
-        data: {
-          name: selectedRows[0].name,
-          oldname: selectedRows[0].name
-        }
+        data: selectedRows[0].name
       });
 
       dialogRef.afterClosed().subscribe(result => {

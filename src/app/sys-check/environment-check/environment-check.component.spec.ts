@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EnvironmentCheckComponent } from './environment-check.component';
+import {MatCardModule} from "@angular/material/card";
 
 describe('EnvironmentCheckComponent', () => {
   let component: EnvironmentCheckComponent;
@@ -8,7 +9,8 @@ describe('EnvironmentCheckComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EnvironmentCheckComponent ]
+      declarations: [ EnvironmentCheckComponent ],
+      imports: [MatCardModule]
     })
     .compileComponents();
   }));

@@ -54,33 +54,34 @@ export class ReportComponent {
 
     const dialogRef = this.saveDialog.open(SaveReportComponent, {
       width: '500px',
-      height: '600px',
-      data: 'jojo'
+      height: '600px'
     });
     dialogRef.afterClosed().subscribe(result => {
-      if (result !== false) {
-        const reportKey = result.get('key').value as string;
-        const reportTitle = result.get('title').value as string;
-        const cd = this.ds.checkConfig$.getValue();
-        console.log('result', result);
-        this.bs.saveReport(
-            cd.workspaceId,
-            cd.name,
-            {
-              keyPhrase: reportKey,
-              title: reportTitle,
-              environment: this.ds.environmentData$.getValue(),
-              network: this.ds.networkData$.getValue(),
-              questionnaire: this.ds.questionnaireData$.getValue(),
-              unit: this.ds.unitData$.getValue()
+      if (typeof result !== 'undefined') {
+        if (result !== false) {
+          const reportKey = result.get('key').value as string;
+          const reportTitle = result.get('title').value as string;
+          const cd = this.ds.checkConfig$.getValue();
+          console.log('result', result);
+          this.bs.saveReport(
+              cd.workspaceId,
+              cd.name,
+              {
+                keyPhrase: reportKey,
+                title: reportTitle,
+                environment: this.ds.environmentData$.getValue(),
+                network: this.ds.networkData$.getValue(),
+                questionnaire: this.ds.questionnaireData$.getValue(),
+                unit: this.ds.unitData$.getValue()
+              }
+          ).subscribe((result: boolean|ServerError) => {
+            if (result instanceof ServerError) {
+              this.snackBar.open('Konnte Bericht nicht speichern.', '', {duration: 3000});
+            } else {
+              this.snackBar.open('Bericht gespeichert.', '', {duration: 3000});
             }
-        ).subscribe((result: boolean|ServerError) => {
-          if (result instanceof ServerError) {
-            this.snackBar.open('Konnte Bericht nicht speichern.', '', {duration: 3000});
-          } else {
-            this.snackBar.open('Bericht gespeichert.', '', {duration: 3000});
-          }
-        });
+          });
+        }
       }
     });
   }

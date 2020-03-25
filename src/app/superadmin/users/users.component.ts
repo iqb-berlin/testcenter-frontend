@@ -71,10 +71,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   // ***********************************************************************************
   addObject() {
     const dialogRef = this.newuserDialog.open(NewuserComponent, {
-      width: '600px',
-      data: {
-        name: ''
-      }
+      width: '600px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -112,9 +109,7 @@ export class UsersComponent implements OnInit, OnDestroy {
     } else {
       const dialogRef = this.newpasswordDialog.open(NewpasswordComponent, {
         width: '600px',
-        data: {
-          name: selectedRows[0]['name']
-        }
+        data: selectedRows[0]['name']
       });
 
       dialogRef.afterClosed().subscribe(result => {

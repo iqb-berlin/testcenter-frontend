@@ -1,21 +1,17 @@
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Component, OnInit, Inject } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Component, Inject } from '@angular/core';
+import {FormGroup, Validators, FormControl} from '@angular/forms';
 
 @Component({
   templateUrl: './newpassword.component.html',
   styleUrls: ['./newpassword.component.css']
 })
 
-export class NewpasswordComponent implements OnInit {
-  newpasswordform: FormGroup;
+export class NewpasswordComponent {
+  newpasswordform = new FormGroup({
+    pw: new FormControl('', [Validators.required, Validators.minLength(3)])
+  });
 
-  constructor(private fb: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: any) { }
-
-  ngOnInit() {
-    this.newpasswordform = this.fb.group({
-      pw: this.fb.control('', [Validators.required, Validators.minLength(3)])
-    });
-  }
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: string) { }
 }

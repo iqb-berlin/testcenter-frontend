@@ -1,29 +1,22 @@
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Component, OnInit, Inject } from '@angular/core';
-import { StartLockData } from '../test-controller.interfaces';
-
+import {Component, Inject} from '@angular/core';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {StartLockData} from "../test-controller.interfaces";
 
 @Component({
   templateUrl: './start-lock-input.component.html',
   styleUrls: ['./start-lock-input.component.css']
 })
-export class StartLockInputComponent implements OnInit {
+export class StartLockInputComponent {
   startkeyform: FormGroup;
 
-  constructor(private fb: FormBuilder,
-    private dialogRef: MatDialogRef<StartLockInputComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: StartLockData) { }
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: StartLockData) {
 
-  ngOnInit() {
-    const controlsConfig = {};
+    const myFormControls = {};
     this.data.codes.forEach(c => {
-      controlsConfig[c.testletId] = this.fb.control('', [Validators.required, Validators.minLength(3)]);
+      myFormControls[c.testletId] = new FormControl('', [Validators.required, Validators.minLength(3)]);
     });
-    this.startkeyform = this.fb.group(controlsConfig);
-  }
-
-  close() {
-    this.dialogRef.close(this.data.codes);
+    this.startkeyform = new FormGroup(myFormControls);
   }
 }

@@ -2,7 +2,10 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditworkspaceComponent } from './editworkspace.component';
 import {ReactiveFormsModule} from "@angular/forms";
-import {MatDialogModule} from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogModule} from "@angular/material/dialog";
+import {MatInputModule} from "@angular/material/input";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 
 describe('EditworkspaceComponent', () => {
   let component: EditworkspaceComponent;
@@ -11,7 +14,17 @@ describe('EditworkspaceComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ EditworkspaceComponent ],
-      imports: [ReactiveFormsModule, MatDialogModule]
+      imports: [
+        MatDialogModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatFormFieldModule,
+        NoopAnimationsModule
+      ],
+      providers: [
+        MatDialog,
+        { provide: MAT_DIALOG_DATA, useValue: 'VERA 2020' }
+      ]
     })
     .compileComponents();
   }));
