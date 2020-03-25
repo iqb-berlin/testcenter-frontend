@@ -30,7 +30,6 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { SyscheckComponent } from './syscheck/syscheck.component';
 import { IqbComponentsModule } from 'iqb-components';
 import {IqbFilesModule} from './files/iqb-files';
-import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
   imports: [
@@ -54,7 +53,6 @@ import {HttpClientModule} from "@angular/common/http";
     MatToolbarModule,
     MatSnackBarModule,
     MatGridListModule,
-    HttpClientModule,
     IqbComponentsModule,
     MatCardModule,
     FlexLayoutModule,

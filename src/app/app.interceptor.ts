@@ -15,6 +15,7 @@ export class AuthInterceptor implements HttpInterceptor {
     }
 
     const loginData = this.mds.loginData$.getValue();
+
     let authData;
     if (loginData === null) {
       authData = {

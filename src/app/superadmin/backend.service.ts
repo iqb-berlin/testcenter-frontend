@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import {IdAndName, IdLabelSelectedData, IdRoleData, UserData} from "./superadmin.interfaces";
 
 
 @Injectable({
@@ -15,10 +16,10 @@ export class BackendService {
     private http: HttpClient) {
   }
 
-  getUsers(): Observable<IdAndName[]> {
+  getUsers(): Observable<UserData[]> {
 
     return this.http
-      .get<NameOnly[]>(this.serverUrl + 'users')
+      .get<UserData[]>(this.serverUrl + 'users')
       .pipe(catchError(() => []));
   }
 
@@ -33,6 +34,13 @@ export class BackendService {
 
     return this.http
       .patch<Boolean>(this.serverUrl + `user/${userId}/password`, {p: password})
+      .pipe(catchError(() => of(false)));
+  }
+
+  setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<Boolean> {
+
+    return this.http
+      .patch<Boolean>(this.serverUrl + `user/${userId}/super-admin/` + (changeToSuperUser ? 'on' : 'off'), {p: password})
       .pipe(catchError(() => of(false)));
   }
 
@@ -98,26 +106,4 @@ export class BackendService {
       .get<IdAndName[]>(this.serverUrl + 'workspaces')
       .pipe(catchError(() => []));
   }
-}
-
-
-export interface NameOnly {
-  name: string;
-}
-
-export interface IdAndName {
-  id: number;
-  name: string;
-}
-
-export interface IdLabelSelectedData {
-  id: number;
-  label: string;
-  selected: boolean;
-}
-
-export interface IdRoleData {
-  id: number;
-  label: string;
-  role: string;
 }

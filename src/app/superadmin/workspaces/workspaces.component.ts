@@ -1,6 +1,6 @@
 import { EditworkspaceComponent } from './editworkspace/editworkspace.component';
 import { NewworkspaceComponent } from './newworkspace/newworkspace.component';
-import { BackendService, IdAndName, IdRoleData } from '../backend.service';
+import { BackendService } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { ViewChild, OnDestroy } from '@angular/core';
 
@@ -16,6 +16,7 @@ import {
 } from 'iqb-components';
 import { Subscription } from 'rxjs';
 import { MainDataService } from 'src/app/maindata.service';
+import {IdAndName, IdRoleData} from "../superadmin.interfaces";
 
 @Component({
   templateUrl: './workspaces.component.html',

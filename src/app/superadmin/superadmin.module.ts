@@ -29,7 +29,7 @@ import {NewpasswordComponent} from "./users/newpassword/newpassword.component";
 import {NewuserComponent} from "./users/newuser/newuser.component";
 import {NewworkspaceComponent} from "./workspaces/newworkspace/newworkspace.component";
 import {EditworkspaceComponent} from "./workspaces/editworkspace/editworkspace.component";
-import {HttpClientModule} from "@angular/common/http";
+import { SuperadminPasswordRequestComponent } from './superadmin-password-request/superadmin-password-request.component';
 
 
 @NgModule({
@@ -40,7 +40,8 @@ import {HttpClientModule} from "@angular/common/http";
     NewuserComponent,
     NewworkspaceComponent,
     EditworkspaceComponent,
-    WorkspacesComponent
+    WorkspacesComponent,
+    SuperadminPasswordRequestComponent
   ],
   imports: [
     CommonModule,
@@ -65,8 +66,7 @@ import {HttpClientModule} from "@angular/common/http";
     MatSnackBarModule,
     MatGridListModule,
     MatCardModule,
-    FlexLayoutModule,
-    HttpClientModule
+    FlexLayoutModule
   ],
   exports: [
     SuperadminComponent

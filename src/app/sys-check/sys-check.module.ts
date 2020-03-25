@@ -35,7 +35,6 @@ import {MatRadioModule} from "@angular/material/radio";
 import {MatSelectModule} from "@angular/material/select";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatStepperModule} from "@angular/material/stepper";
-import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
   imports: [
@@ -58,7 +57,6 @@ import {HttpClientModule} from "@angular/common/http";
     MatTooltipModule,
     ReactiveFormsModule,
     SysCheckRoutingModule,
-    HttpClientModule,
     IqbComponentsModule.forChild()
   ],
   declarations: [
