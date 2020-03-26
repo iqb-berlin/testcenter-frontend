@@ -30,11 +30,11 @@
     </button>
   </div>
 </div>
-<div class="spinner-container" *ngIf="tcs.dataLoading">
+<div class="spinner" *ngIf="tcs.dataLoading">
   <mat-spinner></mat-spinner>
 </div>
 <mat-card *ngIf="showProgress" class="progress-bar">
-  <mat-card-content fxLaxout="column">
+  <mat-card-content fxLayout="column">
     <h2>Lade Aufgaben... bitte warten</h2>
     <mat-progress-bar
         color="primary"

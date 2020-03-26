@@ -31,32 +31,31 @@
   padding: 5px;
 }
 
-.spinner-container {
-  position: fixed;
-  z-index: 999;
-  height: 2em;
-  width: 2em;
-  overflow: visible;
-  margin: auto;
-  top: 0;
-  left: 0;
+.spinner {
   bottom: 0;
+  height: 2em;
+  left: 0;
+  margin: auto;
+  overflow: visible;
+  position: fixed;
   right: 0;
+  top: 0;
+  width: 2em;
+  z-index: 999;
 }
 
 .spinner-container-local {
-  z-index: 999;
-  margin: auto;
-  top: 0;
-  left: 0;
+  align-items: center;
   bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  margin: auto;
+  position: absolute;
   right: 0;
   text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /*background: rgba(0, 0, 0, 0.3);*/
-  position: absolute;
+  top: 0;
+  z-index: 999;
 }
 
 iframe.unitHost {
@@ -90,5 +89,20 @@ div.logo img {
 }
 
 .error-msg {
+  position: absolute;
+  left: 40px;
+  top: 60px;
+  min-height: 60px;
+  width: calc(100% - 80px);
+  font-size: 1.1em;
+  border-width: 6px;
+  border-style: solid;
+  border-color: brown;
+  background-color: white;
   color: brown;
+  z-index: 999;
+}
+
+.error-msg mat-icon {
+  height: 32px;
 }

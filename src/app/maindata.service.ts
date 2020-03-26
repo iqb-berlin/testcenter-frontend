@@ -1,7 +1,7 @@
 import { BackendService } from './backend.service';
 import { BehaviorSubject, Subject, forkJoin } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { LoginData } from './app.interfaces';
+import {AppError, LoginData} from './app.interfaces';
 import { CustomtextService, ServerError } from 'iqb-components';
 import { appconfig, customtextKeySeparator, CustomTextsDefList } from './app.config';
 
@@ -29,7 +29,9 @@ export class MainDataService {
   }
 
   public loginData$ = new BehaviorSubject<LoginData>(MainDataService.defaultLoginData);
-  public globalErrorMsg$ = new BehaviorSubject<ServerError>(null);
+  public globalErrorMsg$ = new BehaviorSubject<ServerError>(null); // TODO remove globalErrorMsg$
+  public appError$ = new BehaviorSubject<AppError>(null);
+  public showSpinner = false;
 
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();

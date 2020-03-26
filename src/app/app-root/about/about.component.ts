@@ -3,7 +3,8 @@ import { Router } from '@angular/router';
 import { CustomtextService } from 'iqb-components';
 
 @Component({
-  templateUrl: './about.component.html'
+  templateUrl: './about.component.html',
+  styleUrls: ['./about.component.css']
 })
 export class AboutComponent {
 

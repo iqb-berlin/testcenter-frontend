@@ -1,18 +1,21 @@
 import { MainDataService } from './maindata.service';
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { BackendService } from './backend.service';
 import { LoginData } from './app.interfaces';
 import {CustomtextService, ServerError} from 'iqb-components';
 import { appconfig } from './app.config';
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'tc-root',
-  template: `<router-outlet></router-outlet>`,
+  templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 
 
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
+  private appErrorSubscription: Subscription = null;
+  showError = false;
 
   constructor (
     private mds: MainDataService,
@@ -30,11 +33,20 @@ export class AppComponent implements OnInit {
     return '';
   }
 
+  closeErrorBox() {
+    this.showError = false;
+  }
+
   ngOnInit() {
     this.mds.addCustomtextsFromDefList(appconfig.customtextsApp);
     this.mds.addCustomtextsFromDefList(appconfig.customtextsLogin);
     this.mds.addCustomtextsFromDefList(appconfig.customtextsBooklet);
 
+    this.appErrorSubscription = this.mds.appError$.subscribe(err => {
+      if (err) {
+        this.showError = true;
+      }
+    });
     // give a message to the central message broadcast
 
     window.addEventListener('message', (event: MessageEvent) => {
@@ -100,5 +112,11 @@ export class AppComponent implements OnInit {
         }
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.appErrorSubscription !== null) {
+      this.appErrorSubscription.unsubscribe();
+    }
   }
 }

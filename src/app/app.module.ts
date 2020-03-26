@@ -1,4 +1,4 @@
-import { AboutComponent } from './about/about.component';
+import { AboutComponent } from './app-root/about/about.component';
 import { BrowserModule } from '@angular/platform-browser';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -11,7 +11,6 @@ import { BackendService } from './backend.service';
 import { StartComponent } from './start/start.component';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { ErrormsgComponent } from './errormsg/errormsg.component';
 import {AuthInterceptor} from './app.interceptor';
 import { IqbComponentsModule } from 'iqb-components';
 import {MatButtonModule} from "@angular/material/button";
@@ -29,6 +28,7 @@ import {MatTabsModule} from "@angular/material/tabs";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {RouterModule} from "@angular/router";
+import { AppRootComponent } from './app-root/app-root.component';
 
 
 
@@ -37,7 +37,7 @@ import {RouterModule} from "@angular/router";
     AppComponent,
     StartComponent,
     AboutComponent,
-    ErrormsgComponent
+    AppRootComponent
   ],
   imports: [
     ApplicationModule,

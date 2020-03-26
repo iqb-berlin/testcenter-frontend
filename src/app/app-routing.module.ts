@@ -1,11 +1,13 @@
-import { AboutComponent } from './about/about.component';
+import { AboutComponent } from './app-root/about/about.component';
 import { StartComponent } from './start/start.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import {AppRootComponent} from "./app-root/app-root.component";
 
 
 const routes: Routes = [
-  {path: '', component: StartComponent, pathMatch: 'full'},
+  {path: '', component: AppRootComponent, pathMatch: 'full'},
+  {path: 'root', component: AppRootComponent},
   {path: 'start', component: StartComponent},
   {path: 'about', component: AboutComponent},
   {path: 'check', loadChildren: () => import('./sys-check/sys-check.module').then(m => m.SysCheckModule)},
