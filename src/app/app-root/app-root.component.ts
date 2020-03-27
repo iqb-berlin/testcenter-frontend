@@ -6,10 +6,9 @@ import {CustomtextService} from "iqb-components";
 @Component({
   selector: 'app-app-root',
   templateUrl: './app-root.component.html',
-  styleUrls: ['./app-root.component.css']
+  styles: ['.root-frame {padding: 80px;}']
 })
 export class AppRootComponent implements OnInit, OnDestroy {
-  showLoginForm = true;
   loginForm = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.minLength(3)]),
     pw: new FormControl('')

@@ -1,10 +1,3 @@
-export interface CheckConfigAbstract {
-  workspaceId: string;
-  name: string;
-  label: string;
-  description: string;
-}
-
 export interface SpeedParameters {
   min: number;
   good: number;

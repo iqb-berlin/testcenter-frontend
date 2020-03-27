@@ -44,7 +44,7 @@
   z-index: 999;
 }
 
-.spinner-container-local {
+.spinner-container-local { /* TODO remove */
   align-items: center;
   bottom: 0;
   display: flex;
@@ -65,7 +65,7 @@ iframe.unitHost {
   margin: 0;
 }
 
-p.unitMessage {
+p.unitMessage { /* TODO why here? */
   margin: 50px;
   text-align: center;
 }
@@ -80,10 +80,29 @@ div.logo img {
   width: 100px;
 }
 
-.pagetitle {
+.page-header {
   position: absolute;
   left: 140px;
-  top: 18px;
+  width: calc(100% - 140px);
+  top: 0;
+  padding: 0 10px 0 0;
+}
+
+.page-header mat-toolbar {
+  position: fixed;
+  z-index: 100;
+  top: 4px;
+  right: 90px;
+}
+
+.page-header mat-icon {
+  position: relative;
+  top: -8px;
+  font-size: 36px;
+  padding: 2px;
+}
+
+.page-header p {
   font-size: 1.5em;
   color: white;
 }

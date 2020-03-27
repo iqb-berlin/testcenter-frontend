@@ -5,7 +5,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { SysCheckRoutingModule } from './sys-check-routing.module';
-import { StartComponent } from './start.component';
 import { SysCheckComponent } from './sys-check.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import {MatDividerModule} from '@angular/material/divider';
@@ -60,7 +59,6 @@ import {MatStepperModule} from "@angular/material/stepper";
     IqbComponentsModule.forChild()
   ],
   declarations: [
-    StartComponent,
     SysCheckComponent,
     EnvironmentCheckComponent,
     NetworkCheckComponent,
@@ -71,9 +69,6 @@ import {MatStepperModule} from "@angular/material/stepper";
     SaveReportComponent,
     UnitNaviButtonsComponent,
     TcSpeedChartComponent
-  ],
-  exports: [
-    StartComponent
   ],
   entryComponents: [
     SaveReportComponent

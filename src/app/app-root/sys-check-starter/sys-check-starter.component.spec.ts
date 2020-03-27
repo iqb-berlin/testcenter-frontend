@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AppRootComponent } from './app-root.component';
+import { SysCheckStarterComponent } from './sys-check-starter.component';
 
-describe('AppRootComponent', () => {
-  let component: AppRootComponent;
-  let fixture: ComponentFixture<AppRootComponent>;
+describe('SysCheckStarterComponent', () => {
+  let component: SysCheckStarterComponent;
+  let fixture: ComponentFixture<SysCheckStarterComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AppRootComponent ],
+      declarations: [ SysCheckStarterComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AppRootComponent);
+    fixture = TestBed.createComponent(SysCheckStarterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

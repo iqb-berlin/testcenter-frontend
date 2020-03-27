@@ -1,20 +1,22 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { StartComponent } from './start.component';
+import { LoginComponent } from './login.component';
 import {HttpClientModule} from "@angular/common/http";
-import {BackendService} from "./backend.service";
-import {AppRoutingModule} from "../app-routing.module";
+import {ReactiveFormsModule} from "@angular/forms";
+import {AppRoutingModule} from "../../app-routing.module";
 import {IqbComponentsModule} from "iqb-components";
+import {BackendService} from "../../backend.service";
 
-describe('StartComponent', () => {
-  let component: StartComponent;
-  let fixture: ComponentFixture<StartComponent>;
+describe('LoginComponent', () => {
+  let component: LoginComponent;
+  let fixture: ComponentFixture<LoginComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ StartComponent ],
+      declarations: [ LoginComponent ],
       imports: [
         HttpClientModule,
+        ReactiveFormsModule,
         AppRoutingModule,
         IqbComponentsModule
       ],
@@ -26,7 +28,7 @@ describe('StartComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(StartComponent);
+    fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

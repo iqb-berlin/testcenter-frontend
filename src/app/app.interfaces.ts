@@ -66,3 +66,15 @@ export interface AppError {
   description: string;
   category: 'WARNING' | 'FATAL' | 'PROBLEM'
 }
+
+export interface starterData {
+  id: string;
+  label: string
+}
+
+export interface SysCheckInfo {
+  workspaceId: string;
+  name: string;
+  label: string;
+  description: string;
+}

@@ -3,7 +3,7 @@ import { Injectable, Inject } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import {catchError, map, switchMap} from 'rxjs/operators';
-import {LoginData, BookletStatus, PersonTokenAndTestId, KeyValuePair, SysConfig} from './app.interfaces';
+import {LoginData, BookletStatus, PersonTokenAndTestId, KeyValuePair, SysConfig, SysCheckInfo} from './app.interfaces';
 import {ErrorHandler, ServerError} from 'iqb-components';
 
 // ============================================================================
@@ -70,6 +70,17 @@ export class BackendService {
       }));
   }
 
+  public getSysCheckInfo(): Observable<SysCheckInfo[]> {
+
+    return this.http
+      .get<SysCheckInfo[]>(this.serverUrl + 'sys-checks')
+      .pipe(
+        catchError(() => {
+          const myreturn: SysCheckInfo[] = [];
+          return of(myreturn);
+        })
+      );
+  }
 
   getBookletState(bookletName: string, code = ''): Observable<BookletStatus | ServerError> {
 

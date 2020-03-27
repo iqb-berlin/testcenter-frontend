@@ -3,11 +3,21 @@ import { StartComponent } from './start/start.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {AppRootComponent} from "./app-root/app-root.component";
+import {LoginComponent} from "./app-root/login/login.component";
+import {SysCheckStarterComponent} from "./app-root/sys-check-starter/sys-check-starter.component";
 
 
 const routes: Routes = [
-  {path: '', component: AppRootComponent, pathMatch: 'full'},
-  {path: 'root', component: AppRootComponent},
+  {path: '', redirectTo: 'r', pathMatch: 'full'},
+  {path: 'r', component: AppRootComponent,
+    children: [
+      {path: '', redirectTo: 'login', pathMatch: 'full'},
+      {path: 'login/:returnTo', component: LoginComponent},
+      {path: 'about', component: AboutComponent},
+      {path: 'check-starter', component: SysCheckStarterComponent},
+      {path: '**', component: LoginComponent}
+    ]
+  },
   {path: 'start', component: StartComponent},
   {path: 'about', component: AboutComponent},
   {path: 'check', loadChildren: () => import('./sys-check/sys-check.module').then(m => m.SysCheckModule)},

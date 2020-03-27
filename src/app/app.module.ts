@@ -29,6 +29,9 @@ import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {RouterModule} from "@angular/router";
 import { AppRootComponent } from './app-root/app-root.component';
+import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
+import { LoginComponent } from './app-root/login/login.component';
+import { AppStatusComponent } from './app-root/app-status/app-status.component';
 
 
 
@@ -37,7 +40,10 @@ import { AppRootComponent } from './app-root/app-root.component';
     AppComponent,
     StartComponent,
     AboutComponent,
-    AppRootComponent
+    AppRootComponent,
+    SysCheckStarterComponent,
+    LoginComponent,
+    AppStatusComponent
   ],
   imports: [
     ApplicationModule,

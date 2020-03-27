@@ -31,7 +31,7 @@ export class MainDataService {
   public loginData$ = new BehaviorSubject<LoginData>(MainDataService.defaultLoginData);
   public globalErrorMsg$ = new BehaviorSubject<ServerError>(null); // TODO remove globalErrorMsg$
   public appError$ = new BehaviorSubject<AppError>(null);
-  public showSpinner = false;
+  public delayedProcessesCount$ = new BehaviorSubject<number>(0);
 
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();
@@ -49,6 +49,14 @@ export class MainDataService {
     private bs: BackendService,
     private cts: CustomtextService
   ) {}
+
+  incrementDelayedProcessesCount() {
+    this.delayedProcessesCount$.next(this.delayedProcessesCount$.getValue() + 1);
+  }
+
+  decrementDelayedProcessesCount() {
+    this.delayedProcessesCount$.next(this.delayedProcessesCount$.getValue() - 1);
+  }
 
   // ensures consistency
   setNewLoginData(logindata?: LoginData) {

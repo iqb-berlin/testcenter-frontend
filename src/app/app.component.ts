@@ -9,7 +9,7 @@ import {Subscription} from "rxjs";
 @Component({
   selector: 'tc-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  // styleUrls: ['./app.component.scss']
 })
 
 
@@ -18,7 +18,7 @@ export class AppComponent implements OnInit, OnDestroy {
   showError = false;
 
   constructor (
-    private mds: MainDataService,
+    public mds: MainDataService,
     private bs: BackendService,
     private cts: CustomtextService
   ) { }
@@ -47,7 +47,6 @@ export class AppComponent implements OnInit, OnDestroy {
         this.showError = true;
       }
     });
-    // give a message to the central message broadcast
 
     window.addEventListener('message', (event: MessageEvent) => {
       const msgData = event.data;
@@ -82,7 +81,7 @@ export class AppComponent implements OnInit, OnDestroy {
           if (personToken) {
             const bookletDbIdStr = AppComponent.getStringFromLocalStorage('bi');
             if (bookletDbIdStr) {
-              bookletDbId = Number(bookletDbIdStr);
+              bookletDbId = Number(bookletDbIdStr); // TODO: not used after assigning?
             }
           }
           const code = AppComponent.getStringFromLocalStorage('c');
