@@ -5,16 +5,19 @@ import { Routes, RouterModule } from '@angular/router';
 import {AppRootComponent} from "./app-root/app-root.component";
 import {LoginComponent} from "./app-root/login/login.component";
 import {SysCheckStarterComponent} from "./app-root/sys-check-starter/sys-check-starter.component";
+import {AdminStarterComponent} from "./app-root/admin-starter/admin-starter.component";
+import {CodeInputComponent} from "./app-root/code-input/code-input.component";
 
 
 const routes: Routes = [
   {path: '', redirectTo: 'r', pathMatch: 'full'},
   {path: 'r', component: AppRootComponent,
     children: [
-      {path: '', redirectTo: 'login', pathMatch: 'full'},
       {path: 'login/:returnTo', component: LoginComponent},
       {path: 'about', component: AboutComponent},
       {path: 'check-starter', component: SysCheckStarterComponent},
+      {path: 'admin-starter', component: AdminStarterComponent},
+      {path: 'code-input', component: CodeInputComponent},
       {path: '**', component: LoginComponent}
     ]
   },

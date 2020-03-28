@@ -12,6 +12,24 @@ export interface BookletListByCode {
   [code: string]: string[];
 }
 
+export enum AuthType {
+  LOGIN = "LOGIN",
+  ADMIN = "ADMIN",
+  PERSON = "PERSON",
+  SUPERADMIN = "SUPERADMIN"
+}
+
+export interface AccessRightList {
+  [key: string]: string[];
+}
+
+export interface AuthData {
+  token: string;
+  authTypes: AuthType[];
+  displayName: string;
+  accessRights: AccessRightList;
+}
+
 export interface LoginData {
   loginToken: string;
   personToken: string;

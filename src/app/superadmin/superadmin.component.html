@@ -1,12 +1,7 @@
-<div id="buttonsContainer" fxLayout="row" fxLayoutAlign="start center">
-  <a [routerLink]="['/']">
-    <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
-  </a>
-  <div fxLayout="row wrap" fxLayoutAlign="space-around center" fxFlex>
-    <div class="error-msg">{{ (mds.globalErrorMsg$ | async)?.labelNice }}</div>
-    <div>IQB-Testcenter Systemverwaltung</div>
-  </div>
+<div class="page-header">
+  <p>IQB-Testcenter Systemverwaltung</p>
 </div>
+
 <div class="page-body">
   <div class="adminbackground">
 

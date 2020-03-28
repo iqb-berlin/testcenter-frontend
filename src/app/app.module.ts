@@ -31,7 +31,8 @@ import {RouterModule} from "@angular/router";
 import { AppRootComponent } from './app-root/app-root.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
 import { LoginComponent } from './app-root/login/login.component';
-import { AppStatusComponent } from './app-root/app-status/app-status.component';
+import { CodeInputComponent } from './app-root/code-input/code-input.component';
+import { AdminStarterComponent } from './app-root/admin-starter/admin-starter.component';
 
 
 
@@ -43,7 +44,8 @@ import { AppStatusComponent } from './app-root/app-status/app-status.component';
     AppRootComponent,
     SysCheckStarterComponent,
     LoginComponent,
-    AppStatusComponent
+    CodeInputComponent,
+    AdminStarterComponent
   ],
   imports: [
     ApplicationModule,

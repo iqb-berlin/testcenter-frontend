@@ -1,4 +1,4 @@
-::ng-deep .scrollable {
+::ng-deep .scrollable { /* TODO ng-deep is deprecated */
   overflow: auto;
   box-sizing: border-box;
   position: absolute;
@@ -16,6 +16,6 @@ mat-card {
   margin: 10px;
 }
 
-::ng-deep .mat-card-header-text {
+::ng-deep .mat-card-header-text { /* TODO ng-deep is deprecated */
   margin-left: 0 !important;
 }

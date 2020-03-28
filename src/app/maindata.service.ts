@@ -58,6 +58,8 @@ export class MainDataService {
     this.delayedProcessesCount$.next(this.delayedProcessesCount$.getValue() - 1);
   }
 
+
+
   // ensures consistency
   setNewLoginData(logindata?: LoginData) {
     const myLoginData: LoginData = MainDataService.defaultLoginData;

@@ -1,9 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MainDataService} from "../../maindata.service";
-import {CustomtextService} from "iqb-components";
+import {CustomtextService, ServerError} from "iqb-components";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs";
+import {appconfig} from "../../app.config";
+import {LoginData} from "../../app.interfaces";
+import {BackendService} from "../../backend.service";
 
 @Component({
   templateUrl: './login.component.html',
@@ -26,6 +29,7 @@ export class LoginComponent  implements OnInit, OnDestroy {
   constructor(
     public mds: MainDataService,
     public cts: CustomtextService,
+    private bs: BackendService,
     private router: Router,
     private route: ActivatedRoute
   ) { }
@@ -37,16 +41,48 @@ export class LoginComponent  implements OnInit, OnDestroy {
   }
 
   login() {
+    this.mds.incrementDelayedProcessesCount();
     const loginData = this.loginForm.value;
     LoginComponent.oldLoginName = loginData['name'];
-    this.mds.appError$.next({
-      label: loginData['name'],
-      description: loginData['pw'],
-      category: "FATAL"
-    });
-    if (this.returnTo) {
-      this.router.navigateByUrl(this.returnTo);
-    }
+    this.bs.login(loginData['name'], loginData['pw']).subscribe(
+      loginData => {
+        if (loginData instanceof ServerError) {
+          const e = loginData as ServerError;
+          this.mds.appError$.next({
+            label: e.labelNice,
+            description: e.labelSystem + ' (' + e.code.toString + ')',
+            category: "PROBLEM"
+          });
+          this.mds.addCustomtextsFromDefList(appconfig.customtextsLogin);
+          // no change in other data
+        } else {
+          if ((loginData as LoginData).customTexts) {
+            this.cts.addCustomTexts((loginData as LoginData).customTexts);
+          }
+          this.mds.setNewLoginData(loginData as LoginData);
+
+          if (this.returnTo) {
+            this.router.navigateByUrl(this.returnTo);
+          } else {
+            const loginDataCleaned = this.mds.loginData$.getValue();
+            if (loginDataCleaned.adminToken.length > 0) {
+              this.router.navigate(['../admin-starter'], {relativeTo: this.route});
+            } else if (loginDataCleaned.loginToken.length > 0) {
+              this.router.navigate(['../code-input'], {relativeTo: this.route});
+            } else if (loginDataCleaned.personToken.length > 0) {
+              this.router.navigate(['../test-starter'], {relativeTo: this.route});
+            } else {
+              this.mds.appError$.next({
+                label: 'Keine Berechtigung für diese Anmeldedaten gefunden.',
+                description: 'Request ohne Fehler, aber kein Token?!',
+                category: "PROBLEM"
+              });
+            }
+          }
+        }
+        this.mds.decrementDelayedProcessesCount();
+      }
+    );
   }
 
   ngOnDestroy() {
