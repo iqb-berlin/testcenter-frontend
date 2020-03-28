@@ -59,17 +59,16 @@ export class LoginComponent  implements OnInit, OnDestroy {
           if ((loginData as LoginData).customTexts) {
             this.cts.addCustomTexts((loginData as LoginData).customTexts);
           }
-          this.mds.setNewLoginData(loginData as LoginData);
+          this.mds.setAuthData(loginData as LoginData);
 
           if (this.returnTo) {
             this.router.navigateByUrl(this.returnTo);
           } else {
-            const loginDataCleaned = this.mds.loginData$.getValue();
-            if (loginDataCleaned.adminToken.length > 0) {
+            if (this.mds.adminToken) {
               this.router.navigate(['../admin-starter'], {relativeTo: this.route});
-            } else if (loginDataCleaned.loginToken.length > 0) {
+            } else if (this.mds.loginToken) {
               this.router.navigate(['../code-input'], {relativeTo: this.route});
-            } else if (loginDataCleaned.personToken.length > 0) {
+            } else if (this.mds.personToken) {
               this.router.navigate(['../test-starter'], {relativeTo: this.route});
             } else {
               this.mds.appError$.next({

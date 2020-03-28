@@ -2,7 +2,7 @@ import { NewpasswordComponent } from './newpassword/newpassword.component';
 import { NewuserComponent } from './newuser/newuser.component';
 import { BackendService } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { ViewChild, OnDestroy } from '@angular/core';
+import { ViewChild } from '@angular/core';
 
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -12,9 +12,8 @@ import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType
+  MessageDialogData, MessageType, ServerError
 } from 'iqb-components';
-import { Subscription } from 'rxjs';
 import { MainDataService } from 'src/app/maindata.service';
 import {IdRoleData, UserData} from "../superadmin.interfaces";
 import {SuperadminPasswordRequestComponent} from "../superadmin-password-request/superadmin-password-request.component";
@@ -24,20 +23,17 @@ import {SuperadminPasswordRequestComponent} from "../superadmin-password-request
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css']
 })
-export class UsersComponent implements OnInit, OnDestroy {
-  public isSuperadmin = false;
-  public dataLoading = false;
+export class UsersComponent implements OnInit {
   public objectsDatasource: MatTableDataSource<UserData>;
   public displayedColumns = ['selectCheckbox', 'name'];
   private tableselectionCheckbox = new SelectionModel<UserData>(true, []);
   private tableselectionRow = new SelectionModel<UserData>(false, []);
-  private selectedUser = -1;
+  public selectedUser = -1;
   private selectedUserName = '';
 
   private pendingWorkspaceChanges = false;
   public WorkspacelistDatasource: MatTableDataSource<IdRoleData>;
   public displayedWorkspaceColumns = ['selectCheckbox', 'label'];
-  private logindataSubscription: Subscription = null;
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -65,10 +61,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.logindataSubscription = this.mds.loginData$.subscribe(ld => {
-      this.isSuperadmin = ld.isSuperadmin;
-      this.updateObjectList();
-    });
+    this.updateObjectList();
   }
 
   // ***********************************************************************************
@@ -80,6 +73,7 @@ export class UsersComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       if (typeof result !== 'undefined') {
         if (result !== false) {
+          this.mds.incrementDelayedProcessesCount();
           this.bs.addUser((<FormGroup>result).get('name').value,
               (<FormGroup>result).get('pw').value).subscribe(
                 respOk => {
@@ -89,6 +83,7 @@ export class UsersComponent implements OnInit, OnDestroy {
                   } else {
                     this.snackBar.open('Konnte Nutzer nicht hinzufügen', 'Fehler', {duration: 1000});
                   }
+                  this.mds.decrementDelayedProcessesCount();
                 });
         }
       }
@@ -131,7 +126,7 @@ export class UsersComponent implements OnInit, OnDestroy {
           passwdDialogRef.afterClosed().subscribe(result => {
             if (typeof result !== 'undefined') {
               if (result !== false) {
-                this.dataLoading = true;
+                this.mds.incrementDelayedProcessesCount();
                 this.bs.setSuperUserStatus(
                   selectedRows[0]['id'],
                   userObject.is_superadmin === '0',
@@ -142,7 +137,7 @@ export class UsersComponent implements OnInit, OnDestroy {
                     } else {
                       this.snackBar.open('Konnte Status nicht ändern', 'Fehler', {duration: 1000});
                     }
-                    this.dataLoading = false;
+                    this.mds.decrementDelayedProcessesCount();
                   });
               }
             }
@@ -175,7 +170,7 @@ export class UsersComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe(result => {
         if (typeof result !== 'undefined') {
           if (result !== false) {
-            this.dataLoading = true;
+            this.mds.incrementDelayedProcessesCount();
             this.bs.changePassword(selectedRows[0]['id'],
                 (<FormGroup>result).get('pw').value).subscribe(
                   respOk => {
@@ -184,7 +179,7 @@ export class UsersComponent implements OnInit, OnDestroy {
                     } else {
                       this.snackBar.open('Konnte Kennwort nicht ändern', 'Fehler', {duration: 1000});
                     }
-                    this.dataLoading = false;
+                    this.mds.decrementDelayedProcessesCount();
                   });
           }
         }
@@ -226,7 +221,7 @@ export class UsersComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           // =========================================================
-          this.dataLoading = true;
+          this.mds.incrementDelayedProcessesCount();
           const usersToDelete = [];
           selectedRows.forEach((r: UserData) => usersToDelete.push(r.id));
           this.bs.deleteUsers(usersToDelete).subscribe(
@@ -234,12 +229,11 @@ export class UsersComponent implements OnInit, OnDestroy {
               if (respOk !== false) {
                 this.snackBar.open('Nutzer gelöscht', '', {duration: 1000});
                 this.updateObjectList();
-                this.dataLoading = false;
               } else {
                 this.snackBar.open('Konnte Nutzer nicht löschen', 'Fehler', {duration: 2000});
-                this.dataLoading = false;
               }
-          });
+              this.mds.decrementDelayedProcessesCount();
+            });
         }
       });
     }
@@ -249,11 +243,19 @@ export class UsersComponent implements OnInit, OnDestroy {
   updateWorkspaceList() {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser > -1) {
-      this.dataLoading = true;
+      this.mds.incrementDelayedProcessesCount();
       this.bs.getWorkspacesByUser(this.selectedUser).subscribe(dataresponse => {
+        if (dataresponse instanceof ServerError) {
+          this.mds.appError$.next({
+            label: (dataresponse as ServerError).labelNice,
+            description: (dataresponse as ServerError).labelSystem,
+            category: "PROBLEM"
+          });
+        } else {
           this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
-          this.dataLoading = false;
-        });
+        }
+        this.mds.decrementDelayedProcessesCount()
+      })
     } else {
       this.WorkspacelistDatasource = null;
     }
@@ -271,7 +273,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   saveWorkspaces() {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser > -1) {
-      this.dataLoading = true;
+      this.mds.incrementDelayedProcessesCount();
       this.bs.setWorkspacesByUser(this.selectedUser, this.WorkspacelistDatasource.data).subscribe(
         respOk => {
           if (respOk !== false) {
@@ -279,7 +281,7 @@ export class UsersComponent implements OnInit, OnDestroy {
           } else {
             this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 2000});
           }
-          this.dataLoading = false;
+          this.mds.decrementDelayedProcessesCount();
         });
     } else {
       this.WorkspacelistDatasource = null;
@@ -288,18 +290,22 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   // ***********************************************************************************
   updateObjectList() {
-    if (this.isSuperadmin) {
-      this.dataLoading = true;
-      this.tableselectionCheckbox.clear();
-      this.tableselectionRow.clear();
-      this.bs.getUsers().subscribe(dataresponse => {
-        console.log(dataresponse);
-          this.objectsDatasource = new MatTableDataSource(dataresponse);
-          this.objectsDatasource.sort = this.sort;
-          this.dataLoading = false;
-        }
-      );
-    }
+    this.mds.incrementDelayedProcessesCount();
+    this.tableselectionCheckbox.clear();
+    this.tableselectionRow.clear();
+    this.bs.getUsers().subscribe(dataresponse => {
+      if (dataresponse instanceof ServerError) {
+        this.mds.appError$.next({
+          label: (dataresponse as ServerError).labelNice,
+          description: (dataresponse as ServerError).labelSystem,
+          category: "PROBLEM"
+        });
+      } else {
+        this.objectsDatasource = new MatTableDataSource(dataresponse);
+        this.objectsDatasource.sort = this.sort;
+      }
+      this.mds.decrementDelayedProcessesCount();
+    });
   }
 
   isAllSelected() {
@@ -316,12 +322,5 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   selectRow(row) {
     this.tableselectionRow.select(row);
-  }
-
-  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-  ngOnDestroy() {
-    if (this.logindataSubscription !== null) {
-      this.logindataSubscription.unsubscribe();
-    }
   }
 }

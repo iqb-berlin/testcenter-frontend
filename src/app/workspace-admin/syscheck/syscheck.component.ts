@@ -8,7 +8,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 import { SysCheckStatistics } from '../workspace.interfaces';
-import { WorkspaceDataService } from '../workspacedata.service';
+import {MainDataService} from "../../maindata.service";
 
 
 @Component({
@@ -20,14 +20,13 @@ export class SyscheckComponent implements OnInit {
   public resultDataSource = new MatTableDataSource<SysCheckStatistics>([]);
   // prepared for selection if needed sometime
   public tableselectionCheckbox = new SelectionModel<SysCheckStatistics>(true, []);
-  public dataLoading = false;
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
     private bs: BackendService,
     private deleteConfirmDialog: MatDialog,
-    public wds: WorkspaceDataService,
+    private mds: MainDataService,
     public snackBar: MatSnackBar
   ) {
   }
@@ -37,13 +36,20 @@ export class SyscheckComponent implements OnInit {
   }
 
   updateTable() {
-    this.dataLoading = true;
+    this.mds.incrementDelayedProcessesCount();
     this.tableselectionCheckbox.clear();
-    this.bs.getSysCheckReportList(this.wds.ws).subscribe(
+    this.bs.getSysCheckReportList().subscribe(
       (resultData: SysCheckStatistics[]) => {
-        this.dataLoading = false;
+        this.mds.decrementDelayedProcessesCount();
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);
         this.resultDataSource.sort = this.sort;
+      }, (err: ServerError) => {
+        this.mds.appError$.next({
+          label: err.labelNice,
+          description: err.labelSystem,
+          category: "PROBLEM"
+        });
+        this.mds.decrementDelayedProcessesCount();
       }
     );
   }
@@ -62,15 +68,14 @@ export class SyscheckComponent implements OnInit {
 
 
   downloadReportsCSV() {
-
     if (this.tableselectionCheckbox.selected.length > 0) {
-      this.dataLoading = true;
+      this.mds.incrementDelayedProcessesCount();
       const selectedReports: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedReports.push(element.id);
       });
       // TODO determine OS dependent line ending char and use this
-      this.bs.getSysCheckReport(this.wds.ws, selectedReports, ';', '"', '\n').subscribe(
+      this.bs.getSysCheckReport(selectedReports, ';', '"', '\n').subscribe(
       (reportData: Blob) => {
         if (reportData.size > 0) {
           saveAs(reportData, 'iqb-testcenter-syscheckreports.csv');
@@ -78,8 +83,15 @@ export class SyscheckComponent implements OnInit {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
-        this.dataLoading = false;
-    });
+        this.mds.decrementDelayedProcessesCount();
+      }, (err: ServerError) => {
+          this.mds.appError$.next({
+            label: err.labelNice,
+            description: err.labelSystem,
+            category: "PROBLEM"
+          });
+          this.mds.decrementDelayedProcessesCount();
+      });
     }
   }
 
@@ -108,16 +120,17 @@ export class SyscheckComponent implements OnInit {
       });
 
       dialogRef.afterClosed().subscribe(result => {
-
         if (result !== false) {
-
-          this.dataLoading = true;
-          this.bs.deleteSysCheckReports(this.wds.ws, selectedReports).subscribe((fileDeletionReport) => {
-
+          this.mds.incrementDelayedProcessesCount();
+          this.bs.deleteSysCheckReports(selectedReports).subscribe((fileDeletionReport) => {
             if (fileDeletionReport instanceof ServerError) {
-              this.wds.setNewErrorMsg(fileDeletionReport as ServerError);
+              this.mds.appError$.next({
+                label: (fileDeletionReport as ServerError).labelNice,
+                description: (fileDeletionReport as ServerError).labelSystem,
+                category: "PROBLEM"
+              });
+              this.mds.decrementDelayedProcessesCount();
             } else {
-
               const message = [];
               if (fileDeletionReport.deleted.length > 0) {
                 message.push(fileDeletionReport.deleted.length + ' Dateien erfolgreich gelöscht.');
@@ -125,11 +138,9 @@ export class SyscheckComponent implements OnInit {
               if (fileDeletionReport.not_allowed.length > 0) {
                 message.push(fileDeletionReport.not_allowed.length + ' Dateien konnten nicht gelöscht werden.');
               }
-
               this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', {duration: 1000});
-
               this.updateTable();
-              this.wds.setNewErrorMsg();
+              this.mds.decrementDelayedProcessesCount();
             }
           });
         }

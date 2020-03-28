@@ -11,25 +11,14 @@ export class AuthInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
     if (request.headers.get('AuthToken') !== null) {
-      return  next.handle(request);
+      return next.handle(request);
     }
 
-    const loginData = this.mds.loginData$.getValue();
-
-    let authData;
-    if (loginData === null) {
-      authData = {
-        l: '',
-        p: '',
-        at: ''
-      };
-    } else {
-      authData = {
-        l: loginData.loginToken,
-        p: loginData.personToken,
-        at: loginData.adminToken
-      };
-    }
+    const authData = {
+      l: this.mds.loginToken,
+      p: this.mds.personToken,
+      at: this.mds.adminToken
+    };
     const requestA = request.clone({
       setHeaders: {
         AuthToken: JSON.stringify(authData)

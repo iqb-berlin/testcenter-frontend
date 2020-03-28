@@ -1,7 +1,7 @@
 import { LogData } from '../workspace.interfaces';
 import { WorkspaceDataService } from '../workspacedata.service';
-import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import {ConfirmDialogComponent, ConfirmDialogData, ServerError} from 'iqb-components';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { BackendService } from '../backend.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -10,20 +10,18 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 import { ResultData, UnitResponse, ReviewData } from '../workspace.interfaces';
-import { Subscription } from 'rxjs';
+import {MainDataService} from "../../maindata.service";
 
 
 @Component({
   templateUrl: './results.component.html',
   styleUrls: ['./results.component.css']
 })
-export class ResultsComponent implements OnInit, OnDestroy {
+export class ResultsComponent implements OnInit {
   displayedColumns: string[] = ['selectCheckbox', 'groupname', 'bookletsStarted', 'num_units_min', 'num_units_max', 'num_units_mean', 'lastchange'];
   public resultDataSource = new MatTableDataSource<ResultData>([]);
   // prepared for selection if needed sometime
   public tableselectionCheckbox = new SelectionModel<ResultData>(true, []);
-  public dataLoading = false;
-  private workspaceIdSubscription: Subscription = null;
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
@@ -31,13 +29,12 @@ export class ResultsComponent implements OnInit, OnDestroy {
     private bs: BackendService,
     public wds: WorkspaceDataService,
     private deleteConfirmDialog: MatDialog,
+    private mds: MainDataService,
     public snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
-    this.workspaceIdSubscription = this.wds.workspaceId$.subscribe(() => {
-      this.updateTable();
-    });
+    this.updateTable();
   }
 
   updateTable() {
@@ -45,12 +42,19 @@ export class ResultsComponent implements OnInit, OnDestroy {
     if (this.wds.wsRole === 'MO') {
       this.resultDataSource = new MatTableDataSource<ResultData>([]);
     } else {
-      this.dataLoading = true;
-      this.bs.getResultData(this.wds.ws).subscribe(
+      this.mds.incrementDelayedProcessesCount();
+      this.bs.getResultData().subscribe(
         (resultData: ResultData[]) => {
-          this.dataLoading = false;
+          this.mds.decrementDelayedProcessesCount();
           this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
           this.resultDataSource.sort = this.sort;
+        }, (err: ServerError) => {
+          this.mds.appError$.next({
+            label: err.labelNice,
+            description: err.labelSystem,
+            category: "PROBLEM"
+          });
+          this.mds.decrementDelayedProcessesCount();
         }
       );
     }
@@ -71,12 +75,12 @@ export class ResultsComponent implements OnInit, OnDestroy {
   // 444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
   downloadResponsesCSV() {
     if (this.tableselectionCheckbox.selected.length > 0) {
-      this.dataLoading = true;
+      this.mds.incrementDelayedProcessesCount();
       const selectedGroups: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.getResponses(this.wds.ws, selectedGroups).subscribe(
+      this.bs.getResponses(selectedGroups).subscribe(
       (responseData: UnitResponse[]) => {
         if (responseData.length > 0) {
           const columnDelimiter = ';';
@@ -126,20 +130,27 @@ export class ResultsComponent implements OnInit, OnDestroy {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
-        this.dataLoading = false;
-    });
+        this.mds.decrementDelayedProcessesCount();
+      }, (err: ServerError) => {
+          this.mds.appError$.next({
+            label: err.labelNice,
+            description: err.labelSystem,
+            category: "PROBLEM"
+          });
+          this.mds.decrementDelayedProcessesCount();
+      });
     }
   }
 
   // 444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
   downloadReviewsCSV() {
     if (this.tableselectionCheckbox.selected.length > 0) {
-      this.dataLoading = true;
+      this.mds.incrementDelayedProcessesCount();
       const selectedGroups: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.getReviews(this.wds.ws, selectedGroups).subscribe(
+      this.bs.getReviews(selectedGroups).subscribe(
       (responseData: ReviewData[]) => {
         if (responseData.length > 0) {
           // collect categories
@@ -188,7 +199,14 @@ export class ResultsComponent implements OnInit, OnDestroy {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
-        this.dataLoading = false;
+        this.mds.decrementDelayedProcessesCount();
+      }, (err: ServerError) => {
+          this.mds.appError$.next({
+            label: err.labelNice,
+            description: err.labelSystem,
+            category: "PROBLEM"
+          });
+          this.mds.decrementDelayedProcessesCount();
       });
     }
   }
@@ -196,12 +214,12 @@ export class ResultsComponent implements OnInit, OnDestroy {
   // 444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
   downloadLogsCSV() {
     if (this.tableselectionCheckbox.selected.length > 0) {
-      this.dataLoading = true;
+      this.mds.incrementDelayedProcessesCount();
       const selectedGroups: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.getLogs(this.wds.ws, selectedGroups).subscribe(
+      this.bs.getLogs(selectedGroups).subscribe(
       (responseData: LogData[]) => {
         if (responseData.length > 0) {
           const columnDelimiter = ';';
@@ -222,7 +240,14 @@ export class ResultsComponent implements OnInit, OnDestroy {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
-        this.dataLoading = false;
+        this.mds.decrementDelayedProcessesCount();
+      }, (err: ServerError) => {
+          this.mds.appError$.next({
+            label: err.labelNice,
+            description: err.labelSystem,
+            category: "PROBLEM"
+          });
+          this.mds.decrementDelayedProcessesCount();
       });
     }
   }
@@ -254,21 +279,21 @@ export class ResultsComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           // =========================================================
-          this.dataLoading = true;
-          this.bs.deleteData(this.wds.ws, selectedGroups).subscribe(() => {
+          this.mds.incrementDelayedProcessesCount();
+          this.bs.deleteData(selectedGroups).subscribe(() => {
               this.tableselectionCheckbox.clear();
-              this.dataLoading = false;
+              this.mds.decrementDelayedProcessesCount();
               // TODO refresh list!
+          }, (err: ServerError) => {
+            this.mds.appError$.next({
+              label: err.labelNice,
+              description: err.labelSystem,
+              category: "PROBLEM"
             });
-          }
-        });
-    }
-  }
-
-  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-  ngOnDestroy() {
-    if (this.workspaceIdSubscription !== null) {
-      this.workspaceIdSubscription.unsubscribe();
+            this.mds.decrementDelayedProcessesCount();
+          });
+        }
+      });
     }
   }
 }

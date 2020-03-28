@@ -20,7 +20,7 @@ export enum AuthType {
 }
 
 export interface AccessRightList {
-  [key: string]: string[];
+  [key: string]: string;
 }
 
 export interface AuthData {

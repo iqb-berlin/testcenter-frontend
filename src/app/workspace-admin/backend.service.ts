@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ErrorHandler, ServerError } from 'iqb-components';
+import {WorkspaceDataService} from "./workspacedata.service";
 
 @Injectable({
   providedIn: 'root'
@@ -14,79 +15,80 @@ export class BackendService {
 
   constructor(
     @Inject('SERVER_URL') private readonly serverUrl: string,
+    private wds: WorkspaceDataService,
     private http: HttpClient
   ) {
   }
 
 
-  getFiles(workspaceId: number): Observable<GetFileResponseData[] | ServerError> {
+  getFiles(): Observable<GetFileResponseData[] | ServerError> {
 
     return this.http
-      .get<GetFileResponseData[]>(this.serverUrl + `workspace/${workspaceId}/files`)
+      .get<GetFileResponseData[]>(this.serverUrl + `workspace/${this.wds.wsId}/files`)
       .pipe(catchError(ErrorHandler.handle));
   }
 
-  deleteFiles(workspaceId: number, filesToDelete: Array<string>): Observable<FileDeletionReport | ServerError> {
+  deleteFiles(filesToDelete: Array<string>): Observable<FileDeletionReport | ServerError> {
 
     return this.http
-      .request<FileDeletionReport>('delete', this.serverUrl + `workspace/${workspaceId}/files`, {body: {f: filesToDelete}})
+      .request<FileDeletionReport>('delete', this.serverUrl + `workspace/${this.wds.wsId}/files`, {body: {f: filesToDelete}})
       .pipe(catchError(ErrorHandler.handle));
   }
 
-  checkWorkspace(workspaceId: number): Observable<CheckWorkspaceResponseData | ServerError> {
+  checkWorkspace(): Observable<CheckWorkspaceResponseData | ServerError> {
 
     return this.http
-      .get<CheckWorkspaceResponseData>(this.serverUrl + `workspace/${workspaceId}/validation`, {})
+      .get<CheckWorkspaceResponseData>(this.serverUrl + `workspace/${this.wds.wsId}/validation`, {})
       .pipe(catchError(ErrorHandler.handle));
   }
 
-  getResultData(workspaceId: number): Observable<ResultData[]> {
+  getResultData(): Observable<ResultData[]> {
 
     return this.http
-      .get<ResultData[]>(this.serverUrl + `workspace/${workspaceId}/results`, {})
+      .get<ResultData[]>(this.serverUrl + `workspace/${this.wds.wsId}/results`, {})
       .pipe(catchError(() => []));
   }
 
-  getResponses(workspaceId: number, groups: string[]): Observable<UnitResponse[]> {
+  getResponses(groups: string[]): Observable<UnitResponse[]> {
 
     return this.http
-      .get<UnitResponse[]>(this.serverUrl + `workspace/${workspaceId}/responses`, {params: {groups: groups.join(',')}})
+      .get<UnitResponse[]>(this.serverUrl + `workspace/${this.wds.wsId}/responses`, {params: {groups: groups.join(',')}})
       .pipe(catchError(() => []));
   }
 
-  getLogs(workspaceId: number, groups: string[]): Observable<LogData[]> {
+  getLogs(groups: string[]): Observable<LogData[]> {
 
     return this.http
-      .get<LogData[]>(this.serverUrl + `workspace/${workspaceId}/logs`, {params: {groups: groups.join(',')}})
+      .get<LogData[]>(this.serverUrl + `workspace/${this.wds.wsId}/logs`, {params: {groups: groups.join(',')}})
       .pipe(catchError(() => []));
   }
 
-  getReviews(workspaceId: number, groups: string[]): Observable<ReviewData[]> {
+  getReviews(groups: string[]): Observable<ReviewData[]> {
 
     return this.http
-      .get<ReviewData[]>(this.serverUrl + `workspace/${workspaceId}/reviews`, {params: {groups: groups.join(',')}})
+      .get<ReviewData[]>(this.serverUrl + `workspace/${this.wds.wsId}/reviews`, {params: {groups: groups.join(',')}})
       .pipe(catchError(() => []));
   }
 
-  deleteData(workspaceId: number, groups: string[]): Observable<boolean | ServerError> {
+  deleteData(groups: string[]): Observable<boolean | ServerError> {
 
     return this.http
-      .request<boolean>('delete', this.serverUrl + `workspace/${workspaceId}/responses`, {body: {groups: groups}})
+      .request<boolean>('delete', this.serverUrl + `workspace/${this.wds.wsId}/responses`, {body: {groups: groups}})
       .pipe(catchError(ErrorHandler.handle));
   }
 
-  getSysCheckReportList(workspaceId: number): Observable<SysCheckStatistics[] | ServerError> {
+  getSysCheckReportList(): Observable<SysCheckStatistics[] | ServerError> {
 
     return this.http
-      .get<ReviewData[]>(this.serverUrl + `workspace/${workspaceId}/sys-check/reports/overview`)
+      .get<ReviewData[]>(this.serverUrl + `workspace/${this.wds.wsId}/sys-check/reports/overview`)
       .pipe(catchError(() => []));
   }
 
-  getSysCheckReport(workspaceId: number, reports: string[], enclosure: string, columnDelimiter: string, lineEnding: string)
+  getSysCheckReport(reports: string[], enclosure: string, columnDelimiter: string, lineEnding: string)
     : Observable<Blob|ServerError> {
 
     return this.http
-      .get(this.serverUrl + `workspace/${workspaceId}/sys-check/reports`,
+      .get(this.serverUrl + `workspace/${this.wds.wsId}/sys-check/reports`,
         {
           params: {
             checkIds: reports.join(','),
@@ -102,17 +104,17 @@ export class BackendService {
       .pipe(catchError(ErrorHandler.handle));
   }
 
-  deleteSysCheckReports(workspaceId: number, checkIds: string[]): Observable <FileDeletionReport|ServerError> {
+  deleteSysCheckReports(checkIds: string[]): Observable <FileDeletionReport|ServerError> {
 
     return this.http
-      .request<FileDeletionReport>('delete', this.serverUrl + `workspace/${workspaceId}/sys-check/reports`, {body: {checkIds: checkIds}})
+      .request<FileDeletionReport>('delete', this.serverUrl + `workspace/${this.wds.wsId}/sys-check/reports`, {body: {checkIds: checkIds}})
       .pipe(catchError(ErrorHandler.handle));
   }
 
-  downloadFile(workspaceId: number, fileType: string, fileName: string): Observable<Blob|ServerError> {
+  downloadFile(fileType: string, fileName: string): Observable<Blob|ServerError> {
 
     return this.http
-      .get(this.serverUrl + `workspace/${workspaceId}/file/${fileType}/${fileName}`, {responseType: 'blob'})
+      .get(this.serverUrl + `workspace/${this.wds.wsId}/file/${fileType}/${fileName}`, {responseType: 'blob'})
       .pipe(catchError(ErrorHandler.handle));
   }
 }

@@ -1,13 +1,16 @@
-import { BackendService } from './backend.service';
-import { BehaviorSubject, Subject, forkJoin } from 'rxjs';
-import { Injectable } from '@angular/core';
-import {AppError, LoginData} from './app.interfaces';
-import { CustomtextService, ServerError } from 'iqb-components';
-import { appconfig, customtextKeySeparator, CustomTextsDefList } from './app.config';
+import {BackendService} from './backend.service';
+import {BehaviorSubject, forkJoin, Subject} from 'rxjs';
+import {Injectable} from '@angular/core';
+import {AccessRightList, AppError, AuthData, AuthType, LoginData} from './app.interfaces';
+import {CustomtextService, ServerError} from 'iqb-components';
+import {appconfig, customtextKeySeparator, CustomTextsDefList} from './app.config';
+
+const localStorageAuthDataKey = 'iqb-tc';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class MainDataService {
   private static get defaultLoginData(): LoginData {
     return {
@@ -37,11 +40,77 @@ export class MainDataService {
   public postMessage$ = new Subject<MessageEvent>();
 
   public get adminToken(): string {
-    const myLoginData = this.loginData$.getValue();
-    if (myLoginData) {
-      return myLoginData.adminToken;
+    const authData = MainDataService.getAuthDataFromLocalStorage();
+    if (authData) {
+      if (authData.token) {
+        if (authData.authTypes.indexOf(AuthType.ADMIN) >= 0) {
+          return authData.token;
+        }
+      }
+    }
+    return '';
+  }
+  public get isSuperAdmin(): boolean {
+    const authData = MainDataService.getAuthDataFromLocalStorage();
+    if (authData) {
+      if (authData.token) {
+        if (authData.authTypes.indexOf(AuthType.SUPERADMIN) >= 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  public get loginToken(): string {
+    const authData = MainDataService.getAuthDataFromLocalStorage();
+    if (authData) {
+      if (authData.token) {
+        if (authData.authTypes.indexOf(AuthType.LOGIN) >= 0) {
+          return authData.token;
+        }
+      }
+    }
+    return '';
+  }
+  public get personToken(): string {
+    const authData = MainDataService.getAuthDataFromLocalStorage();
+    if (authData) {
+      if (authData.token) {
+        if (authData.authTypes.indexOf(AuthType.PERSON) >= 0) {
+          return authData.token;
+        }
+      }
+    }
+    return '';
+  }
+
+  public get workspaces(): AccessRightList {
+    const authData = MainDataService.getAuthDataFromLocalStorage();
+    if (authData) {
+      if (authData.token) {
+        if (authData.authTypes.indexOf(AuthType.ADMIN) >= 0) {
+          return authData.accessRights;
+        }
+      }
+    }
+    return {};
+  }
+
+  private static getAuthDataFromLocalStorage(): AuthData {
+    const storageEntry = localStorage.getItem(localStorageAuthDataKey);
+    if (storageEntry !== null) {
+      if (storageEntry.length > 0) {
+        return JSON.parse(storageEntry as string);
+      }
+    }
+    return null;
+  }
+
+  private static setAuthDataToLocalStorage(authData: AuthData = null) {
+    if (authData) {
+      localStorage.setItem(localStorageAuthDataKey, JSON.stringify(authData));
     } else {
-      return '';
+      localStorage.removeItem(localStorageAuthDataKey);
     }
   }
 
@@ -55,10 +124,60 @@ export class MainDataService {
   }
 
   decrementDelayedProcessesCount() {
-    this.delayedProcessesCount$.next(this.delayedProcessesCount$.getValue() - 1);
+    const dpc = this.delayedProcessesCount$.getValue();
+    if (dpc > 0) {
+      this.delayedProcessesCount$.next(dpc - 1);
+    }
   }
 
-
+  setAuthData(loginData: LoginData = null) {
+    if (loginData) {
+      const authData = <AuthData>{
+        token: '',
+        authTypes: [],
+        displayName: '',
+        accessRights: {}
+      };
+      if (loginData.adminToken) {
+        authData.token = loginData.adminToken;
+        authData.displayName = loginData.name;
+        authData.authTypes.push(AuthType.ADMIN);
+        if (loginData.isSuperadmin) {
+          authData.authTypes.push(AuthType.SUPERADMIN);
+        }
+        for (let ws of loginData.workspaces) {
+          authData.accessRights[ws.id.toString()] = ws.name;
+        }
+        MainDataService.setAuthDataToLocalStorage(authData);
+      } else if (loginData.loginToken) {
+        authData.token = loginData.loginToken;
+        authData.displayName = loginData.name;
+        authData.authTypes.push(AuthType.LOGIN);
+        MainDataService.setAuthDataToLocalStorage(authData);
+      } else if (loginData.personToken) {
+        authData.token = loginData.personToken;
+        authData.displayName = loginData.name;
+        authData.authTypes.push(AuthType.PERSON);
+        if (loginData.code) {
+          const bookletList = loginData.booklets[loginData.code];
+          if (bookletList) {
+            for (let b of bookletList) {
+              authData.accessRights[b] = b;
+            }
+          }
+        } else {
+          for (let b of loginData.booklets[0]) {
+            authData.accessRights[b] = b;
+          }
+        }
+        MainDataService.setAuthDataToLocalStorage(authData);
+      } else {
+        MainDataService.setAuthDataToLocalStorage();
+      }
+    } else {
+      MainDataService.setAuthDataToLocalStorage();
+    }
+  }
 
   // ensures consistency
   setNewLoginData(logindata?: LoginData) {
@@ -161,12 +280,6 @@ export class MainDataService {
   getBookletLabel(): string {
     const myLoginData = this.loginData$.getValue();
     return myLoginData.bookletLabel;
-  }
-
-  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  getPersonToken(): string {
-    const myLoginData = this.loginData$.getValue();
-    return myLoginData.personToken;
   }
 
   public addCustomtextsFromDefList(customtextList: CustomTextsDefList) {

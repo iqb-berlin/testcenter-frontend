@@ -1,9 +1,4 @@
 <div class="columnhost" fxLayout="row" fxLayoutAlign="space-between start">
-  <div class="spinner" *ngIf="dataLoading">
-      <mat-spinner></mat-spinner>
-  </div>
-
-  <!-- ============================================= -->
   <div class="objectlist" fxLayout="column" fxFlex="50">
     <div fxLayout="row">
         <button mat-raised-button (click)="addObject()" matTooltip="Arbeitsbereich hinzufügen" matTooltipPosition="above">
@@ -18,7 +13,7 @@
         </button>
     </div>
 
-    <mat-table *ngIf="isSuperadmin" [dataSource]="objectsDatasource" matSort>
+    <mat-table [dataSource]="objectsDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
         <mat-header-cell *matHeaderCellDef fxFlex="70px">
           <mat-checkbox (change)="$event ? masterToggle() : null"
@@ -46,7 +41,7 @@
   </div>
 
   <!-- ============================================= -->
-  <div *ngIf="isSuperadmin" fxLayout="column" fxFlex="40">
+  <div fxLayout="column" fxFlex="40">
 
     <div *ngIf="selectedWorkspaceId == 0">
       <div>Zugriffsberechtigte für Arbeitsbereich:</div>

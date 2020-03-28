@@ -13,6 +13,7 @@ const routes: Routes = [
   {path: '', redirectTo: 'r', pathMatch: 'full'},
   {path: 'r', component: AppRootComponent,
     children: [
+      {path: '', redirectTo: 'login', pathMatch: 'full'},
       {path: 'login/:returnTo', component: LoginComponent},
       {path: 'about', component: AboutComponent},
       {path: 'check-starter', component: SysCheckStarterComponent},

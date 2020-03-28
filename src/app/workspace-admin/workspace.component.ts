@@ -11,7 +11,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 })
 export class WorkspaceComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription = null;
-  private logindataSubscription: Subscription = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -21,22 +20,17 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.routingSubscription = this.route.params.subscribe(params => {
-      const ws = Number(params['ws']);
-      this.wds.setWorkspace(ws);
-    });
-
-    this.logindataSubscription = this.mds.loginData$.subscribe(() => {
-      this.wds.setWorkspace(this.wds.ws);
+      this.wds.wsId = params['ws'];
+      const wsList = this.mds.workspaces;
+      if (wsList && wsList[this.wds.wsId]) {
+        this.wds.wsName = wsList[this.wds.wsId];
+      }
     });
   }
-
 
   ngOnDestroy() {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
-    }
-    if (this.logindataSubscription !== null) {
-      this.logindataSubscription.unsubscribe();
     }
   }
 }
