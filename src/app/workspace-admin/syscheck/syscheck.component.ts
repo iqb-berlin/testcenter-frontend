@@ -32,7 +32,9 @@ export class SyscheckComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.updateTable();
+    setTimeout(() => {
+      this.updateTable();
+    })
   }
 
   updateTable() {

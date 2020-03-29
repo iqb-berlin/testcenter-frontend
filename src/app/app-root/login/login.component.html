@@ -17,25 +17,4 @@
   </form>
 </mat-card>
 
-
-<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
-<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
-<mat-card fxFlex="0 2 400px" fxLayout="column" class="status-card" *ngIf="! returnTo">
-  <mat-card-title>{{ 'app_title' | customtext:'app_title':cts.updateCount }}</mat-card-title>
-
-  <!-- - - - - - - - - - - - - - - - - -->
-  <mat-card-content>
-    <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
-      {{ 'app_intro1' | customtext:'app_intro1':cts.updateCount }}</p>
-
-    <p>Die mit diesem System erhobenen Daten enthalten grundsätzlich keinen direkten
-      Personenbezug. Es werden z. B. nie Namen gespeichert. Um Auskünfte zu einer bestimmten Befragung bzw. Studie
-      zu erhalten, wenden Sie sich bitte an das <a href="mailto:mechtel@iqb.hu-berlin.de">
-        IQB</a>. Wir benötigen dazu den ungefähren Zeitraum und das Bundesland, in dem die Befragung bzw. Studie
-      durchgeführt wurde.</p>
-  </mat-card-content>
-  <mat-card-actions>
-    <button mat-raised-button color="foreground" [routerLink]="['../about']">Impressum/Datenschutz</button>
-    <button mat-raised-button color="foreground" [routerLink]="['../check-starter']">System-Check</button>
-  </mat-card-actions>
-</mat-card>
+<app-status-card *ngIf="! returnTo"></app-status-card>

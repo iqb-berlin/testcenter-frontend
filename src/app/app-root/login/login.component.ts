@@ -11,8 +11,7 @@ import {BackendService} from "../../backend.service";
 @Component({
   templateUrl: './login.component.html',
   styles: [
-    'mat-card {margin: 10px;}',
-    'mat-card:last-of-type {background-color: lightgray;}',
+    'mat-card {margin: 10px;}'
   ]
 })
 

@@ -43,7 +43,9 @@ export class FilesComponent implements OnInit {
 
   ngOnInit() {
     this.uploadUrl = `${this.serverUrl}workspace/${this.wds.wsId}/file`;
-    this.updateFileList();
+    setTimeout(() => {
+      this.updateFileList();
+    })
   }
 
   // ***********************************************************************************

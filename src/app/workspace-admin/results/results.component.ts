@@ -34,7 +34,9 @@ export class ResultsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.updateTable();
+    setTimeout(() => {
+      this.updateTable();
+    })
   }
 
   updateTable() {
