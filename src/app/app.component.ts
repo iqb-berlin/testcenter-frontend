@@ -5,6 +5,7 @@ import { LoginData } from './app.interfaces';
 import {CustomtextService, ServerError} from 'iqb-components';
 import { appconfig } from './app.config';
 import {Subscription} from "rxjs";
+import {debounceTime} from "rxjs/operators";
 
 @Component({
   selector: 'tc-root',
@@ -16,6 +17,8 @@ import {Subscription} from "rxjs";
 export class AppComponent implements OnInit, OnDestroy {
   private appErrorSubscription: Subscription = null;
   showError = false;
+  private appDelayedProcessesSubscription: Subscription = null;
+  showSpinner = false;
 
   constructor (
     public mds: MainDataService,
@@ -45,8 +48,15 @@ export class AppComponent implements OnInit, OnDestroy {
 
       this.appErrorSubscription = this.mds.appError$.subscribe(err => {
         if (err) {
+          console.warn(err.description);
           this.showError = true;
         }
+      });
+
+      this.appDelayedProcessesSubscription = this.mds.delayedProcessesCount$.pipe(
+        debounceTime(500)
+      ).subscribe( c => {
+        this.showSpinner = c > 0;
       });
 
       window.addEventListener('message', (event: MessageEvent) => {
@@ -110,6 +120,9 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.appErrorSubscription !== null) {
       this.appErrorSubscription.unsubscribe();
+    }
+    if (this.appDelayedProcessesSubscription !== null) {
+      this.appDelayedProcessesSubscription.unsubscribe();
     }
   }
 }

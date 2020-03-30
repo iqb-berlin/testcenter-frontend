@@ -15,7 +15,7 @@ export class RouteDispatcherComponent implements OnInit {
 
   constructor(
     public cts: CustomtextService,
-    router: Router) {
+    private router: Router) {
 
     const state: RouterState = router.routerState;
     const snapshot: RouterStateSnapshot = state.snapshot;

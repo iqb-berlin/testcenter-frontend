@@ -44,10 +44,8 @@ export class ResultsComponent implements OnInit {
     if (this.wds.wsRole === 'MO') {
       this.resultDataSource = new MatTableDataSource<ResultData>([]);
     } else {
-      this.mds.incrementDelayedProcessesCount();
       this.bs.getResultData().subscribe(
         (resultData: ResultData[]) => {
-          this.mds.decrementDelayedProcessesCount();
           this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
           this.resultDataSource.sort = this.sort;
         }, (err: ServerError) => {
@@ -56,7 +54,6 @@ export class ResultsComponent implements OnInit {
             description: err.labelSystem,
             category: "PROBLEM"
           });
-          this.mds.decrementDelayedProcessesCount();
         }
       );
     }
@@ -77,7 +74,6 @@ export class ResultsComponent implements OnInit {
   // 444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
   downloadResponsesCSV() {
     if (this.tableselectionCheckbox.selected.length > 0) {
-      this.mds.incrementDelayedProcessesCount();
       const selectedGroups: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
@@ -132,14 +128,12 @@ export class ResultsComponent implements OnInit {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
-        this.mds.decrementDelayedProcessesCount();
       }, (err: ServerError) => {
           this.mds.appError$.next({
             label: err.labelNice,
             description: err.labelSystem,
             category: "PROBLEM"
           });
-          this.mds.decrementDelayedProcessesCount();
       });
     }
   }
@@ -147,7 +141,6 @@ export class ResultsComponent implements OnInit {
   // 444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
   downloadReviewsCSV() {
     if (this.tableselectionCheckbox.selected.length > 0) {
-      this.mds.incrementDelayedProcessesCount();
       const selectedGroups: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
@@ -201,14 +194,12 @@ export class ResultsComponent implements OnInit {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
-        this.mds.decrementDelayedProcessesCount();
       }, (err: ServerError) => {
           this.mds.appError$.next({
             label: err.labelNice,
             description: err.labelSystem,
             category: "PROBLEM"
           });
-          this.mds.decrementDelayedProcessesCount();
       });
     }
   }
@@ -216,7 +207,6 @@ export class ResultsComponent implements OnInit {
   // 444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
   downloadLogsCSV() {
     if (this.tableselectionCheckbox.selected.length > 0) {
-      this.mds.incrementDelayedProcessesCount();
       const selectedGroups: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
@@ -242,14 +232,12 @@ export class ResultsComponent implements OnInit {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
-        this.mds.decrementDelayedProcessesCount();
       }, (err: ServerError) => {
           this.mds.appError$.next({
             label: err.labelNice,
             description: err.labelSystem,
             category: "PROBLEM"
           });
-          this.mds.decrementDelayedProcessesCount();
       });
     }
   }
@@ -281,10 +269,8 @@ export class ResultsComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           // =========================================================
-          this.mds.incrementDelayedProcessesCount();
           this.bs.deleteData(selectedGroups).subscribe(() => {
               this.tableselectionCheckbox.clear();
-              this.mds.decrementDelayedProcessesCount();
               // TODO refresh list!
           }, (err: ServerError) => {
             this.mds.appError$.next({
@@ -292,7 +278,6 @@ export class ResultsComponent implements OnInit {
               description: err.labelSystem,
               category: "PROBLEM"
             });
-            this.mds.decrementDelayedProcessesCount();
           });
         }
       });

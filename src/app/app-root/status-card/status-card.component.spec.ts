@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StatusCardComponent } from './status-card.component';
+import {IqbComponentsModule} from "iqb-components";
 
 describe('StatusCardComponent', () => {
   let component: StatusCardComponent;
@@ -8,7 +9,8 @@ describe('StatusCardComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ StatusCardComponent ]
+      declarations: [ StatusCardComponent ],
+      imports: [IqbComponentsModule]
     })
     .compileComponents();
   }));

@@ -78,9 +78,7 @@ export class NetworkCheckComponent implements OnInit {
       avgDownloadSpeedBytesPerSecond: -1
     };
 
-    console.log('start the loop: ');
-    const myConfig = this.ds.checkConfig$.getValue();
-    console.log(myConfig);
+    // ?? const myConfig = this.ds.checkConfig$.getValue();
     this.plotPrepare(true);
     this.plotPrepare(false);
 
@@ -131,8 +129,6 @@ export class NetworkCheckComponent implements OnInit {
         .then(results => {
           const averageBytesPerSecond = NetworkCheckComponent.calculateAverageSpeedBytePerSecond(results);
           const averageOfPreviousLoops = this.getAverageNetworkStat(isDownloadPart);
-
-          console.log({type: isDownloadPart ? 'download' : 'upload', results: results, avg: averageBytesPerSecond});
           const errors = results.reduce((a, r) => a + ((r.error !== null) ? 1 : 0), 0);
           let statsLength;
           if (isDownloadPart) {
@@ -145,12 +141,12 @@ export class NetworkCheckComponent implements OnInit {
           this.showBenchmarkSequenceResults(isDownloadPart, this.getAverageNetworkStat(isDownloadPart), results);
 
           if (errors > benchmarkDefinition.maxErrorsPerSequence) {
-            console.warn('some errors occurred', results);
+            console.warn('network check: some errors occurred during', results);
             return reject(errors);
           }
 
           if (statsLength > benchmarkDefinition.maxSequenceRepetitions) {
-            console.warn(`looped ${benchmarkDefinition.maxSequenceRepetitions} times, but could not get reliable average`);
+            console.warn(`network check: looped ${benchmarkDefinition.maxSequenceRepetitions} times, but could not get reliable average`);
             return resolve();
           }
 
@@ -189,8 +185,6 @@ export class NetworkCheckComponent implements OnInit {
 
 
   private benchmark(isDownloadPart: boolean, requestSize: number): Promise<NetworkRequestTestResult> {
-
-    // console.log(`run benchmark ${benchmarkType} for ${requestSize}`);
     const testRound = (isDownloadPart) ? (this.networkStatsDownload.length + 1) : (this.networkStatsUpload.length + 1);
     const testPackage = this.humanReadableBytes(requestSize);
     if (isDownloadPart) {
@@ -295,7 +289,6 @@ export class NetworkCheckComponent implements OnInit {
       avgDownloadSpeed: this.getAverageNetworkStat(true),
       avgUploadSpeed: this.getAverageNetworkStat(false),
     };
-    console.log('measured averages', nd);
 
     // the ratings are calculated individually, by a "how low can you go" approach
 
@@ -331,7 +324,6 @@ export class NetworkCheckComponent implements OnInit {
   private getBrowsersNativeNetworkInformation() {
 
     const connection = navigator['connection'] || navigator['mozConnection'] || navigator['webkitConnection'];
-    console.log('connection', connection);
     if (connection) {
       this.detectedNetworkInformations = {
         available: true,

@@ -1,6 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SysCheckStarterComponent } from './sys-check-starter.component';
+import {HttpClientModule} from "@angular/common/http";
+import {AppRoutingModule} from "../../app-routing.module";
+import {IqbComponentsModule} from "iqb-components";
+import {BackendService} from "../../backend.service";
 
 describe('SysCheckStarterComponent', () => {
   let component: SysCheckStarterComponent;
@@ -8,7 +12,15 @@ describe('SysCheckStarterComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SysCheckStarterComponent ]
+      declarations: [ SysCheckStarterComponent ],
+      imports: [
+        HttpClientModule,
+        AppRoutingModule,
+        IqbComponentsModule
+      ],
+      providers: [
+        BackendService
+      ]
     })
     .compileComponents();
   }));

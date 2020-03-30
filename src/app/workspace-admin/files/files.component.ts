@@ -89,7 +89,6 @@ export class FilesComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
           if (result !== false) {
             // =========================================================
-            this.mds.incrementDelayedProcessesCount();
             this.bs.deleteFiles(filesToDelete).subscribe((fileDeletionReport: FileDeletionReport|ServerError) => {
               if (fileDeletionReport instanceof ServerError) {
                 this.mds.appError$.next({
@@ -108,7 +107,6 @@ export class FilesComponent implements OnInit {
                 this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '',  {duration: 1000});
                 this.updateFileList();
               }
-              this.mds.decrementDelayedProcessesCount();
             });
             // =========================================================
           }
@@ -135,19 +133,16 @@ export class FilesComponent implements OnInit {
     if (empty || this.wds.wsRole === 'MO') {
       this.serverfiles = new MatTableDataSource([]);
     } else {
-      this.mds.incrementDelayedProcessesCount();
       this.bs.getFiles().subscribe(
         (filedataresponse: GetFileResponseData[]) => {
           this.serverfiles = new MatTableDataSource(filedataresponse);
           this.serverfiles.sort = this.sort;
-          this.mds.decrementDelayedProcessesCount();
         }, (err: ServerError) => {
           this.mds.appError$.next({
             label: err.labelNice,
             description: err.labelSystem,
             category: "PROBLEM"
           });
-          this.mds.decrementDelayedProcessesCount();
         }
       );
     }
@@ -156,7 +151,6 @@ export class FilesComponent implements OnInit {
 
   download(element: GetFileResponseData): void {
 
-    this.mds.incrementDelayedProcessesCount();
     this.bs.downloadFile(element.type, element.filename)
       .subscribe(
         (fileData: Blob|ServerError) => {
@@ -166,10 +160,8 @@ export class FilesComponent implements OnInit {
               description: (fileData as ServerError).labelSystem,
               category: "PROBLEM"
             });
-            this.mds.decrementDelayedProcessesCount();
           } else {
             saveAs(fileData, element.filename);
-            this.mds.decrementDelayedProcessesCount();
           }
         }
       );
@@ -181,20 +173,17 @@ export class FilesComponent implements OnInit {
     this.checkWarnings = [];
     this.checkInfos = [];
 
-    this.mds.incrementDelayedProcessesCount();
     this.bs.checkWorkspace().subscribe(
       (checkResponse: CheckWorkspaceResponseData) => {
         this.checkErrors = checkResponse.errors;
         this.checkWarnings = checkResponse.warnings;
         this.checkInfos = checkResponse.infos;
-        this.mds.decrementDelayedProcessesCount();
       }, (err: ServerError) => {
         this.mds.appError$.next({
           label: err.labelNice,
           description: err.labelSystem,
           category: "PROBLEM"
         });
-        this.mds.decrementDelayedProcessesCount();
       }
     );
   }

@@ -38,7 +38,6 @@ export class SysCheckComponent implements OnInit, OnDestroy {
       const sysCheckName = params.get('sys-check-name');
       const workspaceId = parseInt(params.get('workspace-id'));
       setTimeout(() => {
-        this.mds.incrementDelayedProcessesCount();
         this.loading = true;
         this.bs.getCheckConfigData(workspaceId, sysCheckName).subscribe(checkConfig => {
           this.ds.checkConfig$.next(checkConfig);
@@ -65,13 +64,9 @@ export class SysCheckComponent implements OnInit, OnDestroy {
             this.ds.nextTask();
             this.taskSubscription = this.ds.task$.subscribe(task => {
               this.loading = (typeof task !== 'undefined') && (this.ds.taskQueue.length > 0);
-              if (!this.loading) {
-                this.mds.decrementDelayedProcessesCount();
-              }
             });
             this.isError = false;
           } else {
-            this.mds.decrementDelayedProcessesCount();
             this.title = 'Fehler beim Laden der Daten für den System-Check';
             this.loading = false;
             this.isError = true;

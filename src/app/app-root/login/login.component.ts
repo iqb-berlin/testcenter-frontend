@@ -40,18 +40,19 @@ export class LoginComponent  implements OnInit, OnDestroy {
   }
 
   login() {
-    this.mds.incrementDelayedProcessesCount();
     const loginData = this.loginForm.value;
     LoginComponent.oldLoginName = loginData['name'];
     this.bs.login(loginData['name'], loginData['pw']).subscribe(
       loginData => {
         if (loginData instanceof ServerError) {
           const e = loginData as ServerError;
-          this.mds.appError$.next({
-            label: e.labelNice,
-            description: e.labelSystem + ' (' + e.code.toString + ')',
-            category: "PROBLEM"
-          });
+          if (e.code === 400) {
+            this.mds.appError$.next({
+              label: 'Diese Anmeldedaten sind für diesen Server nicht gültig.',
+              description: e.labelSystem + ' (' + e.code.toString + ')',
+              category: "PROBLEM"
+            });
+          }
           this.mds.addCustomtextsFromDefList(appconfig.customtextsLogin);
           // no change in other data
         } else {
@@ -64,11 +65,11 @@ export class LoginComponent  implements OnInit, OnDestroy {
             this.router.navigateByUrl(this.returnTo);
           } else {
             if (this.mds.adminToken) {
-              this.router.navigate(['../admin-starter'], {relativeTo: this.route});
+              this.router.navigate(['/r/admin-starter']);
             } else if (this.mds.loginToken) {
-              this.router.navigate(['../code-input'], {relativeTo: this.route});
+              this.router.navigate(['/r/code-input']);
             } else if (this.mds.personToken) {
-              this.router.navigate(['../test-starter'], {relativeTo: this.route});
+              this.router.navigate(['/r/test-starter']);
             } else {
               this.mds.appError$.next({
                 label: 'Keine Berechtigung für diese Anmeldedaten gefunden.',
@@ -78,7 +79,6 @@ export class LoginComponent  implements OnInit, OnDestroy {
             }
           }
         }
-        this.mds.decrementDelayedProcessesCount();
       }
     );
   }

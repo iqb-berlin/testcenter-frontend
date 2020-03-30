@@ -23,7 +23,6 @@ export class SysCheckStarterComponent implements OnInit {
   ngOnInit() {
     setTimeout(() => {
       this.loading = true;
-      this.mds.incrementDelayedProcessesCount();
       this.bs.getSysCheckInfo().subscribe(myConfigs => {
         if (myConfigs) {
           this.checkConfigList = myConfigs;
@@ -44,7 +43,6 @@ export class SysCheckStarterComponent implements OnInit {
           ]
         }
         this.loading = false;
-        this.mds.decrementDelayedProcessesCount();
       });
     })
   }

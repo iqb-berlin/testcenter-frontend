@@ -21,14 +21,14 @@ export class BackendService {
   login(name: string, password: string): Observable<LoginData | ServerError> {
 
     return this.http
-        .put<LoginData>(this.serverUrl + 'session/login', {name, password})
+        .put<LoginData>(this.serverUrl + 'session/admin', {name, password})
         .pipe(
           catchError(ErrorHandler.handle),
           switchMap(myLoginData => {
             if (myLoginData instanceof ServerError) {
               if ((myLoginData as ServerError).code === 401) {
                 return this.http
-                  .put<LoginData>(this.serverUrl + 'session/admin', {name, password})
+                  .put<LoginData>(this.serverUrl + 'session/login', {name, password})
                   .pipe(catchError(ErrorHandler.handle));
               } else {
                 return of(myLoginData);

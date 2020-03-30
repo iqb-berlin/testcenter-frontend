@@ -52,7 +52,7 @@ export class CodeInputComponent {
   }
 
   resetLogin() {
-    this.mds.setNewLoginData();
+    this.mds.setAuthData();
     this.router.navigate(['/']);
   }
 }

@@ -35,7 +35,7 @@ export class AdminStarterComponent implements OnInit {
   }
 
   resetLogin() {
-    this.mds.setNewLoginData();
+    this.mds.setAuthData();
     this.router.navigate(['/']);
   }
 }

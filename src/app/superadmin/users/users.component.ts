@@ -75,7 +75,6 @@ export class UsersComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (typeof result !== 'undefined') {
         if (result !== false) {
-          this.mds.incrementDelayedProcessesCount();
           this.bs.addUser((<FormGroup>result).get('name').value,
               (<FormGroup>result).get('pw').value).subscribe(
                 respOk => {
@@ -85,7 +84,6 @@ export class UsersComponent implements OnInit {
                   } else {
                     this.snackBar.open('Konnte Nutzer nicht hinzufügen', 'Fehler', {duration: 1000});
                   }
-                  this.mds.decrementDelayedProcessesCount();
                 });
         }
       }
@@ -128,7 +126,6 @@ export class UsersComponent implements OnInit {
           passwdDialogRef.afterClosed().subscribe(result => {
             if (typeof result !== 'undefined') {
               if (result !== false) {
-                this.mds.incrementDelayedProcessesCount();
                 this.bs.setSuperUserStatus(
                   selectedRows[0]['id'],
                   userObject.is_superadmin === '0',
@@ -139,7 +136,6 @@ export class UsersComponent implements OnInit {
                     } else {
                       this.snackBar.open('Konnte Status nicht ändern', 'Fehler', {duration: 1000});
                     }
-                    this.mds.decrementDelayedProcessesCount();
                   });
               }
             }
@@ -172,7 +168,6 @@ export class UsersComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (typeof result !== 'undefined') {
           if (result !== false) {
-            this.mds.incrementDelayedProcessesCount();
             this.bs.changePassword(selectedRows[0]['id'],
                 (<FormGroup>result).get('pw').value).subscribe(
                   respOk => {
@@ -181,7 +176,6 @@ export class UsersComponent implements OnInit {
                     } else {
                       this.snackBar.open('Konnte Kennwort nicht ändern', 'Fehler', {duration: 1000});
                     }
-                    this.mds.decrementDelayedProcessesCount();
                   });
           }
         }
@@ -223,7 +217,6 @@ export class UsersComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           // =========================================================
-          this.mds.incrementDelayedProcessesCount();
           const usersToDelete = [];
           selectedRows.forEach((r: UserData) => usersToDelete.push(r.id));
           this.bs.deleteUsers(usersToDelete).subscribe(
@@ -234,7 +227,6 @@ export class UsersComponent implements OnInit {
               } else {
                 this.snackBar.open('Konnte Nutzer nicht löschen', 'Fehler', {duration: 2000});
               }
-              this.mds.decrementDelayedProcessesCount();
             });
         }
       });
@@ -245,7 +237,6 @@ export class UsersComponent implements OnInit {
   updateWorkspaceList() {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser > -1) {
-      this.mds.incrementDelayedProcessesCount();
       this.bs.getWorkspacesByUser(this.selectedUser).subscribe(dataresponse => {
         if (dataresponse instanceof ServerError) {
           this.mds.appError$.next({
@@ -256,7 +247,6 @@ export class UsersComponent implements OnInit {
         } else {
           this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
         }
-        this.mds.decrementDelayedProcessesCount()
       })
     } else {
       this.WorkspacelistDatasource = null;
@@ -275,7 +265,6 @@ export class UsersComponent implements OnInit {
   saveWorkspaces() {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser > -1) {
-      this.mds.incrementDelayedProcessesCount();
       this.bs.setWorkspacesByUser(this.selectedUser, this.WorkspacelistDatasource.data).subscribe(
         respOk => {
           if (respOk !== false) {
@@ -283,7 +272,6 @@ export class UsersComponent implements OnInit {
           } else {
             this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 2000});
           }
-          this.mds.decrementDelayedProcessesCount();
         });
     } else {
       this.WorkspacelistDatasource = null;
@@ -292,7 +280,6 @@ export class UsersComponent implements OnInit {
 
   // ***********************************************************************************
   updateObjectList() {
-    this.mds.incrementDelayedProcessesCount();
     this.tableselectionCheckbox.clear();
     this.tableselectionRow.clear();
     this.bs.getUsers().subscribe(dataresponse => {
@@ -306,7 +293,6 @@ export class UsersComponent implements OnInit {
         this.objectsDatasource = new MatTableDataSource(dataresponse);
         this.objectsDatasource.sort = this.sort;
       }
-      this.mds.decrementDelayedProcessesCount();
     });
   }
 

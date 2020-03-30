@@ -1,14 +1,26 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AdminStarterComponent } from './admin-starter.component';
+import {AppRoutingModule} from "../../app-routing.module";
+import {HttpClientModule} from "@angular/common/http";
+import {IqbComponentsModule} from "iqb-components";
+import {BackendService} from "../../backend.service";
 
-describe('WorkspaceAdminStarterComponent', () => {
+describe('AdminStarterComponent', () => {
   let component: AdminStarterComponent;
   let fixture: ComponentFixture<AdminStarterComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AdminStarterComponent ]
+      declarations: [ AdminStarterComponent ],
+      imports: [
+        HttpClientModule,
+        AppRoutingModule,
+        IqbComponentsModule
+      ],
+      providers: [
+        BackendService
+      ]
     })
     .compileComponents();
   }));

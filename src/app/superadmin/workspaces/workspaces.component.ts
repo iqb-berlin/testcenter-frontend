@@ -73,7 +73,6 @@ export class WorkspacesComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (typeof result !== 'undefined') {
         if (result !== false) {
-          this.mds.incrementDelayedProcessesCount();
           this.bs.addWorkspace((<FormGroup>result).get('name').value).subscribe(
             respOk => {
               if (respOk !== false) {
@@ -82,7 +81,6 @@ export class WorkspacesComponent implements OnInit {
               } else {
                 this.snackBar.open('Konnte Arbeitsbereich nicht hinzufügen', 'Fehler', {duration: 1000});
               }
-              this.mds.decrementDelayedProcessesCount();
             });
         }
       }
@@ -112,7 +110,6 @@ export class WorkspacesComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (typeof result !== 'undefined') {
           if (result !== false) {
-            this.mds.incrementDelayedProcessesCount();
             this.bs.renameWorkspace(selectedRows[0].id,
                 (<FormGroup>result).get('name').value).subscribe(
                   respOk => {
@@ -122,7 +119,6 @@ export class WorkspacesComponent implements OnInit {
                     } else {
                       this.snackBar.open('Konnte Arbeitsbereich nicht ändern', 'Fehler', {duration: 2000});
                     }
-                    this.mds.decrementDelayedProcessesCount();
                   });
           }
         }
@@ -164,7 +160,6 @@ export class WorkspacesComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           // =========================================================
-          this.mds.incrementDelayedProcessesCount();
           const workspacesToDelete = [];
           selectedRows.forEach((r: IdAndName) => workspacesToDelete.push(r.id));
           this.bs.deleteWorkspaces(workspacesToDelete).subscribe(
@@ -175,7 +170,6 @@ export class WorkspacesComponent implements OnInit {
               } else {
                 this.snackBar.open('Konnte Arbeitsbereich/e nicht löschen', 'Fehler', {duration: 1000});
               }
-              this.mds.decrementDelayedProcessesCount();
           });
         }
       });
@@ -186,10 +180,8 @@ export class WorkspacesComponent implements OnInit {
   updateUserList() {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
-      this.mds.incrementDelayedProcessesCount();
       this.bs.getUsersByWorkspace(this.selectedWorkspaceId).subscribe(dataresponse => {
         this.UserlistDatasource = new MatTableDataSource(dataresponse);
-        this.mds.decrementDelayedProcessesCount();
       });
     } else {
       this.UserlistDatasource = null;
@@ -208,7 +200,6 @@ export class WorkspacesComponent implements OnInit {
   saveUsers() {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
-      this.mds.incrementDelayedProcessesCount();
       this.bs.setUsersByWorkspace(this.selectedWorkspaceId, this.UserlistDatasource.data).subscribe(
         respOk => {
           if (respOk !== false) {
@@ -216,7 +207,6 @@ export class WorkspacesComponent implements OnInit {
           } else {
             this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 2000});
           }
-          this.mds.decrementDelayedProcessesCount();
         });
     } else {
       this.UserlistDatasource = null;
@@ -225,13 +215,11 @@ export class WorkspacesComponent implements OnInit {
 
   // ***********************************************************************************
   updateObjectList() {
-    this.mds.incrementDelayedProcessesCount();
     this.bs.getWorkspaces().subscribe(dataresponse => {
       this.objectsDatasource = new MatTableDataSource(dataresponse);
       this.objectsDatasource.sort = this.sort;
       this.tableselectionCheckbox.clear();
       this.tableselectionRow.clear();
-      this.mds.decrementDelayedProcessesCount();
     });
   }
 

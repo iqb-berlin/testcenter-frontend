@@ -38,11 +38,9 @@ export class SyscheckComponent implements OnInit {
   }
 
   updateTable() {
-    this.mds.incrementDelayedProcessesCount();
     this.tableselectionCheckbox.clear();
     this.bs.getSysCheckReportList().subscribe(
       (resultData: SysCheckStatistics[]) => {
-        this.mds.decrementDelayedProcessesCount();
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);
         this.resultDataSource.sort = this.sort;
       }, (err: ServerError) => {
@@ -51,7 +49,6 @@ export class SyscheckComponent implements OnInit {
           description: err.labelSystem,
           category: "PROBLEM"
         });
-        this.mds.decrementDelayedProcessesCount();
       }
     );
   }
@@ -71,7 +68,6 @@ export class SyscheckComponent implements OnInit {
 
   downloadReportsCSV() {
     if (this.tableselectionCheckbox.selected.length > 0) {
-      this.mds.incrementDelayedProcessesCount();
       const selectedReports: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedReports.push(element.id);
@@ -85,14 +81,12 @@ export class SyscheckComponent implements OnInit {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
-        this.mds.decrementDelayedProcessesCount();
       }, (err: ServerError) => {
           this.mds.appError$.next({
             label: err.labelNice,
             description: err.labelSystem,
             category: "PROBLEM"
           });
-          this.mds.decrementDelayedProcessesCount();
       });
     }
   }
@@ -123,7 +117,6 @@ export class SyscheckComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
-          this.mds.incrementDelayedProcessesCount();
           this.bs.deleteSysCheckReports(selectedReports).subscribe((fileDeletionReport) => {
             if (fileDeletionReport instanceof ServerError) {
               this.mds.appError$.next({
@@ -131,7 +124,6 @@ export class SyscheckComponent implements OnInit {
                 description: (fileDeletionReport as ServerError).labelSystem,
                 category: "PROBLEM"
               });
-              this.mds.decrementDelayedProcessesCount();
             } else {
               const message = [];
               if (fileDeletionReport.deleted.length > 0) {
@@ -142,7 +134,6 @@ export class SyscheckComponent implements OnInit {
               }
               this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', {duration: 1000});
               this.updateTable();
-              this.mds.decrementDelayedProcessesCount();
             }
           });
         }
