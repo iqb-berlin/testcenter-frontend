@@ -1,5 +1,5 @@
 import {BackendService} from './backend.service';
-import {BehaviorSubject, forkJoin, Subject} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {AccessRightList, AppError, AuthData, AuthType, LoginData} from './app.interfaces';
 import {CustomtextService, ServerError} from 'iqb-components';
@@ -35,7 +35,7 @@ export class MainDataService {
   public globalErrorMsg$ = new BehaviorSubject<ServerError>(null); // TODO remove globalErrorMsg$
   public appError$ = new BehaviorSubject<AppError>(null);
   public delayedProcessesCount$ = new BehaviorSubject<number>(0);
-  public apiVersionProblem = false;
+  public isApiVersionValid = true;
 
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();
@@ -180,70 +180,26 @@ export class MainDataService {
     }
   }
 
-  // ensures consistency
-  setNewLoginData(logindata?: LoginData) {
-    const myLoginData: LoginData = MainDataService.defaultLoginData;
-    if (!logindata) {
-      logindata = MainDataService.defaultLoginData;
-    }
-
-    if ((logindata.adminToken)) { // .length > 0) && (logindata.name.length > 0)) {
-      myLoginData.adminToken = logindata.adminToken;
-      myLoginData.name = logindata.name;
-      myLoginData.workspaces = logindata.workspaces;
-      myLoginData.isSuperadmin = logindata.isSuperadmin;
-    } else if (
-      (logindata.loginToken.length > 0) &&
-      (logindata.name.length > 0) &&
-      (logindata.mode.length > 0) &&
-      (logindata.groupName.length > 0) &&
-      (logindata.workspaceName.length > 0) &&
-      (logindata.booklets)) {
-
-        const validCodes = Object.keys(logindata.booklets);
-        if (validCodes.length > 0) {
-          myLoginData.loginToken = logindata.loginToken;
-          myLoginData.name = logindata.name;
-          myLoginData.mode = logindata.mode;
-          myLoginData.groupName = logindata.groupName;
-          myLoginData.workspaceName = logindata.workspaceName;
-          myLoginData.booklets = logindata.booklets;
-          if (logindata.code.length > 0) {
-            if (logindata.code in logindata.booklets) {
-              myLoginData.code = logindata.code;
-            }
-          }
-          if (logindata.personToken.length > 0) {
-            myLoginData.personToken = logindata.personToken;
-            myLoginData.testId = logindata.testId;
-            if (myLoginData.testId > 0) {
-              myLoginData.bookletLabel = logindata.bookletLabel;
-            }
-          }
-        }
-    }
-
-    this.loginData$.next(myLoginData);
-    localStorage.setItem('lt', myLoginData.loginToken);
-    localStorage.setItem('at', myLoginData.adminToken);
-    localStorage.setItem('pt', myLoginData.personToken);
-    localStorage.setItem('bi', myLoginData.testId.toString());
-  }
-
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   setCode ( newCode: string) {
+    /*
     const myLoginData = this.loginData$.getValue();
     myLoginData.code = newCode;
     this.setNewLoginData(myLoginData);
+
+     */
   }
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   setBookletDbId ( personToken: string, bId: number, bLabel: string) {
+    /*
     const myLoginData = this.loginData$.getValue();
     myLoginData.personToken = personToken;
     myLoginData.testId = bId;
     myLoginData.bookletLabel = bLabel;
     this.setNewLoginData(myLoginData);
+
+     */
   }
 
 
@@ -254,6 +210,7 @@ export class MainDataService {
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   endBooklet () {
+    /*
     const myLoginData = this.loginData$.getValue();
     if (myLoginData.testId > 0 && myLoginData.mode === 'hot') {
       forkJoin(
@@ -269,6 +226,8 @@ export class MainDataService {
       myLoginData.bookletLabel = '';
       this.setNewLoginData(myLoginData);
     }
+
+     */
   }
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

@@ -24,6 +24,10 @@ platformBrowserDynamic(<StaticProvider[]>[
   {
     provide: 'APP_VERSION',
     useValue: environment.appVersion
+  },
+  {
+    provide: 'API_VERSION_EXPECTED',
+    useValue: environment.apiVersionExpected
   }
 ]).bootstrapModule(AppModule)
   .catch(err => console.log(err));

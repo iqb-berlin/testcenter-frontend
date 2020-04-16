@@ -218,7 +218,7 @@ export class StartComponent implements OnInit, OnDestroy {
           if ((loginData as LoginData).customTexts) {
             this.cts.addCustomTexts((loginData as LoginData).customTexts);
           }
-          this.mds.setNewLoginData(loginData as LoginData);
+          // this.mds.setNewLoginData(loginData as LoginData); TODO delete component
         }
         this.dataLoading = false;
       }
@@ -280,7 +280,7 @@ export class StartComponent implements OnInit, OnDestroy {
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   resetLogin() {
-    this.mds.setNewLoginData();
+    // this.mds.setNewLoginData(); TODO fix
   }
 
   // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #

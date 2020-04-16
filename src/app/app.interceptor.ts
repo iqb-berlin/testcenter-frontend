@@ -15,10 +15,13 @@ export class AuthInterceptor implements HttpInterceptor {
     private router: Router) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
-    if (request.headers.get('AuthToken') !== null) {
-      return next.handle(request);
+    if (!this.mds.isApiVersionValid) {
+      return of(null);
     }
+
+    // if (request.headers.get('AuthToken') !== null) {
+    //   return next.handle(request);
+    // }
 
     const authData = {
       l: this.mds.loginToken,

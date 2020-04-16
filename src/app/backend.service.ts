@@ -2,8 +2,8 @@
 import { Injectable, Inject } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import {catchError, map, switchMap} from 'rxjs/operators';
-import {LoginData, BookletStatus, PersonTokenAndTestId, KeyValuePair, SysConfig, SysCheckInfo} from './app.interfaces';
+import {catchError, switchMap} from 'rxjs/operators';
+import {LoginData, BookletStatus, PersonTokenAndTestId, SysConfig, SysCheckInfo} from './app.interfaces';
 import {ErrorHandler, ServerError} from 'iqb-components';
 
 // ============================================================================
@@ -51,7 +51,6 @@ export class BackendService {
 
 
   getAdminSession(adminToken: string): Observable<LoginData | ServerError> {
-
     const authToken = JSON.stringify({at: adminToken});
     return this.http
       .get<LoginData>(this.serverUrl + 'session', {headers: {'AuthToken': authToken}})
@@ -59,19 +58,13 @@ export class BackendService {
   }
 
 
-  getSysConfig(): Observable<KeyValuePair> {
-
+  getSysConfig(): Observable<SysConfig> {
     return this.http
       .get<SysConfig>(this.serverUrl + `system/config`)
       .pipe(catchError(() => of(null)))
-      .pipe(map((sysConfig: SysConfig): KeyValuePair => {
-        console.log(sysConfig.version); // TODO check for system version mismatch https://github.com/iqb-berlin/testcenter-iqb-ng/issues/53
-        return sysConfig.customTexts;
-      }));
   }
 
   public getSysCheckInfo(): Observable<SysCheckInfo[]> {
-
     return this.http
       .get<SysCheckInfo[]>(this.serverUrl + 'sys-checks')
       .pipe(

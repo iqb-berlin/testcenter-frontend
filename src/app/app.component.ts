@@ -1,8 +1,7 @@
 import { MainDataService } from './maindata.service';
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import { BackendService } from './backend.service';
-import { LoginData } from './app.interfaces';
-import {CustomtextService, ServerError} from 'iqb-components';
+import {CustomtextService} from 'iqb-components';
 import { appconfig } from './app.config';
 import {Subscription} from "rxjs";
 import {debounceTime} from "rxjs/operators";
@@ -23,17 +22,38 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor (
     public mds: MainDataService,
     private bs: BackendService,
-    private cts: CustomtextService
+    private cts: CustomtextService,
+    @Inject('API_VERSION_EXPECTED') private readonly expectedApiVersion: string,
   ) { }
 
-  private static getStringFromLocalStorage(key: string) {
-    const storageEntry = localStorage.getItem(key);
-    if (storageEntry !== null) {
-      if (storageEntry.length > 0) {
-        return (storageEntry as string);
+  private static isValidVersion(expectedVersion: string, reportedVersion: string): boolean {
+    if (expectedVersion) {
+      const searchPattern = /\d+/g;
+      const expectedVersionNumbers = expectedVersion.match(searchPattern);
+      if (expectedVersionNumbers) {
+        if (reportedVersion) {
+          const reportedVersionNumbers = reportedVersion.match(searchPattern);
+          if (reportedVersionNumbers) {
+            if (reportedVersionNumbers[0] !== expectedVersionNumbers[0]) {
+              return false;
+            } else if (expectedVersionNumbers.length > 1) {
+              if ((reportedVersionNumbers.length < 2) || +reportedVersionNumbers[1] < +expectedVersionNumbers[1]) {
+                return false;
+              } else if ((expectedVersionNumbers.length > 2) && reportedVersionNumbers[1] === expectedVersionNumbers[1]) {
+                if ((reportedVersionNumbers.length < 3) || +reportedVersionNumbers[2] < +expectedVersionNumbers[2]) {
+                  return false;
+                }
+              }
+            }
+          } else {
+            return false;
+          }
+        } else {
+          return false;
+        }
       }
     }
-    return '';
+    return true;
   }
 
   closeErrorBox() {
@@ -69,48 +89,20 @@ export class AppComponent implements OnInit, OnDestroy {
       });
 
       this.bs.getSysConfig().subscribe(sc => {
-        this.mds.setDefaultCustomtexts(sc);
-        this.mds.addCustomtextsFromDefList(appconfig.customtextsApp);
-        // restore login status if stored in localStorage
-        const adminToken = AppComponent.getStringFromLocalStorage('at');
-        if (adminToken) {
-          this.bs.getAdminSession(adminToken).subscribe(
-            (admindata: LoginData) => {
-              if (admindata instanceof ServerError) {
-                this.mds.setNewLoginData();
-              } else {
-                this.mds.setNewLoginData(admindata);
-              }
-            }
-          );
-        } else {
-          const loginToken = AppComponent.getStringFromLocalStorage('lt');
-          if (loginToken) {
-            const personToken = AppComponent.getStringFromLocalStorage('pt');
-            const code = AppComponent.getStringFromLocalStorage('c');
-
-            this.bs.getSession(loginToken, personToken).subscribe(ld => {
-              if (ld instanceof ServerError) {
-                this.mds.setNewLoginData();
-              } else {
-                const loginData = ld as LoginData;
-                loginData.loginToken = loginToken;
-                loginData.personToken = personToken;
-                if (personToken.length === 0) {
-                  loginData.code = code;
-                  loginData.testId = 0;
-                }
-                this.mds.setNewLoginData(loginData);
-                if (loginData.customTexts) {
-                  this.cts.addCustomTexts(loginData.customTexts);
-                }
-              }
-            });
+        if (sc) {
+          this.mds.setDefaultCustomtexts(sc.customTexts);
+          this.mds.isApiVersionValid = AppComponent.isValidVersion(this.expectedApiVersion, sc.version);
+          if (this.mds.isApiVersionValid) {
+            console.log("API ok (erwartet: " + this.expectedApiVersion + ", gefunden: " + sc.version + ")");
           } else {
-            this.mds.setNewLoginData();
-            this.mds.addCustomtextsFromDefList(appconfig.customtextsLogin);
-            this.mds.addCustomtextsFromDefList(appconfig.customtextsBooklet);
+            this.mds.appError$.next({
+              label: "Server-Problem: API-Version ungültig",
+              description: "erwartet: " + this.expectedApiVersion + ", gefunden: " + sc.version,
+              category: "PROBLEM"
+            });
           }
+        } else {
+          this.mds.isApiVersionValid = false;
         }
       });
     });

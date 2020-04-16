@@ -4,12 +4,13 @@
 
 export const environment = {
   production: false,
-  // testcenterUrl: 'https://ocba.iqb.hu-berlin.de/api/',
+  testcenterUrl: 'https://ocba.iqb.hu-berlin.de/api/',
   // testcenterUrl: 'https://www.iqb-testcenter.de/',
-  testcenterUrl: 'http://localhost/api/',
+  // testcenterUrl: 'http://localhost/api/',
   appName: 'IQB-Testcenter',
   appPublisher: 'IQB - Institut zur Qualitätsentwicklung im Bildungswesen',
-  appVersion: '0 (dev)'
+  appVersion: '0 (dev)',
+  apiVersionExpected: '2.0.1'
 };
 
 /*
