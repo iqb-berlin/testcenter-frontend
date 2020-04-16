@@ -30,6 +30,10 @@ getTestBed().initTestEnvironment(
     {
       provide: 'APP_VERSION',
       useValue: environment.appVersion
+    },
+    {
+      provide: 'API_VERSION_EXPECTED',
+      useValue: environment.apiVersionExpected
     }
   ])
 );

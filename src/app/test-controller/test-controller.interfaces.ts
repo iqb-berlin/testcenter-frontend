@@ -34,16 +34,16 @@ export interface KeyValuePair {
     [K: string]: string;
 }
 
-export interface BookletData {
-    xml: string;
-    locked: boolean;
-    laststate: KeyValuePair[];
-}
-
 export interface UnitData {
     xml: string;
     restorepoint: string;
     laststate: KeyValuePair[];
+}
+
+export interface BookletData {
+  xml: string;
+  locked: boolean;
+  laststate: KeyValuePair[];
 }
 
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++

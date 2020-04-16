@@ -474,7 +474,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     // ==========================================================
     // loading booklet data and all unit content
     // navigation to first unit
-    this.loginDataSubscription = this.mds.loginData$.subscribe(loginData => {
+    this.loginDataSubscription = this.tcs.dummyLoginData$.subscribe(loginData => {
       this.tcs.resetDataStore();
       if ((loginData.personToken.length > 0) && (loginData.testId > 0)) {
         const envData = new EnvironmentData(this.appVersion);
@@ -489,8 +489,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.dataLoading = true;
         this.bs.getBookletData(this.mds.getBookletDbId()).subscribe(myData => {
           if (myData instanceof ServerError) {
-            const e = myData as ServerError;
-            this.mds.globalErrorMsg$.next(e);
+            // const e = myData as ServerError;
+            // TODO check: this.mds.globalErrorMsg$.next(e);
             this.mds.addCustomtextsFromDefList(appconfig.customtextsBooklet);
             this.tcs.dataLoading = false;
           } else {
@@ -499,7 +499,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
             if (bookletData.locked) {
               console.log('loading failed');
-              this.mds.globalErrorMsg$.next(new ServerError(0, 'Das Testheft ist für die Bearbeitung gesperrt.', ''));
+              // TODO check: this.mds.globalErrorMsg$.next(new ServerError(0, 'Das Testheft ist für die Bearbeitung gesperrt.', ''));
               this.tcs.resetDataStore();
             } else {
               let navTarget = 1;
@@ -519,10 +519,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
               if (this.tcs.rootTestlet === null) {
                 console.log('rootTestlet = null');
-                this.mds.globalErrorMsg$.next(new ServerError(0, 'Error Parsing Booklet Xml', ''));
+                // TODO check: this.mds.globalErrorMsg$.next(new ServerError(0, 'Error Parsing Booklet Xml', ''));
                 this.tcs.dataLoading = false;
               } else {
-                this.mds.globalErrorMsg$.next(null);
+                // TODO check: this.mds.globalErrorMsg$.next(null);
                 this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
 
                 this.showProgress = true;

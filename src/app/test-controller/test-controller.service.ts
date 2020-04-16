@@ -5,13 +5,15 @@ import { Testlet, BookletConfig, MaxTimerData } from './test-controller.classes'
 import { LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData,
     MaxTimerDataType, UnitNaviButtonData } from './test-controller.interfaces';
 import { BackendService } from './backend.service';
-import { KeyValuePairNumber } from '../app.interfaces';
+import {KeyValuePairNumber, LoginData} from '../app.interfaces';
 import { ServerError } from 'iqb-components';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TestControllerService {
+  public dummyLoginData$ = new BehaviorSubject<LoginData>(null);
+
   private standardBookletConfig: BookletConfig = {
     showMainNaviButtons: true
   };

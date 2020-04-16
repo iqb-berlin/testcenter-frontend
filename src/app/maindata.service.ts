@@ -3,10 +3,9 @@ import {BehaviorSubject, Subject} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {
   AppError,
-  AuthData,
-  LoginData
+  AuthData
 } from './app.interfaces';
-import {CustomtextService, ServerError} from 'iqb-components';
+import {CustomtextService} from 'iqb-components';
 import {appconfig, customtextKeySeparator, CustomTextsDefList} from './app.config';
 
 const localStorageAuthDataKey = 'iqb-tc';
@@ -16,8 +15,6 @@ const localStorageAuthDataKey = 'iqb-tc';
 })
 
 export class MainDataService {
-  public loginData$ = new BehaviorSubject<LoginData>(null);
-  public globalErrorMsg$ = new BehaviorSubject<ServerError>(null); // TODO remove globalErrorMsg$
   public appError$ = new BehaviorSubject<AppError>(null);
   public delayedProcessesCount$ = new BehaviorSubject<number>(0);
   public isApiVersionValid = true;
@@ -92,7 +89,7 @@ export class MainDataService {
 
   getBookletDbId(): number {
 
-    return this.loginData$.getValue().testId;
+    return 0;
   }
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -119,14 +116,14 @@ export class MainDataService {
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   getCode(): string {
-    const myLoginData = this.loginData$.getValue();
-    return myLoginData.code;
+
+    return 'xx';
   }
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   getBookletLabel(): string {
-    const myLoginData = this.loginData$.getValue();
-    return myLoginData.bookletLabel;
+
+    return 'xx';
   }
 
   public addCustomtextsFromDefList(customtextList: CustomTextsDefList) {

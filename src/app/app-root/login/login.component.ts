@@ -42,14 +42,13 @@ export class LoginComponent  implements OnInit, OnDestroy {
   login() {
     const loginData = this.loginForm.value;
     LoginComponent.oldLoginName = loginData['name'];
-    console.log('###');
     this.bs.login(loginData['name'], loginData['pw']).subscribe(
       authData => {
         this.problemText = '';
         if (typeof authData === 'number') {
           const errCode = authData as number;
           if (errCode === 400) {
-            this.problemText = 'Anmeldungsdaten sind nicht gültig.';
+            this.problemText = 'Anmeldedaten sind nicht gültig.';
           } else {
             this.problemText = 'Problem bei der Anmeldung.';
             // app.interceptor will show error message

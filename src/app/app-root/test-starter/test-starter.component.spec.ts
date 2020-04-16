@@ -1,6 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TestStarterComponent } from './test-starter.component';
+import {HttpClientModule} from "@angular/common/http";
+import {ReactiveFormsModule} from "@angular/forms";
+import {AppRoutingModule} from "../../app-routing.module";
+import {IqbComponentsModule} from "iqb-components";
 
 describe('TestStarterComponent', () => {
   let component: TestStarterComponent;
@@ -8,7 +12,13 @@ describe('TestStarterComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TestStarterComponent ]
+      declarations: [ TestStarterComponent ],
+      imports: [
+        HttpClientModule,
+        ReactiveFormsModule,
+        AppRoutingModule,
+        IqbComponentsModule
+      ],
     })
     .compileComponents();
   }));

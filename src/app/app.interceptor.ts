@@ -7,7 +7,6 @@ import {
 import {Observable, throwError} from 'rxjs';
 import {catchError, tap} from "rxjs/operators";
 import {Router, RouterState, RouterStateSnapshot} from "@angular/router";
-import {AuthAccessKeyType, AuthFlagType} from "./app.interfaces";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -32,13 +31,7 @@ export class AuthInterceptor implements HttpInterceptor {
     const authData = MainDataService.getAuthDataFromLocalStorage();
     if (authData) {
       if (authData.token) {
-        if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN] || authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
-          tokenStr = authData.token;
-        } else if (authData.flags.indexOf(AuthFlagType.CODE_REQUIRED) >= 0) {
-          tokenStr = 'l:' + authData.token;
-        } else if (authData.access[AuthAccessKeyType.TEST]) {
-          tokenStr = 'p:' + authData.token;
-        }
+        tokenStr = authData.token;
       }
     }
 
@@ -69,9 +62,14 @@ export class AuthInterceptor implements HttpInterceptor {
               category: "PROBLEM"
             })
           } else {
+            let ignoreError = false;
             let goToLoginPage = false;
             let label = 'Unbekanntes Verbindungsproblem';
             switch (httpError.status) {
+              case 400: {
+                ignoreError = true;
+                break;
+              }
               case 401: {
                 goToLoginPage = true;
                 label = 'Bitte für diese Aktion erst anmelden!';
@@ -95,15 +93,17 @@ export class AuthInterceptor implements HttpInterceptor {
                 break;
               }
             }
-            this.mds.appError$.next({
-              label: label,
-              description: httpError.message,
-              category: "PROBLEM"
-            });
-            if (goToLoginPage) {
-              const state: RouterState = this.router.routerState;
-              const snapshot: RouterStateSnapshot = state.snapshot;
-              this.router.navigate(['/r/login', snapshot.url]);
+            if (!ignoreError) {
+              this.mds.appError$.next({
+                label: label,
+                description: httpError.message,
+                category: "PROBLEM"
+              });
+              if (goToLoginPage) {
+                const state: RouterState = this.router.routerState;
+                const snapshot: RouterStateSnapshot = state.snapshot;
+                this.router.navigate(['/r/login', snapshot.url]);
+              }
             }
           }
         }

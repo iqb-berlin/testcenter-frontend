@@ -10,7 +10,8 @@ import {
   SysConfig,
   SysCheckInfo,
   AuthData,
-  WorkspaceData
+  WorkspaceData,
+  BookletData
 } from './app.interfaces';
 import {ErrorHandler, ServerError} from 'iqb-components';
 
@@ -48,6 +49,14 @@ export class BackendService {
         );
   }
 
+  codeLogin(code: string): Observable<AuthData | number> {
+    return this.http
+      .put<AuthData>(this.serverUrl + 'session/person', {code})
+      .pipe(
+        catchError(errCode => of(errCode))
+      );
+  }
+
   getWorkspaceData(workspaceId: string): Observable<WorkspaceData> {
     return this.http
           .get<WorkspaceData>(this.serverUrl + 'workspace/' + workspaceId)
@@ -68,6 +77,20 @@ export class BackendService {
         catchError(errCode => of(errCode))
       )
   }
+
+  getBookletData(bookletId: string): Observable<BookletData> {
+    return this.http
+      .get<BookletData>(this.serverUrl + 'booklet/' + bookletId)
+      .pipe(catchError(() => {
+        console.warn('get booklet data failed for ' + bookletId);
+        return of(<BookletData>{
+          label: bookletId,
+          isEnabled: false,
+          statusText: "not found"
+        })
+      }));
+  }
+
 
   getSession(loginToken: string, personToken: string): Observable<LoginData | ServerError> {
 

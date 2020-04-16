@@ -32,12 +32,9 @@ export interface WorkspaceData {
 
 export interface BookletData {
   id: string;
-  filename: string;
   label: string;
-}
-
-export interface BookletDataListByCode {
-  [code: string]: BookletData[];
+  isEnabled: boolean;
+  statusText: string
 }
 
 export interface BookletListByCode {

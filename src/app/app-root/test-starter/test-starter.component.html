@@ -1,1 +1,18 @@
-<p>test-starter works!</p>
+<mat-card fxFlex="0 0 400px" fxLayout="column">
+  <mat-card-title>{{ bookletSelectTitle }}</mat-card-title>
+  <mat-card-content>
+    <div fxLayoutGap="10px" fxLayout="column">
+      <p *ngIf="booklets.length === 0">
+        Für diese Anmeldung wurde kein Test gefunden.
+      </p>
+      <button mat-raised-button color="primary" (click)="startBooklet(b)"
+              [disabled]="!b.isEnabled" *ngFor="let b of booklets">
+        <div class="booklet_title">{{b.label}}</div>
+        <div class="booklet_status">{{b.statusText}}</div>
+      </button>
+    </div>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
+  </mat-card-actions>
+</mat-card>

@@ -4,8 +4,9 @@
     <mat-card-subtitle>{{ 'login_codeInputPrompt' | customtext:'login_codeInputPrompt':cts.updateCount }}</mat-card-subtitle>
     <mat-card-content>
       <mat-form-field>
-        <input matInput formControlName="code" (keyup.enter)="codeinput()"> <!-- no placeholder! -->
+        <input matInput formControlName="code"> <!-- no placeholder! -->
       </mat-form-field>
+      <p>{{ problemText }}</p>
     </mat-card-content>
     <mat-card-actions>
       <button mat-raised-button type="submit" [disabled]="codeinputform.invalid" color="primary">Weiter</button>
