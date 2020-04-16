@@ -48,7 +48,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
       this.appErrorSubscription = this.mds.appError$.subscribe(err => {
         if (err) {
-          console.warn(err.description);
           this.showError = true;
         }
       });

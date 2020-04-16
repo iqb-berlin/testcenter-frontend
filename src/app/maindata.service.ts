@@ -35,6 +35,7 @@ export class MainDataService {
   public globalErrorMsg$ = new BehaviorSubject<ServerError>(null); // TODO remove globalErrorMsg$
   public appError$ = new BehaviorSubject<AppError>(null);
   public delayedProcessesCount$ = new BehaviorSubject<number>(0);
+  public apiVersionProblem = false;
 
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();

@@ -35,18 +35,18 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(requestA).pipe(
       tap(requ => {
           // filter out OPTIONS request
-          if (requ.type > 0) {
+          if (requ.type > 0) { // TODO check the way to detect OPTION
             this.mds.decrementDelayedProcessesCount();
+            console.log('äöüsl');
           }
       }),
       catchError(e => {
         this.mds.decrementDelayedProcessesCount();
-        console.log('err dec');
         if (e instanceof HttpErrorResponse) {
           const httpError = e as HttpErrorResponse;
           if (httpError.error instanceof ErrorEvent) {
             this.mds.appError$.next({
-              label: 'Fehler in der Netzwerk-Verbindung',
+              label: 'Fehler in der Netzwerkverbindung',
               description: httpError.message,
               category: "PROBLEM"
             })

@@ -135,9 +135,11 @@ export class FilesComponent implements OnInit {
     } else {
       this.bs.getFiles().subscribe(
         (filedataresponse: GetFileResponseData[]) => {
+          console.log('updateFileList ok');
           this.serverfiles = new MatTableDataSource(filedataresponse);
           this.serverfiles.sort = this.sort;
         }, (err: ServerError) => {
+          console.log('updateFileList err');
           this.mds.appError$.next({
             label: err.labelNice,
             description: err.labelSystem,
