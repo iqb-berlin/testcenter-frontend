@@ -1,11 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MainDataService} from "../../maindata.service";
-import {CustomtextService, ServerError} from "iqb-components";
+import {CustomtextService} from "iqb-components";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs";
-import {appconfig} from "../../app.config";
-import {LoginData} from "../../app.interfaces";
+import {AuthData} from "../../app.interfaces";
 import {BackendService} from "../../backend.service";
 
 @Component({
@@ -19,6 +18,7 @@ export class LoginComponent  implements OnInit, OnDestroy {
   private routingSubscription: Subscription = null;
   static oldLoginName = '';
   returnTo = '';
+  problemText = '';
 
   loginForm = new FormGroup({
     name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -42,41 +42,30 @@ export class LoginComponent  implements OnInit, OnDestroy {
   login() {
     const loginData = this.loginForm.value;
     LoginComponent.oldLoginName = loginData['name'];
+    console.log('###');
     this.bs.login(loginData['name'], loginData['pw']).subscribe(
-      loginData => {
-        if (loginData instanceof ServerError) {
-          const e = loginData as ServerError;
-          if (e.code === 400) {
-            this.mds.appError$.next({
-              label: 'Diese Anmeldedaten sind für diesen Server nicht gültig.',
-              description: e.labelSystem + ' (' + e.code.toString + ')',
-              category: "PROBLEM"
-            });
+      authData => {
+        this.problemText = '';
+        if (typeof authData === 'number') {
+          const errCode = authData as number;
+          if (errCode === 400) {
+            this.problemText = 'Anmeldungsdaten sind nicht gültig.';
+          } else {
+            this.problemText = 'Problem bei der Anmeldung.';
+            // app.interceptor will show error message
           }
-          this.mds.addCustomtextsFromDefList(appconfig.customtextsLogin);
-          // no change in other data
         } else {
-          if ((loginData as LoginData).customTexts) {
-            this.cts.addCustomTexts((loginData as LoginData).customTexts);
+          const authDataTyped = authData as AuthData;
+          if (authDataTyped.customTexts) {
+            this.cts.addCustomTexts(authDataTyped.customTexts);
           }
-          this.mds.setAuthData(loginData as LoginData);
+          this.mds.setAuthData(authDataTyped);
 
           if (this.returnTo) {
             this.router.navigateByUrl(this.returnTo);
           } else {
-            if (this.mds.adminToken) {
-              this.router.navigate(['/r/admin-starter']);
-            } else if (this.mds.loginToken) {
-              this.router.navigate(['/r/code-input']);
-            } else if (this.mds.personToken) {
-              this.router.navigate(['/r/test-starter']);
-            } else {
-              this.mds.appError$.next({
-                label: 'Keine Berechtigung für diese Anmeldedaten gefunden.',
-                description: 'Request ohne Fehler, aber kein Token?!',
-                category: "PROBLEM"
-              });
-            }
+            // let the app-root routing guard decide where to go to
+            this.router.navigate(['/r']);
           }
         }
       }

@@ -1,3 +1,9 @@
+export interface WorkspaceData {
+  id: string;
+  name: string;
+  role: "RW" | "RO" | "n.d.";
+}
+
 export interface GetFileResponseData {
   filename: string;
   filesize: number;

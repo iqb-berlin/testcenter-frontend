@@ -1,8 +1,8 @@
 import { WorkspaceDataService } from './workspacedata.service';
-import { MainDataService } from '../maindata.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import {BackendService} from "./backend.service";
 
 
 @Component({
@@ -14,17 +14,21 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    public mds: MainDataService,
+    private bs: BackendService,
     public wds: WorkspaceDataService
   ) { }
 
   ngOnInit() {
     this.routingSubscription = this.route.params.subscribe(params => {
       this.wds.wsId = params['ws'];
-      const wsList = this.mds.workspaces;
-      if (wsList && wsList[this.wds.wsId]) {
-        this.wds.wsName = wsList[this.wds.wsId];
-      }
+      this.bs.getWorkspaceData(this.wds.wsId).subscribe(
+        wsData => {
+          if (typeof wsData !== 'number') {
+            this.wds.wsName = wsData.name;
+            this.wds.wsRole = wsData.role;
+          }
+        }
+      )
     });
   }
 

@@ -10,7 +10,7 @@ export const environment = {
   appName: 'IQB-Testcenter',
   appPublisher: 'IQB - Institut zur Qualitätsentwicklung im Bildungswesen',
   appVersion: '0 (dev)',
-  apiVersionExpected: '2.0.1'
+  apiVersionExpected: '2.0.0'
 };
 
 /*

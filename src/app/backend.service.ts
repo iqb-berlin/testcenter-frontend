@@ -1,9 +1,17 @@
 
 import { Injectable, Inject } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {catchError, switchMap} from 'rxjs/operators';
-import {LoginData, BookletStatus, PersonTokenAndTestId, SysConfig, SysCheckInfo} from './app.interfaces';
+import {
+  LoginData,
+  BookletStatus,
+  PersonTokenAndTestId,
+  SysConfig,
+  SysCheckInfo,
+  AuthData,
+  WorkspaceData
+} from './app.interfaces';
 import {ErrorHandler, ServerError} from 'iqb-components';
 
 // ============================================================================
@@ -18,28 +26,48 @@ export class BackendService {
   ) {}
 
 
-  login(name: string, password: string): Observable<LoginData | ServerError> {
-
+  login(name: string, password: string): Observable<AuthData | number> {
     return this.http
-        .put<LoginData>(this.serverUrl + 'session/admin', {name, password})
+        .put<AuthData>(this.serverUrl + 'session/admin', {name, password})
         .pipe(
-          catchError(ErrorHandler.handle),
-          switchMap(myLoginData => {
-            if (myLoginData instanceof ServerError) {
-              if ((myLoginData as ServerError).code === 401) {
+          catchError(errCode => of(errCode)),
+          switchMap(authData => {
+            if (typeof authData === 'number') {
+              const errCode = authData as number;
+              if (errCode === 400) {
                 return this.http
                   .put<LoginData>(this.serverUrl + 'session/login', {name, password})
-                  .pipe(catchError(ErrorHandler.handle));
+                  .pipe(catchError(errCode => of(errCode)));
               } else {
-                return of(myLoginData);
+                return of(errCode);
               }
             } else {
-              return of(myLoginData);
+              return of(authData);
             }
           })
         );
   }
 
+  getWorkspaceData(workspaceId: string): Observable<WorkspaceData> {
+    return this.http
+          .get<WorkspaceData>(this.serverUrl + 'workspace/' + workspaceId)
+          .pipe(catchError(() => {
+            console.warn('get workspace data failed for ' + workspaceId);
+            return of(<WorkspaceData>{
+              id: workspaceId,
+              name: workspaceId,
+              role: "n.d."
+            })
+          }));
+  }
+
+  getSessionData(): Observable<AuthData | number> {
+    return this.http
+      .get<AuthData>(this.serverUrl + 'session')
+      .pipe(
+        catchError(errCode => of(errCode))
+      )
+  }
 
   getSession(loginToken: string, personToken: string): Observable<LoginData | ServerError> {
 

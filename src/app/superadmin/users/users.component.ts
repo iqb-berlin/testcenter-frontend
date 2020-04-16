@@ -110,7 +110,7 @@ export class UsersComponent implements OnInit {
         width: '400px',
         data: <ConfirmDialogData>{
           title: 'Ändern des Superadmin-Status',
-          content: 'Für "' + userObject.name + '" den Status auf "' + (userObject.is_superadmin === '0' ? '' : 'NICHT ') + 'Superadmin" setzen?',
+          content: 'Für "' + userObject.name + '" den Status auf "' + (userObject.isSuperadmin ? 'NICHT ' : '') + 'Superadmin" setzen?',
           confirmbuttonlabel: 'Status ändern',
           showcancel: true
         }
@@ -120,7 +120,7 @@ export class UsersComponent implements OnInit {
         if ((typeof result !== 'undefined') && (result !== false)) {
           const passwdDialogRef = this.superadminPasswordDialog.open(SuperadminPasswordRequestComponent, {
             width: '600px',
-            data: 'Superadmin-Status ' + (userObject.is_superadmin === '0' ? 'setzen' : 'entziehen')
+            data: 'Superadmin-Status ' + (userObject.isSuperadmin ? 'entziehen' : 'setzen')
           });
 
           passwdDialogRef.afterClosed().subscribe(result => {
@@ -128,11 +128,12 @@ export class UsersComponent implements OnInit {
               if (result !== false) {
                 this.bs.setSuperUserStatus(
                   selectedRows[0]['id'],
-                  userObject.is_superadmin === '0',
+                  !userObject.isSuperadmin,
                   (<FormGroup>result).get('pw').value).subscribe(
                   respOk => {
                     if (respOk !== false) {
                       this.snackBar.open('Status geändert', '', {duration: 1000});
+                      this.updateObjectList();
                     } else {
                       this.snackBar.open('Konnte Status nicht ändern', 'Fehler', {duration: 1000});
                     }

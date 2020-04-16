@@ -37,7 +37,7 @@ export class FilesComponent implements OnInit {
     private mds: MainDataService,
     public wds: WorkspaceDataService,
     public confirmDialog: MatDialog,
-    public messsageDialog: MatDialog,
+    public messageDialog: MatDialog,
     public snackBar: MatSnackBar
   ) { }
 
@@ -112,7 +112,7 @@ export class FilesComponent implements OnInit {
           }
         });
       } else {
-        this.messsageDialog.open(MessageDialogComponent, {
+        this.messageDialog.open(MessageDialogComponent, {
           width: '400px',
           data: <MessageDialogData>{
             title: 'Löschen von Dateien',

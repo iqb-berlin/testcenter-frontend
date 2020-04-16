@@ -1,3 +1,35 @@
+export enum AuthFlagType {
+  CODE_REQUIRED = "codeRequired",
+  PENDING = "pending",
+  EXPIRED = "expired"
+}
+
+export enum AuthAccessKeyType {
+  WORKSPACE_ADMIN = "workspaceAdmin",
+  SUPER_ADMIN = "superAdmin",
+  TEST = "test",
+  WORKSPACE_MONITOR = "workspaceMonitor",
+  TEST_GROUP_MONITOR = "testGroupMonitor"
+}
+
+export interface AccessType {
+  [key: string]: string[];
+}
+
+export interface AuthData {
+  token: string;
+  displayName: string;
+  customTexts: KeyValuePairs;
+  flags: AuthFlagType[];
+  access: AccessType;
+}
+
+export interface WorkspaceData {
+  id: string;
+  name: string;
+  role: "RW" | "RO" | "n.d.";
+}
+
 export interface BookletData {
   id: string;
   filename: string;
@@ -12,24 +44,6 @@ export interface BookletListByCode {
   [code: string]: string[];
 }
 
-export enum AuthType {
-  LOGIN = "LOGIN",
-  ADMIN = "ADMIN",
-  PERSON = "PERSON",
-  SUPERADMIN = "SUPERADMIN"
-}
-
-export interface AccessRightList {
-  [key: string]: string;
-}
-
-export interface AuthData {
-  token: string;
-  authTypes: AuthType[];
-  displayName: string;
-  accessRights: AccessRightList;
-}
-
 export interface LoginData {
   loginToken: string;
   personToken: string;
@@ -41,7 +55,7 @@ export interface LoginData {
   booklets: BookletListByCode;
   testId: number;
   bookletLabel: string;
-  customTexts: KeyValuePair;
+  customTexts: KeyValuePairs;
   adminToken: string;
   workspaces: WorkspaceData[];
   isSuperadmin: boolean;
@@ -61,22 +75,16 @@ export interface PersonTokenAndTestId {
 }
 
 export interface SysConfig {
-  customTexts: KeyValuePair;
+  customTexts: KeyValuePairs;
   version: string;
 }
 
-export interface KeyValuePair {
+export interface KeyValuePairs {
   [K: string]: string;
 }
 
 export interface KeyValuePairNumber {
   [K: string]: number;
-}
-
-export interface WorkspaceData {
-  id: number;
-  name: string;
-  role: string;
 }
 
 export interface AppError {

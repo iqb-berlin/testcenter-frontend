@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class WorkspaceDataService {
-  public wsId = '';
+  public wsId: string;
   public wsRole = 'RW';
   public wsName = '';
 

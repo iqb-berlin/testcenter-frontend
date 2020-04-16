@@ -2,10 +2,11 @@ import { GetFileResponseData, CheckWorkspaceResponseData, SysCheckStatistics,
   ReviewData, LogData, UnitResponse, ResultData } from './workspace.interfaces';
 import {Injectable, Inject} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {Observable, of} from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ErrorHandler, ServerError } from 'iqb-components';
 import {WorkspaceDataService} from "./workspacedata.service";
+import {WorkspaceData} from "../app.interfaces";
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,13 @@ export class BackendService {
   ) {
   }
 
+  getWorkspaceData(workspaceId: string): Observable<WorkspaceData | number> {
+    return this.http
+      .get<WorkspaceData>(this.serverUrl + 'workspace/' + workspaceId)
+      .pipe(
+        catchError(errCode => of(errCode))
+      );
+  }
 
   getFiles(): Observable<GetFileResponseData[] | ServerError> {
 

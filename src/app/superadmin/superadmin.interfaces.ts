@@ -23,6 +23,6 @@ export interface UserData {
   id: number;
   name: string;
   email: string;
-  is_superadmin: string;
+  isSuperadmin: boolean;
   selected: boolean;
 }

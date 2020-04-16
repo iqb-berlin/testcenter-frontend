@@ -1,5 +1,4 @@
 import { AboutComponent } from './app-root/about/about.component';
-import { StartComponent } from './start/start.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {AppRootComponent} from "./app-root/app-root.component";
@@ -21,6 +20,7 @@ const routes: Routes = [
   {path: 'r', component: AppRootComponent,
     children: [
       {path: '', redirectTo: 'route-dispatcher', pathMatch: 'full'},
+      {path: 'login', redirectTo: 'route-dispatcher', pathMatch: 'full'},
       {path: 'login/:returnTo', component: LoginComponent},
       {path: 'about', component: AboutComponent},
       {path: 'check-starter', component: SysCheckStarterComponent},
@@ -30,7 +30,6 @@ const routes: Routes = [
       {path: 'code-input', component: CodeInputComponent}
     ]
   },
-  {path: 'start', component: StartComponent},
   {path: 'about', component: AboutComponent},
   {path: 'check', loadChildren: () => import('./sys-check/sys-check.module').then(m => m.SysCheckModule)},
   {path: 'admin', loadChildren: () => import('./workspace-admin/workspace.module').then(m => m.WorkspaceModule)},

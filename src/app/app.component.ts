@@ -92,17 +92,20 @@ export class AppComponent implements OnInit, OnDestroy {
         if (sc) {
           this.mds.setDefaultCustomtexts(sc.customTexts);
           this.mds.isApiVersionValid = AppComponent.isValidVersion(this.expectedApiVersion, sc.version);
-          if (this.mds.isApiVersionValid) {
-            console.log("API ok (erwartet: " + this.expectedApiVersion + ", gefunden: " + sc.version + ")");
-          } else {
+          if (!this.mds.isApiVersionValid) {
             this.mds.appError$.next({
               label: "Server-Problem: API-Version ungültig",
               description: "erwartet: " + this.expectedApiVersion + ", gefunden: " + sc.version,
-              category: "PROBLEM"
+              category: "FATAL"
             });
           }
         } else {
           this.mds.isApiVersionValid = false;
+          this.mds.appError$.next({
+            label: "Allgemeines Server-Problem",
+            description: "getSysConfig lieferte null",
+            category: "FATAL"
+          });
         }
       });
     });
