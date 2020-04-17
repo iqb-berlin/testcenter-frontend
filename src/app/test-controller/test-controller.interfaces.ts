@@ -40,9 +40,9 @@ export interface UnitData {
     laststate: KeyValuePair[];
 }
 
-export interface BookletData {
+export interface TestData {
   xml: string;
-  locked: boolean;
+  mode: string;
   laststate: KeyValuePair[];
 }
 
@@ -84,6 +84,13 @@ export enum LogEntryKey {
     RESPONSESCOMPLETE = 'RESPONSESCOMPLETE'
 }
 
+export enum RunModeKey {
+  HOT_RETURN = "run-hot-return",
+  HOT_RESTART = "run-hot-restart",
+  TRIAL = "run-trial",
+  REVIEW = "run-review"
+}
+
 export enum MaxTimerDataType {
     STARTED = 'STARTED',
     STEP = 'STEP',
@@ -111,4 +118,13 @@ export interface ReviewDialogData {
   bookletname: string;
   unitDbKey: string;
   unitTitle: string;
+}
+
+export enum NoUnitFlag {
+  END = "end",
+  ERROR = "error"
+}
+
+export interface KeyValuePairNumber {
+  [K: string]: number;
 }

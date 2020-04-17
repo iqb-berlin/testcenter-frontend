@@ -68,68 +68,6 @@ export class MainDataService {
     }
   }
 
-  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  setCode ( newCode: string) {
-    /*
-    const myLoginData = this.loginData$.getValue();
-    myLoginData.code = newCode;
-    this.setNewLoginData(myLoginData);
-
-     */
-  }
-
-  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  setBookletDbId ( personToken: string, bId: number, bLabel: string) {
-    /*
-    const myLoginData = this.loginData$.getValue();
-    myLoginData.personToken = personToken;
-    myLoginData.testId = bId;
-    myLoginData.bookletLabel = bLabel;
-    this.setNewLoginData(myLoginData);
-
-     */
-  }
-
-
-  getBookletDbId(): number {
-
-    return 0;
-  }
-
-  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  endBooklet () {
-    /*
-    const myLoginData = this.loginData$.getValue();
-    if (myLoginData.testId > 0 && myLoginData.mode === 'hot') {
-      forkJoin(
-        this.bs.addBookletLogClose(myLoginData.testId),
-        this.bs.lockBooklet(myLoginData.testId)
-      ).subscribe(() => {
-        myLoginData.testId = 0;
-        myLoginData.bookletLabel = '';
-        this.setNewLoginData(myLoginData);
-      });
-    } else {
-      myLoginData.testId = 0;
-      myLoginData.bookletLabel = '';
-      this.setNewLoginData(myLoginData);
-    }
-
-     */
-  }
-
-  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  getCode(): string {
-
-    return 'xx';
-  }
-
-  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  getBookletLabel(): string {
-
-    return 'xx';
-  }
-
   public addCustomtextsFromDefList(customtextList: CustomTextsDefList) {
     const myCustomTexts: {[key: string]: string} = {};
     for (const ct of Object.keys(customtextList.defList)) {

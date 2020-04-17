@@ -14,3 +14,8 @@ div.booklet_status {
   height: 24px;
   margin-bottom: 18px;
 }
+
+mat-card {
+  margin: 10px;
+}
+

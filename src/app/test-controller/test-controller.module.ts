@@ -27,6 +27,7 @@ import {MatMenuModule} from "@angular/material/menu";
 import {MatButtonModule} from "@angular/material/button";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatIconModule} from "@angular/material/icon";
+import { NoUnitComponent } from './no-unit/no-unit.component';
 
 
 @NgModule({
@@ -56,7 +57,8 @@ import {MatIconModule} from "@angular/material/icon";
     TestControllerComponent,
     ResizeIFrameChildDirective,
     ReviewDialogComponent,
-    StartLockInputComponent
+    StartLockInputComponent,
+    NoUnitComponent
   ],
   entryComponents: [
     ReviewDialogComponent,

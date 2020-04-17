@@ -1,9 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { BookletData, UnitData, TaggedString } from './test-controller.interfaces';
-import { ServerError } from 'iqb-components';
+import {UnitData, TaggedString, TestData} from './test-controller.interfaces';
 
 
 @Injectable({
@@ -18,41 +17,42 @@ export class BackendService {
   }
 
 
-  saveUnitReview(testId: number, unitName: string, priority: number, categories: string, entry: string)
-    : Observable<boolean | ServerError> {
-
+  saveUnitReview(testId: string, unitName: string, priority: number, categories: string, entry: string)
+    : Observable<boolean> {
+    // TODO endpoint does not give any return, only status 200
     return this.http
       .put<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/review`, {priority, categories, entry})
-      .pipe(catchError(this.handle));
+      .pipe(catchError(() => of(false)));
   }
 
 
-  saveBookletReview(testId: number, priority: number, categories: string, entry: string): Observable<boolean | ServerError> {
-
+  saveBookletReview(testId: string, priority: number, categories: string, entry: string): Observable<boolean> {
+    // TODO endpoint does not give any return, only status 200
     return this.http
       .put<boolean>(this.serverUrl + `test/${testId}/review`, {priority, categories, entry})
-      .pipe(catchError(this.handle));
+      .pipe(catchError(() => of(false)));
   }
 
 
-  getBookletData(testId: number): Observable<BookletData | ServerError> {
-
+  getTestData(testId: string): Observable<TestData | number> {
     return this.http
-      .get<BookletData>(this.serverUrl + 'test/' + testId)
-      .pipe(catchError(this.handle));
+      .get<TestData>(this.serverUrl + 'test/' + testId)
+      .pipe(
+        catchError(errCode => of(errCode))
+      );
   }
 
 
-  getUnitData(testId: number, unitid: string): Observable<UnitData | ServerError> {
-
+  getUnitData(testId: string, unitid: string): Observable<UnitData | number> {
     return this.http
       .get<UnitData>(this.serverUrl + 'test/' + testId + '/unit/' + unitid)
-      .pipe(catchError(this.handle));
+      .pipe(
+        catchError(errCode => of(errCode))
+      );
   }
 
 
-  getResource(testId: number, internalKey: string, resId: string, versionning = false): Observable<TaggedString | ServerError> {
-
+  getResource(testId: string, internalKey: string, resId: string, versionning = false): Observable<TaggedString | number> {
     return this.http
       .get(
         this.serverUrl + `test/${testId}/resource/${resId}`,
@@ -62,75 +62,56 @@ export class BackendService {
         })
       .pipe(
         map(def => <TaggedString>{tag: internalKey, value: def}),
-        catchError(this.handle)
+        catchError(errCode => of(errCode))
       );
   }
 
 
-  addUnitLog(testId: number, timestamp: number, unitName: string, entry: string): Observable<boolean | ServerError> {
-
+  addUnitLog(testId: string, timestamp: number, unitName: string, entry: string): Observable<boolean> {
+    // TODO endpoint does not give any return, only status 200
     return this.http
       .put<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/log`, {timestamp, entry})
-      .pipe(catchError(this.handle));
+      .pipe(catchError(() => of(false)));
   }
 
 
-  addBookletLog(testId: number, timestamp: number, entry: string): Observable<boolean | ServerError> {
-
+  addBookletLog(testId: string, timestamp: number, entry: string): Observable<boolean> {
+    // TODO endpoint does not give any return, only status 200
     return this.http
       .put<boolean>(this.serverUrl + `test/${testId}/log`, {timestamp, entry})
-      .pipe(catchError(this.handle));
+      .pipe(catchError(() => of(false)));
   }
 
 
-  setUnitState(testId: number, unitName: string, stateKey: string, state: string): Observable<boolean | ServerError> {
-
+  setUnitState(testId: string, unitName: string, stateKey: string, state: string): Observable<boolean> {
+    // TODO endpoint does not give any return, only status 200
     return this.http
       .patch<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/state`, {key: stateKey, value: state})
-      .pipe(catchError(this.handle));
+      .pipe(catchError(() => of(false)));
   }
 
 
-  setBookletState(testId: number, stateKey: string, state: string): Observable<boolean | ServerError> {
-
+  setBookletState(testId: string, stateKey: string, state: string): Observable<boolean> {
+    // TODO endpoint does not give any return, only status 200
     return this.http
       .patch<boolean>(this.serverUrl + `test/${testId}/state`, {key: stateKey, value: state})
-      .pipe(catchError(this.handle));
+      .pipe(catchError(() => of(false)));
   }
 
 
-  newUnitResponse(testId: number, timestamp: number, unitName: string, response: string, responseType: string)
-    : Observable<boolean | ServerError> {
-
+  newUnitResponse(testId: string, timestamp: number, unitName: string, response: string, responseType: string)
+    : Observable<boolean> {
+    // TODO endpoint does not give any return, only status 200
     return this.http
       .put<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/response`, {timestamp, response, responseType})
-      .pipe(catchError(this.handle));
+      .pipe(catchError(() => of(false)));
   }
 
 
-  newUnitRestorePoint(testId: number, unitName: string, timestamp: number, restorePoint: string): Observable<boolean | ServerError> {
-
+  newUnitRestorePoint(testId: string, unitName: string, timestamp: number, restorePoint: string): Observable<boolean> {
+    // TODO endpoint does not give any return, only status 200
     return this.http
       .patch<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/restorepoint`, {timestamp, restorePoint})
-      .pipe(catchError(this.handle));
-  }
-
-
-
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
-  handle(errorObj: HttpErrorResponse): Observable<ServerError> {
-    let myreturn;
-    if (errorObj.error instanceof ErrorEvent) {
-      myreturn = new ServerError(500, 'Verbindungsproblem', (<ErrorEvent>errorObj.error).message);
-    } else {
-      myreturn = new ServerError(errorObj.status, 'Verbindungsproblem', errorObj.message);
-      if (errorObj.status === 401) {
-        myreturn.labelNice = 'Zugriff verweigert - bitte (neu) anmelden!';
-      } else if (errorObj.status === 504) {
-        myreturn.labelNice = 'Achtung: Server meldet Datenbankproblem.';
-      }
-    }
-
-    return of(myreturn);
+      .pipe(catchError(() => of(false)));
   }
 }

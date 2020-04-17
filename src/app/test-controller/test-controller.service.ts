@@ -2,34 +2,33 @@ import { debounceTime, takeUntil, map } from 'rxjs/operators';
 import { BehaviorSubject, Subject, Subscription, interval, timer } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Testlet, BookletConfig, MaxTimerData } from './test-controller.classes';
-import { LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData,
-    MaxTimerDataType, UnitNaviButtonData } from './test-controller.interfaces';
+import {
+  LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData,
+  MaxTimerDataType, UnitNaviButtonData, KeyValuePairNumber, NoUnitFlag
+} from './test-controller.interfaces';
 import { BackendService } from './backend.service';
-import {KeyValuePairNumber, LoginData} from '../app.interfaces';
-import { ServerError } from 'iqb-components';
+import {Router} from "@angular/router";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: 'root'
 })
 export class TestControllerService {
-  public dummyLoginData$ = new BehaviorSubject<LoginData>(null);
+  public testId = '';
 
   private standardBookletConfig: BookletConfig = {
     showMainNaviButtons: true
   };
   public bookletConfig$ = new BehaviorSubject<BookletConfig>(this.standardBookletConfig);
   public rootTestlet: Testlet = null;
-  public bookletDbId = 0;
   public maxUnitSequenceId = 0;
   public minUnitSequenceId = 0;
-  public loginname = '';
   public mode = '';
   public logging = true;
   public lazyloading = true;
   public dataLoading = false;
   public bookletLoadComplete = false;
 
-  public navigationRequest$ = new Subject<string>();
   public maxTimeTimer$ = new Subject<MaxTimerData>();
   public currentMaxTimerTestletId = '';
   private maxTimeIntervalSubscription: Subscription = null;
@@ -82,13 +81,15 @@ export class TestControllerService {
   private responsesToSave$ = new Subject<UnitResponseData>();
 
   constructor (
+    private router: Router,
+    private snackBar: MatSnackBar,
     private bs: BackendService
   ) {
     this.restorePointsToSave$.pipe(
       debounceTime(200)).subscribe(restorePoint => {
-        this.bs.newUnitRestorePoint(this.bookletDbId, restorePoint.unitDbKey, Date.now(),
+        this.bs.newUnitRestorePoint(this.testId, restorePoint.unitDbKey, Date.now(),
               JSON.stringify(restorePoint.restorePoint)).subscribe(ok => {
-          if (ok instanceof ServerError) {
+          if (!ok) {
             console.log('((((((((((((((((newUnitRestorePoint');
           }
         });
@@ -98,9 +99,9 @@ export class TestControllerService {
     // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.responsesToSave$.pipe(
       debounceTime(200)).subscribe(response => {
-        this.bs.newUnitResponse(this.bookletDbId, Date.now(), response.unitDbKey,
+        this.bs.newUnitResponse(this.testId, Date.now(), response.unitDbKey,
               JSON.stringify(response.response), response.responseType).subscribe(ok => {
-          if (ok instanceof ServerError) {
+          if (!ok) {
             console.log('((((((((((((((((newUnitResponse');
           }
         });
@@ -111,7 +112,6 @@ export class TestControllerService {
   // 7777777777777777777777777777777777777777777777777777777777777777777777
   public resetDataStore() {
     this.bookletConfig$.next(this.standardBookletConfig);
-    this.bookletDbId = 0;
     this.players = {};
     this.unitDefinitions = {};
     this.unitRestorePoints = {};
@@ -119,7 +119,6 @@ export class TestControllerService {
     this.maxUnitSequenceId = 0;
     this.mode = '';
     this.logging = true;
-    this.loginname = '';
     this.currentUnitSequenceId = 0;
     this.currentUnitDbKey = '';
     this.currentUnitTitle = '';
@@ -201,21 +200,13 @@ export class TestControllerService {
     return this.unitPresentationCompleteStates[sequenceId];
   }
 
-
   // 7777777777777777777777777777777777777777777777777777777777777777777777
-  public setUnitNavigationRequest(RequestKey: string) {
-    this.navigationRequest$.next(RequestKey);
-  }
-
-
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
-  public addBookletLog(logKey: LogEntryKey, entry = '', overwriteBookletDbId = -1) {
+  public addBookletLog(logKey: LogEntryKey, entry = '') {
     if ((this.mode !== 'run-review') && this.logging) {
 
       const entryData =  entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey;
-      const bookletDbId = overwriteBookletDbId > -1 ? overwriteBookletDbId : this.bookletDbId;
-      this.bs.addBookletLog(bookletDbId, Date.now(), entryData).subscribe(ok => {
-        if (ok instanceof ServerError) {
+      this.bs.addBookletLog(this.testId, Date.now(), entryData).subscribe(ok => {
+        if (!ok) {
           console.log('((((((((((((((((addBookletLog');
         }
       });
@@ -223,8 +214,8 @@ export class TestControllerService {
   }
   public setBookletState(stateKey: LastStateKey, state: string) {
     if (this.mode !== 'run-review') {
-      this.bs.setBookletState(this.bookletDbId, stateKey, state).subscribe(ok => {
-        if (ok instanceof ServerError) {
+      this.bs.setBookletState(this.testId, stateKey, state).subscribe(ok => {
+        if (!ok) {
           console.log('((((((((((((((((setBookletState');
         }
       });
@@ -232,9 +223,9 @@ export class TestControllerService {
   }
   public addUnitLog(unitDbKey: string, logKey: LogEntryKey, entry = '') {
     if ((this.mode !== 'run-review') && this.logging) {
-      this.bs.addUnitLog(this.bookletDbId, Date.now(), unitDbKey,
+      this.bs.addUnitLog(this.testId, Date.now(), unitDbKey,
             entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey).subscribe(ok => {
-        if (ok instanceof ServerError) {
+        if (!ok) {
           console.log('((((((((((((((((addUnitLog');
         }
       });
@@ -262,8 +253,8 @@ export class TestControllerService {
     this.unitPresentationCompleteStates[unitSequenceId] = presentationComplete;
     if (this.mode !== 'run-review') {
       this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationComplete);
-      this.bs.setUnitState(this.bookletDbId, unitDbKey, LastStateKey.PRESENTATIONCOMPLETE, presentationComplete).subscribe(ok => {
-        if (ok instanceof ServerError) {
+      this.bs.setUnitState(this.testId, unitDbKey, LastStateKey.PRESENTATIONCOMPLETE, presentationComplete).subscribe(ok => {
+        if (!ok) {
           console.log('((((((((((((((((setUnitState');
         }
       });
@@ -313,6 +304,45 @@ export class TestControllerService {
     if (this.rootTestlet) {
       this.minUnitSequenceId = this.rootTestlet.getFirstUnlockedUnitSequenceId(startWith);
       this.maxUnitSequenceId = this.rootTestlet.getLastUnlockedUnitSequenceId(startWith);
+    }
+  }
+
+  public setUnitNavigationRequest(navString: string) {
+    if (!this.rootTestlet) {
+      this.snackBar.open('Kein Testheft verfügbar.', '', {duration: 3000});
+    } else {
+      if (!navString) {
+        navString = '#next';
+      }
+      switch (navString) {
+        case '#next':
+          let startWith = this.currentUnitSequenceId;
+          if (startWith < this.minUnitSequenceId) {
+            startWith = this.minUnitSequenceId - 1;
+          }
+          const nextUnitSequenceId = this.rootTestlet.getNextUnlockedUnitSequenceId(startWith);
+          if (nextUnitSequenceId > 0) {
+            this.router.navigateByUrl(`/t/${this.testId}/u/${nextUnitSequenceId}`);
+          }
+          break;
+        case '#previous':
+          this.router.navigateByUrl(`/t/${this.testId}/u/${this.currentUnitSequenceId - 1}`);
+          break;
+        case '#first':
+          this.router.navigateByUrl(`/t/${this.testId}/u/${this.minUnitSequenceId}`);
+          break;
+        case '#last':
+          this.router.navigateByUrl(`/t/${this.testId}/u/${this.maxUnitSequenceId}`);
+          break;
+        case '#end':
+          // this.mds.endBooklet(); TODO add some old code to end properly
+          this.router.navigateByUrl(`/t/${this.testId}/nu/${NoUnitFlag.END}`);
+          break;
+
+        default:
+          this.router.navigateByUrl(`/t/${this.testId}/u/${navString}`);
+          break;
+      }
     }
   }
 }

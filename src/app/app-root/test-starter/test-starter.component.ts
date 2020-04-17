@@ -14,6 +14,7 @@ export class TestStarterComponent implements OnInit {
   booklets: BookletData[] = [];
   private getBookletDataSubscription: Subscription = null;
   public bookletSelectTitle = 'Bitte wählen';
+  problemText = '';
 
   constructor(
     private router: Router,
@@ -30,10 +31,23 @@ export class TestStarterComponent implements OnInit {
             if (authData.token) {
               if (authData.access[AuthAccessKeyType.TEST]) {
                 this.booklets = [];
+                if (this.getBookletDataSubscription !== null) {
+                  this.getBookletDataSubscription.unsubscribe();
+                }
                 this.getBookletDataSubscription = from(authData.access[AuthAccessKeyType.TEST]).pipe(
                   concatMap(bookletId => {
                     return this.bs.getBookletData(bookletId)
-                  })).subscribe(bData => this.booklets.push(bData));
+                  })).subscribe(
+                    bData => {
+                      this.booklets.push(bData)
+                    },
+                    e => {
+                      this.problemText = `Fehler in der Netzwerkverbindung (${e}).`
+                    },
+                    () => {
+                      this.problemText = this.booklets.length > 0 ? '' : 'Für diese Anmeldung wurde kein Test gefunden.'
+                    }
+                  );
               }
               this.mds.setAuthData(authData);
             } else {
@@ -47,30 +61,19 @@ export class TestStarterComponent implements OnInit {
     });
   }
 
-  startBooklet(b: BookletData) {
-    this.router.navigate(['/t', b.id]);
-    /*
-    this.bs.startBooklet(b.id).subscribe(
-      startReturnUntyped => {
-        if (startReturnUntyped instanceof ServerError) {
-          const e = startReturnUntyped as ServerError;
-          this.mds.globalErrorMsg$.next(e);
+  startTest(b: BookletData) {
+    this.bs.startTest(b.label).subscribe(testId => {
+      if (typeof testId === 'number') {
+        const errCode = testId as number;
+        if (errCode === 423) {
+          this.problemText = 'Dieser Test ist gesperrt';
         } else {
-          const startReturn = startReturnUntyped as PersonTokenAndTestId;
-          this.mds.globalErrorMsg$.next(null);
-          // ************************************************
-
-          // by setting bookletDbId$ the test-controller will load the booklet
-          this.dataLoading = true;
-          this.mds.setBookletDbId(startReturn.personToken, startReturn.testId, b.label);
-
-
-          // ************************************************
+          this.problemText = `Problem beim Start (${errCode})`;
         }
+      } else {
+        this.router.navigate(['/t', testId]);
       }
-    );
-
-     */
+    });
   }
 
   resetLogin() {
