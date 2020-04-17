@@ -35,6 +35,7 @@ import { AdminStarterComponent } from './app-root/admin-starter/admin-starter.co
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
 import { StatusCardComponent } from './app-root/status-card/status-card.component';
 import { TestStarterComponent } from './app-root/test-starter/test-starter.component';
+import { MonitorStarterComponent } from './app-root/monitor-starter/monitor-starter.component';
 
 
 
@@ -49,7 +50,8 @@ import { TestStarterComponent } from './app-root/test-starter/test-starter.compo
     AdminStarterComponent,
     RouteDispatcherComponent,
     StatusCardComponent,
-    TestStarterComponent
+    TestStarterComponent,
+    MonitorStarterComponent
   ],
   imports: [
     ApplicationModule,

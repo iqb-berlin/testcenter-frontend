@@ -25,6 +25,8 @@ export class RouteDispatcherActivateGuard implements CanActivate {
           this.router.navigate(['/r/code-input']);
         } else if (authData.access[AuthAccessKeyType.TEST]) {
           this.router.navigate(['/r/test-starter']);
+        } else if (authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR] || authData.access[AuthAccessKeyType.WORKSPACE_MONITOR]) {
+          this.router.navigate(['/r/monitor-starter']);
         } else {
           this.router.navigate(['/r/login', '']);
         }

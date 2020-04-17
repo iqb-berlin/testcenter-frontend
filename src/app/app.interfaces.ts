@@ -30,6 +30,12 @@ export interface WorkspaceData {
   role: "RW" | "RO" | "n.d.";
 }
 
+export interface MonitorScopeData {
+  id: string;
+  name: string;
+  type: "GROUP" | "WORKSPACE" | "n.d.";
+}
+
 export interface BookletData {
   id: string;
   label: string;

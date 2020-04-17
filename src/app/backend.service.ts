@@ -11,7 +11,7 @@ import {
   SysCheckInfo,
   AuthData,
   WorkspaceData,
-  BookletData
+  BookletData, MonitorScopeData
 } from './app.interfaces';
 import {ErrorHandler, ServerError} from 'iqb-components';
 
@@ -80,6 +80,19 @@ export class BackendService {
               role: "n.d."
             })
           }));
+  }
+
+  getMonitorScopeData(monitorScopeId: string): Observable<MonitorScopeData> {
+    return this.http
+      .get<MonitorScopeData>(this.serverUrl + 'monitorscope/' + monitorScopeId) // TODO fix route
+      .pipe(catchError(() => {
+        console.warn('get monitor scope data failed for ' + monitorScopeId);
+        return of(<MonitorScopeData>{
+          id: monitorScopeId,
+          name: monitorScopeId,
+          type: "n.d."
+        })
+      }));
   }
 
   getSessionData(): Observable<AuthData | number> {
