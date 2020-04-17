@@ -62,12 +62,7 @@ export class CodeInputComponent implements OnInit{
             }
           } else {
             const authDataTyped = authData as AuthData;
-            if (authDataTyped.customTexts) {
-              this.cts.addCustomTexts(authDataTyped.customTexts);
-            }
             this.mds.setAuthData(authDataTyped);
-
-            // let the app-root routing guard decide where to go to
             this.router.navigate(['/r']);
           }
         })

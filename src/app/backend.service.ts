@@ -28,7 +28,8 @@ export class BackendService {
 
 
   login(name: string, password: string): Observable<AuthData | number> {
-    return this.http
+    if (password) {
+      return this.http
         .put<AuthData>(this.serverUrl + 'session/admin', {name, password})
         .pipe(
           catchError(errCode => of(errCode)),
@@ -47,6 +48,17 @@ export class BackendService {
             }
           })
         );
+    } else {
+      return this.nameOnlyLogin(name);
+    }
+  }
+
+  nameOnlyLogin(name: string): Observable<AuthData | number> {
+    return this.http
+      .put<AuthData>(this.serverUrl + 'session/login', {name})
+      .pipe(
+        catchError(errCode => of(errCode))
+      );
   }
 
   codeLogin(code: string): Observable<AuthData | number> {

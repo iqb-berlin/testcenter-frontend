@@ -55,15 +55,11 @@ export class LoginComponent  implements OnInit, OnDestroy {
           }
         } else {
           const authDataTyped = authData as AuthData;
-          if (authDataTyped.customTexts) {
-            this.cts.addCustomTexts(authDataTyped.customTexts);
-          }
           this.mds.setAuthData(authDataTyped);
 
           if (this.returnTo) {
             this.router.navigateByUrl(this.returnTo);
           } else {
-            // let the app-root routing guard decide where to go to
             this.router.navigate(['/r']);
           }
         }

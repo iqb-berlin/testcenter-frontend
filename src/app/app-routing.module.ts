@@ -6,7 +6,7 @@ import {LoginComponent} from "./app-root/login/login.component";
 import {SysCheckStarterComponent} from "./app-root/sys-check-starter/sys-check-starter.component";
 import {AdminStarterComponent} from "./app-root/admin-starter/admin-starter.component";
 import {CodeInputComponent} from "./app-root/code-input/code-input.component";
-import {RouteDispatcherActivateGuard} from "./app-routing-guards";
+import {DirectLoginActivateGuard, RouteDispatcherActivateGuard} from "./app-routing-guards";
 import {TestStarterComponent} from "./app-root/test-starter/test-starter.component";
 import {RouteDispatcherComponent} from "./app-root/route-dispatcher/route-dispatcher.component";
 
@@ -36,12 +36,12 @@ const routes: Routes = [
   {path: 'superadmin', loadChildren: () => import('./superadmin/superadmin.module').then(m => m.SuperadminModule)},
   {path: 'wsmonitor', loadChildren: () => import('./workspace-monitor/workspace-monitor.module').then(m => m.WorkspaceMonitorModule)},
   {path: 't', loadChildren: () => import('./test-controller/test-controller.module').then(m => m.TestControllerModule)},
-  {path: '**', component: RouteDispatcherComponent}
+  {path: '**', component: RouteDispatcherComponent, canActivate: [DirectLoginActivateGuard]}
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
-  providers: [RouteDispatcherActivateGuard]
+  providers: [RouteDispatcherActivateGuard, DirectLoginActivateGuard]
 })
 export class AppRoutingModule { }

@@ -2,12 +2,12 @@ import {Injectable} from "@angular/core";
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from "@angular/router";
 import {MainDataService} from "./maindata.service";
 import {Observable} from "rxjs";
-import {AuthAccessKeyType, AuthFlagType} from "./app.interfaces";
+import {AuthAccessKeyType, AuthData, AuthFlagType} from "./app.interfaces";
+import {BackendService} from "./backend.service";
 
 @Injectable()
 export class RouteDispatcherActivateGuard implements CanActivate {
   constructor(
-    private mds: MainDataService,
     private router: Router
   ) {
   }
@@ -36,6 +36,35 @@ export class RouteDispatcherActivateGuard implements CanActivate {
     }
 
     return false;
+  }
+}
+
+@Injectable()
+export class DirectLoginActivateGuard implements CanActivate {
+  constructor(
+    private mds: MainDataService,
+    private bs: BackendService,
+    private router: Router
+  ) {
+  }
+
+  canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+
+    const authData = MainDataService.getAuthDataFromLocalStorage();
+    if (!authData) {
+      const directLoginName = state.url.substr(1);
+      if (directLoginName.length > 0 && directLoginName.indexOf('/') < 0) {
+        this.bs.nameOnlyLogin(directLoginName).subscribe(authData => {
+          if (typeof authData !== 'number') {
+            this.mds.setAuthData(authData as AuthData);
+            this.router.navigate(['/r']);
+          }
+        })
+      }
+    }
+    return true
   }
 }
 

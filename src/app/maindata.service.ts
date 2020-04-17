@@ -58,6 +58,10 @@ export class MainDataService {
 
   setAuthData(authData: AuthData = null) {
     if (authData) {
+      if (authData.customTexts) {
+        this.cts.addCustomTexts(authData.customTexts);
+        authData.customTexts = null;
+      }
       MainDataService.setAuthDataToLocalStorage(authData);
     } else {
       MainDataService.setAuthDataToLocalStorage();
