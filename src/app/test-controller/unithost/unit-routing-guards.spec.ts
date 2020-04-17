@@ -4,12 +4,17 @@ import { UnitActivateGuard, UnitDeactivateGuard } from './unit-routing-guards';
 import {HttpClientModule} from "@angular/common/http";
 import {MatDialogModule} from "@angular/material/dialog";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {MainDataService} from "../../maindata.service";
+import {BackendService} from "../backend.service";
+import {CustomtextService} from "iqb-components";
+import {TestControllerService} from "../test-controller.service";
+import {AppRoutingModule} from "../../app-routing.module";
 
 describe('UnitActivateGuard', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [UnitActivateGuard],
-      imports: [HttpClientModule, MatDialogModule, MatSnackBarModule]
+      providers: [UnitActivateGuard, MainDataService, TestControllerService, BackendService, CustomtextService],
+      imports: [HttpClientModule, AppRoutingModule, MatDialogModule, MatSnackBarModule]
     });
   });
 
@@ -22,8 +27,8 @@ describe('UnitActivateGuard', () => {
 describe('UnitDeactivateGuard', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [UnitDeactivateGuard],
-      imports: [HttpClientModule]
+      providers: [UnitDeactivateGuard, TestControllerService],
+      imports: [HttpClientModule, AppRoutingModule]
     });
   });
 

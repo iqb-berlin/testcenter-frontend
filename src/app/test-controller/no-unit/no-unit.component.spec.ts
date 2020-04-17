@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NoUnitComponent } from './no-unit.component';
+import {AppRoutingModule} from "../../app-routing.module";
 
 describe('NoUnitComponent', () => {
   let component: NoUnitComponent;
@@ -8,7 +9,8 @@ describe('NoUnitComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NoUnitComponent ]
+      declarations: [ NoUnitComponent ],
+      imports: [AppRoutingModule]
     })
     .compileComponents();
   }));

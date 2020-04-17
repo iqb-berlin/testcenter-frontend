@@ -8,7 +8,6 @@ import {
 } from './test-controller.interfaces';
 import { BackendService } from './backend.service';
 import {Router} from "@angular/router";
-import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: 'root'
@@ -82,7 +81,6 @@ export class TestControllerService {
 
   constructor (
     private router: Router,
-    private snackBar: MatSnackBar,
     private bs: BackendService
   ) {
     this.restorePointsToSave$.pipe(
@@ -90,7 +88,7 @@ export class TestControllerService {
         this.bs.newUnitRestorePoint(this.testId, restorePoint.unitDbKey, Date.now(),
               JSON.stringify(restorePoint.restorePoint)).subscribe(ok => {
           if (!ok) {
-            console.log('((((((((((((((((newUnitRestorePoint');
+            console.warn('newUnitRestorePoint failed');
           }
         });
       }
@@ -102,7 +100,7 @@ export class TestControllerService {
         this.bs.newUnitResponse(this.testId, Date.now(), response.unitDbKey,
               JSON.stringify(response.response), response.responseType).subscribe(ok => {
           if (!ok) {
-            console.log('((((((((((((((((newUnitResponse');
+            console.warn('newUnitResponse failed');
           }
         });
       }
@@ -207,7 +205,7 @@ export class TestControllerService {
       const entryData =  entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey;
       this.bs.addBookletLog(this.testId, Date.now(), entryData).subscribe(ok => {
         if (!ok) {
-          console.log('((((((((((((((((addBookletLog');
+          console.warn('addBookletLog failed');
         }
       });
     }
@@ -216,7 +214,7 @@ export class TestControllerService {
     if (this.mode !== 'run-review') {
       this.bs.setBookletState(this.testId, stateKey, state).subscribe(ok => {
         if (!ok) {
-          console.log('((((((((((((((((setBookletState');
+          console.warn('setBookletState failed');
         }
       });
     }
@@ -226,7 +224,7 @@ export class TestControllerService {
       this.bs.addUnitLog(this.testId, Date.now(), unitDbKey,
             entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey).subscribe(ok => {
         if (!ok) {
-          console.log('((((((((((((((((addUnitLog');
+          console.warn('addUnitLog failed');
         }
       });
     }
@@ -255,7 +253,7 @@ export class TestControllerService {
       this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationComplete);
       this.bs.setUnitState(this.testId, unitDbKey, LastStateKey.PRESENTATIONCOMPLETE, presentationComplete).subscribe(ok => {
         if (!ok) {
-          console.log('((((((((((((((((setUnitState');
+          console.warn('setUnitState failed');
         }
       });
     }
@@ -309,7 +307,7 @@ export class TestControllerService {
 
   public setUnitNavigationRequest(navString: string) {
     if (!this.rootTestlet) {
-      this.snackBar.open('Kein Testheft verfügbar.', '', {duration: 3000});
+      console.warn(`TestControllerService.setUnitNavigationRequest: Kein Testheft für "${navString}" verfügbar.`);
     } else {
       if (!navString) {
         navString = '#next';

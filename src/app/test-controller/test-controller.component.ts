@@ -33,7 +33,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private unitLoadQueueSubscription1: Subscription = null;
   private unitLoadQueueSubscription2: Subscription = null;
 
-  public showProgress = true;
+  public showProgress = false;
 
   private lastUnitSequenceId = 0;
   private lastTestletIndex = 0;

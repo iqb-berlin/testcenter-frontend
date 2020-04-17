@@ -13,24 +13,27 @@ export class BackendService {
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient
-  ) {
-  }
+  ) { }
 
 
   saveUnitReview(testId: string, unitName: string, priority: number, categories: string, entry: string)
     : Observable<boolean> {
-    // TODO endpoint does not give any return, only status 200
     return this.http
-      .put<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/review`, {priority, categories, entry})
-      .pipe(catchError(() => of(false)));
+      .put(this.serverUrl + `test/${testId}/unit/${unitName}/review`, {priority, categories, entry})
+      .pipe(
+        map(() => true),
+        catchError(() => of(false))
+      );
   }
 
 
   saveBookletReview(testId: string, priority: number, categories: string, entry: string): Observable<boolean> {
-    // TODO endpoint does not give any return, only status 200
     return this.http
-      .put<boolean>(this.serverUrl + `test/${testId}/review`, {priority, categories, entry})
-      .pipe(catchError(() => of(false)));
+      .put(this.serverUrl + `test/${testId}/review`, {priority, categories, entry})
+      .pipe(
+        map(() => true),
+        catchError(() => of(false))
+      );
   }
 
 
@@ -68,50 +71,62 @@ export class BackendService {
 
 
   addUnitLog(testId: string, timestamp: number, unitName: string, entry: string): Observable<boolean> {
-    // TODO endpoint does not give any return, only status 200
     return this.http
-      .put<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/log`, {timestamp, entry})
-      .pipe(catchError(() => of(false)));
+      .put(this.serverUrl + `test/${testId}/unit/${unitName}/log`, {timestamp, entry})
+      .pipe(
+        map(() => true),
+        catchError(() => of(false))
+      );
   }
 
 
   addBookletLog(testId: string, timestamp: number, entry: string): Observable<boolean> {
-    // TODO endpoint does not give any return, only status 200
     return this.http
-      .put<boolean>(this.serverUrl + `test/${testId}/log`, {timestamp, entry})
-      .pipe(catchError(() => of(false)));
+      .put(this.serverUrl + `test/${testId}/log`, {timestamp, entry})
+      .pipe(
+        map(() => true),
+        catchError(() => of(false))
+      );
   }
 
 
   setUnitState(testId: string, unitName: string, stateKey: string, state: string): Observable<boolean> {
-    // TODO endpoint does not give any return, only status 200
     return this.http
-      .patch<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/state`, {key: stateKey, value: state})
-      .pipe(catchError(() => of(false)));
+      .patch(this.serverUrl + `test/${testId}/unit/${unitName}/state`, {key: stateKey, value: state})
+      .pipe(
+        map(() => true),
+        catchError(() => of(false))
+      );
   }
 
 
   setBookletState(testId: string, stateKey: string, state: string): Observable<boolean> {
-    // TODO endpoint does not give any return, only status 200
     return this.http
-      .patch<boolean>(this.serverUrl + `test/${testId}/state`, {key: stateKey, value: state})
-      .pipe(catchError(() => of(false)));
+      .patch(this.serverUrl + `test/${testId}/state`, {key: stateKey, value: state})
+      .pipe(
+        map(() => true),
+        catchError(() => of(false))
+      );
   }
 
 
   newUnitResponse(testId: string, timestamp: number, unitName: string, response: string, responseType: string)
     : Observable<boolean> {
-    // TODO endpoint does not give any return, only status 200
     return this.http
-      .put<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/response`, {timestamp, response, responseType})
-      .pipe(catchError(() => of(false)));
+      .put(this.serverUrl + `test/${testId}/unit/${unitName}/response`, {timestamp, response, responseType})
+      .pipe(
+        map(() => true),
+        catchError(() => of(false))
+      );
   }
 
 
   newUnitRestorePoint(testId: string, unitName: string, timestamp: number, restorePoint: string): Observable<boolean> {
-    // TODO endpoint does not give any return, only status 200
     return this.http
-      .patch<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/restorepoint`, {timestamp, restorePoint})
-      .pipe(catchError(() => of(false)));
+      .patch(this.serverUrl + `test/${testId}/unit/${unitName}/restorepoint`, {timestamp, restorePoint})
+      .pipe(
+        map(() => true),
+        catchError(() => of(false))
+      );
   }
 }
