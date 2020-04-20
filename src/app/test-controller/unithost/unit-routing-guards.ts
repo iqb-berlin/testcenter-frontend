@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable, of, interval } from 'rxjs';
 import { UnitControllerData } from '../test-controller.classes';
-import { CodeInputData, LogEntryKey, StartLockData } from '../test-controller.interfaces';
+import {CodeInputData, LogEntryKey, RunModeKey, StartLockData} from '../test-controller.interfaces';
 import { MainDataService } from 'src/app/maindata.service';
 import {MatDialog} from "@angular/material/dialog";
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -113,7 +113,7 @@ export class UnitActivateGuard implements CanActivate {
             testletId: t.id,
             prompt: t.codePrompt,
             code: t.codeToEnter.toUpperCase().trim(),
-            value: this.tcs.mode === 'hot' ? '' : t.codeToEnter
+            value: this.tcs.mode === (RunModeKey.HOT_RETURN || RunModeKey.HOT_RESTART) ? '' : t.codeToEnter
           });
         });
 
@@ -128,6 +128,8 @@ export class UnitActivateGuard implements CanActivate {
         });
         return dialogRef.afterClosed().pipe(
           switchMap(result => {
+            console.log(typeof result);
+            console.log(result);
               if ((typeof result === 'undefined') || (result === false)) {
                 return of(false);
               } else {

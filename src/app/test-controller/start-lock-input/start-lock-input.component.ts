@@ -15,7 +15,7 @@ export class StartLockInputComponent {
 
     const myFormControls = {};
     this.data.codes.forEach(c => {
-      myFormControls[c.testletId] = new FormControl('', [Validators.required, Validators.minLength(3)]);
+      myFormControls[c.testletId] = new FormControl(c.value, [Validators.required, Validators.minLength(3)]);
     });
     this.startkeyform = new FormGroup(myFormControls);
   }

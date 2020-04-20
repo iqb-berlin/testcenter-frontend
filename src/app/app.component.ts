@@ -75,7 +75,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.appDelayedProcessesSubscription = this.mds.delayedProcessesCount$.pipe(
         debounceTime(500)
       ).subscribe( c => {
-        this.showSpinner = c > 0;
+        this.showSpinner = this.mds.progressVisualEnabled && c > 0;
       });
 
       window.addEventListener('message', (event: MessageEvent) => {

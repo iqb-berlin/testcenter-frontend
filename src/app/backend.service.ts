@@ -118,9 +118,9 @@ export class BackendService {
       }));
   }
 
-  startTest(bookletId: string): Observable<string | number> {
+  startTest(bookletName: string): Observable<string | number> {
     return this.http
-      .put<number>(this.serverUrl + 'test', {bookletId})
+      .put<number>(this.serverUrl + 'test', {bookletName})
       .pipe(
         map((testId: number) => String(testId)),
         catchError(errCode => of(errCode))

@@ -161,57 +161,59 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   ngOnInit() {
-    this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
+    setTimeout(() => {
+      this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
 
-    this.iFrameItemplayer = null;
-    this.leaveWarning = false;
+      this.iFrameItemplayer = null;
+      this.leaveWarning = false;
 
-    this.routingSubscription = this.route.params.subscribe(params => {
-      this.myUnitSequenceId = Number(params['u']);
-      this.tcs.currentUnitSequenceId = this.myUnitSequenceId;
+      this.routingSubscription = this.route.params.subscribe(params => {
+        this.myUnitSequenceId = Number(params['u']);
+        this.tcs.currentUnitSequenceId = this.myUnitSequenceId;
 
-      while (this.iFrameHostElement.hasChildNodes()) {
-        this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
-      }
-
-      if ((this.myUnitSequenceId >= 1) && (this.myUnitSequenceId === this.myUnitSequenceId) && (this.tcs.rootTestlet !== null)) {
-        this.tcs.setBookletState(LastStateKey.LASTUNIT, params['u']);
-
-        const currentUnit = this.tcs.rootTestlet.getUnitAt(this.myUnitSequenceId);
-        this.unitTitle = currentUnit.unitDef.title;
-        this.myUnitDbKey = currentUnit.unitDef.alias;
-        this.tcs.currentUnitDbKey = this.myUnitDbKey;
-        this.tcs.currentUnitTitle = this.unitTitle;
-        this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
-
-        this.setPageList([], '');
-
-        this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-        // this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(currentUnit.unitDef.playerId));
-        this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
-        this.iFrameItemplayer.setAttribute('class', 'unitHost');
-        this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
-
-        if (this.tcs.hasUnitRestorePoint(this.myUnitSequenceId)) {
-          this.pendingUnitRestorePoint = {tag: this.itemplayerSessionId, value: this.tcs.getUnitRestorePoint(this.myUnitSequenceId)};
-        } else {
-          this.pendingUnitRestorePoint = null;
+        while (this.iFrameHostElement.hasChildNodes()) {
+          this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
         }
 
-        this.leaveWarning = false;
-        if (!this.tcs.pageNav) {
-          this.iFrameHostElement.style.bottom = '0px';
-        }
+        if ((this.myUnitSequenceId >= 1) && (this.myUnitSequenceId === this.myUnitSequenceId) && (this.tcs.rootTestlet !== null)) {
+          this.tcs.setBookletState(LastStateKey.LASTUNIT, params['u']);
 
-        if (this.tcs.hasUnitDefinition(this.myUnitSequenceId)) {
-          this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: this.tcs.getUnitDefinition(this.myUnitSequenceId)};
-        } else {
-          this.pendingUnitDefinition = null;
+          const currentUnit = this.tcs.rootTestlet.getUnitAt(this.myUnitSequenceId);
+          this.unitTitle = currentUnit.unitDef.title;
+          this.myUnitDbKey = currentUnit.unitDef.alias;
+          this.tcs.currentUnitDbKey = this.myUnitDbKey;
+          this.tcs.currentUnitTitle = this.unitTitle;
+          this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+
+          this.setPageList([], '');
+
+          this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
+          // this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(currentUnit.unitDef.playerId));
+          this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
+          this.iFrameItemplayer.setAttribute('class', 'unitHost');
+          this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
+
+          if (this.tcs.hasUnitRestorePoint(this.myUnitSequenceId)) {
+            this.pendingUnitRestorePoint = {tag: this.itemplayerSessionId, value: this.tcs.getUnitRestorePoint(this.myUnitSequenceId)};
+          } else {
+            this.pendingUnitRestorePoint = null;
+          }
+
+          this.leaveWarning = false;
+          if (!this.tcs.pageNav) {
+            this.iFrameHostElement.style.bottom = '0px';
+          }
+
+          if (this.tcs.hasUnitDefinition(this.myUnitSequenceId)) {
+            this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: this.tcs.getUnitDefinition(this.myUnitSequenceId)};
+          } else {
+            this.pendingUnitDefinition = null;
+          }
+          this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+          srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(currentUnit.unitDef.playerId));
         }
-        this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-        srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(currentUnit.unitDef.playerId));
-      }
-    });
+      });
+    })
   }
 
   // ++++++++++++ page nav ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

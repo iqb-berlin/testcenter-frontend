@@ -17,6 +17,7 @@ const localStorageAuthDataKey = 'iqb-tc';
 export class MainDataService {
   public appError$ = new BehaviorSubject<AppError>(null);
   public delayedProcessesCount$ = new BehaviorSubject<number>(0);
+  public progressVisualEnabled = true;
   public isApiVersionValid = true;
 
   // set by app.component.ts

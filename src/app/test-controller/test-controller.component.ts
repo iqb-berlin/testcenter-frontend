@@ -385,6 +385,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   // #####################################################################################
   ngOnInit() {
     setTimeout(() => {
+      this.mds.progressVisualEnabled = false;
       this.routingSubscription = this.route.params.subscribe(params => {
         this.tcs.testId = params['t'];
         this.unsubscribeTestSubscriptions();
@@ -613,5 +614,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       this.routingSubscription.unsubscribe();
     }
     this.unsubscribeTestSubscriptions();
+    this.mds.progressVisualEnabled = true;
   }
 }
