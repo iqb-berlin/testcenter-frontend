@@ -37,13 +37,10 @@ export interface MonitorScopeData {
 }
 
 export interface BookletData {
+  id: string;
   label: string;
   running: boolean;
   locked: boolean;
-}
-
-export interface StartBookletReturn {
-  testId: string;
 }
 
 export interface SysConfig {

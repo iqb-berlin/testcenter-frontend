@@ -8,7 +8,7 @@ import {
   SysCheckInfo,
   AuthData,
   WorkspaceData,
-  BookletData, MonitorScopeData, StartBookletReturn
+  BookletData, MonitorScopeData
 } from './app.interfaces';
 
 // ============================================================================
@@ -101,10 +101,16 @@ export class BackendService {
 
   getBookletData(bookletId: string): Observable<BookletData> {
     return this.http
-      .get<BookletData>(this.serverUrl + 'booklet/' + bookletId + '/state')
-      .pipe(catchError(() => {
+      .get<BookletData>(this.serverUrl + 'booklet/' + bookletId)
+      .pipe(
+        map(bData => {
+          bData.id = bookletId;
+          return bData
+        }),
+        catchError(() => {
         console.warn('get booklet data failed for ' + bookletId);
         return of(<BookletData>{
+          id: bookletId,
           label: bookletId,
           locked: true,
           running: false
@@ -112,11 +118,11 @@ export class BackendService {
       }));
   }
 
-  startTest(bookletName: string): Observable<string | number> {
+  startTest(bookletId: string): Observable<string | number> {
     return this.http
-      .put<StartBookletReturn>(this.serverUrl + 'test', {bookletName})
+      .put<number>(this.serverUrl + 'test', {bookletId})
       .pipe(
-        map((testId: StartBookletReturn) => String(testId.testId)),
+        map((testId: number) => String(testId)),
         catchError(errCode => of(errCode))
       );
   }

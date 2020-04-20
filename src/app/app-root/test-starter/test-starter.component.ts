@@ -62,7 +62,7 @@ export class TestStarterComponent implements OnInit {
   }
 
   startTest(b: BookletData) {
-    this.bs.startTest(b.label).subscribe(testId => {
+    this.bs.startTest(b.id).subscribe(testId => {
       if (typeof testId === 'number') {
         const errCode = testId as number;
         if (errCode === 423) {
