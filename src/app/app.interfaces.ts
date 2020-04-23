@@ -58,6 +58,15 @@ export interface AppError {
   category: 'WARNING' | 'FATAL' | 'PROBLEM'
 }
 
+export class ApiError {
+  code: number;
+  info: string;
+  constructor(code: number, info = '') {
+    this.code = code;
+    this.info = info
+  }
+}
+
 export interface SysCheckInfo {
   workspaceId: string;
   name: string;

@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { Testlet, BookletConfig, MaxTimerData } from './test-controller.classes';
 import {
   LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData,
-  MaxTimerDataType, UnitNaviButtonData, KeyValuePairNumber, NoUnitFlag
+  MaxTimerDataType, UnitNaviButtonData, KeyValuePairNumber, NoUnitFlag, UnitNavigationTarget
 } from './test-controller.interfaces';
 import { BackendService } from './backend.service';
 import {Router} from "@angular/router";
@@ -305,15 +305,12 @@ export class TestControllerService {
     }
   }
 
-  public setUnitNavigationRequest(navString: string) {
+  public setUnitNavigationRequest(navString: string = UnitNavigationTarget.NEXT) {
     if (!this.rootTestlet) {
-      console.warn(`TestControllerService.setUnitNavigationRequest: Kein Testheft für "${navString}" verfügbar.`);
+      this.router.navigateByUrl(`/t/${this.testId}/nu/${navString}`);
     } else {
-      if (!navString) {
-        navString = '#next';
-      }
       switch (navString) {
-        case '#next':
+        case UnitNavigationTarget.NEXT:
           let startWith = this.currentUnitSequenceId;
           if (startWith < this.minUnitSequenceId) {
             startWith = this.minUnitSequenceId - 1;
@@ -323,18 +320,22 @@ export class TestControllerService {
             this.router.navigateByUrl(`/t/${this.testId}/u/${nextUnitSequenceId}`);
           }
           break;
-        case '#previous':
+        case UnitNavigationTarget.PREVIOUS:
           this.router.navigateByUrl(`/t/${this.testId}/u/${this.currentUnitSequenceId - 1}`);
           break;
-        case '#first':
+        case UnitNavigationTarget.FIRST:
           this.router.navigateByUrl(`/t/${this.testId}/u/${this.minUnitSequenceId}`);
           break;
-        case '#last':
+        case UnitNavigationTarget.LAST:
           this.router.navigateByUrl(`/t/${this.testId}/u/${this.maxUnitSequenceId}`);
           break;
-        case '#end':
+        case UnitNavigationTarget.END:
           // this.mds.endBooklet(); TODO add some old code to end properly
           this.router.navigateByUrl(`/t/${this.testId}/nu/${NoUnitFlag.END}`);
+          break;
+        case UnitNavigationTarget.ERROR:
+          // this.mds.endBooklet(); TODO add some old code to end properly
+          this.router.navigateByUrl(`/t/${this.testId}/nu/${NoUnitFlag.ERROR}`);
           break;
 
         default:

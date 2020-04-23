@@ -1,6 +1,6 @@
 import { LogData } from '../workspace.interfaces';
 import { WorkspaceDataService } from '../workspacedata.service';
-import {ConfirmDialogComponent, ConfirmDialogData, ServerError} from 'iqb-components';
+import {ConfirmDialogComponent, ConfirmDialogData} from 'iqb-components';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { BackendService } from '../backend.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -10,7 +10,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 import { ResultData, UnitResponse, ReviewData } from '../workspace.interfaces';
-import {MainDataService} from "../../maindata.service";
 
 
 @Component({
@@ -29,7 +28,6 @@ export class ResultsComponent implements OnInit {
     private bs: BackendService,
     public wds: WorkspaceDataService,
     private deleteConfirmDialog: MatDialog,
-    private mds: MainDataService,
     public snackBar: MatSnackBar
   ) { }
 
@@ -48,12 +46,6 @@ export class ResultsComponent implements OnInit {
         (resultData: ResultData[]) => {
           this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
           this.resultDataSource.sort = this.sort;
-        }, (err: ServerError) => {
-          this.mds.appError$.next({
-            label: err.labelNice,
-            description: err.labelSystem,
-            category: "PROBLEM"
-          });
         }
       );
     }
@@ -71,7 +63,6 @@ export class ResultsComponent implements OnInit {
         this.resultDataSource.data.forEach(row => this.tableselectionCheckbox.select(row));
   }
 
-  // 444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
   downloadResponsesCSV() {
     if (this.tableselectionCheckbox.selected.length > 0) {
       const selectedGroups: string[] = [];
@@ -128,12 +119,6 @@ export class ResultsComponent implements OnInit {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
-      }, (err: ServerError) => {
-          this.mds.appError$.next({
-            label: err.labelNice,
-            description: err.labelSystem,
-            category: "PROBLEM"
-          });
       });
     }
   }
@@ -194,12 +179,6 @@ export class ResultsComponent implements OnInit {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
-      }, (err: ServerError) => {
-          this.mds.appError$.next({
-            label: err.labelNice,
-            description: err.labelSystem,
-            category: "PROBLEM"
-          });
       });
     }
   }
@@ -232,12 +211,6 @@ export class ResultsComponent implements OnInit {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
-      }, (err: ServerError) => {
-          this.mds.appError$.next({
-            label: err.labelNice,
-            description: err.labelSystem,
-            category: "PROBLEM"
-          });
       });
     }
   }
@@ -269,15 +242,14 @@ export class ResultsComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           // =========================================================
-          this.bs.deleteData(selectedGroups).subscribe(() => {
-              this.tableselectionCheckbox.clear();
-              // TODO refresh list!
-          }, (err: ServerError) => {
-            this.mds.appError$.next({
-              label: err.labelNice,
-              description: err.labelSystem,
-              category: "PROBLEM"
-            });
+          this.bs.deleteData(selectedGroups).subscribe((ok: boolean) => {
+            if (ok) {
+              this.snackBar.open('Löschen erfolgreich.', 'Ok.', {duration: 3000});
+            } else {
+              this.snackBar.open('Löschen nicht erfolgreich.', 'Fehler', {duration: 3000});
+            }
+            this.tableselectionCheckbox.clear();
+            this.updateTable()
           });
         }
       });

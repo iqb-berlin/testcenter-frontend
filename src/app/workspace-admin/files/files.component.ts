@@ -1,8 +1,7 @@
-import { MainDataService } from '../../maindata.service';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { GetFileResponseData, CheckWorkspaceResponseData } from '../workspace.interfaces';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType, ServerError } from 'iqb-components';
+  MessageDialogData, MessageType } from 'iqb-components';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {BackendService, FileDeletionReport} from '../backend.service';
@@ -34,7 +33,6 @@ export class FilesComponent implements OnInit {
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private bs: BackendService,
-    private mds: MainDataService,
     public wds: WorkspaceDataService,
     public confirmDialog: MatDialog,
     public messageDialog: MatDialog,
@@ -89,24 +87,16 @@ export class FilesComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
           if (result !== false) {
             // =========================================================
-            this.bs.deleteFiles(filesToDelete).subscribe((fileDeletionReport: FileDeletionReport|ServerError) => {
-              if (fileDeletionReport instanceof ServerError) {
-                this.mds.appError$.next({
-                  label: (fileDeletionReport as ServerError).labelNice,
-                  description: (fileDeletionReport as ServerError).labelSystem,
-                  category: "PROBLEM"
-                });
-              } else {
-                const message = [];
-                if (fileDeletionReport.deleted.length > 0) {
-                  message.push(fileDeletionReport.deleted.length + ' Dateien erfolgreich gelöscht.');
-                }
-                if (fileDeletionReport.not_allowed.length > 0) {
-                  message.push(fileDeletionReport.not_allowed.length + ' Dateien konnten nicht gelöscht werden.');
-                }
-                this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '',  {duration: 1000});
-                this.updateFileList();
+            this.bs.deleteFiles(filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) => {
+              const message = [];
+              if (fileDeletionReport.deleted.length > 0) {
+                message.push(fileDeletionReport.deleted.length + ' Dateien erfolgreich gelöscht.');
               }
+              if (fileDeletionReport.not_allowed.length > 0) {
+                message.push(fileDeletionReport.not_allowed.length + ' Dateien konnten nicht gelöscht werden.');
+              }
+              this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '',  {duration: 1000});
+              this.updateFileList();
             });
             // =========================================================
           }
@@ -134,41 +124,24 @@ export class FilesComponent implements OnInit {
       this.serverfiles = new MatTableDataSource([]);
     } else {
       this.bs.getFiles().subscribe(
-        (filedataresponse: GetFileResponseData[]) => {
-          console.log('updateFileList ok');
-          this.serverfiles = new MatTableDataSource(filedataresponse);
+        (fileList: GetFileResponseData[]) => {
+          this.serverfiles = new MatTableDataSource(fileList);
           this.serverfiles.sort = this.sort;
-        }, (err: ServerError) => {
-          console.log('updateFileList err');
-          this.mds.appError$.next({
-            label: err.labelNice,
-            description: err.labelSystem,
-            category: "PROBLEM"
-          });
         }
       );
     }
   }
 
-
   download(element: GetFileResponseData): void {
-
     this.bs.downloadFile(element.type, element.filename)
       .subscribe(
-        (fileData: Blob|ServerError) => {
-          if (fileData instanceof ServerError) {
-            this.mds.appError$.next({
-              label: (fileData as ServerError).labelNice,
-              description: (fileData as ServerError).labelSystem,
-              category: "PROBLEM"
-            });
-          } else {
-            saveAs(fileData, element.filename);
+        (fileData: Blob|boolean) => {
+          if (fileData !== false) {
+            saveAs(fileData as Blob, element.filename);
           }
         }
       );
   }
-
 
   checkWorkspace() {
     this.checkErrors = [];
@@ -180,12 +153,6 @@ export class FilesComponent implements OnInit {
         this.checkErrors = checkResponse.errors;
         this.checkWarnings = checkResponse.warnings;
         this.checkInfos = checkResponse.infos;
-      }, (err: ServerError) => {
-        this.mds.appError$.next({
-          label: err.labelNice,
-          description: err.labelSystem,
-          category: "PROBLEM"
-        });
       }
     );
   }

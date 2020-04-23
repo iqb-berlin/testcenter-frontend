@@ -12,7 +12,7 @@ import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType, ServerError
+  MessageDialogData, MessageType
 } from 'iqb-components';
 import { MainDataService } from 'src/app/maindata.service';
 import {IdRoleData, UserData} from "../superadmin.interfaces";
@@ -239,15 +239,7 @@ export class UsersComponent implements OnInit {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser > -1) {
       this.bs.getWorkspacesByUser(this.selectedUser).subscribe(dataresponse => {
-        if (dataresponse instanceof ServerError) {
-          this.mds.appError$.next({
-            label: (dataresponse as ServerError).labelNice,
-            description: (dataresponse as ServerError).labelSystem,
-            category: "PROBLEM"
-          });
-        } else {
-          this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
-        }
+        this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
       })
     } else {
       this.WorkspacelistDatasource = null;
@@ -284,16 +276,8 @@ export class UsersComponent implements OnInit {
     this.tableselectionCheckbox.clear();
     this.tableselectionRow.clear();
     this.bs.getUsers().subscribe(dataresponse => {
-      if (dataresponse instanceof ServerError) {
-        this.mds.appError$.next({
-          label: (dataresponse as ServerError).labelNice,
-          description: (dataresponse as ServerError).labelSystem,
-          category: "PROBLEM"
-        });
-      } else {
-        this.objectsDatasource = new MatTableDataSource(dataresponse);
-        this.objectsDatasource.sort = this.sort;
-      }
+      this.objectsDatasource = new MatTableDataSource(dataresponse);
+      this.objectsDatasource.sort = this.sort;
     });
   }
 

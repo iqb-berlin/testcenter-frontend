@@ -15,12 +15,12 @@ export interface GetFileResponseData {
   isChecked: boolean;
 }
 
-export interface CheckWorkspaceResponseData {
+export interface CheckWorkspaceResponseData
+{
   errors: string[];
   infos: string[];
   warnings: string[];
 }
-
 
 export interface GroupResponse {
   name: string;

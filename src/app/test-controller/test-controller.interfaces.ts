@@ -128,3 +128,12 @@ export enum NoUnitFlag {
 export interface KeyValuePairNumber {
   [K: string]: number;
 }
+
+export enum UnitNavigationTarget {
+  NEXT = "#next",
+  ERROR = "#error",
+  PREVIOUS = "#previous",
+  FIRST = "#first",
+  LAST = "#last",
+  END = "#end"
+}

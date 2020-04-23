@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output, HostBinding, OnDestroy} from '@angular/core';
 import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
-  HttpErrorResponse, HttpEvent } from '@angular/common/http';
+  HttpEvent } from '@angular/common/http';
 
 
 @Component({
@@ -153,21 +153,12 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
               this.remove();
             }
           }
-        }, (errorObj: HttpErrorResponse) => {
+        }, () => {
           if (this.fileUploadSubscription) {
             this.fileUploadSubscription.unsubscribe();
           }
 
           this.status = UploadStatus.error;
-          if (errorObj.status === 401) {
-            this.requestResponseText = 'Fehler: Zugriff verweigert - bitte (neu) anmelden!';
-          } else if (errorObj.status === 400) {
-            this.requestResponseText = 'Fehler: ' + errorObj.error;
-          } else if (errorObj.error instanceof ErrorEvent) {
-            this.requestResponseText = 'Fehler: ' + (<ErrorEvent>errorObj.error).message;
-          } else {
-            this.requestResponseText = 'Fehler: ' + errorObj.message;
-          }
         });
       }
     }

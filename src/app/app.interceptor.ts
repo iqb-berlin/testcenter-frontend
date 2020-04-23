@@ -7,6 +7,7 @@ import {
 import {Observable, throwError} from 'rxjs';
 import {catchError, tap} from "rxjs/operators";
 import {Router, RouterState, RouterStateSnapshot} from "@angular/router";
+import {ApiError} from "./app.interfaces";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -21,7 +22,7 @@ export class AuthInterceptor implements HttpInterceptor {
         description: "Keine weiteren Server-Aufrufe erlaubt",
         category: "FATAL"
       });
-      return throwError(500);
+      return throwError(new ApiError(500, "API-Version ungültig"));
     }
 
     // if (request.headers.get('AuthToken') !== null) {
@@ -51,10 +52,11 @@ export class AuthInterceptor implements HttpInterceptor {
       }),
       catchError(e => {
         this.mds.decrementDelayedProcessesCount();
-        let errorCode = 999;
+        let apiError = new ApiError(999);
         if (e instanceof HttpErrorResponse) {
           const httpError = e as HttpErrorResponse;
-          errorCode = httpError.status;
+          apiError.code = httpError.status;
+          apiError.info = httpError.message;
           if (httpError.error instanceof ErrorEvent) {
             this.mds.appError$.next({
               label: 'Fehler in der Netzwerkverbindung',
@@ -68,6 +70,7 @@ export class AuthInterceptor implements HttpInterceptor {
             switch (httpError.status) {
               case 400: {
                 ignoreError = true;
+                // TODO get detailed error message from body
                 break;
               }
               case 401: {
@@ -108,7 +111,7 @@ export class AuthInterceptor implements HttpInterceptor {
           }
         }
 
-        return throwError(errorCode);
+        return throwError(apiError);
       })
     )
   }

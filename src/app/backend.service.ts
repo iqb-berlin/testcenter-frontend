@@ -8,7 +8,7 @@ import {
   SysCheckInfo,
   AuthData,
   WorkspaceData,
-  BookletData, MonitorScopeData
+  BookletData, MonitorScopeData, ApiError
 } from './app.interfaces';
 
 // ============================================================================
@@ -28,7 +28,10 @@ export class BackendService {
       return this.http
         .put<AuthData>(this.serverUrl + 'session/admin', {name, password})
         .pipe(
-          catchError(errCode => of(errCode)),
+          catchError((err: ApiError) => {
+            console.warn(`login Api-Error: ${err.code} ${err.info} `);
+            return of(err.code)
+          }),
           switchMap(authData => {
             if (typeof authData === 'number') {
               const errCode = authData as number;
@@ -53,7 +56,10 @@ export class BackendService {
     return this.http
       .put<AuthData>(this.serverUrl + 'session/login', {name})
       .pipe(
-        catchError(errCode => of(errCode))
+        catchError((err: ApiError) => {
+          console.warn(`nameOnlyLogin Api-Error: ${err.code} ${err.info} `);
+          return of(err.code)
+        })
       );
   }
 
@@ -61,21 +67,24 @@ export class BackendService {
     return this.http
       .put<AuthData>(this.serverUrl + 'session/person', {code})
       .pipe(
-        catchError(errCode => of(errCode))
+        catchError((err: ApiError) => {
+          console.warn(`codeLogin Api-Error: ${err.code} ${err.info} `);
+          return of(err.code)
+        })
       );
   }
 
   getWorkspaceData(workspaceId: string): Observable<WorkspaceData> {
     return this.http
-          .get<WorkspaceData>(this.serverUrl + 'workspace/' + workspaceId)
-          .pipe(catchError(() => {
-            console.warn('get workspace data failed for ' + workspaceId);
-            return of(<WorkspaceData>{
-              id: workspaceId,
-              name: workspaceId,
-              role: "n.d."
-            })
-          }));
+      .get<WorkspaceData>(this.serverUrl + 'workspace/' + workspaceId)
+      .pipe(catchError(() => {
+        console.warn('get workspace data failed for ' + workspaceId);
+        return of(<WorkspaceData>{
+          id: workspaceId,
+          name: workspaceId,
+          role: "n.d."
+        })
+      }));
   }
 
   getMonitorScopeData(monitorScopeId: string): Observable<MonitorScopeData> {
@@ -95,7 +104,7 @@ export class BackendService {
     return this.http
       .get<AuthData>(this.serverUrl + 'session')
       .pipe(
-        catchError(errCode => of(errCode))
+        catchError((err: ApiError) => of(err.code))
       )
   }
 
@@ -123,7 +132,7 @@ export class BackendService {
       .put<number>(this.serverUrl + 'test', {bookletName})
       .pipe(
         map((testId: number) => String(testId)),
-        catchError(errCode => of(errCode))
+        catchError((err: ApiError) => of(err.code))
       );
   }
 

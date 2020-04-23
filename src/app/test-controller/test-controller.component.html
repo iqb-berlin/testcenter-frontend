@@ -5,7 +5,7 @@
   <div fxLayout="row" fxLayoutAlign="end center">
     <p class="timer" *ngIf="tcs.mode !== 'hot'">{{ timerValue?.timeLeftString }}</p>
     <button mat-fab [disabled]="!(tcs.unitPrevEnabled$ | async)" *ngIf="tcs.navArrows" color="accent"
-        (click)="tcs.setUnitNavigationRequest('#previous')" matTooltip="Zurück" fxFlex="none">
+            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none">
       <i class="material-icons">chevron_left</i>
     </button>
     <div *ngIf="tcs.navButtons" fxLayout="row wrap" fxLayoutAlign="start center" fxFlex="0 3 100%">
@@ -18,14 +18,14 @@
       </div>
     </div>
     <button mat-fab [disabled]="!(tcs.unitNextEnabled$ | async)" *ngIf="tcs.navArrows" color="accent"
-        (click)="tcs.setUnitNavigationRequest('#next')" matTooltip="Weiter" fxFlex="none">
+            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none">
       <i class="material-icons">chevron_right</i>
     </button>
     <button mat-button (click)="showReviewDialog()" *ngIf="tcs.mode === 'run-review'" matTooltip="Kommentar senden" fxFlex="none">
       <mat-icon>rate_review</mat-icon>
     </button>
-    <button mat-button (click)="tcs.setUnitNavigationRequest('#end')"  *ngIf="tcs.mode !== 'hot'"
-          matTooltip="Zur Testheft-Auswahl zurückkehren" fxFlex="none">
+    <button mat-button (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.END)" *ngIf="tcs.mode !== 'hot'"
+            matTooltip="Zur Testheft-Auswahl zurückkehren" fxFlex="none">
       <mat-icon>exit_to_app</mat-icon>
     </button>
   </div>
