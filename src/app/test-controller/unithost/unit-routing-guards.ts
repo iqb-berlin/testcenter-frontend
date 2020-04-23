@@ -46,7 +46,7 @@ export class UnitActivateGuard implements CanActivate {
         if (myreturn) {
           return of(true);
         } else {
-          if (this.tcs.mode === 'hot') {
+          if (this.tcs.mode === RunModeKey.HOT_RESTART || this.tcs.mode === RunModeKey.HOT_RETURN) {
             const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
               width: '500px',
               // height: '300px',
@@ -78,7 +78,7 @@ export class UnitActivateGuard implements CanActivate {
         if (myreturn) {
           return of(true);
         } else {
-          if (this.tcs.mode === 'hot') {
+          if (this.tcs.mode === RunModeKey.HOT_RESTART || this.tcs.mode === RunModeKey.HOT_RETURN) {
             const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
               width: '500px',
               // height: '300px',

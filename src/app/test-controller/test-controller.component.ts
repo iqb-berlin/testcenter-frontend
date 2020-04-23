@@ -1,5 +1,4 @@
 import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
-import { FormGroup } from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import { MainDataService } from '../maindata.service';
 import { BackendService } from './backend.service';
@@ -43,6 +42,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private loadedUnitCount = 0;
   private unitLoadQueue: TaggedString[] = [];
   unitNavigationTarget = UnitNavigationTarget;
+  runModeKey = RunModeKey;
 
   constructor (
     @Inject('APP_VERSION') public appVersion: string,
@@ -555,14 +555,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe(result => {
         if (typeof result !== 'undefined') {
           if (result !== false) {
-            const targetSelection = (<FormGroup>result).get('target').value;
+            const targetSelection = result['target'];
             if (targetSelection === 'u') {
               this.bs.saveUnitReview(
-                  this.tcs.testId,
-                  this.tcs.currentUnitDbKey,
-                  (<FormGroup>result).get('priority').value,
-                  dialogRef.componentInstance.getCategories(),
-                  (<FormGroup>result).get('entry').value
+                this.tcs.testId,
+                this.tcs.currentUnitDbKey,
+                result['priority'],
+                dialogRef.componentInstance.getCategories(),
+                result['sender'] ? result['sender'] + ': ' + result['entry'] : result['entry']
                 ).subscribe(ok => {
                   if (!ok) {
                     this.snackBar.open('Konnte Kommentar nicht speichern', '', {duration: 3000});
@@ -573,9 +573,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             } else {
               this.bs.saveBookletReview(
                 this.tcs.testId,
-                (<FormGroup>result).get('priority').value,
+                result['priority'],
                 dialogRef.componentInstance.getCategories(),
-                (<FormGroup>result).get('entry').value
+                result['sender'] ? result['sender'] + ': ' + result['entry'] : result['entry']
               ).subscribe(ok => {
                 if (!ok) {
                   this.snackBar.open('Konnte Kommentar nicht speichern', '', {duration: 3000});

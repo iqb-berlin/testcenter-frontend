@@ -56,7 +56,7 @@ export class AuthInterceptor implements HttpInterceptor {
         if (e instanceof HttpErrorResponse) {
           const httpError = e as HttpErrorResponse;
           apiError.code = httpError.status;
-          apiError.info = httpError.message;
+          apiError.info = httpError.message + " // " + httpError.error;
           if (httpError.error instanceof ErrorEvent) {
             this.mds.appError$.next({
               label: 'Fehler in der Netzwerkverbindung',
@@ -70,7 +70,7 @@ export class AuthInterceptor implements HttpInterceptor {
             switch (httpError.status) {
               case 400: {
                 ignoreError = true;
-                // TODO get detailed error message from body
+                // apiError.info = ?? TODO - from request body
                 break;
               }
               case 401: {
@@ -89,6 +89,12 @@ export class AuthInterceptor implements HttpInterceptor {
               case 410: {
                 goToLoginPage = true;
                 label = 'Anmeldung abgelaufen. Bitte erneut anmelden!';
+                break;
+              }
+              case 422: {
+                ignoreError = true;
+                // apiError.info = ?? TODO - from request body
+                label = 'Die übermittelten Objekte sind fehlerhaft!';
                 break;
               }
               case 500: {

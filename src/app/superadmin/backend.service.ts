@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
 import {IdAndName, IdLabelSelectedData, IdRoleData, UserData} from "./superadmin.interfaces";
 import {ApiError} from "../app.interfaces";
 
@@ -44,12 +44,14 @@ export class BackendService {
       }));
   }
 
-  setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<Boolean> {
+  setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<number> {
     return this.http
-      .patch<Boolean>(this.serverUrl + `user/${userId}/super-admin/` + (changeToSuperUser ? 'on' : 'off'), {p: password})
-      .pipe(catchError((err: ApiError) => {
-        console.warn(`setSuperUserStatus Api-Error: ${err.code} ${err.info} `);
-        return of(false)
+      .patch(this.serverUrl + `user/${userId}/super-admin/` + (changeToSuperUser ? 'on' : 'off'), {p: password})
+      .pipe(
+        map(() => 0),
+        catchError((err: ApiError) => {
+          console.warn(`setSuperUserStatus Api-Error: ${err.code} ${err.info} `);
+          return of(err.code)
       }));
   }
 

@@ -27,10 +27,13 @@
       <textarea matInput formControlName="entry" placeholder="Kommentar" rows="15"></textarea>
       <mat-icon matSuffix>mode_edit</mat-icon>
     </mat-form-field>
+    <mat-form-field>
+      <input matInput formControlName="sender" placeholder="Mein Name">
+    </mat-form-field>
   </mat-dialog-content>
 
   <mat-dialog-actions>
-    <button mat-raised-button color="primary" type="submit" [mat-dialog-close]="reviewform" [disabled]="reviewform.invalid">Speichern</button>
+    <button mat-raised-button color="primary" type="submit" [mat-dialog-close]="reviewform.value" [disabled]="reviewform.invalid">Speichern</button>
     <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
   </mat-dialog-actions>
 </form>

@@ -130,12 +130,14 @@ export class UsersComponent implements OnInit {
                   selectedRows[0]['id'],
                   !userObject.isSuperadmin,
                   (<FormGroup>result).get('pw').value).subscribe(
-                  respOk => {
-                    if (respOk !== false) {
+                  respCode => {
+                    if (respCode === 0) {
                       this.snackBar.open('Status geändert', '', {duration: 1000});
                       this.updateObjectList();
+                    } else if (respCode === 403) {
+                      this.snackBar.open('Konnte Status nicht ändern (fehlende Berechtigung)', 'Fehler', {duration: 1000});
                     } else {
-                      this.snackBar.open('Konnte Status nicht ändern', 'Fehler', {duration: 1000});
+                      this.snackBar.open(`Konnte Status nicht ändern (Fehlercode ${respCode})`, 'Fehler', {duration: 1000});
                     }
                   });
               }

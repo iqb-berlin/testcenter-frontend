@@ -13,8 +13,10 @@ export class ReviewDialogComponent {
     tech: new FormControl(''),
     content: new FormControl(''),
     design: new FormControl(''),
-    entry: new FormControl('', Validators.required)
+    entry: new FormControl('', Validators.required),
+    sender: new FormControl(ReviewDialogComponent.oldName)
   });
+  static oldName = '';
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ReviewDialogData) { }
