@@ -1,4 +1,3 @@
-import { AboutComponent } from './app-root/about/about.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {AppRootComponent} from "./app-root/app-root.component";
@@ -9,6 +8,7 @@ import {CodeInputComponent} from "./app-root/code-input/code-input.component";
 import {DirectLoginActivateGuard, RouteDispatcherActivateGuard} from "./app-routing-guards";
 import {TestStarterComponent} from "./app-root/test-starter/test-starter.component";
 import {RouteDispatcherComponent} from "./app-root/route-dispatcher/route-dispatcher.component";
+import {PrivacyComponent} from "./app-root/privacy/privacy.component";
 
 
 const routes: Routes = [
@@ -22,7 +22,6 @@ const routes: Routes = [
       {path: '', redirectTo: 'route-dispatcher', pathMatch: 'full'},
       {path: 'login', redirectTo: 'route-dispatcher', pathMatch: 'full'},
       {path: 'login/:returnTo', component: LoginComponent},
-      {path: 'about', component: AboutComponent},
       {path: 'check-starter', component: SysCheckStarterComponent},
       {path: 'test-starter', component: TestStarterComponent},
       {path: 'admin-starter', component: AdminStarterComponent},
@@ -30,7 +29,7 @@ const routes: Routes = [
       {path: 'code-input', component: CodeInputComponent}
     ]
   },
-  {path: 'about', component: AboutComponent},
+  {path: 'priv', component: PrivacyComponent},
   {path: 'check', loadChildren: () => import('./sys-check/sys-check.module').then(m => m.SysCheckModule)},
   {path: 'admin', loadChildren: () => import('./workspace-admin/workspace.module').then(m => m.WorkspaceModule)},
   {path: 'superadmin', loadChildren: () => import('./superadmin/superadmin.module').then(m => m.SuperadminModule)},

@@ -113,7 +113,7 @@ export class UnitActivateGuard implements CanActivate {
             testletId: t.id,
             prompt: t.codePrompt,
             code: t.codeToEnter.toUpperCase().trim(),
-            value: this.tcs.mode === (RunModeKey.HOT_RETURN || RunModeKey.HOT_RESTART) ? '' : t.codeToEnter
+            value: (this.tcs.mode === RunModeKey.HOT_RETURN || this.tcs.mode === RunModeKey.HOT_RESTART) ? '' : t.codeToEnter
           });
         });
 
@@ -128,40 +128,38 @@ export class UnitActivateGuard implements CanActivate {
         });
         return dialogRef.afterClosed().pipe(
           switchMap(result => {
-            console.log(typeof result);
-            console.log(result);
-              if ((typeof result === 'undefined') || (result === false)) {
-                return of(false);
-              } else {
-                let codesOk = true;
-                for (const c of myCodes) {
-                  const testeeInput = result[c.testletId];
-                  if (testeeInput) {
-                    if (c.value.toUpperCase().trim() !== testeeInput.toUpperCase().trim()) {
-                      codesOk = false;
-                      break;
-                    }
-                  } else {
+            if ((typeof result === 'undefined') || (result === false)) {
+              return of(false);
+            } else {
+              let codesOk = true;
+              for (const c of myCodes) {
+                const testeeInput = result[c.testletId];
+                if (testeeInput) {
+                  if (c.value.toUpperCase().trim() !== testeeInput.toUpperCase().trim()) {
                     codesOk = false;
                     break;
                   }
-                }
-                if (codesOk) {
-                  newUnit.codeRequiringTestlets.forEach(t => {
-                    t.codeToEnter = '';
-                  });
-
-                  return of(true);
-
                 } else {
-                  this.snackBar.open(
-                    'Die Eingabe war nicht korrekt.', this.cts.getCustomText('booklet_codeToEnterTitle'),
-                    {duration: 3000}
-                  );
-                  return of(false);
+                  codesOk = false;
+                  break;
                 }
               }
+              if (codesOk) {
+                newUnit.codeRequiringTestlets.forEach(t => {
+                  t.codeToEnter = '';
+                });
+
+                return of(true);
+
+              } else {
+                this.snackBar.open(
+                  'Die Eingabe war nicht korrekt.', this.cts.getCustomText('booklet_codeToEnterTitle'),
+                  {duration: 3000}
+                );
+                return of(false);
+              }
             }
+          }
         ));
       } else {
         return of(true);

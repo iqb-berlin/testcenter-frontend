@@ -1,11 +1,11 @@
 import {Component} from '@angular/core';
 
 @Component({
-  template: `<div class="root-frame" fxLayout="row wrap" fxLayoutAlign="center stretch">
+  template: `<div class="root-frame">
                 <router-outlet></router-outlet>
               </div>
               `,
-  styles: ['.root-frame {padding: 80px;}']
+  styleUrls: ['./app-root.component.css']
 })
 export class AppRootComponent {
 }

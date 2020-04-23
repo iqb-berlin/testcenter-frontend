@@ -18,9 +18,9 @@ export const appconfig = {
         description: 'Titel der Hauptanwendung, z. B. Homepage'
       },
       'intro1': {
-        defaultvalue: 'betreibt auf diesen Seiten eine Pilotanwendung für das computerbasierte Leistungstesten von ' +
+        defaultvalue: 'betreibt auf diesen Seiten eine Anwendung für das computerbasierte Leistungstesten von ' +
           'Schülerinnen und Schülern. Der Zugang zu einem Test ist nur möglich, wenn Sie von Testverantwortlichen ' +
-          'Zugangsdaten erhalten haben, die Sie bitte links eingeben. Es sind keine weiteren Seiten öffentlich verfügbar.',
+          'Zugangsdaten erhalten haben. Es sind keine weiteren Seiten öffentlich verfügbar.',
         description: 'Begrüßungstext auf der Startseite'
       }
     }

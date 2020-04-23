@@ -10,7 +10,8 @@ import {BackendService} from "../../backend.service";
 @Component({
   templateUrl: './login.component.html',
   styles: [
-    'mat-card {margin: 10px;}'
+    'mat-card {margin: 10px;}',
+    '.mat-card-gray {background-color: lightgray}'
   ]
 })
 
@@ -48,7 +49,7 @@ export class LoginComponent  implements OnInit, OnDestroy {
         if (typeof authData === 'number') {
           const errCode = authData as number;
           if (errCode === 400) {
-            this.problemText = 'Anmeldedaten sind nicht gültig.';
+            this.problemText = 'Anmeldedaten sind nicht gültig. Bitte nocheinmal versuchen!';
           } else {
             this.problemText = 'Problem bei der Anmeldung.';
             // app.interceptor will show error message

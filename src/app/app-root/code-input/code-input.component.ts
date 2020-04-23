@@ -8,7 +8,11 @@ import {AuthData} from "../../app.interfaces";
 import {BackendService} from "../../backend.service";
 
 @Component({
-  templateUrl: './code-input.component.html'
+  templateUrl: './code-input.component.html',
+  styles: [
+    'mat-card {margin: 10px;}',
+    '.mat-card-gray {background-color: lightgray}'
+  ]
 })
 export class CodeInputComponent implements OnInit{
   @ViewChild('codeInputControl') codeInputControl: FormControl;
@@ -55,7 +59,7 @@ export class CodeInputComponent implements OnInit{
           if (typeof authData === 'number') {
             const errCode = authData as number;
             if (errCode === 400) {
-              this.problemText = 'Der Code ist leider nicht gültig.';
+              this.problemText = 'Der Code ist leider nicht gültig. Bitte nocheinmal versuchen';
             } else {
               this.problemText = 'Problem bei der Anmeldung.';
               // app.interceptor will show error message

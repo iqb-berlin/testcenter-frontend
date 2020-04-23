@@ -1,16 +1,30 @@
-<mat-card fxFlex="0 0 400px">
-  <form [formGroup]="codeinputform" (ngSubmit)="codeinput()">
-    <mat-card-title>{{ 'login_codeInputTitle' | customtext:'login_codeInputTitle':cts.updateCount }}</mat-card-title>
-    <mat-card-subtitle>{{ 'login_codeInputPrompt' | customtext:'login_codeInputPrompt':cts.updateCount }}</mat-card-subtitle>
+<div  fxLayout="row wrap" fxLayoutAlign="center stretch">
+  <mat-card fxFlex="0 0 400px">
+    <form [formGroup]="codeinputform" (ngSubmit)="codeinput()">
+      <mat-card-title>{{ 'login_codeInputTitle' | customtext:'login_codeInputTitle':cts.updateCount }}</mat-card-title>
+      <mat-card-subtitle>{{ 'login_codeInputPrompt' | customtext:'login_codeInputPrompt':cts.updateCount }}</mat-card-subtitle>
+      <mat-card-content>
+        <mat-form-field>
+          <input matInput formControlName="code"> <!-- no placeholder! -->
+        </mat-form-field>
+        <p style="color: chocolate"><b>{{ problemText }}</b></p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button type="submit" [disabled]="codeinputform.invalid" color="primary">Weiter</button>
+        <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+
+  <mat-card fxFlex="0 0 400px" class="mat-card-gray">
+    <mat-card-title>{{ 'app_title' | customtext:'app_title':cts.updateCount }}</mat-card-title>
+
     <mat-card-content>
-      <mat-form-field>
-        <input matInput formControlName="code"> <!-- no placeholder! -->
-      </mat-form-field>
-      <p>{{ problemText }}</p>
+
+      <status-card></status-card>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-raised-button type="submit" [disabled]="codeinputform.invalid" color="primary">Weiter</button>
-      <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
+      <button [routerLink]="['/priv']" mat-raised-button color="primary">Impressum/Datenschutz</button>
     </mat-card-actions>
-  </form>
-</mat-card>
+  </mat-card>
+</div>

@@ -34,6 +34,10 @@ getTestBed().initTestEnvironment(
     {
       provide: 'API_VERSION_EXPECTED',
       useValue: environment.apiVersionExpected
+    },
+    {
+      provide: 'IS_PRODUCTION_MODE',
+      useValue: environment.production
     }
   ])
 );

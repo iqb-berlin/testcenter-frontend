@@ -1,21 +1,33 @@
-<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
-<mat-card fxFlex="0 0 400px" fxLayout="column">
-  <!-- - - - - - - - - - - - - - - - - -->
-  <form [formGroup]="loginForm" (ngSubmit)="login()">
-    <mat-card-title>Anmelden</mat-card-title>
-    <mat-card-content fxLayout="column">
-      <mat-form-field>
-        <input matInput formControlName="name" placeholder="Anmeldename" (keyup.enter)="pw.focus()">
-      </mat-form-field>
-      <mat-form-field>
-        <input matInput #pw type="password" formControlName="pw" placeholder="Kennwort">
-      </mat-form-field>
-      <p>{{ problemText }}</p>
+<div  fxLayout="row wrap" fxLayoutAlign="center stretch">
+  <mat-card fxFlex="0 0 400px">
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <mat-card-title>Anmelden</mat-card-title>
+      <mat-card-content fxLayout="column">
+        <mat-form-field>
+          <input matInput formControlName="name" placeholder="Anmeldename" (keyup.enter)="pw.focus()">
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput #pw type="password" formControlName="pw" placeholder="Kennwort">
+        </mat-form-field>
+        <p style="color: chocolate"><b>{{ problemText }}</b></p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button type="submit" [disabled]="loginForm.invalid" color="primary">Weiter</button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+
+  <mat-card fxFlex="0 0 400px" class="mat-card-gray">
+    <mat-card-title>{{ 'app_title' | customtext:'app_title':cts.updateCount }}</mat-card-title>
+
+    <mat-card-content>
+      <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
+        {{ 'app_intro1' | customtext:'app_intro1':cts.updateCount }}</p>
+
+      <status-card></status-card>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-raised-button type="submit" [disabled]="loginForm.invalid" color="primary">Weiter</button>
+      <button [routerLink]="['/priv']" mat-raised-button color="primary">Impressum/Datenschutz</button>
     </mat-card-actions>
-  </form>
-</mat-card>
-
-<app-status-card *ngIf="! returnTo"></app-status-card>
+  </mat-card>
+</div>

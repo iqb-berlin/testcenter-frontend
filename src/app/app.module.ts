@@ -1,4 +1,3 @@
-import { AboutComponent } from './app-root/about/about.component';
 import { BrowserModule } from '@angular/platform-browser';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -36,13 +35,13 @@ import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-disp
 import { StatusCardComponent } from './app-root/status-card/status-card.component';
 import { TestStarterComponent } from './app-root/test-starter/test-starter.component';
 import { MonitorStarterComponent } from './app-root/monitor-starter/monitor-starter.component';
+import { PrivacyComponent } from './app-root/privacy/privacy.component';
 
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    AboutComponent,
     AppRootComponent,
     SysCheckStarterComponent,
     LoginComponent,
@@ -51,7 +50,8 @@ import { MonitorStarterComponent } from './app-root/monitor-starter/monitor-star
     RouteDispatcherComponent,
     StatusCardComponent,
     TestStarterComponent,
-    MonitorStarterComponent
+    MonitorStarterComponent,
+    PrivacyComponent
   ],
   imports: [
     ApplicationModule,

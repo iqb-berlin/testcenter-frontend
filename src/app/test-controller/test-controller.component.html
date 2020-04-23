@@ -24,7 +24,7 @@
     <button mat-button (click)="showReviewDialog()" *ngIf="tcs.mode === runModeKey.REVIEW" matTooltip="Kommentar senden" fxFlex="none">
       <mat-icon>rate_review</mat-icon>
     </button>
-    <button mat-button (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.END)"
+    <button mat-button [routerLink]="['/']"
             *ngIf="(tcs.mode !== runModeKey.HOT_RESTART) && (tcs.mode !== runModeKey.HOT_RETURN)"
             matTooltip="Zur Testheft-Auswahl zurückkehren" fxFlex="none">
       <mat-icon>exit_to_app</mat-icon>
