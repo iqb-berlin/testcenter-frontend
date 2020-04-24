@@ -3,7 +3,9 @@ import {CustomtextService} from "iqb-components";
 
 @Component({
   templateUrl: './privacy.component.html',
-  styleUrls: ['./privacy.component.css']
+  styles: [
+    'mat-card {margin: 10px; background-color: lightgray}'
+  ]
 })
 export class PrivacyComponent {
 

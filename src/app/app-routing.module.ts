@@ -33,7 +33,8 @@ const routes: Routes = [
   {path: 'check', loadChildren: () => import('./sys-check/sys-check.module').then(m => m.SysCheckModule)},
   {path: 'admin', loadChildren: () => import('./workspace-admin/workspace.module').then(m => m.WorkspaceModule)},
   {path: 'superadmin', loadChildren: () => import('./superadmin/superadmin.module').then(m => m.SuperadminModule)},
-  {path: 'wsmonitor', loadChildren: () => import('./workspace-monitor/workspace-monitor.module').then(m => m.WorkspaceMonitorModule)},
+  {path: 'wm', loadChildren: () => import('./workspace-monitor/workspace-monitor.module').then(m => m.WorkspaceMonitorModule)},
+  {path: 'gm', loadChildren: () => import('./group-monitor/group-monitor.module').then(m => m.GroupMonitorModule)},
   {path: 't', loadChildren: () => import('./test-controller/test-controller.module').then(m => m.TestControllerModule)},
   {path: '**', component: RouteDispatcherComponent, canActivate: [DirectLoginActivateGuard]}
 ];

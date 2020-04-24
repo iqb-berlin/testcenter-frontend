@@ -5,6 +5,7 @@ import {AppRoutingModule} from "../../app-routing.module";
 import {BackendService} from "../../test-controller/backend.service";
 import {MainDataService} from "../../maindata.service";
 import {HttpClientModule} from "@angular/common/http";
+import {IqbComponentsModule} from "iqb-components";
 
 describe('MonitorStarterComponent', () => {
   let component: MonitorStarterComponent;
@@ -13,7 +14,10 @@ describe('MonitorStarterComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ MonitorStarterComponent ],
-      imports: [AppRoutingModule, HttpClientModule],
+      imports: [
+        AppRoutingModule,
+        IqbComponentsModule,
+        HttpClientModule],
       providers: [
         MainDataService,
         BackendService

@@ -1,17 +1,32 @@
-<mat-card fxFlex="0 0 400px" fxLayout="column">
-  <mat-card-title>Testdurchführung überwachen</mat-card-title>
-  <mat-card-content>
-    <div fxLayoutGap="10px" fxLayout="column">
-      <p *ngIf="monitorScopes.length === 0">
-        Sie sind angemeldet. Aktuell sind keine Bereiche zur Überwachung für Sie freigegeben.
-      </p>
-      <button mat-raised-button color="primary" (click)="buttonGotoMonitor(ms)"
-              *ngFor="let ms of monitorScopes">
-        {{ms.name}}
-      </button>
-    </div>
-  </mat-card-content>
-  <mat-card-actions>
-    <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
-  </mat-card-actions>
-</mat-card>
+<div fxLayout="row wrap" fxLayoutAlign="center stretch">
+  <mat-card fxFlex="0 0 400px" fxLayout="column">
+    <mat-card-title>Testdurchführung überwachen</mat-card-title>
+    <mat-card-content>
+      <div fxLayoutGap="10px" fxLayout="column">
+        <p *ngIf="workspaces.length === 0">
+          Sie sind angemeldet. Aktuell sind keine Bereiche zur Überwachung für Sie freigegeben.
+        </p>
+        <button mat-raised-button color="primary" (click)="buttonGotoMonitor(ws)"
+                *ngFor="let ws of workspaces">
+          {{ws.name}}
+        </button>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-card fxFlex="0 0 400px" class="mat-card-gray">
+    <mat-card-title>{{ 'app_title' | customtext:'app_title':cts.updateCount }}</mat-card-title>
+
+    <mat-card-content>
+
+      <status-card></status-card>
+
+    </mat-card-content>
+    <mat-card-actions>
+      <button [routerLink]="['/priv']" mat-raised-button color="primary">Impressum/Datenschutz</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

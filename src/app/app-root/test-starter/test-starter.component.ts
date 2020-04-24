@@ -5,6 +5,7 @@ import {concatMap} from "rxjs/operators";
 import {Router} from "@angular/router";
 import {BackendService} from "../../backend.service";
 import {MainDataService} from "../../maindata.service";
+import {CustomtextService} from "iqb-components";
 
 @Component({
   templateUrl: './test-starter.component.html',
@@ -19,6 +20,7 @@ export class TestStarterComponent implements OnInit {
   constructor(
     private router: Router,
     private bs: BackendService,
+    public cts: CustomtextService,
     private mds: MainDataService
   ) { }
 

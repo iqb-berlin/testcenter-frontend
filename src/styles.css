@@ -17,6 +17,14 @@
   bottom: 0;
 }
 
+.root-body {
+  overflow-x: auto;
+  position: absolute;
+  width: 100%;
+  top: 20px;
+  bottom: 0;
+}
+
 .sheetofpaper {
   display: block;
   position: absolute;

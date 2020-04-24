@@ -5,9 +5,14 @@ import {Router} from "@angular/router";
 import {BackendService} from "../../backend.service";
 import {MainDataService} from "../../maindata.service";
 import {concatMap} from "rxjs/operators";
+import {CustomtextService} from "iqb-components";
 
 @Component({
-  templateUrl: './monitor-starter.component.html'
+  templateUrl: './monitor-starter.component.html',
+  styles: [
+    'mat-card {margin: 10px;}',
+    '.mat-card-gray {background-color: lightgray}'
+  ]
 })
 export class MonitorStarterComponent implements OnInit, OnDestroy {
   workspaces: WorkspaceData[] = [];
@@ -17,6 +22,7 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private bs: BackendService,
+    public cts: CustomtextService,
     private mds: MainDataService
   ) { }
 
@@ -55,11 +61,11 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
     });
   }
 
-  buttonGotoMonitor(ms: WorkspaceData) {
+  buttonGotoMonitor(ws: WorkspaceData) {
     if (this.isWorkspaceMonitor) {
-      this.router.navigateByUrl('/workspace-monitor/' + ms.id.toString());
+      this.router.navigateByUrl('/wm/' + ws.id.toString());
     } else {
-      this.router.navigateByUrl('/group-monitor/' + ms.id.toString());
+      this.router.navigateByUrl('/gm/' + ws.id.toString());
     }
   }
 

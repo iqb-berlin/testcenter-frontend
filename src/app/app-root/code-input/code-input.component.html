@@ -1,4 +1,4 @@
-<div  fxLayout="row wrap" fxLayoutAlign="center stretch">
+<div fxLayout="row wrap" fxLayoutAlign="center stretch">
   <mat-card fxFlex="0 0 400px">
     <form [formGroup]="codeinputform" (ngSubmit)="codeinput()">
       <mat-card-title>{{ 'login_codeInputTitle' | customtext:'login_codeInputTitle':cts.updateCount }}</mat-card-title>
@@ -22,6 +22,7 @@
     <mat-card-content>
 
       <status-card></status-card>
+
     </mat-card-content>
     <mat-card-actions>
       <button [routerLink]="['/priv']" mat-raised-button color="primary">Impressum/Datenschutz</button>

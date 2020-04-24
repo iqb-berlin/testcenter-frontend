@@ -5,10 +5,15 @@ import {AuthAccessKeyType, AuthData, WorkspaceData} from "../../app.interfaces";
 import {from, Subscription} from "rxjs";
 import {concatMap} from "rxjs/operators";
 import {BackendService} from "../../backend.service";
+import {CustomtextService} from "iqb-components";
 
 
 @Component({
   templateUrl: './admin-starter.component.html',
+  styles: [
+    'mat-card {margin: 10px;}',
+    '.mat-card-gray {background-color: lightgray}'
+  ]
 })
 
 export class AdminStarterComponent implements OnInit, OnDestroy {
@@ -19,6 +24,7 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private bs: BackendService,
+    public cts: CustomtextService,
     private mds: MainDataService
   ) { }
 
