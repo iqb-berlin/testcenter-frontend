@@ -1,16 +1,22 @@
-import { StartLockInputComponent } from '../start-lock-input/start-lock-input.component';
-import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from 'iqb-components';
-import { TestControllerService } from '../test-controller.service';
-import { switchMap, map, filter, take } from 'rxjs/operators';
-import { UnithostComponent } from './unithost.component';
-import { Injectable } from '@angular/core';
-import { CanActivate, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { Observable, of, interval } from 'rxjs';
-import { UnitControllerData } from '../test-controller.classes';
-import {CodeInputData, LogEntryKey, RunModeKey, StartLockData} from '../test-controller.interfaces';
-import { MainDataService } from 'src/app/maindata.service';
+import {StartLockInputComponent} from '../start-lock-input/start-lock-input.component';
+import {ConfirmDialogComponent, ConfirmDialogData, CustomtextService} from 'iqb-components';
+import {TestControllerService} from '../test-controller.service';
+import {filter, map, switchMap, take} from 'rxjs/operators';
+import {UnithostComponent} from './unithost.component';
+import {Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, CanActivate, CanDeactivate, Router, RouterStateSnapshot} from '@angular/router';
+import {interval, Observable, of} from 'rxjs';
+import {UnitControllerData} from '../test-controller.classes';
+import {
+  CodeInputData,
+  LogEntryKey,
+  RunModeKey,
+  StartLockData
+} from '../test-controller.interfaces';
+import {MainDataService} from 'src/app/maindata.service';
 import {MatDialog} from "@angular/material/dialog";
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {TestControllerComponent} from "../test-controller.component";
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
@@ -18,6 +24,7 @@ export class UnitActivateGuard implements CanActivate {
     private tcs: TestControllerService,
     private mds: MainDataService,
     public startLockDialog: MatDialog,
+    private router: Router,
     public confirmDialog: MatDialog,
     private snackBar: MatSnackBar,
     private cts: CustomtextService
@@ -171,9 +178,12 @@ export class UnitActivateGuard implements CanActivate {
 
   // ****************************************************************************************
   checkAndSolve_DefLoaded(newUnit: UnitControllerData): Observable<Boolean> {
-    if (this.tcs.bookletLoadComplete) {
+    console.log('#1');
+    if (this.tcs.loadComplete) {
+      console.log('#2');
       return of(true);
     } else {
+      console.log('#3');
       if (this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
 
         // 1 going forwards
@@ -185,7 +195,7 @@ export class UnitActivateGuard implements CanActivate {
           if (this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)) {
             return of(true);
           } else {
-            this.tcs.dataLoading = true;
+            this.mds.setSpinnerOn();
             return interval(1000)
               .pipe(
                 filter(() => this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)),
@@ -212,7 +222,7 @@ export class UnitActivateGuard implements CanActivate {
           if (ok) {
             return of(true);
           } else {
-            this.tcs.dataLoading = true;
+            this.mds.setSpinnerOn();
             return interval(1000)
               .pipe(
                 filter(() => {
@@ -342,22 +352,28 @@ export class UnitActivateGuard implements CanActivate {
 
     let myreturn = false;
     if (this.tcs.rootTestlet === null) {
-      console.log('unit canActivate: true (rootTestlet null)');
-      myreturn = true; // ??
+      console.warn('unit canActivate: true (rootTestlet null)');
+      myreturn = false;
+      const oldTestId = localStorage.getItem(TestControllerComponent.localStorageTestKey);
+      if (oldTestId) {
+        this.router.navigate([`/t/${oldTestId}`]);
+      } else {
+        this.router.navigate(['/']);
+      }
     } else if ((targetUnitSequenceId < this.tcs.minUnitSequenceId) || (targetUnitSequenceId > this.tcs.maxUnitSequenceId)) {
-      console.log('unit canActivate: false (unit# out of range)');
+      console.warn('unit canActivate: false (unit# out of range)');
       myreturn = false;
     } else {
       const newUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
       if (!newUnit) {
         myreturn = false;
-        console.log('target unit null (targetUnitSequenceId: ' + targetUnitSequenceId.toString());
+        console.warn('target unit null (targetUnitSequenceId: ' + targetUnitSequenceId.toString());
       } else if (newUnit.unitDef.locked) {
         myreturn = false;
-        console.log('unit canActivate: locked');
+        console.warn('unit canActivate: locked');
       } else if (newUnit.unitDef.canEnter === 'n') {
         myreturn = false;
-        console.log('unit canActivate: false (unit is locked)');
+        console.warn('unit canActivate: false (unit is locked)');
       } else {
         // %%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -373,7 +389,7 @@ export class UnitActivateGuard implements CanActivate {
                   } else {
                     return this.checkAndSolve_DefLoaded(newUnit).pipe(
                       switchMap(cAsDL => {
-                        this.tcs.dataLoading = false;
+                        this.mds.setSpinnerOff();
                         if (!cAsDL) {
                           return of(false);
                         } else {
@@ -426,4 +442,4 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
 }
 
 // 777777777777777777777777777777777777777777777777777777777777777777777777777777777
-export const unitRoutingGuards = [UnitActivateGuard, UnitDeactivateGuard];
+export const unitRouteGuards = [UnitActivateGuard, UnitDeactivateGuard];

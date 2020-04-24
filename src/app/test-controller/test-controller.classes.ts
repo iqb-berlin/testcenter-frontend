@@ -134,6 +134,7 @@ export class UnitControllerData {
   unitDef: UnitDef = null;
   codeRequiringTestlets: Testlet[] = [];
   maxTimerRequiringTestlet: Testlet = null;
+  testletLabel = '';
   constructor(unitDef: UnitDef) {
     this.unitDef = unitDef;
   }
@@ -189,6 +190,9 @@ export class Testlet extends TestletContentElement {
       }
       if (this.maxTimeLeft > 0) {
         myreturn.maxTimerRequiringTestlet = this;
+      }
+      if (this.title) {
+        myreturn.testletLabel = this.title
       }
     }
     return myreturn;
@@ -398,7 +402,7 @@ export class EnvironmentData {
     const deviceInfo = window.navigator.userAgent;
 
     // browser + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
-    // tslint:disable-next-line:max-line-length
+    // @ts-ignore
     const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/;
     // credit due to: https://gist.github.com/ticky/3909462#gistcomment-2245669
     const deviceInfoSplits = regex.exec(deviceInfo);

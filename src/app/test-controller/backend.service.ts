@@ -152,4 +152,16 @@ export class BackendService {
         })
       );
   }
+
+  lockBooklet(testId: string): Observable<boolean> {
+    return this.http
+      .patch<boolean>(this.serverUrl + `test/${testId}/lock`, {})
+      .pipe(
+        map(() => true),
+        catchError((err: ApiError) => {
+          console.warn(`lockBooklet Api-Error: ${err.code} ${err.info} `);
+          return of(false)
+        })
+      );
+  }
 }

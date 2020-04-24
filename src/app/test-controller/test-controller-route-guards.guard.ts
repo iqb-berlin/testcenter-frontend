@@ -12,6 +12,7 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
     currentRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     console.log('TestControllerDeactivateGuard passed');
+    localStorage.removeItem(TestControllerComponent.localStorageTestKey);
 
     return true;
   }

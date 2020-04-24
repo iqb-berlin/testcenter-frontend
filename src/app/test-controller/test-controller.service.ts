@@ -1,12 +1,20 @@
-import { debounceTime, takeUntil, map } from 'rxjs/operators';
-import { BehaviorSubject, Subject, Subscription, interval, timer } from 'rxjs';
-import { Injectable } from '@angular/core';
-import { Testlet, BookletConfig, MaxTimerData } from './test-controller.classes';
+import {debounceTime, map, switchMap, takeUntil} from 'rxjs/operators';
+import {BehaviorSubject, interval, Subject, Subscription, timer} from 'rxjs';
+import {Injectable} from '@angular/core';
+import {BookletConfig, MaxTimerData, Testlet} from './test-controller.classes';
 import {
-  LastStateKey, LogEntryKey, UnitRestorePointData, UnitResponseData,
-  MaxTimerDataType, UnitNaviButtonData, KeyValuePairNumber, NoUnitFlag, UnitNavigationTarget
+  KeyValuePairNumber,
+  LastStateKey,
+  LogEntryKey,
+  MaxTimerDataType,
+  RunModeKey,
+  TestStatus,
+  UnitNaviButtonData,
+  UnitNavigationTarget,
+  UnitResponseData,
+  UnitRestorePointData
 } from './test-controller.interfaces';
-import { BackendService } from './backend.service';
+import {BackendService} from './backend.service';
 import {Router} from "@angular/router";
 
 @Injectable({
@@ -14,6 +22,9 @@ import {Router} from "@angular/router";
 })
 export class TestControllerService {
   public testId = '';
+  public testStatus$ = new BehaviorSubject<TestStatus>(TestStatus.WAITING_LOAD_START);
+  public testStatusEnum = TestStatus;
+  public loadComplete = false;
 
   private standardBookletConfig: BookletConfig = {
     showMainNaviButtons: true
@@ -25,8 +36,6 @@ export class TestControllerService {
   public mode = '';
   public logging = true;
   public lazyloading = true;
-  public dataLoading = false;
-  public bookletLoadComplete = false;
 
   public maxTimeTimer$ = new Subject<MaxTimerData>();
   public currentMaxTimerTestletId = '';
@@ -57,7 +66,9 @@ export class TestControllerService {
           const disabled = (sequ < this.minUnitSequenceId) || (sequ > this.maxUnitSequenceId) || myUnitData.unitDef.locked;
           myUnitListForNaviButtons.push({
             sequenceId: sequ,
-            label: myUnitData.unitDef.naviButtonLabel, //  myUnitData.unitDef.naviButtonLabel,disabled ? '' :
+            shortLabel: myUnitData.unitDef.naviButtonLabel,
+            longLabel: myUnitData.unitDef.title,
+            testletLabel: myUnitData.testletLabel,
             disabled: disabled,
             isCurrent: sequ === v
           });
@@ -134,8 +145,8 @@ export class TestControllerService {
     this.navArrows = true;
     this.pageNav = true;
     this.lazyloading = true;
-    this.dataLoading = false;
-    this.bookletLoadComplete = false;
+    // this.dataLoading = false; TODO set test status?
+    // this.bookletLoadComplete = false;
   }
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
@@ -305,11 +316,30 @@ export class TestControllerService {
     }
   }
 
+  public terminateTest() {
+    if (this.mode && this.mode !== RunModeKey.REVIEW) {
+      this.bs.addBookletLog(this.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE').pipe(
+        switchMap(() => {
+          return this.bs.lockBooklet(this.testId)
+        })
+      ).subscribe(() => {
+        this.testStatus$.next(TestStatus.TERMINATED);
+        this.router.navigate(['/']);
+      })
+    } else {
+      this.testStatus$.next(TestStatus.TERMINATED);
+      this.router.navigate(['/']);
+    }
+  }
+
   public setUnitNavigationRequest(navString: string = UnitNavigationTarget.NEXT) {
     if (!this.rootTestlet) {
-      this.router.navigateByUrl(`/t/${this.testId}/nu/${navString}`);
+      this.router.navigateByUrl(`/t/${this.testId}`);
     } else {
       switch (navString) {
+        case UnitNavigationTarget.MENU:
+          this.router.navigateByUrl(`/t/${this.testId}`);
+          break;
         case UnitNavigationTarget.NEXT:
           let startWith = this.currentUnitSequenceId;
           if (startWith < this.minUnitSequenceId) {
@@ -330,12 +360,11 @@ export class TestControllerService {
           this.router.navigateByUrl(`/t/${this.testId}/u/${this.maxUnitSequenceId}`);
           break;
         case UnitNavigationTarget.END:
-          // this.mds.endBooklet(); TODO add some old code to end properly
-          this.router.navigateByUrl(`/t/${this.testId}/nu/${NoUnitFlag.END}`);
+          this.terminateTest();
           break;
         case UnitNavigationTarget.ERROR:
-          // this.mds.endBooklet(); TODO add some old code to end properly
-          this.router.navigateByUrl(`/t/${this.testId}/nu/${NoUnitFlag.ERROR}`);
+          // this.mds.endBooklet(); TODO add some code to clean up
+          this.router.navigateByUrl(`/t/${this.testId}`);
           break;
 
         default:

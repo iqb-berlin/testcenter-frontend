@@ -46,6 +46,21 @@ export interface TestData {
   laststate: KeyValuePair[];
 }
 
+export enum TestStatus {
+  RUNNING = "RUNNING",
+  WAITING_LOAD_COMPLETE = "WAITING_LOAD_COMPLETE",
+  TERMINATED = "TERMINATED",
+  PAUSED = "PAUSED",
+  WAITING_LOAD_START = "WAITING_LOAD_START",
+  ERROR = "ERROR"
+}
+
+export interface UnitMenuButtonData {
+  sequenceId: number;
+  label: string;
+  isCurrent: boolean;
+}
+
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++
 export interface BookletStateEntry {
     bookletDbId: number;
@@ -88,7 +103,7 @@ export enum RunModeKey {
   HOT_RETURN = "run-hot-return",
   HOT_RESTART = "run-hot-restart",
   TRIAL = "run-trial",
-  REVIEW = "run-review"
+  REVIEW = "run-review",
 }
 
 export enum MaxTimerDataType {
@@ -101,7 +116,9 @@ export enum MaxTimerDataType {
 export interface UnitNaviButtonData {
   sequenceId: number;
   disabled: boolean;
-  label: string;
+  shortLabel: string;
+  longLabel: string;
+  testletLabel: string;
   isCurrent: boolean;
 }
 
@@ -135,5 +152,6 @@ export enum UnitNavigationTarget {
   PREVIOUS = "#previous",
   FIRST = "#first",
   LAST = "#last",
-  END = "#end"
+  END = "#end",
+  MENU = "#menu"
 }

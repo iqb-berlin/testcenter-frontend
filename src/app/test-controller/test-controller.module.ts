@@ -8,7 +8,7 @@ import { TestControllerRoutingModule } from './test-controller-routing.module';
 import { UnithostComponent } from './unithost/unithost.component';
 import { TestControllerComponent } from './test-controller.component';
 import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameChild.directive';
-import { unitRoutingGuards } from './unithost/unit-routing-guards';
+import { unitRouteGuards } from './unithost/unit-route-guards';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -27,7 +27,7 @@ import {MatMenuModule} from "@angular/material/menu";
 import {MatButtonModule} from "@angular/material/button";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatIconModule} from "@angular/material/icon";
-import { NoUnitComponent } from './no-unit/no-unit.component';
+import { TestStatusComponent } from './test-status/test-status.component';
 
 
 @NgModule({
@@ -58,14 +58,14 @@ import { NoUnitComponent } from './no-unit/no-unit.component';
     ResizeIFrameChildDirective,
     ReviewDialogComponent,
     StartLockInputComponent,
-    NoUnitComponent
+    TestStatusComponent
   ],
   entryComponents: [
     ReviewDialogComponent,
     StartLockInputComponent
   ],
   providers: [
-    unitRoutingGuards
+    unitRouteGuards
   ],
   exports: [
     TestControllerComponent

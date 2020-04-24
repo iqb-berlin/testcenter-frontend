@@ -8,7 +8,7 @@ import {
 import {CustomtextService} from 'iqb-components';
 import {AppConfig} from './app.config';
 
-const localStorageAuthDataKey = 'iqb-tc';
+const localStorageAuthDataKey = 'iqb-tc-a';
 
 @Injectable({
   providedIn: 'root'

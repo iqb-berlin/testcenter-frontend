@@ -19,6 +19,10 @@
     "defaultvalue": "Test beenden",
     "description": "Schalterbeschriftung für 'Test beenden'"
   },
+  "booklet_warningLeaveTimerBlockTextPrompt": {
+    "defaultvalue": "Du verlässt einen zeitbeschränkten Bereich uns kannst nicht zurückkehren. Trotzdem weiterblättern?",
+    "description": "Schalterbeschriftung für 'Zurück zum Test'"
+  },
   "login_testReturnButtonText": {
     "defaultvalue": "Zum Test zurückkehren",
     "description": "Schalterbeschriftung für 'Zurück zum Test'"

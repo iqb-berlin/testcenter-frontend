@@ -1,9 +1,9 @@
-import { UnitActivateGuard, UnitDeactivateGuard } from './unithost/unit-routing-guards';
+import { UnitActivateGuard, UnitDeactivateGuard } from './unithost/unit-route-guards';
 import { UnithostComponent } from './unithost/unithost.component';
 import { TestControllerComponent } from './test-controller.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {NoUnitComponent} from "./no-unit/no-unit.component";
+import {TestStatusComponent} from "./test-status/test-status.component";
 import {TestControllerDeactivateGuard} from "./test-controller-route-guards.guard";
 
 
@@ -15,14 +15,14 @@ const routes: Routes = [
     canDeactivate: [TestControllerDeactivateGuard],
     children: [
       {
+        path: '',
+        component: TestStatusComponent
+      },
+      {
         path: 'u/:u',
           component: UnithostComponent,
           canActivate: [UnitActivateGuard],
           canDeactivate: [UnitDeactivateGuard]
-      },
-      {
-        path: 'nu/:f',
-        component: NoUnitComponent
       }
     ]
   }

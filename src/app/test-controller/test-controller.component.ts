@@ -1,44 +1,47 @@
-import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
+import {ReviewDialogComponent} from './review-dialog/review-dialog.component';
 import {ActivatedRoute, Router} from '@angular/router';
-import { MainDataService } from '../maindata.service';
-import { BackendService } from './backend.service';
+import {MainDataService} from '../maindata.service';
+import {BackendService} from './backend.service';
 
-import { TestControllerService } from './test-controller.service';
-import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
-import { UnitDef, Testlet, EnvironmentData, MaxTimerData } from './test-controller.classes';
+import {TestControllerService} from './test-controller.service';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {EnvironmentData, MaxTimerData, Testlet, UnitDef} from './test-controller.classes';
 import {
   LastStateKey,
   LogEntryKey,
-  TestData,
-  UnitData,
   MaxTimerDataType,
+  ReviewDialogData,
+  RunModeKey,
   TaggedString,
-  ReviewDialogData, RunModeKey, UnitNavigationTarget
+  TestData,
+  TestStatus,
+  UnitData,
+  UnitNavigationTarget
 } from './test-controller.interfaces';
-import {Subscription, Observable, of, from, throwError} from 'rxjs';
-import {switchMap, concatMap, map} from 'rxjs/operators';
-import { CustomtextService } from 'iqb-components';
+import {from, Observable, of, Subscription, throwError} from 'rxjs';
+import {concatMap, map, switchMap} from 'rxjs/operators';
+import {CustomtextService} from 'iqb-components';
 import {MatDialog} from "@angular/material/dialog";
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {MatSnackBar} from '@angular/material/snack-bar';
+
 
 @Component({
   templateUrl: './test-controller.component.html',
   styleUrls: ['./test-controller.component.css']
 })
 export class TestControllerComponent implements OnInit, OnDestroy {
+  static localStorageTestKey = 'iqb-tc-t';
   private routingSubscription: Subscription = null;
   private maxTimerSubscription: Subscription = null;
-  private unitLoadQueueSubscription1: Subscription = null;
-  private unitLoadQueueSubscription2: Subscription = null;
-
-  public showProgress = false;
+  private unitLoadXmlSubscription: Subscription = null;
+  private unitLoadBlobSubscription: Subscription = null;
 
   private lastUnitSequenceId = 0;
+  public loadProgressValue = 0;
   private lastTestletIndex = 0;
   private timerValue: MaxTimerData = null;
   private timerRunning = false;
   private allUnitIds: string[] = [];
-  private progressValue = 0;
   private loadedUnitCount = 0;
   private unitLoadQueue: TaggedString[] = [];
   unitNavigationTarget = UnitNavigationTarget;
@@ -271,7 +274,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   private incrementProgressValueBy1() {
     this.loadedUnitCount += 1;
-    this.progressValue = this.loadedUnitCount * 100 / this.lastUnitSequenceId;
+    this.loadProgressValue = this.loadedUnitCount * 100 / this.lastUnitSequenceId;
   }
 
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -362,8 +365,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   ngOnInit() {
     setTimeout(() => {
       this.mds.progressVisualEnabled = false;
+
       this.routingSubscription = this.route.params.subscribe(params => {
         this.tcs.testId = params['t'];
+        localStorage.setItem(TestControllerComponent.localStorageTestKey, params['t']);
+
         this.unsubscribeTestSubscriptions();
 
         this.maxTimerSubscription = this.tcs.maxTimeTimer$.subscribe(maxTimerData => {
@@ -404,7 +410,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         const envData = new EnvironmentData(this.appVersion);
 
         this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADSTART, JSON.stringify(envData));
-        this.tcs.dataLoading = true;
+        this.tcs.testStatus$.next(TestStatus.WAITING_LOAD_COMPLETE);
+        this.loadProgressValue = 0;
+        this.tcs.loadComplete = false;
 
         this.bs.getTestData(this.tcs.testId).subscribe(testDataUntyped => {
           if (testDataUntyped === false) {
@@ -413,7 +421,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               description: "TestController.Component: getTestData()",
               category: "PROBLEM"
             });
-            this.tcs.dataLoading = false;
+            this.tcs.testStatus$.next(TestStatus.ERROR);
+            this.loadProgressValue = 0;
             this.tcs.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
           } else {
             const testData = testDataUntyped as TestData;
@@ -440,19 +449,19 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 description: "TestController.Component: getBookletFromXml(testData.xml)",
                 category: "PROBLEM"
               });
-              this.tcs.dataLoading = false;
+              this.tcs.testStatus$.next(TestStatus.ERROR);
+              this.loadProgressValue = 0;
               this.tcs.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
             } else {
               this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
 
-              this.showProgress = true;
               this.loadedUnitCount = 0;
               const sequArray = [];
               for (let i = 1; i < this.tcs.maxUnitSequenceId + 1; i++) {
                 sequArray.push(i);
               }
 
-              this.unitLoadQueueSubscription1 = from(sequArray).pipe(
+              this.unitLoadXmlSubscription = from(sequArray).pipe(
                 concatMap(uSequ => {
                   const ud = this.tcs.rootTestlet.getUnitAt(uSequ);
                   return this.loadUnitOk(ud.unitDef, uSequ);
@@ -466,7 +475,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     description: errorMessage,
                     category: "PROBLEM"
                   });
-                  this.tcs.dataLoading = false;
+                  this.tcs.testStatus$.next(TestStatus.ERROR);
+                  this.loadProgressValue = 0;
                   this.tcs.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
                 },
                 () => {
@@ -474,7 +484,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                   this.tcs.updateMinMaxUnitSequenceId(navTarget);
                   this.loadedUnitCount = 0;
 
-                  this.unitLoadQueueSubscription2 = from(this.unitLoadQueue).pipe(
+                  this.unitLoadBlobSubscription = from(this.unitLoadQueue).pipe(
                     concatMap(queueEntry => {
                       const unitSequ = Number(queueEntry.tag);
                       if (!this.tcs.lazyloading) {
@@ -505,24 +515,26 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                         description: errorMessage,
                         category: "PROBLEM"
                       });
-                      this.tcs.dataLoading = false;
+                      this.tcs.testStatus$.next(TestStatus.ERROR);
+                      this.loadProgressValue = 0;
                       this.tcs.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
                     },
                     () => { // complete
                       this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
-                      this.tcs.bookletLoadComplete = true;
+                      this.loadProgressValue = 100;
 
+                      this.tcs.loadComplete = true;
                       if (!this.tcs.lazyloading) {
-                        this.showProgress = false;
-                        this.tcs.dataLoading = false;
+                        this.tcs.testStatus$.next(TestStatus.RUNNING);
                         this.tcs.setUnitNavigationRequest(navTarget.toString());
                       }
                     }
                   );
 
                   if (this.tcs.lazyloading) {
-                    this.showProgress = false;
-                    this.tcs.dataLoading = false;
+                    this.tcs.testStatus$.next(TestStatus.RUNNING);
+                    console.log(navTarget);
+
                     this.tcs.setUnitNavigationRequest(navTarget.toString());
                   }
 
@@ -590,20 +602,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
-  // #####################################################################################
-  gotoUnit(newSequenceId: number) {
-    this.tcs.setUnitNavigationRequest(newSequenceId.toString());
-  }
-
   private unsubscribeTestSubscriptions() {
     if (this.maxTimerSubscription !== null) {
       this.maxTimerSubscription.unsubscribe();
     }
-    if (this.unitLoadQueueSubscription1 !== null) {
-      this.unitLoadQueueSubscription1.unsubscribe();
+    if (this.unitLoadXmlSubscription !== null) {
+      this.unitLoadXmlSubscription.unsubscribe();
     }
-    if (this.unitLoadQueueSubscription2 !== null) {
-      this.unitLoadQueueSubscription2.unsubscribe();
+    if (this.unitLoadBlobSubscription !== null) {
+      this.unitLoadBlobSubscription.unsubscribe();
     }
   }
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
