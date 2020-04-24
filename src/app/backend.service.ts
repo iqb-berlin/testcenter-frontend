@@ -8,7 +8,7 @@ import {
   SysCheckInfo,
   AuthData,
   WorkspaceData,
-  BookletData, MonitorScopeData, ApiError
+  BookletData, ApiError
 } from './app.interfaces';
 
 // ============================================================================
@@ -83,19 +83,6 @@ export class BackendService {
           id: workspaceId,
           name: workspaceId,
           role: "n.d."
-        })
-      }));
-  }
-
-  getMonitorScopeData(monitorScopeId: string): Observable<MonitorScopeData> {
-    return this.http
-      .get<MonitorScopeData>(this.serverUrl + 'monitorscope/' + monitorScopeId) // TODO fix route
-      .pipe(catchError(() => {
-        console.warn('get monitor scope data failed for ' + monitorScopeId);
-        return of(<MonitorScopeData>{
-          id: monitorScopeId,
-          name: monitorScopeId,
-          type: "n.d."
         })
       }));
   }

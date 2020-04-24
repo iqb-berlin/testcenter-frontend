@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AuthAccessKeyType, AuthData, MonitorScopeData} from "../../app.interfaces";
+import {AuthAccessKeyType, AuthData, WorkspaceData} from "../../app.interfaces";
 import {from, Subscription} from "rxjs";
 import {Router} from "@angular/router";
 import {BackendService} from "../../backend.service";
@@ -10,8 +10,9 @@ import {concatMap} from "rxjs/operators";
   templateUrl: './monitor-starter.component.html'
 })
 export class MonitorStarterComponent implements OnInit, OnDestroy {
-  monitorScopes: MonitorScopeData[] = [];
-  private getMonitorScopeDataSubscription: Subscription = null;
+  workspaces: WorkspaceData[] = [];
+  isWorkspaceMonitor = false;
+  private getWorkspaceDataSubscription: Subscription = null;
 
   constructor(
     private router: Router,
@@ -26,17 +27,22 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
           const authData = authDataUntyped as AuthData;
           if (authData) {
             if (authData.token) {
-              this.monitorScopes = [];
+              this.workspaces = [];
               let scopeIdList = [];
               if (authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
                 scopeIdList = authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR];
+                this.isWorkspaceMonitor = false;
               } else if (authData.access[AuthAccessKeyType.WORKSPACE_MONITOR]) {
                 scopeIdList = authData.access[AuthAccessKeyType.WORKSPACE_MONITOR];
+                this.isWorkspaceMonitor = true;
               }
-              this.getMonitorScopeDataSubscription = from(scopeIdList).pipe(
+              if (this.getWorkspaceDataSubscription !== null) {
+                this.getWorkspaceDataSubscription.unsubscribe();
+              }
+              this.getWorkspaceDataSubscription = from(scopeIdList).pipe(
                 concatMap(monitorScopeId => {
-                  return this.bs.getMonitorScopeData(monitorScopeId)
-                })).subscribe(msData => this.monitorScopes.push(msData));
+                  return this.bs.getWorkspaceData(monitorScopeId)
+                })).subscribe(wsData => this.workspaces.push(wsData));
               this.mds.setAuthData(authData);
             } else {
               this.mds.setAuthData();
@@ -49,14 +55,11 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
     });
   }
 
-  buttonGotoMonitor(ms: MonitorScopeData) {
-    switch (ms.type) {
-      case "GROUP":
-        this.router.navigateByUrl('/group-monitor/' + ms.id.toString());
-        break;
-      case "WORKSPACE":
-        this.router.navigateByUrl('/workspace-monitor/' + ms.id.toString());
-        break;
+  buttonGotoMonitor(ms: WorkspaceData) {
+    if (this.isWorkspaceMonitor) {
+      this.router.navigateByUrl('/workspace-monitor/' + ms.id.toString());
+    } else {
+      this.router.navigateByUrl('/group-monitor/' + ms.id.toString());
     }
   }
 
@@ -66,8 +69,8 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.getMonitorScopeDataSubscription !== null) {
-      this.getMonitorScopeDataSubscription.unsubscribe();
+    if (this.getWorkspaceDataSubscription !== null) {
+      this.getWorkspaceDataSubscription.unsubscribe();
     }
   }
 }

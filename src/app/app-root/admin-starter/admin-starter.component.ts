@@ -25,6 +25,10 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
   ngOnInit() {
     setTimeout(() => {
       this.bs.getSessionData().subscribe(authDataUntyped => {
+        if (this.getWorkspaceDataSubscription !== null) {
+          this.getWorkspaceDataSubscription.unsubscribe();
+        }
+
         if (typeof authDataUntyped !== 'number') {
           const authData = authDataUntyped as AuthData;
           if (authData) {
