@@ -23,6 +23,7 @@
   width: 100%;
   top: 20px;
   bottom: 0;
+  background: linear-gradient(to bottom, #003333, #045659, #0d7b84, #1aa2b2, #2acae5);
 }
 
 .sheetofpaper {
@@ -82,6 +83,7 @@ p.unitMessage { /* TODO why here? */
   position: absolute;
   left: 5px;
   top: 5px;
+  z-index: 999;
 }
 
 div.logo img {

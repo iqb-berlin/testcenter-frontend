@@ -2,14 +2,12 @@ import { MainDataService } from './maindata.service';
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import { BackendService } from './backend.service';
 import {CustomtextService} from 'iqb-components';
-import { appconfig } from './app.config';
 import {Subscription} from "rxjs";
 import {debounceTime} from "rxjs/operators";
 
 @Component({
   selector: 'tc-root',
-  templateUrl: './app.component.html',
-  // styleUrls: ['./app.component.scss']
+  templateUrl: './app.component.html'
 })
 
 
@@ -62,9 +60,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     setTimeout(() => {
-      this.mds.addCustomtextsFromDefList(appconfig.customtextsApp);
-      this.mds.addCustomtextsFromDefList(appconfig.customtextsLogin);
-      this.mds.addCustomtextsFromDefList(appconfig.customtextsBooklet);
+      this.mds.appConfig.resetCustomTexts();
 
       this.appErrorSubscription = this.mds.appError$.subscribe(err => {
         if (err) {
@@ -90,7 +86,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
       this.bs.getSysConfig().subscribe(sc => {
         if (sc) {
-          this.mds.setDefaultCustomtexts(sc.customTexts);
+          this.cts.addCustomTexts(sc.customTexts);
+          const authData = MainDataService.getAuthDataFromLocalStorage();
+          if (authData) {
+            this.cts.addCustomTexts(authData.customTexts);
+          }
           this.mds.isApiVersionValid = AppComponent.isValidVersion(this.expectedApiVersion, sc.version);
           if (!this.mds.isApiVersionValid) {
             this.mds.appError$.next({

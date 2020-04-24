@@ -6,7 +6,7 @@ import {
   AuthData
 } from './app.interfaces';
 import {CustomtextService} from 'iqb-components';
-import {appconfig, customtextKeySeparator, CustomTextsDefList} from './app.config';
+import {AppConfig} from './app.config';
 
 const localStorageAuthDataKey = 'iqb-tc';
 
@@ -19,6 +19,7 @@ export class MainDataService {
   public delayedProcessesCount$ = new BehaviorSubject<number>(0);
   public progressVisualEnabled = true;
   public isApiVersionValid = true;
+  public appConfig: AppConfig = null;
 
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();
@@ -44,7 +45,9 @@ export class MainDataService {
   constructor(
     private bs: BackendService,
     private cts: CustomtextService
-  ) {}
+  ) {
+    this.appConfig = new AppConfig(cts);
+  }
 
   incrementDelayedProcessesCount() {
     this.delayedProcessesCount$.next(this.delayedProcessesCount$.getValue() + 1);
@@ -61,46 +64,10 @@ export class MainDataService {
     if (authData) {
       if (authData.customTexts) {
         this.cts.addCustomTexts(authData.customTexts);
-        authData.customTexts = null;
       }
       MainDataService.setAuthDataToLocalStorage(authData);
     } else {
       MainDataService.setAuthDataToLocalStorage();
-    }
-  }
-
-  public addCustomtextsFromDefList(customtextList: CustomTextsDefList) {
-    const myCustomTexts: {[key: string]: string} = {};
-    for (const ct of Object.keys(customtextList.defList)) {
-      myCustomTexts[customtextList.keyPrefix + customtextKeySeparator + ct] = customtextList.defList[ct].defaultvalue;
-    }
-    this.cts.addCustomTexts(myCustomTexts);
-  }
-
- public setDefaultCustomtexts(newTexts: {[key: string]: string}) {
-    if (newTexts) {
-      for (const ctKey of Object.keys(newTexts)) {
-        const sepIndex = ctKey.indexOf(customtextKeySeparator);
-        if (sepIndex > 1) {
-          const keyPrefix = ctKey.slice(0 , sepIndex - 1);
-          const keyId = ctKey.slice(sepIndex + 1);
-
-          switch (keyPrefix) {
-            case 'app': {
-              appconfig.customtextsApp.defList[keyId].defaultvalue = newTexts[ctKey];
-              break;
-            }
-            case 'login': {
-              appconfig.customtextsLogin.defList[keyId].defaultvalue = newTexts[ctKey];
-              break;
-            }
-            case 'booklet': {
-              appconfig.customtextsBooklet.defList[keyId].defaultvalue = newTexts[ctKey];
-              break;
-            }
-          }
-        }
-      }
     }
   }
 }

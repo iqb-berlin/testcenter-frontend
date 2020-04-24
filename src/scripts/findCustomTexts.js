@@ -48,6 +48,31 @@ function takeFolder(sourceFolder ) {
 
 takeFolder('../app');
 
-console.log(foundKeys);
-console.log(foundSourceFiles);
+const defaults = JSON.parse(fs.readFileSync('../app/custom-texts.json'));
+
+console.log();
+console.log('\x1b[33m%s\x1b[0m', 'used keys:');
+for (const k of Object.keys(foundKeys)) {
+  if (defaults[k]) {
+    console.log(`  ${k}: ${foundKeys[k]}`);
+  } else {
+    console.log('\x1b[31m%s\x1b[0m', `  ${k}: ${foundKeys[k]}`)
+  }
+}
+
+console.log();
+console.log('\x1b[33m%s\x1b[0m', 'found in:');
+for (const f of foundSourceFiles) {
+  console.log(`  ${f}`);
+}
+
+console.log();
+console.log('\x1b[33m%s\x1b[0m', 'not used:');
+for (const k of Object.keys(defaults)) {
+  if (!foundKeys[k]) {
+    console.log(`  ${k}`);
+  }
+}
+
+console.log();
 console.log('done.');
