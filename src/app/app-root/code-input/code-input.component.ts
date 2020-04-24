@@ -53,8 +53,10 @@ export class CodeInputComponent implements OnInit{
         }
       });
     } else {
+      this.mds.setSpinnerOn();
       this.bs.codeLogin(codeData['code']).subscribe(
         authData => {
+          this.mds.setSpinnerOff();
           this.problemText = '';
           if (typeof authData === 'number') {
             const errCode = authData as number;

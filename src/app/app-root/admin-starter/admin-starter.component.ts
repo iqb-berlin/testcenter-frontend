@@ -30,6 +30,7 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     setTimeout(() => {
+      this.mds.setSpinnerOn();
       this.bs.getSessionData().subscribe(authDataUntyped => {
         if (this.getWorkspaceDataSubscription !== null) {
           this.getWorkspaceDataSubscription.unsubscribe();
@@ -47,15 +48,25 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
                 this.getWorkspaceDataSubscription = from(authData.access[AuthAccessKeyType.WORKSPACE_ADMIN]).pipe(
                   concatMap(workspaceId => {
                     return this.bs.getWorkspaceData(workspaceId)
-                  })).subscribe(wsData => this.workspaces.push(wsData));
+                  })).subscribe(
+                    wsData => this.workspaces.push(wsData),
+                  () => this.mds.setSpinnerOff(),
+                  () => this.mds.setSpinnerOff()
+                  );
+              } else {
+                this.mds.setSpinnerOff();
               }
               this.mds.setAuthData(authData);
             } else {
               this.mds.setAuthData();
+              this.mds.setSpinnerOff();
             }
           } else {
             this.mds.setAuthData();
+            this.mds.setSpinnerOff();
           }
+        } else {
+          this.mds.setSpinnerOff();
         }
       })
     });

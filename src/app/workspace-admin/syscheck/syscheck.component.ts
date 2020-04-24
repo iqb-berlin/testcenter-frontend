@@ -8,6 +8,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 import { SysCheckStatistics } from '../workspace.interfaces';
+import {MainDataService} from "../../maindata.service";
 
 
 @Component({
@@ -25,12 +26,14 @@ export class SyscheckComponent implements OnInit {
   constructor(
     private bs: BackendService,
     private deleteConfirmDialog: MatDialog,
+    private mds: MainDataService,
     public snackBar: MatSnackBar
   ) {
   }
 
   ngOnInit() {
     setTimeout(() => {
+      this.mds.setSpinnerOn();
       this.updateTable();
     })
   }
@@ -41,6 +44,7 @@ export class SyscheckComponent implements OnInit {
       (resultData: SysCheckStatistics[]) => {
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);
         this.resultDataSource.sort = this.sort;
+        this.mds.setSpinnerOff();
       }
     );
   }
@@ -65,8 +69,10 @@ export class SyscheckComponent implements OnInit {
         selectedReports.push(element.id);
       });
       // TODO determine OS dependent line ending char and use this
+      this.mds.setSpinnerOn();
       this.bs.getSysCheckReport(selectedReports, ';', '"', '\n').subscribe(
       (response) => {
+        this.mds.setSpinnerOff();
         if (response === false) {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         } else {
@@ -108,6 +114,7 @@ export class SyscheckComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
+          this.mds.setSpinnerOn();
           this.bs.deleteSysCheckReports(selectedReports).subscribe((fileDeletionReport) => {
             const message = [];
             if (fileDeletionReport.deleted.length > 0) {

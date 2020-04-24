@@ -10,6 +10,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 import { ResultData, UnitResponse, ReviewData } from '../workspace.interfaces';
+import {MainDataService} from "../../maindata.service";
 
 
 @Component({
@@ -28,11 +29,13 @@ export class ResultsComponent implements OnInit {
     private bs: BackendService,
     public wds: WorkspaceDataService,
     private deleteConfirmDialog: MatDialog,
+    private mds: MainDataService,
     public snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
     setTimeout(() => {
+      this.mds.setSpinnerOn();
       this.updateTable();
     })
   }
@@ -41,11 +44,13 @@ export class ResultsComponent implements OnInit {
     this.tableselectionCheckbox.clear();
     if (this.wds.wsRole === 'MO') {
       this.resultDataSource = new MatTableDataSource<ResultData>([]);
+      this.mds.setSpinnerOff();
     } else {
       this.bs.getResultData().subscribe(
         (resultData: ResultData[]) => {
           this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
           this.resultDataSource.sort = this.sort;
+          this.mds.setSpinnerOff();
         }
       );
     }
@@ -69,8 +74,10 @@ export class ResultsComponent implements OnInit {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
+      this.mds.setSpinnerOn();
       this.bs.getResponses(selectedGroups).subscribe(
       (responseData: UnitResponse[]) => {
+        this.mds.setSpinnerOff();
         if (responseData.length > 0) {
           const columnDelimiter = ';';
           const lineDelimiter = '\n';
@@ -130,8 +137,10 @@ export class ResultsComponent implements OnInit {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
+      this.mds.setSpinnerOn();
       this.bs.getReviews(selectedGroups).subscribe(
       (responseData: ReviewData[]) => {
+        this.mds.setSpinnerOff();
         if (responseData.length > 0) {
           // collect categories
           const allCategories: string[] = [];
@@ -190,8 +199,10 @@ export class ResultsComponent implements OnInit {
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
+      this.mds.setSpinnerOn();
       this.bs.getLogs(selectedGroups).subscribe(
       (responseData: LogData[]) => {
+        this.mds.setSpinnerOff();
         if (responseData.length > 0) {
           const columnDelimiter = ';';
           const lineDelimiter = '\n';
@@ -241,7 +252,7 @@ export class ResultsComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
-          // =========================================================
+          this.mds.setSpinnerOn();
           this.bs.deleteData(selectedGroups).subscribe((ok: boolean) => {
             if (ok) {
               this.snackBar.open('Löschen erfolgreich.', 'Ok.', {duration: 3000});

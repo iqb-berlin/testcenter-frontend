@@ -43,8 +43,10 @@ export class LoginComponent  implements OnInit, OnDestroy {
   login() {
     const loginData = this.loginForm.value;
     LoginComponent.oldLoginName = loginData['name'];
+    this.mds.setSpinnerOn();
     this.bs.login(loginData['name'], loginData['pw']).subscribe(
       authData => {
+        this.mds.setSpinnerOff();
         this.problemText = '';
         if (typeof authData === 'number') {
           const errCode = authData as number;

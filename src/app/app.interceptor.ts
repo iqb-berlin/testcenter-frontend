@@ -5,7 +5,7 @@ import {
   HttpHandler, HttpEvent, HttpErrorResponse
 } from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
-import {catchError, tap} from "rxjs/operators";
+import {catchError} from "rxjs/operators";
 import {Router, RouterState, RouterStateSnapshot} from "@angular/router";
 import {ApiError} from "./app.interfaces";
 
@@ -42,16 +42,8 @@ export class AuthInterceptor implements HttpInterceptor {
       }
     });
 
-    this.mds.incrementDelayedProcessesCount();
     return next.handle(requestA).pipe(
-      tap(requ => {
-          // filter out OPTIONS request
-          if (requ.type > 0) { // TODO is there another way to detect OPTION?
-            this.mds.decrementDelayedProcessesCount();
-          }
-      }),
       catchError(e => {
-        this.mds.decrementDelayedProcessesCount();
         let apiError = new ApiError(999);
         if (e instanceof HttpErrorResponse) {
           const httpError = e as HttpErrorResponse;

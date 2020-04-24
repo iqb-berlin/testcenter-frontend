@@ -10,6 +10,7 @@ import { ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { saveAs } from 'file-saver';
+import {MainDataService} from "../../maindata.service";
 
 @Component({
   templateUrl: './files.component.html',
@@ -36,12 +37,14 @@ export class FilesComponent implements OnInit {
     public wds: WorkspaceDataService,
     public confirmDialog: MatDialog,
     public messageDialog: MatDialog,
+    private mds: MainDataService,
     public snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
     this.uploadUrl = `${this.serverUrl}workspace/${this.wds.wsId}/file`;
     setTimeout(() => {
+      this.mds.setSpinnerOn();
       this.updateFileList();
     })
   }
@@ -86,7 +89,7 @@ export class FilesComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result !== false) {
-            // =========================================================
+            this.mds.setSpinnerOn();
             this.bs.deleteFiles(filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) => {
               const message = [];
               if (fileDeletionReport.deleted.length > 0) {
@@ -122,20 +125,24 @@ export class FilesComponent implements OnInit {
 
     if (empty || this.wds.wsRole === 'MO') {
       this.serverfiles = new MatTableDataSource([]);
+      this.mds.setSpinnerOff();
     } else {
       this.bs.getFiles().subscribe(
         (fileList: GetFileResponseData[]) => {
           this.serverfiles = new MatTableDataSource(fileList);
           this.serverfiles.sort = this.sort;
+          this.mds.setSpinnerOff();
         }
       );
     }
   }
 
   download(element: GetFileResponseData): void {
+    this.mds.setSpinnerOn();
     this.bs.downloadFile(element.type, element.filename)
       .subscribe(
         (fileData: Blob|boolean) => {
+          this.mds.setSpinnerOff();
           if (fileData !== false) {
             saveAs(fileData as Blob, element.filename);
           }
@@ -148,8 +155,10 @@ export class FilesComponent implements OnInit {
     this.checkWarnings = [];
     this.checkInfos = [];
 
+    this.mds.setSpinnerOn();
     this.bs.checkWorkspace().subscribe(
       (checkResponse: CheckWorkspaceResponseData) => {
+        this.mds.setSpinnerOff();
         this.checkErrors = checkResponse.errors;
         this.checkWarnings = checkResponse.warnings;
         this.checkInfos = checkResponse.infos;

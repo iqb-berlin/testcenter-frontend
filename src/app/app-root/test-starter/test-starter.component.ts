@@ -26,6 +26,7 @@ export class TestStarterComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
+      this.mds.setSpinnerOn();
       this.bs.getSessionData().subscribe(authDataUntyped => {
         if (typeof authDataUntyped !== 'number') {
           const authData = authDataUntyped as AuthData;
@@ -44,20 +45,26 @@ export class TestStarterComponent implements OnInit {
                       this.booklets.push(bData)
                     },
                     e => {
-                      this.problemText = `Fehler in der Netzwerkverbindung (${e}).`
+                      this.problemText = `Fehler in der Netzwerkverbindung (${e}).`;
+                      this.mds.setSpinnerOff();
                     },
                     () => {
-                      this.problemText = this.booklets.length > 0 ? '' : 'Für diese Anmeldung wurde kein Test gefunden.'
+                      this.problemText = this.booklets.length > 0 ? '' : 'Für diese Anmeldung wurde kein Test gefunden.';
+                      this.mds.setSpinnerOff();
                     }
                   );
               }
               this.mds.setAuthData(authData);
             } else {
               this.mds.setAuthData();
+              this.mds.setSpinnerOff();
             }
           } else {
             this.mds.setAuthData();
+            this.mds.setSpinnerOff();
           }
+        } else {
+          this.mds.setSpinnerOff();
         }
       })
     });

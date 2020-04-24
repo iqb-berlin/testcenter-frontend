@@ -57,6 +57,7 @@ export class WorkspacesComponent implements OnInit {
 
   ngOnInit() {
     setTimeout(() => {
+      this.mds.setSpinnerOn();
       this.updateObjectList();
     })
   }
@@ -73,12 +74,14 @@ export class WorkspacesComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (typeof result !== 'undefined') {
         if (result !== false) {
+          this.mds.setSpinnerOn();
           this.bs.addWorkspace((<FormGroup>result).get('name').value).subscribe(
             respOk => {
               if (respOk !== false) {
                 this.snackBar.open('Arbeitsbereich hinzugefügt', '', {duration: 1000});
                 this.updateObjectList();
               } else {
+                this.mds.setSpinnerOff();
                 this.snackBar.open('Konnte Arbeitsbereich nicht hinzufügen', 'Fehler', {duration: 1000});
               }
             });
@@ -110,6 +113,7 @@ export class WorkspacesComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (typeof result !== 'undefined') {
           if (result !== false) {
+            this.mds.setSpinnerOn();
             this.bs.renameWorkspace(selectedRows[0].id,
                 (<FormGroup>result).get('name').value).subscribe(
                   respOk => {
@@ -117,6 +121,7 @@ export class WorkspacesComponent implements OnInit {
                       this.snackBar.open('Arbeitsbereich geändert', '', {duration: 1000});
                       this.updateObjectList();
                     } else {
+                      this.mds.setSpinnerOff();
                       this.snackBar.open('Konnte Arbeitsbereich nicht ändern', 'Fehler', {duration: 2000});
                     }
                   });
@@ -162,12 +167,14 @@ export class WorkspacesComponent implements OnInit {
           // =========================================================
           const workspacesToDelete = [];
           selectedRows.forEach((r: IdAndName) => workspacesToDelete.push(r.id));
+          this.mds.setSpinnerOn();
           this.bs.deleteWorkspaces(workspacesToDelete).subscribe(
             respOk => {
               if (respOk !== false) {
                 this.snackBar.open('Arbeitsbereich/e gelöscht', '', {duration: 1000});
                 this.updateObjectList();
               } else {
+                this.mds.setSpinnerOff();
                 this.snackBar.open('Konnte Arbeitsbereich/e nicht löschen', 'Fehler', {duration: 1000});
               }
           });
@@ -180,8 +187,10 @@ export class WorkspacesComponent implements OnInit {
   updateUserList() {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
+      this.mds.setSpinnerOn();
       this.bs.getUsersByWorkspace(this.selectedWorkspaceId).subscribe(dataresponse => {
         this.UserlistDatasource = new MatTableDataSource(dataresponse);
+        this.mds.setSpinnerOff();
       });
     } else {
       this.UserlistDatasource = null;
@@ -200,8 +209,10 @@ export class WorkspacesComponent implements OnInit {
   saveUsers() {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
+      this.mds.setSpinnerOn();
       this.bs.setUsersByWorkspace(this.selectedWorkspaceId, this.UserlistDatasource.data).subscribe(
         respOk => {
+          this.mds.setSpinnerOff();
           if (respOk !== false) {
             this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
           } else {
@@ -220,6 +231,7 @@ export class WorkspacesComponent implements OnInit {
       this.objectsDatasource.sort = this.sort;
       this.tableselectionCheckbox.clear();
       this.tableselectionRow.clear();
+      this.mds.setSpinnerOff();
     });
   }
 

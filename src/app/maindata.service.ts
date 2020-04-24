@@ -16,7 +16,7 @@ const localStorageAuthDataKey = 'iqb-tc';
 
 export class MainDataService {
   public appError$ = new BehaviorSubject<AppError>(null);
-  public delayedProcessesCount$ = new BehaviorSubject<number>(0);
+  public isSpinnerOn$ = new BehaviorSubject<boolean>(false);
   public progressVisualEnabled = true;
   public isApiVersionValid = true;
   public appConfig: AppConfig = null;
@@ -49,15 +49,12 @@ export class MainDataService {
     this.appConfig = new AppConfig(cts);
   }
 
-  incrementDelayedProcessesCount() {
-    this.delayedProcessesCount$.next(this.delayedProcessesCount$.getValue() + 1);
+  setSpinnerOn() {
+    this.isSpinnerOn$.next(true)
   }
 
-  decrementDelayedProcessesCount() {
-    const dpc = this.delayedProcessesCount$.getValue();
-    if (dpc > 0) {
-      this.delayedProcessesCount$.next(dpc - 1);
-    }
+  setSpinnerOff() {
+    this.isSpinnerOn$.next(false)
   }
 
   setAuthData(authData: AuthData = null) {

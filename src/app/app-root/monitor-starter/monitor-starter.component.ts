@@ -28,6 +28,7 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     setTimeout(() => {
+      this.mds.setSpinnerOn();
       this.bs.getSessionData().subscribe(authDataUntyped => {
         if (typeof authDataUntyped !== 'number') {
           const authData = authDataUntyped as AuthData;
@@ -48,14 +49,22 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
               this.getWorkspaceDataSubscription = from(scopeIdList).pipe(
                 concatMap(monitorScopeId => {
                   return this.bs.getWorkspaceData(monitorScopeId)
-                })).subscribe(wsData => this.workspaces.push(wsData));
+                })).subscribe(
+                wsData => this.workspaces.push(wsData),
+                () => this.mds.setSpinnerOff(),
+                () => this.mds.setSpinnerOff()
+              );
               this.mds.setAuthData(authData);
             } else {
               this.mds.setAuthData();
+              this.mds.setSpinnerOff();
             }
           } else {
             this.mds.setAuthData();
+            this.mds.setSpinnerOff();
           }
+        } else {
+          this.mds.setSpinnerOff();
         }
       })
     });

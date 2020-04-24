@@ -4,6 +4,7 @@ import { TestControllerComponent } from './test-controller.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {NoUnitComponent} from "./no-unit/no-unit.component";
+import {TestControllerDeactivateGuard} from "./test-controller-route-guards.guard";
 
 
 
@@ -11,6 +12,7 @@ const routes: Routes = [
   {
     path: ':t',
     component: TestControllerComponent,
+    canDeactivate: [TestControllerDeactivateGuard],
     children: [
       {
         path: 'u/:u',

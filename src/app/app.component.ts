@@ -3,7 +3,6 @@ import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import { BackendService } from './backend.service';
 import {CustomtextService} from 'iqb-components';
 import {Subscription} from "rxjs";
-import {debounceTime} from "rxjs/operators";
 
 @Component({
   selector: 'tc-root',
@@ -14,8 +13,6 @@ import {debounceTime} from "rxjs/operators";
 export class AppComponent implements OnInit, OnDestroy {
   private appErrorSubscription: Subscription = null;
   showError = false;
-  private appDelayedProcessesSubscription: Subscription = null;
-  showSpinner = false;
 
   constructor (
     public mds: MainDataService,
@@ -68,12 +65,6 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       });
 
-      this.appDelayedProcessesSubscription = this.mds.delayedProcessesCount$.pipe(
-        debounceTime(500)
-      ).subscribe( c => {
-        this.showSpinner = this.mds.progressVisualEnabled && c > 0;
-      });
-
       window.addEventListener('message', (event: MessageEvent) => {
         const msgData = event.data;
         const msgType = msgData['type'];
@@ -114,9 +105,6 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.appErrorSubscription !== null) {
       this.appErrorSubscription.unsubscribe();
-    }
-    if (this.appDelayedProcessesSubscription !== null) {
-      this.appDelayedProcessesSubscription.unsubscribe();
     }
   }
 }
