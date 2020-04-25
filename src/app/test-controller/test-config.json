@@ -1,0 +1,65 @@
+{
+  "loading_mode": {
+    "label": "Ladeverhalten beim Start",
+    "options": {
+      "LAZY": "Start sobald wie möglich, Laden im Hintergrund fortsetzen",
+      "EAGER": "Testheft erst dann starten, wenn alle Inhalte geladen sind"
+    },
+    "defaultvalue": "LAZY"
+  },
+  "log_mode": {
+    "label": "Erfassen und Speichern von Log-Daten",
+    "options": {
+      "OFF": "Ausgeschaltet",
+      "LEAN": "Nur wichtige Meldungen",
+      "RICH": "Alles"
+    },
+    "defaultvalue": "RICH"
+  },
+  "page_navibuttons": {
+    "label": "Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)",
+    "options": {
+      "OFF": "Keine Seitennavigation unterstützen (übernimmt ggf. die Aufgabe selbst)",
+      "MERGED": "Die Seitennavigation wird durch die Aufgabennavigation mit übernommen",
+      "SEPARATE_TOP": "Seitennavigation über getrennte Button-Leiste - oben",
+      "SEPARATE_BOTTOM": "Seitennavigation über getrennte Button-Leiste - unten"
+    },
+    "defaultvalue": "SEPARATE_BOTTOM"
+  },
+  "unit_navibuttons": {
+    "label": "Navigationsbuttons für die Navigation zwischen den Aufgaben",
+    "options": {
+      "OFF": "Keine Buttons für Aufgabennavigation anzeigen (übernimmt ggf. die Aufgabe selbst)",
+      "ARROWS_ONLY": "Nur die Buttons für 'Weiter' und 'Zurück' anzeigen",
+      "FULL": "Buttons für 'Weiter' und 'Zurück' und dazwischen kleine Buttons für jede Aufgabe anzeigen"
+    },
+    "defaultvalue": "FULL"
+  },
+  "unit_menu": {
+    "label": "Extra-Seite mit großen Buttons für Aufgaben zum direkten Springen",
+    "options": {
+      "OFF": "Ausgeschaltet",
+      "ENABLED_ONLY": "Eingeschaltet - nur die Aufgaben anzeigen, die noch freigegeben sind",
+      "FULL": "Eingeschaltet - auch die Aufgaben anzeigen, die nicht mehr freigegeben sind (gegraut)"
+    },
+    "defaultvalue": "ENABLED_ONLY"
+  },
+  "force_presentation_complete": {
+    "label": "Verhalten, wenn noch nicht alle Elemente der Aufgabe angezeigt wurden",
+    "options": {
+      "OFF": "Ignorieren - Weiterblättern möglich",
+      "ON": "Weiterblättern verhindern, bis Anzeige vollständig"
+    },
+    "defaultvalue": "OFF"
+  },
+  "force_responses_complete": {
+    "label": "Verhalten, wenn noch nicht alle Antworten der Aufgabe vollständig gegeben wurden",
+    "options": {
+      "OFF": "Ignorieren - Weiterblättern möglich",
+      "SOME": "Weiterblättern erst möglich, wenn einige Antworten gegeben wurden",
+      "COMPLETE": "Weiterblättern erst möglich, wenn alle Antworten gegeben wurden",
+      "COMPLETE_AND_VALID": "Weiterblättern erst möglich, wenn alle Antworten gegeben wurden und als gültig eingeschätzt wurden"
+    },
+    "defaultvalue": "OFF"
+  }
+}

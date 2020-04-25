@@ -104,6 +104,7 @@ export enum RunModeKey {
   HOT_RESTART = "run-hot-restart",
   TRIAL = "run-trial",
   REVIEW = "run-review",
+  DEMO = "demo"
 }
 
 export enum MaxTimerDataType {

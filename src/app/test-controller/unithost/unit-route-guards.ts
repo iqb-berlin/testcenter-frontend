@@ -10,7 +10,6 @@ import {UnitControllerData} from '../test-controller.classes';
 import {
   CodeInputData,
   LogEntryKey,
-  RunModeKey,
   StartLockData
 } from '../test-controller.interfaces';
 import {MainDataService} from 'src/app/maindata.service';
@@ -32,7 +31,7 @@ export class UnitActivateGuard implements CanActivate {
 
 
   checkAndSolve_PresentationCompleteCode(newUnit: UnitControllerData): Observable<Boolean> {
-    if (this.tcs.navPolicyNextOnlyIfPresentationComplete && this.tcs.currentUnitSequenceId > 0) {
+    if ((this.tcs.testConfig.force_presentation_complete === 'ON') && this.tcs.currentUnitSequenceId > 0) {
       if (this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
         // go forwards ===================================
         let myreturn = true;
@@ -53,7 +52,7 @@ export class UnitActivateGuard implements CanActivate {
         if (myreturn) {
           return of(true);
         } else {
-          if (this.tcs.mode === RunModeKey.HOT_RESTART || this.tcs.mode === RunModeKey.HOT_RETURN) {
+          if (this.tcs.testConfig.forceNaviRestrictions) {
             const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
               width: '500px',
               // height: '300px',
@@ -85,7 +84,7 @@ export class UnitActivateGuard implements CanActivate {
         if (myreturn) {
           return of(true);
         } else {
-          if (this.tcs.mode === RunModeKey.HOT_RESTART || this.tcs.mode === RunModeKey.HOT_RETURN) {
+          if (this.tcs.testConfig.forceNaviRestrictions) {
             const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
               width: '500px',
               // height: '300px',
@@ -120,7 +119,7 @@ export class UnitActivateGuard implements CanActivate {
             testletId: t.id,
             prompt: t.codePrompt,
             code: t.codeToEnter.toUpperCase().trim(),
-            value: (this.tcs.mode === RunModeKey.HOT_RETURN || this.tcs.mode === RunModeKey.HOT_RESTART) ? '' : t.codeToEnter
+            value: this.tcs.testConfig.presetCode ? t.codeToEnter : ''
           });
         });
 
@@ -178,17 +177,14 @@ export class UnitActivateGuard implements CanActivate {
 
   // ****************************************************************************************
   checkAndSolve_DefLoaded(newUnit: UnitControllerData): Observable<Boolean> {
-    console.log('#1');
     if (this.tcs.loadComplete) {
-      console.log('#2');
       return of(true);
     } else {
-      console.log('#3');
       if (this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
 
         // 1 going forwards
 
-        if ((newUnit.maxTimerRequiringTestlet === null) || (this.tcs.mode === 'run-review')) {
+        if ((newUnit.maxTimerRequiringTestlet === null) || (!this.tcs.testConfig.forceNaviRestrictions)) {
 
           // 1 a) target is not in timed block or review mode --> check only target unit
 

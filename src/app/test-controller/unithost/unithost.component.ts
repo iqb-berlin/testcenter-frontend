@@ -200,7 +200,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
           }
 
           this.leaveWarning = false;
-          if (!this.tcs.pageNav) {
+          if (this.tcs.testConfig.page_navibuttons === 'OFF') {
             this.iFrameHostElement.style.bottom = '0px';
           }
 
@@ -267,11 +267,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         this.pageList[this.pageList.length - 1].disabled = false;
       } else {
         this.pageList[0].disabled = false;
-        if (currentPageIndex === this.pageList.length - 2) {
-          this.pageList[this.pageList.length - 1].disabled = true;
-        } else {
-          this.pageList[this.pageList.length - 1].disabled = false;
-        }
+        this.pageList[this.pageList.length - 1].disabled = currentPageIndex === this.pageList.length - 2;
       }
     }
     this.showPageNav = this.pageList.length > 0;

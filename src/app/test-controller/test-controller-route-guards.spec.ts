@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { TestControllerDeactivateGuard } from './test-controller-route-guards.guard';
+import { TestControllerDeactivateGuard } from './test-controller-route-guards';
 
 describe('TestControllerDeactivateGuard', () => {
   let guard: TestControllerDeactivateGuard;

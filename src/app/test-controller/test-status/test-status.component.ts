@@ -27,18 +27,16 @@ export class TestStatusComponent implements OnInit, OnDestroy {
       this.routingSubscription = this.route.params.subscribe(params => {
         this.flag = params['f'];
       });
-      this.unitMenuButtonListSubscription = this.tcs.unitListForNaviButtons$.subscribe(unitList => {
-        this.unitMenuButtonList = [];
-        for (let unitIndex = 0; unitIndex < unitList.length; unitIndex++) {
-          if (!unitList[unitIndex].disabled && unitList[unitIndex].longLabel.trim()) {
-            this.unitMenuButtonList.push({
-              sequenceId: unitList[unitIndex].sequenceId,
-              label: unitList[unitIndex].longLabel,
-              isCurrent: unitList[unitIndex].isCurrent
-            })
-          }
+      this.unitMenuButtonList = [];
+      for (let unitIndex = 0; unitIndex < this.tcs.unitListForNaviButtons.length; unitIndex++) {
+        if (!this.tcs.unitListForNaviButtons[unitIndex].disabled && this.tcs.unitListForNaviButtons[unitIndex].longLabel.trim()) {
+          this.unitMenuButtonList.push({
+            sequenceId: this.tcs.unitListForNaviButtons[unitIndex].sequenceId,
+            label: this.tcs.unitListForNaviButtons[unitIndex].longLabel,
+            isCurrent: this.tcs.unitListForNaviButtons[unitIndex].isCurrent
+          })
         }
-      })
+      }
     })
   }
 

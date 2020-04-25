@@ -1,13 +1,12 @@
 import {debounceTime, map, switchMap, takeUntil} from 'rxjs/operators';
 import {BehaviorSubject, interval, Subject, Subscription, timer} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {BookletConfig, MaxTimerData, Testlet} from './test-controller.classes';
+import {MaxTimerData, Testlet} from './test-controller.classes';
 import {
   KeyValuePairNumber,
   LastStateKey,
   LogEntryKey,
   MaxTimerDataType,
-  RunModeKey,
   TestStatus,
   UnitNaviButtonData,
   UnitNavigationTarget,
@@ -16,6 +15,7 @@ import {
 } from './test-controller.interfaces';
 import {BackendService} from './backend.service';
 import {Router} from "@angular/router";
+import {TestConfig} from "./test-config";
 
 @Injectable({
   providedIn: 'root'
@@ -26,16 +26,10 @@ export class TestControllerService {
   public testStatusEnum = TestStatus;
   public loadComplete = false;
 
-  private standardBookletConfig: BookletConfig = {
-    showMainNaviButtons: true
-  };
-  public bookletConfig$ = new BehaviorSubject<BookletConfig>(this.standardBookletConfig);
+  public testConfig = new TestConfig();
   public rootTestlet: Testlet = null;
   public maxUnitSequenceId = 0;
   public minUnitSequenceId = 0;
-  public mode = '';
-  public logging = true;
-  public lazyloading = true;
 
   public maxTimeTimer$ = new Subject<MaxTimerData>();
   public currentMaxTimerTestletId = '';
@@ -44,21 +38,17 @@ export class TestControllerService {
   private _currentUnitSequenceId: number;
   public currentUnitDbKey = '';
   public currentUnitTitle = '';
-  public unitPrevEnabled$ = new BehaviorSubject<boolean>(false);
-  public unitNextEnabled$ = new BehaviorSubject<boolean>(false);
-  public unitListForNaviButtons$ = new BehaviorSubject<UnitNaviButtonData[]>([]);
-  public navPolicyNextOnlyIfPresentationComplete = false;
-  public navButtons = false;
-  public navArrows = true;
-  public pageNav = true;
+  public unitPrevEnabled = false;
+  public unitNextEnabled = false;
+  public unitListForNaviButtons: UnitNaviButtonData[] = [];
 
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
   }
   public set currentUnitSequenceId(v: number) {
-    this.unitPrevEnabled$.next(v > this.minUnitSequenceId);
-    this.unitNextEnabled$.next(v < this.maxUnitSequenceId);
-    if (this.rootTestlet && this.navButtons) {
+    this.unitPrevEnabled = v > this.minUnitSequenceId;
+    this.unitNextEnabled = v < this.maxUnitSequenceId;
+    if (this.rootTestlet && (this.testConfig.unit_navibuttons !== 'OFF') ) {
       const myUnitListForNaviButtons: UnitNaviButtonData[] = [];
       for (let sequ = 1; sequ <= this.rootTestlet.getMaxSequenceId(); sequ++) {
         const myUnitData = this.rootTestlet.getUnitAt(sequ);
@@ -74,7 +64,7 @@ export class TestControllerService {
           });
         }
       }
-      this.unitListForNaviButtons$.next(myUnitListForNaviButtons);
+      this.unitListForNaviButtons = myUnitListForNaviButtons;
     }
     this._currentUnitSequenceId = v;
   }
@@ -120,31 +110,23 @@ export class TestControllerService {
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
   public resetDataStore() {
-    this.bookletConfig$.next(this.standardBookletConfig);
     this.players = {};
     this.unitDefinitions = {};
     this.unitRestorePoints = {};
     this.rootTestlet = null;
     this.maxUnitSequenceId = 0;
-    this.mode = '';
-    this.logging = true;
     this.currentUnitSequenceId = 0;
     this.currentUnitDbKey = '';
     this.currentUnitTitle = '';
-    this.unitPrevEnabled$.next(false);
-    this.unitNextEnabled$.next(false);
+    this.unitPrevEnabled = false;
+    this.unitNextEnabled = false;
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
       this.maxTimeIntervalSubscription = null;
     }
     this.currentMaxTimerTestletId = '';
     this.LastMaxTimerState = {};
-    this.unitListForNaviButtons$.next([]);
-    this.navPolicyNextOnlyIfPresentationComplete = false;
-    this.navButtons = false;
-    this.navArrows = true;
-    this.pageNav = true;
-    this.lazyloading = true;
+    this.unitListForNaviButtons = [];
     // this.dataLoading = false; TODO set test status?
     // this.bookletLoadComplete = false;
   }
@@ -211,8 +193,7 @@ export class TestControllerService {
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
   public addBookletLog(logKey: LogEntryKey, entry = '') {
-    if ((this.mode !== 'run-review') && this.logging) {
-
+    if (this.testConfig.saveResponses) {
       const entryData =  entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey;
       this.bs.addBookletLog(this.testId, Date.now(), entryData).subscribe(ok => {
         if (!ok) {
@@ -222,7 +203,7 @@ export class TestControllerService {
     }
   }
   public setBookletState(stateKey: LastStateKey, state: string) {
-    if (this.mode !== 'run-review') {
+    if (this.testConfig.saveResponses) {
       this.bs.setBookletState(this.testId, stateKey, state).subscribe(ok => {
         if (!ok) {
           console.warn('setBookletState failed');
@@ -231,7 +212,7 @@ export class TestControllerService {
     }
   }
   public addUnitLog(unitDbKey: string, logKey: LogEntryKey, entry = '') {
-    if ((this.mode !== 'run-review') && this.logging) {
+    if (this.testConfig.saveResponses) {
       this.bs.addUnitLog(this.testId, Date.now(), unitDbKey,
             entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey).subscribe(ok => {
         if (!ok) {
@@ -241,7 +222,7 @@ export class TestControllerService {
     }
   }
   public newUnitResponse(unitDbKey: string, response: string, responseType: string) {
-    if (this.mode !== 'run-review') {
+    if (this.testConfig.saveResponses) {
       this.responsesToSave$.next({
         unitDbKey: unitDbKey,
         response: response,
@@ -251,7 +232,7 @@ export class TestControllerService {
   }
   public newUnitRestorePoint(unitDbKey: string, unitSequenceId: number, restorePoint: string, postToServer: boolean) {
     this.unitRestorePoints[unitSequenceId] = restorePoint;
-    if (postToServer && this.mode !== 'run-review') {
+    if (postToServer && this.testConfig.saveResponses) {
       this.restorePointsToSave$.next({
         unitDbKey: unitDbKey,
         restorePoint: restorePoint
@@ -260,7 +241,7 @@ export class TestControllerService {
   }
   public newUnitStatePresentationComplete(unitDbKey: string, unitSequenceId: number, presentationComplete: string) {
     this.unitPresentationCompleteStates[unitSequenceId] = presentationComplete;
-    if (this.mode !== 'run-review') {
+    if (this.testConfig.saveResponses) {
       this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationComplete);
       this.bs.setUnitState(this.testId, unitDbKey, LastStateKey.PRESENTATIONCOMPLETE, presentationComplete).subscribe(ok => {
         if (!ok) {
@@ -270,7 +251,7 @@ export class TestControllerService {
     }
   }
   public newUnitStateResponsesGiven(unitDbKey: string, unitSequenceId: number, responsesGiven: string) {
-    if (this.mode !== 'run-review') {
+    if (this.testConfig.saveResponses) {
       this.addUnitLog(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
     }
   }
@@ -317,7 +298,7 @@ export class TestControllerService {
   }
 
   public terminateTest() {
-    if (this.mode && this.mode !== RunModeKey.REVIEW) {
+    if (this.testConfig.saveResponses) {
       this.bs.addBookletLog(this.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE').pipe(
         switchMap(() => {
           return this.bs.lockBooklet(this.testId)

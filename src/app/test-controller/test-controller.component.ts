@@ -23,6 +23,7 @@ import {concatMap, map, switchMap} from 'rxjs/operators';
 import {CustomtextService} from 'iqb-components';
 import {MatDialog} from "@angular/material/dialog";
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {TestConfig} from "./test-config";
 
 
 @Component({
@@ -153,7 +154,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   // private: reading booklet from xml
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
-  private getBookletFromXml(xmlString: string): Testlet {
+  private getBookletFromXml(xmlString: string, loginMode: RunModeKey): Testlet {
     let rootTestlet: Testlet = null;
 
     try {
@@ -186,73 +187,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
             const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
 
+            this.tcs.testConfig = new TestConfig(loginMode); // TODO: standard test config
             if (bookletConfigElements.length > 0) {
-              const bookletConfigs = TestControllerComponent.getChildElements(bookletConfigElements[0]);
-              for (let childIndex = 0; childIndex < bookletConfigs.length; childIndex++) {
-                const configParameter = bookletConfigs[childIndex].getAttribute('parameter');
-                // const configValue = bookletConfigs[childIndex].textContent;
-
-                switch (bookletConfigs[childIndex].nodeName) {
-                  // ----------------------
-                  case 'NavPolicy':
-                    if (configParameter) {
-                      if (configParameter.toUpperCase() === 'NextOnlyIfPresentationComplete'.toUpperCase()) {
-                        this.tcs.navPolicyNextOnlyIfPresentationComplete = true;
-                      }
-                    }
-                    break;
-                  // ----------------------
-                  case 'NavButtons':
-                    if (configParameter) {
-                      switch (configParameter.toUpperCase()) {
-                        case 'ON':
-                          this.tcs.navButtons = true;
-                          this.tcs.navArrows = true;
-                          break;
-                        case 'OFF':
-                          this.tcs.navButtons = false;
-                          this.tcs.navArrows = false;
-                          break;
-                        case 'ARROWSONLY': // default
-                          this.tcs.navButtons = false;
-                          this.tcs.navArrows = true;
-                          break;
-                        default:
-                          console.log('unknown booklet configParameter NavButtons "' + configParameter + '"');
-                          break;
-                      }
-                    }
-                    break;
-                  // ----------------------
-                  case 'PageNavBar':
-                    if (configParameter) {
-                      if (configParameter.toUpperCase() === 'OFF') {
-                        this.tcs.pageNav = false;
-                      }
-                    }
-                    break;
-                  // ----------------------
-                  case 'Logging':
-                    if (configParameter) {
-                      if (configParameter.toUpperCase() === 'OFF') {
-                        this.tcs.logging = false;
-                      }
-                    }
-                    break;
-                  // ----------------------
-                  case 'Loading':
-                    if (configParameter) {
-                      if (configParameter.toUpperCase() === 'EAGER') {
-                        this.tcs.lazyloading = false;
-                      }
-                    }
-                    break;
-                  // ----------------------
-                  default:
-                    console.log('unknown booklet config "' + bookletConfigs[childIndex].nodeName + '"');
-                    break;
-                }
-              }
+              this.tcs.testConfig.setFromXml(bookletConfigElements[0]);
             }
 
             // recursive call through all testlets
@@ -383,7 +320,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
             this.timerRunning = false;
             this.timerValue = null;
-            if (this.tcs.mode !== 'run-review') {
+            if (this.tcs.testConfig.forceTimeRestrictions) {
               this.tcs.setUnitNavigationRequest(UnitNavigationTarget.NEXT);
             }
           } else if (maxTimerData.type === MaxTimerDataType.CANCELLED) {
@@ -426,7 +363,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             this.tcs.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
           } else {
             const testData = testDataUntyped as TestData;
-            this.tcs.mode = testData.mode;
 
             let navTarget = 1;
             if (testData.laststate !== null) {
@@ -441,7 +377,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               }
             }
 
-            this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
+            this.tcs.rootTestlet = this.getBookletFromXml(testData.xml, testData.mode as RunModeKey);
 
             if (this.tcs.rootTestlet === null) {
               this.mds.appError$.next({
@@ -487,7 +423,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                   this.unitLoadBlobSubscription = from(this.unitLoadQueue).pipe(
                     concatMap(queueEntry => {
                       const unitSequ = Number(queueEntry.tag);
-                      if (!this.tcs.lazyloading) {
+                      if (this.tcs.testConfig.loading_mode === "EAGER") {
                         this.incrementProgressValueBy1();
                       }
                       // avoid to load unit def if not necessary
@@ -524,14 +460,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                       this.loadProgressValue = 100;
 
                       this.tcs.loadComplete = true;
-                      if (!this.tcs.lazyloading) {
+                      if (this.tcs.testConfig.loading_mode === "EAGER") {
                         this.tcs.testStatus$.next(TestStatus.RUNNING);
                         this.tcs.setUnitNavigationRequest(navTarget.toString());
                       }
                     }
                   );
 
-                  if (this.tcs.lazyloading) {
+                  if (this.tcs.testConfig.loading_mode === "LAZY") {
                     this.tcs.testStatus$.next(TestStatus.RUNNING);
                     console.log(navTarget);
 

@@ -4,7 +4,7 @@ import { TestControllerComponent } from './test-controller.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {TestStatusComponent} from "./test-status/test-status.component";
-import {TestControllerDeactivateGuard} from "./test-controller-route-guards.guard";
+import {TestControllerDeactivateGuard} from "./test-controller-route-guards";
 
 
 
