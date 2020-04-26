@@ -57,10 +57,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     setTimeout(() => {
-      this.mds.appConfig.resetCustomTexts();
+      this.mds.appConfig.setDefaultCustomTexts();
 
       this.appErrorSubscription = this.mds.appError$.subscribe(err => {
-        if (err) {
+        if (err && !this.mds.errorReportingSilent) {
           this.showError = true;
         }
       });
@@ -78,7 +78,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.bs.getSysConfig().subscribe(sc => {
         if (sc) {
           this.cts.addCustomTexts(sc.customTexts);
-          const authData = MainDataService.getAuthDataFromLocalStorage();
+          const authData = MainDataService.getAuthData();
           if (authData) {
             this.cts.addCustomTexts(authData.customTexts);
           }
@@ -90,6 +90,10 @@ export class AppComponent implements OnInit, OnDestroy {
               category: "FATAL"
             });
           }
+          if (sc.mainLogo) {
+            console.warn('SysConfig.mainLogo not implemented yet');
+          }
+          this.mds.setTestConfig(sc.testConfig);
         } else {
           this.mds.isApiVersionValid = false;
           this.mds.appError$.next({

@@ -48,7 +48,7 @@ function takeFolder(sourceFolder ) {
 
 takeFolder('../app');
 
-const defaults = JSON.parse(fs.readFileSync('../app/custom-texts.json'));
+const defaults = JSON.parse(fs.readFileSync('../app/config/custom-texts.json'));
 
 console.log();
 console.log('\x1b[33m%s\x1b[0m', 'used keys:');

@@ -4,12 +4,12 @@ import {HttpClient} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
 import {catchError, map, switchMap} from 'rxjs/operators';
 import {
-  SysConfig,
   SysCheckInfo,
   AuthData,
   WorkspaceData,
   BookletData, ApiError
 } from './app.interfaces';
+import {SysConfig} from "./config/app.config";
 
 // ============================================================================
 @Injectable({

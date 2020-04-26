@@ -16,7 +16,7 @@ export class RouteDispatcherActivateGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
 
-    const authData = MainDataService.getAuthDataFromLocalStorage();
+    const authData = MainDataService.getAuthData();
     if (authData) {
       if (authData.token) {
         if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN] || authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
@@ -54,7 +54,7 @@ export class DirectLoginActivateGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
 
-    const authData = MainDataService.getAuthDataFromLocalStorage();
+    const authData = MainDataService.getAuthData();
     if (!authData) {
       const directLoginName = state.url.substr(1);
       if (directLoginName.length > 0 && directLoginName.indexOf('/') < 0) {

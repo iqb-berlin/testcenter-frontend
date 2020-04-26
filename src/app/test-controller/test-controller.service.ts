@@ -319,6 +319,8 @@ export class TestControllerService {
     } else {
       switch (navString) {
         case UnitNavigationTarget.MENU:
+        case UnitNavigationTarget.ERROR:
+        case UnitNavigationTarget.PAUSE:
           this.router.navigateByUrl(`/t/${this.testId}`);
           break;
         case UnitNavigationTarget.NEXT:
@@ -342,10 +344,6 @@ export class TestControllerService {
           break;
         case UnitNavigationTarget.END:
           this.terminateTest();
-          break;
-        case UnitNavigationTarget.ERROR:
-          // this.mds.endBooklet(); TODO add some code to clean up
-          this.router.navigateByUrl(`/t/${this.testId}`);
           break;
 
         default:

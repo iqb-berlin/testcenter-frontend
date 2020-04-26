@@ -1,5 +1,5 @@
 // @ts-ignore
-import testConfigDefinition from './test-config.json';
+import testConfigDefinition from '../config/test-config.json';
 import {RunModeKey} from "./test-controller.interfaces";
 
 export class TestConfig  {
@@ -130,5 +130,4 @@ export class TestConfig  {
     return Array.prototype.slice.call(element.childNodes)
       .filter(function (e) { return e.nodeType === 1; });
   }
-
 }

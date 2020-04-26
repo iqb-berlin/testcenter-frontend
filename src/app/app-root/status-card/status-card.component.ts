@@ -20,7 +20,7 @@ export class StatusCardComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      const authData = MainDataService.getAuthDataFromLocalStorage();
+      const authData = MainDataService.getAuthData();
       if (authData) {
         this.loginName = authData.displayName;
         if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN]) {

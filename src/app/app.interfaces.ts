@@ -37,11 +37,6 @@ export interface BookletData {
   locked: boolean;
 }
 
-export interface SysConfig {
-  customTexts: KeyValuePairs;
-  version: string;
-}
-
 export interface KeyValuePairs {
   [K: string]: string;
 }

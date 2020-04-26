@@ -154,5 +154,6 @@ export enum UnitNavigationTarget {
   FIRST = "#first",
   LAST = "#last",
   END = "#end",
-  MENU = "#menu"
+  MENU = "#menu",
+  PAUSE = "#pause"
 }

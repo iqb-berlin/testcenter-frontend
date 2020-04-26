@@ -42,6 +42,7 @@ export class BackendService {
   }
 
   getTestData(testId: string): Observable<TestData | boolean> {
+    console.log('3 ### >' + testId + '<');
     return this.http
       .get<TestData>(this.serverUrl + 'test/' + testId)
       .pipe(

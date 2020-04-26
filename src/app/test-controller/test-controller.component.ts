@@ -32,6 +32,8 @@ import {TestConfig} from "./test-config";
 })
 export class TestControllerComponent implements OnInit, OnDestroy {
   static localStorageTestKey = 'iqb-tc-t';
+  private errorReportingSubscription: Subscription = null;
+  private testStatusSubscription: Subscription = null;
   private routingSubscription: Subscription = null;
   private maxTimerSubscription: Subscription = null;
   private unitLoadXmlSubscription: Subscription = null;
@@ -50,6 +52,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   constructor (
     @Inject('APP_VERSION') public appVersion: string,
+    @Inject('IS_PRODUCTION_MODE') public isProductionMode,
     private mds: MainDataService,
     public tcs: TestControllerService,
     private bs: BackendService,
@@ -187,7 +190,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
             const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
 
-            this.tcs.testConfig = new TestConfig(loginMode); // TODO: standard test config
+            this.tcs.testConfig = new TestConfig(loginMode);
+            this.tcs.testConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
             if (bookletConfigElements.length > 0) {
               this.tcs.testConfig.setFromXml(bookletConfigElements[0]);
             }
@@ -303,182 +307,196 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.mds.progressVisualEnabled = false;
 
-      this.routingSubscription = this.route.params.subscribe(params => {
-        this.tcs.testId = params['t'];
-        localStorage.setItem(TestControllerComponent.localStorageTestKey, params['t']);
-
-        this.unsubscribeTestSubscriptions();
-
-        this.maxTimerSubscription = this.tcs.maxTimeTimer$.subscribe(maxTimerData => {
-          if (maxTimerData.type === MaxTimerDataType.STARTED) {
-            this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') + maxTimerData.timeLeftMinString, '', {duration: 3000});
-            this.timerValue = maxTimerData;
-          } else if (maxTimerData.type === MaxTimerDataType.ENDED) {
-            this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', {duration: 3000});
-            this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
-            this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
-            this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
-            this.timerRunning = false;
-            this.timerValue = null;
-            if (this.tcs.testConfig.forceTimeRestrictions) {
-              this.tcs.setUnitNavigationRequest(UnitNavigationTarget.NEXT);
-            }
-          } else if (maxTimerData.type === MaxTimerDataType.CANCELLED) {
-            this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', {duration: 3000});
-            this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
-            this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
-            this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
-            this.timerValue = null;
-          } else {
-            this.timerValue = maxTimerData;
-            if ((maxTimerData.timeLeftSeconds % 15) === 0) {
-              this.tcs.LastMaxTimerState[maxTimerData.testletId] = Math.round(maxTimerData.timeLeftSeconds / 60);
-              this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
-            }
-            if ((maxTimerData.timeLeftSeconds / 60) === 5) {
-              this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver5Minutes'), '', {duration: 3000});
-            } else if ((maxTimerData.timeLeftSeconds / 60) === 1) {
-              this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver1Minute'), '', {duration: 3000});
-            }
-          }
-        });
-
-        this.tcs.resetDataStore();
-        const envData = new EnvironmentData(this.appVersion);
-
-        this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADSTART, JSON.stringify(envData));
-        this.tcs.testStatus$.next(TestStatus.WAITING_LOAD_COMPLETE);
-        this.loadProgressValue = 0;
-        this.tcs.loadComplete = false;
-
-        this.bs.getTestData(this.tcs.testId).subscribe(testDataUntyped => {
-          if (testDataUntyped === false) {
-            this.mds.appError$.next({
-              label: "Konnte Testinformation nicht laden",
-              description: "TestController.Component: getTestData()",
-              category: "PROBLEM"
-            });
-            this.tcs.testStatus$.next(TestStatus.ERROR);
+      if (this.isProductionMode && this.tcs.testConfig.saveResponses) {
+        this.mds.errorReportingSilent = true;
+      }
+      this.errorReportingSubscription = this.mds.appError$.subscribe(e => {
+        if (this.isProductionMode && this.tcs.testConfig.saveResponses) {
+          console.error(e.label + " / " + e.description);
+        }
+        this.tcs.testStatus$.next(TestStatus.ERROR);
+      });
+      this.testStatusSubscription = this.tcs.testStatus$.subscribe(ts => {
+        switch (ts) {
+          case TestStatus.ERROR:
             this.loadProgressValue = 0;
             this.tcs.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
-          } else {
-            const testData = testDataUntyped as TestData;
+            break;
+          case TestStatus.PAUSED:
+            this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
+            break;
+        }
+      });
 
-            let navTarget = 1;
-            if (testData.laststate !== null) {
-              if (testData.laststate.hasOwnProperty(LastStateKey.LASTUNIT)) {
-                const navTargetTemp = Number(testData.laststate[LastStateKey.LASTUNIT]);
-                if (!isNaN(navTargetTemp)) {
-                  navTarget = navTargetTemp;
-                }
+      this.routingSubscription = this.route.params.subscribe(params => {
+        console.log(this.tcs.testStatus$.getValue());
+        if (this.tcs.testStatus$.getValue() !== TestStatus.ERROR) {
+          this.tcs.testId = params['t'];
+          localStorage.setItem(TestControllerComponent.localStorageTestKey, params['t']);
+
+          this.unsubscribeTestSubscriptions();
+
+          this.maxTimerSubscription = this.tcs.maxTimeTimer$.subscribe(maxTimerData => {
+            if (maxTimerData.type === MaxTimerDataType.STARTED) {
+              this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') + maxTimerData.timeLeftMinString, '', {duration: 3000});
+              this.timerValue = maxTimerData;
+            } else if (maxTimerData.type === MaxTimerDataType.ENDED) {
+              this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', {duration: 3000});
+              this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
+              this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
+              this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
+              this.timerRunning = false;
+              this.timerValue = null;
+              if (this.tcs.testConfig.forceTimeRestrictions) {
+                this.tcs.setUnitNavigationRequest(UnitNavigationTarget.NEXT);
               }
-              if (testData.laststate.hasOwnProperty(LastStateKey.MAXTIMELEFT) && ((testData.mode === RunModeKey.HOT_RESTART) || (testData.mode === RunModeKey.HOT_RETURN))) {
-                this.tcs.LastMaxTimerState = JSON.parse(testData.laststate[LastStateKey.MAXTIMELEFT]);
+            } else if (maxTimerData.type === MaxTimerDataType.CANCELLED) {
+              this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', {duration: 3000});
+              this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
+              this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
+              this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
+              this.timerValue = null;
+            } else {
+              this.timerValue = maxTimerData;
+              if ((maxTimerData.timeLeftSeconds % 15) === 0) {
+                this.tcs.LastMaxTimerState[maxTimerData.testletId] = Math.round(maxTimerData.timeLeftSeconds / 60);
+                this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
+              }
+              if ((maxTimerData.timeLeftSeconds / 60) === 5) {
+                this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver5Minutes'), '', {duration: 3000});
+              } else if ((maxTimerData.timeLeftSeconds / 60) === 1) {
+                this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver1Minute'), '', {duration: 3000});
               }
             }
+          });
 
-            this.tcs.rootTestlet = this.getBookletFromXml(testData.xml, testData.mode as RunModeKey);
+          this.tcs.resetDataStore();
+          const envData = new EnvironmentData(this.appVersion);
 
-            if (this.tcs.rootTestlet === null) {
+          this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADSTART, JSON.stringify(envData));
+          this.tcs.testStatus$.next(TestStatus.WAITING_LOAD_COMPLETE);
+          this.loadProgressValue = 0;
+          this.tcs.loadComplete = false;
+
+          console.log('1 ### >' + this.tcs.testId + '<');
+          this.bs.getTestData(this.tcs.testId).subscribe(testDataUntyped => {
+            console.log('2 ### >' + this.tcs.testId + '<');
+            if (testDataUntyped === false) {
               this.mds.appError$.next({
-                label: "Problem beim Laden der Testinformation",
-                description: "TestController.Component: getBookletFromXml(testData.xml)",
+                label: "Konnte Testinformation nicht laden",
+                description: "TestController.Component: getTestData()",
                 category: "PROBLEM"
               });
-              this.tcs.testStatus$.next(TestStatus.ERROR);
-              this.loadProgressValue = 0;
-              this.tcs.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
             } else {
-              this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
+              const testData = testDataUntyped as TestData;
 
-              this.loadedUnitCount = 0;
-              const sequArray = [];
-              for (let i = 1; i < this.tcs.maxUnitSequenceId + 1; i++) {
-                sequArray.push(i);
+              let navTarget = 1;
+              if (testData.laststate !== null) {
+                if (testData.laststate.hasOwnProperty(LastStateKey.LASTUNIT)) {
+                  const navTargetTemp = Number(testData.laststate[LastStateKey.LASTUNIT]);
+                  if (!isNaN(navTargetTemp)) {
+                    navTarget = navTargetTemp;
+                  }
+                }
+                if (testData.laststate.hasOwnProperty(LastStateKey.MAXTIMELEFT) && ((testData.mode === RunModeKey.HOT_RESTART) || (testData.mode === RunModeKey.HOT_RETURN))) {
+                  this.tcs.LastMaxTimerState = JSON.parse(testData.laststate[LastStateKey.MAXTIMELEFT]);
+                }
               }
 
-              this.unitLoadXmlSubscription = from(sequArray).pipe(
-                concatMap(uSequ => {
-                  const ud = this.tcs.rootTestlet.getUnitAt(uSequ);
-                  return this.loadUnitOk(ud.unitDef, uSequ);
-                })
-              ).subscribe(() => {
-                  this.incrementProgressValueBy1();
-                },
-                errorMessage => {
-                  this.mds.appError$.next({
-                    label: "Problem beim Laden der Testinformation",
-                    description: errorMessage,
-                    category: "PROBLEM"
-                  });
-                  this.tcs.testStatus$.next(TestStatus.ERROR);
-                  this.loadProgressValue = 0;
-                  this.tcs.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
-                },
-                () => {
-                  this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
-                  this.tcs.updateMinMaxUnitSequenceId(navTarget);
-                  this.loadedUnitCount = 0;
+              this.tcs.rootTestlet = this.getBookletFromXml(testData.xml, testData.mode as RunModeKey);
 
-                  this.unitLoadBlobSubscription = from(this.unitLoadQueue).pipe(
-                    concatMap(queueEntry => {
-                      const unitSequ = Number(queueEntry.tag);
-                      if (this.tcs.testConfig.loading_mode === "EAGER") {
-                        this.incrementProgressValueBy1();
-                      }
-                      // avoid to load unit def if not necessary
-                      if (unitSequ < this.tcs.minUnitSequenceId) {
-                        return of(<TaggedString>{tag: unitSequ.toString(), value: ''});
-                      } else {
-                        return this.bs.getResource(this.tcs.testId, queueEntry.tag, queueEntry.value).pipe(
-                          map(response => {
-                            if (typeof response === 'number') {
-                              return throwError(`error loading voud ${this.tcs.testId} / ${queueEntry.tag} / ${queueEntry.value}: status ${response}`)
-                            } else {
-                              return response
-                            }
-                          })
-                        );
-                      }
-                    })
-                  ).subscribe(
-                    (def: TaggedString) => {
-                      this.tcs.addUnitDefinition(Number(def.tag), def.value);
-                    },
-                    errorMessage => {
-                      this.mds.appError$.next({
-                        label: "Problem beim Laden der Testinformation",
-                        description: errorMessage,
-                        category: "PROBLEM"
-                      });
-                      this.tcs.testStatus$.next(TestStatus.ERROR);
-                      this.loadProgressValue = 0;
-                      this.tcs.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
-                    },
-                    () => { // complete
-                      this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
-                      this.loadProgressValue = 100;
+              if (this.tcs.rootTestlet === null) {
+                this.mds.appError$.next({
+                  label: "Problem beim Laden der Testinformation",
+                  description: "TestController.Component: getBookletFromXml(testData.xml)",
+                  category: "PROBLEM"
+                });
+              } else {
+                this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
 
-                      this.tcs.loadComplete = true;
-                      if (this.tcs.testConfig.loading_mode === "EAGER") {
-                        this.tcs.testStatus$.next(TestStatus.RUNNING);
-                        this.tcs.setUnitNavigationRequest(navTarget.toString());
+                this.loadedUnitCount = 0;
+                const sequArray = [];
+                for (let i = 1; i < this.tcs.maxUnitSequenceId + 1; i++) {
+                  sequArray.push(i);
+                }
+
+                this.unitLoadXmlSubscription = from(sequArray).pipe(
+                  concatMap(uSequ => {
+                    const ud = this.tcs.rootTestlet.getUnitAt(uSequ);
+                    return this.loadUnitOk(ud.unitDef, uSequ);
+                  })
+                ).subscribe(() => {
+                    this.incrementProgressValueBy1();
+                  },
+                  errorMessage => {
+                    this.mds.appError$.next({
+                      label: "Problem beim Laden der Testinformation",
+                      description: errorMessage,
+                      category: "PROBLEM"
+                    });
+                  },
+                  () => {
+                    this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
+                    this.tcs.updateMinMaxUnitSequenceId(navTarget);
+                    this.loadedUnitCount = 0;
+
+                    this.unitLoadBlobSubscription = from(this.unitLoadQueue).pipe(
+                      concatMap(queueEntry => {
+                        const unitSequ = Number(queueEntry.tag);
+                        if (this.tcs.testConfig.loading_mode === "EAGER") {
+                          this.incrementProgressValueBy1();
+                        }
+                        // avoid to load unit def if not necessary
+                        if (unitSequ < this.tcs.minUnitSequenceId) {
+                          return of(<TaggedString>{tag: unitSequ.toString(), value: ''});
+                        } else {
+                          return this.bs.getResource(this.tcs.testId, queueEntry.tag, queueEntry.value).pipe(
+                            map(response => {
+                              if (typeof response === 'number') {
+                                return throwError(`error loading voud ${this.tcs.testId} / ${queueEntry.tag} / ${queueEntry.value}: status ${response}`)
+                              } else {
+                                return response
+                              }
+                            })
+                          );
+                        }
+                      })
+                    ).subscribe(
+                      (def: TaggedString) => {
+                        this.tcs.addUnitDefinition(Number(def.tag), def.value);
+                      },
+                      errorMessage => {
+                        this.mds.appError$.next({
+                          label: "Problem beim Laden der Testinformation",
+                          description: errorMessage,
+                          category: "PROBLEM"
+                        });
+                      },
+                      () => { // complete
+                        this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
+                        this.loadProgressValue = 100;
+
+                        this.tcs.loadComplete = true;
+                        if (this.tcs.testConfig.loading_mode === "EAGER") {
+                          this.tcs.testStatus$.next(TestStatus.RUNNING);
+                          this.tcs.setUnitNavigationRequest(navTarget.toString());
+                        }
                       }
+                    );
+
+                    if (this.tcs.testConfig.loading_mode === "LAZY") {
+                      this.tcs.testStatus$.next(TestStatus.RUNNING);
+                      console.log(navTarget);
+
+                      this.tcs.setUnitNavigationRequest(navTarget.toString());
                     }
-                  );
 
-                  if (this.tcs.testConfig.loading_mode === "LAZY") {
-                    this.tcs.testStatus$.next(TestStatus.RUNNING);
-                    console.log(navTarget);
-
-                    this.tcs.setUnitNavigationRequest(navTarget.toString());
-                  }
-
-                } // complete
-              );
+                  } // complete
+                );
+              }
             }
-          }
-        }); // getTestData
+          }); // getTestData
+        }
       }) // routingSubscription
     }) // setTimeOut
   }
@@ -489,7 +507,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (this.tcs.rootTestlet === null) {
       this.snackBar.open('Kein Testheft verfügbar.', '', {duration: 3000});
     } else {
-      const authData = MainDataService.getAuthDataFromLocalStorage();
+      const authData = MainDataService.getAuthData();
       const dialogRef = this.reviewDialog.open(ReviewDialogComponent, {
         width: '700px',
         data: <ReviewDialogData>{
@@ -541,12 +559,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private unsubscribeTestSubscriptions() {
     if (this.maxTimerSubscription !== null) {
       this.maxTimerSubscription.unsubscribe();
+      this.maxTimerSubscription = null
     }
     if (this.unitLoadXmlSubscription !== null) {
       this.unitLoadXmlSubscription.unsubscribe();
+      this.unitLoadXmlSubscription = null
     }
     if (this.unitLoadBlobSubscription !== null) {
       this.unitLoadBlobSubscription.unsubscribe();
+      this.unitLoadBlobSubscription = null
     }
   }
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -554,7 +575,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
     }
+    if (this.errorReportingSubscription !== null) {
+      this.errorReportingSubscription.unsubscribe();
+    }
+    if (this.testStatusSubscription !== null) {
+      this.testStatusSubscription.unsubscribe();
+    }
     this.unsubscribeTestSubscriptions();
     this.mds.progressVisualEnabled = true;
+    this.mds.errorReportingSilent = false;
   }
 }

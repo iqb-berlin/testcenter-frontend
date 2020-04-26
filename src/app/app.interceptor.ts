@@ -29,7 +29,7 @@ export class AuthInterceptor implements HttpInterceptor {
     //   return next.handle(request);
     // }
     let tokenStr = '';
-    const authData = MainDataService.getAuthDataFromLocalStorage();
+    const authData = MainDataService.getAuthData();
     if (authData) {
       if (authData.token) {
         tokenStr = authData.token;
