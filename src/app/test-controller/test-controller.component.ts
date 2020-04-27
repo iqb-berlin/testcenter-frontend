@@ -378,9 +378,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.loadProgressValue = 0;
           this.tcs.loadComplete = false;
 
-          console.log('1 ### >' + this.tcs.testId + '<');
           this.bs.getTestData(this.tcs.testId).subscribe(testDataUntyped => {
-            console.log('2 ### >' + this.tcs.testId + '<');
             if (testDataUntyped === false) {
               this.mds.appError$.next({
                 label: "Konnte Testinformation nicht laden",
@@ -478,17 +476,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
                         this.tcs.loadComplete = true;
                         if (this.tcs.testConfig.loading_mode === "EAGER") {
-                          this.tcs.testStatus$.next(TestStatus.RUNNING);
                           this.tcs.setUnitNavigationRequest(navTarget.toString());
+                          this.tcs.testStatus$.next(TestStatus.RUNNING);
                         }
                       }
                     );
 
                     if (this.tcs.testConfig.loading_mode === "LAZY") {
-                      this.tcs.testStatus$.next(TestStatus.RUNNING);
-                      console.log(navTarget);
-
                       this.tcs.setUnitNavigationRequest(navTarget.toString());
+                      this.tcs.testStatus$.next(TestStatus.RUNNING);
                     }
 
                   } // complete

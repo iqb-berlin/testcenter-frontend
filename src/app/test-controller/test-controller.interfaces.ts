@@ -59,6 +59,8 @@ export interface UnitMenuButtonData {
   sequenceId: number;
   label: string;
   isCurrent: boolean;
+  testletLabel: string;
+  testletMarker: string
 }
 
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++

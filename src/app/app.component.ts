@@ -103,6 +103,10 @@ export class AppComponent implements OnInit, OnDestroy {
           });
         }
       });
+
+      this.bs.getSysCheckInfo().subscribe(myConfigs => {
+        this.mds.sysCheckAvailable = !!myConfigs;
+      });
     });
   }
 

@@ -23,26 +23,15 @@ export class SysCheckStarterComponent implements OnInit {
   ngOnInit() {
     setTimeout(() => {
       this.loading = true;
+      this.mds.setSpinnerOn();
       this.bs.getSysCheckInfo().subscribe(myConfigs => {
         if (myConfigs) {
           this.checkConfigList = myConfigs;
         } else {
-          this.checkConfigList = [
-            {
-              workspaceId: "20",
-              name: "UjjUUjj",
-              label: "Machbarkeit 2020",
-              description: "sijdsidjsi"
-            },
-            {
-              workspaceId: "20",
-              name: "Ikkdie",
-              label: "jojojojojojo",
-              description: "sijdsidjsi"
-            }
-          ]
+          this.checkConfigList = []
         }
         this.loading = false;
+        this.mds.setSpinnerOff();
       });
     })
   }

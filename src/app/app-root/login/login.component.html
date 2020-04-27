@@ -27,6 +27,7 @@
       <status-card></status-card>
     </mat-card-content>
     <mat-card-actions>
+      <button *ngIf="this.mds.sysCheckAvailable" [routerLink]="['/r/check-starter']" mat-raised-button color="primary">System-Check</button>
       <button [routerLink]="['/priv']" mat-raised-button color="primary">Impressum/Datenschutz</button>
     </mat-card-actions>
   </mat-card>

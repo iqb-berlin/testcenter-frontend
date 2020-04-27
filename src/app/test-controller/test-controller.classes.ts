@@ -168,12 +168,12 @@ export class Testlet extends TestletContentElement {
 
   // .....................................................................
   // first looking for the unit, then on the way back adding restrictions
-  getUnitAt(sequenceId: number): UnitControllerData {
+  getUnitAt(sequenceId: number, isEntryPoint = true): UnitControllerData {
     let myreturn: UnitControllerData = null;
     for (const tce of this.children) {
       if (tce instanceof Testlet) {
         const localTestlet = tce as Testlet;
-        myreturn = localTestlet.getUnitAt(sequenceId);
+        myreturn = localTestlet.getUnitAt(sequenceId, false);
         if (myreturn !== null) {
           break;
         }
@@ -191,7 +191,7 @@ export class Testlet extends TestletContentElement {
       if (this.maxTimeLeft > 0) {
         myreturn.maxTimerRequiringTestlet = this;
       }
-      if (this.title) {
+      if (this.title && !isEntryPoint) {
         myreturn.testletLabel = this.title
       }
     }

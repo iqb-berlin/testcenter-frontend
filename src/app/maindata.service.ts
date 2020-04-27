@@ -22,6 +22,7 @@ export class MainDataService {
   public progressVisualEnabled = true;
   public isApiVersionValid = true;
   public appConfig: AppConfig = null;
+  public sysCheckAvailable = false;
 
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();

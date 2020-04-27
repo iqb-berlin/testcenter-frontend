@@ -34,12 +34,25 @@ export class TestStatusComponent implements OnInit, OnDestroy {
         this.flag = params['f'];
       });
       this.unitMenuButtonList = [];
+      let testletMarkerSwitch = true;
+      let prevTestletLabel = '';
       for (let unitIndex = 0; unitIndex < this.tcs.unitListForNaviButtons.length; unitIndex++) {
         if (!this.tcs.unitListForNaviButtons[unitIndex].disabled && this.tcs.unitListForNaviButtons[unitIndex].longLabel.trim()) {
+          const testletLabel = this.tcs.unitListForNaviButtons[unitIndex].testletLabel;
+          let testletMarker = "testlet-marker-non";
+          if (testletLabel) {
+            if (testletLabel !== prevTestletLabel) {
+              testletMarkerSwitch = !testletMarkerSwitch;
+              prevTestletLabel = testletLabel;
+            }
+            testletMarker = testletMarkerSwitch ? "testlet-marker-a" : "testlet-marker-b";
+          }
           this.unitMenuButtonList.push({
             sequenceId: this.tcs.unitListForNaviButtons[unitIndex].sequenceId,
             label: this.tcs.unitListForNaviButtons[unitIndex].longLabel,
-            isCurrent: this.tcs.unitListForNaviButtons[unitIndex].isCurrent
+            isCurrent: this.tcs.unitListForNaviButtons[unitIndex].isCurrent,
+            testletLabel: testletLabel,
+            testletMarker: testletMarker
           })
         }
       }

@@ -23,3 +23,15 @@ mat-card {
   background-color: transparent;
   padding: 4px;
 }
+
+.testlet-marker-non {
+  background-color: transparent;
+}
+
+.testlet-marker-a {
+  background-color: mediumpurple;
+}
+
+.testlet-marker-b {
+  background-color: mediumorchid;
+}
