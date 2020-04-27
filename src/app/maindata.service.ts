@@ -20,7 +20,7 @@ export class MainDataService {
   public errorReportingSilent = false;
   public isSpinnerOn$ = new BehaviorSubject<boolean>(false);
   public progressVisualEnabled = true;
-  public isApiVersionValid = true;
+  public isApiValid = true;
   public appConfig: AppConfig = null;
   public sysCheckAvailable = false;
 

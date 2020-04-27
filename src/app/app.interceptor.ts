@@ -16,7 +16,7 @@ export class AuthInterceptor implements HttpInterceptor {
     private router: Router) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (!this.mds.isApiVersionValid) {
+    if (!this.mds.isApiValid) {
       this.mds.appError$.next({
         label: "Server-Problem: API-Version ungültig",
         description: "Keine weiteren Server-Aufrufe erlaubt",

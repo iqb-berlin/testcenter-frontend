@@ -144,9 +144,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             this.lastTestletIndex += 1;
           }
           let testletLabel: string = childElements[childIndex].getAttribute('label');
-          if ((typeof testletLabel !== 'undefined') && (testletLabel !== null)) {
-            testletLabel = testletId;
-          }
+          testletLabel = testletLabel ? testletLabel.trim() : '';
+          console.log('+ >' + testletLabel + '<');
 
           this.addTestletContentFromBookletXml(targetTestlet.addTestlet(testletId, testletLabel), childElements[childIndex]);
         }

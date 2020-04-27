@@ -7,8 +7,8 @@
           <div *ngFor="let u of unitMenuButtonList" fxLayout="column" fxLayoutAlign="center stretch">
             <div fxLayout="row" fxLayoutAlign="space-between stretch">
               <div [class]="u.testletMarker" [matTooltip]="u.testletLabel" fxFlex="0 0 10px"></div>
-              <div [class]="u.isCurrent ? 'active-unit' : 'non-active-unit'" fxFlex fxLayout="column" fxLayoutAlign="center stretch">
-                <button mat-raised-button (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())">
+              <div [class]="u.isCurrent ? 'active-unit' : 'non-active-unit'" fxFlex fxLayout="column">
+                <button mat-flat-button (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())">
                   {{u.label}}
                 </button>
               </div>
@@ -32,7 +32,7 @@
         </p>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button  color="primary" (click)="terminateTest()">{{ 'Test beenden'  | customtext:'login_testEndButtonLabel':cts.updateCount}}}</button>
+        <button mat-raised-button  color="primary" (click)="terminateTest()">{{ 'Test beenden'  | customtext:'login_testEndButtonLabel':cts.updateCount}}</button>
       </mat-card-actions>
     </mat-card>
   </div>

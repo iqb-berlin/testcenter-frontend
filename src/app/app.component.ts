@@ -3,6 +3,7 @@ import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import { BackendService } from './backend.service';
 import {CustomtextService} from 'iqb-components';
 import {Subscription} from "rxjs";
+import {AppError} from "./app.interfaces";
 
 @Component({
   selector: 'tc-root',
@@ -13,6 +14,7 @@ import {Subscription} from "rxjs";
 export class AppComponent implements OnInit, OnDestroy {
   private appErrorSubscription: Subscription = null;
   showError = false;
+  errorData: AppError;
 
   constructor (
     public mds: MainDataService,
@@ -61,6 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
       this.appErrorSubscription = this.mds.appError$.subscribe(err => {
         if (err && !this.mds.errorReportingSilent) {
+          this.errorData = err;
           this.showError = true;
         }
       });
@@ -82,8 +85,8 @@ export class AppComponent implements OnInit, OnDestroy {
           if (authData) {
             this.cts.addCustomTexts(authData.customTexts);
           }
-          this.mds.isApiVersionValid = AppComponent.isValidVersion(this.expectedApiVersion, sc.version);
-          if (!this.mds.isApiVersionValid) {
+          this.mds.isApiValid = AppComponent.isValidVersion(this.expectedApiVersion, sc.version);
+          if (!this.mds.isApiValid) {
             this.mds.appError$.next({
               label: "Server-Problem: API-Version ungültig",
               description: "erwartet: " + this.expectedApiVersion + ", gefunden: " + sc.version,
@@ -95,12 +98,7 @@ export class AppComponent implements OnInit, OnDestroy {
           }
           this.mds.setTestConfig(sc.testConfig);
         } else {
-          this.mds.isApiVersionValid = false;
-          this.mds.appError$.next({
-            label: "Allgemeines Server-Problem",
-            description: "getSysConfig lieferte null",
-            category: "FATAL"
-          });
+          this.mds.isApiValid = false;
         }
       });
 

@@ -191,8 +191,12 @@ export class Testlet extends TestletContentElement {
       if (this.maxTimeLeft > 0) {
         myreturn.maxTimerRequiringTestlet = this;
       }
-      if (this.title && !isEntryPoint) {
-        myreturn.testletLabel = this.title
+      if (!isEntryPoint) {
+        const label = this.title.trim();
+        if (label) {
+          myreturn.testletLabel = label
+        }
+
       }
     }
     return myreturn;

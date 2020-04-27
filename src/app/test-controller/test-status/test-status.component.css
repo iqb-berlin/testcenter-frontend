@@ -17,11 +17,15 @@ mat-card {
 .active-unit {
   background-color: #b2ff59;
   padding: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .non-active-unit {
   background-color: transparent;
   padding: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .testlet-marker-non {
@@ -29,7 +33,7 @@ mat-card {
 }
 
 .testlet-marker-a {
-  background-color: mediumpurple;
+  background-color: royalblue;
 }
 
 .testlet-marker-b {

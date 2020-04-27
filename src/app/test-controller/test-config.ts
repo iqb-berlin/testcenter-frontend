@@ -76,6 +76,7 @@ export class TestConfig  {
       for (let childIndex = 0; childIndex < bookletConfigs.length; childIndex++) {
         const configParameter = bookletConfigs[childIndex].getAttribute('parameter');
 
+        // TODO remove old version
         switch (bookletConfigs[childIndex].nodeName) {
           // ----------------------
           case 'NavPolicy':
@@ -118,6 +119,35 @@ export class TestConfig  {
             if (configParameter) {
               if (configParameter.toUpperCase() === 'EAGER') {
                 this.loading_mode = "EAGER"
+              }
+            }
+            break;
+          case 'Config':
+            const configKey = bookletConfigs[childIndex].getAttribute('key');
+            const configValue = bookletConfigs[childIndex].textContent;
+            if (configKey) {
+              switch (configKey) {
+                case 'loading_mode':
+                  this.loading_mode = configValue;
+                  break;
+                case 'log_mode':
+                  this.log_mode = configValue;
+                  break;
+                case 'page_navibuttons':
+                  this.page_navibuttons = configValue;
+                  break;
+                case 'unit_navibuttons':
+                  this.unit_navibuttons = configValue;
+                  break;
+                case 'unit_menu':
+                  this.unit_menu = configValue;
+                  break;
+                case 'force_presentation_complete':
+                  this.force_presentation_complete = configValue;
+                  break;
+                case 'force_responses_complete':
+                  this.force_responses_complete = configValue;
+                  break;
               }
             }
             break;

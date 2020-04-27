@@ -3,9 +3,9 @@
     <img src="assets/IQB-LogoA.png" matTooltip="Zur Startseite" alt="IQB-logo"/>
   </a>
 </div>
-<div class="error-msg" *ngIf="showError" [matTooltip]="(mds.appError$ | async)?.description" fxLayout="row" fxLayoutAlign="space-between center">
+<div class="error-msg" *ngIf="showError" [matTooltip]="errorData?.description" fxLayout="row" fxLayoutAlign="space-between center">
   <mat-icon>error</mat-icon>
-  {{ (mds.appError$ | async)?.label }}
+  {{ errorData?.label }}
   <button mat-button (click)="closeErrorBox()" matTooltip="Fehlernachricht ausblenden" fxFlex="none">
     <mat-icon>clear</mat-icon>
   </button>
