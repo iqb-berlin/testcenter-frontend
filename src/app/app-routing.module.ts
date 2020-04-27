@@ -5,7 +5,11 @@ import {LoginComponent} from "./app-root/login/login.component";
 import {SysCheckStarterComponent} from "./app-root/sys-check-starter/sys-check-starter.component";
 import {AdminStarterComponent} from "./app-root/admin-starter/admin-starter.component";
 import {CodeInputComponent} from "./app-root/code-input/code-input.component";
-import {DirectLoginActivateGuard, RouteDispatcherActivateGuard} from "./app-routing-guards";
+import {
+  CodeInputComponentActivateGuard,
+  DirectLoginActivateGuard,
+  RouteDispatcherActivateGuard
+} from "./app-routing-guards";
 import {TestStarterComponent} from "./app-root/test-starter/test-starter.component";
 import {RouteDispatcherComponent} from "./app-root/route-dispatcher/route-dispatcher.component";
 import {PrivacyComponent} from "./app-root/privacy/privacy.component";
@@ -26,7 +30,7 @@ const routes: Routes = [
       {path: 'test-starter', component: TestStarterComponent},
       {path: 'admin-starter', component: AdminStarterComponent},
       {path: 'route-dispatcher', component: RouteDispatcherComponent, canActivate: [RouteDispatcherActivateGuard]},
-      {path: 'code-input', component: CodeInputComponent}
+      {path: 'code-input', component: CodeInputComponent, canActivate: [CodeInputComponentActivateGuard]}
     ]
   },
   {path: 'priv', component: PrivacyComponent},
@@ -42,6 +46,6 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
-  providers: [RouteDispatcherActivateGuard, DirectLoginActivateGuard]
+  providers: [RouteDispatcherActivateGuard, DirectLoginActivateGuard, CodeInputComponentActivateGuard]
 })
 export class AppRoutingModule { }

@@ -70,3 +70,19 @@ export class DirectLoginActivateGuard implements CanActivate {
   }
 }
 
+@Injectable({
+  providedIn: 'root'
+})
+export class CodeInputComponentActivateGuard implements CanActivate {
+  canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+
+    const authData = MainDataService.getAuthData();
+    if (authData) {
+      return authData.flags.indexOf(AuthFlagType.CODE_REQUIRED) >= 0
+    } else {
+      return false
+    }
+  }
+}
