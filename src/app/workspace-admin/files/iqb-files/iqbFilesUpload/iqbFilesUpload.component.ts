@@ -1,6 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output, HostBinding, OnDestroy} from '@angular/core';
-import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
-  HttpEvent } from '@angular/common/http';
+import {
+  HttpClient, HttpEventType, HttpHeaders, HttpParams,
+  HttpEvent, HttpErrorResponse
+} from '@angular/common/http';
+import {ApiError} from "../../../../app.interfaces";
 
 
 @Component({
@@ -153,12 +156,24 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpParams,
               this.remove();
             }
           }
-        }, () => {
+        }, (err) => {
           if (this.fileUploadSubscription) {
             this.fileUploadSubscription.unsubscribe();
           }
-
           this.status = UploadStatus.error;
+          if (err instanceof HttpErrorResponse) {
+            this.requestResponseText = (err as HttpErrorResponse).message;
+          } else if (err instanceof ApiError) {
+            const apiError: ApiError = err;
+            if (apiError.code === 422) {
+              const slashPos = apiError.info.indexOf(' // ');
+              this.requestResponseText = (slashPos > 0) ? apiError.info.substr(slashPos + 4) : apiError.info;
+            } else {
+              this.requestResponseText = apiError.info;
+            }
+          } else {
+            this.requestResponseText = 'Hochladen nicht erfolgreich.'
+          }
         });
       }
     }

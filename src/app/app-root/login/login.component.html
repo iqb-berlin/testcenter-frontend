@@ -14,6 +14,7 @@
         <button mat-raised-button type="submit" [disabled]="loginForm.invalid" color="primary">Weiter</button>
       </mat-card-actions>
     </form>
+    <p style="color: chocolate"><b>{{ problemText }}</b></p>
     <p style="color: chocolate" *ngIf="!mds.isApiValid"><b>Die Verbindung mit dem Server ist nicht möglich.</b></p>
   </mat-card>
 
