@@ -46,7 +46,7 @@ console.log('');
 console.log('writing markdown');
 let mdContent = fs.readFileSync(mdSourceFilename, 'utf8').toString();
 for (const k of Object.keys(definition)) {
-  mdContent += '\n####`' + k + '`\n' + definition[k].label + '\n';
+  mdContent += '\n#### `' + k + '`\n' + definition[k].label + '\n';
   for (const o of Object.keys(definition[k].options)) {
     mdContent += '  * "' + o + ((o === definition[k].defaultvalue) ? '" (default): ' : '": ') + definition[k].options[o] + '\n';
   }

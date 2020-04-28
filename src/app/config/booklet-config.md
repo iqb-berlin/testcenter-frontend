@@ -22,4 +22,17 @@ The adminstrator of the server can upload this file. We aim at providing an
 administration feature of the super-admin section of the application to manage 
 this configuration.
 
+### Configuration via booklet XML
+The configuration can be set for every single booklet. You need to add one XML-Element 
+into the booklet-file. Example:
+```
+...
+</Metadata>
+<BookletConfig>
+    <Config key="force_responses_complete">OFF</CustomText>
+    <Config key="unit_navibuttons">ARROWS_ONLY</CustomText>
+...
+</BookletConfig>
+```
+
 ### List of parameters
