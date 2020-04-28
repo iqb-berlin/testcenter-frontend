@@ -2,8 +2,14 @@
 // listing of all used keys for customText
 
 const fs = require("fs");
+const definitionFilename = '../app/config/custom-texts.json';
+const startFolder = '../app';
+const mdSourceFilename = '../app/config/custom-texts.md';
+const mdTargetFilename = '../../docs/custom-texts.md';
+
 let foundKeys = {};
 let foundSourceFiles = [];
+let foundError = false;
 
 function analyse ( fileName, isHtml ) {
   const fileContent = fs.readFileSync(fileName, 'utf8').toString();
@@ -46,9 +52,9 @@ function takeFolder(sourceFolder ) {
   }
 }
 
-takeFolder('../app');
+takeFolder(startFolder);
 
-const defaults = JSON.parse(fs.readFileSync('../app/config/custom-texts.json'));
+const defaults = JSON.parse(fs.readFileSync(definitionFilename));
 
 console.log();
 console.log('\x1b[33m%s\x1b[0m', 'used keys:');
@@ -56,6 +62,7 @@ for (const k of Object.keys(foundKeys)) {
   if (defaults[k]) {
     console.log(`  ${k}: ${foundKeys[k]}`);
   } else {
+    foundError = true;
     console.log('\x1b[31m%s\x1b[0m', `  ${k}: ${foundKeys[k]}`)
   }
 }
@@ -74,5 +81,15 @@ for (const k of Object.keys(defaults)) {
   }
 }
 
-console.log();
+if (!foundError) {
+  console.log('');
+  console.log('writing markdown');
+  let mdContent = fs.readFileSync(mdSourceFilename, 'utf8').toString();
+  for (const k of Object.keys(defaults)) {
+    mdContent += '|`' + k + '`|' + defaults[k].label + '|' + defaults[k].defaultvalue + '|' + '\n';
+  }
+  fs.writeFileSync(mdTargetFilename, mdContent, "utf8");
+}
+
+console.log('');
 console.log('done.');

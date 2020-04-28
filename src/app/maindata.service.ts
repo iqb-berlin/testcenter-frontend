@@ -44,6 +44,13 @@ export class MainDataService {
     return myReturn;
   }
 
+  static resetAuthData() {
+    const storageEntry = localStorage.getItem(localStorageAuthDataKey);
+    if (storageEntry) {
+      localStorage.removeItem(localStorageAuthDataKey);
+    }
+  }
+
   static getTestConfig(): KeyValuePairs {
     let myReturn: KeyValuePairs = null;
     const storageEntry = localStorage.getItem(localStorageTestConfigKey);

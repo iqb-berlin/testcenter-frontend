@@ -101,6 +101,7 @@ export class AuthInterceptor implements HttpInterceptor {
                 category: "PROBLEM"
               });
               if (goToLoginPage) {
+                MainDataService.resetAuthData();
                 const state: RouterState = this.router.routerState;
                 const snapshot: RouterStateSnapshot = state.snapshot;
                 this.router.navigate(['/r/login', snapshot.url]);

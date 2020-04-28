@@ -21,7 +21,7 @@
   },
   "booklet_warningLeaveTimerBlockTextPrompt": {
     "label": "Schalterbeschriftung für 'Zurück zum Test'",
-    "defaultvalue": "Du verlässt einen zeitbeschränkten Bereich uns kannst nicht zurückkehren. Trotzdem weiterblättern?"
+    "defaultvalue": "Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?"
   },
   "login_testReturnButtonLabel": {
     "label": "Schalterbeschriftung für 'Zurück zum Test'",
@@ -108,8 +108,8 @@
     "defaultvalue": "Test verlassen?"
   },
   "booklet_warningLeaveTestPrompt": {
-    "label": "Der Test ist noch nicht beendet. Möchtest Du den Test trotzdem verlassen?",
-    "defaultvalue": "Aufgaben"
+    "label": "Warnung vor dem vorzeitigen Verlassen des Tests",
+    "defaultvalue": "Der Test ist noch nicht beendet. Möchtest Du den Test trotzdem verlassen?"
   },
   "syscheck_questionsintro": {
     "label": "Aufforderung, die Fragen (Questionnaire) zu beantworten",

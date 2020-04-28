@@ -1,17 +1,8 @@
-// @ts-ignore
-import testConfigDefinition from '../config/test-config.json';
 import {RunModeKey} from "./test-controller.interfaces";
+import {BookletConfig} from "../config/booklet-config";
 
-export class TestConfig  {
-  definition = testConfigDefinition;
-  loading_mode: "LAZY" | "EAGER" = testConfigDefinition.loading_mode.defaultvalue;
-  log_mode: "OFF" | "LEAN" | "RICH" = testConfigDefinition.log_mode.defaultvalue;
-  page_navibuttons: "OFF" | "MERGED" | "SEPARATE_TOP" | "SEPARATE_BOTTOM" = testConfigDefinition.page_navibuttons.defaultvalue;
-  unit_navibuttons: "OFF" | "ARROWS_ONLY" | "FULL" = testConfigDefinition.unit_navibuttons.defaultvalue;
-  unit_menu: "OFF" | "ENABLED_ONLY" | "FULL" = testConfigDefinition.unit_menu.defaultvalue;
-  force_presentation_complete: "ON" | "OFF" = testConfigDefinition.force_presentation_complete.defaultvalue;
-  force_responses_complete: "OFF" | "SOME" | "COMPLETE" | "COMPLETE_AND_VALID" = testConfigDefinition.force_responses_complete.defaultvalue;
 
+export class TestConfig extends BookletConfig {
   // default for RunModeKey.DEMO
   canReview = false;
   saveResponses = false;
@@ -22,6 +13,7 @@ export class TestConfig  {
   modeLabel = "Demo";
 
   constructor(loginMode: RunModeKey = RunModeKey.DEMO) {
+    super();
     if (loginMode !== RunModeKey.DEMO) {
       switch (loginMode) {
         case RunModeKey.HOT_RESTART:
@@ -56,108 +48,5 @@ export class TestConfig  {
           console.error("TestConfig: invalid test mode '" + loginMode + "'")
       }
     }
-  }
-
-  public setFromKeyValuePairs(config) {
-    if (config) {
-      if (config['loading_mode']) { this.loading_mode = config['loading_mode']}
-      if (config['log_mode']) { this.log_mode = config['log_mode']}
-      if (config['page_navibuttons']) { this.page_navibuttons = config['page_navibuttons']}
-      if (config['unit_navibuttons']) { this.unit_navibuttons = config['unit_navibuttons']}
-      if (config['unit_menu']) { this.unit_menu = config['unit_menu']}
-      if (config['force_presentation_complete']) { this.force_presentation_complete = config['force_presentation_complete']}
-      if (config['force_responses_complete']) { this.force_responses_complete = config['force_responses_complete']}
-    }
-  }
-
-  public setFromXml(bookletConfigElement: Element) {
-    if (bookletConfigElement) {
-      const bookletConfigs = TestConfig.getChildElements(bookletConfigElement);
-      for (let childIndex = 0; childIndex < bookletConfigs.length; childIndex++) {
-        const configParameter = bookletConfigs[childIndex].getAttribute('parameter');
-
-        // TODO remove old version
-        switch (bookletConfigs[childIndex].nodeName) {
-          // ----------------------
-          case 'NavPolicy':
-            if (configParameter) {
-              if (configParameter.toUpperCase() === 'NextOnlyIfPresentationComplete'.toUpperCase()) {
-                this.force_presentation_complete = "ON"
-              }
-            }
-            break;
-          case 'NavButtons':
-            if (configParameter) {
-              switch (configParameter.toUpperCase()) {
-                case 'ON':
-                  this.unit_navibuttons = "FULL";
-                  break;
-                case 'OFF':
-                  this.unit_navibuttons = "OFF";
-                  break;
-                case 'ARROWSONLY':
-                  this.unit_navibuttons = "ARROWS_ONLY";
-                  break;
-              }
-            }
-            break;
-          case 'PageNavBar':
-            if (configParameter) {
-              if (configParameter.toUpperCase() === 'OFF') {
-                this.page_navibuttons = "OFF"
-              }
-            }
-            break;
-          case 'Logging':
-            if (configParameter) {
-              if (configParameter.toUpperCase() === 'OFF') {
-                this.log_mode = "OFF"
-              }
-            }
-            break;
-          case 'Loading':
-            if (configParameter) {
-              if (configParameter.toUpperCase() === 'EAGER') {
-                this.loading_mode = "EAGER"
-              }
-            }
-            break;
-          case 'Config':
-            const configKey = bookletConfigs[childIndex].getAttribute('key');
-            const configValue = bookletConfigs[childIndex].textContent;
-            if (configKey) {
-              switch (configKey) {
-                case 'loading_mode':
-                  this.loading_mode = configValue;
-                  break;
-                case 'log_mode':
-                  this.log_mode = configValue;
-                  break;
-                case 'page_navibuttons':
-                  this.page_navibuttons = configValue;
-                  break;
-                case 'unit_navibuttons':
-                  this.unit_navibuttons = configValue;
-                  break;
-                case 'unit_menu':
-                  this.unit_menu = configValue;
-                  break;
-                case 'force_presentation_complete':
-                  this.force_presentation_complete = configValue;
-                  break;
-                case 'force_responses_complete':
-                  this.force_responses_complete = configValue;
-                  break;
-              }
-            }
-            break;
-        }
-      }
-    }
-  }
-
-  private static getChildElements(element) {
-    return Array.prototype.slice.call(element.childNodes)
-      .filter(function (e) { return e.nodeType === 1; });
   }
 }
