@@ -1,4 +1,4 @@
-import {debounceTime, map, switchMap, takeUntil} from 'rxjs/operators';
+import {debounceTime, map, takeUntil} from 'rxjs/operators';
 import {BehaviorSubject, interval, Subject, Subscription, timer} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {MaxTimerData, Testlet} from './test-controller.classes';
@@ -299,13 +299,17 @@ export class TestControllerService {
 
   public terminateTest() {
     if (this.testConfig.saveResponses) {
-      this.bs.addBookletLog(this.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE').pipe(
-        switchMap(() => {
-          return this.bs.lockBooklet(this.testId)
-        })
-      ).subscribe(() => {
-        this.testStatus$.next(TestStatus.TERMINATED);
-        this.router.navigate(['/']);
+      this.bs.addBookletLog(this.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE').subscribe(OK =>{
+        // TODO who evaluates TestStatus when navigating to root?
+        if (OK) {
+          this.bs.lockBooklet(this.testId).subscribe(bsOk => {
+            this.testStatus$.next(bsOk ? TestStatus.TERMINATED : TestStatus.ERROR);
+            this.router.navigate(['/']);
+          })
+        } else {
+          this.testStatus$.next(TestStatus.ERROR);
+          this.router.navigate(['/']);
+        }
       })
     } else {
       this.testStatus$.next(TestStatus.TERMINATED);
