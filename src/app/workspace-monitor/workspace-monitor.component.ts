@@ -37,8 +37,7 @@ export class WorkspaceMonitorComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.routingSubscription = this.route.params.subscribe(params => {
       this.workspaceId = Number(params['ws']);
-      const ld = this.mds.loginData$.getValue();
-      this.workspaceName = ld.workspaceName;
+      this.workspaceName = 'xx'; // TODO where to get the workspace name from?
       this.updateTable();
     });
   }
@@ -114,7 +113,6 @@ export class WorkspaceMonitorComponent implements OnInit, OnDestroy {
       });
       this.bs.lockBooklets(this.workspaceId, selectedGroups).subscribe(success => {
         if (success instanceof ServerError) {
-          this.mds.globalErrorMsg$.next(success as ServerError);
           this.snackBar.open('Testhefte konnten nicht gesperrt werden.', 'Systemfehler', {duration: 3000});
         } else {
           const ok = success as boolean;
@@ -139,7 +137,6 @@ export class WorkspaceMonitorComponent implements OnInit, OnDestroy {
       });
       this.bs.unlockBooklets(this.workspaceId, selectedGroups).subscribe(success => {
         if (success instanceof ServerError) {
-          this.mds.globalErrorMsg$.next(success as ServerError);
           this.snackBar.open('Testhefte konnten nicht freigegeben werden.', 'Systemfehler', {duration: 3000});
         } else {
           const ok = success as boolean;

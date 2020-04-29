@@ -5,7 +5,9 @@ import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ErrorHandler, ServerError } from 'iqb-components';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 
 export class BackendService {
   private serverUrlSlim = '';

@@ -1,3 +1,9 @@
+:root {
+  --tc-topmargin: 65px;
+  --tc-unithost-topmargin: 40px;
+  --tc-unithost-bottommargin: 45px;
+}
+
 /* orienta-regular - latin */
 @font-face {
   font-family: 'Orienta';
@@ -17,6 +23,15 @@
   bottom: 0;
 }
 
+.root-body {
+  overflow-x: auto;
+  position: absolute;
+  width: 100%;
+  top: 20px;
+  bottom: 0;
+  background: linear-gradient(to bottom, #003333, #045659, #0d7b84, #1aa2b2, #2acae5);
+}
+
 .sheetofpaper {
   display: block;
   position: absolute;
@@ -31,32 +46,31 @@
   padding: 5px;
 }
 
-.spinner-container {
-  position: fixed;
-  z-index: 999;
-  height: 2em;
-  width: 2em;
-  overflow: visible;
-  margin: auto;
-  top: 0;
-  left: 0;
+.spinner {
   bottom: 0;
+  height: 2em;
+  left: 0;
+  margin: auto;
+  overflow: visible;
+  position: fixed;
   right: 0;
+  top: 0;
+  width: 2em;
+  z-index: 999;
 }
 
-.spinner-container-local {
-  z-index: 999;
-  margin: auto;
-  top: 0;
-  left: 0;
+.spinner-container-local { /* TODO remove */
+  align-items: center;
   bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  margin: auto;
+  position: absolute;
   right: 0;
   text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /*background: rgba(0, 0, 0, 0.3);*/
-  position: absolute;
+  top: 0;
+  z-index: 999;
 }
 
 iframe.unitHost {
@@ -66,7 +80,7 @@ iframe.unitHost {
   margin: 0;
 }
 
-p.unitMessage {
+p.unitMessage { /* TODO why here? */
   margin: 50px;
   text-align: center;
 }
@@ -75,20 +89,55 @@ p.unitMessage {
   position: absolute;
   left: 5px;
   top: 5px;
+  z-index: 999;
 }
 
 div.logo img {
   width: 100px;
 }
 
-.pagetitle {
+.page-header {
   position: absolute;
   left: 140px;
-  top: 18px;
+  width: calc(100% - 140px);
+  top: 0;
+  padding: 0 10px 0 0;
+}
+
+.page-header mat-toolbar {
+  position: fixed;
+  z-index: 100;
+  top: 4px;
+  right: 90px;
+}
+
+.page-header mat-icon {
+  position: relative;
+  top: -8px;
+  font-size: 36px;
+  padding: 2px;
+}
+
+.page-header p {
   font-size: 1.5em;
   color: white;
 }
 
 .error-msg {
+  position: absolute;
+  left: 40px;
+  top: 60px;
+  min-height: 60px;
+  width: calc(100% - 80px);
+  font-size: 1.1em;
+  border-width: 6px;
+  border-style: solid;
+  border-color: brown;
+  background-color: white;
   color: brown;
+  z-index: 999;
+}
+
+.error-msg mat-icon {
+  height: 32px;
 }

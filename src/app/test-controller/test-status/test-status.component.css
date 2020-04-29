@@ -1,0 +1,41 @@
+.status-body {
+  position: absolute;
+  width: 100%;
+  top: 40px;
+  bottom: 45px;
+  padding: 0;
+}
+
+mat-card {
+  margin: 10px;
+}
+
+.mat-card-gray {
+  background-color: lightgray
+}
+
+.active-unit {
+  background-color: #b2ff59;
+  padding: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.non-active-unit {
+  background-color: transparent;
+  padding: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.testlet-marker-non {
+  background-color: transparent;
+}
+
+.testlet-marker-a {
+  background-color: royalblue;
+}
+
+.testlet-marker-b {
+  background-color: mediumorchid;
+}

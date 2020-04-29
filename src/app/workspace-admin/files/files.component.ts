@@ -1,27 +1,24 @@
-import { MainDataService } from '../../maindata.service';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { GetFileResponseData, CheckWorkspaceResponseData } from '../workspace.interfaces';
 import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType, ServerError } from 'iqb-components';
-import { Subscription } from 'rxjs';
+  MessageDialogData, MessageType } from 'iqb-components';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {BackendService, FileDeletionReport} from '../backend.service';
-import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { saveAs } from 'file-saver';
+import {MainDataService} from "../../maindata.service";
 
 @Component({
   templateUrl: './files.component.html',
   styleUrls: ['./files.component.css']
 })
-export class FilesComponent implements OnInit, OnDestroy {
+export class FilesComponent implements OnInit {
   public serverfiles: MatTableDataSource<GetFileResponseData>;
   public displayedColumns = ['checked', 'filename', 'typelabel', 'filesize', 'filedatetime'];
-  public dataLoading = false;
-  private workspaceIdSubscription: Subscription = null;
 
   // for fileupload
   public uploadUrl = '';
@@ -37,22 +34,19 @@ export class FilesComponent implements OnInit, OnDestroy {
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private bs: BackendService,
-    private mds: MainDataService,
     public wds: WorkspaceDataService,
     public confirmDialog: MatDialog,
-    public messsageDialog: MatDialog,
+    public messageDialog: MatDialog,
+    private mds: MainDataService,
     public snackBar: MatSnackBar
-  ) {
-    this.wds.workspaceId$.subscribe(workspaceId => {
-      this.uploadUrl = this.serverUrl + `workspace/${workspaceId}/file`;
-    });
-    this.uploadUrl = this.serverUrl + "workspace/" + this.wds.ws + '/file';
-  }
+  ) { }
 
   ngOnInit() {
-    this.workspaceIdSubscription = this.wds.workspaceId$.subscribe(() => {
-      this.updateFileList((this.wds.ws <= 0) || (this.mds.adminToken.length === 0));
-    });
+    this.uploadUrl = `${this.serverUrl}workspace/${this.wds.wsId}/file`;
+    setTimeout(() => {
+      this.mds.setSpinnerOn();
+      this.updateFileList();
+    })
   }
 
   // ***********************************************************************************
@@ -95,32 +89,23 @@ export class FilesComponent implements OnInit, OnDestroy {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result !== false) {
-            // =========================================================
-            this.dataLoading = true;
-            this.bs.deleteFiles(this.wds.ws, filesToDelete).subscribe((fileDeletionReport: FileDeletionReport|ServerError) => {
-              if (fileDeletionReport instanceof ServerError) {
-                this.wds.setNewErrorMsg(fileDeletionReport as ServerError);
-              } else {
-
-                const message = [];
-                if (fileDeletionReport.deleted.length > 0) {
-                  message.push(fileDeletionReport.deleted.length + ' Dateien erfolgreich gelöscht.');
-                }
-                if (fileDeletionReport.not_allowed.length > 0) {
-                  message.push(fileDeletionReport.not_allowed.length + ' Dateien konnten nicht gelöscht werden.');
-                }
-
-                this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '',  {duration: 1000});
-
-                this.updateFileList();
-                this.wds.setNewErrorMsg();
+            this.mds.setSpinnerOn();
+            this.bs.deleteFiles(filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) => {
+              const message = [];
+              if (fileDeletionReport.deleted.length > 0) {
+                message.push(fileDeletionReport.deleted.length + ' Dateien erfolgreich gelöscht.');
               }
+              if (fileDeletionReport.not_allowed.length > 0) {
+                message.push(fileDeletionReport.not_allowed.length + ' Dateien konnten nicht gelöscht werden.');
+              }
+              this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '',  {duration: 1000});
+              this.updateFileList();
             });
             // =========================================================
           }
         });
       } else {
-        this.messsageDialog.open(MessageDialogComponent, {
+        this.messageDialog.open(MessageDialogComponent, {
           width: '400px',
           data: <MessageDialogData>{
             title: 'Löschen von Dateien',
@@ -140,67 +125,44 @@ export class FilesComponent implements OnInit, OnDestroy {
 
     if (empty || this.wds.wsRole === 'MO') {
       this.serverfiles = new MatTableDataSource([]);
+      this.mds.setSpinnerOff();
     } else {
-      this.dataLoading = true;
-      this.bs.getFiles(this.wds.ws).subscribe(
-        (filedataresponse: GetFileResponseData[]) => {
-          this.serverfiles = new MatTableDataSource(filedataresponse);
+      this.bs.getFiles().subscribe(
+        (fileList: GetFileResponseData[]) => {
+          this.serverfiles = new MatTableDataSource(fileList);
           this.serverfiles.sort = this.sort;
-          this.dataLoading = false;
-          this.wds.setNewErrorMsg();
-        }, (err: ServerError) => {
-          this.wds.setNewErrorMsg(err);
-          this.dataLoading = false;
+          this.mds.setSpinnerOff();
         }
       );
     }
   }
 
-
   download(element: GetFileResponseData): void {
-
-    this.dataLoading = true;
-    this.bs.downloadFile(this.wds.ws, element.type, element.filename)
+    this.mds.setSpinnerOn();
+    this.bs.downloadFile(element.type, element.filename)
       .subscribe(
-        (fileData: Blob|ServerError) => {
-          if (fileData instanceof ServerError) {
-            this.wds.setNewErrorMsg(fileData);
-            this.dataLoading = false;
-          } else {
-            saveAs(fileData, element.filename);
-            this.wds.setNewErrorMsg();
-            this.dataLoading = false;
+        (fileData: Blob|boolean) => {
+          this.mds.setSpinnerOff();
+          if (fileData !== false) {
+            saveAs(fileData as Blob, element.filename);
           }
         }
       );
   }
-
 
   checkWorkspace() {
     this.checkErrors = [];
     this.checkWarnings = [];
     this.checkInfos = [];
 
-    this.dataLoading = true;
-    this.bs.checkWorkspace(this.wds.ws).subscribe(
+    this.mds.setSpinnerOn();
+    this.bs.checkWorkspace().subscribe(
       (checkResponse: CheckWorkspaceResponseData) => {
+        this.mds.setSpinnerOff();
         this.checkErrors = checkResponse.errors;
         this.checkWarnings = checkResponse.warnings;
         this.checkInfos = checkResponse.infos;
-        this.wds.setNewErrorMsg();
-
-        this.dataLoading = false;
-      }, (err: ServerError) => {
-        this.wds.setNewErrorMsg(err);
-        this.dataLoading = false;
       }
     );
-  }
-
-  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-  ngOnDestroy() {
-    if (this.workspaceIdSubscription !== null) {
-      this.workspaceIdSubscription.unsubscribe();
-    }
   }
 }

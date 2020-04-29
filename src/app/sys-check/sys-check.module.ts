@@ -5,12 +5,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { SysCheckRoutingModule } from './sys-check-routing.module';
-import { StartComponent } from './start.component';
 import { SysCheckComponent } from './sys-check.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { MatButtonModule, MatCheckboxModule, MatCardModule, MatStepperModule,
-  MatIconModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-  MatProgressSpinnerModule, MatSnackBarModule, MatRadioModule } from '@angular/material';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -26,32 +22,43 @@ import { UnitNaviButtonsComponent } from './unit-check/tc-navi-buttons/unit-navi
 import { TcSpeedChartComponent } from './network-check/tc-speed-chart.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {IqbComponentsModule} from "iqb-components";
+import {MatButtonModule} from "@angular/material/button";
+import {MatCardModule} from "@angular/material/card";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MatDialogModule} from "@angular/material/dialog";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatIconModule} from "@angular/material/icon";
+import {MatInputModule} from "@angular/material/input";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {MatRadioModule} from "@angular/material/radio";
+import {MatSelectModule} from "@angular/material/select";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {MatStepperModule} from "@angular/material/stepper";
 
 @NgModule({
   imports: [
     CommonModule,
-    MatCardModule,
     FlexLayoutModule,
-    MatCheckboxModule,
-    MatFormFieldModule,
-    MatInputModule,
-    SysCheckRoutingModule,
-    MatProgressSpinnerModule,
-    MatStepperModule,
     MatButtonModule,
-    MatDividerModule,
-    MatListModule,
-    MatIconModule,
-    MatSelectModule,
-    MatRadioModule,
-    MatTooltipModule,
-    MatSnackBarModule,
+    MatCardModule,
+    MatCheckboxModule,
     MatDialogModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatProgressSpinnerModule,
+    MatRadioModule,
+    MatSelectModule,
+    MatSnackBarModule,
+    MatStepperModule,
+    MatTooltipModule,
     ReactiveFormsModule,
+    SysCheckRoutingModule,
     IqbComponentsModule.forChild()
   ],
   declarations: [
-    StartComponent,
     SysCheckComponent,
     EnvironmentCheckComponent,
     NetworkCheckComponent,
@@ -62,9 +69,6 @@ import {IqbComponentsModule} from "iqb-components";
     SaveReportComponent,
     UnitNaviButtonsComponent,
     TcSpeedChartComponent
-  ],
-  exports: [
-    StartComponent
   ],
   entryComponents: [
     SaveReportComponent

@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { BookletData, UnitData, TaggedString } from './test-controller.interfaces';
-import { ServerError } from 'iqb-components';
+import {UnitData, TaggedString, TestData} from './test-controller.interfaces';
+import {ApiError} from "../app.interfaces";
 
 
 @Injectable({
@@ -14,45 +14,56 @@ export class BackendService {
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
     private http: HttpClient
-  ) {
-  }
+  ) { }
 
-
-  saveUnitReview(testId: number, unitName: string, priority: number, categories: string, entry: string)
-    : Observable<boolean | ServerError> {
-
+  saveUnitReview(testId: string, unitName: string, priority: number, categories: string, entry: string)
+    : Observable<boolean> {
     return this.http
-      .put<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/review`, {priority, categories, entry})
-      .pipe(catchError(this.handle));
+      .put(this.serverUrl + `test/${testId}/unit/${unitName}/review`, {priority, categories, entry})
+      .pipe(
+        map(() => true),
+        catchError((err: ApiError) => {
+          console.warn(`saveUnitReview Api-Error: ${err.code} ${err.info} `);
+          return of(false)
+        })
+      );
   }
 
-
-  saveBookletReview(testId: number, priority: number, categories: string, entry: string): Observable<boolean | ServerError> {
-
+  saveBookletReview(testId: string, priority: number, categories: string, entry: string): Observable<boolean> {
     return this.http
-      .put<boolean>(this.serverUrl + `test/${testId}/review`, {priority, categories, entry})
-      .pipe(catchError(this.handle));
+      .put(this.serverUrl + `test/${testId}/review`, {priority, categories, entry})
+      .pipe(
+        map(() => true),
+        catchError((err: ApiError) => {
+          console.warn(`saveBookletReview Api-Error: ${err.code} ${err.info} `);
+          return of(false)
+        })
+      );
   }
 
-
-  getBookletData(testId: number): Observable<BookletData | ServerError> {
-
+  getTestData(testId: string): Observable<TestData | boolean> {
     return this.http
-      .get<BookletData>(this.serverUrl + 'test/' + testId)
-      .pipe(catchError(this.handle));
+      .get<TestData>(this.serverUrl + 'test/' + testId)
+      .pipe(
+        catchError((err: ApiError) => {
+          console.warn(`getTestData Api-Error: ${err.code} ${err.info} `);
+          return of(false)
+        })
+      );
   }
 
-
-  getUnitData(testId: number, unitid: string): Observable<UnitData | ServerError> {
-
+  getUnitData(testId: string, unitid: string): Observable<UnitData | boolean> {
     return this.http
       .get<UnitData>(this.serverUrl + 'test/' + testId + '/unit/' + unitid)
-      .pipe(catchError(this.handle));
+      .pipe(
+        catchError((err: ApiError) => {
+          console.warn(`getUnitData Api-Error: ${err.code} ${err.info} `);
+          return of(false)
+        })
+      );
   }
 
-
-  getResource(testId: number, internalKey: string, resId: string, versionning = false): Observable<TaggedString | ServerError> {
-
+  getResource(testId: string, internalKey: string, resId: string, versionning = false): Observable<TaggedString | number> {
     return this.http
       .get(
         this.serverUrl + `test/${testId}/resource/${resId}`,
@@ -62,75 +73,95 @@ export class BackendService {
         })
       .pipe(
         map(def => <TaggedString>{tag: internalKey, value: def}),
-        catchError(this.handle)
+        catchError((err: ApiError) => {
+          console.warn(`getResource Api-Error: ${err.code} ${err.info} `);
+          return of(err.code)
+        })
       );
   }
 
-
-  addUnitLog(testId: number, timestamp: number, unitName: string, entry: string): Observable<boolean | ServerError> {
-
+  addUnitLog(testId: string, timestamp: number, unitName: string, entry: string): Observable<boolean> {
     return this.http
-      .put<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/log`, {timestamp, entry})
-      .pipe(catchError(this.handle));
+      .put(this.serverUrl + `test/${testId}/unit/${unitName}/log`, {timestamp, entry})
+      .pipe(
+        map(() => true),
+        catchError((err: ApiError) => {
+          console.warn(`addUnitLog Api-Error: ${err.code} ${err.info} `);
+          return of(false)
+        })
+      );
   }
 
-
-  addBookletLog(testId: number, timestamp: number, entry: string): Observable<boolean | ServerError> {
-
+  addBookletLog(testId: string, timestamp: number, entry: string): Observable<boolean> {
     return this.http
-      .put<boolean>(this.serverUrl + `test/${testId}/log`, {timestamp, entry})
-      .pipe(catchError(this.handle));
+      .put(this.serverUrl + `test/${testId}/log`, {timestamp, entry})
+      .pipe(
+        map(() => true),
+        catchError((err: ApiError) => {
+          console.warn(`addBookletLog Api-Error: ${err.code} ${err.info} `);
+          return of(false)
+        })
+      );
   }
 
-
-  setUnitState(testId: number, unitName: string, stateKey: string, state: string): Observable<boolean | ServerError> {
-
+  setUnitState(testId: string, unitName: string, stateKey: string, state: string): Observable<boolean> {
     return this.http
-      .patch<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/state`, {key: stateKey, value: state})
-      .pipe(catchError(this.handle));
+      .patch(this.serverUrl + `test/${testId}/unit/${unitName}/state`, {key: stateKey, value: state})
+      .pipe(
+        map(() => true),
+        catchError((err: ApiError) => {
+          console.warn(`setUnitState Api-Error: ${err.code} ${err.info} `);
+          return of(false)
+        })
+      );
   }
 
-
-  setBookletState(testId: number, stateKey: string, state: string): Observable<boolean | ServerError> {
-
+  setBookletState(testId: string, stateKey: string, state: string): Observable<boolean> {
     return this.http
-      .patch<boolean>(this.serverUrl + `test/${testId}/state`, {key: stateKey, value: state})
-      .pipe(catchError(this.handle));
+      .patch(this.serverUrl + `test/${testId}/state`, {key: stateKey, value: state})
+      .pipe(
+        map(() => true),
+        catchError((err: ApiError) => {
+          console.warn(`setBookletState Api-Error: ${err.code} ${err.info} `);
+          return of(false)
+        })
+      );
   }
 
-
-  newUnitResponse(testId: number, timestamp: number, unitName: string, response: string, responseType: string)
-    : Observable<boolean | ServerError> {
-
+  newUnitResponse(testId: string, timestamp: number, unitName: string, response: string, responseType: string)
+    : Observable<boolean> {
     return this.http
-      .put<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/response`, {timestamp, response, responseType})
-      .pipe(catchError(this.handle));
+      .put(this.serverUrl + `test/${testId}/unit/${unitName}/response`, {timestamp, response, responseType})
+      .pipe(
+        map(() => true),
+        catchError((err: ApiError) => {
+          console.warn(`newUnitResponse Api-Error: ${err.code} ${err.info} `);
+          return of(false)
+        })
+      );
   }
 
-
-  newUnitRestorePoint(testId: number, unitName: string, timestamp: number, restorePoint: string): Observable<boolean | ServerError> {
-
+  newUnitRestorePoint(testId: string, unitName: string, timestamp: number, restorePoint: string): Observable<boolean> {
     return this.http
-      .patch<boolean>(this.serverUrl + `test/${testId}/unit/${unitName}/restorepoint`, {timestamp, restorePoint})
-      .pipe(catchError(this.handle));
+      .patch(this.serverUrl + `test/${testId}/unit/${unitName}/restorepoint`, {timestamp, restorePoint})
+      .pipe(
+        map(() => true),
+        catchError((err: ApiError) => {
+          console.warn(`newUnitRestorePoint Api-Error: ${err.code} ${err.info} `);
+          return of(false)
+        })
+      );
   }
 
-
-
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
-  handle(errorObj: HttpErrorResponse): Observable<ServerError> {
-    let myreturn;
-    if (errorObj.error instanceof ErrorEvent) {
-      myreturn = new ServerError(500, 'Verbindungsproblem', (<ErrorEvent>errorObj.error).message);
-    } else {
-      myreturn = new ServerError(errorObj.status, 'Verbindungsproblem', errorObj.message);
-      if (errorObj.status === 401) {
-        myreturn.labelNice = 'Zugriff verweigert - bitte (neu) anmelden!';
-      } else if (errorObj.status === 504) {
-        myreturn.labelNice = 'Achtung: Server meldet Datenbankproblem.';
-      }
-    }
-
-    return of(myreturn);
+  lockBooklet(testId: string): Observable<boolean> {
+    return this.http
+      .patch<boolean>(this.serverUrl + `test/${testId}/lock`, {})
+      .pipe(
+        map(() => true),
+        catchError((err: ApiError) => {
+          console.warn(`lockBooklet Api-Error: ${err.code} ${err.info} `);
+          return of(false)
+        })
+      );
   }
 }

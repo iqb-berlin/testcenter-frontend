@@ -1,49 +1,66 @@
-import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
-import { MatDialog, MatSnackBar } from '@angular/material';
-import { FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { MainDataService } from '../maindata.service';
-import { BackendService } from './backend.service';
+import {ReviewDialogComponent} from './review-dialog/review-dialog.component';
+import {ActivatedRoute, Router} from '@angular/router';
+import {MainDataService} from '../maindata.service';
+import {BackendService} from './backend.service';
 
-import { TestControllerService } from './test-controller.service';
-import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
-import { UnitDef, Testlet, EnvironmentData, MaxTimerData } from './test-controller.classes';
-import { LastStateKey, LogEntryKey, BookletData, UnitData, MaxTimerDataType, TaggedString } from './test-controller.interfaces';
-import { Subscription, Observable, of, from } from 'rxjs';
-import { switchMap, concatMap } from 'rxjs/operators';
-import { CustomtextService, ServerError } from 'iqb-components';
-import { appconfig } from '../app.config';
+import {TestControllerService} from './test-controller.service';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {EnvironmentData, MaxTimerData, Testlet, UnitDef} from './test-controller.classes';
+import {
+  LastStateKey,
+  LogEntryKey,
+  MaxTimerDataType,
+  ReviewDialogData,
+  TaggedString,
+  TestData,
+  TestStatus,
+  UnitData,
+  UnitNavigationTarget
+} from './test-controller.interfaces';
+import {from, Observable, of, Subscription, throwError} from 'rxjs';
+import {concatMap, map, switchMap} from 'rxjs/operators';
+import {CustomtextService} from 'iqb-components';
+import {MatDialog} from "@angular/material/dialog";
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {BookletConfig} from "../config/booklet-config";
+import { TestMode } from '../config/test-mode';
+
 
 @Component({
   templateUrl: './test-controller.component.html',
   styleUrls: ['./test-controller.component.css']
 })
 export class TestControllerComponent implements OnInit, OnDestroy {
-  private loginDataSubscription: Subscription = null;
-  private navigationRequestSubsription: Subscription = null;
+  static localStorageTestKey = 'iqb-tc-t';
+  private errorReportingSubscription: Subscription = null;
+  private testStatusSubscription: Subscription = null;
+  private routingSubscription: Subscription = null;
   private maxTimerSubscription: Subscription = null;
-  private unitLoadQueueSubscription1: Subscription = null;
-  private unitLoadQueueSubscription2: Subscription = null;
-
-  public showProgress = true;
+  private unitLoadXmlSubscription: Subscription = null;
+  private unitLoadBlobSubscription: Subscription = null;
 
   private lastUnitSequenceId = 0;
+  public loadProgressValue = 0;
   private lastTestletIndex = 0;
   private timerValue: MaxTimerData = null;
   private timerRunning = false;
   private allUnitIds: string[] = [];
-  private progressValue = 0;
   private loadedUnitCount = 0;
   private unitLoadQueue: TaggedString[] = [];
+  unitNavigationTarget = UnitNavigationTarget;
+  isTopMargin = true;
+  isBottomMargin = true;
 
   constructor (
     @Inject('APP_VERSION') public appVersion: string,
+    @Inject('IS_PRODUCTION_MODE') public isProductionMode,
     private mds: MainDataService,
     public tcs: TestControllerService,
     private bs: BackendService,
     private reviewDialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
+    private route: ActivatedRoute,
     private cts: CustomtextService
   ) { }
 
@@ -128,9 +145,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             this.lastTestletIndex += 1;
           }
           let testletLabel: string = childElements[childIndex].getAttribute('label');
-          if ((typeof testletLabel !== 'undefined') && (testletLabel !== null)) {
-            testletLabel = testletId;
-          }
+          testletLabel = testletLabel ? testletLabel.trim() : '';
+          console.log('+ >' + testletLabel + '<');
 
           this.addTestletContentFromBookletXml(targetTestlet.addTestlet(testletId, testletLabel), childElements[childIndex]);
         }
@@ -141,7 +157,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   // private: reading booklet from xml
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
-  private getBookletFromXml(xmlString: string): Testlet {
+  private getBookletFromXml(xmlString: string, loginMode: string): Testlet {
     let rootTestlet: Testlet = null;
 
     try {
@@ -174,74 +190,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
             const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
 
+            this.tcs.bookletConfig = new BookletConfig();
+            this.tcs.bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
             if (bookletConfigElements.length > 0) {
-              const bookletConfigs = TestControllerComponent.getChildElements(bookletConfigElements[0]);
-              for (let childIndex = 0; childIndex < bookletConfigs.length; childIndex++) {
-                const configParameter = bookletConfigs[childIndex].getAttribute('parameter');
-                // const configValue = bookletConfigs[childIndex].textContent;
-
-                switch (bookletConfigs[childIndex].nodeName) {
-                  // ----------------------
-                  case 'NavPolicy':
-                    if (configParameter) {
-                      if (configParameter.toUpperCase() === 'NextOnlyIfPresentationComplete'.toUpperCase()) {
-                        this.tcs.navPolicyNextOnlyIfPresentationComplete = true;
-                      }
-                    }
-                    break;
-                  // ----------------------
-                  case 'NavButtons':
-                    if (configParameter) {
-                      switch (configParameter.toUpperCase()) {
-                        case 'ON':
-                          this.tcs.navButtons = true;
-                          this.tcs.navArrows = true;
-                          break;
-                        case 'OFF':
-                          this.tcs.navButtons = false;
-                          this.tcs.navArrows = false;
-                          break;
-                        case 'ARROWSONLY': // default
-                          this.tcs.navButtons = false;
-                          this.tcs.navArrows = true;
-                          break;
-                        default:
-                          console.log('unknown booklet configParameter NavButtons "' + configParameter + '"');
-                          break;
-                      }
-                    }
-                    break;
-                  // ----------------------
-                  case 'PageNavBar':
-                    if (configParameter) {
-                      if (configParameter.toUpperCase() === 'OFF') {
-                        this.tcs.pageNav = false;
-                      }
-                    }
-                    break;
-                  // ----------------------
-                  case 'Logging':
-                    if (configParameter) {
-                      if (configParameter.toUpperCase() === 'OFF') {
-                        this.tcs.logging = false;
-                      }
-                    }
-                    break;
-                  // ----------------------
-                  case 'Loading':
-                    if (configParameter) {
-                      if (configParameter.toUpperCase() === 'EAGER') {
-                        this.tcs.lazyloading = false;
-                      }
-                    }
-                    break;
-                  // ----------------------
-                  default:
-                    console.log('unknown booklet config "' + bookletConfigs[childIndex].nodeName + '"');
-                    break;
-                }
-              }
+              this.tcs.bookletConfig.setFromXml(bookletConfigElements[0]);
             }
+            this.tcs.testMode = new TestMode(loginMode);
 
             // recursive call through all testlets
             this.lastUnitSequenceId = 1;
@@ -260,52 +214,21 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     return rootTestlet;
   }
 
-  // ''''''''''''''''''''''''''''''''''''''''''''''''''''
-  // private: get player if not already available
-  // ''''''''''''''''''''''''''''''''''''''''''''''''''''
-  private loadPlayerOk(playerId: string): Observable<boolean> {
-    if (this.tcs.hasPlayer(playerId)) {
-      return of(true);
-    } else {
-      // to avoid multiple calls before returning:
-      this.tcs.addPlayer(playerId, '');
-      return this.bs.getResource(this.tcs.bookletDbId, '', this.tcs.normaliseId(playerId, 'html'), true)
-          .pipe(
-            switchMap(myData => {
-              if (myData instanceof ServerError) {
-                console.log('## problem getting player "' + playerId + '"');
-                return of(false);
-              } else {
-                const player = myData as TaggedString;
-                if (player.value.length > 0) {
-                  this.tcs.addPlayer(playerId, player.value);
-                  return of(true);
-                } else {
-                  console.log('## size of player "' + playerId + '" = 0');
-                  return of(false);
-                }
-              }
-            }));
-    }
-  }
-
   private incrementProgressValueBy1() {
     this.loadedUnitCount += 1;
-    this.progressValue = this.loadedUnitCount * 100 / this.lastUnitSequenceId;
+    this.loadProgressValue = this.loadedUnitCount * 100 / this.lastUnitSequenceId;
   }
 
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   // private: read unitdata
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
-  private loadUnitOk (myUnit: UnitDef, sequenceId: number): Observable<boolean> {
+  private loadUnitOk (myUnit: UnitDef, sequenceId: number): Observable<number> {
     myUnit.setCanEnter('n', 'Fehler beim Laden');
-    return this.bs.getUnitData(this.mds.getBookletDbId(), myUnit.id)
+    return this.bs.getUnitData(this.tcs.testId, myUnit.id)
       .pipe(
         switchMap(myData => {
-          if (myData instanceof ServerError) {
-            const e = myData as ServerError;
-            console.log('error getting unit "' + myUnit.id + '": ' + e.code.toString() + ' - ' + e.labelNice);
-            return of(false);
+          if (myData === false) {
+            return throwError(`error requesting unit ${this.tcs.testId}/${myUnit.id}`);
           } else {
             const myUnitData = myData as UnitData;
             if (myUnitData.restorepoint) {
@@ -337,35 +260,42 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 }
               }
             } catch (error) {
-              console.log('error parsing xml for unit "' + myUnit.id + '": ' + error.toString());
-              playerId = null;
-              definitionRef = '';
+              return throwError(`error parsing unit def ${this.tcs.testId}/${myUnit.id} (${error.toString()})`);
             }
-            this.incrementProgressValueBy1();
 
             if (playerId) {
               myUnit.playerId = playerId;
+              if (definitionRef.length > 0) {
+                this.unitLoadQueue.push(<TaggedString>{
+                  tag: sequenceId.toString(),
+                  value: definitionRef
+                });
+              }
+              myUnit.setCanEnter('y', '');
 
-              return this.loadPlayerOk(playerId).pipe(
-                switchMap(ok => {
-                  if (ok && definitionRef.length > 0) {
-                    const newUnditDef: TaggedString = {
-                      tag: sequenceId.toString(),
-                      value: definitionRef
-                    };
-                    this.unitLoadQueue.push(newUnditDef);
-                      myUnit.setCanEnter('y', '');
-                      return of(true);
-                  } else {
-                    if (ok) {
-                      myUnit.setCanEnter('y', '');
-                    }
-                    return of(ok);
-                  }
-                }));
+              if (this.tcs.hasPlayer(playerId)) {
+                return of(sequenceId)
+              } else {
+                // to avoid multiple calls before returning:
+                this.tcs.addPlayer(playerId, '');
+                return this.bs.getResource(this.tcs.testId, '', this.tcs.normaliseId(playerId, 'html'), true)
+                  .pipe(
+                    switchMap(myData => {
+                      if (typeof myData === 'number') {
+                        return throwError(`error getting player "${playerId}"`);
+                      } else {
+                        const player = myData as TaggedString;
+                        if (player.value.length > 0) {
+                          this.tcs.addPlayer(playerId, player.value);
+                          return of(sequenceId);
+                        } else {
+                          return throwError(`error getting player "${playerId}" (size = 0)`);
+                        }
+                      }
+                    }));
+              }
             } else {
-              console.log('error getting unit "' + myUnit.id + '": no player');
-              return of(false);
+              return throwError(`player def missing for unit ${this.tcs.testId}/${myUnit.id}`);
             }
           }
         })
@@ -375,223 +305,201 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   // #####################################################################################
   // #####################################################################################
   ngOnInit() {
-    this.router.navigateByUrl('/t');
+    setTimeout(() => {
+      this.mds.progressVisualEnabled = false;
 
-    this.maxTimerSubscription = this.tcs.maxTimeTimer$.subscribe(maxTimerData => {
-      if (maxTimerData.type === MaxTimerDataType.STARTED) {
-        this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') + maxTimerData.timeLeftMinString, '', {duration: 3000});
-        this.timerValue = maxTimerData;
-      } else if (maxTimerData.type === MaxTimerDataType.ENDED) {
-        this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', {duration: 3000});
-        this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
-        this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
-        this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
-        this.timerRunning = false;
-        this.timerValue = null;
-        if (this.tcs.mode !== 'run-review') {
-          this.tcs.setUnitNavigationRequest('#next');
-        }
-      } else if (maxTimerData.type === MaxTimerDataType.CANCELLED) {
-        this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', {duration: 3000});
-        this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
-        this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
-        this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
-        this.timerValue = null;
-      } else {
-        this.timerValue = maxTimerData;
-        if ((maxTimerData.timeLeftSeconds % 15) === 0) {
-          this.tcs.LastMaxTimerState[maxTimerData.testletId] = Math.round(maxTimerData.timeLeftSeconds / 60);
-          this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
-        }
-        if ((maxTimerData.timeLeftSeconds / 60) === 5) {
-          this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver5Minutes'), '', {duration: 3000});
-        } else if ((maxTimerData.timeLeftSeconds / 60) === 1) {
-          this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver1Minute'), '', {duration: 3000});
-        }
+      if (this.isProductionMode && this.tcs.testMode.saveResponses) {
+        this.mds.errorReportingSilent = true;
       }
-    });
-
-    // ==========================================================
-    // navigation between units and end booklet
-    this.navigationRequestSubsription = this.tcs.navigationRequest$.subscribe((navString: string) => {
-      if (this.tcs.rootTestlet === null) {
-        this.snackBar.open('Kein Testheft verfügbar.', '', {duration: 3000});
-      } else {
-        if (!navString) {
-          navString = '#next';
+      this.errorReportingSubscription = this.mds.appError$.subscribe(e => {
+        if (this.isProductionMode && this.tcs.testMode.saveResponses) {
+          console.error(e.label + " / " + e.description);
         }
-        switch (navString) {
-          case '#next':
-            if (this.tcs.rootTestlet) {
-              let startWith = this.tcs.currentUnitSequenceId;
-              if (startWith < this.tcs.minUnitSequenceId) {
-                startWith = this.tcs.minUnitSequenceId - 1;
-              }
-              const nextUnitSequenceId = this.tcs.rootTestlet.getNextUnlockedUnitSequenceId(startWith);
-              if (nextUnitSequenceId > 0) {
-                this.router.navigateByUrl('/t/u/' + (nextUnitSequenceId).toString());
-              }
-            }
+        this.tcs.testStatus$.next(TestStatus.ERROR);
+      });
+      this.testStatusSubscription = this.tcs.testStatus$.subscribe(ts => {
+        switch (ts) {
+          case TestStatus.ERROR:
+            this.loadProgressValue = 0;
+            this.tcs.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
             break;
-          case '#previous':
-            if (this.tcs.rootTestlet) {
-              this.router.navigateByUrl('/t/u/' + (this.tcs.currentUnitSequenceId - 1).toString());
-            }
-            break;
-          case '#first':
-            if (this.tcs.rootTestlet) {
-              this.router.navigateByUrl('/t/u/' + this.tcs.minUnitSequenceId.toString());
-            }
-            break;
-          case '#last':
-            if (this.tcs.rootTestlet) {
-              this.router.navigateByUrl('/t/u/' + this.tcs.maxUnitSequenceId.toString());
-            }
-            break;
-          case '#end':
-            this.mds.endBooklet();
-            break;
-
-          default:
-            if (this.tcs.rootTestlet) {
-              this.router.navigateByUrl('/t/u/' + navString);
-            }
+          case TestStatus.PAUSED:
+            this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
             break;
         }
-      }
-    });
+      });
 
+      this.routingSubscription = this.route.params.subscribe(params => {
+        console.log(this.tcs.testStatus$.getValue());
+        if (this.tcs.testStatus$.getValue() !== TestStatus.ERROR) {
+          this.tcs.testId = params['t'];
+          localStorage.setItem(TestControllerComponent.localStorageTestKey, params['t']);
 
-    // ==========================================================
-    // loading booklet data and all unit content
-    // navigation to first unit
-    this.loginDataSubscription = this.mds.loginData$.subscribe(loginData => {
-      this.tcs.resetDataStore();
-      if ((loginData.personToken.length > 0) && (loginData.testId > 0)) {
-        const envData = new EnvironmentData(this.appVersion);
+          this.unsubscribeTestSubscriptions();
 
-        // we have to provide bookletDbId (testId) here manually, because this.tcs.bookletDbId is set after bs.getBookletData is resolved
-        // TODO instead, prove if this.tcs.bookletDbId could be set here without side effects, which would be a more consistent solution
-        this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADSTART, JSON.stringify(envData), this.mds.getBookletDbId());
-
-        this.tcs.mode = loginData.mode;
-        this.tcs.loginname = loginData.name;
-
-        this.tcs.dataLoading = true;
-        this.bs.getBookletData(this.mds.getBookletDbId()).subscribe(myData => {
-          if (myData instanceof ServerError) {
-            const e = myData as ServerError;
-            this.mds.globalErrorMsg$.next(e);
-            this.mds.addCustomtextsFromDefList(appconfig.customtextsBooklet);
-            this.tcs.dataLoading = false;
-          } else {
-            const bookletData = myData as BookletData;
-            console.log('#2');
-
-            if (bookletData.locked) {
-              console.log('loading failed');
-              this.mds.globalErrorMsg$.next(new ServerError(0, 'Das Testheft ist für die Bearbeitung gesperrt.', ''));
-              this.tcs.resetDataStore();
+          this.maxTimerSubscription = this.tcs.maxTimeTimer$.subscribe(maxTimerData => {
+            if (maxTimerData.type === MaxTimerDataType.STARTED) {
+              this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') + maxTimerData.timeLeftMinString, '', {duration: 3000});
+              this.timerValue = maxTimerData;
+            } else if (maxTimerData.type === MaxTimerDataType.ENDED) {
+              this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', {duration: 3000});
+              this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
+              this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
+              this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
+              this.timerRunning = false;
+              this.timerValue = null;
+              if (this.tcs.testMode.forceTimeRestrictions) {
+                this.tcs.setUnitNavigationRequest(UnitNavigationTarget.NEXT);
+              }
+            } else if (maxTimerData.type === MaxTimerDataType.CANCELLED) {
+              this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', {duration: 3000});
+              this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
+              this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
+              this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
+              this.timerValue = null;
             } else {
+              this.timerValue = maxTimerData;
+              if ((maxTimerData.timeLeftSeconds % 15) === 0) {
+                this.tcs.LastMaxTimerState[maxTimerData.testletId] = Math.round(maxTimerData.timeLeftSeconds / 60);
+                this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
+              }
+              if ((maxTimerData.timeLeftSeconds / 60) === 5) {
+                this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver5Minutes'), '', {duration: 3000});
+              } else if ((maxTimerData.timeLeftSeconds / 60) === 1) {
+                this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver1Minute'), '', {duration: 3000});
+              }
+            }
+          });
+
+          this.tcs.resetDataStore();
+          const envData = new EnvironmentData(this.appVersion);
+
+          this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADSTART, JSON.stringify(envData));
+          this.tcs.testStatus$.next(TestStatus.WAITING_LOAD_COMPLETE);
+          this.loadProgressValue = 0;
+          this.tcs.loadComplete = false;
+
+          this.bs.getTestData(this.tcs.testId).subscribe(testDataUntyped => {
+            if (testDataUntyped === false) {
+              this.mds.appError$.next({
+                label: "Konnte Testinformation nicht laden",
+                description: "TestController.Component: getTestData()",
+                category: "PROBLEM"
+              });
+            } else {
+              const testData = testDataUntyped as TestData;
+
               let navTarget = 1;
-              if (bookletData.laststate !== null) {
-                if (bookletData.laststate.hasOwnProperty(LastStateKey.LASTUNIT)) {
-                  const navTargetTemp = Number(bookletData.laststate[LastStateKey.LASTUNIT]);
+              if (testData.laststate !== null) {
+                if (testData.laststate.hasOwnProperty(LastStateKey.LASTUNIT)) {
+                  const navTargetTemp = Number(testData.laststate[LastStateKey.LASTUNIT]);
                   if (!isNaN(navTargetTemp)) {
                     navTarget = navTargetTemp;
                   }
                 }
-                if (bookletData.laststate.hasOwnProperty(LastStateKey.MAXTIMELEFT) && (loginData.mode === 'hot')) {
-                  this.tcs.LastMaxTimerState = JSON.parse(bookletData.laststate[LastStateKey.MAXTIMELEFT]);
+                if (testData.laststate.hasOwnProperty(LastStateKey.MAXTIMELEFT) && (this.tcs.testMode.saveResponses)) {
+                  this.tcs.LastMaxTimerState = JSON.parse(testData.laststate[LastStateKey.MAXTIMELEFT]);
                 }
               }
 
-              this.tcs.rootTestlet = this.getBookletFromXml(bookletData.xml);
+              this.tcs.rootTestlet = this.getBookletFromXml(testData.xml, testData.mode);
+
+              document.documentElement.style.setProperty('--tc-unithost-bottommargin', this.tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' ? '45px' : '0');
+              document.documentElement.style.setProperty('--tc-unithost-topmargin', this.tcs.bookletConfig.unit_title === 'ON' ? '40px' : '0');
+              document.documentElement.style.setProperty('--tc-topmargin', this.tcs.bookletConfig.unit_screenheader === 'OFF' ? '0' : '65px');
 
               if (this.tcs.rootTestlet === null) {
-                console.log('rootTestlet = null');
-                this.mds.globalErrorMsg$.next(new ServerError(0, 'Error Parsing Booklet Xml', ''));
-                this.tcs.dataLoading = false;
+                this.mds.appError$.next({
+                  label: "Problem beim Laden der Testinformation",
+                  description: "TestController.Component: getBookletFromXml(testData.xml)",
+                  category: "PROBLEM"
+                });
               } else {
-                this.mds.globalErrorMsg$.next(null);
                 this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
 
-                this.showProgress = true;
                 this.loadedUnitCount = 0;
                 const sequArray = [];
                 for (let i = 1; i < this.tcs.maxUnitSequenceId + 1; i++) {
                   sequArray.push(i);
                 }
-                this.unitLoadQueueSubscription1 = from(sequArray).pipe(
+
+                this.unitLoadXmlSubscription = from(sequArray).pipe(
                   concatMap(uSequ => {
                     const ud = this.tcs.rootTestlet.getUnitAt(uSequ);
                     return this.loadUnitOk(ud.unitDef, uSequ);
                   })
-                ).subscribe(ok => {
-                      if (!ok) {
-                          console.log('unit load problem from loadUnitOk');
-                      }
-                    },
-                    err => console.error('unit load error from loadUnitOk: ' + err),
-                    () => {
+                ).subscribe(() => {
+                    this.incrementProgressValueBy1();
+                  },
+                  errorMessage => {
+                    this.mds.appError$.next({
+                      label: "Problem beim Laden der Testinformation",
+                      description: errorMessage,
+                      category: "PROBLEM"
+                    });
+                  },
+                  () => {
+                    this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
+                    this.tcs.updateMinMaxUnitSequenceId(navTarget);
+                    this.loadedUnitCount = 0;
 
-                      // =====================
-                      this.tcs.bookletDbId = loginData.testId;
-                      this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
-                      this.tcs.updateMinMaxUnitSequenceId(navTarget);
-                      this.loadedUnitCount = 0;
-
-                      // =====================
-                      this.unitLoadQueueSubscription2 = from(this.unitLoadQueue).pipe(
-                        concatMap(queueEntry => {
-                          const unitSequ = Number(queueEntry.tag);
-                          if (!this.tcs.lazyloading) {
-                            this.incrementProgressValueBy1();
-                          }
-                          // avoid to load unit def if not necessary
-                          if (unitSequ < this.tcs.minUnitSequenceId) {
-                            return of({tag: unitSequ.toString(), value: ''});
-                          } else {
-                            return this.bs.getResource(this.mds.getBookletDbId(), queueEntry.tag, queueEntry.value);
-                          }
-                        })
-                      ).subscribe(
-                        def => {
-                          if (def instanceof ServerError) {
-                            console.log('getting unit data failed ' + def.labelNice + '/' + def.labelSystem);
-                          } else {
-                            const udef = def as TaggedString;
-                            this.tcs.addUnitDefinition(Number(udef.tag), udef.value);
-                          }
-                        },
-                        err => console.error('unit load error: ' + err),
-                        () => { // complete
-                          this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
-                          this.tcs.bookletLoadComplete = true;
-                          if (!this.tcs.lazyloading) {
-                              this.showProgress = false;
-                              this.tcs.dataLoading = false;
-                              this.tcs.setUnitNavigationRequest(navTarget.toString());
-                          }
+                    this.unitLoadBlobSubscription = from(this.unitLoadQueue).pipe(
+                      concatMap(queueEntry => {
+                        const unitSequ = Number(queueEntry.tag);
+                        if (this.tcs.bookletConfig.loading_mode === "EAGER") {
+                          this.incrementProgressValueBy1();
                         }
-                      );
+                        // avoid to load unit def if not necessary
+                        if (unitSequ < this.tcs.minUnitSequenceId) {
+                          return of(<TaggedString>{tag: unitSequ.toString(), value: ''});
+                        } else {
+                          return this.bs.getResource(this.tcs.testId, queueEntry.tag, queueEntry.value).pipe(
+                            map(response => {
+                              if (typeof response === 'number') {
+                                return throwError(`error loading voud ${this.tcs.testId} / ${queueEntry.tag} / ${queueEntry.value}: status ${response}`)
+                              } else {
+                                return response
+                              }
+                            })
+                          );
+                        }
+                      })
+                    ).subscribe(
+                      (def: TaggedString) => {
+                        this.tcs.addUnitDefinition(Number(def.tag), def.value);
+                      },
+                      errorMessage => {
+                        this.mds.appError$.next({
+                          label: "Problem beim Laden der Testinformation",
+                          description: errorMessage,
+                          category: "PROBLEM"
+                        });
+                      },
+                      () => { // complete
+                        this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
+                        this.loadProgressValue = 100;
 
-                      if (this.tcs.lazyloading) {
-                        this.showProgress = false;
-                        this.tcs.dataLoading = false;
-                        this.tcs.setUnitNavigationRequest(navTarget.toString());
+                        this.tcs.loadComplete = true;
+                        if (this.tcs.bookletConfig.loading_mode === "EAGER") {
+                          this.tcs.setUnitNavigationRequest(navTarget.toString());
+                          this.tcs.testStatus$.next(TestStatus.RUNNING);
+                        }
                       }
+                    );
 
-                    } // complete
+                    if (this.tcs.bookletConfig.loading_mode === "LAZY") {
+                      this.tcs.setUnitNavigationRequest(navTarget.toString());
+                      this.tcs.testStatus$.next(TestStatus.RUNNING);
+                    }
+
+                  } // complete
                 );
               }
             }
-          }
-        });
-      } else {
-        this.router.navigateByUrl('/');
-      }
-    });
+          }); // getTestData
+        }
+      }) // routingSubscription
+    }) // setTimeOut
   }
 
 
@@ -600,10 +508,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (this.tcs.rootTestlet === null) {
       this.snackBar.open('Kein Testheft verfügbar.', '', {duration: 3000});
     } else {
+      const authData = MainDataService.getAuthData();
       const dialogRef = this.reviewDialog.open(ReviewDialogComponent, {
         width: '700px',
-        data: {
-          loginname: this.tcs.loginname,
+        data: <ReviewDialogData>{
+          loginname: authData.displayName,
           bookletname: this.tcs.rootTestlet.title,
           unitTitle: this.tcs.currentUnitTitle,
           unitDbKey: this.tcs.currentUnitDbKey
@@ -613,32 +522,30 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe(result => {
         if (typeof result !== 'undefined') {
           if (result !== false) {
-            const targetSelection = (<FormGroup>result).get('target').value;
+            const targetSelection = result['target'];
             if (targetSelection === 'u') {
               this.bs.saveUnitReview(
-                  this.mds.getBookletDbId(),
-                  this.tcs.currentUnitDbKey,
-                  (<FormGroup>result).get('priority').value,
-                  dialogRef.componentInstance.getCategories(),
-                  (<FormGroup>result).get('entry').value
-                ).subscribe(myData => {
-                  if (myData instanceof ServerError) {
-                    this.snackBar.open('Konnte Kommentar nicht speichern (' +
-                      myData.code.toString() + ': ' + myData.labelNice, '', {duration: 3000});
+                this.tcs.testId,
+                this.tcs.currentUnitDbKey,
+                result['priority'],
+                dialogRef.componentInstance.getCategories(),
+                result['sender'] ? result['sender'] + ': ' + result['entry'] : result['entry']
+                ).subscribe(ok => {
+                  if (!ok) {
+                    this.snackBar.open('Konnte Kommentar nicht speichern', '', {duration: 3000});
                   } else {
                     this.snackBar.open('Kommentar gespeichert', '', {duration: 1000});
                   }
                 });
             } else {
               this.bs.saveBookletReview(
-                this.mds.getBookletDbId(),
-                (<FormGroup>result).get('priority').value,
+                this.tcs.testId,
+                result['priority'],
                 dialogRef.componentInstance.getCategories(),
-                (<FormGroup>result).get('entry').value
-              ).subscribe(myData => {
-                if (myData instanceof ServerError) {
-                  this.snackBar.open('Konnte Kommentar nicht speichern (' + myData.code.toString()
-                    + ': ' + myData.labelNice, '', {duration: 3000});
+                result['sender'] ? result['sender'] + ': ' + result['entry'] : result['entry']
+              ).subscribe(ok => {
+                if (!ok) {
+                  this.snackBar.open('Konnte Kommentar nicht speichern', '', {duration: 3000});
                 } else {
                   this.snackBar.open('Kommentar gespeichert', '', {duration: 1000});
                 }
@@ -650,27 +557,43 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
-  // #####################################################################################
-  gotoUnit(newSequenceId: number) {
-    this.tcs.setUnitNavigationRequest(newSequenceId.toString());
+  private unsubscribeTestSubscriptions() {
+    if (this.maxTimerSubscription !== null) {
+      this.maxTimerSubscription.unsubscribe();
+      this.maxTimerSubscription = null
+    }
+    if (this.unitLoadXmlSubscription !== null) {
+      this.unitLoadXmlSubscription.unsubscribe();
+      this.unitLoadXmlSubscription = null
+    }
+    if (this.unitLoadBlobSubscription !== null) {
+      this.unitLoadBlobSubscription.unsubscribe();
+      this.unitLoadBlobSubscription = null
+    }
+  }
+
+  topMargin() {
+    this.isTopMargin = !this.isTopMargin;
+  }
+
+  bottomMargin() {
+    this.isBottomMargin = !this.isBottomMargin;
+
   }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   ngOnDestroy() {
-    if (this.loginDataSubscription !== null) {
-      this.loginDataSubscription.unsubscribe();
+    if (this.routingSubscription !== null) {
+      this.routingSubscription.unsubscribe();
     }
-    if (this.navigationRequestSubsription !== null) {
-      this.navigationRequestSubsription.unsubscribe();
+    if (this.errorReportingSubscription !== null) {
+      this.errorReportingSubscription.unsubscribe();
     }
-    if (this.maxTimerSubscription !== null) {
-      this.maxTimerSubscription.unsubscribe();
+    if (this.testStatusSubscription !== null) {
+      this.testStatusSubscription.unsubscribe();
     }
-    if (this.unitLoadQueueSubscription1 !== null) {
-      this.unitLoadQueueSubscription1.unsubscribe();
-    }
-    if (this.unitLoadQueueSubscription2 !== null) {
-      this.unitLoadQueueSubscription2.unsubscribe();
-    }
+    this.unsubscribeTestSubscriptions();
+    this.mds.progressVisualEnabled = true;
+    this.mds.errorReportingSilent = false;
   }
 }

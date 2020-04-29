@@ -1,8 +1,8 @@
 import { NewpasswordComponent } from './newpassword/newpassword.component';
 import { NewuserComponent } from './newuser/newuser.component';
-import { BackendService, IdRoleData, IdAndName } from '../backend.service';
+import { BackendService } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { ViewChild, OnDestroy } from '@angular/core';
+import { ViewChild } from '@angular/core';
 
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,37 +14,36 @@ import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
   MessageDialogData, MessageType
 } from 'iqb-components';
-import { Subscription } from 'rxjs';
 import { MainDataService } from 'src/app/maindata.service';
+import {IdRoleData, UserData} from "../superadmin.interfaces";
+import {SuperadminPasswordRequestComponent} from "../superadmin-password-request/superadmin-password-request.component";
 
 
 @Component({
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css']
 })
-export class UsersComponent implements OnInit, OnDestroy {
-  public isSuperadmin = false;
-  public dataLoading = false;
-  public objectsDatasource: MatTableDataSource<IdAndName>;
+export class UsersComponent implements OnInit {
+  public objectsDatasource: MatTableDataSource<UserData>;
   public displayedColumns = ['selectCheckbox', 'name'];
-  private tableselectionCheckbox = new SelectionModel<IdAndName>(true, []);
-  private tableselectionRow = new SelectionModel<IdAndName>(false, []);
-  private selectedUser = -1;
+  private tableselectionCheckbox = new SelectionModel<UserData>(true, []);
+  private tableselectionRow = new SelectionModel<UserData>(false, []);
+  public selectedUser = -1;
   private selectedUserName = '';
 
   private pendingWorkspaceChanges = false;
   public WorkspacelistDatasource: MatTableDataSource<IdRoleData>;
   public displayedWorkspaceColumns = ['selectCheckbox', 'label'];
-  private logindataSubscription: Subscription = null;
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatSort) sort: MatSort;
 
   constructor(
     private bs: BackendService,
     private mds: MainDataService,
     private newuserDialog: MatDialog,
     private newpasswordDialog: MatDialog,
-    private deleteConfirmDialog: MatDialog,
+    private confirmDialog: MatDialog,
+    private superadminPasswordDialog: MatDialog,
     private messsageDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
@@ -62,24 +61,22 @@ export class UsersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.logindataSubscription = this.mds.loginData$.subscribe(ld => {
-      this.isSuperadmin = ld.isSuperadmin;
+    setTimeout(() => {
+      this.mds.setSpinnerOn();
       this.updateObjectList();
-    });
+    })
   }
 
   // ***********************************************************************************
   addObject() {
     const dialogRef = this.newuserDialog.open(NewuserComponent, {
-      width: '600px',
-      data: {
-        name: ''
-      }
+      width: '600px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (typeof result !== 'undefined') {
         if (result !== false) {
+          this.mds.setSpinnerOn();
           this.bs.addUser((<FormGroup>result).get('name').value,
               (<FormGroup>result).get('pw').value).subscribe(
                 respOk => {
@@ -87,12 +84,74 @@ export class UsersComponent implements OnInit, OnDestroy {
                     this.snackBar.open('Nutzer hinzugefügt', '', {duration: 1000});
                     this.updateObjectList();
                   } else {
+                    this.mds.setSpinnerOff();
                     this.snackBar.open('Konnte Nutzer nicht hinzufügen', 'Fehler', {duration: 1000});
                   }
                 });
         }
       }
     });
+  }
+
+  changeSuperadminStatus() {
+    let selectedRows = this.tableselectionRow.selected;
+    if (selectedRows.length === 0) {
+      selectedRows = this.tableselectionCheckbox.selected;
+    }
+    if (selectedRows.length === 0) {
+      this.messsageDialog.open(MessageDialogComponent, {
+        width: '400px',
+        data: <MessageDialogData>{
+          title: 'Superadmin-Status ändern',
+          content: 'Bitte markieren Sie erst einen Nutzer!',
+          type: MessageType.error
+        }
+      });
+    } else {
+      const userObject = <UserData>selectedRows[0];
+      const confirmDialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
+        width: '400px',
+        data: <ConfirmDialogData>{
+          title: 'Ändern des Superadmin-Status',
+          content: 'Für "' + userObject.name + '" den Status auf "' + (userObject.isSuperadmin ? 'NICHT ' : '') + 'Superadmin" setzen?',
+          confirmbuttonlabel: 'Status ändern',
+          showcancel: true
+        }
+      });
+
+      confirmDialogRef.afterClosed().subscribe(result => {
+        if ((typeof result !== 'undefined') && (result !== false)) {
+          const passwdDialogRef = this.superadminPasswordDialog.open(SuperadminPasswordRequestComponent, {
+            width: '600px',
+            data: 'Superadmin-Status ' + (userObject.isSuperadmin ? 'entziehen' : 'setzen')
+          });
+
+          passwdDialogRef.afterClosed().subscribe(result => {
+            if (typeof result !== 'undefined') {
+              if (result !== false) {
+                this.mds.setSpinnerOn();
+                this.bs.setSuperUserStatus(
+                  selectedRows[0]['id'],
+                  !userObject.isSuperadmin,
+                  (<FormGroup>result).get('pw').value).subscribe(
+                  respCode => {
+                    if (respCode === 0) {
+                      this.snackBar.open('Status geändert', '', {duration: 1000});
+                      this.updateObjectList();
+                    } else if (respCode === 403) {
+                      this.mds.setSpinnerOff();
+                      this.snackBar.open('Konnte Status nicht ändern (fehlende Berechtigung)', 'Fehler', {duration: 1000});
+                    } else {
+                      this.mds.setSpinnerOff();
+                      this.snackBar.open(`Konnte Status nicht ändern (Fehlercode ${respCode})`, 'Fehler', {duration: 1000});
+                    }
+                  });
+              }
+            }
+          });
+        }
+      });
+    }
   }
 
   changePassword() {
@@ -112,24 +171,22 @@ export class UsersComponent implements OnInit, OnDestroy {
     } else {
       const dialogRef = this.newpasswordDialog.open(NewpasswordComponent, {
         width: '600px',
-        data: {
-          name: selectedRows[0]['name']
-        }
+        data: selectedRows[0]['name']
       });
 
       dialogRef.afterClosed().subscribe(result => {
         if (typeof result !== 'undefined') {
           if (result !== false) {
-            this.dataLoading = true;
+            this.mds.setSpinnerOn();
             this.bs.changePassword(selectedRows[0]['id'],
                 (<FormGroup>result).get('pw').value).subscribe(
                   respOk => {
+                    this.mds.setSpinnerOff();
                     if (respOk !== false) {
                       this.snackBar.open('Kennwort geändert', '', {duration: 1000});
                     } else {
                       this.snackBar.open('Konnte Kennwort nicht ändern', 'Fehler', {duration: 1000});
                     }
-                    this.dataLoading = false;
                   });
           }
         }
@@ -158,7 +215,7 @@ export class UsersComponent implements OnInit, OnDestroy {
       } else {
         prompt = prompt + ' Nutzer "' + selectedRows[0].name + '" ';
       }
-      const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
+      const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
         width: '400px',
         data: <ConfirmDialogData>{
           title: 'Löschen von Nutzern',
@@ -171,20 +228,19 @@ export class UsersComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           // =========================================================
-          this.dataLoading = true;
           const usersToDelete = [];
-          selectedRows.forEach((r: IdAndName) => usersToDelete.push(r.id));
+          selectedRows.forEach((r: UserData) => usersToDelete.push(r.id));
+          this.mds.setSpinnerOn();
           this.bs.deleteUsers(usersToDelete).subscribe(
             respOk => {
               if (respOk !== false) {
                 this.snackBar.open('Nutzer gelöscht', '', {duration: 1000});
                 this.updateObjectList();
-                this.dataLoading = false;
               } else {
+                this.mds.setSpinnerOff();
                 this.snackBar.open('Konnte Nutzer nicht löschen', 'Fehler', {duration: 2000});
-                this.dataLoading = false;
               }
-          });
+            });
         }
       });
     }
@@ -194,11 +250,11 @@ export class UsersComponent implements OnInit, OnDestroy {
   updateWorkspaceList() {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser > -1) {
-      this.dataLoading = true;
+      this.mds.setSpinnerOn();
       this.bs.getWorkspacesByUser(this.selectedUser).subscribe(dataresponse => {
-          this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
-          this.dataLoading = false;
-        });
+        this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
+        this.mds.setSpinnerOff();
+      })
     } else {
       this.WorkspacelistDatasource = null;
     }
@@ -216,15 +272,15 @@ export class UsersComponent implements OnInit, OnDestroy {
   saveWorkspaces() {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser > -1) {
-      this.dataLoading = true;
+      this.mds.setSpinnerOn();
       this.bs.setWorkspacesByUser(this.selectedUser, this.WorkspacelistDatasource.data).subscribe(
         respOk => {
+          this.mds.setSpinnerOff();
           if (respOk !== false) {
             this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
           } else {
             this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 2000});
           }
-          this.dataLoading = false;
         });
     } else {
       this.WorkspacelistDatasource = null;
@@ -233,17 +289,13 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   // ***********************************************************************************
   updateObjectList() {
-    if (this.isSuperadmin) {
-      this.dataLoading = true;
-      this.tableselectionCheckbox.clear();
-      this.tableselectionRow.clear();
-      this.bs.getUsers().subscribe(dataresponse => {
-          this.objectsDatasource = new MatTableDataSource(dataresponse);
-          this.objectsDatasource.sort = this.sort;
-          this.dataLoading = false;
-        }
-      );
-    }
+    this.tableselectionCheckbox.clear();
+    this.tableselectionRow.clear();
+    this.bs.getUsers().subscribe(dataresponse => {
+      this.objectsDatasource = new MatTableDataSource(dataresponse);
+      this.objectsDatasource.sort = this.sort;
+      this.mds.setSpinnerOff();
+    });
   }
 
   isAllSelected() {
@@ -260,12 +312,5 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   selectRow(row) {
     this.tableselectionRow.select(row);
-  }
-
-  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-  ngOnDestroy() {
-    if (this.logindataSubscription !== null) {
-      this.logindataSubscription.unsubscribe();
-    }
   }
 }

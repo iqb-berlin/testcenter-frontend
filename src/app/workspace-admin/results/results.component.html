@@ -1,7 +1,4 @@
 <div class="columnhost" fxLayout="column">
-  <div class="spinner-container" *ngIf="dataLoading">
-    <mat-spinner></mat-spinner>
-  </div>
   <div fxLayout="row">
     <button mat-raised-button (click)="downloadResponsesCSV()" [disabled]="!tableselectionCheckbox.hasValue()"
         matTooltip="Download markierte Gruppen als CSV für Excel" matTooltipPosition="above">

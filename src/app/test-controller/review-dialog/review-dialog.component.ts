@@ -1,27 +1,25 @@
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA } from '@angular/material';
-import { Component, OnInit, Inject } from '@angular/core';
+import {FormGroup, Validators, FormControl} from '@angular/forms';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject } from '@angular/core';
+import {ReviewDialogData} from "../test-controller.interfaces";
 
 @Component({
   templateUrl: './review-dialog.component.html'
 })
-export class ReviewDialogComponent implements OnInit {
-  reviewform: FormGroup;
+export class ReviewDialogComponent {
+  reviewform = new FormGroup({
+    target: new FormControl ('b', Validators.required),
+    priority: new FormControl('', Validators.required),
+    tech: new FormControl(''),
+    content: new FormControl(''),
+    design: new FormControl(''),
+    entry: new FormControl('', Validators.required),
+    sender: new FormControl(ReviewDialogComponent.oldName)
+  });
+  static oldName = '';
 
   constructor(
-    private fb: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: any) { }
-
-  ngOnInit() {
-    this.reviewform = this.fb.group({
-      target: this.fb.control('b', Validators.required),
-      priority: this.fb.control('', Validators.required),
-      tech: this.fb.control(''),
-      content: this.fb.control(''),
-      design: this.fb.control(''),
-      entry: this.fb.control('', Validators.required)
-    });
-  }
+    @Inject(MAT_DIALOG_DATA) public data: ReviewDialogData) { }
 
   getCategories(): string {
     let myreturn = '';

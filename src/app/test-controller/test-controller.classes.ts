@@ -134,6 +134,7 @@ export class UnitControllerData {
   unitDef: UnitDef = null;
   codeRequiringTestlets: Testlet[] = [];
   maxTimerRequiringTestlet: Testlet = null;
+  testletLabel = '';
   constructor(unitDef: UnitDef) {
     this.unitDef = unitDef;
   }
@@ -167,12 +168,12 @@ export class Testlet extends TestletContentElement {
 
   // .....................................................................
   // first looking for the unit, then on the way back adding restrictions
-  getUnitAt(sequenceId: number): UnitControllerData {
+  getUnitAt(sequenceId: number, isEntryPoint = true): UnitControllerData {
     let myreturn: UnitControllerData = null;
     for (const tce of this.children) {
       if (tce instanceof Testlet) {
         const localTestlet = tce as Testlet;
-        myreturn = localTestlet.getUnitAt(sequenceId);
+        myreturn = localTestlet.getUnitAt(sequenceId, false);
         if (myreturn !== null) {
           break;
         }
@@ -189,6 +190,13 @@ export class Testlet extends TestletContentElement {
       }
       if (this.maxTimeLeft > 0) {
         myreturn.maxTimerRequiringTestlet = this;
+      }
+      if (!isEntryPoint) {
+        const label = this.title.trim();
+        if (label) {
+          myreturn.testletLabel = label
+        }
+
       }
     }
     return myreturn;
@@ -398,7 +406,7 @@ export class EnvironmentData {
     const deviceInfo = window.navigator.userAgent;
 
     // browser + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
-    // tslint:disable-next-line:max-line-length
+    // @ts-ignore
     const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/;
     // credit due to: https://gist.github.com/ticky/3909462#gistcomment-2245669
     const deviceInfoSplits = regex.exec(deviceInfo);
@@ -460,11 +468,6 @@ export class MaxTimerData {
     this.testletId = tId;
     this.type = type;
   }
-}
-
-// 7777777777777777777777777777777777777777777777777777777777777
-export class BookletConfig {
-  showMainNaviButtons: boolean;
 }
 
 // 7777777777777777777777777777777777777777777777777777777777777

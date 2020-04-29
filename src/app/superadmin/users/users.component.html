@@ -1,25 +1,25 @@
 <div class="columnhost" fxLayout="row" fxLayoutAlign="space-between start">
-  <div class="spinner-container" *ngIf="dataLoading">
-      <mat-spinner></mat-spinner>
-  </div>
-
   <!-- ============================================= -->
   <div class="objectlist" fxLayout="column" fxFlex="50">
     <div fxLayout="row">
-        <button mat-raised-button (click)="addObject()" matTooltip="Nutzer hinzufügen" matTooltipPosition="above">
-            <mat-icon>add</mat-icon>
-          </button>
-        <button mat-raised-button (click)="deleteObject()"
-                matTooltip="Markierte Nutzer löschen" matTooltipPosition="above">
-          <mat-icon>delete</mat-icon>
+      <button mat-raised-button (click)="addObject()" matTooltip="Nutzer hinzufügen" matTooltipPosition="above">
+          <mat-icon>add</mat-icon>
         </button>
-        <button mat-raised-button (click)="changePassword()"
-                matTooltip="Kennwort ändern" matTooltipPosition="above">
-          <mat-icon>edit</mat-icon>
-        </button>
+      <button mat-raised-button (click)="deleteObject()"
+              matTooltip="Markierte Nutzer löschen" matTooltipPosition="above">
+        <mat-icon>delete</mat-icon>
+      </button>
+      <button mat-raised-button (click)="changePassword()"
+              matTooltip="Kennwort ändern" matTooltipPosition="above">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-raised-button (click)="changeSuperadminStatus()"
+              matTooltip="Superadmin-Status ändern" matTooltipPosition="above">
+        <mat-icon>edit</mat-icon>
+      </button>
     </div>
 
-    <mat-table *ngIf="isSuperadmin" [dataSource]="objectsDatasource" matSort>
+    <mat-table [dataSource]="objectsDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
         <mat-header-cell *matHeaderCellDef fxFlex="70px">
           <mat-checkbox (change)="$event ? masterToggle() : null"
@@ -37,7 +37,7 @@
 
       <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+        <mat-cell *matCellDef="let element"> {{element.name}} {{element.isSuperadmin ? '*' : ''}}</mat-cell>
       </ng-container>
 
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -47,7 +47,7 @@
   </div>
 
   <!-- ============================================= -->
-  <div *ngIf="isSuperadmin" fxLayout="column" fxFlex="40">
+  <div fxLayout="column" fxFlex="40">
 
     <div *ngIf="selectedUser < 0">
       <div>Zugriffsrechte für Arbeitsbereich(e):</div>

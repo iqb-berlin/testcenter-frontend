@@ -1,13 +1,20 @@
 
 import { Injectable, Inject } from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {Observable, of} from 'rxjs';
 import {catchError, map, switchMap} from 'rxjs/operators';
-import {LoginData, BookletStatus, PersonTokenAndTestId, KeyValuePair, SysConfig} from './app.interfaces';
-import {ErrorHandler, ServerError} from 'iqb-components';
+import {
+  SysCheckInfo,
+  AuthData,
+  WorkspaceData,
+  BookletData, ApiError
+} from './app.interfaces';
+import {SysConfig} from "./config/app.config";
 
 // ============================================================================
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class BackendService {
 
   constructor(
@@ -16,91 +23,119 @@ export class BackendService {
   ) {}
 
 
-  login(name: string, password: string): Observable<LoginData | ServerError> {
-
-    return this.http
-        .put<LoginData>(this.serverUrl + 'session/login', {name, password})
+  login(name: string, password: string): Observable<AuthData | number> {
+    if (password) {
+      return this.http
+        .put<AuthData>(this.serverUrl + 'session/admin', {name, password})
         .pipe(
-          catchError(ErrorHandler.handle),
-          switchMap(myLoginData => {
-            if (myLoginData instanceof ServerError) {
-              if ((myLoginData as ServerError).code === 401) {
+          catchError((err: ApiError) => {
+            console.warn(`login Api-Error: ${err.code} ${err.info} `);
+            return of(err.code)
+          }),
+          switchMap(authData => {
+            if (typeof authData === 'number') {
+              const errCode = authData as number;
+              if (errCode === 400) {
                 return this.http
-                  .put<LoginData>(this.serverUrl + 'session/admin', {name, password})
-                  .pipe(catchError(ErrorHandler.handle));
+                  .put<AuthData>(this.serverUrl + 'session/login', {name, password})
+                  .pipe(catchError(errCode => of(errCode)));
               } else {
-                return of(myLoginData);
+                return of(errCode);
               }
             } else {
-              return of(myLoginData);
+              return of(authData);
             }
           })
         );
+    } else {
+      return this.nameOnlyLogin(name);
+    }
   }
 
-
-  getSession(loginToken: string, personToken: string): Observable<LoginData | ServerError> {
-
-    const authToken = JSON.stringify({l: loginToken, p: personToken});
+  nameOnlyLogin(name: string): Observable<AuthData | number> {
     return this.http
-      .get<LoginData>(this.serverUrl + 'session', {headers: {'AuthToken': authToken}})
-      .pipe(catchError(ErrorHandler.handle));
+      .put<AuthData>(this.serverUrl + 'session/login', {name})
+      .pipe(
+        catchError((err: ApiError) => {
+          console.warn(`nameOnlyLogin Api-Error: ${err.code} ${err.info} `);
+          return of(err.code)
+        })
+      );
   }
 
-
-  getAdminSession(adminToken: string): Observable<LoginData | ServerError> {
-
-    const authToken = JSON.stringify({at: adminToken});
+  codeLogin(code: string): Observable<AuthData | number> {
     return this.http
-      .get<LoginData>(this.serverUrl + 'session', {headers: {'AuthToken': authToken}})
-      .pipe(catchError(ErrorHandler.handle));
+      .put<AuthData>(this.serverUrl + 'session/person', {code})
+      .pipe(
+        catchError((err: ApiError) => {
+          console.warn(`codeLogin Api-Error: ${err.code} ${err.info} `);
+          return of(err.code)
+        })
+      );
   }
 
-
-  getSysConfig(): Observable<KeyValuePair> {
-
+  getWorkspaceData(workspaceId: string): Observable<WorkspaceData> {
     return this.http
-      .get<SysConfig>(this.serverUrl + `system/config`)
-      .pipe(catchError(() => of(null)))
-      .pipe(map((sysConfig: SysConfig): KeyValuePair => {
-        console.log(sysConfig.version); // TODO check for system version mismatch https://github.com/iqb-berlin/testcenter-iqb-ng/issues/53
-        return sysConfig.customTexts;
+      .get<WorkspaceData>(this.serverUrl + 'workspace/' + workspaceId)
+      .pipe(catchError(() => {
+        console.warn('get workspace data failed for ' + workspaceId);
+        return of(<WorkspaceData>{
+          id: workspaceId,
+          name: workspaceId,
+          role: "n.d."
+        })
       }));
   }
 
-
-  getBookletState(bookletName: string, code = ''): Observable<BookletStatus | ServerError> {
-
-    // TODO after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52 is resolved,
-    //  this must be removed, we would have a personToken here
-    const params = new HttpParams().set('code', code);
-
+  getSessionData(): Observable<AuthData | number> {
     return this.http
-      .get<BookletStatus>(this.serverUrl + `booklet/${bookletName}/state`, {params})
-      .pipe(catchError(ErrorHandler.handle));
+      .get<AuthData>(this.serverUrl + 'session')
+      .pipe(
+        catchError((err: ApiError) => of(err.code))
+      )
   }
 
-
-  startBooklet(code: string, bookletName: string, bookletLabel: string): Observable<PersonTokenAndTestId | ServerError> {
-
+  getBookletData(bookletId: string): Observable<BookletData> {
     return this.http
-      .put<PersonTokenAndTestId>(this.serverUrl + `test`, {code, bookletName, bookletLabel})
-      .pipe(catchError(ErrorHandler.handle));
+      .get<BookletData>(this.serverUrl + 'booklet/' + bookletId)
+      .pipe(
+        map(bData => {
+          bData.id = bookletId;
+          return bData
+        }),
+        catchError(() => {
+        console.warn('get booklet data failed for ' + bookletId);
+        return of(<BookletData>{
+          id: bookletId,
+          label: bookletId,
+          locked: true,
+          running: false
+        })
+      }));
   }
 
-
-  addBookletLogClose(testId: number): Observable<boolean | ServerError> {
-
+  startTest(bookletName: string): Observable<string | number> {
     return this.http
-      .put<boolean>(this.serverUrl + `test/${testId}/log`, {timestamp: Date.now(), entry: 'BOOKLETLOCKEDbyTESTEE'})
-      .pipe(catchError(ErrorHandler.handle));
+      .put<number>(this.serverUrl + 'test', {bookletName})
+      .pipe(
+        map((testId: number) => String(testId)),
+        catchError((err: ApiError) => of(err.code))
+      );
   }
 
-
-  lockBooklet(testId: number): Observable<boolean | ServerError> {
-
+  getSysConfig(): Observable<SysConfig> {
     return this.http
-      .patch<boolean>(this.serverUrl + `test/${testId}/lock`, {})
-      .pipe(catchError(ErrorHandler.handle));
+      .get<SysConfig>(this.serverUrl + `system/config`)
+      .pipe(catchError(() => of(null)))
+  }
+
+  getSysCheckInfo(): Observable<SysCheckInfo[]> {
+    return this.http
+      .get<SysCheckInfo[]>(this.serverUrl + 'sys-checks')
+      .pipe(
+        catchError(() => {
+          return of([]);
+        })
+      );
   }
 }

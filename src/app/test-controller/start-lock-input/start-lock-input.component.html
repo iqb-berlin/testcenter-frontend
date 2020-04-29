@@ -1,18 +1,19 @@
-<form [formGroup]="startkeyform" fxLayout="column">
+<form #matform [formGroup]="startkeyform" fxLayout="column">
   <h1 mat-dialog-title>{{ data.title }}</h1>
 
   <mat-dialog-content>
     <p>{{ data.prompt }}</p>
     <mat-form-field *ngFor="let c of data.codes" fxLayout="column">
       <p>{{ c.prompt }}</p>
-      <input matInput [formControlName]="c.testletId" [(ngModel)]="c.value" (keyup.enter)="close()">
+      <input matInput [formControlName]="c.testletId" (keyup.enter)="matform.submit()">
     </mat-form-field>
   </mat-dialog-content>
 
   <mat-dialog-actions>
-    <button mat-raised-button #okButton color="primary"
-        [disabled]="startkeyform.invalid"
-        type="submit" [mat-dialog-close]="data.codes">Weiter</button>
+    <button mat-raised-button color="primary"
+            [disabled]="!startkeyform.valid"
+            type="submit"
+            [mat-dialog-close]="startkeyform.value">Weiter</button>
     <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
   </mat-dialog-actions>
 </form>

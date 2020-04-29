@@ -3,43 +3,49 @@
     <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
   </a>
   <div fxLayout="row" fxLayoutAlign="end center">
-    <p class="timer" *ngIf="tcs.mode !== 'hot'">{{ timerValue?.timeLeftString }}</p>
-    <button mat-fab [disabled]="!(tcs.unitPrevEnabled$ | async)" *ngIf="tcs.navArrows" color="accent"
-        (click)="tcs.setUnitNavigationRequest('#previous')" matTooltip="Zurück" fxFlex="none">
+    <p class="timer" *ngIf="tcs.testMode.showTimeLeft">{{ timerValue?.timeLeftString }}</p>
+    <button mat-fab [disabled]="!tcs.unitPrevEnabled" *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)" color="accent"
+            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none">
       <i class="material-icons">chevron_left</i>
     </button>
-    <div *ngIf="tcs.navButtons" fxLayout="row wrap" fxLayoutAlign="start center" fxFlex="0 3 100%">
-      <div *ngFor="let u of (tcs.unitListForNaviButtons$ | async)">
+    <div *ngIf="(tcs.bookletConfig.unit_navibuttons === 'FULL') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)" fxLayout="row wrap" fxLayoutAlign="start center" fxFlex="0 3 100%">
+      <div *ngFor="let u of tcs.unitListForNaviButtons">
         <div fxLayout="column" fxLayoutAlign="start center">
-            <button (click)="gotoUnit(u.sequenceId)" class="unit-button" [disabled]="u.disabled">{{ u.label }}</button>
+            <button (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())" class="unit-button" [disabled]="u.disabled">{{ u.shortLabel }}</button>
             <span class="current-unit-dot" *ngIf="u.isCurrent"></span>
             <span class="notcurrent-unit-dot" *ngIf="!u.isCurrent"></span>
         </div>
       </div>
     </div>
-    <button mat-fab [disabled]="!(tcs.unitNextEnabled$ | async)" *ngIf="tcs.navArrows" color="accent"
-        (click)="tcs.setUnitNavigationRequest('#next')" matTooltip="Weiter" fxFlex="none">
+    <button mat-fab [disabled]="!tcs.unitNextEnabled" *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF')  && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)" color="accent"
+            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none">
       <i class="material-icons">chevron_right</i>
     </button>
-    <button mat-button (click)="showReviewDialog()" *ngIf="tcs.mode === 'run-review'" matTooltip="Kommentar senden" fxFlex="none">
+    <button mat-button (click)="showReviewDialog()" *ngIf="tcs.testMode.canReview" matTooltip="Kommentar senden" fxFlex="none">
       <mat-icon>rate_review</mat-icon>
     </button>
-    <button mat-button (click)="tcs.setUnitNavigationRequest('#end')"  *ngIf="tcs.mode !== 'hot'"
-          matTooltip="Zur Testheft-Auswahl zurückkehren" fxFlex="none">
-      <mat-icon>exit_to_app</mat-icon>
+    <button mat-button (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.MENU)"
+            *ngIf="(tcs.bookletConfig.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
+            matTooltip="Zur Aufgabenliste" fxFlex="none">
+      <mat-icon>menu</mat-icon>
     </button>
+    <!--
+    <button mat-button (click)="topMargin()" fxFlex="none" style="z-index: 888;">
+      <mat-icon>vertical_align_top</mat-icon>
+    </button>
+    <button mat-button (click)="bottomMargin()" fxFlex="none" style="z-index: 888;">
+      <mat-icon>vertical_align_bottom</mat-icon>
+    </button>
+    -->
   </div>
 </div>
-<div class="spinner-container" *ngIf="tcs.dataLoading">
-  <mat-spinner></mat-spinner>
-</div>
-<mat-card *ngIf="showProgress" class="progress-bar">
-  <mat-card-content fxLaxout="column">
+<mat-card *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.WAITING_LOAD_COMPLETE" class="progress-bar">
+  <mat-card-content fxLayout="column">
     <h2>Lade Aufgaben... bitte warten</h2>
     <mat-progress-bar
         color="primary"
         mode="determinate"
-        [value]="progressValue">
+        [value]="loadProgressValue">
     </mat-progress-bar>
   </mat-card-content>
 </mat-card>

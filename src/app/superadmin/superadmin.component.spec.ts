@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SuperadminComponent } from './superadmin.component';
+import {HttpClientModule} from "@angular/common/http";
+import {AppRoutingModule} from "../app-routing.module";
+import {MainDataService} from "../maindata.service";
 
 describe('SuperadminComponent', () => {
   let component: SuperadminComponent;
@@ -8,7 +11,9 @@ describe('SuperadminComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SuperadminComponent ]
+      declarations: [ SuperadminComponent ],
+      imports: [HttpClientModule, AppRoutingModule],
+      providers: [MainDataService]
     })
     .compileComponents();
   }));

@@ -1,5 +1,4 @@
 import {
-  CheckConfigAbstract,
   CheckConfig,
   NetworkRequestTestResult,
   UnitAndPlayerContainer,
@@ -21,19 +20,6 @@ export class BackendService {
     @Inject('SERVER_URL') private readonly serverUrl: string,
     private http: HttpClient
   ) {}
-
-
-  public getCheckConfigs(): Observable<CheckConfigAbstract[]> {
-
-    return this.http
-      .get<CheckConfigAbstract[]>(this.serverUrl + 'sys-checks')
-      .pipe(
-        catchError(() => {
-          const myreturn: CheckConfigAbstract[] = [];
-          return of(myreturn);
-        })
-      );
-  }
 
 
   public getCheckConfigData(workspaceId: number, sysCheckName: string): Observable<CheckConfig> {

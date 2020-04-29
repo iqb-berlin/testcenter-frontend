@@ -34,16 +34,34 @@ export interface KeyValuePair {
     [K: string]: string;
 }
 
-export interface BookletData {
-    xml: string;
-    locked: boolean;
-    laststate: KeyValuePair[];
-}
-
 export interface UnitData {
     xml: string;
     restorepoint: string;
     laststate: KeyValuePair[];
+}
+
+export interface TestData {
+  xml: string;
+  mode: string;
+  laststate: KeyValuePair[];
+}
+
+export enum TestStatus {
+  RUNNING = "RUNNING",
+  WAITING_LOAD_COMPLETE = "WAITING_LOAD_COMPLETE",
+  TERMINATED = "TERMINATED",
+  PAUSED = "PAUSED",
+  WAITING_LOAD_START = "WAITING_LOAD_START",
+  ERROR = "ERROR"
+}
+
+export interface UnitMenuButtonData {
+  sequenceId: number;
+  label: string;
+  isCurrent: boolean;
+  isDisabled: boolean;
+  testletLabel: string;
+  testletMarker: string
 }
 
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++
@@ -94,7 +112,9 @@ export enum MaxTimerDataType {
 export interface UnitNaviButtonData {
   sequenceId: number;
   disabled: boolean;
-  label: string;
+  shortLabel: string;
+  longLabel: string;
+  testletLabel: string;
   isCurrent: boolean;
 }
 
@@ -104,4 +124,31 @@ export interface PageData {
     id: string;
     type: '#next' | '#previous' | '#goto';
     disabled: boolean;
+}
+
+export interface ReviewDialogData {
+  loginname: string;
+  bookletname: string;
+  unitDbKey: string;
+  unitTitle: string;
+}
+
+export enum NoUnitFlag {
+  END = "end",
+  ERROR = "error"
+}
+
+export interface KeyValuePairNumber {
+  [K: string]: number;
+}
+
+export enum UnitNavigationTarget {
+  NEXT = "#next",
+  ERROR = "#error",
+  PREVIOUS = "#previous",
+  FIRST = "#first",
+  LAST = "#last",
+  END = "#end",
+  MENU = "#menu",
+  PAUSE = "#pause"
 }

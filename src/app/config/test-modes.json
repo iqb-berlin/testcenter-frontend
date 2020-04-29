@@ -1,0 +1,50 @@
+{
+  "DEMO": {
+    "label": "Nur Ansicht (Demo)",
+    "config": {
+      "canReview": false,
+      "saveResponses": false,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
+      "presetCode": true,
+      "showTimeLeft": true,
+      "showUnitMenu": false
+    }
+  },
+  "HOT": {
+    "label": "Durchführung Test/Befragung",
+    "config": {
+      "canReview": false,
+      "saveResponses": true,
+      "forceTimeRestrictions": true,
+      "forceNaviRestrictions": true,
+      "presetCode": false,
+      "showTimeLeft": false,
+      "showUnitMenu": false
+    }
+  },
+  "REVIEW": {
+    "label": "Prüfdurchgang ohne Speichern",
+    "config": {
+      "canReview": true,
+      "saveResponses": false,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
+      "presetCode": true,
+      "showTimeLeft": true,
+      "showUnitMenu": true
+    }
+  },
+  "TRIAL": {
+    "label": "Prüfdurchgang mit Speichern",
+    "config": {
+      "canReview": false,
+      "saveResponses": true,
+      "forceTimeRestrictions": true,
+      "forceNaviRestrictions": true,
+      "presetCode": true,
+      "showTimeLeft": false,
+      "showUnitMenu": false
+    }
+  }
+}

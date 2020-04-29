@@ -1,7 +1,7 @@
 import { LogData } from '../workspace.interfaces';
 import { WorkspaceDataService } from '../workspacedata.service';
-import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import {ConfirmDialogComponent, ConfirmDialogData} from 'iqb-components';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { BackendService } from '../backend.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -10,20 +10,18 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 import { ResultData, UnitResponse, ReviewData } from '../workspace.interfaces';
-import { Subscription } from 'rxjs';
+import {MainDataService} from "../../maindata.service";
 
 
 @Component({
   templateUrl: './results.component.html',
   styleUrls: ['./results.component.css']
 })
-export class ResultsComponent implements OnInit, OnDestroy {
+export class ResultsComponent implements OnInit {
   displayedColumns: string[] = ['selectCheckbox', 'groupname', 'bookletsStarted', 'num_units_min', 'num_units_max', 'num_units_mean', 'lastchange'];
   public resultDataSource = new MatTableDataSource<ResultData>([]);
   // prepared for selection if needed sometime
   public tableselectionCheckbox = new SelectionModel<ResultData>(true, []);
-  public dataLoading = false;
-  private workspaceIdSubscription: Subscription = null;
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
@@ -31,26 +29,28 @@ export class ResultsComponent implements OnInit, OnDestroy {
     private bs: BackendService,
     public wds: WorkspaceDataService,
     private deleteConfirmDialog: MatDialog,
+    private mds: MainDataService,
     public snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
-    this.workspaceIdSubscription = this.wds.workspaceId$.subscribe(() => {
+    setTimeout(() => {
+      this.mds.setSpinnerOn();
       this.updateTable();
-    });
+    })
   }
 
   updateTable() {
     this.tableselectionCheckbox.clear();
     if (this.wds.wsRole === 'MO') {
       this.resultDataSource = new MatTableDataSource<ResultData>([]);
+      this.mds.setSpinnerOff();
     } else {
-      this.dataLoading = true;
-      this.bs.getResultData(this.wds.ws).subscribe(
+      this.bs.getResultData().subscribe(
         (resultData: ResultData[]) => {
-          this.dataLoading = false;
           this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
           this.resultDataSource.sort = this.sort;
+          this.mds.setSpinnerOff();
         }
       );
     }
@@ -68,16 +68,16 @@ export class ResultsComponent implements OnInit, OnDestroy {
         this.resultDataSource.data.forEach(row => this.tableselectionCheckbox.select(row));
   }
 
-  // 444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
   downloadResponsesCSV() {
     if (this.tableselectionCheckbox.selected.length > 0) {
-      this.dataLoading = true;
       const selectedGroups: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.getResponses(this.wds.ws, selectedGroups).subscribe(
+      this.mds.setSpinnerOn();
+      this.bs.getResponses(selectedGroups).subscribe(
       (responseData: UnitResponse[]) => {
+        this.mds.setSpinnerOff();
         if (responseData.length > 0) {
           const columnDelimiter = ';';
           const lineDelimiter = '\n';
@@ -126,21 +126,21 @@ export class ResultsComponent implements OnInit, OnDestroy {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
-        this.dataLoading = false;
-    });
+      });
     }
   }
 
   // 444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
   downloadReviewsCSV() {
     if (this.tableselectionCheckbox.selected.length > 0) {
-      this.dataLoading = true;
       const selectedGroups: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.getReviews(this.wds.ws, selectedGroups).subscribe(
+      this.mds.setSpinnerOn();
+      this.bs.getReviews(selectedGroups).subscribe(
       (responseData: ReviewData[]) => {
+        this.mds.setSpinnerOff();
         if (responseData.length > 0) {
           // collect categories
           const allCategories: string[] = [];
@@ -188,7 +188,6 @@ export class ResultsComponent implements OnInit, OnDestroy {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
-        this.dataLoading = false;
       });
     }
   }
@@ -196,13 +195,14 @@ export class ResultsComponent implements OnInit, OnDestroy {
   // 444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
   downloadLogsCSV() {
     if (this.tableselectionCheckbox.selected.length > 0) {
-      this.dataLoading = true;
       const selectedGroups: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupname);
       });
-      this.bs.getLogs(this.wds.ws, selectedGroups).subscribe(
+      this.mds.setSpinnerOn();
+      this.bs.getLogs(selectedGroups).subscribe(
       (responseData: LogData[]) => {
+        this.mds.setSpinnerOff();
         if (responseData.length > 0) {
           const columnDelimiter = ';';
           const lineDelimiter = '\n';
@@ -222,7 +222,6 @@ export class ResultsComponent implements OnInit, OnDestroy {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
         }
         this.tableselectionCheckbox.clear();
-        this.dataLoading = false;
       });
     }
   }
@@ -253,22 +252,18 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
-          // =========================================================
-          this.dataLoading = true;
-          this.bs.deleteData(this.wds.ws, selectedGroups).subscribe(() => {
-              this.tableselectionCheckbox.clear();
-              this.dataLoading = false;
-              // TODO refresh list!
-            });
-          }
-        });
-    }
-  }
-
-  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-  ngOnDestroy() {
-    if (this.workspaceIdSubscription !== null) {
-      this.workspaceIdSubscription.unsubscribe();
+          this.mds.setSpinnerOn();
+          this.bs.deleteData(selectedGroups).subscribe((ok: boolean) => {
+            if (ok) {
+              this.snackBar.open('Löschen erfolgreich.', 'Ok.', {duration: 3000});
+            } else {
+              this.snackBar.open('Löschen nicht erfolgreich.', 'Fehler', {duration: 3000});
+            }
+            this.tableselectionCheckbox.clear();
+            this.updateTable()
+          });
+        }
+      });
     }
   }
 }

@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UnitCheckComponent } from './unit-check.component';
+import {HttpClientModule} from "@angular/common/http";
+import {BackendService} from "../backend.service";
 
 describe('UnitCheckComponent', () => {
   let component: UnitCheckComponent;
@@ -8,7 +10,13 @@ describe('UnitCheckComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UnitCheckComponent ]
+      declarations: [ UnitCheckComponent ],
+      imports: [
+        HttpClientModule
+      ],
+      providers: [
+        BackendService
+      ]
     })
     .compileComponents();
   }));

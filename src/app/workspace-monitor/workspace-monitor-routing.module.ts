@@ -4,7 +4,7 @@ import {WorkspaceMonitorComponent} from "./workspace-monitor.component";
 
 
 const routes: Routes = [ {
-  path: ':ws',
+  path: '',
   component: WorkspaceMonitorComponent
 }];
 

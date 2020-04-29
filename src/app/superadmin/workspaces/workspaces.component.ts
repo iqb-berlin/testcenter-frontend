@@ -1,9 +1,8 @@
 import { EditworkspaceComponent } from './editworkspace/editworkspace.component';
 import { NewworkspaceComponent } from './newworkspace/newworkspace.component';
-import { BackendService, IdAndName, IdRoleData } from '../backend.service';
+import { BackendService } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { ViewChild, OnDestroy } from '@angular/core';
-
+import { ViewChild } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -14,29 +13,25 @@ import {
   ConfirmDialogComponent, ConfirmDialogData,
   MessageDialogComponent, MessageDialogData, MessageType
 } from 'iqb-components';
-import { Subscription } from 'rxjs';
 import { MainDataService } from 'src/app/maindata.service';
+import {IdAndName, IdRoleData} from "../superadmin.interfaces";
 
 @Component({
   templateUrl: './workspaces.component.html',
   styleUrls: ['./workspaces.component.css']
 })
-export class WorkspacesComponent implements OnInit, OnDestroy {
-  public isSuperadmin = false;
-  public dataLoading = false;
+export class WorkspacesComponent implements OnInit {
   public objectsDatasource: MatTableDataSource<IdAndName>;
   public displayedColumns = ['selectCheckbox', 'name'];
   private tableselectionCheckbox = new SelectionModel <IdAndName>(true, []);
   private tableselectionRow = new SelectionModel <IdAndName>(false, []);
-  private selectedWorkspaceId = 0;
+  public selectedWorkspaceId = 0;
   private selectedWorkspaceName = '';
-  private logindataSubscription: Subscription = null;
-
   private pendingUserChanges = false;
   public UserlistDatasource: MatTableDataSource<IdRoleData>;
   public displayedUserColumns = ['selectCheckbox', 'name'];
 
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatSort) sort: MatSort;
 
   constructor(
     private bs: BackendService,
@@ -61,10 +56,10 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.logindataSubscription = this.mds.loginData$.subscribe(ld => {
-      this.isSuperadmin = ld.isSuperadmin;
+    setTimeout(() => {
+      this.mds.setSpinnerOn();
       this.updateObjectList();
-    });
+    })
   }
 
   // ***********************************************************************************
@@ -79,17 +74,17 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       if (typeof result !== 'undefined') {
         if (result !== false) {
-          this.dataLoading = true;
+          this.mds.setSpinnerOn();
           this.bs.addWorkspace((<FormGroup>result).get('name').value).subscribe(
-                respOk => {
-                  if (respOk !== false) {
-                    this.snackBar.open('Arbeitsbereich hinzugefügt', '', {duration: 1000});
-                    this.updateObjectList();
-                  } else {
-                    this.snackBar.open('Konnte Arbeitsbereich nicht hinzufügen', 'Fehler', {duration: 1000});
-                  }
-                  this.dataLoading = false;
-                });
+            respOk => {
+              if (respOk !== false) {
+                this.snackBar.open('Arbeitsbereich hinzugefügt', '', {duration: 1000});
+                this.updateObjectList();
+              } else {
+                this.mds.setSpinnerOff();
+                this.snackBar.open('Konnte Arbeitsbereich nicht hinzufügen', 'Fehler', {duration: 1000});
+              }
+            });
         }
       }
     });
@@ -112,16 +107,13 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
     } else {
       const dialogRef = this.editworkspaceDialog.open(EditworkspaceComponent, {
         width: '600px',
-        data: {
-          name: selectedRows[0].name,
-          oldname: selectedRows[0].name
-        }
+        data: selectedRows[0].name
       });
 
       dialogRef.afterClosed().subscribe(result => {
         if (typeof result !== 'undefined') {
           if (result !== false) {
-            this.dataLoading = true;
+            this.mds.setSpinnerOn();
             this.bs.renameWorkspace(selectedRows[0].id,
                 (<FormGroup>result).get('name').value).subscribe(
                   respOk => {
@@ -129,9 +121,9 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
                       this.snackBar.open('Arbeitsbereich geändert', '', {duration: 1000});
                       this.updateObjectList();
                     } else {
+                      this.mds.setSpinnerOff();
                       this.snackBar.open('Konnte Arbeitsbereich nicht ändern', 'Fehler', {duration: 2000});
                     }
-                    this.dataLoading = false;
                   });
           }
         }
@@ -173,18 +165,17 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           // =========================================================
-          this.dataLoading = true;
           const workspacesToDelete = [];
           selectedRows.forEach((r: IdAndName) => workspacesToDelete.push(r.id));
+          this.mds.setSpinnerOn();
           this.bs.deleteWorkspaces(workspacesToDelete).subscribe(
             respOk => {
               if (respOk !== false) {
                 this.snackBar.open('Arbeitsbereich/e gelöscht', '', {duration: 1000});
                 this.updateObjectList();
-                this.dataLoading = false;
               } else {
+                this.mds.setSpinnerOff();
                 this.snackBar.open('Konnte Arbeitsbereich/e nicht löschen', 'Fehler', {duration: 1000});
-                this.dataLoading = false;
               }
           });
         }
@@ -196,11 +187,11 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
   updateUserList() {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
-      this.dataLoading = true;
+      this.mds.setSpinnerOn();
       this.bs.getUsersByWorkspace(this.selectedWorkspaceId).subscribe(dataresponse => {
-          this.UserlistDatasource = new MatTableDataSource(dataresponse);
-          this.dataLoading = false;
-        });
+        this.UserlistDatasource = new MatTableDataSource(dataresponse);
+        this.mds.setSpinnerOff();
+      });
     } else {
       this.UserlistDatasource = null;
     }
@@ -218,15 +209,15 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
   saveUsers() {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
-      this.dataLoading = true;
+      this.mds.setSpinnerOn();
       this.bs.setUsersByWorkspace(this.selectedWorkspaceId, this.UserlistDatasource.data).subscribe(
         respOk => {
+          this.mds.setSpinnerOff();
           if (respOk !== false) {
             this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
           } else {
             this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 2000});
           }
-          this.dataLoading = false;
         });
     } else {
       this.UserlistDatasource = null;
@@ -235,17 +226,13 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
 
   // ***********************************************************************************
   updateObjectList() {
-    if (this.isSuperadmin) {
-      this.dataLoading = true;
-      this.bs.getWorkspaces().subscribe(dataresponse => {
-          this.objectsDatasource = new MatTableDataSource(dataresponse);
-          this.objectsDatasource.sort = this.sort;
-          this.tableselectionCheckbox.clear();
-          this.tableselectionRow.clear();
-          this.dataLoading = false;
-        }
-      );
-    }
+    this.bs.getWorkspaces().subscribe(dataresponse => {
+      this.objectsDatasource = new MatTableDataSource(dataresponse);
+      this.objectsDatasource.sort = this.sort;
+      this.tableselectionCheckbox.clear();
+      this.tableselectionRow.clear();
+      this.mds.setSpinnerOff();
+    });
   }
 
   isAllSelected() {
@@ -262,12 +249,5 @@ export class WorkspacesComponent implements OnInit, OnDestroy {
 
   selectRow(row) {
     this.tableselectionRow.select(row);
-  }
-
-  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-  ngOnDestroy() {
-    if (this.logindataSubscription !== null) {
-      this.logindataSubscription.unsubscribe();
-    }
   }
 }
