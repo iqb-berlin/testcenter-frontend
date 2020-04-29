@@ -95,16 +95,18 @@ export class AuthInterceptor implements HttpInterceptor {
               }
             }
             if (!ignoreError) {
-              this.mds.appError$.next({
-                label: label,
-                description: httpError.message,
-                category: "PROBLEM"
-              });
               if (goToLoginPage) {
+                console.warn('AuthError' + httpError.status + ' (' + label + ')');
                 MainDataService.resetAuthData();
                 const state: RouterState = this.router.routerState;
                 const snapshot: RouterStateSnapshot = state.snapshot;
                 this.router.navigate(['/r/login', snapshot.url]);
+              } else {
+                this.mds.appError$.next({
+                  label: label,
+                  description: httpError.message,
+                  category: "PROBLEM"
+                });
               }
             }
           }
