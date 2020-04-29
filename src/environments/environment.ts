@@ -4,13 +4,14 @@
 
 export const environment = {
   production: false,
+  // testcenterUrl: 'http://localhost/2020/testcenter-iqb-php-postgrestest/',
   testcenterUrl: 'https://ocba.iqb.hu-berlin.de/api/',
   // testcenterUrl: 'https://www.iqb-testcenter.de/',
   // testcenterUrl: 'http://localhost/api/',
   appName: 'IQB-Testcenter',
   appPublisher: 'IQB - Institut zur Qualitätsentwicklung im Bildungswesen',
   appVersion: '2.0.0-beta.2 - 27.4.2020',
-  apiVersionExpected: '2.2.0'
+  apiVersionExpected: '3.0.0'
 };
 
 /*
