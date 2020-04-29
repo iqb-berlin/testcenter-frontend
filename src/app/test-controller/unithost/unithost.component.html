@@ -1,11 +1,11 @@
-<div id="unit-title" fxLayoutAlign="center center">
-    {{ unitTitle }}
-</div>
-<div id="iFrameHost" iqbResizeIFrameChild class="unit-body">
+  <div id="unit-title" *ngIf="tcs.bookletConfig.unit_title === 'ON'" fxLayout="column" fxLayoutAlign="center center">
+    <p>{{ unitTitle }}</p>
+  </div>
 
-</div>
-  <div id="pageNav" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px" *ngIf="tcs.bookletConfig.page_navibuttons !== 'OFF'">
+  <div id="iFrameHost" iqbResizeIFrameChild>
+  </div>
 
+  <div id="pageNav" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px" *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM'">
     <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="showPageNav">
         <div id="pageNavPrompt">
             Wähle hier andere Seiten dieser Aufgabe:

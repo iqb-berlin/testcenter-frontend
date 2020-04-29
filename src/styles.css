@@ -1,7 +1,7 @@
 :root {
-  --tc-topmargin: 65px;
-  --tc-unithost-topmargin: 40px;
-  --tc-unithost-bottommargin: 45px;
+  --tc-header-height: 65px;
+  --tc-unit-title-height: 40px;
+  --tc-unit-page-nav-height: 45px;
 }
 
 /* orienta-regular - latin */

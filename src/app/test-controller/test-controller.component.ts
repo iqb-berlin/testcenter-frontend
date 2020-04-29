@@ -404,9 +404,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
               this.tcs.rootTestlet = this.getBookletFromXml(testData.xml, testData.mode);
 
-              document.documentElement.style.setProperty('--tc-unithost-bottommargin', this.tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' ? '45px' : '0');
-              document.documentElement.style.setProperty('--tc-unithost-topmargin', this.tcs.bookletConfig.unit_title === 'ON' ? '40px' : '0');
-              document.documentElement.style.setProperty('--tc-topmargin', this.tcs.bookletConfig.unit_screenheader === 'OFF' ? '0' : '65px');
+              document.documentElement.style.setProperty('--tc-unit-title-height', this.tcs.bookletConfig.unit_title === 'ON' ? this.mds.defaultTcUnitTitleHeight : '0');
+              document.documentElement.style.setProperty('--tc-header-height', this.tcs.bookletConfig.unit_screenheader === 'OFF' ? '0' : this.mds.defaultTcHeaderHeight);
+              document.documentElement.style.setProperty('--tc-unit-page-nav-height', this.tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' ? this.mds.defaultTcUnitPageNavHeight : '0');
 
               if (this.tcs.rootTestlet === null) {
                 this.mds.appError$.next({

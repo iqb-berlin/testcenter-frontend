@@ -62,7 +62,11 @@ export class LoginComponent  implements OnInit, OnDestroy {
           this.mds.setAuthData(authDataTyped);
 
           if (this.returnTo) {
-            this.router.navigateByUrl(this.returnTo);
+            this.router.navigateByUrl(this.returnTo).then(navOk => {
+              if (!navOk) {
+                this.router.navigate(['/r']);
+              }
+            });
           } else {
             this.router.navigate(['/r']);
           }

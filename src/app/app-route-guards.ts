@@ -86,3 +86,66 @@ export class CodeInputComponentActivateGuard implements CanActivate {
     }
   }
 }
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AdminComponentActivateGuard implements CanActivate {
+  canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+
+    const authData = MainDataService.getAuthData();
+    if (authData) {
+      if (authData.access) {
+        if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN]) {
+          return true;
+        }
+      }
+    } else {
+      return false
+    }
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class SuperAdminComponentActivateGuard implements CanActivate {
+  canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+
+    const authData = MainDataService.getAuthData();
+    if (authData) {
+      if (authData.access) {
+        if (authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
+          return true;
+        }
+      }
+    } else {
+      return false
+    }
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TestComponentActivateGuard implements CanActivate {
+  canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+
+    const authData = MainDataService.getAuthData();
+    if (authData) {
+      if (authData.access) {
+        if (authData.access[AuthAccessKeyType.TEST]) {
+          return true;
+        }
+      }
+    } else {
+      return false
+    }
+  }
+}

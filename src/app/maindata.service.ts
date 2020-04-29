@@ -24,6 +24,10 @@ export class MainDataService {
   public appConfig: AppConfig = null;
   public sysCheckAvailable = false;
 
+  public defaultTcHeaderHeight = document.documentElement.style.getPropertyValue('--tc-header-height');
+  public defaultTcUnitTitleHeight = document.documentElement.style.getPropertyValue('--tc-unit-title-height');
+  public defaultTcUnitPageNavHeight = document.documentElement.style.getPropertyValue('--tc-unit-page-nav-height');
+
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();
 

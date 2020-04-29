@@ -5,6 +5,6 @@ export const environment = {
   testcenterUrl: '/',
   appName: 'IQB-Testcenter',
   appPublisher: 'IQB - Institut zur Qualitätsentwicklung im Bildungswesen',
-  appVersion: '1.5.2 - 12.2.2020',
-  apiVersionExpected: '2.2.0'
+  appVersion: '2.0.0-beta.4 - 29.4.2020',
+  apiVersionExpected: '3.0.1'
 };

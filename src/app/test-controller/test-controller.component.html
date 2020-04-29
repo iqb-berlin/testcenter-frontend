@@ -1,14 +1,10 @@
-<div id="buttonsContainer" fxLayout="row" fxLayoutAlign="space-between center">
-  <a [routerLink]="['/']">
-    <img src="assets/IQB-LogoA.png" matTooltip="Startseite"/>
-  </a>
-  <div fxLayout="row" fxLayoutAlign="end center">
+<div id="header" fxLayout="row" fxLayoutAlign="end center">
     <p class="timer" *ngIf="tcs.testMode.showTimeLeft">{{ timerValue?.timeLeftString }}</p>
     <button mat-fab [disabled]="!tcs.unitPrevEnabled" *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)" color="accent"
             (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none">
       <i class="material-icons">chevron_left</i>
     </button>
-    <div *ngIf="(tcs.bookletConfig.unit_navibuttons === 'FULL') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)" fxLayout="row wrap" fxLayoutAlign="start center" fxFlex="0 3 100%">
+    <div *ngIf="(tcs.bookletConfig.unit_navibuttons === 'FULL') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)" fxLayout="row wrap" fxLayoutAlign="start center">
       <div *ngFor="let u of tcs.unitListForNaviButtons">
         <div fxLayout="column" fxLayoutAlign="start center">
             <button (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())" class="unit-button" [disabled]="u.disabled">{{ u.shortLabel }}</button>
@@ -21,24 +17,18 @@
             (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none">
       <i class="material-icons">chevron_right</i>
     </button>
-    <button mat-button (click)="showReviewDialog()" *ngIf="tcs.testMode.canReview" matTooltip="Kommentar senden" fxFlex="none">
-      <mat-icon>rate_review</mat-icon>
-    </button>
-    <button mat-button (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.MENU)"
-            *ngIf="(tcs.bookletConfig.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
-            matTooltip="Zur Aufgabenliste" fxFlex="none">
-      <mat-icon>menu</mat-icon>
-    </button>
-    <!--
-    <button mat-button (click)="topMargin()" fxFlex="none" style="z-index: 888;">
-      <mat-icon>vertical_align_top</mat-icon>
-    </button>
-    <button mat-button (click)="bottomMargin()" fxFlex="none" style="z-index: 888;">
-      <mat-icon>vertical_align_bottom</mat-icon>
-    </button>
-    -->
-  </div>
+    <div class="plus-buttons" fxFlex="none" fxLayout="row">
+      <button mat-button (click)="showReviewDialog()" *ngIf="tcs.testMode.canReview" matTooltip="Kommentar senden" fxFlex="none">
+        <mat-icon>rate_review</mat-icon>
+      </button>
+      <button mat-button (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.MENU)"
+              *ngIf="(tcs.bookletConfig.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
+              matTooltip="Zur Aufgabenliste" fxFlex="none">
+        <mat-icon>menu</mat-icon>
+      </button>
+    </div>
 </div>
+
 <mat-card *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.WAITING_LOAD_COMPLETE" class="progress-bar">
   <mat-card-content fxLayout="column">
     <h2>Lade Aufgaben... bitte warten</h2>
@@ -49,6 +39,7 @@
     </mat-progress-bar>
   </mat-card-content>
 </mat-card>
-<div class="tc-body">
+
+<div class="tc-body" fxLayout="row" fxLayoutAlign="start stretch">
     <router-outlet></router-outlet>
 </div>

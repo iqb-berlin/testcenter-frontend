@@ -189,7 +189,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
           // this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(currentUnit.unitDef.playerId));
           this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
           this.iFrameItemplayer.setAttribute('class', 'unitHost');
-          this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
+          this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
 
           if (this.tcs.hasUnitRestorePoint(this.myUnitSequenceId)) {
             this.pendingUnitRestorePoint = {tag: this.itemplayerSessionId, value: this.tcs.getUnitRestorePoint(this.myUnitSequenceId)};

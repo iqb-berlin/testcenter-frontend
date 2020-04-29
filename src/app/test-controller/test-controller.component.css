@@ -22,51 +22,42 @@
   margin: 15px 10px 0 10px;
 }
 
-.errorMsg, .statusMsg {
-  margin: 20px;
-  max-width: 300px;
-}
-
-.errorMsg {
-  color: brown;
-}
-
 .tc-body {
   overflow-x: auto;
   position: absolute;
   width: 100%;
-  top: var(--tc-topmargin);
+  top: var(--tc-header-height);
   bottom: 0;
 }
 
 /* --------------------------------------------- */
-#buttonsContainer {
+#header {
   position: absolute;
-  right: 5px;
-  top: 2px;
-  left: 5px;
+  width: 100%;
+  padding-right: 5px;
+  padding-top: 2px;
+  padding-left: 25px;
   color: white;
+  z-index: 444;
 }
-#buttonsContainer .material-icons {
-  font-size: 2.0rem;
-}
-#buttonsContainer img {
-  width: 100px;
+#header .material-icons {
+  /* font-size: 2.0rem; */
+  position: relative;
+  top: -8px;
+  font-size: 36px;
+  padding: 2px;
 }
 
+#header .plus-buttons {
+  background-color: rgba(0, 51, 51, 0.4);
+  height: 48px;
+}
 /* --------------------------------------------- */
 mat-toolbar {
   position: fixed;
   z-index: 100;
   top: 4px;
   right: 90px;
-}
-
-#buttonsContainer .material-icons {
-  position: relative;
-  top: -8px;
-  font-size: 36px;
-  padding: 2px;
 }
 
 .mat-fab {

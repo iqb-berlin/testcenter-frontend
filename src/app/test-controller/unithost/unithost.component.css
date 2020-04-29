@@ -1,19 +1,29 @@
-.unit-body {
+#iFrameHost {
   position: absolute;
   width: 100%;
-  top: var(--tc-unithost-topmargin);
-  bottom: var(--tc-unithost-bottommargin);
+  top: var(--tc-unit-title-height);
+  bottom: var(--tc-unit-page-nav-height);
+  padding: 0;
+  background-color: white;
+}
+
+.unitHost {
+  position: absolute;
+  width: 100%;
+  top: 0;
   padding: 0;
   background-color: white;
 }
 
 #unit-title {
+  position: absolute;
   width: 100%;
+  /* top: set by .tc-body */
+  height: 39px;
   padding: 0;
-  height: 40px;
   font-size: 1.5em;
   background-color: white;
-  border-bottom: solid 2px black;
+  border-bottom: solid 1px black;
 }
 
 #pageNav {
@@ -21,7 +31,6 @@
   width: 100%;
   height: 45px;
   bottom: 0;
-  /* background-color: silver; */
   padding: 0 30px;
   font-size: 1.2em;
 }
