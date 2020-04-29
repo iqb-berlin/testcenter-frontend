@@ -471,11 +471,6 @@ export class MaxTimerData {
 }
 
 // 7777777777777777777777777777777777777777777777777777777777777
-export class BookletConfig {
-  showMainNaviButtons: boolean;
-}
-
-// 7777777777777777777777777777777777777777777777777777777777777
 export class UnitDefLoadQueue {
   private unitsToLoad: {[sequenceId: string]: string} = {};
   private loading = false;

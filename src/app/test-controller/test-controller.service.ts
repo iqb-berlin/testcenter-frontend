@@ -15,7 +15,8 @@ import {
 } from './test-controller.interfaces';
 import {BackendService} from './backend.service';
 import {Router} from "@angular/router";
-import {TestConfig} from "./test-config";
+import {TestMode} from "../config/test-mode";
+import { BookletConfig } from '../config/booklet-config';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +27,8 @@ export class TestControllerService {
   public testStatusEnum = TestStatus;
   public loadComplete = false;
 
-  public testConfig = new TestConfig();
+  public testMode = new TestMode();
+  public bookletConfig = new BookletConfig();
   public rootTestlet: Testlet = null;
   public maxUnitSequenceId = 0;
   public minUnitSequenceId = 0;
@@ -48,7 +50,7 @@ export class TestControllerService {
   public set currentUnitSequenceId(v: number) {
     this.unitPrevEnabled = v > this.minUnitSequenceId;
     this.unitNextEnabled = v < this.maxUnitSequenceId;
-    if (this.rootTestlet && (this.testConfig.unit_navibuttons !== 'OFF') ) {
+    if (this.rootTestlet && (this.bookletConfig.unit_navibuttons !== 'OFF') ) {
       const myUnitListForNaviButtons: UnitNaviButtonData[] = [];
       for (let sequ = 1; sequ <= this.rootTestlet.getMaxSequenceId(); sequ++) {
         const myUnitData = this.rootTestlet.getUnitAt(sequ);
@@ -193,7 +195,7 @@ export class TestControllerService {
 
   // 7777777777777777777777777777777777777777777777777777777777777777777777
   public addBookletLog(logKey: LogEntryKey, entry = '') {
-    if (this.testConfig.saveResponses) {
+    if (this.testMode.saveResponses) {
       const entryData =  entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey;
       this.bs.addBookletLog(this.testId, Date.now(), entryData).subscribe(ok => {
         if (!ok) {
@@ -203,7 +205,7 @@ export class TestControllerService {
     }
   }
   public setBookletState(stateKey: LastStateKey, state: string) {
-    if (this.testConfig.saveResponses) {
+    if (this.testMode.saveResponses) {
       this.bs.setBookletState(this.testId, stateKey, state).subscribe(ok => {
         if (!ok) {
           console.warn('setBookletState failed');
@@ -212,7 +214,7 @@ export class TestControllerService {
     }
   }
   public addUnitLog(unitDbKey: string, logKey: LogEntryKey, entry = '') {
-    if (this.testConfig.saveResponses) {
+    if (this.testMode.saveResponses) {
       this.bs.addUnitLog(this.testId, Date.now(), unitDbKey,
             entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey).subscribe(ok => {
         if (!ok) {
@@ -222,7 +224,7 @@ export class TestControllerService {
     }
   }
   public newUnitResponse(unitDbKey: string, response: string, responseType: string) {
-    if (this.testConfig.saveResponses) {
+    if (this.testMode.saveResponses) {
       this.responsesToSave$.next({
         unitDbKey: unitDbKey,
         response: response,
@@ -232,7 +234,7 @@ export class TestControllerService {
   }
   public newUnitRestorePoint(unitDbKey: string, unitSequenceId: number, restorePoint: string, postToServer: boolean) {
     this.unitRestorePoints[unitSequenceId] = restorePoint;
-    if (postToServer && this.testConfig.saveResponses) {
+    if (postToServer && this.testMode.saveResponses) {
       this.restorePointsToSave$.next({
         unitDbKey: unitDbKey,
         restorePoint: restorePoint
@@ -241,7 +243,7 @@ export class TestControllerService {
   }
   public newUnitStatePresentationComplete(unitDbKey: string, unitSequenceId: number, presentationComplete: string) {
     this.unitPresentationCompleteStates[unitSequenceId] = presentationComplete;
-    if (this.testConfig.saveResponses) {
+    if (this.testMode.saveResponses) {
       this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationComplete);
       this.bs.setUnitState(this.testId, unitDbKey, LastStateKey.PRESENTATIONCOMPLETE, presentationComplete).subscribe(ok => {
         if (!ok) {
@@ -251,7 +253,7 @@ export class TestControllerService {
     }
   }
   public newUnitStateResponsesGiven(unitDbKey: string, unitSequenceId: number, responsesGiven: string) {
-    if (this.testConfig.saveResponses) {
+    if (this.testMode.saveResponses) {
       this.addUnitLog(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
     }
   }
@@ -298,7 +300,7 @@ export class TestControllerService {
   }
 
   public terminateTest() {
-    if (this.testConfig.saveResponses) {
+    if (this.testMode.saveResponses) {
       this.bs.addBookletLog(this.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE').subscribe(OK =>{
         // TODO who evaluates TestStatus when navigating to root?
         if (OK) {

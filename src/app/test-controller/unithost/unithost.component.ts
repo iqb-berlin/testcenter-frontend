@@ -198,9 +198,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
           }
 
           this.leaveWarning = false;
-          if (this.tcs.testConfig.page_navibuttons === 'OFF') {
-            this.iFrameHostElement.style.bottom = '0px';
-          }
 
           if (this.tcs.hasUnitDefinition(this.myUnitSequenceId)) {
             this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: this.tcs.getUnitDefinition(this.myUnitSequenceId)};

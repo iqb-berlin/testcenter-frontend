@@ -11,7 +11,6 @@ import {
   LogEntryKey,
   MaxTimerDataType,
   ReviewDialogData,
-  RunModeKey,
   TaggedString,
   TestData,
   TestStatus,
@@ -23,7 +22,8 @@ import {concatMap, map, switchMap} from 'rxjs/operators';
 import {CustomtextService} from 'iqb-components';
 import {MatDialog} from "@angular/material/dialog";
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {TestConfig} from "./test-config";
+import {BookletConfig} from "../config/booklet-config";
+import { TestMode } from '../config/test-mode';
 
 
 @Component({
@@ -48,7 +48,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private loadedUnitCount = 0;
   private unitLoadQueue: TaggedString[] = [];
   unitNavigationTarget = UnitNavigationTarget;
-  runModeKey = RunModeKey;
   isTopMargin = true;
   isBottomMargin = true;
 
@@ -158,7 +157,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   // private: reading booklet from xml
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
-  private getBookletFromXml(xmlString: string, loginMode: RunModeKey): Testlet {
+  private getBookletFromXml(xmlString: string, loginMode: string): Testlet {
     let rootTestlet: Testlet = null;
 
     try {
@@ -191,11 +190,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
             const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
 
-            this.tcs.testConfig = new TestConfig(loginMode);
-            this.tcs.testConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
+            this.tcs.bookletConfig = new BookletConfig();
+            this.tcs.bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
             if (bookletConfigElements.length > 0) {
-              this.tcs.testConfig.setFromXml(bookletConfigElements[0]);
+              this.tcs.bookletConfig.setFromXml(bookletConfigElements[0]);
             }
+            this.tcs.testMode = new TestMode(loginMode);
 
             // recursive call through all testlets
             this.lastUnitSequenceId = 1;
@@ -308,11 +308,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.mds.progressVisualEnabled = false;
 
-      if (this.isProductionMode && this.tcs.testConfig.saveResponses) {
+      if (this.isProductionMode && this.tcs.testMode.saveResponses) {
         this.mds.errorReportingSilent = true;
       }
       this.errorReportingSubscription = this.mds.appError$.subscribe(e => {
-        if (this.isProductionMode && this.tcs.testConfig.saveResponses) {
+        if (this.isProductionMode && this.tcs.testMode.saveResponses) {
           console.error(e.label + " / " + e.description);
         }
         this.tcs.testStatus$.next(TestStatus.ERROR);
@@ -348,7 +348,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
               this.timerRunning = false;
               this.timerValue = null;
-              if (this.tcs.testConfig.forceTimeRestrictions) {
+              if (this.tcs.testMode.forceTimeRestrictions) {
                 this.tcs.setUnitNavigationRequest(UnitNavigationTarget.NEXT);
               }
             } else if (maxTimerData.type === MaxTimerDataType.CANCELLED) {
@@ -397,12 +397,16 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     navTarget = navTargetTemp;
                   }
                 }
-                if (testData.laststate.hasOwnProperty(LastStateKey.MAXTIMELEFT) && ((testData.mode === RunModeKey.HOT_RESTART) || (testData.mode === RunModeKey.HOT_RETURN))) {
+                if (testData.laststate.hasOwnProperty(LastStateKey.MAXTIMELEFT) && (this.tcs.testMode.saveResponses)) {
                   this.tcs.LastMaxTimerState = JSON.parse(testData.laststate[LastStateKey.MAXTIMELEFT]);
                 }
               }
 
-              this.tcs.rootTestlet = this.getBookletFromXml(testData.xml, testData.mode as RunModeKey);
+              this.tcs.rootTestlet = this.getBookletFromXml(testData.xml, testData.mode);
+
+              document.documentElement.style.setProperty('--tc-unithost-bottommargin', this.tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' ? '45px' : '0');
+              document.documentElement.style.setProperty('--tc-unithost-topmargin', this.tcs.bookletConfig.unit_title === 'ON' ? '40px' : '0');
+              document.documentElement.style.setProperty('--tc-topmargin', this.tcs.bookletConfig.unit_screenheader === 'OFF' ? '0' : '65px');
 
               if (this.tcs.rootTestlet === null) {
                 this.mds.appError$.next({
@@ -442,7 +446,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     this.unitLoadBlobSubscription = from(this.unitLoadQueue).pipe(
                       concatMap(queueEntry => {
                         const unitSequ = Number(queueEntry.tag);
-                        if (this.tcs.testConfig.loading_mode === "EAGER") {
+                        if (this.tcs.bookletConfig.loading_mode === "EAGER") {
                           this.incrementProgressValueBy1();
                         }
                         // avoid to load unit def if not necessary
@@ -476,14 +480,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                         this.loadProgressValue = 100;
 
                         this.tcs.loadComplete = true;
-                        if (this.tcs.testConfig.loading_mode === "EAGER") {
+                        if (this.tcs.bookletConfig.loading_mode === "EAGER") {
                           this.tcs.setUnitNavigationRequest(navTarget.toString());
                           this.tcs.testStatus$.next(TestStatus.RUNNING);
                         }
                       }
                     );
 
-                    if (this.tcs.testConfig.loading_mode === "LAZY") {
+                    if (this.tcs.bookletConfig.loading_mode === "LAZY") {
                       this.tcs.setUnitNavigationRequest(navTarget.toString());
                       this.tcs.testStatus$.next(TestStatus.RUNNING);
                     }
@@ -570,13 +574,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   topMargin() {
     this.isTopMargin = !this.isTopMargin;
-    document.documentElement.style.setProperty('--tc-unithost-topmargin', this.isTopMargin ? '40px' : '0');
-    document.documentElement.style.setProperty('--tc-topmargin', this.isTopMargin ? '65px' : '0');
   }
 
   bottomMargin() {
     this.isBottomMargin = !this.isBottomMargin;
-    document.documentElement.style.setProperty('--tc-unithost-bottommargin', this.isBottomMargin ? '45px' : '0');
+
   }
 
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

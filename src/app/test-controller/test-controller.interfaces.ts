@@ -59,6 +59,7 @@ export interface UnitMenuButtonData {
   sequenceId: number;
   label: string;
   isCurrent: boolean;
+  isDisabled: boolean;
   testletLabel: string;
   testletMarker: string
 }
@@ -99,14 +100,6 @@ export enum LogEntryKey {
     PAGENAVIGATIONCOMPLETE = 'PAGENAVIGATIONCOMPLETE',
     PRESENTATIONCOMPLETE = 'PRESENTATIONCOMPLETE',
     RESPONSESCOMPLETE = 'RESPONSESCOMPLETE'
-}
-
-export enum RunModeKey {
-  HOT_RETURN = "run-hot-return",
-  HOT_RESTART = "run-hot-restart",
-  TRIAL = "run-trial",
-  REVIEW = "run-review",
-  DEMO = "demo"
 }
 
 export enum MaxTimerDataType {

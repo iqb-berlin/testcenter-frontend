@@ -19,7 +19,7 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
     currentRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
 
-    if (this.tcs.testConfig.saveResponses) {
+    if (this.tcs.testMode.saveResponses) {
       const testStatus: TestStatus = this.tcs.testStatus$.getValue();
       if ((testStatus !== TestStatus.ERROR) && (testStatus !== TestStatus.TERMINATED)) {
         this.tcs.setUnitNavigationRequest(UnitNavigationTarget.MENU);

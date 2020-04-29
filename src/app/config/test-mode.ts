@@ -14,7 +14,7 @@ export class TestMode {
 	showUnitMenu: false;
 	modeLabel: "Nur Ansicht (Demo)";
 
-	public constructor (loginMode: string) {
+	public constructor (loginMode: string = 'DEMO') {
 		if (loginMode) {
 			const regExPattern = /(DEMO|HOT|REVIEW|TRIAL)/;
 			if (regExPattern.test(loginMode.toUpperCase())) {

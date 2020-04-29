@@ -31,7 +31,7 @@ export class UnitActivateGuard implements CanActivate {
 
 
   checkAndSolve_PresentationCompleteCode(newUnit: UnitControllerData): Observable<Boolean> {
-    if ((this.tcs.testConfig.force_presentation_complete === 'ON') && this.tcs.currentUnitSequenceId > 0) {
+    if ((this.tcs.bookletConfig.force_presentation_complete === 'ON') && this.tcs.currentUnitSequenceId > 0) {
       if (this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
         // go forwards ===================================
         let myreturn = true;
@@ -52,7 +52,7 @@ export class UnitActivateGuard implements CanActivate {
         if (myreturn) {
           return of(true);
         } else {
-          if (this.tcs.testConfig.forceNaviRestrictions) {
+          if (this.tcs.testMode.forceNaviRestrictions) {
             const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
               width: '500px',
               // height: '300px',
@@ -84,7 +84,7 @@ export class UnitActivateGuard implements CanActivate {
         if (myreturn) {
           return of(true);
         } else {
-          if (this.tcs.testConfig.forceNaviRestrictions) {
+          if (this.tcs.testMode.forceNaviRestrictions) {
             const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
               width: '500px',
               // height: '300px',
@@ -119,7 +119,7 @@ export class UnitActivateGuard implements CanActivate {
             testletId: t.id,
             prompt: t.codePrompt,
             code: t.codeToEnter.toUpperCase().trim(),
-            value: this.tcs.testConfig.presetCode ? t.codeToEnter : ''
+            value: this.tcs.testMode.presetCode ? t.codeToEnter : ''
           });
         });
 
@@ -184,7 +184,7 @@ export class UnitActivateGuard implements CanActivate {
 
         // 1 going forwards
 
-        if ((newUnit.maxTimerRequiringTestlet === null) || (!this.tcs.testConfig.forceNaviRestrictions)) {
+        if ((newUnit.maxTimerRequiringTestlet === null) || (!this.tcs.testMode.forceNaviRestrictions)) {
 
           // 1 a) target is not in timed block or review mode --> check only target unit
 

@@ -26,7 +26,7 @@ for (const k of Object.keys(definitionOptions)) {
 }
 fileContent += '\tmodeLabel: "Nur Ansicht (Demo)";\n';
 
-fileContent += "\n\tpublic constructor (loginMode: string) {\n";
+fileContent += "\n\tpublic constructor (loginMode: string = 'DEMO') {\n";
 fileContent += "\t\tif (loginMode) {\n";
 fileContent += "\t\t\tconst regExPattern = /(" + Object.keys(definitionModes).join('|') + ")/;\n";
 fileContent += "\t\t\tif (regExPattern.test(loginMode.toUpperCase())) {\n";
