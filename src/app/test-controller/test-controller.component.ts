@@ -49,6 +49,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private unitLoadQueue: TaggedString[] = [];
   unitNavigationTarget = UnitNavigationTarget;
   runModeKey = RunModeKey;
+  isTopMargin = true;
+  isBottomMargin = true;
 
   constructor (
     @Inject('APP_VERSION') public appVersion: string,
@@ -565,6 +567,18 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       this.unitLoadBlobSubscription = null
     }
   }
+
+  topMargin() {
+    this.isTopMargin = !this.isTopMargin;
+    document.documentElement.style.setProperty('--tc-unithost-topmargin', this.isTopMargin ? '40px' : '0');
+    document.documentElement.style.setProperty('--tc-topmargin', this.isTopMargin ? '65px' : '0');
+  }
+
+  bottomMargin() {
+    this.isBottomMargin = !this.isBottomMargin;
+    document.documentElement.style.setProperty('--tc-unithost-bottommargin', this.isBottomMargin ? '45px' : '0');
+  }
+
   // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   ngOnDestroy() {
     if (this.routingSubscription !== null) {

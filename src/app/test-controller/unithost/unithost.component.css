@@ -1,15 +1,15 @@
 .unit-body {
   position: absolute;
   width: 100%;
-  top: 40px;
-  bottom: 45px;
-  padding: 0px;
+  top: var(--tc-unithost-topmargin);
+  bottom: var(--tc-unithost-bottommargin);
+  padding: 0;
   background-color: white;
 }
 
 #unit-title {
   width: 100%;
-  padding: 0px;
+  padding: 0;
   height: 40px;
   font-size: 1.5em;
   background-color: white;
@@ -20,9 +20,9 @@
   position: absolute;
   width: 100%;
   height: 45px;
-  bottom: 0px;
+  bottom: 0;
   /* background-color: silver; */
-  padding: 0px 30px;
+  padding: 0 30px;
   font-size: 1.2em;
 }
 

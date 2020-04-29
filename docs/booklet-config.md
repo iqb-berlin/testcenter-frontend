@@ -78,3 +78,15 @@ Verhalten, wenn noch nicht alle Antworten der Aufgabe vollständig gegeben wurde
   * "SOME": Weiterblättern erst möglich, wenn einige Antworten gegeben wurden
   * "COMPLETE": Weiterblättern erst möglich, wenn alle Antworten gegeben wurden
   * "COMPLETE_AND_VALID": Weiterblättern erst möglich, wenn alle Antworten gegeben wurden und als gültig eingeschätzt wurden
+
+#### `unit_screenheader`
+Legt fest, ob im obersten Seitenbereich Platz für Logo, Navigations-Buttons u. ä. gelassen wird.
+  * "OFF": Kein Seitenkopf. Achtung: Logo bleibt sichtbar (überlappt).
+  * "WITH_UNIT_TITLE": Seitenkopf wird angezeigt mit Titel der Unit (s. Booklet-XML)
+  * "WITH_BOOKLET_TITLE": Seitenkopf wird angezeigt mit Titel des Booklets (s. Booklet-XML)
+  * "EMPTY" (default): Seitenkopf wird angezeigt (leer)
+
+#### `unit_title`
+Festlegung, ob oberhalb des Unitbereiches eine Zeile mit dem Unit-Titel gezeigt werden soll
+  * "OFF": Keine Titelzeile
+  * "ON" (default): Eine Zeile wird eingeblendet mit dem Unit-Titel (s. Booklet-XML).

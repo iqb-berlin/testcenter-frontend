@@ -9,6 +9,8 @@ export class BookletConfig {
 	unit_menu: "OFF" | "ENABLED_ONLY" | "FULL" = "ENABLED_ONLY";
 	force_presentation_complete: "OFF" | "ON" = "OFF";
 	force_responses_complete: "OFF" | "SOME" | "COMPLETE" | "COMPLETE_AND_VALID" = "OFF";
+	unit_screenheader: "OFF" | "WITH_UNIT_TITLE" | "WITH_BOOKLET_TITLE" | "EMPTY" = "EMPTY";
+	unit_title: "OFF" | "ON" = "ON";
 
 	public setFromKeyValuePairs(config) {
 		if (config) {
@@ -19,6 +21,8 @@ export class BookletConfig {
 			if (config['unit_menu']) { this.unit_menu = config['unit_menu']}
 			if (config['force_presentation_complete']) { this.force_presentation_complete = config['force_presentation_complete']}
 			if (config['force_responses_complete']) { this.force_responses_complete = config['force_responses_complete']}
+			if (config['unit_screenheader']) { this.unit_screenheader = config['unit_screenheader']}
+			if (config['unit_title']) { this.unit_title = config['unit_title']}
 		}
 	}
 
@@ -49,6 +53,12 @@ export class BookletConfig {
 						break;
 					case 'force_responses_complete':
 						this.force_responses_complete = configValue;
+						break;
+					case 'unit_screenheader':
+						this.unit_screenheader = configValue;
+						break;
+					case 'unit_title':
+						this.unit_title = configValue;
 						break;
 				}
 			}

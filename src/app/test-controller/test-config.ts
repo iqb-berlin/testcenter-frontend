@@ -36,7 +36,7 @@ export class TestConfig extends BookletConfig {
           this.modeLabel = "Prüfdurchgang ohne Speichern";
           break;
         case RunModeKey.TRIAL:
-          this.canReview = true;
+          this.canReview = false;
           this.saveResponses = true;
           this.forceTimeRestrictions = true;
           this.forceNaviRestrictions = true;

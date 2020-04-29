@@ -35,7 +35,7 @@
   overflow-x: auto;
   position: absolute;
   width: 100%;
-  top: 65px;
+  top: var(--tc-topmargin);
   bottom: 0;
 }
 

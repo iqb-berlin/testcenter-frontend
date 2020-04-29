@@ -29,6 +29,14 @@
             matTooltip="Zur Aufgabenliste" fxFlex="none">
       <mat-icon>menu</mat-icon>
     </button>
+    <!--
+    <button mat-button (click)="topMargin()" fxFlex="none" style="z-index: 888;">
+      <mat-icon>vertical_align_top</mat-icon>
+    </button>
+    <button mat-button (click)="bottomMargin()" fxFlex="none" style="z-index: 888;">
+      <mat-icon>vertical_align_bottom</mat-icon>
+    </button>
+    -->
   </div>
 </div>
 <mat-card *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.WAITING_LOAD_COMPLETE" class="progress-bar">

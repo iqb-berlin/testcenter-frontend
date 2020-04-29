@@ -19,8 +19,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription = null;
   public currentValidPages: string[] = [];
   public leaveWarning = false;
-  public leaveWarningText = 'Du hast den Hörtext noch nicht vollständig gehört. Nach dem ' +
-          'Verlassen der Aufgabe wird der Hörtext nicht noch einmal gestartet. Trotzdem die Aufgabe verlassen?';
 
   public unitTitle = '';
   public showPageNav = false;
