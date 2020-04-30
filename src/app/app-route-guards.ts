@@ -62,11 +62,17 @@ export class DirectLoginActivateGuard implements CanActivate {
           if (typeof authData !== 'number') {
             this.mds.setAuthData(authData as AuthData);
             this.router.navigate(['/r']);
+            return false
+          } else {
+            return true
           }
         })
+      } else {
+        return true
       }
+    } else {
+      return true
     }
-    return true
   }
 }
 
@@ -74,14 +80,27 @@ export class DirectLoginActivateGuard implements CanActivate {
   providedIn: 'root'
 })
 export class CodeInputComponentActivateGuard implements CanActivate {
+  constructor( private router: Router ) {  }
+
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
 
     const authData = MainDataService.getAuthData();
     if (authData) {
-      return authData.flags.indexOf(AuthFlagType.CODE_REQUIRED) >= 0
+      if (authData.flags) {
+        if (authData.flags.indexOf(AuthFlagType.CODE_REQUIRED) >= 0) {
+          return true
+        } else {
+          this.router.navigate(['/r']);
+          return false
+        }
+      } else {
+        this.router.navigate(['/r']);
+        return false
+      }
     } else {
+      this.router.navigate(['/r']);
       return false
     }
   }
@@ -91,6 +110,8 @@ export class CodeInputComponentActivateGuard implements CanActivate {
   providedIn: 'root'
 })
 export class AdminComponentActivateGuard implements CanActivate {
+  constructor( private router: Router ) {  }
+
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
@@ -100,9 +121,16 @@ export class AdminComponentActivateGuard implements CanActivate {
       if (authData.access) {
         if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN]) {
           return true;
+        } else {
+          this.router.navigate(['/r']);
+          return false
         }
+      } else {
+        this.router.navigate(['/r']);
+        return false
       }
     } else {
+      this.router.navigate(['/r']);
       return false
     }
   }
@@ -112,6 +140,8 @@ export class AdminComponentActivateGuard implements CanActivate {
   providedIn: 'root'
 })
 export class SuperAdminComponentActivateGuard implements CanActivate {
+  constructor( private router: Router ) {  }
+
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
@@ -121,9 +151,16 @@ export class SuperAdminComponentActivateGuard implements CanActivate {
       if (authData.access) {
         if (authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
           return true;
+        } else {
+          this.router.navigate(['/r']);
+          return false
         }
+      } else {
+        this.router.navigate(['/r']);
+        return false
       }
     } else {
+      this.router.navigate(['/r']);
       return false
     }
   }
@@ -133,6 +170,8 @@ export class SuperAdminComponentActivateGuard implements CanActivate {
   providedIn: 'root'
 })
 export class TestComponentActivateGuard implements CanActivate {
+  constructor( private router: Router ) {  }
+
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
@@ -142,9 +181,16 @@ export class TestComponentActivateGuard implements CanActivate {
       if (authData.access) {
         if (authData.access[AuthAccessKeyType.TEST]) {
           return true;
+        } else {
+          this.router.navigate(['/r']);
+          return false
         }
+      } else {
+        this.router.navigate(['/r']);
+        return false
       }
     } else {
+      this.router.navigate(['/r']);
       return false
     }
   }
