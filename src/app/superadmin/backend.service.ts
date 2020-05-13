@@ -29,19 +29,11 @@ export class BackendService {
   addUser(name: string, password: string): Observable<Boolean> {
     return this.http
       .put<Boolean>(this.serverUrl + 'user', {n: name, p: password})
-      .pipe(catchError((err: ApiError) => {
-        console.warn(`addUser Api-Error: ${err.code} ${err.info} `);
-        return of(false)
-      }));
   }
 
   changePassword(userId: number, password: string): Observable<Boolean> {
     return this.http
       .patch<Boolean>(this.serverUrl + `user/${userId}/password`, {p: password})
-      .pipe(catchError((err: ApiError) => {
-        console.warn(`changePassword Api-Error: ${err.code} ${err.info} `);
-        return of(false)
-      }));
   }
 
   setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<number> {

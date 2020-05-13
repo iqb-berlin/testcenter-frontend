@@ -17,6 +17,9 @@ import {
 import { MainDataService } from 'src/app/maindata.service';
 import {IdRoleData, UserData} from "../superadmin.interfaces";
 import {SuperadminPasswordRequestComponent} from "../superadmin-password-request/superadmin-password-request.component";
+import {catchError} from "rxjs/operators";
+import {ApiError} from "../../app.interfaces";
+import {of} from "rxjs";
 
 
 @Component({
@@ -78,14 +81,17 @@ export class UsersComponent implements OnInit {
         if (result !== false) {
           this.mds.setSpinnerOn();
           this.bs.addUser((<FormGroup>result).get('name').value,
-              (<FormGroup>result).get('pw').value).subscribe(
+              (<FormGroup>result).get('pw').value)
+            .pipe(catchError((err: ApiError) => {
+              this.snackBar.open(`Konnte Nutzer nicht hinzufügen: ${err.code} ${err.info} `, 'Fehler', {duration: 5000});
+              return of(false)
+            })).subscribe(
                 respOk => {
                   if (respOk !== false) {
                     this.snackBar.open('Nutzer hinzugefügt', '', {duration: 1000});
                     this.updateObjectList();
                   } else {
                     this.mds.setSpinnerOff();
-                    this.snackBar.open('Konnte Nutzer nicht hinzufügen', 'Fehler', {duration: 1000});
                   }
                 });
         }
@@ -179,13 +185,15 @@ export class UsersComponent implements OnInit {
           if (result !== false) {
             this.mds.setSpinnerOn();
             this.bs.changePassword(selectedRows[0]['id'],
-                (<FormGroup>result).get('pw').value).subscribe(
+                (<FormGroup>result).get('pw').value)
+              .pipe(catchError((err: ApiError) => {
+                this.snackBar.open(`Konnte Kennwort nicht ändern: ${err.code} ${err.info} `, 'Fehler', {duration: 5000});
+                return of(false)
+              })).subscribe(
                   respOk => {
                     this.mds.setSpinnerOff();
                     if (respOk !== false) {
                       this.snackBar.open('Kennwort geändert', '', {duration: 1000});
-                    } else {
-                      this.snackBar.open('Konnte Kennwort nicht ändern', 'Fehler', {duration: 1000});
                     }
                   });
           }

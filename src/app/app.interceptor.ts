@@ -49,39 +49,42 @@ export class AuthInterceptor implements HttpInterceptor {
               let goToLoginPage = false;
               let label = 'Unbekanntes Verbindungsproblem';
               switch (httpError.status) {
-                case 400: {
+                case 202:
+                case 204:
+                case 207:
+                case 400:
                   ignoreError = true;
-                  // apiError.info = ?? TODO - from request body
+                  // apiError.info contains error = body
                   break;
-                }
-                case 401: {
+
+                case 401:
                   goToLoginPage = true;
                   label = 'Bitte für diese Aktion erst anmelden!';
                   break;
-                }
-                case 403: {
+
+                case 403:
                   label = 'Für diese Funktion haben Sie keine Berechtigung.';
                   break;
-                }
-                case 404: {
+
+                case 404:
                   label = 'Daten/Objekt nicht gefunden.';
                   break;
-                }
-                case 410: {
+
+                case 410:
                   goToLoginPage = true;
                   label = 'Anmeldung abgelaufen. Bitte erneut anmelden!';
                   break;
-                }
-                case 422: {
+
+                case 422:
                   ignoreError = true;
                   // apiError.info = ?? TODO - from request body
                   label = 'Die übermittelten Objekte sind fehlerhaft!';
                   break;
-                }
-                case 500: {
+
+                case 500:
                   label = 'Allgemeines Server-Problem.';
                   break;
-                }
+
               }
               if (!ignoreError) {
                 if (goToLoginPage) {
