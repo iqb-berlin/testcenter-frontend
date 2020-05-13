@@ -146,10 +146,10 @@ export class UsersComponent implements OnInit {
                       this.updateObjectList();
                     } else if (respCode === 403) {
                       this.mds.setSpinnerOff();
-                      this.snackBar.open('Konnte Status nicht ändern (fehlende Berechtigung)', 'Fehler', {duration: 1000});
+                      this.snackBar.open('Konnte Status nicht ändern (falsches Kennwort?)', 'Fehler', {duration: 5000});
                     } else {
                       this.mds.setSpinnerOff();
-                      this.snackBar.open(`Konnte Status nicht ändern (Fehlercode ${respCode})`, 'Fehler', {duration: 1000});
+                      this.snackBar.open(`Konnte Status nicht ändern (Fehlercode ${respCode})`, 'Fehler', {duration: 5000});
                     }
                   });
               }
