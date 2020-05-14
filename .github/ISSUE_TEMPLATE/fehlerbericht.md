@@ -13,13 +13,24 @@ assignees: ''
 - Was sollte passieren?
 - Wie kann man es Schritt für Schritt reproduzieren?
 
-- ggf. Fehler-Ausgabe auf der Browserkonsole
+```
+ggf. Fehler-Ausgabe auf der Browserkonsole
+```
 
-# Fehler-Kontext
-**Server**: 
+# Kontext
+**Server**: OCBA / Local / etc.
+
+**Frontend-Version**: 2.0.1
+
+**Backend-Version**: 
+
 **Testdaten (player etc.)**:
-**URL**:
+
+**URL**: 
+
 **Modus**:
+
 **Browser**: 
+
 
 # Screenshot
