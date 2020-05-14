@@ -53,6 +53,9 @@ export class LoginComponent  implements OnInit, OnDestroy {
           const errCode = authData as number;
           if (errCode === 400) {
             this.problemText = 'Anmeldedaten sind nicht gültig. Bitte nocheinmal versuchen!';
+          } else if (errCode === 202 || errCode === 204) {
+            this.problemText = 'Anmeldedaten sind gültig, aber es sind keine Arbeitsbereiche oder Tests freigegeben.';
+
           } else {
             this.problemText = 'Problem bei der Anmeldung.';
             // app.interceptor will show error message

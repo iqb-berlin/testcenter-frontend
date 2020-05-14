@@ -9,7 +9,7 @@ import {FormGroup, Validators, FormControl} from '@angular/forms';
 
 export class NewpasswordComponent {
   newpasswordform = new FormGroup({
-    pw: new FormControl('', [Validators.required, Validators.minLength(3)])
+    pw: new FormControl('', [Validators.required, Validators.minLength(7)])
   });
 
   constructor(

@@ -9,6 +9,6 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 export class NewuserComponent {
   newuserform = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.minLength(3)]),
-    pw: new FormControl('', [Validators.required, Validators.minLength(3)])
+    pw: new FormControl('', [Validators.required, Validators.minLength(7)])
   });
 }

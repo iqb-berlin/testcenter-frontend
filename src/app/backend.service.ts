@@ -38,7 +38,7 @@ export class BackendService {
               if (errCode === 400) {
                 return this.http
                   .put<AuthData>(this.serverUrl + 'session/login', {name, password})
-                  .pipe(catchError(errCode => of(errCode)));
+                  .pipe(catchError((err: ApiError) => of(err.code)));
               } else {
                 return of(errCode);
               }
