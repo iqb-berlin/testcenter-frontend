@@ -146,7 +146,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           }
           let testletLabel: string = childElements[childIndex].getAttribute('label');
           testletLabel = testletLabel ? testletLabel.trim() : '';
-          console.log('+ >' + testletLabel + '<');
 
           this.addTestletContentFromBookletXml(targetTestlet.addTestlet(testletId, testletLabel), childElements[childIndex]);
         }
