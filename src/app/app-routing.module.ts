@@ -6,7 +6,7 @@ import {SysCheckStarterComponent} from "./app-root/sys-check-starter/sys-check-s
 import {AdminStarterComponent} from "./app-root/admin-starter/admin-starter.component";
 import {CodeInputComponent} from "./app-root/code-input/code-input.component";
 import {
-  AdminComponentActivateGuard,
+  AdminComponentActivateGuard, AdminOrSuperAdminComponentActivateGuard,
   CodeInputComponentActivateGuard,
   DirectLoginActivateGuard,
   RouteDispatcherActivateGuard, SuperAdminComponentActivateGuard, TestComponentActivateGuard
@@ -36,7 +36,7 @@ const routes: Routes = [
       {
         path: 'admin-starter',
         component: AdminStarterComponent,
-        canActivate: [AdminComponentActivateGuard, SuperAdminComponentActivateGuard]
+        canActivate: [AdminOrSuperAdminComponentActivateGuard]
       },
       {
         path: 'route-dispatcher',
@@ -75,6 +75,8 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
   providers: [RouteDispatcherActivateGuard, DirectLoginActivateGuard, CodeInputComponentActivateGuard,
-    AdminComponentActivateGuard, SuperAdminComponentActivateGuard, TestComponentActivateGuard]
+    AdminComponentActivateGuard, SuperAdminComponentActivateGuard, TestComponentActivateGuard,
+    AdminOrSuperAdminComponentActivateGuard
+  ]
 })
 export class AppRoutingModule { }
