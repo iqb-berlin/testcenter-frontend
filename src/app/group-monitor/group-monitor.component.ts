@@ -14,7 +14,7 @@ export class GroupMonitorComponent implements OnInit {
 
   }
 
-  displayedColumns: string[] = ['name', 'personStatus', 'test', 'testStatus', 'unit', 'unitStatus'];
+  displayedColumns: string[] = ['status', 'name', 'personStatus', 'test', 'testStatus', 'unit', 'unitStatus'];
 
   dataSource$: Observable<any>;
   clientCount$: Observable<number>;
