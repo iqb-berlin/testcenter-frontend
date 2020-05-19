@@ -4,7 +4,7 @@ import {GroupMonitorComponent} from "./group-monitor.component";
 
 
 const routes: Routes = [
-  {path: '', component: GroupMonitorComponent}
+  {path: ':ws', component: GroupMonitorComponent}
 ];
 
 @NgModule({

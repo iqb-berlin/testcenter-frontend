@@ -225,3 +225,37 @@ export class TestComponentActivateGuard implements CanActivate {
     }
   }
 }
+
+
+@Injectable({
+  providedIn: 'root'
+})
+export class GroupMonitorActivateGuard implements CanActivate {
+
+  constructor(
+      private router: Router
+  ) {}
+
+  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot)
+      : boolean {
+
+        const authData = MainDataService.getAuthData();
+
+        if (authData) {
+          if (authData.access) {
+            if (authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
+              return true;
+            } else {
+              this.router.navigate(['/r']);
+              return false
+            }
+          } else {
+            this.router.navigate(['/r']);
+            return false
+          }
+        } else {
+          this.router.navigate(['/r']);
+          return false
+        }
+  }
+}

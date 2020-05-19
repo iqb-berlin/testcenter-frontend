@@ -8,12 +8,13 @@ import {CodeInputComponent} from "./app-root/code-input/code-input.component";
 import {
   AdminComponentActivateGuard, AdminOrSuperAdminComponentActivateGuard,
   CodeInputComponentActivateGuard,
-  DirectLoginActivateGuard,
+  DirectLoginActivateGuard, GroupMonitorActivateGuard,
   RouteDispatcherActivateGuard, SuperAdminComponentActivateGuard, TestComponentActivateGuard
-} from "./app-route-guards";
+} from './app-route-guards';
 import {TestStarterComponent} from "./app-root/test-starter/test-starter.component";
 import {RouteDispatcherComponent} from "./app-root/route-dispatcher/route-dispatcher.component";
 import {PrivacyComponent} from "./app-root/privacy/privacy.component";
+import {MonitorStarterComponent} from './app-root/monitor-starter/monitor-starter.component';
 
 
 const routes: Routes = [
@@ -22,12 +23,28 @@ const routes: Routes = [
     redirectTo: 'r/route-dispatcher',
     pathMatch: 'full'
   },
-  {path: 'r', component: AppRootComponent,
+  {
+    path: 'r',
+    component: AppRootComponent,
     children: [
-      {path: '', redirectTo: 'route-dispatcher', pathMatch: 'full'},
-      {path: 'login', redirectTo: 'route-dispatcher', pathMatch: 'full'},
-      {path: 'login/:returnTo', component: LoginComponent},
-      {path: 'check-starter', component: SysCheckStarterComponent},
+      {
+        path: '',
+        redirectTo: 'route-dispatcher',
+        pathMatch: 'full'
+      },
+      {
+        path: 'login',
+        redirectTo: 'route-dispatcher',
+        pathMatch: 'full'
+      },
+      {
+        path: 'login/:returnTo',
+        component: LoginComponent
+      },
+      {
+        path: 'check-starter',
+        component: SysCheckStarterComponent
+      },
       {
         path: 'test-starter',
         component: TestStarterComponent,
@@ -41,16 +58,28 @@ const routes: Routes = [
       {
         path: 'route-dispatcher',
         component: RouteDispatcherComponent,
-        canActivate: [RouteDispatcherActivateGuard]},
+        canActivate: [RouteDispatcherActivateGuard]
+      },
       {
         path: 'code-input',
         component: CodeInputComponent,
         canActivate: [CodeInputComponentActivateGuard]
+      },
+      {
+        path: 'monitor-starter',
+        component: MonitorStarterComponent,
+        canActivate: [GroupMonitorActivateGuard] // TODO, also: workspaceMonitor
       }
     ]
   },
-  {path: 'priv', component: PrivacyComponent},
-  {path: 'check', loadChildren: () => import('./sys-check/sys-check.module').then(m => m.SysCheckModule)},
+  {
+    path: 'priv',
+    component: PrivacyComponent
+  },
+  {
+    path: 'check',
+    loadChildren: () => import('./sys-check/sys-check.module').then(m => m.SysCheckModule)
+  },
   {
     path: 'admin',
     loadChildren: () => import('./workspace-admin/workspace.module').then(m => m.WorkspaceModule),
@@ -61,14 +90,25 @@ const routes: Routes = [
     loadChildren: () => import('./superadmin/superadmin.module').then(m => m.SuperadminModule),
     canActivate: [SuperAdminComponentActivateGuard]
   },
-  {path: 'wm', loadChildren: () => import('./workspace-monitor/workspace-monitor.module').then(m => m.WorkspaceMonitorModule)},
-  {path: 'gm', loadChildren: () => import('./group-monitor/group-monitor.module').then(m => m.GroupMonitorModule)},
+  {
+    path: 'wm',
+    loadChildren: () => import('./workspace-monitor/workspace-monitor.module').then(m => m.WorkspaceMonitorModule),
+  },
+  {
+    path: 'gm',
+    loadChildren: () => import('./group-monitor/group-monitor.module').then(m => m.GroupMonitorModule),
+    // canActivate: [GroupMonitorActivateGuard]
+  },
   {
     path: 't',
     loadChildren: () => import('./test-controller/test-controller.module').then(m => m.TestControllerModule),
     canActivate: [TestComponentActivateGuard]
   },
-  {path: '**', component: RouteDispatcherComponent, canActivate: [DirectLoginActivateGuard]}
+  {
+    path: '**',
+    component: RouteDispatcherComponent,
+    canActivate: [DirectLoginActivateGuard]
+  }
 ];
 
 @NgModule({
