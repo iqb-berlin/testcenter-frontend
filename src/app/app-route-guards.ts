@@ -139,6 +139,36 @@ export class AdminComponentActivateGuard implements CanActivate {
 @Injectable({
   providedIn: 'root'
 })
+export class AdminOrSuperAdminComponentActivateGuard implements CanActivate {
+  constructor( private router: Router ) {  }
+
+  canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+
+    const authData = MainDataService.getAuthData();
+    if (authData) {
+      if (authData.access) {
+        if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN] || authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
+          return true;
+        } else {
+          this.router.navigate(['/r']);
+          return false
+        }
+      } else {
+        this.router.navigate(['/r']);
+        return false
+      }
+    } else {
+      this.router.navigate(['/r']);
+      return false
+    }
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
 export class SuperAdminComponentActivateGuard implements CanActivate {
   constructor( private router: Router ) {  }
 

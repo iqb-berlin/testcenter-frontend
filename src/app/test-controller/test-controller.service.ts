@@ -16,7 +16,7 @@ import {
 import {BackendService} from './backend.service';
 import {Router} from "@angular/router";
 import {TestMode} from "../config/test-mode";
-import { BookletConfig } from '../config/booklet-config';
+import {BookletConfig} from '../config/booklet-config';
 
 @Injectable({
   providedIn: 'root'
@@ -214,7 +214,7 @@ export class TestControllerService {
     }
   }
   public addUnitLog(unitDbKey: string, logKey: LogEntryKey, entry = '') {
-    if (this.testMode.saveResponses) {
+    if (this.testMode.saveResponses && this.testStatus$.getValue() === TestStatus.RUNNING) {
       this.bs.addUnitLog(this.testId, Date.now(), unitDbKey,
             entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey).subscribe(ok => {
         if (!ok) {

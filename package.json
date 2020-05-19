@@ -1,6 +1,11 @@
 {
   "name": "itc-ng",
-  "version": "2.0.2",
+  "version": "2.0.3",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iqb-berlin/testcenter-iqb-ng"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
