@@ -128,7 +128,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           let myUnitAliasClear = myUnitAlias;
           let unitIdSuffix = 1;
           while (this.allUnitIds.indexOf(myUnitAliasClear) > -1) {
-            myUnitAliasClear = myUnitAlias + '%' + unitIdSuffix.toString();
+            myUnitAliasClear = myUnitAlias + '-' + unitIdSuffix.toString();
             unitIdSuffix += 1;
           }
           this.allUnitIds.push(myUnitAliasClear);
