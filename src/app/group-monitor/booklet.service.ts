@@ -42,7 +42,7 @@ export class BookletService {
 
         if (parseInt(testId) < 1) {
 
-            this.booklets[testId] = of(null);
+            this.booklets[testId] = new BehaviorSubject<Booklet|boolean>(false);
 
         } else {
 

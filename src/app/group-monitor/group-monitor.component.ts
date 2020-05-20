@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {BackendService} from './backend.service';
-import {Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 import {StatusUpdate} from './group-monitor.interfaces';
 import {Booklet, BookletService} from './booklet.service';
 
@@ -41,13 +41,13 @@ export class GroupMonitorComponent implements OnInit {
     });
   }
 
-  getBookletInfo(status: StatusUpdate): Observable<Booklet|boolean> {
+  getBookletInfo(status: StatusUpdate): Booklet|boolean {
 
     if ((typeof status.testState["status"] !== "undefined") && (status.testState["status"] === "locked")) {
       console.log('no need to load locked booklet', status.testId);
-      return of(null);
+      return false;
     }
 
-    return this.bookletsService.getBooklet(status.testId.toString());
+    return this.bookletsService.getBooklet(status.testId.toString()).getValue();
   }
 }
