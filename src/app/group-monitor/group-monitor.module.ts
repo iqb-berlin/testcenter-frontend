@@ -10,6 +10,7 @@ import { MatChipsModule } from "@angular/material/chips";
 import { CdkTableModule } from '@angular/cdk/table';
 
 import {BackendService} from './backend.service';
+import {BookletService} from './booklet.service';
 
 
 
@@ -27,7 +28,8 @@ import {BackendService} from './backend.service';
       MatChipsModule
   ],
   providers: [
-      BackendService
+      BackendService,
+      BookletService
   ],
 })
 export class GroupMonitorModule {

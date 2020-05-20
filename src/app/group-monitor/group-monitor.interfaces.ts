@@ -10,8 +10,6 @@ export interface StatusUpdate {
     testState: {
         [testStateKey: string]: string
     };
-    testStateKey?: string;
-    testStateValue?: string;
     unitName?: string;
     unitLabel?: string;
     unitState: {

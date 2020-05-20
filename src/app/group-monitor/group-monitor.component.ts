@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {BackendService} from './backend.service';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {StatusUpdate} from './group-monitor.interfaces';
+import {Booklet, BookletService} from './booklet.service';
 
 @Component({
   selector: 'app-group-monitor',
@@ -10,13 +11,14 @@ import {StatusUpdate} from './group-monitor.interfaces';
 })
 export class GroupMonitorComponent implements OnInit {
 
-  constructor(private bs: BackendService) {
+  constructor(
+      private bs: BackendService,
+      private bookletsService: BookletService,
+  ) {}
 
-  }
+  displayedColumns: string[] = ['status', 'name', 'personStatus', 'test', 'testStatus', 'unit', 'unitStatus', 'booklet'];
 
-  displayedColumns: string[] = ['status', 'name', 'personStatus', 'test', 'testStatus', 'unit', 'unitStatus'];
-
-  dataSource$: Observable<any>;
+  dataSource$: Observable<StatusUpdate[]>;
   clientCount$: Observable<number>;
   serviceConnected$: Observable<boolean>;
 
@@ -34,6 +36,18 @@ export class GroupMonitorComponent implements OnInit {
 
     this.dataSource$ = this.bs.observe<StatusUpdate[]>('status');
 
+    this.dataSource$.subscribe((status: StatusUpdate[]) => {
+      status.forEach((statusUpate: StatusUpdate) => this.getBookletInfo(statusUpate));
+    });
   }
 
+  getBookletInfo(status: StatusUpdate): Observable<Booklet|boolean> {
+
+    if ((typeof status.testState["status"] !== "undefined") && (status.testState["status"] === "locked")) {
+      console.log('no need to load locked booklet', status.testId);
+      return of(null);
+    }
+
+    return this.bookletsService.getBooklet(status.testId.toString());
+  }
 }

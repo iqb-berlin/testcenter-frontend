@@ -1,8 +1,11 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {Inject, Injectable} from '@angular/core';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import {WebSocketMessage} from 'rxjs/internal/observable/dom/WebSocketSubject';
-import {filter, map, share} from 'rxjs/operators';
+import {catchError, filter, map, share} from 'rxjs/operators';
+import {TestData} from '../test-controller/test-controller.interfaces';
+import {ApiError} from '../app.interfaces';
+import {HttpClient} from '@angular/common/http';
 
 
 interface WsMessage {
@@ -22,7 +25,10 @@ export class BackendService {
   public serviceConnected$ = new BehaviorSubject<boolean>(undefined);
 
 
-  constructor() {
+  constructor(
+      @Inject('SERVER_URL') private serverUrl: string,
+      private http: HttpClient
+  ) {
 
     this.serviceConnected$
         .pipe(filter((value: boolean) => (value !== undefined)))
@@ -121,4 +127,35 @@ export class BackendService {
         .pipe(map((event: WsMessage): T => event.data))
         .pipe(share());
   }
+
+
+  // === non websocket stuff -> TODO move to separate service
+
+  getTestData(testId: string): Observable<TestData | boolean> {
+
+    console.log("load booklet for " + testId);
+
+    return this.http
+        .get<TestData>(this.serverUrl + 'test/' + testId)
+        .pipe(
+            catchError((err: ApiError) => {
+              console.warn(`getTestData Api-Error: ${err.code} ${err.info} `);
+              return of(false)
+            })
+        );
+
+    //const loadingTestData = new BehaviorSubject<TestData | boolean>(true);
+    // const TODO_unsubscribeMe = this.http
+    //     .get<TestData>(this.serverUrl + 'test/' + testId)
+    //     .pipe(
+    //         catchError((err: ApiError) => {
+    //           console.warn(`getTestData Api-Error: ${err.code} ${err.info} `);
+    //           return of(false)
+    //         })
+    //     )
+    //     .subscribe(loadingTestData);
+    // return loadingTestData;
+  }
+
+
 }
