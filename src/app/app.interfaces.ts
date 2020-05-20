@@ -35,6 +35,7 @@ export interface BookletData {
   label: string;
   running: boolean;
   locked: boolean;
+  xml?: string; // in monitor
 }
 
 export interface KeyValuePairs {

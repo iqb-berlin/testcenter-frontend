@@ -5,8 +5,8 @@ import {MainDataService} from '../maindata.service';
 import {BackendService} from './backend.service';
 import {BehaviorSubject, of} from 'rxjs';
 import {isDefined} from '@angular/compiler/src/util';
-import {TestData} from '../test-controller/test-controller.interfaces';
 import {map} from 'rxjs/operators';
+import {BookletData} from '../app.interfaces';
 
 // TODO find a solution for shared classes
 
@@ -32,32 +32,33 @@ export class BookletService {
     ) { }
 
 
-    public getBooklet(testId: string): BehaviorSubject<Booklet|boolean> {
+    public getBooklet(bookletName: string): BehaviorSubject<Booklet|boolean> {
 
-        if (isDefined(this.booklets[testId])) {
+        if (isDefined(this.booklets[bookletName])) {
 
-            console.log('FORWARDING testlet data for ' + testId + '');
-            return this.booklets[testId];
+            console.log('FORWARDING testlet data for ' + bookletName + '');
+            return this.booklets[bookletName];
         }
 
-        if (parseInt(testId) < 1) {
+        if (bookletName == "") {
 
-            this.booklets[testId] = new BehaviorSubject<Booklet|boolean>(false);
+            console.log("EMPTY bookletID");
+            this.booklets[bookletName] = new BehaviorSubject<Booklet|boolean>(false);
 
         } else {
 
-            console.log('LOADING testlet data for ' + testId + ' not available. loading');
+            console.log('LOADING testlet data for ' + bookletName + ' not available. loading');
 
-            const loadingTestData = new BehaviorSubject<Booklet|boolean>(true);
-            const TODO_unsubscribeMe = this.bs.getTestData(testId)
-                .pipe(map((testData: TestData): string => testData.xml))
+            const loadingBooklet = new BehaviorSubject<Booklet|boolean>(true);
+            const TODO_unsubscribeMe = this.bs.getBooklet(bookletName)
+                .pipe(map((testData: BookletData): string => testData.xml))
                 .pipe(map(BookletService.getBookletFromXml))
-                .subscribe(loadingTestData);
+                .subscribe(loadingBooklet);
 
-            this.booklets[testId] = loadingTestData;
+            this.booklets[bookletName] = loadingBooklet;
         }
 
-        return this.booklets[testId];
+        return this.booklets[bookletName];
     }
 
 

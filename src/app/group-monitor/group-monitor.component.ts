@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {BackendService} from './backend.service';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {StatusUpdate} from './group-monitor.interfaces';
 import {Booklet, BookletService} from './booklet.service';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-group-monitor',
@@ -11,18 +12,30 @@ import {Booklet, BookletService} from './booklet.service';
 })
 export class GroupMonitorComponent implements OnInit {
 
-  constructor(
-      private bs: BackendService,
-      private bookletsService: BookletService,
-  ) {}
+  private workspacesId: string;
 
-  displayedColumns: string[] = ['status', 'name', 'personStatus', 'test', 'testStatus', 'unit', 'unitStatus', 'booklet'];
+  private routingSubscription: Subscription = null;
 
   dataSource$: Observable<StatusUpdate[]>;
   clientCount$: Observable<number>;
   serviceConnected$: Observable<boolean>;
 
+  displayedColumns: string[] = ['status', 'name', 'personStatus', 'test', 'testStatus', 'unit', 'unitStatus', 'booklet'];
+
+
+  constructor(
+      private route: ActivatedRoute,
+      private bs: BackendService,
+      private bookletsService: BookletService,
+  ) {}
+
+
   ngOnInit(): void {
+
+    this.routingSubscription = this.route.params.subscribe(params => {
+
+      this.workspacesId = params['ws'];
+    });
 
     console.log('going to connect');
 
@@ -41,13 +54,23 @@ export class GroupMonitorComponent implements OnInit {
     });
   }
 
+
+  ngOnDestroy() {
+
+    if (this.routingSubscription !== null) {
+      this.routingSubscription.unsubscribe();
+    }
+  }
+
+
   getBookletInfo(status: StatusUpdate): Booklet|boolean {
 
-    if ((typeof status.testState["status"] !== "undefined") && (status.testState["status"] === "locked")) {
-      console.log('no need to load locked booklet', status.testId);
-      return false;
-    }
+    // if ((typeof status.testState["status"] !== "undefined") && (status.testState["status"] === "locked")) {
+    //   console.log('no need to load locked booklet', status.testId);
+    //   return false;
+    // }
 
-    return this.bookletsService.getBooklet(status.testId.toString()).getValue();
+    // return this.bookletsService.getBooklet(status.testId.toString()).getValue();
+    return this.bookletsService.getBooklet(status.bookletName || "").getValue();
   }
 }
