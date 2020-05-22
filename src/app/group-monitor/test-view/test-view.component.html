@@ -6,7 +6,7 @@
         <span  *ngFor="let testlet of getChildren(booklet$.getValue())">
             <span
                     *ngIf="filterUnit(testlet) as unit"
-                    class="unit"
+                    class="{{(testStatus$.unitName === unit.id) ? 'unit current': 'unit'}}"
                     matTooltip="{{unit.title}}"
             >
                 {{unit.naviButtonLabel}}
@@ -15,7 +15,7 @@
 <!--            <b>{{testlet.constructor.name}}</b>-->
 <!--            <pre>{{testlet|json}}</pre>
 
-(testStatus$ && (testStatus$.getValue().unitName === unit.id)) ? 'unit current' :
+ :
 -->
 
     </div>

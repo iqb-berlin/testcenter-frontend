@@ -1,35 +1,23 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {Booklet} from '../booklet.service';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {Testlet, TestletContentElement, UnitDef} from '../../test-controller/test-controller.classes';
 import {StatusUpdate} from '../group-monitor.interfaces';
-import {map} from 'rxjs/operators';
+
 
 @Component({
   selector: 'test-view',
   templateUrl: './test-view.component.html',
   styleUrls: ['./test-view.component.css']
 })
-export class TestViewComponent implements OnInit {
+export class TestViewComponent {
 
   @Input() booklet$: BehaviorSubject<Booklet|boolean>;
-  @Input() testStatus$: BehaviorSubject<StatusUpdate>;
+  @Input() testStatus$: StatusUpdate;
 
   public firstLevelChildren$: Observable<TestletContentElement[]>;
 
   constructor() { }
-
-  ngOnInit(): void {
-
-      this.firstLevelChildren$ = this.booklet$
-          .pipe(map((booklet: Booklet|boolean) => {
-              console.log("RUNNIGN THROUGH A PIPE")
-              if ((booklet !== true) && (booklet !== false)) {
-                  return TestViewComponent.getChildrenFromTestlet(booklet.testlet);
-              }
-              return [];
-          })); // TODO unsubscribe later
-  }
 
 
   // TODO put on better place
