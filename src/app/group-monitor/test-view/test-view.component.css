@@ -1,0 +1,38 @@
+.testlet {
+    display: inline-block;
+    position: relative;
+}
+
+.testlet:before {
+    background: #003333;
+    /*width: 100%;*/
+    position: absolute;
+    content: " ";
+    top: 45%;
+    height: 10%;
+    left: 2em;
+    right: 2em;
+}
+
+/*.testlet:after {*/
+/*    clear: both;*/
+/*    content: "f";*/
+/*    display: block*/
+/*}*/
+
+.unit {
+    position: relative;
+    display: inline-block;
+    padding: 7px 12px;
+    margin: 2px;
+    border-radius: 16px;
+    align-items: center;
+    cursor: default;
+    text-transform: uppercase;
+    color: white;
+    background: #003333;
+}
+
+.unit.current {
+    background: darkred; /* TODO correct red */
+}

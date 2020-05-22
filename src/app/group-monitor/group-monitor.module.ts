@@ -11,13 +11,15 @@ import { CdkTableModule } from '@angular/cdk/table';
 
 import {BackendService} from './backend.service';
 import {BookletService} from './booklet.service';
+import { TestViewComponent } from './test-view/test-view.component';
 
 
 
 
 @NgModule({
   declarations: [
-      GroupMonitorComponent
+      GroupMonitorComponent,
+      TestViewComponent
   ],
   imports: [
       CommonModule,

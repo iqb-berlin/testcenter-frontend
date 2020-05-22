@@ -1,0 +1,25 @@
+<div *ngIf="(booklet$ | async) === true">Loading...</div>
+
+<div *ngIf="((booklet$ | async) !== true) && ((booklet$ | async) !== false)">
+
+    <div class="testlet">
+        <span  *ngFor="let testlet of getChildren(booklet$.getValue())">
+            <span
+                    *ngIf="filterUnit(testlet) as unit"
+                    class="unit"
+                    matTooltip="{{unit.title}}"
+            >
+                {{unit.naviButtonLabel}}
+            </span>
+        </span>
+<!--            <b>{{testlet.constructor.name}}</b>-->
+<!--            <pre>{{testlet|json}}</pre>
+
+(testStatus$ && (testStatus$.getValue().unitName === unit.id)) ? 'unit current' :
+-->
+
+    </div>
+
+</div>
+
+<div *ngIf="(booklet$ | async) === false">Nix is.</div>

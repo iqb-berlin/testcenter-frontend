@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {BackendService} from './backend.service';
-import {Observable, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {StatusUpdate} from './group-monitor.interfaces';
 import {Booklet, BookletService} from './booklet.service';
 import {ActivatedRoute} from '@angular/router';
@@ -21,6 +21,7 @@ export class GroupMonitorComponent implements OnInit {
   serviceConnected$: Observable<boolean>;
 
   displayedColumns: string[] = ['status', 'name', 'personStatus', 'test', 'testStatus', 'unit', 'unitStatus', 'booklet'];
+  sampleBooklet: BehaviorSubject<Booklet|boolean>;
 
 
   constructor(
@@ -52,6 +53,9 @@ export class GroupMonitorComponent implements OnInit {
     this.dataSource$.subscribe((status: StatusUpdate[]) => {
       status.forEach((statusUpate: StatusUpdate) => this.getBookletInfo(statusUpate));
     });
+
+    // this.sampleBooklet = this.bookletsService.getBooklet('BOOKLET.SAMPLE');
+
   }
 
 
@@ -63,7 +67,7 @@ export class GroupMonitorComponent implements OnInit {
   }
 
 
-  getBookletInfo(status: StatusUpdate): Booklet|boolean {
+  getBookletInfo(status: StatusUpdate): BehaviorSubject<Booklet|boolean> {
 
     // if ((typeof status.testState["status"] !== "undefined") && (status.testState["status"] === "locked")) {
     //   console.log('no need to load locked booklet', status.testId);
@@ -71,6 +75,6 @@ export class GroupMonitorComponent implements OnInit {
     // }
 
     // return this.bookletsService.getBooklet(status.testId.toString()).getValue();
-    return this.bookletsService.getBooklet(status.bookletName || "").getValue();
+    return this.bookletsService.getBooklet(status.bookletName || "");
   }
 }

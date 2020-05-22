@@ -13,6 +13,8 @@
 <div class="page-body">
   <div class="adminbackground">
 
+<!--    <test-view [booklet]="sampleBooklet"></test-view>-->
+
     <table mat-table [dataSource]="dataSource$">
 
       <ng-container matColumnDef="status">
@@ -65,8 +67,9 @@
       <ng-container matColumnDef="booklet">
         <th mat-header-cell *matHeaderCellDef>Debug</th>
         <td mat-cell *matCellDef="let element">
+          <test-view [booklet$]="getBookletInfo(element)" [testStatus$]="element"></test-view>
           <b>{{element.bookletName}}</b>
-          <pre>{{getBookletInfo(element) | json}}</pre>
+<!--          <pre>{{getBookletInfo(element) | json}}</pre>-->
         </td>
       </ng-container>
 
