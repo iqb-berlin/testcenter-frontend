@@ -9,7 +9,7 @@
                     class="{{(testStatus$.unitName === unit.id) ? 'unit current': 'unit'}}"
                     matTooltip="{{unit.title}}"
             >
-                {{unit.naviButtonLabel}}
+                {{unit.naviButtonLabel || "&nbsp;"}}
             </span>
         </span>
 <!--            <b>{{testlet.constructor.name}}</b>-->
