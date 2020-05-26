@@ -3,9 +3,9 @@ import {Testlet} from '../test-controller/test-controller.classes';
 import {BookletConfig} from '../config/booklet-config';
 import {MainDataService} from '../maindata.service';
 import {BackendService} from './backend.service';
-import {BehaviorSubject, of} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {isDefined} from '@angular/compiler/src/util';
-import {map} from 'rxjs/operators';
+import {map, shareReplay} from 'rxjs/operators';
 import {BookletData} from '../app.interfaces';
 
 // TODO find a solution for shared classes
@@ -24,7 +24,7 @@ export interface Booklet {
 export class BookletService {
 
 
-    public booklets: BehaviorSubject<Booklet>[] = [];
+    public booklets: Observable<Booklet>[] = [];
 
 
     constructor(
@@ -32,30 +32,27 @@ export class BookletService {
     ) { }
 
 
-    public getBooklet(bookletName: string): BehaviorSubject<Booklet|boolean> {
+    public getBooklet(bookletName: string): Observable<Booklet|boolean> {
 
         if (isDefined(this.booklets[bookletName])) {
 
-            console.log('FORWARDING testlet data for ' + bookletName + '');
+            // console.log('FORWARDING testlet data for ' + bookletName + '');
             return this.booklets[bookletName];
         }
 
         if (bookletName == "") {
 
-            console.log("EMPTY bookletID");
-            this.booklets[bookletName] = new BehaviorSubject<Booklet|boolean>(false);
+            // console.log("EMPTY bookletID");
+            this.booklets[bookletName] = of<Booklet|boolean>(false);
 
         } else {
 
-            console.log('LOADING testlet data for ' + bookletName + ' not available. loading');
+            // console.log('LOADING testlet data for ' + bookletName + ' not available. loading');
 
-            const loadingBooklet = new BehaviorSubject<Booklet|boolean>(true);
-            const TODO_unsubscribeMe = this.bs.getBooklet(bookletName)
+            this.booklets[bookletName] = this.bs.getBooklet(bookletName)
                 .pipe(map((testData: BookletData): string => testData.xml))
                 .pipe(map(BookletService.getBookletFromXml))
-                .subscribe(loadingBooklet);
-
-            this.booklets[bookletName] = loadingBooklet;
+                .pipe(shareReplay(1));
         }
 
         return this.booklets[bookletName];

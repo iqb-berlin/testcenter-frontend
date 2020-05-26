@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {BackendService} from './backend.service';
-import {BehaviorSubject, Observable, Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {StatusUpdate} from './group-monitor.interfaces';
-import {Booklet, BookletService} from './booklet.service';
 import {ActivatedRoute} from '@angular/router';
 
 @Component({
@@ -10,24 +9,22 @@ import {ActivatedRoute} from '@angular/router';
   templateUrl: './group-monitor.component.html',
   styleUrls: ['./group-monitor.component.css']
 })
-export class GroupMonitorComponent implements OnInit {
+export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   private workspacesId: string;
 
   private routingSubscription: Subscription = null;
 
-  dataSource$: Observable<StatusUpdate[]>;
+  sessions$: Observable<StatusUpdate[]>;
   clientCount$: Observable<number>;
   serviceConnected$: Observable<boolean>;
 
   displayedColumns: string[] = ['status', 'name', 'personStatus', 'test', 'testStatus', 'unit', 'unitStatus', 'booklet'];
-  sampleBooklet: BehaviorSubject<Booklet|boolean>;
 
 
   constructor(
       private route: ActivatedRoute,
       private bs: BackendService,
-      private bookletsService: BookletService,
   ) {}
 
 
@@ -48,14 +45,11 @@ export class GroupMonitorComponent implements OnInit {
       console.log('connection-status', s);
     });
 
-    this.dataSource$ = this.bs.observe<StatusUpdate[]>('status');
+    this.sessions$ = this.bs.observe<StatusUpdate[]>('status');
 
-    this.dataSource$.subscribe((status: StatusUpdate[]) => {
-      status.forEach((statusUpate: StatusUpdate) => this.getBookletInfo(statusUpate));
-    });
-
-    // this.sampleBooklet = this.bookletsService.getBooklet('BOOKLET.SAMPLE');
-
+    // this.dataSource$.subscribe((status: StatusUpdate[]) => {
+    //   status.forEach((statusUpate: StatusUpdate) => this.getBookletInfo(statusUpate));
+    // });
   }
 
 
@@ -67,14 +61,8 @@ export class GroupMonitorComponent implements OnInit {
   }
 
 
-  getBookletInfo(status: StatusUpdate): BehaviorSubject<Booklet|boolean> {
+  trackSession(index: number, session: StatusUpdate) {
 
-    // if ((typeof status.testState["status"] !== "undefined") && (status.testState["status"] === "locked")) {
-    //   console.log('no need to load locked booklet', status.testId);
-    //   return false;
-    // }
-
-    // return this.bookletsService.getBooklet(status.testId.toString()).getValue();
-    return this.bookletsService.getBooklet(status.bookletName || "");
+    return session.personId + '|' + session.testId;
   }
 }

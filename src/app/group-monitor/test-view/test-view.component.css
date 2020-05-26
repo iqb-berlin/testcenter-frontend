@@ -35,5 +35,14 @@
 }
 
 .unit.current {
-    background: green
+    background: #b2ff59;
+    color: #003333
+}
+
+.featured-unit {
+    background: #b2ff59;
+    padding: 7px 12px;
+    margin: 2px;
+    border-radius: 16px;
+    color: #003333;
 }
