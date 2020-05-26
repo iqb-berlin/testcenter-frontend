@@ -30,7 +30,7 @@ export class TestViewComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
 
-        // console.log('NEW:' + this.testStatus.testId, this.testStatus.bookletName);
+        console.log('NEW:' + this.testStatus.testId, this.testStatus.bookletName);
 
         this.booklet$ = this.getBookletInfo(this.testStatus);
 
@@ -73,9 +73,21 @@ export class TestViewComponent implements OnInit, OnDestroy {
     }
 
 
-    filterUnit(testlet: TestletContentElement): UnitDef|null {
+    filterUnits(testlet: TestletContentElement): UnitDef|null {
 
-      return (testlet instanceof UnitDef) ? testlet : null;
+        return (testlet instanceof UnitDef) ? testlet : null;
+    }
+
+
+    filterUnit(testlet: TestletContentElement, unitId: string): UnitDef|null {
+
+        return ((testlet instanceof UnitDef) && (testlet.id === unitId)) ? testlet : null;
+    }
+
+
+    hasState(stateObject: object, key: string, value: any): boolean {
+
+        return ((typeof stateObject[key] !== "undefined") && (stateObject[key] === value));
     }
 
 

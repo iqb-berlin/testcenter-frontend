@@ -18,13 +18,13 @@
     <table *ngFor="let session of sessions$ | async; trackBy: trackSession">
 
       <tr>
-        <td matTooltip="{{session.personId}}"><i class="material-icons">face</i></td>
+        <td matTooltip="{{session.personId}} on {{session.testId}}"><i class="material-icons">face</i></td>
 
-        <td matTooltip="{{session.personId}}">{{session.personLabel}}</td>
+        <td>{{session.personLabel}}</td>
 
         <td>{{session.personStatus}}</td>
 
-        <td matTooltip="{{session.testId}}">{{session.testLabel}}</td>
+<!--        <td matTooltip="{{session.testId}}">{{session.testLabel}}</td>-->
 
         <td>
           <table>
@@ -34,18 +34,18 @@
           </table>
         </td>
 
-        <td>{{session.unitName}}</td>
+<!--        <td>{{session.unitName}}</td>-->
+
+<!--        <td>-->
+<!--          <table>-->
+<!--            <tr *ngFor="let item of session.unitState | keyvalue">-->
+<!--              <td>{{item.key}}</td><td>{{item.value}}</td>-->
+<!--            </tr>-->
+<!--          </table>-->
+<!--        </td>-->
 
         <td>
-          <table>
-            <tr *ngFor="let item of session.unitState | keyvalue">
-              <td>{{item.key}}</td><td>{{item.value}}</td>
-            </tr>
-          </table>
-        </td>
-
-        <td>
-          <b>{{session.bookletName}}</b>
+<!--          <b>{{session.bookletName}}</b>-->
           <test-view [testStatus]="session"></test-view>
         </td>
       </tr>
