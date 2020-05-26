@@ -22,16 +22,18 @@
 
         </div>
 
-        <span *ngFor="let testlet of units; trackBy: trackUnits ">
-            <div class="featured-unit" *ngIf="filterUnit(testlet, testStatus.unitName) as unit">
-                <div class="title">{{unit.title}}</div>
-                <div class="badges">
-                    <span *ngIf="hasState(testStatus.unitState, 'PRESENTATIONCOMPLETE', 'yes')" class="material-icons">
+        <span *ngFor="let testlet of units; trackBy: trackUnits; let i = index">
+            <div class="featured-unit" *ngIf="filterUnit(testlet, testStatus.unitName) as unit" [ngClass]="{'first': i == 0}">
+                <div class="title">
+                    <div>{{unit.title || 'Ohne Titel'}}</div>
+                    <div *ngIf="hasState(testStatus.unitState, 'PRESENTATIONCOMPLETE', 'yes')" class="material-icons unit-badge">
                         remove_red_eye
-                    </span>
+                    </div>
                 </div>
 
-                <div class="state"><pre>{{testStatus.unitState | json}}</pre></div>
+
+<!--                <div class="state"><pre>{{testStatus.unitState | json}}</pre></div>-->
+<!--                <div class="state"><pre>{{unit | json}}</pre></div>-->
             </div>
         </span>
 

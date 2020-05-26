@@ -15,9 +15,9 @@
 
 <!--    <test-view [booklet]="sampleBooklet"></test-view>-->
 
-    <table *ngFor="let session of sessions$ | async; trackBy: trackSession">
+    <table>
 
-      <tr>
+      <tr *ngFor="let session of sessions$ | async; trackBy: trackSession">
         <td matTooltip="{{session.personId}} on {{session.testId}}"><i class="material-icons">face</i></td>
 
         <td>{{session.personLabel}}</td>

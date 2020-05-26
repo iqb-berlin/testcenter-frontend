@@ -20,12 +20,6 @@
     right: 0.5em;
 }
 
-/*.testlet:after {*/
-/*    clear: both;*/
-/*    content: "f";*/
-/*    display: block*/
-/*}*/
-
 .unit {
     position: relative;
     display: inline-block;
@@ -37,6 +31,8 @@
     text-transform: uppercase;
     color: white;
     background: #003333;
+    min-width: 1em;
+    text-align: center;
 }
 
 .unit.current {
@@ -52,4 +48,18 @@
     margin: 0 2px;
     border-radius: 16px;
     color: #003333;
+}
+
+.featured-unit.first {
+    border-top-left-radius: 0;
+}
+
+.featured-unit .title {
+    display: inline-flex;
+    vertical-align: middle;
+    align-items: center;
+}
+
+.featured-unit .unit-badge {
+    margin-left: 0.5em;
 }
