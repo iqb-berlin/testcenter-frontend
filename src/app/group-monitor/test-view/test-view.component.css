@@ -3,28 +3,28 @@
     font-size: 100%;
 }
 
-.testlet {
+.units {
     display: inline-block;
     position: relative;
     white-space: nowrap;
 }
 
-.testlet:before {
+.units:before {
     background: #003333;
     /*width: 100%;*/
     position: absolute;
     content: " ";
     top: 45%;
     height: 10%;
-    left: 0.5em;
-    right: 0.5em;
+    left: 3px;
+    right: 3px;
 }
 
 .unit {
     position: relative;
     display: inline-block;
     padding: 7px 12px;
-    margin: 2px 2px 0 2px;
+    margin: 2px;
     border-radius: 16px;
     align-items: center;
     cursor: default;
@@ -38,8 +38,14 @@
 .unit.current {
     background: #b2ff59;
     color: #003333;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+}
+
+.testlet {
+    display: inline-block;
+    padding: 3px 4px;
+    margin: 2px;
+    border-radius: 20px;
+    border: 2px solid #003333;
 }
 
 .featured-unit {

@@ -25,7 +25,7 @@ export class BookletService {
 
         if (isDefined(this.booklets[bookletName])) {
 
-            // console.log('FORWARDING testlet data for ' + bookletName + '');
+            // console.log('FORWARDING testletOrUnit data for ' + bookletName + '');
             return this.booklets[bookletName];
         }
 
@@ -36,7 +36,7 @@ export class BookletService {
 
         } else {
 
-            // console.log('LOADING testlet data for ' + bookletName + ' not available. loading');
+            // console.log('LOADING testletOrUnit data for ' + bookletName + ' not available. loading');
 
             this.booklets[bookletName] = this.bs.getBooklet(bookletName)
                 .pipe(map((testData: BookletData): string => testData.xml))

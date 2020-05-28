@@ -4,38 +4,27 @@
     <div class="booklet">
 
         <h1>{{booklet.metadata.label}}</h1>
-        <div class="testlet">
 
-            <span *ngFor="let testlet of booklet.units.children; trackBy: trackUnits">
-                <span
-                        *ngIf="filterUnits(testlet) as unit"
-                        class="{{(testStatus.unitName === unit.id) ? 'unit current': 'unit'}}"
-                        matTooltip="{{unit.label}}"
-                >
-                    {{unit.labelShort || "&nbsp;"}}
-                </span>
-<!--                <b>{{testlet.constructor.name}}</b>-->
-<!--                <pre>{{testlet|json}}</pre>-->
-            </span>
+        <div *ngIf="booklet.units as testlet" class="units">
 
-
+            <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testlet}"></ng-container>
         </div>
 
-        <span *ngFor="let testlet of units; trackBy: trackUnits; let i = index">
-            <div class="featured-unit" *ngIf="filterUnit(testlet, testStatus.unitName) as unit" [ngClass]="{'first': i == 0}">
-                <div class="title">
-                    <div>{{unit.title || 'Ohne Titel'}}</div>
-                    <div *ngIf="hasState(testStatus.unitState, 'PRESENTATIONCOMPLETE', 'yes')" class="material-icons unit-badge">
-                        remove_red_eye
-                    </div>
-                </div>
+<!--        <span *ngFor="let testletOrUnit of units; trackBy: trackUnits; let i = index">-->
+<!--            <div class="featured-unit" *ngIf="filterUnit(testletOrUnit, testStatus.unitName) as unit" [ngClass]="{'first': i == 0}">-->
+<!--                <div class="title">-->
+<!--                    <div>{{unit.title || 'Ohne Titel'}}</div>-->
+<!--                    <div *ngIf="hasState(testStatus.unitState, 'PRESENTATIONCOMPLETE', 'yes')" class="material-icons unit-badge">-->
+<!--                        remove_red_eye-->
+<!--                    </div>-->
+<!--                </div>-->
 
 
-<!--                <div class="state"><pre>{{testStatus.unitState | json}}</pre></div>-->
-<!--                <div class="state"><pre>{{testStatus.testState | json}}</pre></div>-->
-<!--                <div class="state"><pre>{{unit | json}}</pre></div>-->
-            </div>
-        </span>
+<!--&lt;!&ndash;                <div class="state"><pre>{{testStatus.unitState | json}}</pre></div>&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="state"><pre>{{testStatus.testState | json}}</pre></div>&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="state"><pre>{{unit | json}}</pre></div>&ndash;&gt;-->
+<!--            </div>-->
+<!--        </span>-->
 
     </div>
 
@@ -43,6 +32,25 @@
 
 
 </div>
+
+
+<ng-template #testletTemplate let-testlet>
+
+    <ng-container *ngFor="let testletOrUnit of testlet.children; trackBy: trackUnits" [ngSwitch]="getTestletType(testletOrUnit)">
+
+        <span *ngSwitchCase="'unit'"
+              class="{{(testStatus.unitName === testletOrUnit.id) ? 'unit current': 'unit'}}"
+              matTooltip="{{testletOrUnit.label}}"
+        >{{testletOrUnit.labelShort || "&nbsp;"}}
+        </span>
+
+        <span *ngSwitchCase="'testletOrUnit'" class="testlet">
+            <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testletOrUnit}"></ng-container>
+        </span>
+        <!--                <pre>{{testletOrUnit|json}}</pre>-->
+    </ng-container>
+</ng-template>
+
 
 <ng-template #noBooklet>
     <div class="booklet">

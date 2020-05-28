@@ -55,22 +55,33 @@ export class TestViewComponent implements OnInit, OnDestroy {
     }
 
 
-    filterUnits(testletOrUnit: Testlet|Unit): Unit|null|Testlet { // TODO tmp.
+    // filterUnits(testletOrUnit: Testlet|Unit): Unit|null|Testlet { // TODO tmp.
+    //
+    //     return (typeof testletOrUnit['children'] === "undefined") ? testletOrUnit : null;
+    // }
+    //
+    //
+    // filterUnit(testletOrUnit: Testlet|Unit, unitId: string): Unit|null|Testlet { // TODO tmp.
+    //
+    //     return (isUnit(testletOrUnit) && (testletOrUnit['id'] === unitId)) ? testletOrUnit : null;
+    // }
 
-        return (typeof testletOrUnit['children'] === "undefined") ? testletOrUnit : null;
+
+    getTestletType(testletOrUnit: Testlet): 'testletOrUnit' | 'unit' {
+
+        if (('id' in testletOrUnit) && ('label' in testletOrUnit)) {
+            return 'unit';
+        }
+
+        if ('children' in testletOrUnit) {
+            return 'testletOrUnit';
+        }
     }
 
-
-    filterUnit(testlet: Testlet|Unit, unitId: string): Unit|null|Testlet { // TODO tmp.
-
-        return (this.isUnit(testlet) && (testlet['id'] === unitId)) ? testlet : null;
-    }
-
-
-    isUnit(testletOrUnit: Testlet|Unit): boolean {
-
-        return (typeof testletOrUnit['children'] === "undefined");
-    }
+    // isUnit(testletOrUnit: Testlet|Unit): boolean {
+    //
+    //     return (typeof testletOrUnit['children'] === "undefined");
+    // }
 
 
     hasState(stateObject: object, key: string, value: any): boolean {
