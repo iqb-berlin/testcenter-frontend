@@ -1,3 +1,5 @@
+import {BookletConfig} from '../config/booklet-config';
+
 export interface StatusUpdate {
 
     personId: number;
@@ -15,4 +17,40 @@ export interface StatusUpdate {
         [unitStateKey: string]: string
     };
     timestamp: number;
+}
+
+export interface Booklet {
+    metadata: BookletMetadata;
+    config: BookletConfig;
+    restrictions?: Restrictions;
+    units: Testlet;
+}
+
+export interface BookletMetadata {
+    id: string;
+    label: string;
+    description: string;
+    owner?: string;
+    lastchange?: string;
+    status?: string;
+    project?: string;
+}
+
+export interface Testlet {
+    restrictions?: Restrictions;
+    children: (Unit|Testlet)[];
+}
+
+export interface Unit {
+    id: string;
+    label: string;
+    labelShort: string;
+}
+
+export interface Restrictions {
+    codeToEnter?: {
+        code: string;
+        message: string;
+    }
+    timeMax?: number;
 }

@@ -18,21 +18,22 @@
     <table>
 
       <tr *ngFor="let session of sessions$ | async; trackBy: trackSession">
-        <td matTooltip="{{session.personId}} on {{session.testId}}"><i class="material-icons">face</i></td>
 
-        <td>{{session.personLabel}}</td>
+        <td matTooltip="{{session.personId}} on {{session.testId}}">
+            <i class="material-icons">face</i> {{session.personLabel}}: {{session.personStatus}}
+        </td>
 
-        <td>{{session.personStatus}}</td>
+<!--        <td></td>-->
 
 <!--        <td matTooltip="{{session.testId}}">{{session.testLabel}}</td>-->
 
-        <td>
-          <table>
-            <tr *ngFor="let item of session.testState | keyvalue">
-              <td>{{item.key}}</td><td>{{item.value}}</td>
-            </tr>
-          </table>
-        </td>
+<!--        <td>-->
+<!--          <table>-->
+<!--            <tr *ngFor="let item of session.testState | keyvalue">-->
+<!--              <td>{{item.key}}</td><td>{{item.value}}</td>-->
+<!--            </tr>-->
+<!--          </table>-->
+<!--        </td>-->
 
 <!--        <td>{{session.unitName}}</td>-->
 

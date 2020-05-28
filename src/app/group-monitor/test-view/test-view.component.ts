@@ -1,8 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Booklet, BookletService} from '../booklet.service';
+import {BookletService} from '../booklet.service';
 import {Observable} from 'rxjs';
-import {Testlet, TestletContentElement, UnitDef} from '../../test-controller/test-controller.classes';
-import {StatusUpdate} from '../group-monitor.interfaces';
+import {Booklet, StatusUpdate, Testlet, Unit} from '../group-monitor.interfaces';
 
 
 @Component({
@@ -15,8 +14,7 @@ export class TestViewComponent implements OnInit, OnDestroy {
     @Input() testStatus: StatusUpdate;
 
     public booklet$: Observable<boolean|Booklet>;
-    public units$: Observable<TestletContentElement[]>;
-    public units: TestletContentElement[];
+    public units: (Testlet|Unit)[];
     public session: Observable<StatusUpdate>;
 
     private childrenSubscription;
@@ -32,7 +30,7 @@ export class TestViewComponent implements OnInit, OnDestroy {
 
         console.log('NEW:' + this.testStatus.testId, this.testStatus.bookletName);
 
-        this.booklet$ = this.getBookletInfo(this.testStatus);
+        this.booklet$ = this.bookletsService.getBooklet(this.testStatus.bookletName || "");
 
         this.childrenSubscription = this.booklet$.subscribe((booklet: Booklet|boolean) => {
             this.units = this.getChildren(booklet);
@@ -46,42 +44,32 @@ export class TestViewComponent implements OnInit, OnDestroy {
     }
 
 
-    // TODO put on better place
 
-    static getChildrenFromTestlet(testlet: Testlet): TestletContentElement[] {
-
-      return testlet.children
-          .sort((element: TestletContentElement): number => {
-              if (element.sequenceId == element.sequenceId) return 0;
-              if (element.sequenceId > element.sequenceId) return 1;
-              if (element.sequenceId > element.sequenceId) return -1;
-          });
-    }
-
-
-    getChildren(booklet: Booklet|boolean): TestletContentElement[] {
-
-        if ((booklet === null)) {
-            console.log("NULL");
-        }
+    getChildren(booklet: Booklet|boolean): (Testlet|Unit)[] {
 
         if ((booklet !== null) && (booklet !== true) && (booklet !== false)) {
-            return TestViewComponent.getChildrenFromTestlet(booklet.testlet);
+            return booklet.units.children;
         }
 
         return [];
     }
 
 
-    filterUnits(testlet: TestletContentElement): UnitDef|null {
+    filterUnits(testletOrUnit: Testlet|Unit): Unit|null|Testlet { // TODO tmp.
 
-        return (testlet instanceof UnitDef) ? testlet : null;
+        return (typeof testletOrUnit['children'] === "undefined") ? testletOrUnit : null;
     }
 
 
-    filterUnit(testlet: TestletContentElement, unitId: string): UnitDef|null {
+    filterUnit(testlet: Testlet|Unit, unitId: string): Unit|null|Testlet { // TODO tmp.
 
-        return ((testlet instanceof UnitDef) && (testlet.id === unitId)) ? testlet : null;
+        return (this.isUnit(testlet) && (testlet['id'] === unitId)) ? testlet : null;
+    }
+
+
+    isUnit(testletOrUnit: Testlet|Unit): boolean {
+
+        return (typeof testletOrUnit['children'] === "undefined");
     }
 
 
@@ -91,21 +79,8 @@ export class TestViewComponent implements OnInit, OnDestroy {
     }
 
 
-    public trackUnits(index: number, testlet: TestletContentElement) {
+    public trackUnits(index: number, testlet: Testlet|Unit): string {
 
-        return testlet.id;
+        return testlet['id'] || index.toString();
     }
-
-
-    getBookletInfo(status: StatusUpdate): Observable<Booklet|boolean> {
-
-        // if ((typeof status.testState["status"] !== "undefined") && (status.testState["status"] === "locked")) {
-        //   console.log('no need to load locked booklet', status.testId);
-        //   return false;
-        // }
-
-        return this.bookletsService.getBooklet(status.bookletName || "");
-    }
-
-
 }

@@ -1,24 +1,23 @@
+<!--    <pre>{{booklet$|async|json}}</pre>-->
 <div *ngIf="(booklet$ | async) as booklet; else: noBooklet">
-
-
-<!--    <div *ngIf="(booklet !== true) && (booklet !== false)">-->
 
     <div class="booklet">
 
-        <h1>{{booklet.testlet.title}}</h1>
+        <h1>{{booklet.metadata.label}}</h1>
         <div class="testlet">
 
-        <span *ngFor="let testlet of units; trackBy: trackUnits ">
-            <span
-                    *ngIf="filterUnits(testlet) as unit"
-                    class="{{(testStatus.unitName === unit.id) ? 'unit current': 'unit'}}"
-                    matTooltip="{{unit.title}}"
-            >
-                {{unit.naviButtonLabel || "&nbsp;"}}
+            <span *ngFor="let testlet of booklet.units.children; trackBy: trackUnits">
+                <span
+                        *ngIf="filterUnits(testlet) as unit"
+                        class="{{(testStatus.unitName === unit.id) ? 'unit current': 'unit'}}"
+                        matTooltip="{{unit.label}}"
+                >
+                    {{unit.labelShort || "&nbsp;"}}
+                </span>
+<!--                <b>{{testlet.constructor.name}}</b>-->
+<!--                <pre>{{testlet|json}}</pre>-->
             </span>
-        </span>
-            <!--            <b>{{testlet.constructor.name}}</b>-->
-            <!--            <pre>{{testlet|json}}</pre>-->
+
 
         </div>
 
@@ -46,5 +45,7 @@
 </div>
 
 <ng-template #noBooklet>
-    Nix is.
+    <div class="booklet">
+        <h1>Noch kein Test gestarted.</h1>
+    </div>
 </ng-template>

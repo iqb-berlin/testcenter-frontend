@@ -48,7 +48,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.sessions$ = this.bs.observe<StatusUpdate[]>('status');
 
     // this.dataSource$.subscribe((status: StatusUpdate[]) => {
-    //   status.forEach((statusUpate: StatusUpdate) => this.getBookletInfo(statusUpate));
+    //   status.forEach((statusUpate: StatusUpdate) => this.getBooklet(statusUpate));
     // });
   }
 
