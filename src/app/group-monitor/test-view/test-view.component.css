@@ -1,6 +1,6 @@
 .booklet h1 {
-    margin: 0;
     font-size: 100%;
+    display: inline-block;
 }
 
 .units {
@@ -49,18 +49,6 @@
 }
 
 .featured-unit {
-    background: #b2ff59;
-    padding: 7px 12px;
-    margin: 0 2px;
-    border-radius: 16px;
-    color: #003333;
-}
-
-.featured-unit.first {
-    border-top-left-radius: 0;
-}
-
-.featured-unit .title {
     display: inline-flex;
     vertical-align: middle;
     align-items: center;

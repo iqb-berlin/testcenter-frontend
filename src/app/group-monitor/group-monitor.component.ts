@@ -19,9 +19,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   clientCount$: Observable<number>;
   serviceConnected$: Observable<boolean>;
 
-  displayedColumns: string[] = ['status', 'name', 'personStatus', 'test', 'testStatus', 'unit', 'unitStatus', 'booklet'];
-
-
   constructor(
       private route: ActivatedRoute,
       private bs: BackendService,
