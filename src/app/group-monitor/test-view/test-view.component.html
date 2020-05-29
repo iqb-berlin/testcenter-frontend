@@ -22,6 +22,10 @@
     <div *ngIf="hasState(testStatus.unitState, 'PRESENTATIONCOMPLETE', 'yes')" class="material-icons unit-badge">
         remove_red_eye
     </div>
+    <pre>{{maxTimeLeft|json}}</pre>
+
+    <div *ngIf="maxTimeLeft[unit.id] as time">{{time}}</div>
+
 
     <!--                <div class="state"><pre>{{testStatus.unitState | json}}</pre></div>-->
     <!--                <div class="state"><pre>{{testStatus.testState | json}}</pre></div>-->

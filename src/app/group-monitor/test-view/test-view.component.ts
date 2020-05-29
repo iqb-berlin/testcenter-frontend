@@ -20,15 +20,13 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
     @Input() testStatus: StatusUpdate;
 
     private testStatus$: Subject<StatusUpdate>;
-
     public booklet$: Observable<boolean|Booklet>;
     public featuredUnit$: Observable<Unit|null>;
-    public units: (Testlet|Unit)[];
-    public session: Observable<StatusUpdate>;
 
     private childrenSubscription;
 
-    private id;
+    public units: (Testlet|Unit)[];
+    public maxTimeLeft: object|null;
 
     constructor(
         private bookletsService: BookletService,
@@ -39,9 +37,7 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
     ngOnInit() {
 
-        this.id = this.testStatus.personId;
-
-        console.log('NEW:' + this.id + ' |  ' + this.testStatus.testId, this.testStatus.bookletName);
+        console.log('NEW:' + this.testStatus.personId, this.testStatus.bookletName);
 
         this.booklet$ = this.bookletsService.getBooklet(this.testStatus.bookletName || "");
 
@@ -55,6 +51,8 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
         this.featuredUnit$ = combineLatest<[Booklet|null, StatusUpdate]>([this.booklet$, this.testStatus$])
             .pipe(map((bookletAndStatus: [Booklet|boolean, StatusUpdate]) => {
 
+                console.log("MAP");
+
                 const booklet: Booklet|boolean = bookletAndStatus[0];
 
                 if ((booklet === true) || (booklet === false)) {
@@ -65,6 +63,13 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
                     return this.findUnitByName(booklet.units, this.testStatus.unitName);
                 }
             }));
+    }
+
+
+    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
+
+        this.testStatus$.next(this.testStatus);
+        this.maxTimeLeft = this.parseJsonState(this.testStatus.testState, 'MAXTIMELEFT');
     }
 
 
@@ -86,6 +91,24 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
     }
 
 
+    parseJsonState(testStateObject: object, key: string): object|null {
+
+        if (typeof testStateObject[key] === "undefined") {
+            return null;
+        }
+
+        const stateValueString = testStateObject[key];
+
+        try {
+            return JSON.parse(stateValueString);
+        } catch (error) {
+            console.warn(`state ${key} is no valid JSON`, stateValueString, error);
+            return null;
+        }
+    }
+
+
+
     trackUnits(index: number, testlet: Testlet|Unit): string {
 
         return testlet['id'] || index.toString();
@@ -97,20 +120,22 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
         for (let i = 0; i < testlet.children.length; i++) {
 
             const testletOrUnit = testlet.children[i];
+
             if (isUnit(testletOrUnit)) {
+
                 if (testletOrUnit.id === unitName) {
                     return testletOrUnit
                 }
+
             } else {
-                return this.findUnitByName(testletOrUnit, unitName);
+
+                const findInChildren = this.findUnitByName(testletOrUnit, unitName);
+
+                if (findInChildren !== null) {
+                    return findInChildren;
+                }
             }
         }
         return null;
-    }
-
-
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
-
-        this.testStatus$.next(this.testStatus);
     }
 }
