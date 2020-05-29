@@ -18,19 +18,6 @@ function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
 export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
     @Input() testStatus: StatusUpdate;
-    // set testStatus(sessionState: StatusUpdate) {
-    //
-    //     if (!this.testStatus$) {
-    //         this.testStatus$ = new BehaviorSubject<StatusUpdate>(sessionState);
-    //     } else {
-    //         this.testStatus$.next(sessionState);
-    //     }
-    //
-    // }
-    // get testStatus(): StatusUpdate {
-    //
-    //     return this.testStatus$.getValue();
-    // }
 
     private testStatus$: Subject<StatusUpdate>;
 
