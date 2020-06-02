@@ -39,9 +39,9 @@
     </mat-icon>
 
     <mat-icon class="unit-badge"
-              *ngIf="hasState(testStatus.unitState, 'responding')"
-              matTooltip="Wird beantwortet"
-        >keyboard
+              *ngIf="hasState(testStatus.unitState, 'RESPONSESCOMPLETE', 'all')"
+              matTooltip="Fertig beantwortet"
+        >done_all
     </mat-icon>
 
     <!--                <div class="state"><pre>{{testStatus.unitState | json}}</pre></div>-->
