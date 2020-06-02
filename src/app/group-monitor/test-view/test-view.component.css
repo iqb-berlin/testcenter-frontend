@@ -1,3 +1,8 @@
+td {
+    margin-top: 0.3em;
+    border-bottom: 1px solid silver;
+}
+
 .featured-unit h1,
 .featured-unit h2,
 .booklet h1 {
@@ -15,6 +20,7 @@
     display: inline-block;
     position: relative;
     white-space: nowrap;
+    margin-top: 1em;
 }
 
 .units:before {

@@ -3,6 +3,11 @@ table {
     padding: 2em;
 }
 
+test-view {
+    display: table-row;
+    vertical-align: middle;
+}
+
 .live {
     text-transform: uppercase;
     color: white;

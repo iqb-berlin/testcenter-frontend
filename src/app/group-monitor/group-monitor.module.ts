@@ -14,6 +14,7 @@ import {BookletService} from './booklet.service';
 import { TestViewComponent } from './test-view/test-view.component';
 import {MatIconModule} from '@angular/material/icon';
 import {MatBadgeModule} from '@angular/material/badge';
+import {FlexModule} from '@angular/flex-layout';
 
 
 
@@ -31,7 +32,8 @@ import {MatBadgeModule} from '@angular/material/badge';
         CdkTableModule,
         MatChipsModule,
         MatIconModule,
-        MatBadgeModule
+        MatBadgeModule,
+        FlexModule
     ],
   providers: [
       BackendService,

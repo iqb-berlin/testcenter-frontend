@@ -1,57 +1,54 @@
-<!--    <pre>{{booklet$|async|json}}</pre>-->
+<td matTooltip="{{testStatus.personId}} on {{testStatus.testId}}">
+    <i class="material-icons">face</i> {{testStatus.personLabel}}: {{testStatus.personStatus}}
+</td>
 
-<div *ngIf="(booklet$ | async) as booklet; else: noBooklet">
+<ng-container *ngIf="(booklet$ | async) as booklet; else: noBooklet">
 
-    <div class="booklet">
+    <td class="booklet">
 
         <h1>{{booklet.metadata.label}}</h1>
+    </td>
 
-        <div *ngIf="booklet.units as testlet" class="units">
+    <td *ngIf="booklet.units as testlet">
 
+        <div class="units">
             <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testlet}"></ng-container>
         </div>
-    </div>
 
-</div>
+        <div class="featured-unit" *ngIf="(featuredUnit$| async) as unitContext; else: noFeaturedUnit ">
 
-<!--    <pre>{{featuredUnit$|async|json}}</pre>-->
+            <h1>{{unitContext.parent.label || 'Aktueller Abschnitt'}}</h1>
 
-<div class="featured-unit" *ngIf="featuredUnit$ | async as unitContext">
+            <mat-icon class="unit-badge"
+                      *ngIf="maxTimeLeft && (maxTimeLeft[unitContext.parent.id] !== undefined)"
+                      matBadge="{{maxTimeLeft[unitContext.parent.id].toString()}}"
+                      matBadgeColor="accent"
+                      matTooltip="Verbleibende Zeit"
+            >alarm
+            </mat-icon>
 
+            <h1>:</h1>
 
-    <h1>{{unitContext.parent.label || 'Aktueller Abschnitt'}}</h1>
+            <h2>{{unitContext.unit.label || unitContext.unit.labelShort || unitContext.unit.id}}</h2>
 
-    <mat-icon class="unit-badge"
-              *ngIf="maxTimeLeft && (maxTimeLeft[unitContext.parent.id] !== undefined)"
-              matBadge="{{maxTimeLeft[unitContext.parent.id].toString()}}"
-              matBadgeColor="accent"
-              matTooltip="Verbleibende Zeit"
-        >alarm
-    </mat-icon>
+            <mat-icon class="unit-badge"
+                      *ngIf="hasState(testStatus.unitState, 'PRESENTATIONCOMPLETE', 'yes')"
+                      matTooltip="Vollständig betrachtet / angehört"
+            >remove_red_eye
+            </mat-icon>
 
-    <h1>:</h1>
+            <mat-icon class="unit-badge"
+                      *ngIf="hasState(testStatus.unitState, 'RESPONSESCOMPLETE', 'all')"
+                      matTooltip="Fertig beantwortet"
+            >done_all
+            </mat-icon>
+        </div>
+    </td>
+</ng-container>
 
-    <h2>{{unitContext.unit.label || unitContext.unit.labelShort || unitContext.unit.id}}</h2>
-
-    <mat-icon class="unit-badge"
-              *ngIf="hasState(testStatus.unitState, 'PRESENTATIONCOMPLETE', 'yes')"
-              matTooltip="Vollständig betrachtet / angehört"
-        >remove_red_eye
-    </mat-icon>
-
-    <mat-icon class="unit-badge"
-              *ngIf="hasState(testStatus.unitState, 'RESPONSESCOMPLETE', 'all')"
-              matTooltip="Fertig beantwortet"
-        >done_all
-    </mat-icon>
-
-    <!--                <div class="state"><pre>{{testStatus.unitState | json}}</pre></div>-->
-    <!--                <div class="state"><pre>{{testStatus.testState | json}}</pre></div>-->
-    <!--                <div class="state"><pre>{{unit | json}}</pre></div>-->
-</div>
-
-<!--<pre>{{maxTimeLeft|json}}</pre>-->
-
+<ng-template #noFeaturedUnit>
+    -
+</ng-template>
 
 <ng-template #testletTemplate let-testlet>
 
@@ -82,7 +79,5 @@
 
 
 <ng-template #noBooklet>
-    <div class="booklet">
-        <h1>Noch kein Test gestarted.</h1>
-    </div>
+    <td colspan="2" class="booklet">Noch kein Test gestarted.</td>
 </ng-template>
