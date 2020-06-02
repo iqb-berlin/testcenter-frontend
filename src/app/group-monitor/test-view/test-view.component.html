@@ -59,11 +59,11 @@
         <span *ngSwitchCase="'unit'"
               class="{{(testStatus.unitName === testletOrUnit.id) ? 'unit current': 'unit'}}"
               matTooltip="{{testletOrUnit.label}}"
+              matTooltipPosition="above"
             >{{testletOrUnit.labelShort || "&nbsp;"}}
-<!--            <span *ngIf="(testStatus.unitName === testletOrUnit.id)">{{setFeaturedUnit(testletOrUnit)}}</span>-->
         </span>
 
-        <span *ngSwitchCase="'testlet'" class="testlet" matTooltip="{{testlet.label}}">
+        <span *ngSwitchCase="'testlet'" class="testlet" matTooltip="{{testletOrUnit.label}}">
             <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testletOrUnit}"></ng-container>
         </span>
         <!--                <pre>{{testletOrUnit|json}}</pre>-->
