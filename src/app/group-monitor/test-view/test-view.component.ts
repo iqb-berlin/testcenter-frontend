@@ -88,9 +88,9 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
     }
 
 
-    hasState(stateObject: object, key: string, value: any): boolean {
+    hasState(stateObject: object, key: string, value: any = null): boolean {
 
-        return ((typeof stateObject[key] !== "undefined") && (stateObject[key] === value));
+        return ((typeof stateObject[key] !== "undefined") && ((value !== null) ? (stateObject[key] === value) : true));
     }
 
 

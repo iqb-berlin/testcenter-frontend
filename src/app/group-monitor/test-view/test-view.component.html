@@ -38,6 +38,11 @@
         >remove_red_eye
     </mat-icon>
 
+    <mat-icon class="unit-badge"
+              *ngIf="hasState(testStatus.unitState, 'responding')"
+              matTooltip="Wird beantwortet"
+        >keyboard
+    </mat-icon>
 
     <!--                <div class="state"><pre>{{testStatus.unitState | json}}</pre></div>-->
     <!--                <div class="state"><pre>{{testStatus.testState | json}}</pre></div>-->
