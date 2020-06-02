@@ -7,7 +7,7 @@ import {map} from 'rxjs/operators';
 
 function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
 
-    return (('id' in testletOrUnit) && ('label' in testletOrUnit));
+    return !('children' in testletOrUnit);
 }
 
 @Component({
@@ -21,7 +21,10 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
     private testStatus$: Subject<StatusUpdate>;
     public booklet$: Observable<boolean|Booklet>;
-    public featuredUnit$: Observable<Unit|null>;
+    public featuredUnit$: Observable<{
+        unit: Unit,
+        parent: Testlet
+    }|null>;
 
     private childrenSubscription;
 
@@ -115,7 +118,7 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
     }
 
 
-    findUnitByName(testlet: Testlet, unitName: String): Unit|null {
+    findUnitByName(testlet: Testlet, unitName: String): {unit: Unit|null, parent: Testlet} {
 
         for (let i = 0; i < testlet.children.length; i++) {
 
@@ -124,7 +127,10 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
             if (isUnit(testletOrUnit)) {
 
                 if (testletOrUnit.id === unitName) {
-                    return testletOrUnit
+                    return {
+                        parent: testlet,
+                        unit: testletOrUnit
+                    }
                 }
 
             } else {

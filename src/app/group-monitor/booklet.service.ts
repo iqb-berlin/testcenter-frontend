@@ -25,7 +25,7 @@ export class BookletService {
 
         if (isDefined(this.booklets[bookletName])) {
 
-            // console.log('FORWARDING testletOrUnit data for ' + bookletName + '');
+            // console.log('FORWARDING booklet for ' + bookletName + '');
             return this.booklets[bookletName];
         }
 
@@ -100,7 +100,11 @@ export class BookletService {
 
     private static parseTestlet(testletElement: Element): Testlet {
 
+        // TODO fehlende ID -> Zeit wird nicht angezeigt... überdenken: https://github.com/iqb-berlin/testcenter-iqb-php/issues/116
+
         return {
+            id: testletElement.getAttribute('id') || '',
+            label:  testletElement.getAttribute('label') || '',
             restrictions: BookletService.parseRestrictions(testletElement),
             children: BookletService.xmlGetChildElements(testletElement)
                 .filter((element: Element) => (['Unit', 'Testlet'].indexOf(element.tagName) > -1))
@@ -157,7 +161,7 @@ export class BookletService {
 
         const elements = element.getElementsByTagName(childName);
         if (!elements.length && !isOptional) {
-            throw new Error(`Missing field: '${childName}'`);
+            throw new Error(`Missing field: '${childName}'`); // TODO hierauf wird irgendwie gar nicht reagiert
         }
         return elements.length ? elements[0] : null;
     }

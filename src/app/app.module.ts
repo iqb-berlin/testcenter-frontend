@@ -25,6 +25,7 @@ import {MatRadioModule} from "@angular/material/radio";
 import {MatTabsModule} from "@angular/material/tabs";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatTooltipModule} from "@angular/material/tooltip";
+import {MatBadgeModule} from '@angular/material/badge';
 import {RouterModule} from "@angular/router";
 import { AppRootComponent } from './app-root/app-root.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
@@ -36,6 +37,7 @@ import { StatusCardComponent } from './app-root/status-card/status-card.componen
 import { TestStarterComponent } from './app-root/test-starter/test-starter.component';
 import { MonitorStarterComponent } from './app-root/monitor-starter/monitor-starter.component';
 import { PrivacyComponent } from './app-root/privacy/privacy.component';
+
 
 
 
@@ -57,6 +59,7 @@ import { PrivacyComponent } from './app-root/privacy/privacy.component';
     ApplicationModule,
     BrowserModule,
     BrowserAnimationsModule,
+    MatBadgeModule,
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,

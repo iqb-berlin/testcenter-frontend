@@ -1,6 +1,14 @@
+.featured-unit h1,
+.featured-unit h2,
 .booklet h1 {
     font-size: 100%;
     display: inline-block;
+    margin-right: 0.3em;
+}
+
+.featured-unit h2 {
+    font-weight: normal;
+    margin-right: 0.3em;
 }
 
 .units {
@@ -52,8 +60,4 @@
     display: inline-flex;
     vertical-align: middle;
     align-items: center;
-}
-
-.featured-unit .unit-badge {
-    margin-left: 0.5em;
 }

@@ -15,22 +15,36 @@
 
 <!--    <pre>{{featuredUnit$|async|json}}</pre>-->
 
-<div class="featured-unit" *ngIf="featuredUnit$ | async as unit">
+<div class="featured-unit" *ngIf="featuredUnit$ | async as unitContext">
 
-    <div>Aktuelle Aufgabe: {{unit.label || 'Ohne Titel'}}</div>
 
-    <div *ngIf="hasState(testStatus.unitState, 'PRESENTATIONCOMPLETE', 'yes')" class="material-icons unit-badge">
-        remove_red_eye
-    </div>
-    <pre>{{maxTimeLeft|json}}</pre>
+    <h1>{{unitContext.parent.label || 'Aktueller Abschnitt'}}</h1>
 
-    <div *ngIf="maxTimeLeft[unit.id] as time">{{time}}</div>
+    <mat-icon class="unit-badge"
+              *ngIf="maxTimeLeft && (maxTimeLeft[unitContext.parent.id] !== undefined)"
+              matBadge="{{maxTimeLeft[unitContext.parent.id].toString()}}"
+              matBadgeColor="accent"
+              matTooltip="Verbleibende Zeit"
+        >alarm
+    </mat-icon>
+
+    <h1>:</h1>
+
+    <h2>{{unitContext.unit.label || unitContext.unit.labelShort || unitContext.unit.id}}</h2>
+
+    <mat-icon class="unit-badge"
+              *ngIf="hasState(testStatus.unitState, 'PRESENTATIONCOMPLETE', 'yes')"
+              matTooltip="Vollständig betrachtet / angehört"
+        >remove_red_eye
+    </mat-icon>
 
 
     <!--                <div class="state"><pre>{{testStatus.unitState | json}}</pre></div>-->
     <!--                <div class="state"><pre>{{testStatus.testState | json}}</pre></div>-->
     <!--                <div class="state"><pre>{{unit | json}}</pre></div>-->
 </div>
+
+<!--<pre>{{maxTimeLeft|json}}</pre>-->
 
 
 <ng-template #testletTemplate let-testlet>
@@ -44,7 +58,7 @@
 <!--            <span *ngIf="(testStatus.unitName === testletOrUnit.id)">{{setFeaturedUnit(testletOrUnit)}}</span>-->
         </span>
 
-        <span *ngSwitchCase="'testlet'" class="testlet">
+        <span *ngSwitchCase="'testlet'" class="testlet" matTooltip="{{testlet.label}}">
             <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testletOrUnit}"></ng-container>
         </span>
         <!--                <pre>{{testletOrUnit|json}}</pre>-->

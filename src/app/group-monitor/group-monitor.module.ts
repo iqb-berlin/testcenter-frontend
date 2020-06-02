@@ -12,6 +12,8 @@ import { CdkTableModule } from '@angular/cdk/table';
 import {BackendService} from './backend.service';
 import {BookletService} from './booklet.service';
 import { TestViewComponent } from './test-view/test-view.component';
+import {MatIconModule} from '@angular/material/icon';
+import {MatBadgeModule} from '@angular/material/badge';
 
 
 
@@ -21,14 +23,16 @@ import { TestViewComponent } from './test-view/test-view.component';
       GroupMonitorComponent,
       TestViewComponent
   ],
-  imports: [
-      CommonModule,
-      GroupMonitorRoutingModule,
-      MatTableModule,
-      MatTooltipModule,
-      CdkTableModule,
-      MatChipsModule
-  ],
+    imports: [
+        CommonModule,
+        GroupMonitorRoutingModule,
+        MatTableModule,
+        MatTooltipModule,
+        CdkTableModule,
+        MatChipsModule,
+        MatIconModule,
+        MatBadgeModule
+    ],
   providers: [
       BackendService,
       BookletService

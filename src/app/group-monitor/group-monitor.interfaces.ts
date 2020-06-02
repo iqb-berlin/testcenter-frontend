@@ -37,6 +37,8 @@ export interface BookletMetadata {
 }
 
 export interface Testlet {
+    id: string;
+    label: string;
     restrictions?: Restrictions;
     children: (Unit|Testlet)[];
 }
