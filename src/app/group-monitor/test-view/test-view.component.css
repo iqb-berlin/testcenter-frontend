@@ -43,6 +43,16 @@
     text-align: center;
 }
 
+.unit.restriction {
+    padding: 2px 3px;
+}
+
+.unit.restriction mat-icon {
+    font-size: 0.7em;
+    height: auto;
+    width: auto;
+}
+
 .unit.current {
     background: #b2ff59;
     color: #003333;

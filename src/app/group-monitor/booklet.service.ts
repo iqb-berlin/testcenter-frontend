@@ -76,10 +76,10 @@ export class BookletService {
 
     private static parseBookletConfig(bookletElement: Element): BookletConfig {
 
-        const bookletConfigElements = bookletElement.getElementsByTagName('BookletConfig');
+        const bookletConfigElements = BookletService.xmlGetChildIfExists(bookletElement, 'BookletConfig', true);
         const bookletConfig = new BookletConfig();
         bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
-        if (bookletConfigElements.length > 0) {
+        if (bookletConfigElements) {
             bookletConfig.setFromXml(bookletConfigElements[0]);
         }
         return bookletConfig;
@@ -106,8 +106,7 @@ export class BookletService {
             id: testletElement.getAttribute('id') || '',
             label:  testletElement.getAttribute('label') || '',
             restrictions: BookletService.parseRestrictions(testletElement),
-            children: BookletService.xmlGetChildElements(testletElement)
-                .filter((element: Element) => (['Unit', 'Testlet'].indexOf(element.tagName) > -1))
+            children: BookletService.xmlGetDirectChildrenByTagName(testletElement, ['Unit', 'Testlet'])
                 .map(BookletService.parseUnitOrTestlet)
         };
     }
@@ -159,7 +158,7 @@ export class BookletService {
 
     private static xmlGetChildIfExists(element: Element, childName: string, isOptional: boolean = false): Element {
 
-        const elements = element.getElementsByTagName(childName);
+        const elements = BookletService.xmlGetDirectChildrenByTagName(element, [childName]);
         if (!elements.length && !isOptional) {
             throw new Error(`Missing field: '${childName}'`); // TODO hierauf wird irgendwie gar nicht reagiert
         }
@@ -174,11 +173,12 @@ export class BookletService {
     }
 
 
-    private static xmlGetChildElements(element): Element[] {
+    private static xmlGetDirectChildrenByTagName(element: Element, tagNames: string[]): Element[] {
 
-        return [].slice.call(element.childNodes).filter(e => (e.nodeType === 1));
+        return [].slice.call(element.childNodes)
+            .filter((element: Element) => (element.nodeType === 1))
+            .filter((element: Element) => (tagNames.indexOf(element.tagName) > -1));
     }
-
 }
 
 

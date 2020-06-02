@@ -1,4 +1,5 @@
 <!--    <pre>{{booklet$|async|json}}</pre>-->
+
 <div *ngIf="(booklet$ | async) as booklet; else: noBooklet">
 
     <div class="booklet">
@@ -53,6 +54,14 @@
 
 
 <ng-template #testletTemplate let-testlet>
+
+    <span *ngIf="testlet.restrictions && testlet.restrictions.codeToEnter as codeToEnter"
+          class="unit restriction"
+          matTooltip="Freigabewort: {{codeToEnter.code.toUpperCase()}}"
+          matTooltipPosition="above"
+        >
+        <mat-icon>sms</mat-icon>
+    </span>
 
     <ng-container *ngFor="let testletOrUnit of testlet.children; trackBy: trackUnits" [ngSwitch]="getTestletType(testletOrUnit)">
 
