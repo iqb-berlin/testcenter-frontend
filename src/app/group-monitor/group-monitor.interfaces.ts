@@ -4,9 +4,9 @@ export interface StatusUpdate {
 
     personId: number;
     personLabel?: string;
-    groupId?: number;
+    groupName?: string;
     groupLabel?: string;
-    personStatus?: string;
+    mode?: string;
     testId?: number;
     bookletName?: string;
     testState: {

@@ -1,18 +1,32 @@
-<td matTooltip="{{testStatus.personId}} on {{testStatus.testId}}">
-    <i class="material-icons">face</i> {{testStatus.personLabel}}: {{testStatus.personStatus}}
+<td>
+    <ng-container *ngIf="getMode(testStatus.mode) as mode" matTooltip="{{mode.modeLabel}}">
+
+        <i class="material-icons" *ngIf="mode.modeId === 'HOT'">face</i>
+        <i class="material-icons" *ngIf="mode.modeId === 'REVIEW'">rate_review</i>
+        <i class="material-icons" *ngIf="mode.modeId === 'TRIAL'">remove_red_eye</i>
+        <i class="material-icons" *ngIf="mode.modeId === 'DEMO'">ondemand_video</i>
+        <i class="material-icons" *ngIf="mode.modeId === 'monitor-group'">supervisor_account</i>
+        <i class="material-icons" *ngIf="mode.modeId === 'monitor-workspace'">supervisor_account</i>
+    </ng-container>
+    {{testStatus.personLabel}}
 </td>
+
+
+<td><div>{{testStatus.groupLabel}}</div></td>
 
 <ng-container *ngIf="(booklet$ | async) as booklet; else: noBooklet">
 
     <td class="booklet">
 
-        <h1>{{booklet.metadata.label}}</h1>
+        <h1><span>{{booklet.metadata.label}}</span></h1>
     </td>
 
     <td *ngIf="booklet.units as testlet">
 
-        <div class="units">
-            <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testlet}"></ng-container>
+        <div class="units-container">
+            <div class="units">
+                <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testlet}"></ng-container>
+            </div>
         </div>
 
         <div class="featured-unit" *ngIf="(featuredUnit$| async) as unitContext; else: noFeaturedUnit ">

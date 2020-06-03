@@ -13,6 +13,7 @@ export class TestMode {
 	showTimeLeft: true;
 	showUnitMenu: false;
 	modeLabel: "Nur Ansicht (Demo)";
+	modeId: string = "DEMO";
 
 	public constructor (loginMode: string = 'DEMO') {
 		if (loginMode) {
@@ -28,6 +29,7 @@ export class TestMode {
 				this.showTimeLeft = modeConfig.config.showTimeLeft;
 				this.showUnitMenu = modeConfig.config.showUnitMenu;
 				this.modeLabel = modeConfig.label;
+				this.modeId = mode;
 			} else {
 				console.error('TestConfig: invalid loginMode - take DEMO');
 			}

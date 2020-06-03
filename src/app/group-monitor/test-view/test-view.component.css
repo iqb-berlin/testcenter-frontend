@@ -1,5 +1,6 @@
 td {
     margin-top: 0.3em;
+    padding-bottom: 0.6em;
     border-bottom: 1px solid silver;
 }
 
@@ -14,6 +15,10 @@ td {
 .featured-unit h2 {
     font-weight: normal;
     margin-right: 0.3em;
+}
+
+.units-container {
+    width: 100%
 }
 
 .units {

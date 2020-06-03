@@ -3,6 +3,7 @@ import {BookletService} from '../booklet.service';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {Booklet, StatusUpdate, Testlet, Unit} from '../group-monitor.interfaces';
 import {map} from 'rxjs/operators';
+import {TestMode} from '../../config/test-mode';
 
 
 function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
@@ -110,6 +111,31 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
         }
     }
 
+
+    getMode(modeString: string): {modeId: string, modeLabel: string} {
+
+        if (modeString === 'monitor-group') {
+
+            return {
+                modeId: modeString,
+                modeLabel: 'Testleiter'
+            }
+        }
+
+        if (modeString === 'monitor-workspace') {
+
+            return {
+                modeId: modeString,
+                modeLabel: modeString
+            }
+        }
+
+        const testMode = new TestMode(modeString);
+        return {
+            modeId: testMode.modeId,
+            modeLabel: testMode.modeLabel
+        };
+    }
 
 
     trackUnits(index: number, testlet: Testlet|Unit): string {

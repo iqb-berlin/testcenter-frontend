@@ -25,6 +25,7 @@ for (const k of Object.keys(definitionOptions)) {
   fileContent += '\t' + k + ': ' + (demoConfig[k] ? 'true' : 'false') + ';\n';
 }
 fileContent += '\tmodeLabel: "Nur Ansicht (Demo)";\n';
+fileContent += '\tmodeId: string = "DEMO";\n';
 
 fileContent += "\n\tpublic constructor (loginMode: string = 'DEMO') {\n";
 fileContent += "\t\tif (loginMode) {\n";
@@ -36,6 +37,8 @@ for (const k of Object.keys(definitionOptions)) {
   fileContent += "\t\t\t\tthis." + k + " = modeConfig.config." + k + ";\n";
 }
 fileContent += "\t\t\t\tthis.modeLabel = modeConfig.label;\n";
+fileContent += "\t\t\t\tthis.modeId = mode;\n";
+
 
 fileContent += "\t\t\t} else {\n";
 fileContent += "\t\t\t\tconsole.error('TestConfig: invalid loginMode - take DEMO');\n";
