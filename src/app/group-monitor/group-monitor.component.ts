@@ -58,8 +58,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
 
-  trackSession(index: number, session: StatusUpdate) {
+  trackSession(index: number, session: StatusUpdate): number {
 
-    return session.personId + '|' + session.testId;
+    return session.personId * 10000 +  session.testId;
   }
 }
