@@ -13,10 +13,8 @@
 <div class="page-body">
   <div class="adminbackground">
 
-<!--    <test-view [booklet]="sampleBooklet"></test-view>-->
-
     <table>
-      <test-view *ngFor="let session of sessions$ | async; trackBy: trackSession" [testStatus]="session"></test-view>
+        <test-view *ngFor="let session of sessions$ | async; trackBy: trackSession" [testStatus]="session"></test-view>
     </table>
 
     <p>Connected Admins: {{clientCount$ | async}}</p>
