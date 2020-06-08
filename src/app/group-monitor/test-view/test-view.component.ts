@@ -114,7 +114,9 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
     getMode(modeString: string): {modeId: string, modeLabel: string} {
 
-        if (modeString === 'monitor-group') {
+        const untranslatedModes = ['monitor-group', 'monitor-workspace', 'monitor-study'];
+
+        if (untranslatedModes.indexOf(modeString) > -1) {
 
             return {
                 modeId: modeString,
@@ -122,15 +124,7 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
             }
         }
 
-        if (modeString === 'monitor-workspace') {
-
-            return {
-                modeId: modeString,
-                modeLabel: modeString
-            }
-        }
-
-        const testMode = new TestMode(modeString);
+        let testMode = new TestMode(modeString);
         return {
             modeId: testMode.modeId,
             modeLabel: testMode.modeLabel
