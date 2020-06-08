@@ -23,18 +23,28 @@
 
     <td class="booklet">
 
-        <h1><span>{{booklet.metadata.label}}</span></h1>
+        <h1>{{booklet.metadata.label}}</h1>
+        <mat-icon class="unit-badge"
+                  *ngIf="hasState(testStatus.testState, 'BOOKLETLOCKEDbyTESTEE')"
+                  matTooltip="Testheft abgeschlossen"
+            >done_all
+        </mat-icon>
+        <mat-icon class="unit-badge"
+                  *ngIf="hasState(testStatus.testState, 'status', 'locked')"
+                  matTooltip="Testheft abgeschlossen"
+            >lock
+        </mat-icon>
     </td>
 
     <td *ngIf="booklet.units as testlet">
 
-        <div class="units-container">
+        <div class="units-container" [class]="hasState(testStatus.testState, 'status', 'locked') ? 'locked' : ''">
             <div class="units">
                 <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testlet}"></ng-container>
             </div>
         </div>
 
-        <div class="featured-unit" *ngIf="(featuredUnit$| async) as unitContext; else: noFeaturedUnit ">
+        <div class="featured-unit" *ngIf="(featuredUnit$| async) as unitContext; else: noFeaturedUnit">
 
             <h1>{{unitContext.parent.label || 'Aktueller Abschnitt'}}</h1>
 
@@ -43,7 +53,7 @@
                       matBadge="{{maxTimeLeft[unitContext.parent.id].toString()}}"
                       matBadgeColor="accent"
                       matTooltip="Verbleibende Zeit"
-            >alarm
+                >alarm
             </mat-icon>
 
             <h1>:</h1>
@@ -53,13 +63,13 @@
             <mat-icon class="unit-badge"
                       *ngIf="hasState(testStatus.unitState, 'PRESENTATIONCOMPLETE', 'yes')"
                       matTooltip="Vollständig betrachtet / angehört"
-            >remove_red_eye
+                >remove_red_eye
             </mat-icon>
 
             <mat-icon class="unit-badge"
                       *ngIf="hasState(testStatus.unitState, 'RESPONSESCOMPLETE', 'all')"
                       matTooltip="Fertig beantwortet"
-            >done_all
+                >done_all
             </mat-icon>
         </div>
     </td>
