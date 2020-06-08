@@ -34,19 +34,14 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
     console.log('going to connect');
 
-    this.clientCount$ = this.bs.observe<number>('client.count');
-
+    this.sessions$ = this.bs.getSessions();
+    // this.bs.connect('ZYX');
+    // this.clientCount$ = this.bs.observe<number>('client.count');
+    // this.sessions$ = this.bs.observe<StatusUpdate[]>('status');
     this.serviceConnected$ = this.bs.serviceConnected$;
 
-    this.serviceConnected$.subscribe(s => {
-      console.log('connection-status', s);
-    });
 
-    this.sessions$ = this.bs.observe<StatusUpdate[]>('status');
 
-    // this.dataSource$.subscribe((status: StatusUpdate[]) => {
-    //   status.forEach((statusUpate: StatusUpdate) => this.getBooklet(statusUpate));
-    // });
   }
 
 

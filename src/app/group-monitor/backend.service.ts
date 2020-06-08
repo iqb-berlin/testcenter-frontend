@@ -4,7 +4,8 @@ import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import {WebSocketMessage} from 'rxjs/internal/observable/dom/WebSocketSubject';
 import {catchError, filter, map, share} from 'rxjs/operators';
 import {ApiError, BookletData} from '../app.interfaces';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpResponse} from '@angular/common/http';
+import {StatusUpdate} from './group-monitor.interfaces';
 
 
 interface WsMessage {
@@ -18,6 +19,8 @@ export class BackendService {
   private url = 'ws://127.0.0.1:3000';
   private connectionRetries = 5;
   private connectionRetried = 5;
+
+  private urlParam = "XYZ";
 
   private webSocketSubject$: WebSocketSubject<any>;
 
@@ -40,14 +43,15 @@ export class BackendService {
   }
 
 
-  public connect(forceReconnect: boolean = false): WebSocketSubject<any> {
+  public connect(urlParam: string, forceReconnect: boolean = false): WebSocketSubject<any> {
 
+    this.urlParam = urlParam;
 
     // const url = 'wss://echo.websocket.org';
 
     if (!this.webSocketSubject$ || forceReconnect) {
 
-      console.log('connecting...');
+      console.log('connecting...' + urlParam);
 
       this.webSocketSubject$ = webSocket({
 
@@ -67,7 +71,7 @@ export class BackendService {
           }
         },
 
-        url: this.url
+        url: this.url + '/' + urlParam
       });
 
       this.webSocketSubject$.subscribe(
@@ -95,7 +99,7 @@ export class BackendService {
     if (this.connectionRetries-- ) {
       setTimeout(() => {
         console.log(`trying to reconnect (${this.connectionRetries} left)`);
-        this.connect(true);
+        this.connect(this.urlParam, true);
       }, 5000);
     }
   }
@@ -104,7 +108,7 @@ export class BackendService {
   public send(event: string, data: any) {
 
     if (!this.webSocketSubject$) {
-      this.connect();
+      this.connect(this.urlParam);
     }
 
     this.webSocketSubject$.next({event, data});
@@ -114,7 +118,7 @@ export class BackendService {
   public observe<T>(subscriptionName: string): Observable<T> {
 
     if (!this.webSocketSubject$) {
-      this.connect();
+      this.connect(this.urlParam);
     }
 
     return this.webSocketSubject$
@@ -138,11 +142,54 @@ export class BackendService {
         .get<BookletData>(this.serverUrl + `booklet/${bookletName}/data`)
         .pipe(
             catchError((err: ApiError) => {
-              console.warn(`getTestData Api-Error: ${err.code} ${err.info} `);
+              console.warn(`getTestData Api-Error: ${err.code} ${err.info}`);
               return of(false)
             })
         );
   }
 
+
+  public sessions$: BehaviorSubject<StatusUpdate[]>;
+
+  getSessions(): Observable<StatusUpdate[]> {
+
+    console.log("load monitor for ");
+    if (!this.sessions$) {
+
+      this.sessions$ = new BehaviorSubject<StatusUpdate[]>([]);
+    }
+
+    const TODO_unsubscribME = this.http
+        .get<StatusUpdate[]>(this.serverUrl + `/workspace/1/sessions`, {observe: 'response'})
+        .subscribe((response: HttpResponse<StatusUpdate[]>) => {
+
+            console.log("headers", response.headers);
+
+            if (response.headers.has('SubscribeURI')) {
+
+              console.log('use ws');
+              this.urlParam = response.headers.get('SubscribeURI');
+              this.observe<StatusUpdate[]>('status').subscribe(this.sessions$);
+              // stand
+              // - auf connection lost reagieren
+              // - webserive aufräumen (abstralte ws-variante?)
+              // - identification nutzen
+
+            } else {
+
+              this.sessions$.next(response.body);
+              setTimeout(() => this.getSessions(), 5000);
+            }
+        });
+
+    return this.sessions$;
+
+        // .pipe(
+        //     catchError((err: ApiError) => {
+        //       console.warn(`getState Api-Error: ${err.code} ${err.info}`);
+        //       return of(false)
+        //     })
+        // );
+  }
 
 }
