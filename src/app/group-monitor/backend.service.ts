@@ -84,7 +84,7 @@ export class BackendService extends WebsocketService implements OnDestroy {
 
             if (response.headers.has('SubscribeURI')) {
 
-                console.log('use ws');
+                console.log('switch to websocket-mode');
                 this.urlParam = response.headers.get('SubscribeURI');
                 this.subScribeToStatusUpdateWsChannel();
 
@@ -124,7 +124,7 @@ export class BackendService extends WebsocketService implements OnDestroy {
               skipWhile((item: boolean) => item === null), // skip pre-init-state
               tap((wsConnected: boolean) => {
                   if (!wsConnected) {
-                      console.log("RETURN TO POLLING MODE");
+                      console.log('switch to polling-mode');
                       this.connectionStatus$.next("polling-sleep");
                       setTimeout(() => this.getSessions(), 5000);
                   }

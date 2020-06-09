@@ -2,10 +2,21 @@
   <p>IQB-Testcenter Gruppenüberwachung</p>
   <span class="fill-remaining-space"></span>
   <p>
-    <mat-chip-list>
-        <mat-chip [ngSwitch]="connectionStatus$ | async">
-            <mat-icon *ngSwitchCase="'error'">error</mat-icon>
-            {{connectionStatus$ | async}}
+    <mat-chip-list [ngSwitch]="connectionStatus$ | async">
+        <mat-chip *ngSwitchCase="'error'" class="connection-status error">
+            <mat-icon>error</mat-icon>Fehler
+        </mat-chip>
+        <mat-chip *ngSwitchCase="'ws-offline'" class="connection-status ws-offline">
+            <mat-icon>error</mat-icon>Warte
+        </mat-chip>
+        <mat-chip *ngSwitchCase="'ws-online'" class="connection-status ws-online">
+            <mat-icon>wifi_tethering</mat-icon>Live
+        </mat-chip>
+        <mat-chip *ngSwitchCase="'polling-fetch'" class="connection-status polling-fetch">
+            <mat-icon>loop</mat-icon>Aktualisiere
+        </mat-chip>
+        <mat-chip *ngSwitchCase="'polling-sleep'" class="connection-status polling-sleep">
+            <mat-icon>update</mat-icon>Warte
         </mat-chip>
     </mat-chip-list>
   </p>

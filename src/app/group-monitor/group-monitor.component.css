@@ -8,35 +8,6 @@ test-view {
     vertical-align: middle;
 }
 
-.live {
-    text-transform: uppercase;
-    color: white;
-    font-size: 80%;
-}
-
-.live.off {
-    background: red;
-}
-
-.live.on {
-    background: green;
-    animation-name: pulse;
-    animation-duration: 3s;
-    animation-iteration-count: infinite;
-}
-
-@keyframes pulse {
-    0% {
-        background-color: green;
-    }
-    50% {
-        background-color: #00c700;
-    }
-    100% {
-        background-color: green;
-    }
-}
-
 .adminbackground {
     flex:  10 0 900px;
     box-shadow: 5px 10px 20px black;
@@ -63,4 +34,49 @@ test-view {
 
 .page-header .fill-remaining-space {
     flex: 1 1 auto;
+}
+
+.connection-status {
+    text-transform: uppercase;
+    color: white;
+    font-size: 80%;
+    justify-content: space-between;
+}
+
+.connection-status.error {
+    background: red
+}
+
+.connection-status.ws-offline {
+    background: orange;
+}
+
+.connection-status.ws-online {
+    background: #00c700;
+    animation-name: pulse;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+}
+
+.connection-status.polling-sleep,
+.connection-status.polling-fetch {
+    background: green;
+}
+
+.connection-status mat-icon {
+    font-size: 100%;
+    padding: 0;
+    top: 1px;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.8;
+    }
 }
