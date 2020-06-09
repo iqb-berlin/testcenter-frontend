@@ -3,8 +3,10 @@
   <span class="fill-remaining-space"></span>
   <p>
     <mat-chip-list >
-      <mat-chip class="{{(serviceConnected$ | async) ? 'live on' : 'live off'}}">
-        {{(serviceConnected$ | async) ? 'live' : 'offline'}}
+<!-- class="{{(serviceConnected$ | async) ? 'live on' : 'live off'}}" -->
+ <mat-chip >
+<!--        {{//(serviceConnected$ | async) ? 'live' : 'offline'}}-->
+        {{connectionStatus$ | async}}
       </mat-chip>
     </mat-chip-list>
   </p>

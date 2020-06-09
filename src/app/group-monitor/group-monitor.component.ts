@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {BackendService} from './backend.service';
+import {BackendService, ConnectionStatus} from './backend.service';
 import {Observable, Subscription} from 'rxjs';
 import {StatusUpdate} from './group-monitor.interfaces';
 import {ActivatedRoute} from '@angular/router';
@@ -18,6 +18,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   sessions$: Observable<StatusUpdate[]>;
   clientCount$: Observable<number>;
   serviceConnected$: Observable<boolean>;
+  connectionStatus$: Observable<ConnectionStatus>;
 
   constructor(
       private route: ActivatedRoute,
@@ -36,11 +37,13 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
     this.sessions$ = this.bs.getSessions();
     // this.bs.connect('ZYX');
-    // this.clientCount$ = this.bs.observe<number>('client.count');
-    // this.sessions$ = this.bs.observe<StatusUpdate[]>('status');
+    // this.clientCount$ = this.bs.getChannel<number>('client.count');
+    // this.sessions$ = this.bs.getChannel<StatusUpdate[]>('status');
     this.serviceConnected$ = this.bs.serviceConnected$;
 
+    this.connectionStatus$ = this.bs.connectionStatus$;
 
+    this.connectionStatus$.subscribe(v => console.log("CONNECTION-STATUS: " + v));
 
   }
 

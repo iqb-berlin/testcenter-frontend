@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-ignoreinterface
 import customTextsDefault from './custom-texts.json';
 import {CustomtextService} from "iqb-components";
 import {KeyValuePairs} from "../app.interfaces";
