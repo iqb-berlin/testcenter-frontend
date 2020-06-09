@@ -6,7 +6,7 @@ import {HttpClient, HttpResponse} from '@angular/common/http';
 import {StatusUpdate} from './group-monitor.interfaces';
 import {WebsocketService} from './websocket.service';
 
-export type ConnectionStatus = "initial" | "ws-offline" | "ws-online" | "polling-sleep" | "polling-fetch";
+export type ConnectionStatus = "initial" | "ws-offline" | "ws-online" | "polling-sleep" | "polling-fetch" | "error";
 
 
 @Injectable()
@@ -69,6 +69,13 @@ export class BackendService extends WebsocketService implements OnDestroy {
 
     this.http
         .get<StatusUpdate[]>(this.serverUrl + `/workspace/1/sessions`, {observe: 'response'})
+        .pipe(
+            catchError((err: ApiError) => {
+                console.warn(`getState Api-Error: ${err.code} ${err.info}`);
+                this.connectionStatus$.next("error");
+                return of([])
+            })
+        )
         .subscribe((response: HttpResponse<StatusUpdate[]>) => {
 
             console.log("headers", response.headers);
@@ -86,21 +93,16 @@ export class BackendService extends WebsocketService implements OnDestroy {
                 this.connectionStatus$.next("polling-sleep");
                 setTimeout(() => this.getSessions(), 5000);
             }
-        });
+        })
+
 
     return this.sessions$;
 
-        // .pipe(
-        //     catchError((err: ApiError) => {
-        //       console.warn(`getState Api-Error: ${err.code} ${err.info}`);
-        //       return of(false)
-        //     })
-        // );
+
   }
 
 
   private unsubscribeFromWebsocket() {
-
 
       if (this.wsStatusSubscription) {
           this.wsStatusSubscription.unsubscribe();
@@ -115,7 +117,7 @@ export class BackendService extends WebsocketService implements OnDestroy {
   private subScribeToStatusUpdateWsChannel() {
 
       this.wsSessionsSubscription = this.getChannel<StatusUpdate[]>('status')
-          .subscribe(this.sessions$);
+          .subscribe((sessionStatus: StatusUpdate[]) => this.sessions$.next(sessionStatus)); // subscribe only next, not complete!
 
       this.wsStatusSubscription = this.serviceConnected$
           .pipe(

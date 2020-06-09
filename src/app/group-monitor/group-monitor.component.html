@@ -2,12 +2,11 @@
   <p>IQB-Testcenter Gruppenüberwachung</p>
   <span class="fill-remaining-space"></span>
   <p>
-    <mat-chip-list >
-<!-- class="{{(serviceConnected$ | async) ? 'live on' : 'live off'}}" -->
- <mat-chip >
-<!--        {{//(serviceConnected$ | async) ? 'live' : 'offline'}}-->
-        {{connectionStatus$ | async}}
-      </mat-chip>
+    <mat-chip-list>
+        <mat-chip [ngSwitch]="connectionStatus$ | async">
+            <mat-icon *ngSwitchCase="'error'">error</mat-icon>
+            {{connectionStatus$ | async}}
+        </mat-chip>
     </mat-chip-list>
   </p>
 </div>
