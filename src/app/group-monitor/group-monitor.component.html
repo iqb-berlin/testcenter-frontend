@@ -2,21 +2,21 @@
   <p>IQB-Testcenter Gruppenüberwachung</p>
   <span class="fill-remaining-space"></span>
   <p>
-    <mat-chip-list [ngSwitch]="connectionStatus$ | async">
-        <mat-chip *ngSwitchCase="'error'" class="connection-status error">
-            <mat-icon>error</mat-icon>Fehler
-        </mat-chip>
-        <mat-chip *ngSwitchCase="'ws-offline'" class="connection-status ws-offline">
-            <mat-icon>error</mat-icon>Warte
-        </mat-chip>
-        <mat-chip *ngSwitchCase="'ws-online'" class="connection-status ws-online">
-            <mat-icon>wifi_tethering</mat-icon>Live
-        </mat-chip>
-        <mat-chip *ngSwitchCase="'polling-fetch'" class="connection-status polling-fetch">
-            <mat-icon>loop</mat-icon>Aktualisiere
-        </mat-chip>
-        <mat-chip *ngSwitchCase="'polling-sleep'" class="connection-status polling-sleep">
-            <mat-icon>update</mat-icon>Warte
+    <mat-chip-list *ngIf="connectionStatus$ | async as connectionStatus">
+
+        <mat-chip [class]="connectionStatus + ' connection-status'">
+            <mat-icon>
+                {{connectionStatus === 'error' ? 'error' : ''}}
+                {{connectionStatus === 'polling-fetch' ? 'loop' : ''}}
+                {{connectionStatus === 'polling-sleep' ? 'loop' : ''}}
+                {{connectionStatus === 'ws-offline' ? 'loop' : ''}}
+                {{connectionStatus === 'ws-online' ? 'wifi_tethering' : ''}}
+            </mat-icon>
+            {{connectionStatus === 'error' ? 'Offline' : ''}}
+            {{connectionStatus === 'polling-fetch' ? 'Online' : ''}}
+            {{connectionStatus === 'polling-sleep' ? 'Online' : ''}}
+            {{connectionStatus === 'ws-offline' ? 'Reconn.' : ''}}
+            {{connectionStatus === 'ws-online' ? 'Live' : ''}}
         </mat-chip>
     </mat-chip-list>
   </p>
