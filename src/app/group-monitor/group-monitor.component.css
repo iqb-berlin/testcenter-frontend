@@ -1,11 +1,7 @@
-table {
+.test-view-table {
     width: 100%;
-    padding: 2em;
-}
-
-test-view {
-    display: table-row;
-    vertical-align: middle;
+    border-collapse: collapse;
+    display: table;
 }
 
 .adminbackground {
@@ -20,7 +16,6 @@ test-view {
 .page-header {
     display: flex;
     flex-wrap: wrap;
-
 }
 
 .page-header > p:last-child {

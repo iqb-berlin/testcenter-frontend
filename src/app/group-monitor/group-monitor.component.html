@@ -25,7 +25,7 @@
 <div class="page-body">
   <div class="adminbackground">
 
-    <table>
+    <table class="test-view-table">
         <test-view *ngFor="let session of sessions$ | async; trackBy: trackSession" [testStatus]="session"></test-view>
     </table>
 

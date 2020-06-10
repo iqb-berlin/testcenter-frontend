@@ -14,7 +14,7 @@ function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
 @Component({
   selector: 'test-view',
   templateUrl: './test-view.component.html',
-  styleUrls: ['./test-view.component.css']
+  styleUrls: ['./test-view.component.css', './test-view-table.css']
 })
 export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 

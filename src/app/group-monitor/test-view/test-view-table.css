@@ -1,0 +1,19 @@
+:host(test-view) {
+    display: table-row;
+    vertical-align: middle;
+}
+
+td {
+    margin-top: 0.3em;
+    padding-bottom: 0.6em;
+    border-bottom: 1px solid silver;
+}
+
+:host(test-view:last-child) td {
+    border-bottom: none;
+
+}
+
+test-view:last-child {
+    background: aliceblue;
+}
