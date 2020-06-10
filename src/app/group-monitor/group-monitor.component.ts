@@ -17,7 +17,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   sessions$: Observable<StatusUpdate[]>;
   clientCount$: Observable<number>;
-  serviceConnected$: Observable<boolean>;
   connectionStatus$: Observable<ConnectionStatus>;
 
   constructor(
@@ -33,18 +32,11 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.workspacesId = params['ws'];
     });
 
-    console.log('going to connect');
-
     this.sessions$ = this.bs.getSessions();
-    // this.bs.connect('ZYX');
-    // this.clientCount$ = this.bs.getChannel<number>('client.count');
-    // this.sessions$ = this.bs.getChannel<StatusUpdate[]>('status');
-    this.serviceConnected$ = this.bs.serviceConnected$;
 
     this.connectionStatus$ = this.bs.connectionStatus$;
 
-    this.connectionStatus$.subscribe(v => console.log("CONNECTION-STATUS: " + v));
-
+    // this.connectionStatus$.subscribe(v => console.log("CONNECTION-STATUS: " + v));
   }
 
 
@@ -53,6 +45,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
     }
+    this.bs.cutConnection();
   }
 
 

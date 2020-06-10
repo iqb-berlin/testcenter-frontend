@@ -12,11 +12,14 @@ export type ConnectionStatus = "initial" | "ws-offline" | "ws-online" | "polling
 @Injectable()
 export class BackendService extends WebsocketService implements OnDestroy {
 
-  public sessions$: BehaviorSubject<StatusUpdate[]>;
+  public sessions$: BehaviorSubject<StatusUpdate[]> = new BehaviorSubject<StatusUpdate[]>([]);
   public connectionStatus$: BehaviorSubject<ConnectionStatus> = new BehaviorSubject<ConnectionStatus>("initial");
 
   private wsStatusSubscription: Subscription = null;
   private wsSessionsSubscription: Subscription = null;
+  private pollingTimeoutId: number = null;
+
+  private connectionClosed: boolean = true;
 
   constructor(
       @Inject('SERVER_URL') private serverUrl: string,
@@ -28,7 +31,7 @@ export class BackendService extends WebsocketService implements OnDestroy {
 
   ngOnDestroy() {
 
-      this.unsubscribeFromWebsocket();
+    this.cutConnection();
   }
 
 
@@ -55,13 +58,9 @@ export class BackendService extends WebsocketService implements OnDestroy {
     // - errors
 
 
-  getSessions(): Observable<StatusUpdate[]> {
+  public getSessions(): Observable<StatusUpdate[]> {
 
-    console.log("load monitor for ");
-    if (!this.sessions$) {
-
-      this.sessions$ = new BehaviorSubject<StatusUpdate[]>([]);
-    }
+    this.connectionClosed = false;
 
     this.unsubscribeFromWebsocket();
 
@@ -71,14 +70,12 @@ export class BackendService extends WebsocketService implements OnDestroy {
         .get<StatusUpdate[]>(this.serverUrl + `/workspace/1/sessions`, {observe: 'response'})
         .pipe(
             catchError((err: ApiError) => {
-                console.warn(`getState Api-Error: ${err.code} ${err.info}`);
+                console.warn(`Api-Error: ${err.code} ${err.info}`);
                 this.connectionStatus$.next("error");
                 return of([])
             })
         )
         .subscribe((response: HttpResponse<StatusUpdate[]>) => {
-
-            console.log("headers", response.headers);
 
             this.sessions$.next(response.body);
 
@@ -91,47 +88,67 @@ export class BackendService extends WebsocketService implements OnDestroy {
             } else {
 
                 this.connectionStatus$.next("polling-sleep");
-                setTimeout(() => this.getSessions(), 5000);
+                this.scheduleNextPoll();
             }
-        })
+        });
 
 
     return this.sessions$;
+  }
 
 
+  public cutConnection(): void {
+
+    console.log("cut monitor connection");
+
+    this.unsubscribeFromWebsocket();
+    if (this.pollingTimeoutId) {
+        clearTimeout(this.pollingTimeoutId);
+        this.pollingTimeoutId = null;
+    }
+  }
+
+
+  private scheduleNextPoll(): void {
+
+    if (this.pollingTimeoutId) {
+        clearTimeout(this.pollingTimeoutId);
+    }
+    this.pollingTimeoutId = window.setTimeout(
+        () => {if (!this.connectionClosed) this.getSessions();},
+        5000
+    );
   }
 
 
   private unsubscribeFromWebsocket() {
 
-      if (this.wsStatusSubscription) {
-          this.wsStatusSubscription.unsubscribe();
-      }
+    if (this.wsStatusSubscription) {
+      this.wsStatusSubscription.unsubscribe();
+    }
 
-      if (this.wsSessionsSubscription) {
-          this.wsSessionsSubscription.unsubscribe();
-      }
+    if (this.wsSessionsSubscription) {
+      this.wsSessionsSubscription.unsubscribe();
+    }
   }
 
 
   private subScribeToStatusUpdateWsChannel() {
 
-      this.wsSessionsSubscription = this.getChannel<StatusUpdate[]>('status')
-          .subscribe((sessionStatus: StatusUpdate[]) => this.sessions$.next(sessionStatus)); // subscribe only next, not complete!
+    this.wsSessionsSubscription = this.getChannel<StatusUpdate[]>('status')
+      .subscribe((sessionStatus: StatusUpdate[]) => this.sessions$.next(sessionStatus)); // subscribe only next, not complete!
 
-      this.wsStatusSubscription = this.serviceConnected$
-          .pipe(
-              skipWhile((item: boolean) => item === null), // skip pre-init-state
-              tap((wsConnected: boolean) => {
-                  if (!wsConnected) {
-                      console.log('switch to polling-mode');
-                      this.connectionStatus$.next("polling-sleep");
-                      setTimeout(() => this.getSessions(), 5000);
-                  }
-              }),
-              map((wsConnected: boolean): ConnectionStatus => wsConnected ? "ws-online" : "ws-offline")
-          )
-          .subscribe(this.connectionStatus$);
+    this.wsStatusSubscription = this.serviceConnected$
+      .pipe(
+          skipWhile((item: boolean) => item === null), // skip pre-init-state
+          tap((wsConnected: boolean) => {
+              if (!wsConnected) {
+                  console.log('switch to polling-mode');
+                  this.scheduleNextPoll();
+              }
+          }),
+          map((wsConnected: boolean): ConnectionStatus => wsConnected ? "ws-online" : "ws-offline")
+      )
+      .subscribe(this.connectionStatus$);
   }
-
 }
