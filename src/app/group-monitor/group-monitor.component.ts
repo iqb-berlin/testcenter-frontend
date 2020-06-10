@@ -1,8 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {BackendService, ConnectionStatus} from './backend.service';
+import {BackendService} from './backend.service';
 import {Observable, Subscription} from 'rxjs';
 import {StatusUpdate} from './group-monitor.interfaces';
 import {ActivatedRoute} from '@angular/router';
+import {ConnectionStatus} from './websocket-backend.service';
 
 @Component({
   selector: 'app-group-monitor',
@@ -32,7 +33,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.workspacesId = params['ws'];
     });
 
-    this.sessions$ = this.bs.getSessions();
+    this.sessions$ = this.bs.subscribeSessionsMonitor();
 
     this.connectionStatus$ = this.bs.connectionStatus$;
 
