@@ -10,12 +10,11 @@ interface WsMessage {
 
 export class WebsocketService {
 
-  protected url = 'ws://127.0.0.1:3000';
-  protected urlParam = "XYZ";
+  protected wsUrl: string = "";
 
-  private webSocketSubject$: WebSocketSubject<any>;
+  private wsSubject$: WebSocketSubject<any>;
 
-  public serviceConnected$ = new BehaviorSubject<boolean>(null);
+  public wsConnected$ = new BehaviorSubject<boolean>(null);
 
 
   constructor(
@@ -23,17 +22,13 @@ export class WebsocketService {
   }
 
 
-  public connect(urlParam: string, forceReconnect: boolean = false): WebSocketSubject<any> {
+  public connect() {
 
-    this.urlParam = urlParam;
+    if (!this.wsSubject$) {
 
-    // const url = 'wss://echo.websocket.org';
+      console.log('connecting...' + this.wsUrl);
 
-    if (!this.webSocketSubject$ || forceReconnect) {
-
-      console.log('connecting...' + urlParam);
-
-      this.webSocketSubject$ = webSocket({
+      this.wsSubject$ = webSocket({
 
         deserializer(event: MessageEvent): any {
           return JSON.parse(event.data);
@@ -46,50 +41,48 @@ export class WebsocketService {
         openObserver: {
           next: () => {
             console.log('connection established');
-            this.serviceConnected$.next(true);
+            this.wsConnected$.next(true);
           }
         },
 
-        url: this.url + '/' + urlParam
+        url: this.wsUrl
       });
 
-      this.webSocketSubject$.subscribe(
+      this.wsSubject$.subscribe(
 
           () => {},
 
           () => {
             console.log('connection error');
-            this.serviceConnected$.next(false);
+            this.wsConnected$.next(false);
           },
 
           () => {
             console.log('connection closed');
-            this.serviceConnected$.next(false);
+            this.wsConnected$.next(false);
           }
       );
     }
-
-    return this.webSocketSubject$;
   }
 
 
   public send(event: string, data: any) {
 
-    if (!this.webSocketSubject$) {
-      this.connect(this.urlParam);
+    if (!this.wsSubject$) {
+      this.connect();
     }
 
-    this.webSocketSubject$.next({event, data});
+    this.wsSubject$.next({event, data});
   }
 
 
   public getChannel<T>(channelName: string): Observable<T> {
 
-    if (!this.webSocketSubject$) {
-      this.connect(this.urlParam);
+    if (!this.wsSubject$) {
+        this.connect();
     }
 
-    return this.webSocketSubject$
+    return this.wsSubject$
         .multiplex(
             () => ({event: `subscribe:${channelName}`}),
             () => ({event: `unsubscribe:${channelName}`}),

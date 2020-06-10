@@ -62,26 +62,26 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
         .get<T>(this.serverUrl + this.pollingEndpoint, {observe: 'response'})
         .pipe(
             catchError((err: ApiError) => {
-              console.warn(`Api-Error: ${err.code} ${err.info}`);
-              this.connectionStatus$.next("error");
-              return of([])
+                console.warn(`Api-Error: ${err.code} ${err.info}`);
+                this.connectionStatus$.next("error");
+                return of([])
             })
         )
         .subscribe((response: HttpResponse<T>) => {
 
-          this.data$.next(response.body);
+            this.data$.next(response.body);
 
-          if (response.headers.has('SubscribeURI')) {
+            if (response.headers.has('SubscribeURI')) {
 
-            console.log('switch to websocket-mode');
-            this.urlParam = response.headers.get('SubscribeURI');
-            this.subScribeToStatusUpdateWsChannel();
+                this.wsUrl = response.headers.get('SubscribeURI');
+                console.log('switch to websocket-mode');
+                this.subScribeToWsChannel();
 
-          } else {
+            } else {
 
-            this.connectionStatus$.next("polling-sleep");
-            this.scheduleNextPoll();
-          }
+                this.connectionStatus$.next("polling-sleep");
+                this.scheduleNextPoll();
+            }
         });
   }
 
@@ -122,12 +122,12 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
   }
 
 
-  private subScribeToStatusUpdateWsChannel() {
+  private subScribeToWsChannel() {
 
     this.wsDataSubscription = this.getChannel<T>(this.wsChannelName)
         .subscribe((dataObject: T) => this.data$.next(dataObject)); // subscribe only next, not complete!
 
-    this.wsConnectionStatusSubscription = this.serviceConnected$
+    this.wsConnectionStatusSubscription = this.wsConnected$
         .pipe(
             skipWhile((item: boolean) => item === null), // skip pre-init-state
             tap((wsConnected: boolean) => {
