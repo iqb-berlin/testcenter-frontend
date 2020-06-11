@@ -10,8 +10,9 @@ export class BackendService extends WebsocketBackendService<StatusUpdate[]> {
 
     public pollingEndpoint = '/workspace/1/sessions';
     public pollingInterval = 5000;
-    public wsChannelName = 'status';
+    public wsChannelName = 'test-sessions';
     public initialData: StatusUpdate[] = [];
+
 
     public subscribeSessionsMonitor(): Observable<StatusUpdate[]> {
 
