@@ -1,5 +1,5 @@
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {map, share} from 'rxjs/operators';
 import {WebSocketMessage} from 'rxjs/internal/observable/dom/WebSocketSubject';
 
@@ -16,6 +16,7 @@ export class WebsocketService {
 
   public wsConnected$ = new BehaviorSubject<boolean>(null);
 
+  private wsSubscription$: Subscription;
 
   constructor(
   ) {
@@ -48,21 +49,29 @@ export class WebsocketService {
         url: this.wsUrl
       });
 
-      this.wsSubject$.subscribe(
+      this.wsSubscription$ = this.wsSubject$.subscribe(
 
           () => {},
 
           () => {
             console.log('connection error');
-            this.wsConnected$.next(false);
+            this.closeConnection();
           },
 
           () => {
             console.log('connection closed');
-            this.wsConnected$.next(false);
+            this.closeConnection();
           }
       );
     }
+  }
+
+
+  protected closeConnection(): void {
+
+    this.wsConnected$.next(false);
+    this.wsSubscription$.unsubscribe(); // TODO also on leave
+    this.wsSubject$ = null;
   }
 
 
