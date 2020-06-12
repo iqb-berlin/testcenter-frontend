@@ -1,7 +1,7 @@
 import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange} from '@angular/core';
 import {BookletService} from '../booklet.service';
 import {combineLatest, Observable, Subject} from 'rxjs';
-import {Booklet, StatusUpdate, Testlet, Unit} from '../group-monitor.interfaces';
+import {Booklet, TestSession, Testlet, Unit} from '../group-monitor.interfaces';
 import {map} from 'rxjs/operators';
 import {TestMode} from '../../config/test-mode';
 
@@ -18,9 +18,9 @@ function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
 })
 export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
-    @Input() testStatus: StatusUpdate;
+    @Input() testStatus: TestSession;
 
-    private testStatus$: Subject<StatusUpdate>;
+    private testStatus$: Subject<TestSession>;
     public booklet$: Observable<boolean|Booklet>;
     public featuredUnit$: Observable<{
         unit: Unit,
@@ -35,7 +35,7 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
     constructor(
         private bookletsService: BookletService,
     ) {
-        this.testStatus$ = new Subject<StatusUpdate>();
+        this.testStatus$ = new Subject<TestSession>();
     }
 
 
@@ -52,8 +52,8 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
             }
         });
 
-        this.featuredUnit$ = combineLatest<[Booklet|null, StatusUpdate]>([this.booklet$, this.testStatus$])
-            .pipe(map((bookletAndStatus: [Booklet|boolean, StatusUpdate]) => {
+        this.featuredUnit$ = combineLatest<[Booklet|null, TestSession]>([this.booklet$, this.testStatus$])
+            .pipe(map((bookletAndStatus: [Booklet|boolean, TestSession]) => {
 
                 console.log("MAP");
 

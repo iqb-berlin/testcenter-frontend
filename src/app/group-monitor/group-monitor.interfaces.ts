@@ -1,6 +1,6 @@
 import {BookletConfig} from '../config/booklet-config';
 
-export interface StatusUpdate {
+export interface TestSession {
 
     personId: number;
     personLabel?: string;

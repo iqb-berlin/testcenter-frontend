@@ -2,19 +2,19 @@ import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {ApiError, BookletData} from '../app.interfaces';
-import {StatusUpdate} from './group-monitor.interfaces';
+import {TestSession} from './group-monitor.interfaces';
 import {WebsocketBackendService} from './websocket-backend.service';
 
 @Injectable()
-export class BackendService extends WebsocketBackendService<StatusUpdate[]> {
+export class BackendService extends WebsocketBackendService<TestSession[]> {
 
     public pollingEndpoint = '/workspace/1/sessions';
     public pollingInterval = 5000;
     public wsChannelName = 'test-sessions';
-    public initialData: StatusUpdate[] = [];
+    public initialData: TestSession[] = [];
 
 
-    public subscribeSessionsMonitor(): Observable<StatusUpdate[]> {
+    public subscribeSessionsMonitor(): Observable<TestSession[]> {
 
         return this.subscribeEndpointAndChannel();
     }

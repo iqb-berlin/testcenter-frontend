@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {BackendService} from './backend.service';
 import {Observable, Subscription} from 'rxjs';
-import {StatusUpdate} from './group-monitor.interfaces';
+import {TestSession} from './group-monitor.interfaces';
 import {ActivatedRoute} from '@angular/router';
 import {ConnectionStatus} from './websocket-backend.service';
 
@@ -16,7 +16,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   private routingSubscription: Subscription = null;
 
-  sessions$: Observable<StatusUpdate[]>;
+  sessions$: Observable<TestSession[]>;
   clientCount$: Observable<number>;
   connectionStatus$: Observable<ConnectionStatus>;
 
@@ -50,7 +50,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
 
-  trackSession(index: number, session: StatusUpdate): number {
+  trackSession(index: number, session: TestSession): number {
 
     return session.personId * 10000 +  session.testId;
   }

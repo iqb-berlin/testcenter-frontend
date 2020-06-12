@@ -16,7 +16,7 @@ export class WebsocketService {
 
   public wsConnected$ = new BehaviorSubject<boolean>(null);
 
-  private wsSubscription$: Subscription;
+  private wsSubscription: Subscription;
 
   constructor(
   ) {
@@ -49,7 +49,7 @@ export class WebsocketService {
         url: this.wsUrl
       });
 
-      this.wsSubscription$ = this.wsSubject$.subscribe(
+      this.wsSubscription = this.wsSubject$.subscribe(
 
           () => {},
 
@@ -70,7 +70,7 @@ export class WebsocketService {
   protected closeConnection(): void {
 
     this.wsConnected$.next(false);
-    this.wsSubscription$.unsubscribe(); // TODO also on leave
+    this.wsSubscription.unsubscribe();
     this.wsSubject$.complete();
     this.wsSubject$ = null;
   }
