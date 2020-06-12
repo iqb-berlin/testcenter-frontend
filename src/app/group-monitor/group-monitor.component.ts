@@ -41,8 +41,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.connectionStatus$ = this.bs.connectionStatus$;
 
     this.ownGroup = 'sample_group'; // TODO fetchItBaby;
-
-    // this.connectionStatus$.subscribe(v => console.log("CONNECTION-STATUS: " + v));
   }
 
 
