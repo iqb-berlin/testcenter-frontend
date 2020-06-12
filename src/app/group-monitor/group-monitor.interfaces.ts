@@ -55,4 +55,7 @@ export interface Restrictions {
         message: string;
     }
     timeMax?: number;
+    lock?: {
+        message: string;
+    }
 }

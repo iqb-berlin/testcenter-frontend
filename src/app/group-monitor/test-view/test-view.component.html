@@ -89,6 +89,14 @@
         <mat-icon>sms</mat-icon>
     </span>
 
+    <span *ngIf="testlet.restrictions && testlet.restrictions.lock as lock"
+          class="unit restriction"
+          matTooltip="{{lock.message}}"
+          matTooltipPosition="above"
+    >
+        <mat-icon>lock</mat-icon>
+    </span>
+
     <ng-container *ngFor="let testletOrUnit of testlet.children; trackBy: trackUnits" [ngSwitch]="getTestletType(testletOrUnit)">
 
         <span *ngSwitchCase="'unit'"

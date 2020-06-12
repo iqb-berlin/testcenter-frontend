@@ -152,6 +152,14 @@ export class BookletService {
             restrictions.timeMax = parseInt(timeMaxElement.textContent);
         }
 
+        const lockElement = restrictionsElement.querySelector('Lock');
+        if (lockElement) {
+
+            restrictions.lock = {
+                message: lockElement.textContent
+            };
+        }
+
         return restrictions;
     }
 
