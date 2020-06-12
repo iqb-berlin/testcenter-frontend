@@ -16,9 +16,12 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   private routingSubscription: Subscription = null;
 
+  ownGroup: string;
+
   sessions$: Observable<TestSession[]>;
   clientCount$: Observable<number>;
   connectionStatus$: Observable<ConnectionStatus>;
+
 
   constructor(
       private route: ActivatedRoute,
@@ -36,6 +39,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.sessions$ = this.bs.subscribeSessionsMonitor();
 
     this.connectionStatus$ = this.bs.connectionStatus$;
+
+    this.ownGroup = 'sample_group'; // TODO fetchItBaby;
 
     // this.connectionStatus$.subscribe(v => console.log("CONNECTION-STATUS: " + v));
   }
