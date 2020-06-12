@@ -3,45 +3,50 @@
 <!--</td>-->
 
 <td>
-    <ng-container *ngIf="getMode(testStatus.mode) as mode" >
+    <div class="vertical-align-middle">
+        <ng-container *ngIf="getMode(testStatus.mode) as mode" >
 
-        <i class="material-icons" *ngIf="mode.modeId === 'HOT'">face</i>
-        <i class="material-icons" *ngIf="mode.modeId === 'REVIEW'">rate_review</i>
-        <i class="material-icons" *ngIf="mode.modeId === 'TRIAL'">remove_red_eye</i>
-        <i class="material-icons" *ngIf="mode.modeId === 'DEMO'">ondemand_video</i>
-        <i class="material-icons" *ngIf="mode.modeId === 'monitor-group'">supervisor_account</i>
-        <i class="material-icons" *ngIf="mode.modeId === 'monitor-workspace'">supervisor_account</i>
-        <i class="material-icons" *ngIf="mode.modeId === 'monitor-study'">supervisor_account</i>
-    </ng-container>
-    {{testStatus.personLabel}}
+            <mat-icon *ngIf="mode.modeId === 'HOT'">face</mat-icon>
+            <mat-icon *ngIf="mode.modeId === 'REVIEW'">rate_review</mat-icon>
+            <mat-icon *ngIf="mode.modeId === 'TRIAL'">remove_red_eye</mat-icon>
+            <mat-icon *ngIf="mode.modeId === 'DEMO'">ondemand_video</mat-icon>
+            <mat-icon *ngIf="mode.modeId === 'monitor-group'">supervisor_account</mat-icon>
+            <mat-icon *ngIf="mode.modeId === 'monitor-workspace'">supervisor_account</mat-icon>
+            <mat-icon *ngIf="mode.modeId === 'monitor-study'">supervisor_account</mat-icon>
+        </ng-container>
+        <h1>{{testStatus.personLabel}}</h1>
+    </div>
 </td>
 
 
-<!--<td><div>{{testStatus.groupLabel}}</div></td>-->
+<!--<td><div class="vertical-align-middle">{{testStatus.groupLabel}}</div></td>-->
 
 <ng-container *ngIf="(booklet$ | async) as booklet; else: noBooklet">
 
     <td class="booklet">
 
-        <h1>{{booklet.metadata.label}}</h1>
+        <div class="vertical-align-middle">
 
-        <mat-icon class="unit-badge"
-                  *ngIf="hasState(testStatus.testState, 'status', 'locked')"
-                  matTooltip="Testheft gesperrt"
-            >lock
-        </mat-icon>
+            <h1>{{booklet.metadata.label}}</h1>
 
-        <mat-icon class="unit-badge"
-                  *ngIf="!hasState(testStatus.testState, 'status', 'locked')"
-                  matTooltip="Testheft gesperrt"
-            >lock_open
-        </mat-icon>
+            <mat-icon class="unit-badge"
+                      *ngIf="hasState(testStatus.testState, 'status', 'locked')"
+                      matTooltip="Testheft gesperrt"
+                >lock
+            </mat-icon>
 
-        <mat-icon class="unit-badge"
-                  *ngIf="hasState(testStatus.testState, 'BOOKLETLOCKEDbyTESTEE')"
-                  matTooltip="Testheft abgeschlossen"
-            >done_all
-        </mat-icon>
+            <mat-icon class="unit-badge"
+                      *ngIf="!hasState(testStatus.testState, 'status', 'locked')"
+                      matTooltip="Testheft gesperrt"
+                >lock_open
+            </mat-icon>
+
+            <mat-icon class="unit-badge"
+                      *ngIf="hasState(testStatus.testState, 'BOOKLETLOCKEDbyTESTEE')"
+                      matTooltip="Testheft abgeschlossen"
+                >done_all
+            </mat-icon>
+        </div>
     </td>
 
     <td *ngIf="booklet.units as testlet">
