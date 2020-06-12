@@ -91,6 +91,8 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
     console.log("cut monitor connection");
 
     this.unsubscribeFromWebsocket();
+    this.closeConnection();
+
     if (this.pollingTimeoutId) {
         clearTimeout(this.pollingTimeoutId);
         this.pollingTimeoutId = null;

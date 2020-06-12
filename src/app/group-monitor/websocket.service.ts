@@ -71,6 +71,7 @@ export class WebsocketService {
 
     this.wsConnected$.next(false);
     this.wsSubscription$.unsubscribe(); // TODO also on leave
+    this.wsSubject$.complete();
     this.wsSubject$ = null;
   }
 
