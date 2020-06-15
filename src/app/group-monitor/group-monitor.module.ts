@@ -15,6 +15,7 @@ import { TestViewComponent } from './test-view/test-view.component';
 import {MatIconModule} from '@angular/material/icon';
 import {MatBadgeModule} from '@angular/material/badge';
 import {FlexModule} from '@angular/flex-layout';
+import {MatSortModule} from '@angular/material/sort';
 
 
 
@@ -33,7 +34,8 @@ import {FlexModule} from '@angular/flex-layout';
         MatChipsModule,
         MatIconModule,
         MatBadgeModule,
-        FlexModule
+        FlexModule,
+        MatSortModule
     ],
   providers: [
       BackendService,

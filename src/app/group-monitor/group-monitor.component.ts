@@ -1,9 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {BackendService} from './backend.service';
-import {Observable, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, Subject, Subscription} from 'rxjs';
 import {TestSession} from './group-monitor.interfaces';
 import {ActivatedRoute} from '@angular/router';
 import {ConnectionStatus} from './websocket-backend.service';
+import {map} from 'rxjs/operators';
+import {Sort} from '@angular/material/sort';
+
 
 @Component({
   selector: 'app-group-monitor',
@@ -18,10 +21,10 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   ownGroup: string;
 
-  sessions$: Observable<TestSession[]>;
-  clientCount$: Observable<number>;
+  monitor$: Observable<TestSession[]>;
   connectionStatus$: Observable<ConnectionStatus>;
-
+  sortBy$: Subject<Sort>;
+  sessions$: Observable<TestSession[]>;
 
   constructor(
       private route: ActivatedRoute,
@@ -36,7 +39,25 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.workspacesId = params['ws'];
     });
 
-    this.sessions$ = this.bs.subscribeSessionsMonitor();
+    this.sortBy$ = new BehaviorSubject<Sort>({direction: 'asc', active: 'bookletName'});
+    this.monitor$ = this.bs.subscribeSessionsMonitor();
+    this.sessions$ = combineLatest<[Sort, TestSession[]]>([this.sortBy$, this.monitor$])
+        .pipe(
+            map((data: [Sort, TestSession[]]): TestSession[] => data[1].sort(
+                (testSession1, testSession2) => {
+
+                  if (data[0].active === "timestamp") {
+                    return (testSession2.timestamp - testSession1.timestamp) * (data[0].direction === 'asc' ? 1 : -1);
+                  }
+
+                  const stringA = (testSession1[data[0].active] || "zzzzz");
+                  const stringB = (testSession2[data[0].active] || "zzzzz");
+                  return stringA.localeCompare(stringB) * (data[0].direction === 'asc' ? 1 : -1);
+                }
+            ))
+        );
+
+
 
     this.connectionStatus$ = this.bs.connectionStatus$;
 
@@ -56,5 +77,15 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   trackSession(index: number, session: TestSession): number {
 
     return session.personId * 10000 +  session.testId;
+  }
+
+
+  sortSessions(sort: Sort): void {
+
+    if (!sort.active || sort.direction === '') {
+      return;
+    }
+
+    this.sortBy$.next(sort);
   }
 }

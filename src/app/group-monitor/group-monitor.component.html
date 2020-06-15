@@ -25,7 +25,17 @@
 <div class="page-body">
   <div class="adminbackground">
 
-    <table class="test-view-table">
+    <table class="test-view-table" matSort (matSortChange)="sortSessions($event)">
+
+        <thead>
+            <tr class="mat-sort-container">
+                <td mat-sort-header="personLabel">Benutzer</td>
+<!--                <td  mat-sort-header="groupLabel">Gruppe</td>-->
+                <td mat-sort-header="bookletName">Testheft</td>
+                <td mat-sort-header="timestamp">Aktivität</td>
+            </tr>
+        </thead>
+
         <test-view *ngFor="let session of sessions$ | async; trackBy: trackSession" [testStatus]="session"></test-view>
     </table>
 
