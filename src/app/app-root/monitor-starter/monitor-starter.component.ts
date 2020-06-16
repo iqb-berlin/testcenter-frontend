@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AuthAccessKeyType, AuthData, WorkspaceData} from "../../app.interfaces";
+import {AccessObject, AuthAccessKeyType, AuthData, WorkspaceData} from '../../app.interfaces';
 import {from, Subscription} from "rxjs";
 import {Router} from "@angular/router";
 import {BackendService} from "../../backend.service";
@@ -15,7 +15,7 @@ import {CustomtextService} from "iqb-components";
   ]
 })
 export class MonitorStarterComponent implements OnInit, OnDestroy {
-  workspaces: WorkspaceData[] = [];
+  accessObjects: (WorkspaceData|AccessObject)[] = [];
   isWorkspaceMonitor = false;
   private getWorkspaceDataSubscription: Subscription = null;
 
@@ -34,7 +34,7 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
           const authData = authDataUntyped as AuthData;
           if (authData) {
             if (authData.token) {
-              this.workspaces = [];
+              this.accessObjects = [];
               let scopeIdList = [];
               if (authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
                 scopeIdList = authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR];
@@ -48,9 +48,13 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
               }
               this.getWorkspaceDataSubscription = from(scopeIdList).pipe(
                 concatMap(monitorScopeId => {
-                  return this.bs.getWorkspaceData(monitorScopeId)
+                  if (authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
+                    return this.bs.getGroupData(monitorScopeId)
+                  } else if (authData.access[AuthAccessKeyType.WORKSPACE_MONITOR]) {
+                    return this.bs.getWorkspaceData(monitorScopeId)
+                  }
                 })).subscribe(
-                wsData => this.workspaces.push(wsData),
+                wsData => this.accessObjects.push(wsData),
                 () => this.mds.setSpinnerOff(),
                 () => this.mds.setSpinnerOff()
               );
@@ -70,11 +74,12 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
     });
   }
 
-  buttonGotoMonitor(ws: WorkspaceData) {
+  buttonGotoMonitor(accessObject: AccessObject) {
+
     if (this.isWorkspaceMonitor) {
-      this.router.navigateByUrl('/wm/' + ws.id.toString());
+      this.router.navigateByUrl('/wm/' + accessObject.id.toString());
     } else {
-      this.router.navigateByUrl('/gm/' + ws.id.toString());
+      this.router.navigateByUrl('/gm/' + accessObject.id.toString());
     }
   }
 

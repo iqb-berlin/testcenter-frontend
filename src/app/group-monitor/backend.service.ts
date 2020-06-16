@@ -8,7 +8,7 @@ import {WebsocketBackendService} from './websocket-backend.service';
 @Injectable()
 export class BackendService extends WebsocketBackendService<TestSession[]> {
 
-    public pollingEndpoint = '/workspace/1/sessions';
+    public pollingEndpoint = '/monitor/test-sessions';
     public pollingInterval = 5000;
     public wsChannelName = 'test-sessions';
     public initialData: TestSession[] = [];

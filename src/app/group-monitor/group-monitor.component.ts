@@ -15,8 +15,6 @@ import {Sort} from '@angular/material/sort';
 })
 export class GroupMonitorComponent implements OnInit, OnDestroy {
 
-  private workspacesId: string;
-
   private routingSubscription: Subscription = null;
 
   ownGroup: string;
@@ -36,7 +34,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
     this.routingSubscription = this.route.params.subscribe(params => {
 
-      this.workspacesId = params['ws'];
+      this.ownGroup = params['group-name']; // TODO fetch label
     });
 
     this.sortBy$ = new BehaviorSubject<Sort>({direction: 'asc', active: 'bookletName'});

@@ -30,6 +30,11 @@ export interface WorkspaceData {
   role: "RW" | "RO" | "n.d.";
 }
 
+export interface AccessObject {
+  id: string;
+  name: string;
+}
+
 export interface BookletData {
   id: string;
   label: string;

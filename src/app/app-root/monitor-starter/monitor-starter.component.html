@@ -3,12 +3,12 @@
     <mat-card-title>Testdurchführung überwachen</mat-card-title>
     <mat-card-content>
       <div fxLayoutGap="10px" fxLayout="column">
-        <p *ngIf="workspaces.length === 0">
+        <p *ngIf="accessObjects.length === 0">
           Sie sind angemeldet. Aktuell sind keine Bereiche zur Überwachung für Sie freigegeben.
         </p>
-        <button mat-raised-button color="primary" (click)="buttonGotoMonitor(ws)"
-                *ngFor="let ws of workspaces">
-          {{ws.name}}
+        <button mat-raised-button color="primary" (click)="buttonGotoMonitor(accessObject)"
+                *ngFor="let accessObject of accessObjects">
+          {{accessObject.name}}
         </button>
       </div>
     </mat-card-content>

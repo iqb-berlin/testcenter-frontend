@@ -4,10 +4,10 @@ import {HttpClient} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
 import {catchError, map, switchMap} from 'rxjs/operators';
 import {
-  SysCheckInfo,
-  AuthData,
-  WorkspaceData,
-  BookletData, ApiError
+    SysCheckInfo,
+    AuthData,
+    WorkspaceData,
+    BookletData, ApiError, AccessObject
 } from './app.interfaces';
 import {SysConfig} from "./config/app.config";
 
@@ -86,6 +86,18 @@ export class BackendService {
         })
       }));
   }
+
+    getGroupData(groupName: string): Observable<AccessObject> {
+        return this.http
+            .get<AccessObject>(this.serverUrl + 'monitor/group/' + groupName)
+            .pipe(catchError(() => {
+                console.warn('get workspace data failed for ' + groupName);
+                return of(<AccessObject>{
+                    id: groupName,
+                    name: groupName,
+                })
+            }));
+    }
 
   getSessionData(): Observable<AuthData | number> {
     return this.http
