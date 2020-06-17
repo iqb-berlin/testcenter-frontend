@@ -16,15 +16,16 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatBadgeModule} from '@angular/material/badge';
 import {FlexModule} from '@angular/flex-layout';
 import {MatSortModule} from '@angular/material/sort';
-
+import {MatMenuModule} from '@angular/material/menu';
+import {MatButtonModule} from '@angular/material/button';
 
 
 
 @NgModule({
-  declarations: [
-      GroupMonitorComponent,
-      TestViewComponent
-  ],
+    declarations: [
+        GroupMonitorComponent,
+        TestViewComponent,
+    ],
     imports: [
         CommonModule,
         GroupMonitorRoutingModule,
@@ -35,12 +36,14 @@ import {MatSortModule} from '@angular/material/sort';
         MatIconModule,
         MatBadgeModule,
         FlexModule,
-        MatSortModule
+        MatSortModule,
+        MatMenuModule,
+        MatButtonModule,
     ],
-  providers: [
-      BackendService,
-      BookletService
-  ],
+    providers: [
+        BackendService,
+        BookletService
+    ],
 })
 export class GroupMonitorModule {
 }

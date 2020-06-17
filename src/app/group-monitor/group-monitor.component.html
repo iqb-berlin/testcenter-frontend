@@ -25,7 +25,31 @@
 <div class="page-body">
   <div class="adminbackground">
 
-    <table class="test-view-table" matSort (matSortChange)="sortSessions($event)">
+      <mat-menu #rootMenu="matMenu">
+          <button mat-menu-item [matMenuTriggerFor]="activity">Aktivität</button>
+      </mat-menu>
+
+      <mat-menu #activity="matMenu">
+          <button mat-menu-item (click)="setDisplayOption('view', 'full')">
+              <mat-icon *ngIf="displayOptions.view === 'full'">check</mat-icon>
+              <span>Vollständig</span>
+          </button>
+          <button mat-menu-item (click)="setDisplayOption('view', 'medium')">
+              <mat-icon *ngIf="displayOptions.view === 'medium'">check</mat-icon>
+              <span>Nur Blöcke</span>
+          </button>
+          <button mat-menu-item (click)="setDisplayOption('view', 'small')">
+              <mat-icon *ngIf="displayOptions.view === 'small'">check</mat-icon>
+              <span>Kurz</span>
+          </button>
+      </mat-menu>
+
+      <button mat-icon-button [matMenuTriggerFor]="rootMenu">
+          Ansicht
+      </button>
+
+
+      <table class="test-view-table" matSort (matSortChange)="sortSessions($event)">
 
         <thead>
             <tr class="mat-sort-container">
@@ -36,12 +60,17 @@
             </tr>
         </thead>
 
-        <test-view *ngFor="let session of sessions$ | async; trackBy: trackSession" [testStatus]="session"></test-view>
-    </table>
+        <test-view
+                *ngFor="let session of sessions$ | async; trackBy: trackSession"
+                [testStatus]="session"
+                [displayOptions]="displayOptions"
+            >
+        </test-view>
+      </table>
 
 <!--    <p>Connected Admins: {{clientCount$ | async}}</p>-->
 
 <!--    <pre>{{sessions$ | async | json}}</pre>-->
 
-</div>
+    </div>
 </div>

@@ -51,42 +51,62 @@
 
     <td *ngIf="booklet.units as testlet">
 
-        <div class="units-container" [class]="hasState(testStatus.testState, 'status', 'locked') ? 'locked' : ''">
-            <div class="units">
-                <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testlet}"></ng-container>
-            </div>
+        <div
+                class="units-container"
+                [class]="hasState(testStatus.testState, 'status', 'locked') ? 'locked' : ''"
+                [ngSwitch]="displayOptions.view"
+            >
+                <div class="units full" *ngSwitchCase="'full'" >
+                    <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testlet}"></ng-container>
+                </div>
+
+                <div class="units medium" *ngSwitchCase="'medium'" >
+                    <ng-container *ngTemplateOutlet="bookletTemplateMedium; context: {$implicit: testlet}"></ng-container>
+                </div>
+
+                <div class="units small" *ngSwitchCase="'small'" >
+                    <ng-container *ngTemplateOutlet="testletBookletSmall; context: {$implicit: testlet}"></ng-container>
+                </div>
         </div>
 
-        <div class="featured-unit" *ngIf="(featuredUnit$| async) as unitContext; else: noFeaturedUnit">
+        <ng-container *ngIf="displayOptions.view === 'full'">
+            <ng-container *ngTemplateOutlet="featuredUnit"></ng-container>
+        </ng-container>
 
-            <h1>{{unitContext.parent.label || 'Aktueller Abschnitt'}}</h1>
-
-            <mat-icon class="unit-badge"
-                      *ngIf="maxTimeLeft && (maxTimeLeft[unitContext.parent.id] !== undefined)"
-                      matBadge="{{maxTimeLeft[unitContext.parent.id].toString()}}"
-                      matBadgeColor="accent"
-                      matTooltip="Verbleibende Zeit"
-                >alarm
-            </mat-icon>
-
-            <h1>:</h1>
-
-            <h2>{{unitContext.unit.label || unitContext.unit.labelShort || unitContext.unit.id}}</h2>
-
-            <mat-icon class="unit-badge"
-                      *ngIf="hasState(testStatus.unitState, 'PRESENTATIONCOMPLETE', 'yes')"
-                      matTooltip="Vollständig betrachtet / angehört"
-                >remove_red_eye
-            </mat-icon>
-
-            <mat-icon class="unit-badge"
-                      *ngIf="hasState(testStatus.unitState, 'RESPONSESCOMPLETE', 'all')"
-                      matTooltip="Fertig beantwortet"
-                >done_all
-            </mat-icon>
-        </div>
     </td>
 </ng-container>
+
+<ng-template #featuredUnit>
+
+    <div class="featured-unit" *ngIf="(featuredUnit$| async) as unitContext; else: noFeaturedUnit">
+
+        <h1>{{unitContext.parent.label || 'Aktueller Abschnitt'}}</h1>
+
+        <mat-icon class="unit-badge"
+                  *ngIf="maxTimeLeft && (maxTimeLeft[unitContext.parent.id] !== undefined)"
+                  matBadge="{{maxTimeLeft[unitContext.parent.id].toString()}}"
+                  matBadgeColor="accent"
+                  matTooltip="Verbleibende Zeit"
+        >alarm
+        </mat-icon>
+
+        <h1>:</h1>
+
+        <h2>{{unitContext.unit.label || unitContext.unit.labelShort || unitContext.unit.id}}</h2>
+
+        <mat-icon class="unit-badge"
+                  *ngIf="hasState(testStatus.unitState, 'PRESENTATIONCOMPLETE', 'yes')"
+                  matTooltip="Vollständig betrachtet / angehört"
+        >remove_red_eye
+        </mat-icon>
+
+        <mat-icon class="unit-badge"
+                  *ngIf="hasState(testStatus.unitState, 'RESPONSESCOMPLETE', 'all')"
+                  matTooltip="Fertig beantwortet"
+        >done_all
+        </mat-icon>
+    </div>
+</ng-template>
 
 <ng-template #noFeaturedUnit>
 </ng-template>
@@ -115,15 +135,67 @@
               [class]="(testStatus.unitName === testletOrUnit.id) ? 'unit current': 'unit'"
               matTooltip="{{testletOrUnit.label}}"
               matTooltipPosition="above"
-            >{{testletOrUnit.labelShort || "&nbsp;"}}
+        >{{testletOrUnit.labelShort || "&nbsp;"}}
         </span>
 
         <span *ngSwitchCase="'testlet'" class="testlet" matTooltip="{{testletOrUnit.label}}">
             <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testletOrUnit}"></ng-container>
         </span>
-        <!--                <pre>{{testletOrUnit|json}}</pre>-->
 
     </ng-container>
+
+</ng-template>
+
+<ng-template #bookletTemplateMedium let-testlet>
+
+    <ng-container *ngFor="let testletOrUnit of testlet.children; let i = index; trackBy: trackUnits" [ngSwitch]="getTestletType(testletOrUnit)">
+
+        <span *ngSwitchCase="'unit'"
+              [class]="(testStatus.unitName === testletOrUnit.id) ? 'unit current': 'unit'"
+              matTooltip="{{testletOrUnit.label}}"
+              matTooltipPosition="above"
+            >·
+        </span>
+
+        <span *ngSwitchCase="'testlet'" class="testlet" matTooltip="{{testletOrUnit.label}}">
+            <ng-container *ngIf="featuredUnit$ | async as featuredUnit; else: nonFeaturedTestlet">
+                <span
+                        *ngIf="featuredUnit.parent.id === testletOrUnit.id; else: nonFeaturedTestlet"
+                        class="unit current aggregated"
+                        matTooltip="{{featuredUnit.unit.label}}"
+                        matTooltipPosition="above"
+                    >{{featuredUnit.indexInTestlet + 1}} / {{testletOrUnit.children.length}}
+                </span>
+            </ng-container>
+
+            <ng-template #nonFeaturedTestlet>
+                <span class="unit aggregated">{{testletOrUnit.children.length}}</span>
+            </ng-template>
+        </span>
+    </ng-container>
+</ng-template>
+
+
+<ng-template #testletBookletSmall let-testlet>
+
+    <span
+            class="testlet" *ngIf="featuredUnit$ | async as featuredUnit; else: nonFeaturedTestlet"
+            matTooltip="{{featuredUnit.parent.label}}"
+        >
+        <span
+                class="unit current aggregated"
+                matTooltip="{{featuredUnit.unit.label}}"
+                matTooltipPosition="above"
+            >
+            {{featuredUnit.indexInBooklet + 1}} / {{countTestletChildren(testlet)}}
+        </span>
+    </span>
+
+    <ng-template #nonFeaturedTestlet>
+        <span class="testlet" >
+            <span class="unit aggregated">{{countTestletChildren(testlet)}}</span>
+        </span>
+    </ng-template>
 </ng-template>
 
 

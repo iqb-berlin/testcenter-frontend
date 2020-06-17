@@ -64,3 +64,7 @@ export interface GroupData {
     name: string;
     label: string;
 }
+
+export interface TestViewDisplayOptions {
+    view: 'full' | 'medium' | 'small';
+}

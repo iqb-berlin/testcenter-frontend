@@ -1,7 +1,7 @@
 import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange} from '@angular/core';
 import {BookletService} from '../booklet.service';
 import {combineLatest, Observable, Subject} from 'rxjs';
-import {Booklet, TestSession, Testlet, Unit} from '../group-monitor.interfaces';
+import {Booklet, TestSession, Testlet, Unit, TestViewDisplayOptions} from '../group-monitor.interfaces';
 import {map} from 'rxjs/operators';
 import {TestMode} from '../../config/test-mode';
 
@@ -9,6 +9,13 @@ import {TestMode} from '../../config/test-mode';
 function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
 
     return !('children' in testletOrUnit);
+}
+
+interface FeaturedUnitContext {
+    unit: Unit,
+    parent: Testlet,
+    indexInBooklet: number,
+    indexInTestlet: number
 }
 
 @Component({
@@ -19,13 +26,11 @@ function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
 export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
     @Input() testStatus: TestSession;
+    @Input() displayOptions: TestViewDisplayOptions;
 
     private testStatus$: Subject<TestSession>;
     public booklet$: Observable<boolean|Booklet>;
-    public featuredUnit$: Observable<{
-        unit: Unit,
-        parent: Testlet
-    }|null>;
+    public featuredUnit$: Observable<FeaturedUnitContext|null>;
 
     private childrenSubscription;
 
@@ -72,6 +77,7 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
 
+        console.log('CHANGE', changes);
         this.testStatus$.next(this.testStatus);
         this.maxTimeLeft = this.parseJsonState(this.testStatus.testState, 'MAXTIMELEFT');
     }
@@ -138,7 +144,7 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
     }
 
 
-    findUnitByName(testlet: Testlet, unitName: String): {unit: Unit|null, parent: Testlet} {
+    findUnitByName(testlet: Testlet, unitName: String, indexOffset: number = null): FeaturedUnitContext|null {
 
         for (let i = 0; i < testlet.children.length; i++) {
 
@@ -149,19 +155,44 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
                 if (testletOrUnit.id === unitName) {
                     return {
                         parent: testlet,
-                        unit: testletOrUnit
+                        unit: testletOrUnit,
+                        indexInBooklet: indexOffset + i,
+                        indexInTestlet: i
                     }
                 }
 
             } else {
 
-                const findInChildren = this.findUnitByName(testletOrUnit, unitName);
+                const findInChildren = this.findUnitByName(testletOrUnit, unitName, indexOffset + i);
 
                 if (findInChildren !== null) {
                     return findInChildren;
                 }
+
+                indexOffset += testletOrUnit.children.length;
             }
         }
         return null;
+    }
+
+    countTestletChildren(testlet: Testlet): number {
+
+        let childrenCount = 1;
+
+        for (let i = 0; i < testlet.children.length; i++) {
+
+            const testletOrUnit = testlet.children[i];
+
+            if (isUnit(testletOrUnit)) {
+
+                childrenCount++;
+
+            } else {
+
+                childrenCount += this.countTestletChildren(testletOrUnit);
+            }
+        }
+
+        return childrenCount;
     }
 }
