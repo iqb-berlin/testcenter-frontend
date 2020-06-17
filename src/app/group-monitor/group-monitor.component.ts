@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {BackendService} from './backend.service';
 import {BehaviorSubject, combineLatest, Observable, Subject, Subscription} from 'rxjs';
 import {GroupData, TestSession, TestViewDisplayOptions} from './group-monitor.interfaces';
@@ -39,6 +39,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
+    this.autoSelectViewMode();
+
     this.routingSubscription = this.route.params.subscribe(params => {
 
       this.ownGroupName = params['group-name']; // TODO fetch label
@@ -76,6 +78,20 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.routingSubscription.unsubscribe();
     }
     this.bs.cutConnection();
+  }
+
+
+  @HostListener('window:resize', ['$event'])
+  autoSelectViewMode(event?): void {
+
+    const screenWidth = window.innerWidth;
+    if (screenWidth > 1200) {
+      this.displayOptions.view = 'full';
+    } else if (screenWidth > 800) {
+      this.displayOptions.view = 'medium';
+    } else {
+      this.displayOptions.view = 'small';
+    }
   }
 
 
