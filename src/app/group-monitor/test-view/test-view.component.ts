@@ -1,6 +1,6 @@
 import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange} from '@angular/core';
 import {BookletService} from '../booklet.service';
-import {combineLatest, Observable, Subject} from 'rxjs';
+import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
 import {Booklet, TestSession, Testlet, Unit, TestViewDisplayOptions} from '../group-monitor.interfaces';
 import {map} from 'rxjs/operators';
 import {TestMode} from '../../config/test-mode';
@@ -32,7 +32,7 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
     public booklet$: Observable<boolean|Booklet>;
     public featuredUnit$: Observable<FeaturedUnitContext|null>;
 
-    private childrenSubscription;
+    private childrenSubscription: Subscription;
 
     public units: (Testlet|Unit)[];
     public maxTimeLeft: object|null;
@@ -77,7 +77,6 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
 
-        console.log('CHANGE', changes);
         this.testStatus$.next(this.testStatus);
         this.maxTimeLeft = this.parseJsonState(this.testStatus.testState, 'MAXTIMELEFT');
     }
