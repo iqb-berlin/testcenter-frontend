@@ -88,10 +88,17 @@ export class BackendService {
   }
 
     getGroupData(groupName: string): Observable<AccessObject> {
+
+        interface NameAndLabel { // TODO find consistent terminology. in XSD they are called name & label and likewise (mostly) in newer BE-versions
+            name: string;
+            label: string;
+        }
+
         return this.http
-            .get<AccessObject>(this.serverUrl + 'monitor/group/' + groupName)
+            .get<NameAndLabel>(this.serverUrl + 'monitor/group/' + groupName)
+            .pipe(map((r: NameAndLabel): AccessObject => ({id: r.name, name: r.label})))
             .pipe(catchError(() => {
-                console.warn('get workspace data failed for ' + groupName);
+                console.warn('get group data failed for ' + groupName);
                 return of(<AccessObject>{
                     id: groupName,
                     name: groupName,

@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {BackendService} from './backend.service';
 import {BehaviorSubject, combineLatest, Observable, Subject, Subscription} from 'rxjs';
-import {TestSession} from './group-monitor.interfaces';
+import {GroupData, TestSession} from './group-monitor.interfaces';
 import {ActivatedRoute} from '@angular/router';
 import {ConnectionStatus} from './websocket-backend.service';
 import {map} from 'rxjs/operators';
@@ -17,7 +17,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   private routingSubscription: Subscription = null;
 
-  ownGroup: string;
+  ownGroupName: string;
+  ownGroup$: Observable<GroupData>;
 
   monitor$: Observable<TestSession[]>;
   connectionStatus$: Observable<ConnectionStatus>;
@@ -34,7 +35,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
     this.routingSubscription = this.route.params.subscribe(params => {
 
-      this.ownGroup = params['group-name']; // TODO fetch label
+      this.ownGroupName = params['group-name']; // TODO fetch label
     });
 
     this.sortBy$ = new BehaviorSubject<Sort>({direction: 'asc', active: 'bookletName'});
@@ -59,7 +60,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
     this.connectionStatus$ = this.bs.connectionStatus$;
 
-    this.ownGroup = 'sample_group'; // TODO fetchItBaby;
+    this.ownGroup$ = this.bs.getGroupData(this.ownGroupName);
   }
 
 

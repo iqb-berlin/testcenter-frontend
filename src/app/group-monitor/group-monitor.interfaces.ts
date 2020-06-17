@@ -59,3 +59,8 @@ export interface Restrictions {
         message: string;
     }
 }
+
+export interface GroupData {
+    name: string;
+    label: string;
+}

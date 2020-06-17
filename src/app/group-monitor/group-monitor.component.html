@@ -1,5 +1,5 @@
 <div class="page-header">
-  <p>IQB-Testcenter Gruppenüberwachung: {{ownGroup}}</p>
+  <p>IQB-Testcenter Gruppenüberwachung: {{(ownGroup$ | async).label}}</p>
   <span class="fill-remaining-space"></span>
   <p>
     <mat-chip-list *ngIf="connectionStatus$ | async as connectionStatus">

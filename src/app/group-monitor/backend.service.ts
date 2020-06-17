@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {ApiError, BookletData} from '../app.interfaces';
-import {TestSession} from './group-monitor.interfaces';
+import {GroupData, TestSession} from './group-monitor.interfaces';
 import {WebsocketBackendService} from './websocket-backend.service';
 
 @Injectable()
@@ -26,11 +26,24 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
 
         return this.http
             .get<BookletData>(this.serverUrl + `booklet/${bookletName}/data`)
-            .pipe(
+            .pipe( // TODO useful error handling
                 catchError((err: ApiError) => {
                   console.warn(`getTestData Api-Error: ${err.code} ${err.info}`);
                   return of(false)
                 })
             );
+    }
+
+
+    public getGroupData(groupName: string): Observable<GroupData> {
+        return this.http
+            .get<GroupData>(this.serverUrl +  `monitor/group/${groupName}`)
+            .pipe(catchError(() => { // TODO useful error handling
+                console.warn(`failed: monitor/group/${groupName}`);
+                return of(<GroupData>{
+                    name: groupName,
+                    label: groupName,
+                })
+            }));
     }
 }
