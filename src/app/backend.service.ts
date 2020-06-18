@@ -116,7 +116,7 @@ export class BackendService {
 
   getBookletData(bookletId: string): Observable<BookletData> {
     return this.http
-      .get<BookletData>(this.serverUrl + 'booklet/' + bookletId)
+      .get<BookletData>(this.serverUrl + 'booklet/' + bookletId + '/data')
       .pipe(
         map(bData => {
           bData.id = bookletId;

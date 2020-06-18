@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {catchError} from 'rxjs/operators';
-import {ApiError, BookletData} from '../app.interfaces';
 import {GroupData, TestSession} from './group-monitor.interfaces';
 import {WebsocketBackendService} from './websocket-backend.service';
+import {HttpHeaders} from '@angular/common/http';
 
 @Injectable()
 export class BackendService extends WebsocketBackendService<TestSession[]> {
@@ -20,18 +20,20 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
     }
 
 
-    public getBooklet(bookletName: string): Observable<BookletData | boolean> {
+    public getBooklet(bookletName: string): Observable<string> {
 
         console.log("load booklet for " + bookletName);
 
+        const headers = new HttpHeaders({ 'Content-Type': 'text/xml' }).set('Accept', 'text/xml');
+
         return this.http
-            .get<BookletData>(this.serverUrl + `booklet/${bookletName}/data`)
-            .pipe( // TODO useful error handling
-                catchError((err: ApiError) => {
-                  console.warn(`getTestData Api-Error: ${err.code} ${err.info}`);
-                  return of(false)
-                })
-            );
+            .get(this.serverUrl + `booklet/${bookletName}`, {headers, responseType: 'text'})
+            // .pipe( // TODO useful error handling
+            //     catchError((err: ApiError) => {
+            //       console.warn(`getTestData Api-Error: ${err.code} ${err.info}`);
+            //       return of(false)
+            //     })
+            // );
     }
 
 

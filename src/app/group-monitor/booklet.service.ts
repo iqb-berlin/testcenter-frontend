@@ -4,7 +4,6 @@ import {BackendService} from './backend.service';
 import {Observable, of} from 'rxjs';
 import {isDefined} from '@angular/compiler/src/util';
 import {map, shareReplay} from 'rxjs/operators';
-import {BookletData} from '../app.interfaces';
 import {Booklet, BookletMetadata, Restrictions, Testlet, Unit} from './group-monitor.interfaces';
 import {BookletConfig} from '../config/booklet-config';
 
@@ -39,7 +38,6 @@ export class BookletService {
             // console.log('LOADING testletOrUnit data for ' + bookletName + ' not available. loading');
 
             this.booklets[bookletName] = this.bs.getBooklet(bookletName)
-                .pipe(map((testData: BookletData): string => testData.xml))
                 .pipe(map(BookletService.parseBookletXml))
                 .pipe(shareReplay(1));
         }
