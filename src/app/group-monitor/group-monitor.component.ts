@@ -19,7 +19,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   private routingSubscription: Subscription = null;
 
-  ownGroupName: string;
   ownGroup$: Observable<GroupData>;
 
   monitor$: Observable<TestSession[]>;
@@ -43,32 +42,17 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
     this.routingSubscription = this.route.params.subscribe(params => {
 
-      this.ownGroupName = params['group-name']; // TODO fetch label
+      this.ownGroup$ = this.bs.getGroupData(params['group-name']);
     });
 
     this.sortBy$ = new BehaviorSubject<Sort>({direction: 'asc', active: 'bookletName'});
+
     this.monitor$ = this.bs.subscribeSessionsMonitor();
+
     this.sessions$ = combineLatest<[Sort, TestSession[]]>([this.sortBy$, this.monitor$])
-        .pipe(
-            map((data: [Sort, TestSession[]]): TestSession[] => data[1].sort(
-                (testSession1, testSession2) => {
-
-                  if (data[0].active === "timestamp") {
-                    return (testSession2.timestamp - testSession1.timestamp) * (data[0].direction === 'asc' ? 1 : -1);
-                  }
-
-                  const stringA = (testSession1[data[0].active] || "zzzzz");
-                  const stringB = (testSession2[data[0].active] || "zzzzz");
-                  return stringA.localeCompare(stringB) * (data[0].direction === 'asc' ? 1 : -1);
-                }
-            ))
-        );
-
-
+        .pipe(map(data => this.sortSessions(...data)));
 
     this.connectionStatus$ = this.bs.connectionStatus$;
-
-    this.ownGroup$ = this.bs.getGroupData(this.ownGroupName);
   }
 
 
@@ -82,7 +66,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
 
   @HostListener('window:resize', ['$event'])
-  autoSelectViewMode(event?): void {
+  autoSelectViewMode(): void {
 
     const screenWidth = window.innerWidth;
     if (screenWidth > 1200) {
@@ -101,7 +85,25 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
 
-  sortSessions(sort: Sort): void {
+  sortSessions(sort: Sort, sessions: TestSession[]): TestSession[] {
+
+    return sessions.sort(
+
+      (testSession1, testSession2) => {
+
+        if (sort.active === "timestamp") {
+          return (testSession2.timestamp - testSession1.timestamp) * (sort.direction === 'asc' ? 1 : -1);
+        }
+
+        const stringA = (testSession1[sort.active] || "zzzzz");
+        const stringB = (testSession2[sort.active] || "zzzzz");
+        return stringA.localeCompare(stringB) * (sort.direction === 'asc' ? 1 : -1);
+      }
+    )
+  }
+
+
+  setTableSorting(sort: Sort): void {
 
     if (!sort.active || sort.direction === '') {
       return;
