@@ -176,7 +176,7 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
     countTestletChildren(testlet: Testlet): number {
 
-        let childrenCount = 1;
+        let childrenCount = 0;
 
         for (let i = 0; i < testlet.children.length; i++) {
 
