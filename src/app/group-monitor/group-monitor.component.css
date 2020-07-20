@@ -90,3 +90,9 @@
         background: rgba(0,199,0,1);
     }
 }
+
+.settings-button {
+    position: absolute;
+    right: 14px;
+    top: 14px;
+}
