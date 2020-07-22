@@ -158,18 +158,19 @@
         </span>
 
         <span *ngSwitchCase="'testlet'" class="testlet" matTooltip="{{testletOrUnit.label}}">
+
             <ng-container *ngIf="featuredUnit$ | async as featuredUnit; else: nonFeaturedTestlet">
                 <span
-                        *ngIf="featuredUnit.parent.id === testletOrUnit.id; else: nonFeaturedTestlet"
+                        *ngIf="featuredUnit.ancestor.id === testletOrUnit.id; else: nonFeaturedTestlet"
                         class="unit current aggregated"
                         matTooltip="{{featuredUnit.unit.label}}"
                         matTooltipPosition="above"
-                    >{{featuredUnit.indexInTestlet + 1}} / {{testletOrUnit.children.length}}
+                    >{{featuredUnit.indexAncestor + 1}} / {{featuredUnit.unitCountAncestor}}
                 </span>
             </ng-container>
 
             <ng-template #nonFeaturedTestlet>
-                <span class="unit aggregated">{{testletOrUnit.children.length}}</span>
+                <span class="unit aggregated">{{countTestletChildren(testletOrUnit)}}</span>
             </ng-template>
         </span>
     </ng-container>
@@ -187,7 +188,7 @@
                 matTooltip="{{featuredUnit.unit.label}}"
                 matTooltipPosition="above"
             >
-            {{featuredUnit.indexInBooklet + 1}} / {{countTestletChildren(testlet)}}
+            {{featuredUnit.indexGlobal + 1}} / {{featuredUnit.unitCountGlobal}}
         </span>
     </span>
 

@@ -11,11 +11,16 @@ function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
     return !('children' in testletOrUnit);
 }
 
-interface FeaturedUnitContext {
-    unit: Unit,
-    parent: Testlet,
-    indexInBooklet: number,
-    indexInTestlet: number
+interface UnitContext {
+    unit?: Unit,
+    parent?: Testlet,
+    ancestor?: Testlet,
+    unitCount: number,
+    unitCountGlobal: number,
+    indexGlobal: number,
+    indexLocal: number,
+    indexAncestor: number,
+    unitCountAncestor: number,
 }
 
 @Component({
@@ -30,7 +35,7 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
     private testStatus$: Subject<TestSession>;
     public booklet$: Observable<boolean|Booklet>;
-    public featuredUnit$: Observable<FeaturedUnitContext|null>;
+    public featuredUnit$: Observable<UnitContext|null>;
 
     private childrenSubscription: Subscription;
 
@@ -69,7 +74,7 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
                 }
 
                 if (this.testStatus.unitName) {
-                    return this.findUnitByName(booklet.units, this.testStatus.unitName);
+                    return this.getUnitContext(booklet.units, this.testStatus.unitName);
                 }
             }));
     }
@@ -143,40 +148,62 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
     }
 
 
-    findUnitByName(testlet: Testlet, unitName: String, indexOffset: number = null): FeaturedUnitContext|null {
+    getUnitContext(testlet: Testlet, unitName: String, level: number = 0, countGlobal = 0,
+                   countAncestor = 0, ancestor: Testlet = null): UnitContext {
 
-        for (let i = 0; i < testlet.children.length; i++) {
+        let result: UnitContext = {
+            unit: null,
+            parent: null,
+            ancestor: (level <= 1) ? testlet : ancestor,
+            unitCount: 0,
+            unitCountGlobal: countGlobal,
+            unitCountAncestor: countAncestor,
+            indexGlobal: -1,
+            indexLocal: -1,
+            indexAncestor: -1,
+        }
+
+        let i = -1;
+
+        while (i++ < testlet.children.length - 1) {
 
             const testletOrUnit = testlet.children[i];
 
             if (isUnit(testletOrUnit)) {
 
-                if (testletOrUnit.id === unitName) {
-                    return {
-                        parent: testlet,
-                        unit: testletOrUnit,
-                        indexInBooklet: indexOffset + i,
-                        indexInTestlet: i
-                    }
+                if (testletOrUnit.id == unitName) {
+
+                    result.indexGlobal = result.unitCountGlobal;
+                    result.indexLocal = result.unitCount;
+                    result.indexAncestor = result.unitCountAncestor;
+                    result.unit = testletOrUnit;
+                    result.parent = testlet;
                 }
+
+                result.unitCount++;
+                result.unitCountGlobal++;
+                result.unitCountAncestor++;
 
             } else {
 
-                const findInChildren = this.findUnitByName(testletOrUnit, unitName, indexOffset + i);
+                const subResult = this.getUnitContext(testletOrUnit, unitName, level + 1, result.unitCountGlobal,
+                    (level < 1) ? 0 : result.unitCountAncestor, result.ancestor);
+                result.unitCountGlobal = subResult.unitCountGlobal;
+                result.unitCountAncestor = (level < 1) ? result.unitCountAncestor : subResult.unitCountAncestor;
 
-                if (findInChildren !== null) {
-                    return findInChildren;
+                if (subResult.indexLocal >= 0) {
+                    result = subResult;
                 }
-
-                indexOffset += testletOrUnit.children.length;
             }
         }
-        return null;
+
+        return result;
     }
+
 
     countTestletChildren(testlet: Testlet): number {
 
-        let childrenCount = 0;
+        let result = 0;
 
         for (let i = 0; i < testlet.children.length; i++) {
 
@@ -184,14 +211,14 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
             if (isUnit(testletOrUnit)) {
 
-                childrenCount++;
+                result++;
 
             } else {
 
-                childrenCount += this.countTestletChildren(testletOrUnit);
+                result = result + this.countTestletChildren(testletOrUnit);
             }
         }
 
-        return childrenCount;
+        return result;
     }
 }
