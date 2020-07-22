@@ -105,7 +105,8 @@ export class BookletService {
             label:  testletElement.getAttribute('label') || '',
             restrictions: BookletService.parseRestrictions(testletElement),
             children: BookletService.xmlGetDirectChildrenByTagName(testletElement, ['Unit', 'Testlet'])
-                .map(BookletService.parseUnitOrTestlet)
+                .map(BookletService.parseUnitOrTestlet),
+            descendantCount: BookletService.xmlCountChildrenOfTagNames(testletElement, ['Unit'])
         };
     }
 
@@ -184,6 +185,12 @@ export class BookletService {
         return [].slice.call(element.childNodes)
             .filter((element: Element) => (element.nodeType === 1))
             .filter((element: Element) => (tagNames.indexOf(element.tagName) > -1));
+    }
+
+
+    private static xmlCountChildrenOfTagNames(element: Element, tagNames: string[]): number {
+
+        return element.querySelectorAll(tagNames.join(', ')).length;
     }
 }
 

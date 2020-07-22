@@ -45,10 +45,6 @@ class MockBookletService {
 
   public booklets: Observable<Booklet>[] = [of(exampleBooklet)];
 
-  constructor(
-  ) { }
-
-
   public getBooklet(bookletName: string): Observable<Booklet|boolean> {
 
     if (!bookletName) {
@@ -64,7 +60,8 @@ class MockBookletService {
 }
 
 
-fdescribe('TestViewComponent', () => {
+describe('TestViewComponent', () => {
+
   let component: TestViewComponent;
   let fixture: ComponentFixture<TestViewComponent>;
 
@@ -82,6 +79,7 @@ fdescribe('TestViewComponent', () => {
   }));
 
   beforeEach(() => {
+
     fixture = TestBed.createComponent(TestViewComponent);
     component = fixture.componentInstance;
     component.testStatus = exampleSession;
@@ -89,6 +87,7 @@ fdescribe('TestViewComponent', () => {
   });
 
   it('should create', () => {
+
     expect(component).toBeTruthy();
   });
 

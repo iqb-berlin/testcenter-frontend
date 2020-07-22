@@ -170,7 +170,7 @@
             </ng-container>
 
             <ng-template #nonFeaturedTestlet>
-                <span class="unit aggregated">{{countTestletChildren(testletOrUnit)}}</span>
+                <span class="unit aggregated">{{testletOrUnit.descendantCount}}</span>
             </ng-template>
         </span>
     </ng-container>
@@ -194,7 +194,7 @@
 
     <ng-template #nonFeaturedTestlet>
         <span class="testlet" >
-            <span class="unit aggregated">{{countTestletChildren(testlet)}}</span>
+            <span class="unit aggregated">{{testlet.descendantCount}}</span>
         </span>
     </ng-template>
 </ng-template>

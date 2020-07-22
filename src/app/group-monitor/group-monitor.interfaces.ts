@@ -41,6 +41,7 @@ export interface Testlet {
     label: string;
     restrictions?: Restrictions;
     children: (Unit|Testlet)[];
+    descendantCount: number
 }
 
 export interface Unit {
