@@ -26,7 +26,15 @@
   <div class="adminbackground">
 
       <mat-menu #rootMenu="matMenu">
+          <button mat-menu-item [matMenuTriggerFor]="group">Spalten</button>
           <button mat-menu-item [matMenuTriggerFor]="activity">Aktivität</button>
+      </mat-menu>
+
+      <mat-menu #group="matMenu">
+          <button mat-menu-item (click)="setDisplayOption('groupColumn', (displayOptions.groupColumn === 'hide') ? 'show' : 'hide')">
+              <mat-icon *ngIf="displayOptions.groupColumn === 'show'">check</mat-icon>
+              <span>Spalte anzeigen</span>
+          </button>
       </mat-menu>
 
       <mat-menu #activity="matMenu">
@@ -54,7 +62,7 @@
         <thead>
             <tr class="mat-sort-container">
                 <td mat-sort-header="personLabel">Benutzer</td>
-<!--                <td  mat-sort-header="groupLabel">Gruppe</td>-->
+                <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">Gruppe</td>
                 <td mat-sort-header="bookletName">Testheft</td>
                 <td mat-sort-header="timestamp">Aktivität</td>
             </tr>

@@ -66,6 +66,9 @@ export interface GroupData {
     label: string;
 }
 
+export type TestViewDisplayOptionKey = 'view' | 'groupColumn';
+
 export interface TestViewDisplayOptions {
     view: 'full' | 'medium' | 'small';
+    groupColumn: 'show' | 'hide';
 }

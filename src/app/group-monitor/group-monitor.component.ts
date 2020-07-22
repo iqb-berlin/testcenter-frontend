@@ -1,14 +1,12 @@
 import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {BackendService} from './backend.service';
 import {BehaviorSubject, combineLatest, Observable, Subject, Subscription} from 'rxjs';
-import {GroupData, TestSession, TestViewDisplayOptions} from './group-monitor.interfaces';
+import {GroupData, TestSession, TestViewDisplayOptions, TestViewDisplayOptionKey} from './group-monitor.interfaces';
 import {ActivatedRoute} from '@angular/router';
 import {ConnectionStatus} from './websocket-backend.service';
 import {map} from 'rxjs/operators';
 import {Sort} from '@angular/material/sort';
 
-
-type TestViewDisplayOptionKey = 'view';
 
 @Component({
   selector: 'app-group-monitor',
@@ -27,7 +25,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   sessions$: Observable<TestSession[]>;
 
   displayOptions: TestViewDisplayOptions = {
-    view: 'full'
+    view: 'full',
+    groupColumn: 'hide'
   };
 
   constructor(
@@ -113,7 +112,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
 
-  setDisplayOption(option: TestViewDisplayOptionKey, value: TestViewDisplayOptions[TestViewDisplayOptionKey]) {
+  setDisplayOption(option: string, value: TestViewDisplayOptions[TestViewDisplayOptionKey]): void {
 
     this.displayOptions[option] = value;
   }

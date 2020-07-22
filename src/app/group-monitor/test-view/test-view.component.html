@@ -19,7 +19,7 @@
 </td>
 
 
-<!--<td><div class="vertical-align-middle">{{testStatus.groupLabel}}</div></td>-->
+<td *ngIf="displayOptions.groupColumn === 'show'"><div class="vertical-align-middle">{{testStatus.groupLabel}}</div></td>
 
 <ng-container *ngIf="(booklet$ | async) as booklet; else: noBooklet">
 
