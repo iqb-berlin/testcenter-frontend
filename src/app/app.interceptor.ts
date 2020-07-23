@@ -13,8 +13,10 @@ import {ApiError} from "./app.interfaces";
 export class AuthInterceptor implements HttpInterceptor {
   constructor(
     private mds: MainDataService,
-    private router: Router) {}
+    private router: Router
+  ) {}
 
+  // TODO separation of concerns: split into two interceptors, one for error handling, one for auth token addition
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (this.mds.isApiValid) {
       let tokenStr = '';
@@ -34,7 +36,7 @@ export class AuthInterceptor implements HttpInterceptor {
       return next.handle(requestA).pipe(
         catchError(e => {
           let apiError = new ApiError(999);
-          if (e instanceof HttpErrorResponse) {
+          if (e instanceof HttpErrorResponse) { // TODO is the opposite case even possible?
             const httpError = e as HttpErrorResponse;
             apiError.code = httpError.status;
             apiError.info = httpError.message + " // " + httpError.error;
