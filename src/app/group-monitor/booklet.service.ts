@@ -102,7 +102,7 @@ export class BookletService {
 
     private static parseTestlet(testletElement: Element): Testlet {
 
-        // TODO fehlende ID -> Zeit wird nicht angezeigt... überdenken: https://github.com/iqb-berlin/testcenter-iqb-php/issues/116
+        // TODO id will be mandatory (https://github.com/iqb-berlin/testcenter-iqb-php/issues/116), the remove fallback to ''
 
         return {
             id: testletElement.getAttribute('id') || '',
