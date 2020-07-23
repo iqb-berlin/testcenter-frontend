@@ -14,9 +14,9 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
     public initialData: TestSession[] = [];
 
 
-    public subscribeSessionsMonitor(): Observable<TestSession[]> { // TODO rename since it does not return a subscription
+    public observeSessionsMonitor(): Observable<TestSession[]> {
 
-        return this.subscribeEndpointAndChannel();
+        return this.observeEndpointAndChannel();
     }
 
 

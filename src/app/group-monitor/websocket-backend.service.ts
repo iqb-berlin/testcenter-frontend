@@ -39,7 +39,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
   }
 
 
-  protected subscribeEndpointAndChannel(): Observable<T> {
+  protected observeEndpointAndChannel(): Observable<T> {
 
     if (!this.data$) {
 

@@ -46,7 +46,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
     this.sortBy$ = new BehaviorSubject<Sort>({direction: 'asc', active: 'bookletName'});
 
-    this.monitor$ = this.bs.subscribeSessionsMonitor();
+    this.monitor$ = this.bs.observeSessionsMonitor();
 
     this.sessions$ = combineLatest<[Sort, TestSession[]]>([this.sortBy$, this.monitor$])
         .pipe(map(data => this.sortSessions(...data)));
