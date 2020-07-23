@@ -17,59 +17,77 @@
 
 <td *ngIf="displayOptions.groupColumn === 'show'"><div class="vertical-align-middle">{{testStatus.groupLabel}}</div></td>
 
-<ng-container *ngIf="(booklet$ | async) as booklet; else: noBooklet">
+<ng-container *ngIf="(booklet$ | async) as booklet">
 
-    <td class="booklet">
+    <ng-container *ngIf="isBooklet(booklet); else: noBooklet">
 
-        <div class="vertical-align-middle">
+        <td class="booklet" >
 
-            <h1>{{booklet.metadata.label}}</h1>
+            <div class="vertical-align-middle">
 
-            <mat-icon class="unit-badge"
-                      *ngIf="hasState(testStatus.testState, 'status', 'locked')"
-                      matTooltip="Testheft gesperrt"
-                >lock
-            </mat-icon>
+                <h1>{{booklet.metadata.label}}</h1>
 
-            <mat-icon class="unit-badge"
-                      *ngIf="!hasState(testStatus.testState, 'status', 'locked')"
-                      matTooltip="Testheft gesperrt"
-                >lock_open
-            </mat-icon>
+                <mat-icon class="unit-badge"
+                          *ngIf="hasState(testStatus.testState, 'status', 'locked')"
+                          matTooltip="Testheft gesperrt"
+                    >lock
+                </mat-icon>
 
-            <mat-icon class="unit-badge"
-                      *ngIf="hasState(testStatus.testState, 'BOOKLETLOCKEDbyTESTEE')"
-                      matTooltip="Testheft abgeschlossen"
-                >done_all
-            </mat-icon>
-        </div>
-    </td>
+                <mat-icon class="unit-badge"
+                          *ngIf="!hasState(testStatus.testState, 'status', 'locked')"
+                          matTooltip="Testheft gesperrt"
+                    >lock_open
+                </mat-icon>
 
-    <td *ngIf="booklet.units as testlet">
+                <mat-icon class="unit-badge"
+                          *ngIf="hasState(testStatus.testState, 'BOOKLETLOCKEDbyTESTEE')"
+                          matTooltip="Testheft abgeschlossen"
+                    >done_all
+                </mat-icon>
+            </div>
+        </td>
 
-        <div
-                class="units-container"
-                [class]="hasState(testStatus.testState, 'status', 'locked') ? 'locked' : ''"
-                [ngSwitch]="displayOptions.view"
-            >
-                <div class="units full" *ngSwitchCase="'full'" >
-                    <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testlet}"></ng-container>
-                </div>
+        <td *ngIf="booklet.units as testlet">
 
-                <div class="units medium" *ngSwitchCase="'medium'" >
-                    <ng-container *ngTemplateOutlet="bookletTemplateMedium; context: {$implicit: testlet}"></ng-container>
-                </div>
+            <div
+                    class="units-container"
+                    [class]="hasState(testStatus.testState, 'status', 'locked') ? 'locked' : ''"
+                    [ngSwitch]="displayOptions.view"
+                >
+                    <div class="units full" *ngSwitchCase="'full'" >
+                        <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testlet}"></ng-container>
+                    </div>
 
-                <div class="units small" *ngSwitchCase="'small'" >
-                    <ng-container *ngTemplateOutlet="testletBookletSmall; context: {$implicit: testlet}"></ng-container>
-                </div>
-        </div>
+                    <div class="units medium" *ngSwitchCase="'medium'" >
+                        <ng-container *ngTemplateOutlet="bookletTemplateMedium; context: {$implicit: testlet}"></ng-container>
+                    </div>
 
-        <ng-container *ngIf="displayOptions.view === 'full'">
-            <ng-container *ngTemplateOutlet="featuredUnit"></ng-container>
-        </ng-container>
+                    <div class="units small" *ngSwitchCase="'small'" >
+                        <ng-container *ngTemplateOutlet="testletBookletSmall; context: {$implicit: testlet}"></ng-container>
+                    </div>
+            </div>
 
-    </td>
+            <ng-container *ngIf="displayOptions.view === 'full'">
+                <ng-container *ngTemplateOutlet="featuredUnit"></ng-container>
+            </ng-container>
+
+        </td>
+    </ng-container>
+
+    <ng-template #noBooklet>
+        <td colspan="2" class="booklet">
+            <span *ngIf="booklet.error == 'missing-id'">Kein Testheft zugeordnet</span>
+            <span *ngIf="booklet.error == 'missing-file'" class="warning">
+                Kein Zugriff auf Testheft-Datei (`{{testStatus.bookletName}}`)!
+            </span>
+            <span *ngIf="booklet.error == 'xml'" class="warning">
+                Konnte Testheft-Datei (`{{testStatus.bookletName}}`) lesen!
+            </span>
+            <span *ngIf="booklet.error == 'general'" class="warning">>
+                Fehler beim Zugriff aus Testheft-Datei (`{{testStatus.bookletName}}`)!
+            </span>
+        </td>
+    </ng-template>
 </ng-container>
 
 <ng-template #featuredUnit>
@@ -196,6 +214,4 @@
 </ng-template>
 
 
-<ng-template #noBooklet>
-    <td colspan="2" class="booklet">Noch kein Test gestarted.</td>
-</ng-template>
+

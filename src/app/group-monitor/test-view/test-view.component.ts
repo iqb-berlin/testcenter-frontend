@@ -1,7 +1,7 @@
 import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange} from '@angular/core';
 import {BookletService} from '../booklet.service';
 import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
-import {Booklet, TestSession, Testlet, Unit, TestViewDisplayOptions} from '../group-monitor.interfaces';
+import {Booklet, TestSession, Testlet, Unit, TestViewDisplayOptions, BookletError} from '../group-monitor.interfaces';
 import {map} from 'rxjs/operators';
 import {TestMode} from '../../config/test-mode';
 
@@ -10,6 +10,8 @@ function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
 
     return !('children' in testletOrUnit);
 }
+
+
 
 interface UnitContext {
     unit?: Unit,
@@ -34,7 +36,7 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
     @Input() displayOptions: TestViewDisplayOptions;
 
     private testStatus$: Subject<TestSession>;
-    public booklet$: Observable<boolean|Booklet>;
+    public booklet$: Observable<Booklet|BookletError>;
     public featuredUnit$: Observable<UnitContext|null>;
 
     private childrenSubscription: Subscription;
@@ -55,21 +57,21 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
         this.booklet$ = this.bookletsService.getBooklet(this.testStatus.bookletName || "");
 
-        this.childrenSubscription = this.booklet$.subscribe((booklet: Booklet|boolean) => {
+        this.childrenSubscription = this.booklet$.subscribe((booklet: Booklet|BookletError) => { // TODO kann/soll das mit in dem unteren stehen?
 
-            if ((booklet !== null) && (booklet !== true) && (booklet !== false)) {
+            if (this.isBooklet(booklet)) {
                 this.units = booklet.units.children;
             }
         });
 
-        this.featuredUnit$ = combineLatest<[Booklet|null, TestSession]>([this.booklet$, this.testStatus$])
-            .pipe(map((bookletAndStatus: [Booklet|boolean, TestSession]) => {
+        this.featuredUnit$ = combineLatest<[Booklet|BookletError, TestSession]>([this.booklet$, this.testStatus$])
+            .pipe(map((bookletAndStatus: [Booklet|BookletError, TestSession]) => {
 
                 console.log("MAP");
 
-                const booklet: Booklet|boolean = bookletAndStatus[0];
+                const booklet: Booklet|BookletError = bookletAndStatus[0];
 
-                if ((booklet === true) || (booklet === false)) {
+                if (!this.isBooklet(booklet)) {
                     return null;
                 }
 
@@ -90,6 +92,12 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
     ngOnDestroy(): void {
 
         this.childrenSubscription.unsubscribe();
+    }
+
+
+    isBooklet(bookletOrBookletError: Booklet|BookletError): bookletOrBookletError is Booklet {
+
+        return !('error' in bookletOrBookletError);
     }
 
 

@@ -100,3 +100,8 @@ mat-icon + h1 {
     vertical-align: middle;
     align-items: center;
 }
+
+.warning {
+    color: red;
+    font-weight: bold
+}

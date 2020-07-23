@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {catchError} from 'rxjs/operators';
-import {GroupData, TestSession} from './group-monitor.interfaces';
+import {BookletError, GroupData, TestSession} from './group-monitor.interfaces';
 import {WebsocketBackendService} from './websocket-backend.service';
 import {HttpHeaders} from '@angular/common/http';
+import {ApiError} from '../app.interfaces';
 
 @Injectable()
 export class BackendService extends WebsocketBackendService<TestSession[]> {
@@ -20,20 +21,30 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
     }
 
 
-    public getBooklet(bookletName: string): Observable<string> {
+    public getBooklet(bookletName: string): Observable<string|BookletError> {
 
         console.log("load booklet for " + bookletName);
 
         const headers = new HttpHeaders({ 'Content-Type': 'text/xml' }).set('Accept', 'text/xml');
 
+        const missingFileError: BookletError = {error: 'missing-file'};
+        const generalError: BookletError = {error: 'general'};
+
         return this.http
             .get(this.serverUrl + `booklet/${bookletName}`, {headers, responseType: 'text'})
-            // .pipe( // TODO useful error handling
-            //     catchError((err: ApiError) => {
-            //       console.warn(`getTestData Api-Error: ${err.code} ${err.info}`);
-            //       return of(false)
-            //     })
-            // );
+            .pipe( // TODO useful error handling
+                catchError((err: ApiError) => {
+                  console.warn(`getTestData Api-Error: ${err.code} ${err.info}`);
+                  if (err.code === 404) {
+                      // could potentially happen when booklet file was removed since test was started
+                      // TODO interceptor
+                      return of(missingFileError);
+                  } else {
+                      // TODO interceptor should have interfered and moved to error-page https://github.com/iqb-berlin/testcenter-frontend/issues/53
+                      return of(generalError);
+                  }
+                })
+            );
     }
 
 
@@ -45,7 +56,7 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
                 return of(<GroupData>{
                     name: groupName,
                     label: groupName,
-                })
+                });
             }));
     }
 }

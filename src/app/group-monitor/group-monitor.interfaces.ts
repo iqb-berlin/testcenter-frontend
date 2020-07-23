@@ -26,6 +26,10 @@ export interface Booklet {
     units: Testlet;
 }
 
+export interface BookletError {
+    error: 'xml' | 'missing-id' | 'missing-file' | 'general',
+}
+
 export interface BookletMetadata {
     id: string;
     label: string;

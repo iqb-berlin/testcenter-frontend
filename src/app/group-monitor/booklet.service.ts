@@ -4,7 +4,7 @@ import {BackendService} from './backend.service';
 import {Observable, of} from 'rxjs';
 import {isDefined} from '@angular/compiler/src/util';
 import {map, shareReplay} from 'rxjs/operators';
-import {Booklet, BookletMetadata, Restrictions, Testlet, Unit} from './group-monitor.interfaces';
+import {Booklet, BookletError, BookletMetadata, Restrictions, Testlet, Unit} from './group-monitor.interfaces';
 import {BookletConfig} from '../config/booklet-config';
 
 
@@ -12,7 +12,7 @@ import {BookletConfig} from '../config/booklet-config';
 export class BookletService {
 
 
-    public booklets: Observable<Booklet>[] = [];
+    public booklets: Observable<Booklet|BookletError>[] = [];
 
 
     constructor(
@@ -20,7 +20,7 @@ export class BookletService {
     ) { }
 
 
-    public getBooklet(bookletName: string): Observable<Booklet|boolean> {
+    public getBooklet(bookletName: string): Observable<Booklet|BookletError> {
 
         if (isDefined(this.booklets[bookletName])) {
 
@@ -31,22 +31,26 @@ export class BookletService {
         if (bookletName == "") {
 
             // console.log("EMPTY bookletID");
-            this.booklets[bookletName] = of<Booklet|boolean>(false);
+            this.booklets[bookletName] = of<Booklet|BookletError>({error: 'missing-id'});
 
         } else {
 
             // console.log('LOADING testletOrUnit data for ' + bookletName + ' not available. loading');
 
             this.booklets[bookletName] = this.bs.getBooklet(bookletName)
-                .pipe(map(BookletService.parseBookletXml))
-                .pipe(shareReplay(1));
+                .pipe(
+                    map((response: string|BookletError) => {
+                        return (typeof response === 'string') ? BookletService.parseBookletXml(response) : response;
+                    }),
+                    shareReplay(1)
+                );
         }
 
         return this.booklets[bookletName];
     }
 
 
-    private static parseBookletXml(xmlString: string): Booklet|boolean {
+    private static parseBookletXml(xmlString: string): Booklet|BookletError {
 
         try {
 
@@ -54,7 +58,8 @@ export class BookletService {
             const bookletElement = domParser.parseFromString(xmlString, 'text/xml').documentElement;
 
             if (bookletElement.nodeName !== 'Booklet') {
-                throw new Error("XML is not Booklet");
+                console.warn('XML-root is not `Booklet`');
+                return {error: 'xml'};
             }
 
             return {
@@ -65,9 +70,8 @@ export class BookletService {
 
         } catch (error) {
 
-            console.log('error reading booklet XML:');
-            console.log(error);
-            return false;
+            console.warn('Error reading booklet XML:', error);
+            return {error: 'xml'};
         }
     }
 
@@ -167,7 +171,7 @@ export class BookletService {
 
         const elements = BookletService.xmlGetDirectChildrenByTagName(element, [childName]);
         if (!elements.length && !isOptional) {
-            throw new Error(`Missing field: '${childName}'`); // TODO hierauf wird irgendwie gar nicht reagiert
+            throw new Error(`Missing field: '${childName}'`);
         }
         return elements.length ? elements[0] : null;
     }
