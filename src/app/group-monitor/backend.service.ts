@@ -32,7 +32,7 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
 
         return this.http
             .get(this.serverUrl + `booklet/${bookletName}`, {headers, responseType: 'text'})
-            .pipe( // TODO useful error handling
+            .pipe(
                 catchError((err: ApiError) => {
                   console.warn(`getTestData Api-Error: ${err.code} ${err.info}`);
                   if (err.code === 404) {
@@ -40,7 +40,7 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
                       // TODO interceptor
                       return of(missingFileError);
                   } else {
-                      // TODO interceptor should have interfered and moved to error-page https://github.com/iqb-berlin/testcenter-frontend/issues/53
+                      // TODO should interceptor should have interfered and moved to error-page https://github.com/iqb-berlin/testcenter-frontend/issues/53
                       return of(generalError);
                   }
                 })
@@ -51,11 +51,13 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
     public getGroupData(groupName: string): Observable<GroupData> {
         return this.http
             .get<GroupData>(this.serverUrl +  `monitor/group/${groupName}`)
-            .pipe(catchError(() => { // TODO useful error handling
+            .pipe(catchError(() => {
+
+                // TODO interceptor should have interfered and moved to error-page https://github.com/iqb-berlin/testcenter-frontend/issues/53
                 console.warn(`failed: monitor/group/${groupName}`);
                 return of(<GroupData>{
-                    name: groupName,
-                    label: groupName,
+                    name: 'error',
+                    label: 'error',
                 });
             }));
     }

@@ -1,5 +1,5 @@
 import {Inject, OnDestroy} from '@angular/core';
-import {BehaviorSubject, Observable, of, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {catchError, map, skipWhile, tap} from 'rxjs/operators';
 import {ApiError} from '../app.interfaces';
 import {HttpClient, HttpResponse} from '@angular/common/http';
@@ -61,10 +61,11 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
     this.http
         .get<T>(this.serverUrl + this.pollingEndpoint, {observe: 'response'})
         .pipe(
+            // TODO interceptor should have interfered and moved to error-page https://github.com/iqb-berlin/testcenter-frontend/issues/53
             catchError((err: ApiError) => {
                 console.warn(`Api-Error: ${err.code} ${err.info}`);
                 this.connectionStatus$.next("error");
-                return of([])
+                return new Observable<T>();
             })
         )
         .subscribe((response: HttpResponse<T>) => {
