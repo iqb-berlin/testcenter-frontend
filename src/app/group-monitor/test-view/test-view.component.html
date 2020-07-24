@@ -17,6 +17,7 @@
 
 <td *ngIf="displayOptions.groupColumn === 'show'"><div class="vertical-align-middle">{{testStatus.groupLabel}}</div></td>
 
+
 <ng-container *ngIf="(booklet$ | async) as booklet">
 
     <ng-container *ngIf="isBooklet(booklet); else: noBooklet">
@@ -55,15 +56,18 @@
                     [ngSwitch]="displayOptions.view"
                 >
                     <div class="units full" *ngSwitchCase="'full'" >
-                        <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testlet}"></ng-container>
+                        <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testlet}">
+                        </ng-container>
                     </div>
 
                     <div class="units medium" *ngSwitchCase="'medium'" >
-                        <ng-container *ngTemplateOutlet="bookletTemplateMedium; context: {$implicit: testlet}"></ng-container>
+                        <ng-container *ngTemplateOutlet="bookletTemplateMedium; context: {$implicit: testlet}">
+                        </ng-container>
                     </div>
 
                     <div class="units small" *ngSwitchCase="'small'" >
-                        <ng-container *ngTemplateOutlet="testletBookletSmall; context: {$implicit: testlet}"></ng-container>
+                        <ng-container *ngTemplateOutlet="testletBookletSmall; context: {$implicit: testlet}">
+                        </ng-container>
                     </div>
             </div>
 
@@ -89,6 +93,7 @@
         </td>
     </ng-template>
 </ng-container>
+
 
 <ng-template #featuredUnit>
 
@@ -122,8 +127,10 @@
     </div>
 </ng-template>
 
+
 <ng-template #noFeaturedUnit>
 </ng-template>
+
 
 <ng-template #testletTemplate let-testlet>
 
@@ -160,7 +167,22 @@
 
 </ng-template>
 
+
 <ng-template #bookletTemplateMedium let-testlet>
+
+    <ng-container *ngIf="featuredUnit$ | async as featuredUnit; else: nonFeaturedTestlet">
+        <ng-container *ngTemplateOutlet="testletTemplateMedium; context: {testlet: testlet, featuredUnit: featuredUnit}">
+        </ng-container>
+    </ng-container>
+
+    <ng-template #nonFeaturedTestlet>
+        <ng-container *ngTemplateOutlet="testletTemplateMedium; context: {testlet: testlet, featuredUnit: false}">
+        </ng-container>
+    </ng-template>
+</ng-template>
+
+
+<ng-template #testletTemplateMedium let-testlet="testlet" let-featuredUnit="featuredUnit">
 
     <ng-container *ngFor="let testletOrUnit of testlet.children; let i = index; trackBy: trackUnits" [ngSwitch]="getTestletType(testletOrUnit)">
 
@@ -168,22 +190,22 @@
               [class]="(testStatus.unitName === testletOrUnit.id) ? 'unit current': 'unit'"
               matTooltip="{{testletOrUnit.label}}"
               matTooltipPosition="above"
-            >·
+        >·
         </span>
 
         <span *ngSwitchCase="'testlet'" class="testlet" matTooltip="{{testletOrUnit.label}}">
 
-            <ng-container *ngIf="featuredUnit$ | async as featuredUnit; else: nonFeaturedTestlet">
+            <ng-container *ngIf="featuredUnit; else: unFeaturedTestlet">
                 <span
-                        *ngIf="featuredUnit.ancestor.id === testletOrUnit.id; else: nonFeaturedTestlet"
+                        *ngIf="featuredUnit.ancestor.id === testletOrUnit.id; else: unFeaturedTestlet"
                         class="unit current aggregated"
                         matTooltip="{{featuredUnit.unit.label}}"
                         matTooltipPosition="above"
-                    >{{featuredUnit.indexAncestor + 1}} / {{featuredUnit.unitCountAncestor}}
+                >{{featuredUnit.indexAncestor + 1}} / {{featuredUnit.unitCountAncestor}}
                 </span>
             </ng-container>
 
-            <ng-template #nonFeaturedTestlet>
+            <ng-template #unFeaturedTestlet>
                 <span class="unit aggregated">{{testletOrUnit.descendantCount}}</span>
             </ng-template>
         </span>
