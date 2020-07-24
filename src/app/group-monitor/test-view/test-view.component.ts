@@ -5,12 +5,11 @@ import {Booklet, TestSession, Testlet, Unit, TestViewDisplayOptions, BookletErro
 import {map} from 'rxjs/operators';
 import {TestMode} from '../../config/test-mode';
 
-
+// TODO find good place for this typeguard
 function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
 
     return !('children' in testletOrUnit);
 }
-
 
 
 interface UnitContext {
@@ -57,7 +56,9 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
         this.booklet$ = this.bookletsService.getBooklet(this.testStatus.bookletName || "");
 
-        this.childrenSubscription = this.booklet$.subscribe((booklet: Booklet|BookletError) => { // TODO kann/soll das mit in dem unteren stehen?
+        this.childrenSubscription = this.booklet$.subscribe((booklet: Booklet|BookletError) => {
+
+            console.log("A-" + (this.isBooklet(booklet) ? booklet.metadata.id : booklet.error));
 
             if (this.isBooklet(booklet)) {
                 this.units = booklet.units.children;
@@ -65,11 +66,9 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
         });
 
         this.featuredUnit$ = combineLatest<[Booklet|BookletError, TestSession]>([this.booklet$, this.testStatus$])
-            .pipe(map((bookletAndStatus: [Booklet|BookletError, TestSession]) => {
+            .pipe(map((bookletAndSession: [Booklet|BookletError, TestSession]) => {
 
-                console.log("MAP");
-
-                const booklet: Booklet|BookletError = bookletAndStatus[0];
+                const booklet: Booklet|BookletError = bookletAndSession[0];
 
                 if (!this.isBooklet(booklet)) {
                     return null;
@@ -79,6 +78,8 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
                     return this.getUnitContext(booklet.units, this.testStatus.unitName);
                 }
             }));
+
+        // this.ngOnChanges(null);
     }
 
 

@@ -37,7 +37,7 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
                   console.warn(`getTestData Api-Error: ${err.code} ${err.info}`);
                   if (err.code === 404) {
                       // could potentially happen when booklet file was removed since test was started
-                      // TODO interceptor
+                      // TODO interceptor be omitted
                       return of(missingFileError);
                   } else {
                       // TODO should interceptor should have interfered and moved to error-page https://github.com/iqb-berlin/testcenter-frontend/issues/53
