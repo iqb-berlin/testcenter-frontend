@@ -7,9 +7,7 @@ import {WebsocketService} from './websocket.service';
 
 export type ConnectionStatus = "initial" | "ws-offline" | "ws-online" | "polling-sleep" | "polling-fetch" | "error";
 
-
 export abstract class WebsocketBackendService<T> extends WebsocketService implements OnDestroy {
-
   abstract pollingEndpoint: string;
   abstract pollingInterval: number;
   abstract wsChannelName: string;
@@ -32,15 +30,11 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
 
   }
 
-
   ngOnDestroy(): void {
-
     this.cutConnection();
   }
 
-
   protected observeEndpointAndChannel(): Observable<T> {
-
     if (!this.data$) {
 
         this.data$ = new BehaviorSubject<T>(this.initialData);
@@ -49,9 +43,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
     return this.data$;
   }
 
-
   private pollNext(): void {
-
     this.connectionClosed = false;
 
     this.unsubscribeFromWebsocket();
@@ -86,9 +78,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
         });
   }
 
-
   public cutConnection(): void {
-
     console.log("cut monitor connection");
 
     this.unsubscribeFromWebsocket();
@@ -100,21 +90,18 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
     }
   }
 
-
   private scheduleNextPoll(): void {
-
     if (this.pollingTimeoutId) {
         clearTimeout(this.pollingTimeoutId);
     }
+
     this.pollingTimeoutId = window.setTimeout(
         () => {if (!this.connectionClosed) this.pollNext();},
         this.pollingInterval
     );
   }
 
-
   private unsubscribeFromWebsocket() {
-
     if (this.wsConnectionStatusSubscription) {
         this.wsConnectionStatusSubscription.unsubscribe();
     }
@@ -124,9 +111,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
     }
   }
 
-
   private subScribeToWsChannel() {
-
     this.wsDataSubscription = this.getChannel<T>(this.wsChannelName)
         .subscribe((dataObject: T) => this.data$.next(dataObject)); // subscribe only next, not complete!
 

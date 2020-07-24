@@ -16,13 +16,11 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
 
 
     public observeSessionsMonitor(): Observable<TestSession[]> {
-
         return this.observeEndpointAndChannel();
     }
 
 
     public getBooklet(bookletName: string): Observable<string|BookletError> {
-
         console.log("load booklet for " + bookletName);
 
         const headers = new HttpHeaders({ 'Content-Type': 'text/xml' }).set('Accept', 'text/xml');

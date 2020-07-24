@@ -92,9 +92,37 @@ fdescribe('TestViewComponent', () => {
     expect(component).toBeTruthy();
   });
 
+
+  describe('hasState()', () => {
+
+      xit('should check correctly if state is in state-object', () => {
+
+          // TOOD implementn unit-test
+      });
+  });
+
+
+  describe('parseJsonState()', () => {
+
+    xit('should parse an string containing a state-object', () => {
+
+        // TOOD implementn unit-test
+    });
+  });
+
+
+  describe('getMode()', () => {
+
+    xit('should transform mode-string into label', () => {
+
+        // TOOD implementn unit-test
+    });
+  });
+
+
   describe('getUnitContext()', () => {
 
-    it('should find correct indices', () => {
+    it('should find correct indices, unit and parent', () => {
 
        const expectations = {
         'unit-0': {global: -1, ancestor: -1, local: -1},

@@ -9,13 +9,9 @@ interface WsMessage {
 }
 
 export class WebsocketService {
-
   protected wsUrl: string = "";
-
   private wsSubject$: WebSocketSubject<any>;
-
   public wsConnected$ = new BehaviorSubject<boolean>(null);
-
   private wsSubscription: Subscription;
 
   constructor(
@@ -24,7 +20,6 @@ export class WebsocketService {
 
 
   public connect() {
-
     if (!this.wsSubject$) {
 
       console.log('connecting...' + this.wsUrl);
@@ -68,7 +63,6 @@ export class WebsocketService {
 
 
   protected closeConnection(): void {
-
     this.wsConnected$.next(false);
     this.wsSubscription.unsubscribe();
     this.wsSubject$.complete();
@@ -77,7 +71,6 @@ export class WebsocketService {
 
 
   public send(event: string, data: any) {
-
     if (!this.wsSubject$) {
       this.connect();
     }
@@ -87,7 +80,6 @@ export class WebsocketService {
 
 
   public getChannel<T>(channelName: string): Observable<T> {
-
     if (!this.wsSubject$) {
         this.connect();
     }

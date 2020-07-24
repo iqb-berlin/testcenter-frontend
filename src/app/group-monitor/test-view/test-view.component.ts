@@ -7,7 +7,6 @@ import {TestMode} from '../../config/test-mode';
 
 // TODO find good place for this typeguard
 function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
-
     return !('children' in testletOrUnit);
 }
 
@@ -30,7 +29,6 @@ interface UnitContext {
   styleUrls: ['./test-view.component.css', './test-view-table.css']
 })
 export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
-
     @Input() testStatus: TestSession;
     @Input() displayOptions: TestViewDisplayOptions;
 
@@ -51,7 +49,6 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
 
     ngOnInit() {
-
         console.log('NEW:' + this.testStatus.personId, this.testStatus.bookletName);
 
         this.booklet$ = this.bookletsService.getBooklet(this.testStatus.bookletName || "");
@@ -84,38 +81,32 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
-
         this.testStatus$.next(this.testStatus);
         this.maxTimeLeft = this.parseJsonState(this.testStatus.testState, 'MAXTIMELEFT');
     }
 
 
     ngOnDestroy(): void {
-
         this.childrenSubscription.unsubscribe();
     }
 
 
     isBooklet(bookletOrBookletError: Booklet|BookletError): bookletOrBookletError is Booklet {
-
         return !('error' in bookletOrBookletError);
     }
 
 
     getTestletType(testletOrUnit: Unit|Testlet): 'testlet'|'unit' {
-
         return isUnit(testletOrUnit) ? 'unit': 'testlet';
     }
 
 
     hasState(stateObject: object, key: string, value: any = null): boolean {
-
         return ((typeof stateObject[key] !== "undefined") && ((value !== null) ? (stateObject[key] === value) : true));
     }
 
 
     parseJsonState(testStateObject: object, key: string): object|null {
-
         if (typeof testStateObject[key] === "undefined") {
             return null;
         }
@@ -132,7 +123,6 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
 
     getMode(modeString: string): {modeId: string, modeLabel: string} {
-
         const untranslatedModes = ['monitor-group', 'monitor-workspace', 'monitor-study'];
 
         if (untranslatedModes.indexOf(modeString) > -1) {
@@ -152,7 +142,6 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
 
 
     trackUnits(index: number, testlet: Testlet|Unit): string {
-
         return testlet['id'] || index.toString();
     }
 

@@ -13,4 +13,20 @@ describe('WebsocketService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
+
+  xit('connect() should connect to the specified websocket and endpoint if not connected', () => {
+    // TODO implement unit.test
+  });
+
+  xit('closeConnection() should close connection', () => {
+    // TODO implement unit.test
+  });
+
+  xit('send() should send data over the websocket', () => {
+    // TODO implement unit.test
+  });
+
+  xit('getChannel() should subscribe to a specific channel', () => {
+    // TODO implement unit.test
+  });
 });
