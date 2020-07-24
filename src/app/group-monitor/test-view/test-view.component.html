@@ -56,17 +56,17 @@
                     [ngSwitch]="displayOptions.view"
                 >
                     <div class="units full" *ngSwitchCase="'full'" >
-                        <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testlet}">
+                        <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testlet}">
                         </ng-container>
                     </div>
 
                     <div class="units medium" *ngSwitchCase="'medium'" >
-                        <ng-container *ngTemplateOutlet="bookletTemplateMedium; context: {$implicit: testlet}">
+                        <ng-container *ngTemplateOutlet="bookletMedium; context: {$implicit: testlet}">
                         </ng-container>
                     </div>
 
                     <div class="units small" *ngSwitchCase="'small'" >
-                        <ng-container *ngTemplateOutlet="testletBookletSmall; context: {$implicit: testlet}">
+                        <ng-container *ngTemplateOutlet="bookletSmall; context: {$implicit: testlet}">
                         </ng-container>
                     </div>
             </div>
@@ -97,7 +97,7 @@
 
 <ng-template #featuredUnit>
 
-    <div class="featured-unit" *ngIf="(featuredUnit$| async) as unitContext; else: noFeaturedUnit">
+    <div class="featured-unit" *ngIf="(featuredUnit$| async) as unitContext">
 
         <h1>{{unitContext.parent.label || 'Aktueller Abschnitt'}}</h1>
 
@@ -128,11 +128,9 @@
 </ng-template>
 
 
-<ng-template #noFeaturedUnit>
-</ng-template>
 
 
-<ng-template #testletTemplate let-testlet>
+<ng-template #testletFull let-testlet>
 
     <span *ngIf="testlet.restrictions && testlet.restrictions.codeToEnter as codeToEnter"
           class="unit restriction"
@@ -160,7 +158,7 @@
         </span>
 
         <span *ngSwitchCase="'testlet'" class="testlet" matTooltip="{{testletOrUnit.label}}">
-            <ng-container *ngTemplateOutlet="testletTemplate; context: {$implicit: testletOrUnit}"></ng-container>
+            <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testletOrUnit}"></ng-container>
         </span>
 
     </ng-container>
@@ -168,7 +166,7 @@
 </ng-template>
 
 
-<ng-template #bookletTemplateMedium let-testlet>
+<ng-template #bookletMedium let-testlet>
 
     <ng-container *ngIf="featuredUnit$ | async as featuredUnit; else: nonFeaturedTestlet">
         <ng-container *ngTemplateOutlet="testletTemplateMedium; context: {testlet: testlet, featuredUnit: featuredUnit}">
@@ -213,10 +211,10 @@
 </ng-template>
 
 
-<ng-template #testletBookletSmall let-testlet>
+<ng-template #bookletSmall let-testlet>
 
     <span
-            class="testlet" *ngIf="featuredUnit$ | async as featuredUnit; else: nonFeaturedTestlet"
+            class="testlet" *ngIf="featuredUnit$ | async as featuredUnit; else: unFeaturedTestlet"
             matTooltip="{{featuredUnit.parent.label}}"
         >
         <span
@@ -228,7 +226,7 @@
         </span>
     </span>
 
-    <ng-template #nonFeaturedTestlet>
+    <ng-template #unFeaturedTestlet>
         <span class="testlet" >
             <span class="unit aggregated">{{testlet.descendantCount}}</span>
         </span>
