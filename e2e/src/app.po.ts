@@ -1,11 +1,15 @@
 import { browser, by, element } from 'protractor';
 
-export class AppPage {
-  navigateTo() {
-    return browser.get('/');
+export default class LoginPage {
+  static navigateTo(): Promise<void> {
+    return browser.get(browser.baseUrl) as Promise<any>;
   }
 
-  getParagraphText() {
-    return element(by.css('app-root h1')).getText();
+  static async getFirstCardTitle(): Promise<string> {
+    return element(by.css('.root-body mat-card.mat-card:nth-child(1) mat-card-title')).getText();
+  }
+
+  static async getSecondCardTitle(): Promise<string> {
+    return element(by.css('.root-body mat-card.mat-card:nth-child(2) mat-card-title')).getText();
   }
 }

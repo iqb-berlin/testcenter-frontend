@@ -1,14 +1,9 @@
-import { AppPage } from './app.po';
+import LoginPage from './app.po';
 
-describe('workspace-project App', () => {
-  let page: AppPage;
-
-  beforeEach(() => {
-    page = new AppPage();
-  });
-
-  it('should display welcome message', () => {
-    page.navigateTo();
-    expect(page.getParagraphText()).toEqual('Welcome to itc-ng!');
+describe('Testcenter Frontend', () => {
+  it('should display title texts', async () => {
+    await LoginPage.navigateTo();
+    await expect(LoginPage.getFirstCardTitle()).toEqual('Anmelden');
+    await expect(LoginPage.getSecondCardTitle()).toEqual('IQB-Testcenter');
   });
 });
