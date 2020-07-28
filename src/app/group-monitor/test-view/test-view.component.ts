@@ -1,6 +1,6 @@
-import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChange} from '@angular/core';
 import {BookletService} from '../booklet.service';
-import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {Booklet, TestSession, Testlet, Unit, TestViewDisplayOptions, BookletError} from '../group-monitor.interfaces';
 import {map} from 'rxjs/operators';
 import {TestMode} from '../../config/test-mode';
@@ -28,17 +28,14 @@ interface UnitContext {
   templateUrl: './test-view.component.html',
   styleUrls: ['./test-view.component.css', './test-view-table.css']
 })
-export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
-    @Input() testStatus: TestSession;
+export class TestViewComponent implements OnInit, OnChanges {
+    @Input() testSession: TestSession;
     @Input() displayOptions: TestViewDisplayOptions;
 
     private testStatus$: Subject<TestSession>;
     public booklet$: Observable<Booklet|BookletError>;
     public featuredUnit$: Observable<UnitContext|null>;
 
-    private childrenSubscription: Subscription;
-
-    public units: (Testlet|Unit)[];
     public maxTimeLeft: object|null;
 
     constructor(
@@ -47,64 +44,78 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
         this.testStatus$ = new Subject<TestSession>();
     }
 
-
     ngOnInit() {
-        console.log('NEW:' + this.testStatus.personId, this.testStatus.bookletName);
+        console.log('NEW:' + this.testSession.personId, this.testSession.bookletName);
 
-        this.booklet$ = this.bookletsService.getBooklet(this.testStatus.bookletName || "");
-
-        this.childrenSubscription = this.booklet$.subscribe((booklet: Booklet|BookletError) => {
-
-            console.log("A-" + (this.isBooklet(booklet) ? booklet.metadata.id : booklet.error));
-
-            if (this.isBooklet(booklet)) {
-                this.units = booklet.units.children;
-            }
-        });
+        this.booklet$ = this.bookletsService.getBooklet(this.testSession.bookletName || "");
 
         this.featuredUnit$ = combineLatest<[Booklet|BookletError, TestSession]>([this.booklet$, this.testStatus$])
             .pipe(map((bookletAndSession: [Booklet|BookletError, TestSession]) => {
 
                 const booklet: Booklet|BookletError = bookletAndSession[0];
 
+                const bId = (this.isBooklet(booklet) ? booklet.metadata.id : booklet.error);
+                console.log("B-" + bId, bookletAndSession[1]);
+
                 if (!this.isBooklet(booklet)) {
+                    console.log("X-" + bId + ' --> NULL');
                     return null;
                 }
 
-                if (this.testStatus.unitName) {
-                    return this.getUnitContext(booklet.units, this.testStatus.unitName);
+                if (this.testSession.unitName) {
+                    console.log("X-" + bId + ' --> sessn');
+                    return this.getUnitContext(booklet.units, this.testSession.unitName);
                 }
             }));
+        //
+        // setTimeout(() => {
+        //     this.featuredUnit$.next({
+        //         unit: {
+        //             id: 'FAKEFAKEFAKE',
+        //             label: "FAKAKAAKA",
+        //             labelShort: "FUCKA"
+        //         },
+        //         indexAncestor: 0, indexGlobal: 0, indexLocal: 0, unitCount: 0, unitCountAncestor: 0, unitCountGlobal: 0
+        //
+        //     });
+        // }, 500);
 
-        // this.ngOnChanges(null);
+        this.featuredUnit$.subscribe((uc: UnitContext) => {
+            console.log ("C-", uc);
+        });
+
+
+        const fakeSession: TestSession = {
+            personId: this.testSession.personId,
+            timestamp: this.testSession.timestamp,
+            unitState: this.testSession.unitState,
+            testId: this.testSession.testId,
+            testState: this.testSession.testState,
+            personLabel: "FAKE"
+        }
+
+        setTimeout(() => {
+            this.testStatus$.next(fakeSession);
+        });
     }
-
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
-        this.testStatus$.next(this.testStatus);
-        this.maxTimeLeft = this.parseJsonState(this.testStatus.testState, 'MAXTIMELEFT');
+        console.log("XXXX");
+        this.testStatus$.next(this.testSession);
+        this.maxTimeLeft = this.parseJsonState(this.testSession.testState, 'MAXTIMELEFT');
     }
-
-
-    ngOnDestroy(): void {
-        this.childrenSubscription.unsubscribe();
-    }
-
 
     isBooklet(bookletOrBookletError: Booklet|BookletError): bookletOrBookletError is Booklet {
         return !('error' in bookletOrBookletError);
     }
 
-
     getTestletType(testletOrUnit: Unit|Testlet): 'testlet'|'unit' {
         return isUnit(testletOrUnit) ? 'unit': 'testlet';
     }
 
-
     hasState(stateObject: object, key: string, value: any = null): boolean {
         return ((typeof stateObject[key] !== "undefined") && ((value !== null) ? (stateObject[key] === value) : true));
     }
-
 
     parseJsonState(testStateObject: object, key: string): object|null {
         if (typeof testStateObject[key] === "undefined") {
@@ -120,7 +131,6 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
             return null;
         }
     }
-
 
     getMode(modeString: string): {modeId: string, modeLabel: string} {
         const untranslatedModes = ['monitor-group', 'monitor-workspace', 'monitor-study'];
@@ -140,11 +150,9 @@ export class TestViewComponent implements OnInit, OnDestroy, OnChanges {
         };
     }
 
-
     trackUnits(index: number, testlet: Testlet|Unit): string {
         return testlet['id'] || index.toString();
     }
-
 
     getUnitContext(testlet: Testlet, unitName: String, level: number = 0, countGlobal = 0,
                    countAncestor = 0, ancestor: Testlet = null): UnitContext {

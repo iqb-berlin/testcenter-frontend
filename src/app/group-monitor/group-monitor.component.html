@@ -70,7 +70,7 @@
 
         <test-view
                 *ngFor="let session of sessions$ | async; trackBy: trackSession"
-                [testStatus]="session"
+                [testSession]="session"
                 [displayOptions]="displayOptions"
             >
         </test-view>

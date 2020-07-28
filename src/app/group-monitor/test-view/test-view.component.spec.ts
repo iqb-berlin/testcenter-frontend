@@ -82,7 +82,7 @@ fdescribe('TestViewComponent', () => {
 
     fixture = TestBed.createComponent(TestViewComponent);
     component = fixture.componentInstance;
-    component.testStatus = exampleSession
+    component.testSession = exampleSession
     component.displayOptions = {groupColumn: undefined, view: undefined};
     fixture.detectChanges();
   });
