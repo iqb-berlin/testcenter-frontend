@@ -1,4 +1,4 @@
-:host(test-view) {
+:host(tc-test-view) {
     display: table-row;
     vertical-align: middle;
 }
