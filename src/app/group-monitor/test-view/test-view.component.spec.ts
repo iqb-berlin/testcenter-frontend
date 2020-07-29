@@ -32,14 +32,14 @@ const exampleBooklet: Booklet = { // labels are: {global index}-{ancestor index}
             ]}
       ]}
   ]}
-}
+};
 
 const exampleSession: TestSession = {
   personId: 0,
   testState: {},
   timestamp: 0,
   unitState: {}
-}
+};
 
 class MockBookletService {
 
@@ -51,7 +51,7 @@ class MockBookletService {
       return of(false);
     }
 
-    if (bookletName == 'test') {
+    if (bookletName === 'test') {
       return of(exampleBooklet);
     }
 
@@ -82,7 +82,7 @@ fdescribe('TestViewComponent', () => {
 
     fixture = TestBed.createComponent(TestViewComponent);
     component = fixture.componentInstance;
-    component.testSession = exampleSession
+    component.testSession = exampleSession;
     component.displayOptions = {groupColumn: undefined, view: undefined};
     fixture.detectChanges();
   });
@@ -136,27 +136,27 @@ fdescribe('TestViewComponent', () => {
         'unit-8': {global: 7, ancestor: 2, local: 2, parentName: 'root', ancestorName: 'root'},
         'unit-9': {global: 8, ancestor: 0, local: 0, parentName: 'ellie', ancestorName: 'ellie'},
         'unit-10': {global: 9, ancestor: 1, local: 0, parentName: 'fred', ancestorName: 'ellie'},
-      }
+      };
 
-      for (let i = 0; i < 11; i++ ){
+      for (let i = 0; i < 11; i++ ) {
 
         const result = component.getUnitContext(exampleBooklet.units, 'unit-' + i);
         const expectation = expectations['unit-' + i];
 
-        expect(result.indexGlobal).withContext("global index of unit-" + i).toEqual(expectation.global);
-        expect(result.indexAncestor).withContext("ancestor-index of unit-" + i).toEqual(expectation.ancestor);
-        expect(result.indexLocal).withContext("local index of unit-" + i).toEqual(expectation.local);
+        expect(result.indexGlobal).withContext('global index of unit-' + i).toEqual(expectation.global);
+        expect(result.indexAncestor).withContext('ancestor-index of unit-' + i).toEqual(expectation.ancestor);
+        expect(result.indexLocal).withContext('local index of unit-' + i).toEqual(expectation.local);
 
         if ('parentName' in expectation) {
 
-            expect(result.unit.id).withContext("featured unit of unit-" + i).toEqual('unit-' + i);
-            expect(result.parent.id).withContext("parent of unit-" + i).toEqual(expectation.parentName);
-            expect(result.ancestor.id).withContext("ancestor of unit-" + i).toEqual(expectation.ancestorName);
+            expect(result.unit.id).withContext('featured unit of unit-' + i).toEqual('unit-' + i);
+            expect(result.parent.id).withContext('parent of unit-' + i).toEqual(expectation.parentName);
+            expect(result.ancestor.id).withContext('ancestor of unit-' + i).toEqual(expectation.ancestorName);
 
         } else {
 
-            expect(result.unit).withContext("not found unit-" + i).toBeNull();
-            expect(result.parent).withContext("no parent of unit-" + i).toBeNull();
+            expect(result.unit).withContext('not found unit-' + i).toBeNull();
+            expect(result.parent).withContext('no parent of unit-' + i).toBeNull();
         }
       }
     });

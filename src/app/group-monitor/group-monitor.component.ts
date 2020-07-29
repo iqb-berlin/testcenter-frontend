@@ -14,7 +14,6 @@ import {Sort} from '@angular/material/sort';
   styleUrls: ['./group-monitor.component.css']
 })
 export class GroupMonitorComponent implements OnInit, OnDestroy {
-
   private routingSubscription: Subscription = null;
 
   ownGroup$: Observable<GroupData>;
@@ -34,13 +33,10 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       private bs: BackendService,
   ) {}
 
-
   ngOnInit(): void {
-
     this.autoSelectViewMode();
 
     this.routingSubscription = this.route.params.subscribe(params => {
-
       this.ownGroup$ = this.bs.getGroupData(params['group-name']);
     });
 
@@ -54,19 +50,15 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.connectionStatus$ = this.bs.connectionStatus$;
   }
 
-
   ngOnDestroy() {
-
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
     }
     this.bs.cutConnection();
   }
 
-
   @HostListener('window:resize', ['$event'])
   autoSelectViewMode(): void {
-
     const screenWidth = window.innerWidth;
     if (screenWidth > 1200) {
       this.displayOptions.view = 'full';
@@ -77,33 +69,27 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     }
   }
 
-
   trackSession(index: number, session: TestSession): number {
-
     return session.personId * 10000 +  session.testId;
   }
 
-
   sortSessions(sort: Sort, sessions: TestSession[]): TestSession[] {
-
     return sessions.sort(
 
       (testSession1, testSession2) => {
 
-        if (sort.active === "timestamp") {
+        if (sort.active === 'timestamp') {
           return (testSession2.timestamp - testSession1.timestamp) * (sort.direction === 'asc' ? 1 : -1);
         }
 
-        const stringA = (testSession1[sort.active] || "zzzzz");
-        const stringB = (testSession2[sort.active] || "zzzzz");
+        const stringA = (testSession1[sort.active] || 'zzzzz');
+        const stringB = (testSession2[sort.active] || 'zzzzz');
         return stringA.localeCompare(stringB) * (sort.direction === 'asc' ? 1 : -1);
       }
-    )
+    );
   }
 
-
   setTableSorting(sort: Sort): void {
-
     if (!sort.active || sort.direction === '') {
       return;
     }
@@ -111,9 +97,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.sortBy$.next(sort);
   }
 
-
   setDisplayOption(option: string, value: TestViewDisplayOptions[TestViewDisplayOptionKey]): void {
-
     this.displayOptions[option] = value;
   }
 }

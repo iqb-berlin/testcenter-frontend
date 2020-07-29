@@ -12,19 +12,19 @@ function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
 
 
 interface UnitContext {
-    unit?: Unit,
-    parent?: Testlet,
-    ancestor?: Testlet,
-    unitCount: number,
-    unitCountGlobal: number,
-    indexGlobal: number,
-    indexLocal: number,
-    indexAncestor: number,
-    unitCountAncestor: number,
+    unit?: Unit;
+    parent?: Testlet;
+    ancestor?: Testlet;
+    unitCount: number;
+    unitCountGlobal: number;
+    indexGlobal: number;
+    indexLocal: number;
+    indexAncestor: number;
+    unitCountAncestor: number;
 }
 
 @Component({
-  selector: 'test-view',
+  selector: 'tc-test-view',
   templateUrl: './test-view.component.html',
   styleUrls: ['./test-view.component.css', './test-view-table.css']
 })
@@ -33,8 +33,8 @@ export class TestViewComponent implements OnInit, OnChanges {
     @Input() displayOptions: TestViewDisplayOptions;
 
     public testSession$: Subject<TestSession> = new Subject<TestSession>();
-    public booklet$: Observable<Booklet|BookletError>;// = new Subject<Booklet|BookletError>();
-    public featuredUnit$: Observable<UnitContext|null>
+    public booklet$: Observable<Booklet|BookletError>;
+    public featuredUnit$: Observable<UnitContext|null>;
 
 
     public maxTimeLeft: object|null; // TODO make observable maybe
@@ -47,7 +47,7 @@ export class TestViewComponent implements OnInit, OnChanges {
     ngOnInit() {
         console.log('NEW test-view component:' + this.testSession.personId, this.testSession.bookletName);
 
-        this.booklet$ = this.bookletsService.getBooklet(this.testSession.bookletName || "");
+        this.booklet$ = this.bookletsService.getBooklet(this.testSession.bookletName || '');
 
         this.featuredUnit$ = combineLatest<[Booklet|BookletError, TestSession]>([this.booklet$, this.testSession$])
             .pipe(map((bookletAndSession: [Booklet|BookletError, TestSession]): UnitContext|null => {
@@ -79,15 +79,15 @@ export class TestViewComponent implements OnInit, OnChanges {
     }
 
     getTestletType(testletOrUnit: Unit|Testlet): 'testlet'|'unit' {
-        return isUnit(testletOrUnit) ? 'unit': 'testlet';
+        return isUnit(testletOrUnit) ? 'unit' : 'testlet';
     }
 
     hasState(stateObject: object, key: string, value: any = null): boolean {
-        return ((typeof stateObject[key] !== "undefined") && ((value !== null) ? (stateObject[key] === value) : true));
+        return ((typeof stateObject[key] !== 'undefined') && ((value !== null) ? (stateObject[key] === value) : true));
     }
 
     parseJsonState(testStateObject: object, key: string): object|null {
-        if (typeof testStateObject[key] === "undefined") {
+        if (typeof testStateObject[key] === 'undefined') {
             return null;
         }
 
@@ -109,10 +109,10 @@ export class TestViewComponent implements OnInit, OnChanges {
             return {
                 modeId: modeString,
                 modeLabel: 'Testleiter'
-            }
+            };
         }
 
-        let testMode = new TestMode(modeString);
+        const testMode = new TestMode(modeString);
         return {
             modeId: testMode.modeId,
             modeLabel: testMode.modeLabel
@@ -136,7 +136,7 @@ export class TestViewComponent implements OnInit, OnChanges {
             indexGlobal: -1,
             indexLocal: -1,
             indexAncestor: -1,
-        }
+        };
 
         let i = -1;
 
@@ -146,7 +146,7 @@ export class TestViewComponent implements OnInit, OnChanges {
 
             if (isUnit(testletOrUnit)) {
 
-                if (testletOrUnit.id == unitName) {
+                if (testletOrUnit.id === unitName) {
 
                     result.indexGlobal = result.unitCountGlobal;
                     result.indexLocal = result.unitCount;

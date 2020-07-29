@@ -9,7 +9,7 @@ interface WsMessage {
 }
 
 export class WebsocketService {
-  protected wsUrl: string = "";
+  protected wsUrl = '';
   private wsSubject$: WebSocketSubject<any>;
   public wsConnected$ = new BehaviorSubject<boolean>(null);
   private wsSubscription: Subscription;
@@ -17,7 +17,6 @@ export class WebsocketService {
   constructor(
   ) {
   }
-
 
   public connect() {
     if (!this.wsSubject$) {
@@ -61,14 +60,12 @@ export class WebsocketService {
     }
   }
 
-
   protected closeConnection(): void {
     this.wsConnected$.next(false);
     this.wsSubscription.unsubscribe();
     this.wsSubject$.complete();
     this.wsSubject$ = null;
   }
-
 
   public send(event: string, data: any) {
     if (!this.wsSubject$) {
@@ -77,7 +74,6 @@ export class WebsocketService {
 
     this.wsSubject$.next({event, data});
   }
-
 
   public getChannel<T>(channelName: string): Observable<T> {
     if (!this.wsSubject$) {

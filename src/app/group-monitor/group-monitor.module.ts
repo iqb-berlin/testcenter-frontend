@@ -6,7 +6,7 @@ import { GroupMonitorComponent } from './group-monitor.component';
 
 import {MatTableModule} from '@angular/material/table';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import { MatChipsModule } from "@angular/material/chips";
+import { MatChipsModule } from '@angular/material/chips';
 import { CdkTableModule } from '@angular/cdk/table';
 
 import {BackendService} from './backend.service';
@@ -18,7 +18,6 @@ import {FlexModule} from '@angular/flex-layout';
 import {MatSortModule} from '@angular/material/sort';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
-
 
 
 @NgModule({

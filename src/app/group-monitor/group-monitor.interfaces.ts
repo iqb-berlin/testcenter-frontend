@@ -27,7 +27,7 @@ export interface Booklet {
 }
 
 export interface BookletError {
-    error: 'xml' | 'missing-id' | 'missing-file' | 'general',
+    error: 'xml' | 'missing-id' | 'missing-file' | 'general';
 }
 
 export interface BookletMetadata {
@@ -45,7 +45,7 @@ export interface Testlet {
     label: string;
     restrictions?: Restrictions;
     children: (Unit|Testlet)[];
-    descendantCount: number
+    descendantCount: number;
 }
 
 export interface Unit {
@@ -58,7 +58,7 @@ export interface Restrictions {
     codeToEnter?: {
         code: string;
         message: string;
-    }
+    };
     timeMax?: {
         minutes: number
     };

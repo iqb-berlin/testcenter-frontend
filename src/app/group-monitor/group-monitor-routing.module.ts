@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {GroupMonitorComponent} from "./group-monitor.component";
+import {GroupMonitorComponent} from './group-monitor.component';
 
 
 const routes: Routes = [

@@ -21,7 +21,7 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
 
 
     public getBooklet(bookletName: string): Observable<string|BookletError> {
-        console.log("load booklet for " + bookletName);
+        console.log('load booklet for ' + bookletName);
 
         const headers = new HttpHeaders({ 'Content-Type': 'text/xml' }).set('Accept', 'text/xml');
 
@@ -38,7 +38,8 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
                       // TODO interceptor be omitted
                       return of(missingFileError);
                   } else {
-                      // TODO should interceptor should have interfered and moved to error-page https://github.com/iqb-berlin/testcenter-frontend/issues/53
+                      // TODO should interceptor should have interfered and moved to error-page ...
+                      // https://github.com/iqb-berlin/testcenter-frontend/issues/53
                       return of(generalError);
                   }
                 })
@@ -50,8 +51,8 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
         return this.http
             .get<GroupData>(this.serverUrl +  `monitor/group/${groupName}`)
             .pipe(catchError(() => {
-
-                // TODO interceptor should have interfered and moved to error-page https://github.com/iqb-berlin/testcenter-frontend/issues/53
+                // TODO interceptor should have interfered and moved to error-page ...
+                //  https://github.com/iqb-berlin/testcenter-frontend/issues/53
                 console.warn(`failed: monitor/group/${groupName}`);
                 return of(<GroupData>{
                     name: 'error',

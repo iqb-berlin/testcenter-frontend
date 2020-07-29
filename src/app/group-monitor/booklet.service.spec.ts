@@ -76,7 +76,7 @@ fdescribe('BookletService', () => {
 
         it('xmlCountChildrenOfTagNames() should count all (grand-)children of the defined types', () => {
             const domParser = new DOMParser();
-            const testXml = "<root><a>x<b>x</b><b /><b></b></a><b><!-- ! --><c>x</c>x</b><a><b></b></a>x</root>";
+            const testXml = '<root><a>x<b>x</b><b /><b></b></a><b><!-- ! --><c>x</c>x</b><a><b></b></a>x</root>';
             const testContent = domParser.parseFromString(testXml, 'text/xml').documentElement;
 
             let result = BookletService['xmlCountChildrenOfTagNames'](testContent, ['a']);

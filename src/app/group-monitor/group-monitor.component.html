@@ -68,12 +68,12 @@
             </tr>
         </thead>
 
-        <test-view
+        <tc-test-view
                 *ngFor="let session of sessions$ | async; trackBy: trackSession"
                 [testSession]="session"
                 [displayOptions]="displayOptions"
             >
-        </test-view>
+        </tc-test-view>
       </table>
 
 <!--    <p>Connected Admins: {{clientCount$ | async}}</p>-->
