@@ -1,11 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AccessObject, AuthAccessKeyType, AuthData, WorkspaceData} from '../../app.interfaces';
-import {from, Subscription} from "rxjs";
-import {Router} from "@angular/router";
-import {BackendService} from "../../backend.service";
-import {MainDataService} from "../../maindata.service";
-import {concatMap} from "rxjs/operators";
-import {CustomtextService} from "iqb-components";
+import {from, Subscription} from 'rxjs';
+import {Router} from '@angular/router';
+import {BackendService} from '../../backend.service';
+import {MainDataService} from '../../maindata.service';
+import {concatMap} from 'rxjs/operators';
+import {CustomtextService} from 'iqb-components';
 
 @Component({
   templateUrl: './monitor-starter.component.html',
@@ -49,9 +49,9 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
               this.getWorkspaceDataSubscription = from(scopeIdList).pipe(
                 concatMap(monitorScopeId => {
                   if (authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
-                    return this.bs.getGroupData(monitorScopeId)
+                    return this.bs.getGroupData(monitorScopeId);
                   } else if (authData.access[AuthAccessKeyType.WORKSPACE_MONITOR]) {
-                    return this.bs.getWorkspaceData(monitorScopeId)
+                    return this.bs.getWorkspaceData(monitorScopeId);
                   }
                 })).subscribe(
                 wsData => this.accessObjects.push(wsData),
@@ -70,7 +70,7 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
         } else {
           this.mds.setSpinnerOff();
         }
-      })
+      });
     });
   }
 
