@@ -32,76 +32,45 @@ export class TestViewComponent implements OnInit, OnChanges {
     @Input() testSession: TestSession;
     @Input() displayOptions: TestViewDisplayOptions;
 
-    private testStatus$: Subject<TestSession>;
-    public booklet$: Observable<Booklet|BookletError>;
-    public featuredUnit$: Observable<UnitContext|null>;
+    public testSession$: Subject<TestSession> = new Subject<TestSession>();
+    public booklet$: Observable<Booklet|BookletError>;// = new Subject<Booklet|BookletError>();
+    public featuredUnit$: Observable<UnitContext|null>
 
-    public maxTimeLeft: object|null;
+
+    public maxTimeLeft: object|null; // TODO make observable maybe
 
     constructor(
         private bookletsService: BookletService,
     ) {
-        this.testStatus$ = new Subject<TestSession>();
     }
 
     ngOnInit() {
-        console.log('NEW:' + this.testSession.personId, this.testSession.bookletName);
+        console.log('NEW test-view component:' + this.testSession.personId, this.testSession.bookletName);
 
         this.booklet$ = this.bookletsService.getBooklet(this.testSession.bookletName || "");
 
-        this.featuredUnit$ = combineLatest<[Booklet|BookletError, TestSession]>([this.booklet$, this.testStatus$])
-            .pipe(map((bookletAndSession: [Booklet|BookletError, TestSession]) => {
-
+        this.featuredUnit$ = combineLatest<[Booklet|BookletError, TestSession]>([this.booklet$, this.testSession$])
+            .pipe(map((bookletAndSession: [Booklet|BookletError, TestSession]): UnitContext|null => {
                 const booklet: Booklet|BookletError = bookletAndSession[0];
 
-                const bId = (this.isBooklet(booklet) ? booklet.metadata.id : booklet.error);
-                console.log("B-" + bId, bookletAndSession[1]);
-
                 if (!this.isBooklet(booklet)) {
-                    console.log("X-" + bId + ' --> NULL');
                     return null;
                 }
 
                 if (this.testSession.unitName) {
-                    console.log("X-" + bId + ' --> sessn');
                     return this.getUnitContext(booklet.units, this.testSession.unitName);
                 }
             }));
-        //
-        // setTimeout(() => {
-        //     this.featuredUnit$.next({
-        //         unit: {
-        //             id: 'FAKEFAKEFAKE',
-        //             label: "FAKAKAAKA",
-        //             labelShort: "FUCKA"
-        //         },
-        //         indexAncestor: 0, indexGlobal: 0, indexLocal: 0, unitCount: 0, unitCountAncestor: 0, unitCountGlobal: 0
-        //
-        //     });
-        // }, 500);
 
-        this.featuredUnit$.subscribe((uc: UnitContext) => {
-            console.log ("C-", uc);
-        });
-
-
-        const fakeSession: TestSession = {
-            personId: this.testSession.personId,
-            timestamp: this.testSession.timestamp,
-            unitState: this.testSession.unitState,
-            testId: this.testSession.testId,
-            testState: this.testSession.testState,
-            personLabel: "FAKE"
-        }
-
+        // use setTimeout to put this event at the end of js task queue, so testSession$-initialization happens
+        // after (!) subscription from async-pipe
         setTimeout(() => {
-            this.testStatus$.next(fakeSession);
+            this.testSession$.next(this.testSession);
         });
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
-        console.log("XXXX");
-        this.testStatus$.next(this.testSession);
+        this.testSession$.next(this.testSession);
         this.maxTimeLeft = this.parseJsonState(this.testSession.testState, 'MAXTIMELEFT');
     }
 

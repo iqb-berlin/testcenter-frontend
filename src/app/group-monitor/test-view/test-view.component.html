@@ -15,17 +15,14 @@
 </td>
 
 
-<td *ngIf="displayOptions.groupColumn === 'show'"><div class="vertical-align-middle">{{testSession.groupLabel}}</div></td>
-
-<td>
-    <p *ngIf="featuredUnit$ | async as fU; else: shit">{{fU.unit.label}}</p><ng-template #shit>NOOO</ng-template>
+<td *ngIf="displayOptions.groupColumn === 'show'">
+    <div class="vertical-align-middle">{{testSession.groupLabel}}</div>
 </td>
 
-<ng-container *ngIf="(booklet$ | async) as booklet">
+<td class="booklet">
 
-    <ng-container *ngIf="isBooklet(booklet); else: noBooklet">
-
-        <td class="booklet" >
+    <ng-container *ngIf="(booklet$ | async) as booklet">
+        <ng-container *ngIf="isBooklet(booklet); else: noBooklet">
 
             <div class="vertical-align-middle">
 
@@ -49,58 +46,56 @@
                     >done_all
                 </mat-icon>
             </div>
-        </td>
-
-        <td *ngIf="booklet.units as testlet">
-
-            <div
-                    class="units-container"
-                    [class]="hasState(testSession.testState, 'status', 'locked') ? 'locked' : ''"
-                    [ngSwitch]="displayOptions.view"
-                >
-                    <div class="units full" *ngSwitchCase="'full'" >
-                        <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testlet}">
-                        </ng-container>
-                    </div>
-
-                    <div class="units medium" *ngSwitchCase="'medium'" >
-                        <ng-container *ngTemplateOutlet="bookletMedium; context: {$implicit: testlet}">
-                        </ng-container>
-                    </div>
-
-                    <div class="units small" *ngSwitchCase="'small'" >
-                        <ng-container *ngTemplateOutlet="bookletSmall; context: {$implicit: testlet}">
-                        </ng-container>
-                    </div>
-            </div>
-
-            <ng-container *ngIf="displayOptions.view === 'full'">
-                <ng-container *ngTemplateOutlet="featuredUnit"></ng-container>
-            </ng-container>
-
-        </td>
+        </ng-container>
     </ng-container>
 
     <ng-template #noBooklet>
-        <td colspan="2" class="booklet">
-            <span *ngIf="booklet.error == 'missing-id'">Kein Testheft zugeordnet</span>
-            <span *ngIf="booklet.error == 'missing-file'" class="warning">
-                Kein Zugriff auf Testheft-Datei (`{{testSession.bookletName}}`)!
-            </span>
-            <span *ngIf="booklet.error == 'xml'" class="warning">
-                Konnte Testheft-Datei (`{{testSession.bookletName}}`) lesen!
-            </span>
-            <span *ngIf="booklet.error == 'general'" class="warning">>
-                Fehler beim Zugriff aus Testheft-Datei (`{{testSession.bookletName}}`)!
-            </span>
-        </td>
+        <div class="vertical-align-middle">
+            <h1 class="warning">{{testSession.bookletName}}</h1>
+        </div>
     </ng-template>
-</ng-container>
+</td>
+
+<td class="activity">
+    <ng-container *ngIf="(booklet$ | async) as booklet">
+        <ng-container *ngIf="isBooklet(booklet); else: noBookletReason">
+
+            <div *ngIf="booklet.units as testlet"
+                 class="units-container"
+                 [class]="hasState(testSession.testState, 'status', 'locked') ? 'locked' : ''"
+                 [ngSwitch]="displayOptions.view"
+            >
+                <div class="units full" *ngSwitchCase="'full'" >
+                    <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testlet}"></ng-container>
+                </div>
+
+                <div class="units medium" *ngSwitchCase="'medium'" >
+                    <ng-container *ngTemplateOutlet="bookletMedium; context: {$implicit: testlet}"></ng-container>
+                </div>
+
+                <div class="units small" *ngSwitchCase="'small'" >
+                    <ng-container *ngTemplateOutlet="bookletSmall; context: {$implicit: testlet}"></ng-container>
+                </div>
+            </div>
+        </ng-container>
+
+        <ng-template #noBookletReason>
+            <span *ngIf="booklet.error == 'missing-id'">Kein Testheft zugeordnet</span>
+            <span *ngIf="booklet.error == 'missing-file'" class="warning">Kein Zugriff auf Testheft-Datei!</span>
+            <span *ngIf="booklet.error == 'xml'" class="warning">Konnte Testheft-Datei lesen!</span>
+            <span *ngIf="booklet.error == 'general'" class="warning">Fehler beim Zugriff aus Testheft-Datei!</span>
+        </ng-template>
+    </ng-container>
+
+    <ng-container *ngIf="displayOptions.view === 'full'">
+        <ng-container *ngTemplateOutlet="featuredUnit"></ng-container>
+    </ng-container>
+</td>
+
 
 
 <ng-template #featuredUnit>
-    XXX
-    <div class="featured-unit" *ngIf="(featuredUnit$| async) as unitContext; else: XXX">
+    <div class="featured-unit" *ngIf="featuredUnit$ | async as unitContext">
 
         <h1>{{unitContext.parent.label || 'Aktueller Abschnitt'}}</h1>
 
@@ -130,18 +125,15 @@
     </div>
 </ng-template>
 
-<ng-template #XXX>
-    !!!
-</ng-template>
-
 
 <ng-template #testletFull let-testlet>
 
     <span *ngIf="testlet.restrictions && testlet.restrictions.codeToEnter as codeToEnter"
           class="unit restriction"
-          matTooltip="Freigabewort: {{codeToEnter.code.toUpperCase()}}"
+          matTooltip="Freigabewort: {{codeToEnter | json}}"
           matTooltipPosition="above"
         >
+<!-- TODO fix this .code.toUpperCase() -->
         <mat-icon>sms</mat-icon>
     </span>
 

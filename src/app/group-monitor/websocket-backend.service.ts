@@ -73,7 +73,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
             } else {
 
                 this.connectionStatus$.next("polling-sleep");
-                // this.scheduleNextPoll();
+                this.scheduleNextPoll();
             }
         });
   }
