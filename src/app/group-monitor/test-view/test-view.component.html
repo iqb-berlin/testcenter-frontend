@@ -130,10 +130,10 @@
 
     <span *ngIf="testlet.restrictions && testlet.restrictions.codeToEnter as codeToEnter"
           class="unit restriction"
-          matTooltip="Freigabewort: {{codeToEnter | json}}"
+          matTooltip="Freigabewort: {{codeToEnter.code.toUpperCase()}}"
           matTooltipPosition="above"
         >
-<!-- TODO fix this .code.toUpperCase() -->
+
         <mat-icon>sms</mat-icon>
     </span>
 

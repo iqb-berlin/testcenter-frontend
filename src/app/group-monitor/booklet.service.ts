@@ -144,7 +144,7 @@ export class BookletService {
         if (codeToEnterElement) {
 
             restrictions.codeToEnter = {
-                code: codeToEnterElement.getAttribute('parameter'),
+                code: codeToEnterElement.getAttribute('code'),
                 message: codeToEnterElement.textContent
             }
         }
@@ -152,14 +152,8 @@ export class BookletService {
         const timeMaxElement = restrictionsElement.querySelector('TimeMax');
         if (timeMaxElement) {
 
-            restrictions.timeMax = parseInt(timeMaxElement.textContent);
-        }
-
-        const lockElement = restrictionsElement.querySelector('Lock');
-        if (lockElement) {
-
-            restrictions.lock = {
-                message: lockElement.textContent
+            restrictions.timeMax = {
+                minutes: parseFloat(timeMaxElement.getAttribute('minutes')),
             };
         }
 

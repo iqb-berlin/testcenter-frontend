@@ -59,10 +59,9 @@ export interface Restrictions {
         code: string;
         message: string;
     }
-    timeMax?: number;
-    lock?: {
-        message: string;
-    }
+    timeMax?: {
+        minutes: number
+    };
 }
 
 export interface GroupData {
