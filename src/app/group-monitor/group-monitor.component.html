@@ -56,29 +56,28 @@
           <mat-icon>settings</mat-icon>
       </button>
 
+      <div class="test-view-table-wrapper">
+          <table class="test-view-table" matSort (matSortChange)="setTableSorting($event)">
 
-      <table class="test-view-table" matSort (matSortChange)="setTableSorting($event)">
+            <thead>
+                <tr class="mat-sort-container">
+                    <td mat-sort-header="personLabel">Benutzer</td>
+                    <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">Gruppe</td>
+                    <td mat-sort-header="bookletName">Testheft</td>
+                    <td mat-sort-header="timestamp">Aktivität</td>
+                </tr>
+            </thead>
 
-        <thead>
-            <tr class="mat-sort-container">
-                <td mat-sort-header="personLabel">Benutzer</td>
-                <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">Gruppe</td>
-                <td mat-sort-header="bookletName">Testheft</td>
-                <td mat-sort-header="timestamp">Aktivität</td>
-            </tr>
-        </thead>
+            <tc-test-view
+                    *ngFor="let session of sessions$ | async; trackBy: trackSession"
+                    [testSession]="session"
+                    [displayOptions]="displayOptions"
+                    (bookletId$)="adjustViewModeOnBookletLoad($event)"
+                >
+            </tc-test-view>
+          </table>
+      </div>
 
-        <tc-test-view
-                *ngFor="let session of sessions$ | async; trackBy: trackSession"
-                [testSession]="session"
-                [displayOptions]="displayOptions"
-            >
-        </tc-test-view>
-      </table>
-
-<!--    <p>Connected Admins: {{clientCount$ | async}}</p>-->
-
-<!--    <pre>{{sessions$ | async | json}}</pre>-->
 
     </div>
 </div>

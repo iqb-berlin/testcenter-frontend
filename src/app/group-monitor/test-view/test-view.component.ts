@@ -1,6 +1,6 @@
-import {Component, Input, OnChanges, OnInit, SimpleChange} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChange} from '@angular/core';
 import {BookletService} from '../booklet.service';
-import {combineLatest, Observable, Subject} from 'rxjs';
+import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
 import {Booklet, TestSession, Testlet, Unit, TestViewDisplayOptions, BookletError} from '../group-monitor.interfaces';
 import {map} from 'rxjs/operators';
 import {TestMode} from '../../config/test-mode';
@@ -28,16 +28,18 @@ interface UnitContext {
   templateUrl: './test-view.component.html',
   styleUrls: ['./test-view.component.css', './test-view-table.css']
 })
-export class TestViewComponent implements OnInit, OnChanges {
+export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     @Input() testSession: TestSession;
     @Input() displayOptions: TestViewDisplayOptions;
+    @Output() bookletId$ = new EventEmitter<string>();
 
     public testSession$: Subject<TestSession> = new Subject<TestSession>();
     public booklet$: Observable<Booklet|BookletError>;
     public featuredUnit$: Observable<UnitContext|null>;
 
-
     public maxTimeLeft: object|null; // TODO make observable maybe
+
+    private bookletSubscription: Subscription;
 
     constructor(
         private bookletsService: BookletService,
@@ -48,6 +50,10 @@ export class TestViewComponent implements OnInit, OnChanges {
         console.log('NEW test-view component:' + this.testSession.personId, this.testSession.bookletName);
 
         this.booklet$ = this.bookletsService.getBooklet(this.testSession.bookletName || '');
+
+        this.bookletSubscription = this.booklet$.subscribe((booklet: Booklet|BookletError) => {
+            this.bookletId$.emit(this.isBooklet(booklet) ? booklet.metadata.id : '');
+        });
 
         this.featuredUnit$ = combineLatest<[Booklet|BookletError, TestSession]>([this.booklet$, this.testSession$])
             .pipe(map((bookletAndSession: [Booklet|BookletError, TestSession]): UnitContext|null => {
@@ -72,6 +78,10 @@ export class TestViewComponent implements OnInit, OnChanges {
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
         this.testSession$.next(this.testSession);
         this.maxTimeLeft = this.parseJsonState(this.testSession.testState, 'MAXTIMELEFT');
+    }
+
+    ngOnDestroy() {
+        this.bookletSubscription.unsubscribe();
     }
 
     isBooklet(bookletOrBookletError: Booklet|BookletError): bookletOrBookletError is Booklet {

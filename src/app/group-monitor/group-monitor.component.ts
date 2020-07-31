@@ -1,7 +1,12 @@
 import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {BackendService} from './backend.service';
 import {BehaviorSubject, combineLatest, Observable, Subject, Subscription} from 'rxjs';
-import {GroupData, TestSession, TestViewDisplayOptions, TestViewDisplayOptionKey} from './group-monitor.interfaces';
+import {
+  GroupData,
+  TestSession,
+  TestViewDisplayOptions,
+  TestViewDisplayOptionKey,
+} from './group-monitor.interfaces';
 import {ActivatedRoute} from '@angular/router';
 import {ConnectionStatus} from './websocket-backend.service';
 import {map} from 'rxjs/operators';
@@ -14,6 +19,11 @@ import {Sort} from '@angular/material/sort';
   styleUrls: ['./group-monitor.component.css']
 })
 export class GroupMonitorComponent implements OnInit, OnDestroy {
+
+  constructor(
+      private route: ActivatedRoute,
+      private bs: BackendService,
+  ) {}
   private routingSubscription: Subscription = null;
 
   ownGroup$: Observable<GroupData>;
@@ -28,14 +38,10 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     groupColumn: 'hide'
   };
 
-  constructor(
-      private route: ActivatedRoute,
-      private bs: BackendService,
-  ) {}
+  private bookletIdsViewIsAdjustedFor: string[] = [];
+  private lastWindowSize = Infinity;
 
   ngOnInit(): void {
-    this.autoSelectViewMode();
-
     this.routingSubscription = this.route.params.subscribe(params => {
       this.ownGroup$ = this.bs.getGroupData(params['group-name']);
     });
@@ -58,15 +64,44 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:resize', ['$event'])
-  autoSelectViewMode(): void {
-    const screenWidth = window.innerWidth;
-    if (screenWidth > 1200) {
-      this.displayOptions.view = 'full';
-    } else if (screenWidth > 800) {
-      this.displayOptions.view = 'medium';
+  adjustViewModeOnWindowResize(): void {
+    if (this.lastWindowSize > window.innerWidth) {
+      this.shrinkViewIfNecessary();
     } else {
-      this.displayOptions.view = 'small';
+      this.growViewIfPossible();
     }
+    this.lastWindowSize = window.innerWidth;
+  }
+
+  adjustViewModeOnBookletLoad(bookletId: string): void {
+    if (bookletId && this.bookletIdsViewIsAdjustedFor.indexOf(bookletId) === -1) {
+      this.bookletIdsViewIsAdjustedFor.push(bookletId);
+      this.growViewIfPossible();
+    }
+  }
+
+  private growViewIfPossible() {
+    if (this.getOverflow() <= 0) {
+      this.displayOptions.view = 'full';
+      setTimeout(() => this.shrinkViewIfNecessary(), 15);
+    }
+  }
+
+  private shrinkViewIfNecessary(): void {
+    if (this.getOverflow() > 0) {
+      if (this.displayOptions.view === 'full') {
+        this.displayOptions.view = 'medium';
+        setTimeout(() => this.shrinkViewIfNecessary(), 15);
+      } else if (this.displayOptions.view === 'medium') {
+        this.displayOptions.view = 'small';
+      }
+    }
+  }
+
+  private getOverflow = (): number => {
+    const backgroundElement = document.querySelector('.adminbackground');
+    const testViewTableElement = document.querySelector('.test-view-table');
+    return testViewTableElement.scrollWidth - (backgroundElement.clientWidth - 50); // 50 = adminbackground's padding *2
   }
 
   trackSession(index: number, session: TestSession): number {
@@ -74,26 +109,21 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   sortSessions(sort: Sort, sessions: TestSession[]): TestSession[] {
-    return sessions.sort(
-
-      (testSession1, testSession2) => {
-
-        if (sort.active === 'timestamp') {
-          return (testSession2.timestamp - testSession1.timestamp) * (sort.direction === 'asc' ? 1 : -1);
-        }
-
-        const stringA = (testSession1[sort.active] || 'zzzzz');
-        const stringB = (testSession2[sort.active] || 'zzzzz');
-        return stringA.localeCompare(stringB) * (sort.direction === 'asc' ? 1 : -1);
-      }
-    );
+    return sessions
+        .sort((testSession1, testSession2) => {
+          if (sort.active === 'timestamp') {
+            return (testSession2.timestamp - testSession1.timestamp) * (sort.direction === 'asc' ? 1 : -1);
+          }
+          const stringA = (testSession1[sort.active] || 'zzzzz');
+          const stringB = (testSession2[sort.active] || 'zzzzz');
+          return stringA.localeCompare(stringB) * (sort.direction === 'asc' ? 1 : -1);
+        });
   }
 
   setTableSorting(sort: Sort): void {
     if (!sort.active || sort.direction === '') {
       return;
     }
-
     this.sortBy$.next(sort);
   }
 
