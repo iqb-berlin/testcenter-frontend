@@ -52,7 +52,7 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
             .get<GroupData>(this.serverUrl +  `monitor/group/${groupName}`)
             .pipe(catchError(() => {
                 // TODO interceptor should have interfered and moved to error-page ...
-                //  https://github.com/iqb-berlin/testcenter-frontend/issues/53
+                // https://github.com/iqb-berlin/testcenter-frontend/issues/53
                 console.warn(`failed: monitor/group/${groupName}`);
                 return of(<GroupData>{
                     name: 'error',
