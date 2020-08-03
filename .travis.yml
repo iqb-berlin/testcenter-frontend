@@ -23,4 +23,4 @@ script:
   - google-chrome --version
   - ng build
   # ng e2e
-  # ng test --watch=false --browsers=ChromeHeadless
+  - ng test --watch=false --browsers=ChromeHeadless
