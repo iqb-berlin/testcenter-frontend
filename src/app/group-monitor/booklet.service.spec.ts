@@ -10,7 +10,7 @@ class MockBackendService {
 }
 
 
-fdescribe('BookletService', () => {
+describe('BookletService', () => {
     let service: BookletService;
 
     beforeEach(() => {

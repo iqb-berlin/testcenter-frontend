@@ -60,7 +60,7 @@ class MockBookletService {
 }
 
 
-fdescribe('TestViewComponent', () => {
+describe('TestViewComponent', () => {
 
   let component: TestViewComponent;
   let fixture: ComponentFixture<TestViewComponent>;
@@ -79,7 +79,6 @@ fdescribe('TestViewComponent', () => {
   }));
 
   beforeEach(() => {
-
     fixture = TestBed.createComponent(TestViewComponent);
     component = fixture.componentInstance;
     component.testSession = exampleSession;
@@ -92,38 +91,26 @@ fdescribe('TestViewComponent', () => {
     expect(component).toBeTruthy();
   });
 
-
   describe('hasState()', () => {
-
       xit('should check correctly if state is in state-object', () => {
-
-          // TOOD implementn unit-test
+          // TOOD implement unit-test
       });
   });
 
-
   describe('parseJsonState()', () => {
-
     xit('should parse an string containing a state-object', () => {
-
-        // TOOD implementn unit-test
+        // TOOD implement unit-test
     });
   });
-
 
   describe('getMode()', () => {
-
     xit('should transform mode-string into label', () => {
-
-        // TOOD implementn unit-test
+        // TOOD implement unit-test
     });
   });
 
-
   describe('getUnitContext()', () => {
-
     it('should find correct indices, unit and parent', () => {
-
        const expectations = {
         'unit-0': {global: -1, ancestor: -1, local: -1},
         'unit-1': {global: 0, ancestor: 0, local: 0, parentName: 'root', ancestorName: 'root'},
@@ -139,7 +126,6 @@ fdescribe('TestViewComponent', () => {
       };
 
       for (let i = 0; i < 11; i++ ) {
-
         const result = component.getUnitContext(exampleBooklet.units, 'unit-' + i);
         const expectation = expectations['unit-' + i];
 
@@ -148,18 +134,14 @@ fdescribe('TestViewComponent', () => {
         expect(result.indexLocal).withContext('local index of unit-' + i).toEqual(expectation.local);
 
         if ('parentName' in expectation) {
-
             expect(result.unit.id).withContext('featured unit of unit-' + i).toEqual('unit-' + i);
             expect(result.parent.id).withContext('parent of unit-' + i).toEqual(expectation.parentName);
             expect(result.ancestor.id).withContext('ancestor of unit-' + i).toEqual(expectation.ancestorName);
-
         } else {
-
             expect(result.unit).withContext('not found unit-' + i).toBeNull();
             expect(result.parent).withContext('no parent of unit-' + i).toBeNull();
         }
       }
     });
   });
-
 });
