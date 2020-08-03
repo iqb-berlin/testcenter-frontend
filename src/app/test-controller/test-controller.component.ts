@@ -90,13 +90,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         const restrictionElements = TestControllerComponent.getChildElements(restrictionElement);
         for (let childIndex = 0; childIndex < restrictionElements.length; childIndex++) {
           if (restrictionElements[childIndex].nodeName === 'CodeToEnter') {
-            const restrictionParameter = restrictionElements[childIndex].getAttribute('parameter');
+            const restrictionParameter = restrictionElements[childIndex].getAttribute('code');
             if ((typeof restrictionParameter !== 'undefined') && (restrictionParameter !== null)) {
               codeToEnter = restrictionParameter.toUpperCase();
               codePrompt = restrictionElements[childIndex].textContent;
             }
           } else if (restrictionElements[childIndex].nodeName === 'TimeMax') {
-            const restrictionParameter = restrictionElements[childIndex].getAttribute('parameter');
+            const restrictionParameter = restrictionElements[childIndex].getAttribute('minutes');
             if ((typeof restrictionParameter !== 'undefined') && (restrictionParameter !== null)) {
               maxTime = Number(restrictionParameter);
               if (isNaN(maxTime)) {
