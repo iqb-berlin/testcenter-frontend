@@ -23,7 +23,6 @@ export class BackendService {
 
 
   public getCheckConfigData(workspaceId: number, sysCheckName: string): Observable<CheckConfig> {
-
     return this.http
       .get<CheckConfig>(this.serverUrl + `workspace/${workspaceId}/sys-check/${sysCheckName}`)
       .pipe(
@@ -36,14 +35,12 @@ export class BackendService {
 
 
   public saveReport(workspaceId: number, sysCheckName: string, sysCheckReport: SysCheckReport): Observable<Boolean|ServerError> {
-
     return this.http
-      .put<boolean>(this.serverUrl + `workspace/${workspaceId}/sys-check/${sysCheckName}/report`, {...sysCheckReport})
+      .put<boolean>(this.serverUrl + `workspace/${workspaceId}/sys-check/${sysCheckName}/report`, {...sysCheckReport});
   }
 
 
   public getUnitAndPlayer(workspaceId: number, sysCheckName: string): Observable<UnitAndPlayerContainer|ServerError> {
-
     const startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
     return this.http
       .get<UnitAndPlayerContainer>(this.serverUrl + `workspace/${workspaceId}/sys-check/${sysCheckName}/unit-and-player`)
@@ -57,7 +54,6 @@ export class BackendService {
 
 
   public benchmarkDownloadRequest(requestedDownloadSize: number): Promise<NetworkRequestTestResult> {
-
     const serverUrl = this.serverUrl;
     const cacheKiller = '&uid=' + (new Date().getTime());
     const testResult: NetworkRequestTestResult = {
@@ -69,7 +65,6 @@ export class BackendService {
     };
 
     return new Promise(function(resolve) {
-
       const xhr = new XMLHttpRequest();
       xhr.open('GET', serverUrl + `speed-test/random-package/${requestedDownloadSize}${cacheKiller}`, true);
 
@@ -109,7 +104,6 @@ export class BackendService {
 
 
   public benchmarkUploadRequest(requestedUploadSize: number): Promise<NetworkRequestTestResult> {
-
     const serverUrl = this.serverUrl;
     const randomContent = BackendService.generateRandomContent(requestedUploadSize);
     const testResult: NetworkRequestTestResult = {
@@ -176,7 +170,6 @@ export class BackendService {
 
   // tslint:disable-next-line:member-ordering
   private static getMostPreciseTimestampBrowserCanProvide(): number {
-
     if (typeof performance !== 'undefined') {
       const timeOrigin = (typeof performance.timeOrigin !== 'undefined') ? performance.timeOrigin : performance.timing.navigationStart;
       if (typeof timeOrigin !== 'undefined' && timeOrigin) {
@@ -189,7 +182,6 @@ export class BackendService {
 
   // tslint:disable-next-line:member-ordering
   private static generateRandomContent(length: number): string {
-
     const base64Characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz0123456789+/';
     let randomString = '';
     for (let i = 1; i <= length; i++) {
