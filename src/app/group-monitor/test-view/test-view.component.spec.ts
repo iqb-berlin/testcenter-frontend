@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TestViewComponent } from './test-view.component';
 import {Observable, of} from 'rxjs';
-import {Booklet, TestSession} from '../group-monitor.interfaces';
+import {Booklet, BookletError, TestSession} from '../group-monitor.interfaces';
 import {BookletService} from '../booklet.service';
 
 const exampleBooklet: Booklet = { // labels are: {global index}-{ancestor index}-{local index}
@@ -45,17 +45,17 @@ class MockBookletService {
 
   public booklets: Observable<Booklet>[] = [of(exampleBooklet)];
 
-  public getBooklet(bookletName: string): Observable<Booklet|boolean> {
+  public getBooklet(bookletName: string): Observable<Booklet|BookletError> {
 
     if (!bookletName) {
-      return of(false);
+      return of({'error' : 'general'});
     }
 
     if (bookletName === 'test') {
       return of(exampleBooklet);
     }
 
-    return of (true);
+    return of ({'error': 'missing-file'});
   }
 }
 
