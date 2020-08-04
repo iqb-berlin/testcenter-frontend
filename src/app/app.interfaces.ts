@@ -1,15 +1,15 @@
 export enum AuthFlagType {
-  CODE_REQUIRED = "codeRequired",
-  PENDING = "pending",
-  EXPIRED = "expired"
+  CODE_REQUIRED = 'codeRequired',
+  PENDING = 'pending',
+  EXPIRED = 'expired'
 }
 
 export enum AuthAccessKeyType {
-  WORKSPACE_ADMIN = "workspaceAdmin",
-  SUPER_ADMIN = "superAdmin",
-  TEST = "test",
-  WORKSPACE_MONITOR = "workspaceMonitor",
-  TEST_GROUP_MONITOR = "testGroupMonitor"
+  WORKSPACE_ADMIN = 'workspaceAdmin',
+  SUPER_ADMIN = 'superAdmin',
+  TEST = 'test',
+  WORKSPACE_MONITOR = 'workspaceMonitor',
+  TEST_GROUP_MONITOR = 'testGroupMonitor'
 }
 
 export interface AccessType {
@@ -27,7 +27,7 @@ export interface AuthData {
 export interface WorkspaceData {
   id: string;
   name: string;
-  role: "RW" | "RO" | "n.d.";
+  role: 'RW' | 'RO' | 'n.d.';
 }
 
 export interface AccessObject {
@@ -50,7 +50,7 @@ export interface KeyValuePairs {
 export interface AppError {
   label: string;
   description: string;
-  category: 'WARNING' | 'FATAL' | 'PROBLEM'
+  category: 'WARNING' | 'FATAL' | 'PROBLEM';
 }
 
 export class ApiError {
@@ -58,7 +58,7 @@ export class ApiError {
   info: string;
   constructor(code: number, info = '') {
     this.code = code;
-    this.info = info
+    this.info = info;
   }
 }
 

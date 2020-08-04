@@ -15,11 +15,11 @@ import {
   MessageDialogData, MessageType
 } from 'iqb-components';
 import { MainDataService } from 'src/app/maindata.service';
-import {IdRoleData, UserData} from "../superadmin.interfaces";
-import {SuperadminPasswordRequestComponent} from "../superadmin-password-request/superadmin-password-request.component";
-import {catchError} from "rxjs/operators";
-import {ApiError} from "../../app.interfaces";
-import {of} from "rxjs";
+import {IdRoleData, UserData} from '../superadmin.interfaces';
+import {SuperadminPasswordRequestComponent} from '../superadmin-password-request/superadmin-password-request.component';
+import {catchError} from 'rxjs/operators';
+import {ApiError} from '../../app.interfaces';
+import {of} from 'rxjs';
 
 
 @Component({
@@ -29,12 +29,12 @@ import {of} from "rxjs";
 export class UsersComponent implements OnInit {
   public objectsDatasource: MatTableDataSource<UserData>;
   public displayedColumns = ['selectCheckbox', 'name'];
-  private tableselectionCheckbox = new SelectionModel<UserData>(true, []);
-  private tableselectionRow = new SelectionModel<UserData>(false, []);
+  public tableselectionCheckbox = new SelectionModel<UserData>(true, []);
+  public tableselectionRow = new SelectionModel<UserData>(false, []);
   public selectedUser = -1;
-  private selectedUserName = '';
+  public selectedUserName = '';
 
-  private pendingWorkspaceChanges = false;
+  public pendingWorkspaceChanges = false;
   public WorkspacelistDatasource: MatTableDataSource<IdRoleData>;
   public displayedWorkspaceColumns = ['selectCheckbox', 'label'];
 
@@ -54,7 +54,7 @@ export class UsersComponent implements OnInit {
       r => {
         if (r.added.length > 0) {
           this.selectedUser = r.added[0].id;
-          this.selectedUserName = r.added[0].name
+          this.selectedUserName = r.added[0].name;
         } else {
           this.selectedUser = -1;
           this.selectedUserName = '';
@@ -67,10 +67,9 @@ export class UsersComponent implements OnInit {
     setTimeout(() => {
       this.mds.setSpinnerOn();
       this.updateObjectList();
-    })
+    });
   }
 
-  // ***********************************************************************************
   addObject() {
     const dialogRef = this.newuserDialog.open(NewuserComponent, {
       width: '600px'
@@ -84,7 +83,7 @@ export class UsersComponent implements OnInit {
               (<FormGroup>result).get('pw').value)
             .pipe(catchError((err: ApiError) => {
               this.snackBar.open(`Konnte Nutzer nicht hinzufügen: ${err.code} ${err.info} `, 'Fehler', {duration: 5000});
-              return of(false)
+              return of(false);
             })).subscribe(
                 respOk => {
                   if (respOk !== false) {
@@ -132,14 +131,14 @@ export class UsersComponent implements OnInit {
             data: 'Superadmin-Status ' + (userObject.isSuperadmin ? 'entziehen' : 'setzen')
           });
 
-          passwdDialogRef.afterClosed().subscribe(result => {
-            if (typeof result !== 'undefined') {
-              if (result !== false) {
+          passwdDialogRef.afterClosed().subscribe(afterClosedResult => {
+            if (typeof afterClosedResult !== 'undefined') {
+              if (afterClosedResult !== false) {
                 this.mds.setSpinnerOn();
                 this.bs.setSuperUserStatus(
                   selectedRows[0]['id'],
                   !userObject.isSuperadmin,
-                  (<FormGroup>result).get('pw').value).subscribe(
+                  (<FormGroup>afterClosedResult).get('pw').value).subscribe(
                   respCode => {
                     if (respCode === 0) {
                       this.snackBar.open('Status geändert', '', {duration: 1000});
@@ -188,7 +187,7 @@ export class UsersComponent implements OnInit {
                 (<FormGroup>result).get('pw').value)
               .pipe(catchError((err: ApiError) => {
                 this.snackBar.open(`Konnte Kennwort nicht ändern: ${err.code} ${err.info} `, 'Fehler', {duration: 5000});
-                return of(false)
+                return of(false);
               })).subscribe(
                   respOk => {
                     this.mds.setSpinnerOff();
@@ -235,7 +234,6 @@ export class UsersComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
-          // =========================================================
           const usersToDelete = [];
           selectedRows.forEach((r: UserData) => usersToDelete.push(r.id));
           this.mds.setSpinnerOn();
@@ -254,7 +252,6 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  // ***********************************************************************************
   updateWorkspaceList() {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser > -1) {
@@ -262,7 +259,7 @@ export class UsersComponent implements OnInit {
       this.bs.getWorkspacesByUser(this.selectedUser).subscribe(dataresponse => {
         this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
         this.mds.setSpinnerOff();
-      })
+      });
     } else {
       this.WorkspacelistDatasource = null;
     }
@@ -295,7 +292,6 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  // ***********************************************************************************
   updateObjectList() {
     this.tableselectionCheckbox.clear();
     this.tableselectionRow.clear();

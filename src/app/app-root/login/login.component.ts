@@ -1,11 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {MainDataService} from "../../maindata.service";
-import {CustomtextService} from "iqb-components";
-import {ActivatedRoute, Router} from "@angular/router";
-import {Subscription} from "rxjs";
-import {AuthData} from "../../app.interfaces";
-import {BackendService} from "../../backend.service";
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {MainDataService} from '../../maindata.service';
+import {CustomtextService} from 'iqb-components';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Subscription} from 'rxjs';
+import {AuthData} from '../../app.interfaces';
+import {BackendService} from '../../backend.service';
 
 @Component({
   templateUrl: './login.component.html',
@@ -16,8 +16,8 @@ import {BackendService} from "../../backend.service";
 })
 
 export class LoginComponent  implements OnInit, OnDestroy {
-  private routingSubscription: Subscription = null;
   static oldLoginName = '';
+  private routingSubscription: Subscription = null;
   returnTo = '';
   problemText = '';
 
@@ -38,7 +38,7 @@ export class LoginComponent  implements OnInit, OnDestroy {
     this.mds.setSpinnerOff();
     this.routingSubscription = this.route.params.subscribe(params => {
       this.returnTo = params['returnTo'];
-    })
+    });
   }
 
   login() {

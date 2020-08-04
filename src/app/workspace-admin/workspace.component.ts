@@ -2,7 +2,7 @@ import { WorkspaceDataService } from './workspacedata.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import {BackendService} from "./backend.service";
+import {BackendService} from './backend.service';
 
 
 @Component({
@@ -28,7 +28,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
             this.wds.wsRole = wsData.role;
           }
         }
-      )
+      );
     });
   }
 

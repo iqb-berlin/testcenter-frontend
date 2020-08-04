@@ -1,11 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NewpasswordComponent } from './newpassword.component';
-import {ReactiveFormsModule} from "@angular/forms";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogModule} from "@angular/material/dialog";
-import {MatInputModule} from "@angular/material/input";
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {NoopAnimationsModule} from "@angular/platform-browser/animations";
+import {ReactiveFormsModule} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('NewpasswordComponent', () => {
   let component: NewpasswordComponent;

@@ -1,11 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditworkspaceComponent } from './editworkspace.component';
-import {ReactiveFormsModule} from "@angular/forms";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogModule} from "@angular/material/dialog";
-import {MatInputModule} from "@angular/material/input";
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {NoopAnimationsModule} from "@angular/platform-browser/animations";
+import {ReactiveFormsModule} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('EditworkspaceComponent', () => {
   let component: EditworkspaceComponent;

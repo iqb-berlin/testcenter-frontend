@@ -16,7 +16,7 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
     @ViewChildren(IqbFilesUploadComponent) fileUploads: QueryList<IqbFilesUploadComponent>;
 
     public files: Array<any> = [];
-    private disableClearButton = true;
+    public disableClearButton = true;
 
     /* Http request input bindings */
     @Input()
@@ -49,29 +49,25 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
 
     @Output() uploadCompleteEvent = new EventEmitter<IqbFilesUploadQueueComponent>();
 
-    // +++++++++++++++++++++++++++++++++++++++++++++++++
     add(file: any) {
       this.files.push(file);
     }
 
-    // +++++++++++++++++++++++++++++++++++++++++++++++++
     public removeAll() {
       this.files.splice(0, this.files.length);
     }
 
-    // +++++++++++++++++++++++++++++++++++++++++++++++++
     ngOnDestroy() {
       if (this.files) {
         this.removeAll();
       }
     }
 
-    // +++++++++++++++++++++++++++++++++++++++++++++++++
     removeFile(fileToRemove: IqbFilesUploadComponent) {
       this.files.splice(fileToRemove.id, 1);
     }
 
-/*    // +++++++++++++++++++++++++++++++++++++++++++++++++
+/*
     updateStatus() {
       this.numberOfErrors = 0;
       this.numberOfUploads = 0;
@@ -82,7 +78,6 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
       });
     } */
 
-    // +++++++++++++++++++++++++++++++++++++++++++++++++
     analyseStatus() {
       let someoneiscomplete = false;
       let someoneisbusy = false;

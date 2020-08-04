@@ -1,11 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SyscheckComponent } from './syscheck.component';
-import {HttpClientModule} from "@angular/common/http";
-import {BackendService} from "../backend.service";
-import {MatDialogModule} from "@angular/material/dialog";
-import {MatSnackBarModule} from "@angular/material/snack-bar";
-import {WorkspaceDataService} from "../workspacedata.service";
+import {HttpClientModule} from '@angular/common/http';
+import {BackendService} from '../backend.service';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {WorkspaceDataService} from '../workspacedata.service';
 
 describe('Workspace-Admin: SyscheckComponent', () => {
   let component: SyscheckComponent;

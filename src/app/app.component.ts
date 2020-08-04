@@ -2,8 +2,8 @@ import { MainDataService } from './maindata.service';
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import { BackendService } from './backend.service';
 import {CustomtextService} from 'iqb-components';
-import {Subscription} from "rxjs";
-import {AppError} from "./app.interfaces";
+import {Subscription} from 'rxjs';
+import {AppError} from './app.interfaces';
 
 @Component({
   selector: 'tc-root',
@@ -88,9 +88,9 @@ export class AppComponent implements OnInit, OnDestroy {
           this.mds.isApiValid = AppComponent.isValidVersion(this.expectedApiVersion, sc.version);
           if (!this.mds.isApiValid) {
             this.mds.appError$.next({
-              label: "Server-Problem: API-Version ungültig",
-              description: "erwartet: " + this.expectedApiVersion + ", gefunden: " + sc.version,
-              category: "FATAL"
+              label: 'Server-Problem: API-Version ungültig',
+              description: 'erwartet: ' + this.expectedApiVersion + ', gefunden: ' + sc.version,
+              category: 'FATAL'
             });
           }
           if (sc.mainLogo) {

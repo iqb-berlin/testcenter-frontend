@@ -1,7 +1,7 @@
 export interface WorkspaceData {
   id: string;
   name: string;
-  role: "RW" | "RO" | "n.d.";
+  role: 'RW' | 'RO' | 'n.d.';
 }
 
 export interface GetFileResponseData {
@@ -15,8 +15,7 @@ export interface GetFileResponseData {
   isChecked: boolean;
 }
 
-export interface CheckWorkspaceResponseData
-{
+export interface CheckWorkspaceResponseData {
   errors: string[];
   infos: string[];
   warnings: string[];

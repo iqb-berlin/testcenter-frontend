@@ -1,17 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import {AuthAccessKeyType, AuthData, BookletData} from "../../app.interfaces";
-import {from, Subscription} from "rxjs";
-import {concatMap} from "rxjs/operators";
-import {Router} from "@angular/router";
-import {BackendService} from "../../backend.service";
-import {MainDataService} from "../../maindata.service";
-import {CustomtextService} from "iqb-components";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AuthAccessKeyType, AuthData, BookletData} from '../../app.interfaces';
+import {from, Subscription} from 'rxjs';
+import {concatMap} from 'rxjs/operators';
+import {Router} from '@angular/router';
+import {BackendService} from '../../backend.service';
+import {MainDataService} from '../../maindata.service';
+import {CustomtextService} from 'iqb-components';
 
 @Component({
   templateUrl: './test-starter.component.html',
   styleUrls: ['./test-starter.component.css']
 })
-export class TestStarterComponent implements OnInit {
+export class TestStarterComponent implements OnInit, OnDestroy {
   booklets: BookletData[] = [];
   private getBookletDataSubscription: Subscription = null;
   public bookletSelectTitle = 'Bitte wählen';
@@ -39,10 +39,10 @@ export class TestStarterComponent implements OnInit {
                 }
                 this.getBookletDataSubscription = from(authData.access[AuthAccessKeyType.TEST]).pipe(
                   concatMap(bookletId => {
-                    return this.bs.getBookletData(bookletId)
+                    return this.bs.getBookletData(bookletId);
                   })).subscribe(
                     bData => {
-                      this.booklets.push(bData)
+                      this.booklets.push(bData);
                     },
                     e => {
                       this.problemText = `Fehler in der Netzwerkverbindung (${e}).`;
@@ -66,7 +66,7 @@ export class TestStarterComponent implements OnInit {
         } else {
           this.mds.setSpinnerOff();
         }
-      })
+      });
     });
   }
 

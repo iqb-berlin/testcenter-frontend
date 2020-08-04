@@ -1,11 +1,11 @@
-import { GetFileResponseData, CheckWorkspaceResponseData, SysCheckStatistics,
-  ReviewData, LogData, UnitResponse, ResultData } from './workspace.interfaces';
+import {GetFileResponseData, CheckWorkspaceResponseData, SysCheckStatistics,
+  ReviewData, LogData, UnitResponse, ResultData} from './workspace.interfaces';
 import {Injectable, Inject} from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import {WorkspaceDataService} from "./workspacedata.service";
-import {ApiError, WorkspaceData} from "../app.interfaces";
+import {catchError, map} from 'rxjs/operators';
+import {WorkspaceDataService} from './workspacedata.service';
+import {ApiError, WorkspaceData} from '../app.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +25,7 @@ export class BackendService {
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getWorkspaceData Api-Error: ${err.code} ${err.info} `);
-          return of(err.code)
+          return of(err.code);
         })
       );
   }
@@ -36,7 +36,7 @@ export class BackendService {
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getFiles Api-Error: ${err.code} ${err.info} `);
-          return []
+          return [];
         })
       );
   }
@@ -51,7 +51,7 @@ export class BackendService {
             deleted: [],
             not_allowed: [`deleteFiles Api-Error: ${err.code} ${err.info} `],
             did_not_exist: []
-          })
+          });
         })
       );
   }
@@ -66,7 +66,7 @@ export class BackendService {
             errors: [`checkWorkspace Api-Error: ${err.code} ${err.info} `],
             infos: [],
             warnings: []
-          })
+          });
         })
       );
   }
@@ -77,7 +77,7 @@ export class BackendService {
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getResultData Api-Error: ${err.code} ${err.info} `);
-          return []
+          return [];
         })
       );
   }
@@ -88,7 +88,7 @@ export class BackendService {
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getResponses Api-Error: ${err.code} ${err.info} `);
-          return []
+          return [];
         })
       );
   }
@@ -99,7 +99,7 @@ export class BackendService {
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getLogs Api-Error: ${err.code} ${err.info} `);
-          return []
+          return [];
         })
       );
   }
@@ -110,7 +110,7 @@ export class BackendService {
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getReviews Api-Error: ${err.code} ${err.info} `);
-          return []
+          return [];
         })
       );
   }
@@ -122,7 +122,7 @@ export class BackendService {
         map(() => true),
         catchError((err: ApiError) => {
           console.warn(`deleteData Api-Error: ${err.code} ${err.info} `);
-          return of(false)
+          return of(false);
         })
       );
   }
@@ -133,7 +133,7 @@ export class BackendService {
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getSysCheckReportList Api-Error: ${err.code} ${err.info} `);
-          return []
+          return [];
         })
       );
   }
@@ -157,7 +157,7 @@ export class BackendService {
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getSysCheckReport Api-Error: ${err.code} ${err.info} `);
-          return of(false)
+          return of(false);
         })
       );
   }
@@ -172,7 +172,7 @@ export class BackendService {
             deleted: [],
             not_allowed: [`deleteSysCheckReports Api-Error: ${err.code} ${err.info} `],
             did_not_exist: []
-          })
+          });
         })
       );
   }
@@ -183,7 +183,7 @@ export class BackendService {
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`downloadFile Api-Error: ${err.code} ${err.info} `);
-          return of(false)
+          return of(false);
         })
       );
   }

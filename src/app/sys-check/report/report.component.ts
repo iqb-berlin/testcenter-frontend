@@ -1,19 +1,19 @@
 import { BackendService } from '../backend.service';
 import { SysCheckDataService } from '../sys-check-data.service';
-import { Component, Input } from '@angular/core';
+import {Component, Input, OnDestroy} from '@angular/core';
 import { SaveReportComponent } from './save-report/save-report.component';
 import { ReportEntry } from '../sys-check.interfaces';
 import { Subscription } from 'rxjs';
 import {ServerError} from 'iqb-components';
-import {MatDialog} from "@angular/material/dialog";
-import {MatSnackBar} from "@angular/material/snack-bar";
+import {MatDialog} from '@angular/material/dialog';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'iqb-report',
   templateUrl: './report.component.html',
   styleUrls: ['./report.component.css']
 })
-export class ReportComponent {
+export class ReportComponent implements OnDestroy {
 
   @Input() canSave: boolean;
 
@@ -74,8 +74,8 @@ export class ReportComponent {
                 questionnaire: this.ds.questionnaireData$.getValue(),
                 unit: this.ds.unitData$.getValue()
               }
-          ).subscribe((result: boolean|ServerError) => {
-            if (result instanceof ServerError) {
+          ).subscribe((saveReportResult: boolean|ServerError) => {
+            if (saveReportResult instanceof ServerError) {
               this.snackBar.open('Konnte Bericht nicht speichern.', '', {duration: 3000});
             } else {
               this.snackBar.open('Bericht gespeichert.', '', {duration: 3000});

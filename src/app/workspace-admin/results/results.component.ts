@@ -10,7 +10,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 import { ResultData, UnitResponse, ReviewData } from '../workspace.interfaces';
-import {MainDataService} from "../../maindata.service";
+import {MainDataService} from '../../maindata.service';
 
 
 @Component({
@@ -37,7 +37,7 @@ export class ResultsComponent implements OnInit {
     setTimeout(() => {
       this.mds.setSpinnerOn();
       this.updateTable();
-    })
+    });
   }
 
   updateTable() {
@@ -130,7 +130,6 @@ export class ResultsComponent implements OnInit {
     }
   }
 
-  // 444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
   downloadReviewsCSV() {
     if (this.tableselectionCheckbox.selected.length > 0) {
       const selectedGroups: string[] = [];
@@ -192,7 +191,6 @@ export class ResultsComponent implements OnInit {
     }
   }
 
-  // 444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
   downloadLogsCSV() {
     if (this.tableselectionCheckbox.selected.length > 0) {
       const selectedGroups: string[] = [];
@@ -260,7 +258,7 @@ export class ResultsComponent implements OnInit {
               this.snackBar.open('Löschen nicht erfolgreich.', 'Fehler', {duration: 3000});
             }
             this.tableselectionCheckbox.clear();
-            this.updateTable()
+            this.updateTable();
           });
         }
       });

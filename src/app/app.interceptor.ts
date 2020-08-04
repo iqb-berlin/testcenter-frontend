@@ -5,9 +5,9 @@ import {
   HttpHandler, HttpEvent, HttpErrorResponse
 } from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
-import {catchError} from "rxjs/operators";
-import {Router, RouterState, RouterStateSnapshot} from "@angular/router";
-import {ApiError} from "./app.interfaces";
+import {catchError} from 'rxjs/operators';
+import {Router, RouterState, RouterStateSnapshot} from '@angular/router';
+import {ApiError} from './app.interfaces';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -35,17 +35,17 @@ export class AuthInterceptor implements HttpInterceptor {
 
       return next.handle(requestA).pipe(
         catchError(e => {
-          let apiError = new ApiError(999);
+          const apiError = new ApiError(999);
           if (e instanceof HttpErrorResponse) { // TODO is the opposite case even possible?
             const httpError = e as HttpErrorResponse;
             apiError.code = httpError.status;
-            apiError.info = httpError.message + " // " + httpError.error;
+            apiError.info = httpError.message + ' // ' + httpError.error;
             if (httpError.error instanceof ErrorEvent) {
               this.mds.appError$.next({
                 label: 'Fehler in der Netzwerkverbindung',
                 description: httpError.message,
-                category: "PROBLEM"
-              })
+                category: 'PROBLEM'
+              });
             } else {
               let ignoreError = false;
               let goToLoginPage = false;
@@ -99,7 +99,7 @@ export class AuthInterceptor implements HttpInterceptor {
                   this.mds.appError$.next({
                     label: label,
                     description: httpError.message,
-                    category: "PROBLEM"
+                    category: 'PROBLEM'
                   });
                 }
               }
@@ -108,14 +108,14 @@ export class AuthInterceptor implements HttpInterceptor {
 
           return throwError(apiError);
         })
-      )
+      );
     } else {
       this.mds.appError$.next({
-        label: "Server-Problem: API-Version ungültig",
-        description: "Keine weiteren Server-Aufrufe erlaubt",
-        category: "FATAL"
+        label: 'Server-Problem: API-Version ungültig',
+        description: 'Keine weiteren Server-Aufrufe erlaubt',
+        category: 'FATAL'
       });
-      return throwError(new ApiError(500, "API-Version ungültig"));
+      return throwError(new ApiError(500, 'API-Version ungültig'));
     }
   }
 }

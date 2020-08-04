@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import {UnitData, TaggedString, TestData} from './test-controller.interfaces';
-import {ApiError} from "../app.interfaces";
+import {ApiError} from '../app.interfaces';
 
 
 @Injectable({
@@ -24,7 +24,7 @@ export class BackendService {
         map(() => true),
         catchError((err: ApiError) => {
           console.warn(`saveUnitReview Api-Error: ${err.code} ${err.info} `);
-          return of(false)
+          return of(false);
         })
       );
   }
@@ -36,7 +36,7 @@ export class BackendService {
         map(() => true),
         catchError((err: ApiError) => {
           console.warn(`saveBookletReview Api-Error: ${err.code} ${err.info} `);
-          return of(false)
+          return of(false);
         })
       );
   }
@@ -47,7 +47,7 @@ export class BackendService {
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getTestData Api-Error: ${err.code} ${err.info} `);
-          return of(false)
+          return of(false);
         })
       );
   }
@@ -58,7 +58,7 @@ export class BackendService {
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getUnitData Api-Error: ${err.code} ${err.info} `);
-          return of(false)
+          return of(false);
         })
       );
   }
@@ -75,7 +75,7 @@ export class BackendService {
         map(def => <TaggedString>{tag: internalKey, value: def}),
         catchError((err: ApiError) => {
           console.warn(`getResource Api-Error: ${err.code} ${err.info} `);
-          return of(err.code)
+          return of(err.code);
         })
       );
   }
@@ -87,7 +87,7 @@ export class BackendService {
         map(() => true),
         catchError((err: ApiError) => {
           console.warn(`addUnitLog Api-Error: ${err.code} ${err.info} `);
-          return of(false)
+          return of(false);
         })
       );
   }
@@ -99,7 +99,7 @@ export class BackendService {
         map(() => true),
         catchError((err: ApiError) => {
           console.warn(`addBookletLog Api-Error: ${err.code} ${err.info} `);
-          return of(false)
+          return of(false);
         })
       );
   }
@@ -111,7 +111,7 @@ export class BackendService {
         map(() => true),
         catchError((err: ApiError) => {
           console.warn(`setUnitState Api-Error: ${err.code} ${err.info} `);
-          return of(false)
+          return of(false);
         })
       );
   }
@@ -123,7 +123,7 @@ export class BackendService {
         map(() => true),
         catchError((err: ApiError) => {
           console.warn(`setBookletState Api-Error: ${err.code} ${err.info} `);
-          return of(false)
+          return of(false);
         })
       );
   }
@@ -136,7 +136,7 @@ export class BackendService {
         map(() => true),
         catchError((err: ApiError) => {
           console.warn(`newUnitResponse Api-Error: ${err.code} ${err.info} `);
-          return of(false)
+          return of(false);
         })
       );
   }
@@ -148,7 +148,7 @@ export class BackendService {
         map(() => true),
         catchError((err: ApiError) => {
           console.warn(`newUnitRestorePoint Api-Error: ${err.code} ${err.info} `);
-          return of(false)
+          return of(false);
         })
       );
   }
@@ -160,7 +160,7 @@ export class BackendService {
         map(() => true),
         catchError((err: ApiError) => {
           console.warn(`lockBooklet Api-Error: ${err.code} ${err.info} `);
-          return of(false)
+          return of(false);
         })
       );
   }

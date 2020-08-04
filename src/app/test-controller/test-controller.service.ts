@@ -14,8 +14,8 @@ import {
   UnitRestorePointData
 } from './test-controller.interfaces';
 import {BackendService} from './backend.service';
-import {Router} from "@angular/router";
-import {TestMode} from "../config/test-mode";
+import {Router} from '@angular/router';
+import {TestMode} from '../config/test-mode';
 import {BookletConfig} from '../config/booklet-config';
 
 @Injectable({
@@ -72,7 +72,6 @@ export class TestControllerService {
   }
 
   public LastMaxTimerState: KeyValuePairNumber = {};
-   // ))))))))))))))))))))))))))))))))))))))))))))))))
 
   private players: {[filename: string]: string} = {};
   private unitDefinitions: {[sequenceId: number]: string} = {};
@@ -97,7 +96,6 @@ export class TestControllerService {
       }
     );
 
-    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.responsesToSave$.pipe(
       debounceTime(200)).subscribe(response => {
         this.bs.newUnitResponse(this.testId, Date.now(), response.unitDbKey,
@@ -110,7 +108,6 @@ export class TestControllerService {
     );
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
   public resetDataStore() {
     this.players = {};
     this.unitDefinitions = {};
@@ -133,7 +130,7 @@ export class TestControllerService {
     // this.bookletLoadComplete = false;
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
+
   // uppercase and add extension if not part
   public normaliseId(s: string, standardext = ''): string {
     s = s.trim().toUpperCase();
@@ -150,29 +147,30 @@ export class TestControllerService {
     return s;
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
   public addPlayer (id: string, player: string) {
     this.players[this.normaliseId(id, 'html')] = player;
   }
+
   public hasPlayer (id: string): boolean {
     return this.players.hasOwnProperty(this.normaliseId(id, 'html'));
   }
+
   public getPlayer(id: string): string {
     return this.players[this.normaliseId(id, 'html')];
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
   public addUnitDefinition (sequenceId: number, uDef: string) {
     this.unitDefinitions[sequenceId] = uDef;
   }
+
   public hasUnitDefinition (sequenceId: number): boolean {
     return this.unitDefinitions.hasOwnProperty(sequenceId);
   }
+
   public getUnitDefinition(sequenceId: number): string {
     return this.unitDefinitions[sequenceId];
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
   // adding RestorePoint via newUnitRestorePoint below
   public hasUnitRestorePoint (sequenceId: number): boolean {
     return this.unitRestorePoints.hasOwnProperty(sequenceId);
@@ -181,19 +179,19 @@ export class TestControllerService {
     return this.unitRestorePoints[sequenceId];
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
   // adding PresentationComplete via newUnitStatePresentationComplete below
   public addUnitPresentationComplete (sequenceId: number, uPC: string) {
     this.unitPresentationCompleteStates[sequenceId] = uPC;
   }
+
   public hasUnitPresentationComplete (sequenceId: number): boolean {
     return this.unitPresentationCompleteStates.hasOwnProperty(sequenceId);
   }
+
   public getUnitPresentationComplete(sequenceId: number): string {
     return this.unitPresentationCompleteStates[sequenceId];
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
   public addBookletLog(logKey: LogEntryKey, entry = '') {
     if (this.testMode.saveResponses) {
       const entryData =  entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey;
@@ -204,6 +202,7 @@ export class TestControllerService {
       });
     }
   }
+
   public setBookletState(stateKey: LastStateKey, state: string) {
     if (this.testMode.saveResponses) {
       this.bs.setBookletState(this.testId, stateKey, state).subscribe(ok => {
@@ -213,6 +212,7 @@ export class TestControllerService {
       });
     }
   }
+
   public addUnitLog(unitDbKey: string, logKey: LogEntryKey, entry = '') {
     if (this.testMode.saveResponses && this.testStatus$.getValue() === TestStatus.RUNNING) {
       this.bs.addUnitLog(this.testId, Date.now(), unitDbKey,
@@ -223,6 +223,7 @@ export class TestControllerService {
       });
     }
   }
+
   public newUnitResponse(unitDbKey: string, response: string, responseType: string) {
     if (this.testMode.saveResponses) {
       this.responsesToSave$.next({
@@ -232,6 +233,7 @@ export class TestControllerService {
       });
     }
   }
+
   public newUnitRestorePoint(unitDbKey: string, unitSequenceId: number, restorePoint: string, postToServer: boolean) {
     this.unitRestorePoints[unitSequenceId] = restorePoint;
     if (postToServer && this.testMode.saveResponses) {
@@ -241,6 +243,7 @@ export class TestControllerService {
       });
     }
   }
+
   public newUnitStatePresentationComplete(unitDbKey: string, unitSequenceId: number, presentationComplete: string) {
     this.unitPresentationCompleteStates[unitSequenceId] = presentationComplete;
     if (this.testMode.saveResponses) {
@@ -258,7 +261,6 @@ export class TestControllerService {
     }
   }
 
-  // 7777777777777777777777777777777777777777777777777777777777777777777777
   public startMaxTimer(testletId: string, timeLeftMinutes: number) {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
@@ -301,18 +303,18 @@ export class TestControllerService {
 
   public terminateTest() {
     if (this.testMode.saveResponses) {
-      this.bs.addBookletLog(this.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE').subscribe(OK =>{
+      this.bs.addBookletLog(this.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE').subscribe(OK => {
         // TODO who evaluates TestStatus when navigating to root?
         if (OK) {
           this.bs.lockBooklet(this.testId).subscribe(bsOk => {
             this.testStatus$.next(bsOk ? TestStatus.TERMINATED : TestStatus.ERROR);
             this.router.navigate(['/']);
-          })
+          });
         } else {
           this.testStatus$.next(TestStatus.ERROR);
           this.router.navigate(['/']);
         }
-      })
+      });
     } else {
       this.testStatus$.next(TestStatus.TERMINATED);
       this.router.navigate(['/']);

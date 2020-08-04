@@ -88,5 +88,5 @@ export interface SysCheckReport {
   environment: ReportEntry[];
   network: ReportEntry[];
   questionnaire: ReportEntry[];
-  unit: ReportEntry[]
+  unit: ReportEntry[];
 }

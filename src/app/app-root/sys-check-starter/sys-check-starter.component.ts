@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {BackendService} from "../../backend.service";
-import {Router} from "@angular/router";
-import {MainDataService} from "../../maindata.service";
-import {SysCheckInfo} from "../../app.interfaces";
-import {CustomtextService} from "iqb-components";
+import {BackendService} from '../../backend.service';
+import {Router} from '@angular/router';
+import {MainDataService} from '../../maindata.service';
+import {SysCheckInfo} from '../../app.interfaces';
+import {CustomtextService} from 'iqb-components';
 
 @Component({
   templateUrl: './sys-check-starter.component.html',
@@ -28,12 +28,12 @@ export class SysCheckStarterComponent implements OnInit {
         if (myConfigs) {
           this.checkConfigList = myConfigs;
         } else {
-          this.checkConfigList = []
+          this.checkConfigList = [];
         }
         this.loading = false;
         this.mds.setSpinnerOff();
       });
-    })
+    });
   }
 
   buttonStartCheck(checkInfo: SysCheckInfo) {

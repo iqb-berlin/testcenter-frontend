@@ -10,7 +10,7 @@ import { ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { saveAs } from 'file-saver';
-import {MainDataService} from "../../maindata.service";
+import {MainDataService} from '../../maindata.service';
 
 @Component({
   templateUrl: './files.component.html',
@@ -46,17 +46,15 @@ export class FilesComponent implements OnInit {
     setTimeout(() => {
       this.mds.setSpinnerOn();
       this.updateFileList();
-    })
+    });
   }
 
-  // ***********************************************************************************
   checkAll(isChecked: boolean) {
     this.serverfiles.data.forEach(element => {
       element.isChecked = isChecked;
     });
   }
 
-  // ***********************************************************************************
   deleteFiles() {
     if (this.wds.wsRole === 'RW') {
       this.checkErrors = [];
@@ -101,7 +99,6 @@ export class FilesComponent implements OnInit {
               this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '',  {duration: 1000});
               this.updateFileList();
             });
-            // =========================================================
           }
         });
       } else {
@@ -117,7 +114,7 @@ export class FilesComponent implements OnInit {
     }
   }
 
-  // ***********************************************************************************
+
   updateFileList(empty = false) {
     this.checkErrors = [];
     this.checkWarnings = [];

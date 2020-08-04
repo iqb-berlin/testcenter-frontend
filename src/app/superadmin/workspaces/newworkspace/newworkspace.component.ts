@@ -8,5 +8,5 @@ import {FormGroup, Validators, FormControl} from '@angular/forms';
 export class NewworkspaceComponent {
   newworkspaceform = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.minLength(3)])
-  })
+  });
 }

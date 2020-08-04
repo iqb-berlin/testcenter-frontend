@@ -22,7 +22,6 @@ export class TestletContentElement {
     this.children = [];
   }
 
-  // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
   setCanEnter (can: string, message: string, allChildren = false) {
     let newCan: 'y' | 'n' | 'w' = 'y';
     if (can.length > 0) {
@@ -42,7 +41,6 @@ export class TestletContentElement {
     }
   }
 
-  // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
   setCanLeave (can: string, message: string, allChildren = false) {
     let newCan: 'y' | 'n' | 'w' = 'y';
     if (can.length > 0) {
@@ -62,7 +60,6 @@ export class TestletContentElement {
     }
   }
 
-  // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
   getMaxSequenceId(tmpId = 0): number {
     if (this.sequenceId >= tmpId) {
       tmpId = this.sequenceId + 1;
@@ -74,8 +71,6 @@ export class TestletContentElement {
   }
 }
 
-// .....................................................................
-// .....................................................................
 export class UnitDef extends TestletContentElement {
   readonly alias: string;
   readonly naviButtonLabel: string;
@@ -99,7 +94,7 @@ export class UnitDef extends TestletContentElement {
       this.statusPresentation = 'no';
   }
 
-  // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
+
   setStatusResponses (status: string) {
     let newStatus: 'no' | 'some' | 'all' = 'no';
     if (status.length > 0) {
@@ -113,7 +108,6 @@ export class UnitDef extends TestletContentElement {
     this.statusResponses = newStatus;
   }
 
-  // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
   setStatusPresentation (status: string) {
     let newStatus: 'no' | 'partly' | 'full' = 'no';
     if (status.length > 0) {
@@ -128,8 +122,6 @@ export class UnitDef extends TestletContentElement {
   }
 }
 
-// .....................................................................
-// .....................................................................
 export class UnitControllerData {
   unitDef: UnitDef = null;
   codeRequiringTestlets: Testlet[] = [];
@@ -140,21 +132,19 @@ export class UnitControllerData {
   }
 }
 
-// .....................................................................
-// .....................................................................
 export class Testlet extends TestletContentElement {
   codeToEnter = '';
   codePrompt = '';
   maxTimeLeft = -1;
 
-  // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
+
   addTestlet(id: string, title: string): Testlet {
     const newChild = new Testlet(0, id, title);
     this.children.push(newChild);
     return newChild;
   }
 
-  // """"""""""""""""""""""""""""""""""""""""""""""""""""""""
+
   addUnit(
     sequenceId: number,
     id: string,
@@ -166,7 +156,6 @@ export class Testlet extends TestletContentElement {
     return newChild;
   }
 
-  // .....................................................................
   // first looking for the unit, then on the way back adding restrictions
   getUnitAt(sequenceId: number, isEntryPoint = true): UnitControllerData {
     let myreturn: UnitControllerData = null;
@@ -194,7 +183,7 @@ export class Testlet extends TestletContentElement {
       if (!isEntryPoint) {
         const label = this.title.trim();
         if (label) {
-          myreturn.testletLabel = label
+          myreturn.testletLabel = label;
         }
 
       }
@@ -202,7 +191,6 @@ export class Testlet extends TestletContentElement {
     return myreturn;
   }
 
-  // .....................................................................
   getTestlet(testletId: string): Testlet {
     let myreturn = null;
     if (this.id === testletId) {
@@ -221,7 +209,6 @@ export class Testlet extends TestletContentElement {
     return myreturn;
   }
 
-  // .....................................................................
   getAllUnitSequenceIds(testletId = ''): number[] {
     let myreturn = [];
 
@@ -245,7 +232,6 @@ export class Testlet extends TestletContentElement {
     return myreturn;
   }
 
-  // .....................................................................
   setTimeLeftNull(testletId = '') {
     if (testletId) {
       // find testlet
@@ -265,7 +251,6 @@ export class Testlet extends TestletContentElement {
     }
   }
 
-  // .....................................................................
   lockUnits_allChildren(testletId = '') {
     if (testletId) {
       // find testlet
@@ -286,7 +271,6 @@ export class Testlet extends TestletContentElement {
     }
   }
 
-  // .....................................................................
   private minTestletUnitSequenceId(id = -1): number {
     let myreturn = id;
     for (const tce of this.children) {
@@ -303,7 +287,6 @@ export class Testlet extends TestletContentElement {
     return myreturn;
   }
 
-  // .....................................................................
   lockUnits_before(testletId = '') {
     let myTestlet: Testlet = this;
     if (testletId) {
@@ -316,7 +299,6 @@ export class Testlet extends TestletContentElement {
     }
   }
 
-  // .....................................................................
   getNextUnlockedUnitSequenceId(currentUnitSequenceId: number): number {
     currentUnitSequenceId += 1;
     let myUnit: UnitControllerData = this.getUnitAt(currentUnitSequenceId);
@@ -330,7 +312,6 @@ export class Testlet extends TestletContentElement {
     return myUnit ? currentUnitSequenceId : 0;
   }
 
-  // .....................................................................
   getFirstUnlockedUnitSequenceId(startWith: number): number {
     let myreturn = startWith;
     const myUnit: UnitControllerData = this.getUnitAt(myreturn);
@@ -348,7 +329,7 @@ export class Testlet extends TestletContentElement {
     return myUnit ? myreturn : 0;
   }
 
-  // .....................................................................
+
   getLastUnlockedUnitSequenceId(startWith: number): number {
     const maxSequenceId = this.getMaxSequenceId();
     let myreturn = startWith;
@@ -369,7 +350,6 @@ export class Testlet extends TestletContentElement {
     return myUnit ? myreturn : 0;
   }
 
-  // .....................................................................
   lockUnitsIfTimeLeftNull(lock = false) {
     lock = lock || this.maxTimeLeft === 0;
     for (const tce of this.children) {
@@ -384,9 +364,6 @@ export class Testlet extends TestletContentElement {
   }
 }
 
-
-// .....................................................................
-// .....................................................................
 export class EnvironmentData {
   public appVersion: string;
   public browserVersion = '';
@@ -405,7 +382,7 @@ export class EnvironmentData {
     this.appVersion = appVersion;
     const deviceInfo = window.navigator.userAgent;
 
-    // browser + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+    // browser
     // @ts-ignore
     const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/;
     // credit due to: https://gist.github.com/ticky/3909462#gistcomment-2245669
@@ -416,7 +393,7 @@ export class EnvironmentData {
     this.browserVersion = browserInfoSplits[1];
     this.browserName = browserInfoSplits[0];
 
-    // os + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+    // os
     if (deviceInfo.indexOf('Windows') !== -1) {
       if (deviceInfo.indexOf('Windows NT 10.0') !== -1) {
         this.osName = 'Windows 10';
@@ -448,7 +425,6 @@ export class EnvironmentData {
   }
 }
 
-// 7777777777777777777777777777777777777777777777777777777777777
 export class MaxTimerData {
   timeLeftSeconds: number; // seconds
   testletId: string;
@@ -470,7 +446,6 @@ export class MaxTimerData {
   }
 }
 
-// 7777777777777777777777777777777777777777777777777777777777777
 export class UnitDefLoadQueue {
   private unitsToLoad: {[sequenceId: string]: string} = {};
   private loading = false;

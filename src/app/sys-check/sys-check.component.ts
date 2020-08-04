@@ -4,7 +4,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import { BackendService } from './backend.service';
 import { Subscription } from 'rxjs';
 import { CustomtextService } from 'iqb-components';
-import {MainDataService} from "../maindata.service";
+import {MainDataService} from '../maindata.service';
 
 @Component({
   templateUrl: './sys-check.component.html',
@@ -36,7 +36,7 @@ export class SysCheckComponent implements OnInit, OnDestroy {
     this.route.paramMap.subscribe((params: ParamMap) => {
 
       const sysCheckName = params.get('sys-check-name');
-      const workspaceId = parseInt(params.get('workspace-id'));
+      const workspaceId = parseInt(params.get('workspace-id'), 10);
       setTimeout(() => {
         this.loading = true;
         this.bs.getCheckConfigData(workspaceId, sysCheckName).subscribe(checkConfig => {
@@ -72,7 +72,7 @@ export class SysCheckComponent implements OnInit, OnDestroy {
             this.isError = true;
           }
         });
-      })
+      });
     });
   }
 

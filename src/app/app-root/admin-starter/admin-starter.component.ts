@@ -1,11 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MainDataService} from "../../maindata.service";
-import {Router} from "@angular/router";
-import {AuthAccessKeyType, AuthData, WorkspaceData} from "../../app.interfaces";
-import {from, Subscription} from "rxjs";
-import {concatMap} from "rxjs/operators";
-import {BackendService} from "../../backend.service";
-import {CustomtextService} from "iqb-components";
+import {MainDataService} from '../../maindata.service';
+import {Router} from '@angular/router';
+import {AuthAccessKeyType, AuthData, WorkspaceData} from '../../app.interfaces';
+import {from, Subscription} from 'rxjs';
+import {concatMap} from 'rxjs/operators';
+import {BackendService} from '../../backend.service';
+import {CustomtextService} from 'iqb-components';
 
 
 @Component({
@@ -47,7 +47,7 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
                 this.workspaces = [];
                 this.getWorkspaceDataSubscription = from(authData.access[AuthAccessKeyType.WORKSPACE_ADMIN]).pipe(
                   concatMap(workspaceId => {
-                    return this.bs.getWorkspaceData(workspaceId)
+                    return this.bs.getWorkspaceData(workspaceId);
                   })).subscribe(
                     wsData => this.workspaces.push(wsData),
                   () => this.mds.setSpinnerOff(),
@@ -68,7 +68,7 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
         } else {
           this.mds.setSpinnerOff();
         }
-      })
+      });
     });
   }
 

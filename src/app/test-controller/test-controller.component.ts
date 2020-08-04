@@ -20,9 +20,9 @@ import {
 import {from, Observable, of, Subscription, throwError} from 'rxjs';
 import {concatMap, map, switchMap} from 'rxjs/operators';
 import {CustomtextService} from 'iqb-components';
-import {MatDialog} from "@angular/material/dialog";
+import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {BookletConfig} from "../config/booklet-config";
+import {BookletConfig} from '../config/booklet-config';
 import { TestMode } from '../config/test-mode';
 
 
@@ -42,7 +42,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private lastUnitSequenceId = 0;
   public loadProgressValue = 0;
   private lastTestletIndex = 0;
-  private timerValue: MaxTimerData = null;
+  public timerValue: MaxTimerData = null;
   private timerRunning = false;
   private allUnitIds: string[] = [];
   private loadedUnitCount = 0;
@@ -69,9 +69,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     .filter(function (e) { return e.nodeType === 1; });
   }
 
-  // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   // private: recursive reading testlets/units from xml
-  // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   private addTestletContentFromBookletXml(targetTestlet: Testlet, node: Element) {
     const childElements = TestControllerComponent.getChildElements(node);
     if (childElements.length > 0) {
@@ -153,9 +151,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   // private: reading booklet from xml
-  // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   private getBookletFromXml(xmlString: string, loginMode: string): Testlet {
     let rootTestlet: Testlet = null;
 
@@ -218,9 +214,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     this.loadProgressValue = this.loadedUnitCount * 100 / this.lastUnitSequenceId;
   }
 
-  // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   // private: read unitdata
-  // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   private loadUnitOk (myUnit: UnitDef, sequenceId: number): Observable<number> {
     myUnit.setCanEnter('n', 'Fehler beim Laden');
     return this.bs.getUnitData(this.tcs.testId, myUnit.id)
@@ -273,17 +267,17 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               myUnit.setCanEnter('y', '');
 
               if (this.tcs.hasPlayer(playerId)) {
-                return of(sequenceId)
+                return of(sequenceId);
               } else {
                 // to avoid multiple calls before returning:
                 this.tcs.addPlayer(playerId, '');
                 return this.bs.getResource(this.tcs.testId, '', this.tcs.normaliseId(playerId, 'html'), true)
                   .pipe(
-                    switchMap(myData => {
-                      if (typeof myData === 'number') {
+                    switchMap((data: number|TaggedString) => {
+                      if (typeof data === 'number') {
                         return throwError(`error getting player "${playerId}"`);
                       } else {
-                        const player = myData as TaggedString;
+                        const player = data as TaggedString;
                         if (player.value.length > 0) {
                           this.tcs.addPlayer(playerId, player.value);
                           return of(sequenceId);
@@ -301,8 +295,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       );
   }
 
-  // #####################################################################################
-  // #####################################################################################
   ngOnInit() {
     setTimeout(() => {
       this.mds.progressVisualEnabled = false;
@@ -312,7 +304,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       }
       this.errorReportingSubscription = this.mds.appError$.subscribe(e => {
         if (this.isProductionMode && this.tcs.testMode.saveResponses) {
-          console.error(e.label + " / " + e.description);
+          console.error(e.label + ' / ' + e.description);
         }
         this.tcs.testStatus$.next(TestStatus.ERROR);
       });
@@ -381,9 +373,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.bs.getTestData(this.tcs.testId).subscribe(testDataUntyped => {
             if (testDataUntyped === false) {
               this.mds.appError$.next({
-                label: "Konnte Testinformation nicht laden",
-                description: "TestController.Component: getTestData()",
-                category: "PROBLEM"
+                label: 'Konnte Testinformation nicht laden',
+                description: 'TestController.Component: getTestData()',
+                category: 'PROBLEM'
               });
             } else {
               const testData = testDataUntyped as TestData;
@@ -403,15 +395,18 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
               this.tcs.rootTestlet = this.getBookletFromXml(testData.xml, testData.mode);
 
-              document.documentElement.style.setProperty('--tc-unit-title-height', this.tcs.bookletConfig.unit_title === 'ON' ? this.mds.defaultTcUnitTitleHeight : '0');
-              document.documentElement.style.setProperty('--tc-header-height', this.tcs.bookletConfig.unit_screenheader === 'OFF' ? '0' : this.mds.defaultTcHeaderHeight);
-              document.documentElement.style.setProperty('--tc-unit-page-nav-height', this.tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' ? this.mds.defaultTcUnitPageNavHeight : '0');
+              document.documentElement.style.setProperty('--tc-unit-title-height',
+                  this.tcs.bookletConfig.unit_title === 'ON' ? this.mds.defaultTcUnitTitleHeight : '0');
+              document.documentElement.style.setProperty('--tc-header-height',
+                  this.tcs.bookletConfig.unit_screenheader === 'OFF' ? '0' : this.mds.defaultTcHeaderHeight);
+              document.documentElement.style.setProperty('--tc-unit-page-nav-height',
+                  this.tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' ? this.mds.defaultTcUnitPageNavHeight : '0');
 
               if (this.tcs.rootTestlet === null) {
                 this.mds.appError$.next({
-                  label: "Problem beim Laden der Testinformation",
-                  description: "TestController.Component: getBookletFromXml(testData.xml)",
-                  category: "PROBLEM"
+                  label: 'Problem beim Laden der Testinformation',
+                  description: 'TestController.Component: getBookletFromXml(testData.xml)',
+                  category: 'PROBLEM'
                 });
               } else {
                 this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
@@ -432,9 +427,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                   },
                   errorMessage => {
                     this.mds.appError$.next({
-                      label: "Problem beim Laden der Testinformation",
+                      label: 'Problem beim Laden der Testinformation',
                       description: errorMessage,
-                      category: "PROBLEM"
+                      category: 'PROBLEM'
                     });
                   },
                   () => {
@@ -445,7 +440,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     this.unitLoadBlobSubscription = from(this.unitLoadQueue).pipe(
                       concatMap(queueEntry => {
                         const unitSequ = Number(queueEntry.tag);
-                        if (this.tcs.bookletConfig.loading_mode === "EAGER") {
+                        if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
                           this.incrementProgressValueBy1();
                         }
                         // avoid to load unit def if not necessary
@@ -455,9 +450,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                           return this.bs.getResource(this.tcs.testId, queueEntry.tag, queueEntry.value).pipe(
                             map(response => {
                               if (typeof response === 'number') {
-                                return throwError(`error loading voud ${this.tcs.testId} / ${queueEntry.tag} / ${queueEntry.value}: status ${response}`)
+                                return throwError(`error loading voud ${this.tcs.testId} / ${queueEntry.tag} / ${queueEntry.value}: status ${response}`);
                               } else {
-                                return response
+                                return response;
                               }
                             })
                           );
@@ -469,9 +464,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                       },
                       errorMessage => {
                         this.mds.appError$.next({
-                          label: "Problem beim Laden der Testinformation",
+                          label: 'Problem beim Laden der Testinformation',
                           description: errorMessage,
-                          category: "PROBLEM"
+                          category: 'PROBLEM'
                         });
                       },
                       () => { // complete
@@ -479,14 +474,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                         this.loadProgressValue = 100;
 
                         this.tcs.loadComplete = true;
-                        if (this.tcs.bookletConfig.loading_mode === "EAGER") {
+                        if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
                           this.tcs.setUnitNavigationRequest(navTarget.toString());
                           this.tcs.testStatus$.next(TestStatus.RUNNING);
                         }
                       }
                     );
 
-                    if (this.tcs.bookletConfig.loading_mode === "LAZY") {
+                    if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
                       this.tcs.setUnitNavigationRequest(navTarget.toString());
                       this.tcs.testStatus$.next(TestStatus.RUNNING);
                     }
@@ -497,12 +492,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             }
           }); // getTestData
         }
-      }) // routingSubscription
-    }) // setTimeOut
+      }); // routingSubscription
+    }); // setTimeOut
   }
 
-
-  // #####################################################################################
   showReviewDialog() {
     if (this.tcs.rootTestlet === null) {
       this.snackBar.open('Kein Testheft verfügbar.', '', {duration: 3000});
@@ -559,20 +552,16 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private unsubscribeTestSubscriptions() {
     if (this.maxTimerSubscription !== null) {
       this.maxTimerSubscription.unsubscribe();
-      this.maxTimerSubscription = null
+      this.maxTimerSubscription = null;
     }
     if (this.unitLoadXmlSubscription !== null) {
       this.unitLoadXmlSubscription.unsubscribe();
-      this.unitLoadXmlSubscription = null
+      this.unitLoadXmlSubscription = null;
     }
     if (this.unitLoadBlobSubscription !== null) {
       this.unitLoadBlobSubscription.unsubscribe();
-      this.unitLoadBlobSubscription = null
+      this.unitLoadBlobSubscription = null;
     }
-  }
-
-  topMargin() {
-    this.isTopMargin = !this.isTopMargin;
   }
 
   bottomMargin() {
@@ -580,7 +569,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   }
 
-  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   ngOnDestroy() {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();

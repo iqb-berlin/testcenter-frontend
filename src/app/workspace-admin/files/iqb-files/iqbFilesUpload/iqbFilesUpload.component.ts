@@ -3,7 +3,7 @@ import {
   HttpClient, HttpEventType, HttpHeaders, HttpParams,
   HttpEvent, HttpErrorResponse
 } from '@angular/common/http';
-import {ApiError} from "../../../../app.interfaces";
+import {ApiError} from '../../../../app.interfaces';
 
 
 @Component({
@@ -19,7 +19,7 @@ import {ApiError} from "../../../../app.interfaces";
     constructor(
       private myHttpClient: HttpClient) { }
 
-    // ''''''''''''''''''''''''
+
     private _status: UploadStatus;
     get status(): UploadStatus {
       return this._status;
@@ -30,7 +30,7 @@ import {ApiError} from "../../../../app.interfaces";
       this.statusChangedEvent.emit(this);
     }
 
-    // ''''''''''''''''''''''''
+
     private requestResponseText: string;
     get statustext(): string {
       let myreturn;
@@ -102,7 +102,7 @@ import {ApiError} from "../../../../app.interfaces";
     @Output() removeFileRequestEvent = new EventEmitter<IqbFilesUploadComponent>();
     @Output() statusChangedEvent = new EventEmitter<IqbFilesUploadComponent>();
 
-    private progressPercentage = 0;
+    public progressPercentage = 0;
     public loaded = 0;
     private total = 0;
     private _file: any;
@@ -117,8 +117,7 @@ import {ApiError} from "../../../../app.interfaces";
       this.upload();
     }
 
-    // ==================================================================
-    private upload(): void {
+    upload(): void {
       if (this.status === UploadStatus.ready) {
 
         this.status = UploadStatus.busy;
@@ -172,13 +171,12 @@ import {ApiError} from "../../../../app.interfaces";
               this.requestResponseText = apiError.info;
             }
           } else {
-            this.requestResponseText = 'Hochladen nicht erfolgreich.'
+            this.requestResponseText = 'Hochladen nicht erfolgreich.';
           }
         });
       }
     }
 
-    // ==================================================================
     public remove(): void {
       if (this.fileUploadSubscription) {
         this.fileUploadSubscription.unsubscribe();

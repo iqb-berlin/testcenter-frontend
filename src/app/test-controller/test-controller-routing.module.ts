@@ -3,10 +3,8 @@ import { UnithostComponent } from './unithost/unithost.component';
 import { TestControllerComponent } from './test-controller.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {TestStatusComponent} from "./test-status/test-status.component";
-import {TestControllerDeactivateGuard} from "./test-controller-route-guards";
-
-
+import {TestStatusComponent} from './test-status/test-status.component';
+import {TestControllerDeactivateGuard} from './test-controller-route-guards';
 
 const routes: Routes = [
   {

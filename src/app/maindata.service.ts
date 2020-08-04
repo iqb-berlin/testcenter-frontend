@@ -6,7 +6,7 @@ import {
   AuthData, KeyValuePairs
 } from './app.interfaces';
 import {CustomtextService} from 'iqb-components';
-import {AppConfig} from "./config/app.config";
+import {AppConfig} from './config/app.config';
 
 const localStorageAuthDataKey = 'iqb-tc-a';
 const localStorageTestConfigKey = 'iqb-tc-c';
@@ -38,10 +38,9 @@ export class MainDataService {
       if (storageEntry.length > 0) {
         try {
           myReturn = JSON.parse(storageEntry as string);
-        }
-        catch (e) {
-          console.warn("corrupt localStorage authData entry");
-          myReturn = null
+        } catch (e) {
+          console.warn('corrupt localStorage authData entry');
+          myReturn = null;
         }
       }
     }
@@ -62,10 +61,9 @@ export class MainDataService {
       if (storageEntry.length > 0) {
         try {
           myReturn = JSON.parse(storageEntry as string);
-        }
-        catch (e) {
-          console.warn("corrupt localStorage testConfig entry");
-          myReturn = null
+        } catch (e) {
+          console.warn('corrupt localStorage testConfig entry');
+          myReturn = null;
         }
       }
     }
@@ -80,11 +78,11 @@ export class MainDataService {
   }
 
   setSpinnerOn() {
-    this.isSpinnerOn$.next(true)
+    this.isSpinnerOn$.next(true);
   }
 
   setSpinnerOff() {
-    this.isSpinnerOn$.next(false)
+    this.isSpinnerOn$.next(false);
   }
 
   setAuthData(authData: AuthData = null) {

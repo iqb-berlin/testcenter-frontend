@@ -1,8 +1,8 @@
 import { TestBed, inject } from '@angular/core/testing';
 
 import { BackendService } from './backend.service';
-import {HttpClientModule} from "@angular/common/http";
-import {WorkspaceDataService} from "./workspacedata.service";
+import {HttpClientModule} from '@angular/common/http';
+import {WorkspaceDataService} from './workspacedata.service';
 
 
 describe('HttpClient testing', () => {

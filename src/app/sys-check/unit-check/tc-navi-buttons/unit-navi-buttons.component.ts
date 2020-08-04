@@ -8,8 +8,8 @@ import { Component } from '@angular/core';
 })
 export class UnitNaviButtonsComponent {
   public showPageNaviButtons = true;
-  private pagePrevEnabled = false;
-  private pageNextEnabled = false;
+  public pagePrevEnabled = false;
+  public pageNextEnabled = false;
 
   constructor(private ds: SysCheckDataService) {
 

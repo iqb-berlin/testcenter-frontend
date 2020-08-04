@@ -1,11 +1,11 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {Router} from "@angular/router";
-import {MainDataService} from "../../maindata.service";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {CustomtextService, MessageDialogComponent, MessageDialogData, MessageType} from "iqb-components";
-import {MatDialog} from "@angular/material/dialog";
-import {AuthData} from "../../app.interfaces";
-import {BackendService} from "../../backend.service";
+import {Router} from '@angular/router';
+import {MainDataService} from '../../maindata.service';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {CustomtextService, MessageDialogComponent, MessageDialogData, MessageType} from 'iqb-components';
+import {MatDialog} from '@angular/material/dialog';
+import {AuthData} from '../../app.interfaces';
+import {BackendService} from '../../backend.service';
 
 @Component({
   templateUrl: './code-input.component.html',
@@ -14,7 +14,7 @@ import {BackendService} from "../../backend.service";
     '.mat-card-gray {background-color: lightgray}'
   ]
 })
-export class CodeInputComponent implements OnInit{
+export class CodeInputComponent implements OnInit {
   @ViewChild('codeInputControl') codeInputControl: FormControl;
   problemText = '';
 
@@ -36,7 +36,7 @@ export class CodeInputComponent implements OnInit{
       if (element) {
         element.focus();
       }
-    })
+    });
   }
 
   codeinput() {
@@ -71,7 +71,7 @@ export class CodeInputComponent implements OnInit{
             this.mds.setAuthData(authDataTyped);
             this.router.navigate(['/r']);
           }
-        })
+        });
     }
   }
 

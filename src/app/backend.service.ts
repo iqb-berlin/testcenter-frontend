@@ -1,4 +1,3 @@
-
 import { Injectable, Inject } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
@@ -9,9 +8,9 @@ import {
     WorkspaceData,
     BookletData, ApiError, AccessObject
 } from './app.interfaces';
-import {SysConfig} from "./config/app.config";
+import {SysConfig} from './config/app.config';
 
-// ============================================================================
+
 @Injectable({
   providedIn: 'root'
 })
@@ -30,7 +29,7 @@ export class BackendService {
         .pipe(
           catchError((err: ApiError) => {
             console.warn(`login Api-Error: ${err.code} ${err.info} `);
-            return of(err.code)
+            return of(err.code);
           }),
           switchMap(authData => {
             if (typeof authData === 'number') {
@@ -58,7 +57,7 @@ export class BackendService {
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`nameOnlyLogin Api-Error: ${err.code} ${err.info} `);
-          return of(err.code)
+          return of(err.code);
         })
       );
   }
@@ -69,7 +68,7 @@ export class BackendService {
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`codeLogin Api-Error: ${err.code} ${err.info} `);
-          return of(err.code)
+          return of(err.code);
         })
       );
   }
@@ -82,28 +81,29 @@ export class BackendService {
         return of(<WorkspaceData>{
           id: workspaceId,
           name: workspaceId,
-          role: "n.d."
-        })
+          role: 'n.d.'
+        });
       }));
   }
 
-    getGroupData(groupName: string): Observable<AccessObject> {
+  getGroupData(groupName: string): Observable<AccessObject> {
 
-        interface NameAndLabel { // TODO find consistent terminology. in XSD they are called name & label and likewise (mostly) in newer BE-versions
-            name: string;
-            label: string;
-        }
+    // TODO find consistent terminology. in XSD they are called name & label and likewise (mostly) in newer BE-versions
+    interface NameAndLabel {
+        name: string;
+        label: string;
+    }
 
-        return this.http
-            .get<NameAndLabel>(this.serverUrl + 'monitor/group/' + groupName)
-            .pipe(map((r: NameAndLabel): AccessObject => ({id: r.name, name: r.label})))
-            .pipe(catchError(() => {
-                console.warn('get group data failed for ' + groupName);
-                return of(<AccessObject>{
-                    id: groupName,
-                    name: groupName,
-                })
-            }));
+    return this.http
+        .get<NameAndLabel>(this.serverUrl + 'monitor/group/' + groupName)
+        .pipe(map((r: NameAndLabel): AccessObject => ({id: r.name, name: r.label})))
+        .pipe(catchError(() => {
+            console.warn('get group data failed for ' + groupName);
+            return of(<AccessObject>{
+                id: groupName,
+                name: groupName,
+            });
+        }));
     }
 
   getSessionData(): Observable<AuthData | number> {
@@ -111,7 +111,7 @@ export class BackendService {
       .get<AuthData>(this.serverUrl + 'session')
       .pipe(
         catchError((err: ApiError) => of(err.code))
-      )
+      );
   }
 
   getBookletData(bookletId: string): Observable<BookletData> {
@@ -120,7 +120,7 @@ export class BackendService {
       .pipe(
         map(bData => {
           bData.id = bookletId;
-          return bData
+          return bData;
         }),
         catchError(() => {
         console.warn('get booklet data failed for ' + bookletId);
@@ -129,7 +129,7 @@ export class BackendService {
           label: bookletId,
           locked: true,
           running: false
-        })
+        });
       }));
   }
 
@@ -145,7 +145,7 @@ export class BackendService {
   getSysConfig(): Observable<SysConfig> {
     return this.http
       .get<SysConfig>(this.serverUrl + `system/config`)
-      .pipe(catchError(() => of(null)))
+      .pipe(catchError(() => of(null)));
   }
 
   getSysCheckInfo(): Observable<SysCheckInfo[]> {

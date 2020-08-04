@@ -8,7 +8,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 import { SysCheckStatistics } from '../workspace.interfaces';
-import {MainDataService} from "../../maindata.service";
+import {MainDataService} from '../../maindata.service';
 
 
 @Component({
@@ -35,7 +35,7 @@ export class SyscheckComponent implements OnInit {
     setTimeout(() => {
       this.mds.setSpinnerOn();
       this.updateTable();
-    })
+    });
   }
 
   updateTable() {

@@ -47,12 +47,12 @@ export interface TestData {
 }
 
 export enum TestStatus {
-  RUNNING = "RUNNING",
-  WAITING_LOAD_COMPLETE = "WAITING_LOAD_COMPLETE",
-  TERMINATED = "TERMINATED",
-  PAUSED = "PAUSED",
-  WAITING_LOAD_START = "WAITING_LOAD_START",
-  ERROR = "ERROR"
+  RUNNING = 'RUNNING',
+  WAITING_LOAD_COMPLETE = 'WAITING_LOAD_COMPLETE',
+  TERMINATED = 'TERMINATED',
+  PAUSED = 'PAUSED',
+  WAITING_LOAD_START = 'WAITING_LOAD_START',
+  ERROR = 'ERROR'
 }
 
 export interface UnitMenuButtonData {
@@ -61,7 +61,7 @@ export interface UnitMenuButtonData {
   isCurrent: boolean;
   isDisabled: boolean;
   testletLabel: string;
-  testletMarker: string
+  testletMarker: string;
 }
 
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++
@@ -134,8 +134,8 @@ export interface ReviewDialogData {
 }
 
 export enum NoUnitFlag {
-  END = "end",
-  ERROR = "error"
+  END = 'end',
+  ERROR = 'error'
 }
 
 export interface KeyValuePairNumber {
@@ -143,12 +143,12 @@ export interface KeyValuePairNumber {
 }
 
 export enum UnitNavigationTarget {
-  NEXT = "#next",
-  ERROR = "#error",
-  PREVIOUS = "#previous",
-  FIRST = "#first",
-  LAST = "#last",
-  END = "#end",
-  MENU = "#menu",
-  PAUSE = "#pause"
+  NEXT = '#next',
+  ERROR = '#error',
+  PREVIOUS = '#previous',
+  FIRST = '#first',
+  LAST = '#last',
+  END = '#end',
+  MENU = '#menu',
+  PAUSE = '#pause'
 }

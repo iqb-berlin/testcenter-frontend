@@ -14,7 +14,7 @@ import {
   MessageDialogComponent, MessageDialogData, MessageType
 } from 'iqb-components';
 import { MainDataService } from 'src/app/maindata.service';
-import {IdAndName, IdRoleData} from "../superadmin.interfaces";
+import {IdAndName, IdRoleData} from '../superadmin.interfaces';
 
 @Component({
   templateUrl: './workspaces.component.html',
@@ -23,11 +23,11 @@ import {IdAndName, IdRoleData} from "../superadmin.interfaces";
 export class WorkspacesComponent implements OnInit {
   public objectsDatasource: MatTableDataSource<IdAndName>;
   public displayedColumns = ['selectCheckbox', 'name'];
-  private tableselectionCheckbox = new SelectionModel <IdAndName>(true, []);
-  private tableselectionRow = new SelectionModel <IdAndName>(false, []);
+  public tableselectionCheckbox = new SelectionModel <IdAndName>(true, []);
+  public tableselectionRow = new SelectionModel <IdAndName>(false, []);
   public selectedWorkspaceId = 0;
-  private selectedWorkspaceName = '';
-  private pendingUserChanges = false;
+  public selectedWorkspaceName = '';
+  public pendingUserChanges = false;
   public UserlistDatasource: MatTableDataSource<IdRoleData>;
   public displayedUserColumns = ['selectCheckbox', 'name'];
 
@@ -59,10 +59,9 @@ export class WorkspacesComponent implements OnInit {
     setTimeout(() => {
       this.mds.setSpinnerOn();
       this.updateObjectList();
-    })
+    });
   }
 
-  // ***********************************************************************************
   addObject() {
     const dialogRef = this.newworkspaceDialog.open(NewworkspaceComponent, {
       width: '600px',
@@ -164,7 +163,6 @@ export class WorkspacesComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
-          // =========================================================
           const workspacesToDelete = [];
           selectedRows.forEach((r: IdAndName) => workspacesToDelete.push(r.id));
           this.mds.setSpinnerOn();
@@ -183,7 +181,6 @@ export class WorkspacesComponent implements OnInit {
     }
   }
 
-  // ***********************************************************************************
   updateUserList() {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
@@ -224,7 +221,6 @@ export class WorkspacesComponent implements OnInit {
     }
   }
 
-  // ***********************************************************************************
   updateObjectList() {
     this.bs.getWorkspaces().subscribe(dataresponse => {
       this.objectsDatasource = new MatTableDataSource(dataresponse);

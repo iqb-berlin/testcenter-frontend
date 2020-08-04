@@ -1,9 +1,9 @@
-import {Injectable} from "@angular/core";
-import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from "@angular/router";
-import {MainDataService} from "./maindata.service";
-import {Observable} from "rxjs";
-import {AuthAccessKeyType, AuthData, AuthFlagType} from "./app.interfaces";
-import {BackendService} from "./backend.service";
+import {Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
+import {MainDataService} from './maindata.service';
+import {Observable} from 'rxjs';
+import {AuthAccessKeyType, AuthData, AuthFlagType} from './app.interfaces';
+import {BackendService} from './backend.service';
 
 @Injectable()
 export class RouteDispatcherActivateGuard implements CanActivate {
@@ -58,20 +58,20 @@ export class DirectLoginActivateGuard implements CanActivate {
     if (!authData) {
       const directLoginName = state.url.substr(1);
       if (directLoginName.length > 0 && directLoginName.indexOf('/') < 0) {
-        this.bs.nameOnlyLogin(directLoginName).subscribe(authData => {
-          if (typeof authData !== 'number') {
-            this.mds.setAuthData(authData as AuthData);
+        this.bs.nameOnlyLogin(directLoginName).subscribe((authDataResponse: AuthData|number) => {
+          if (typeof authDataResponse !== 'number') {
+            this.mds.setAuthData(authDataResponse as AuthData);
             this.router.navigate(['/r']);
-            return false
+            return false;
           } else {
-            return true
+            return true;
           }
-        })
+        });
       } else {
-        return true
+        return true;
       }
     } else {
-      return true
+      return true;
     }
   }
 }
@@ -90,18 +90,18 @@ export class CodeInputComponentActivateGuard implements CanActivate {
     if (authData) {
       if (authData.flags) {
         if (authData.flags.indexOf(AuthFlagType.CODE_REQUIRED) >= 0) {
-          return true
+          return true;
         } else {
           this.router.navigate(['/r']);
-          return false
+          return false;
         }
       } else {
         this.router.navigate(['/r']);
-        return false
+        return false;
       }
     } else {
       this.router.navigate(['/r']);
-      return false
+      return false;
     }
   }
 }
@@ -123,15 +123,15 @@ export class AdminComponentActivateGuard implements CanActivate {
           return true;
         } else {
           this.router.navigate(['/r']);
-          return false
+          return false;
         }
       } else {
         this.router.navigate(['/r']);
-        return false
+        return false;
       }
     } else {
       this.router.navigate(['/r']);
-      return false
+      return false;
     }
   }
 }
@@ -153,15 +153,15 @@ export class AdminOrSuperAdminComponentActivateGuard implements CanActivate {
           return true;
         } else {
           this.router.navigate(['/r']);
-          return false
+          return false;
         }
       } else {
         this.router.navigate(['/r']);
-        return false
+        return false;
       }
     } else {
       this.router.navigate(['/r']);
-      return false
+      return false;
     }
   }
 }
@@ -183,15 +183,15 @@ export class SuperAdminComponentActivateGuard implements CanActivate {
           return true;
         } else {
           this.router.navigate(['/r']);
-          return false
+          return false;
         }
       } else {
         this.router.navigate(['/r']);
-        return false
+        return false;
       }
     } else {
       this.router.navigate(['/r']);
-      return false
+      return false;
     }
   }
 }
@@ -213,15 +213,15 @@ export class TestComponentActivateGuard implements CanActivate {
           return true;
         } else {
           this.router.navigate(['/r']);
-          return false
+          return false;
         }
       } else {
         this.router.navigate(['/r']);
-        return false
+        return false;
       }
     } else {
       this.router.navigate(['/r']);
-      return false
+      return false;
     }
   }
 }
@@ -236,9 +236,7 @@ export class GroupMonitorActivateGuard implements CanActivate {
       private router: Router
   ) {}
 
-  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot)
-      : boolean {
-
+  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
         const authData = MainDataService.getAuthData();
 
         if (authData) {
@@ -247,15 +245,15 @@ export class GroupMonitorActivateGuard implements CanActivate {
               return true;
             } else {
               this.router.navigate(['/r']);
-              return false
+              return ;
             }
           } else {
             this.router.navigate(['/r']);
-            return false
+            return false;
           }
         } else {
           this.router.navigate(['/r']);
-          return false
+          return false;
         }
   }
 }

@@ -2,8 +2,8 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
-import {IdAndName, IdLabelSelectedData, IdRoleData, UserData} from "./superadmin.interfaces";
-import {ApiError} from "../app.interfaces";
+import {IdAndName, IdLabelSelectedData, IdRoleData, UserData} from './superadmin.interfaces';
+import {ApiError} from '../app.interfaces';
 
 
 @Injectable({
@@ -22,18 +22,18 @@ export class BackendService {
       .get<UserData[]>(this.serverUrl + 'users')
       .pipe(catchError((err: ApiError) => {
         console.warn(`getUsers Api-Error: ${err.code} ${err.info} `);
-        return []
+        return [];
       }));
   }
 
   addUser(name: string, password: string): Observable<Boolean> {
     return this.http
-      .put<Boolean>(this.serverUrl + 'user', {n: name, p: password})
+      .put<Boolean>(this.serverUrl + 'user', {n: name, p: password});
   }
 
   changePassword(userId: number, password: string): Observable<Boolean> {
     return this.http
-      .patch<Boolean>(this.serverUrl + `user/${userId}/password`, {p: password})
+      .patch<Boolean>(this.serverUrl + `user/${userId}/password`, {p: password});
   }
 
   setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<number> {
@@ -43,7 +43,7 @@ export class BackendService {
         map(() => 0),
         catchError((err: ApiError) => {
           console.warn(`setSuperUserStatus Api-Error: ${err.code} ${err.info} `);
-          return of(err.code)
+          return of(err.code);
       }));
   }
 
@@ -53,7 +53,7 @@ export class BackendService {
       .request<boolean>('delete', this.serverUrl + 'users', {body: {u: users}})
       .pipe(catchError((err: ApiError) => {
         console.warn(`deleteUsers Api-Error: ${err.code} ${err.info} `);
-        return of(false)
+        return of(false);
       }));
   }
 
@@ -62,7 +62,7 @@ export class BackendService {
       .get<IdLabelSelectedData[]>(this.serverUrl + `user/${userId}/workspaces`)
       .pipe(catchError((err: ApiError) => {
         console.warn(`getWorkspacesByUser Api-Error: ${err.code} ${err.info} `);
-        return []
+        return [];
       }));
   }
 
@@ -71,7 +71,7 @@ export class BackendService {
       .patch<Boolean>(this.serverUrl + `user/${userId}/workspaces`, {ws: accessTo})
       .pipe(catchError((err: ApiError) => {
         console.warn(`setWorkspacesByUser Api-Error: ${err.code} ${err.info} `);
-        return of(false)
+        return of(false);
       }));
   }
 
@@ -80,7 +80,7 @@ export class BackendService {
       .put<Boolean>(this.serverUrl + 'workspace', {name: name})
       .pipe(catchError((err: ApiError) => {
         console.warn(`addWorkspace Api-Error: ${err.code} ${err.info} `);
-        return of(false)
+        return of(false);
       }));
   }
 
@@ -89,7 +89,7 @@ export class BackendService {
       .patch<Boolean>(this.serverUrl + `workspace/${workspaceId}`, {name: wsName})
       .pipe(catchError((err: ApiError) => {
         console.warn(`renameWorkspace Api-Error: ${err.code} ${err.info} `);
-        return of(false)
+        return of(false);
       }));
   }
 
@@ -98,7 +98,7 @@ export class BackendService {
       .request<Boolean>('delete', this.serverUrl + 'workspaces', {body: {ws: workspaces}})
       .pipe(catchError((err: ApiError) => {
         console.warn(`deleteWorkspaces Api-Error: ${err.code} ${err.info} `);
-        return of(false)
+        return of(false);
       }));
   }
 
@@ -107,7 +107,7 @@ export class BackendService {
       .get<IdRoleData[]>(this.serverUrl + `workspace/${workspaceId}/users`)
       .pipe(catchError((err: ApiError) => {
         console.warn(`getUsersByWorkspace Api-Error: ${err.code} ${err.info} `);
-        return []
+        return [];
       }));
   }
 
@@ -116,7 +116,7 @@ export class BackendService {
       .patch<Boolean>(this.serverUrl + `workspace/${workspaceId}/users`, {u: accessing})
       .pipe(catchError((err: ApiError) => {
         console.warn(`setUsersByWorkspace Api-Error: ${err.code} ${err.info} `);
-        return of(false)
+        return of(false);
       }));
   }
 
@@ -125,7 +125,7 @@ export class BackendService {
       .get<IdAndName[]>(this.serverUrl + 'workspaces')
       .pipe(catchError((err: ApiError) => {
         console.warn(`getWorkspaces Api-Error: ${err.code} ${err.info} `);
-        return []
+        return [];
       }));
   }
 }
