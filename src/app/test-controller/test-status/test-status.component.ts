@@ -1,10 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subscription} from "rxjs";
-import {ActivatedRoute} from "@angular/router";
-import {TestControllerService} from "../test-controller.service";
-import {CustomtextService} from "iqb-components";
-import {UnitMenuButtonData} from "../test-controller.interfaces";
-import {MainDataService} from "../../maindata.service";
+import {Subscription} from 'rxjs';
+import {ActivatedRoute} from '@angular/router';
+import {TestControllerService} from '../test-controller.service';
+import {CustomtextService} from 'iqb-components';
+import {UnitMenuButtonData} from '../test-controller.interfaces';
+import {MainDataService} from '../../maindata.service';
 
 @Component({
   templateUrl: './test-status.component.html',
@@ -38,15 +38,16 @@ export class TestStatusComponent implements OnInit, OnDestroy {
       let prevTestletLabel = '';
       if (this.tcs.bookletConfig.unit_menu !== 'OFF' || this.tcs.testMode.showUnitMenu) {
         for (let unitIndex = 0; unitIndex < this.tcs.unitListForNaviButtons.length; unitIndex++) {
-          if (this.tcs.unitListForNaviButtons[unitIndex].longLabel.trim() && (!this.tcs.unitListForNaviButtons[unitIndex].disabled || this.tcs.bookletConfig.unit_menu === 'FULL')) {
+          if (this.tcs.unitListForNaviButtons[unitIndex].longLabel.trim()
+              && (!this.tcs.unitListForNaviButtons[unitIndex].disabled || this.tcs.bookletConfig.unit_menu === 'FULL')) {
             const testletLabel = this.tcs.unitListForNaviButtons[unitIndex].testletLabel;
-            let testletMarker = "testlet-marker-non";
+            let testletMarker = 'testlet-marker-non';
             if (testletLabel) {
               if (testletLabel !== prevTestletLabel) {
                 testletMarkerSwitch = !testletMarkerSwitch;
                 prevTestletLabel = testletLabel;
               }
-              testletMarker = testletMarkerSwitch ? "testlet-marker-a" : "testlet-marker-b";
+              testletMarker = testletMarkerSwitch ? 'testlet-marker-a' : 'testlet-marker-b';
             }
             this.unitMenuButtonList.push({
               sequenceId: this.tcs.unitListForNaviButtons[unitIndex].sequenceId,
@@ -55,11 +56,11 @@ export class TestStatusComponent implements OnInit, OnDestroy {
               isDisabled: this.tcs.unitListForNaviButtons[unitIndex].disabled,
               testletLabel: testletLabel,
               testletMarker: testletMarker
-            })
+            });
           }
         }
       }
-    })
+    });
   }
 
   terminateTest() {
