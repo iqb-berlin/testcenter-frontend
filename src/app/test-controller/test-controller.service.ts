@@ -194,53 +194,34 @@ export class TestControllerService {
 
   public addBookletLog(logKey: LogEntryKey, entry = '') {
     if (this.testMode.saveResponses) {
-      const entryData =  entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey;
-      this.bs.addBookletLog(this.testId, Date.now(), entryData).subscribe(ok => {
-        if (!ok) {
-          console.warn('addBookletLog failed');
-        }
-      }); // TODO error is handled by central error log, this subscription seems to be unnecessary- prove and delete
+      const entryData = entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey;
+      this.bs.addBookletLog(this.testId, Date.now(), entryData);
     }
   }
 
   public setBookletState(stateKey: LastStateKey, state: string) {
     if (this.testMode.saveResponses) {
-      this.bs.setBookletState(this.testId, stateKey, state).subscribe(ok => {
-        if (!ok) {
-          console.warn('setBookletState failed');
-        }
-      }); // TODO error is handled by central error log, this subscription seems to be unnecessary- prove and delete
+      this.bs.setBookletState(this.testId, stateKey, state);
     }
   }
 
   public addUnitLog(unitDbKey: string, logKey: LogEntryKey, entry = '') {
     if (this.testMode.saveResponses && this.testStatus$.getValue() === TestStatus.RUNNING) {
-      this.bs.addUnitLog(this.testId, Date.now(), unitDbKey, entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey)
-          .subscribe(ok => {
-            if (!ok) {
-              console.warn('addUnitLog failed');
-            }
-          }); // TODO error is handled by central error log, this subscription seems to be unnecessary- prove and delete
+      const entryString = entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey;
+      this.bs.addUnitLog(this.testId, Date.now(), unitDbKey, entryString);
     }
   }
 
   public newUnitResponse(unitDbKey: string, response: string, responseType: string) {
     if (this.testMode.saveResponses) {
-      this.responsesToSave$.next({
-        unitDbKey: unitDbKey,
-        response: response,
-        responseType: responseType
-      });
+      this.responsesToSave$.next({unitDbKey, response, responseType});
     }
   }
 
   public newUnitRestorePoint(unitDbKey: string, unitSequenceId: number, restorePoint: string, postToServer: boolean) {
     this.unitRestorePoints[unitSequenceId] = restorePoint;
     if (postToServer && this.testMode.saveResponses) {
-      this.restorePointsToSave$.next({
-        unitDbKey: unitDbKey,
-        restorePoint: restorePoint
-      });
+      this.restorePointsToSave$.next({unitDbKey, restorePoint});
     }
   }
 
@@ -264,6 +245,8 @@ export class TestControllerService {
   public newUnitStatePage(unitDbKey: string, pageName: string, pageNr: number, pagesCount: number) {
     if (this.testMode.saveResponses) {
       // TODO prove if state change can be logged to save calls (log is made in unithost)
+      // TODO when backend can take several token at once, send this data as 3 token ...
+      // ... instead of stringified JSON
       const stateString = JSON.stringify({pageName, pageNr, pagesCount});
       this.bs.setUnitState(this.testId, unitDbKey, UnitStateKey.PAGE, stateString);
     }
@@ -311,7 +294,7 @@ export class TestControllerService {
 
   public terminateTest() {
     if (this.testMode.saveResponses) {
-      this.bs.addBookletLog(this.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE').subscribe(OK => {
+      this.bs.addBookletLog(this.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE').add(OK => {
         // TODO who evaluates TestStatus when navigating to root?
         if (OK) {
           this.bs.lockBooklet(this.testId).subscribe(bsOk => {

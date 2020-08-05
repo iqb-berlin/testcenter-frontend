@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import {Observable, of} from 'rxjs';
+import {Observable, of, Subscription} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 import {UnitData, TaggedString, TestData, UnitStateKey} from './test-controller.interfaces';
 import {ApiError} from '../app.interfaces';
@@ -80,46 +80,28 @@ export class BackendService {
       );
   }
 
-  addUnitLog(testId: string, timestamp: number, unitName: string, entry: string): Observable<boolean> {
+  addUnitLog(testId: string, timestamp: number, unitName: string, entry: string): Subscription {
     return this.http
       .put(this.serverUrl + `test/${testId}/unit/${unitName}/log`, {timestamp, entry})
-      .pipe(
-        map(() => true),
-        catchError((err: ApiError) => {
-          console.warn(`addUnitLog Api-Error: ${err.code} ${err.info} `);
-          return of(false);
-        })
-      );
+      .subscribe({error: (err: ApiError) => console.error(`addUnitLog Api-Error: ${err.code} ${err.info}`)});
   }
 
-  addBookletLog(testId: string, timestamp: number, entry: string): Observable<boolean> {
+  addBookletLog(testId: string, timestamp: number, entry: string): Subscription {
     return this.http
       .put(this.serverUrl + `test/${testId}/log`, {timestamp, entry})
-      .pipe(
-        map(() => true),
-        catchError((err: ApiError) => {
-          console.warn(`addBookletLog Api-Error: ${err.code} ${err.info} `);
-          return of(false);
-        })
-      );
+      .subscribe({error: (err: ApiError) => console.error(`addBookletLog Api-Error: ${err.code} ${err.info}`)});
   }
 
-  setUnitState(testId: string, unitName: string, stateKey: UnitStateKey, state: string): void {
-    this.http
+  setUnitState(testId: string, unitName: string, stateKey: UnitStateKey, state: string): Subscription {
+    return this.http
       .patch(this.serverUrl + `test/${testId}/unit/${unitName}/state`, {key: stateKey, value: state})
       .subscribe({error: (err: ApiError) => console.error(`setUnitState Api-Error: ${err.code} ${err.info}`)});
   }
 
-  setBookletState(testId: string, stateKey: string, state: string): Observable<boolean> {
+  setBookletState(testId: string, stateKey: string, state: string): Subscription {
     return this.http
       .patch(this.serverUrl + `test/${testId}/state`, {key: stateKey, value: state})
-      .pipe(
-        map(() => true),
-        catchError((err: ApiError) => {
-          console.warn(`setBookletState Api-Error: ${err.code} ${err.info} `);
-          return of(false);
-        })
-      );
+      .subscribe({error: (err: ApiError) => console.error(`setBookletState Api-Error: ${err.code} ${err.info}`)});
   }
 
   newUnitResponse(testId: string, timestamp: number, unitName: string, response: string, responseType: string)
