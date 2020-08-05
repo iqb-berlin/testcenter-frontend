@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import {Observable, of} from 'rxjs';
+import {catchError, map} from 'rxjs/operators';
 import {UnitData, TaggedString, TestData} from './test-controller.interfaces';
 import {ApiError} from '../app.interfaces';
 
@@ -104,16 +104,10 @@ export class BackendService {
       );
   }
 
-  setUnitState(testId: string, unitName: string, stateKey: string, state: string): Observable<boolean> {
-    return this.http
+  setUnitState(testId: string, unitName: string, stateKey: string, state: string): void {
+    this.http
       .patch(this.serverUrl + `test/${testId}/unit/${unitName}/state`, {key: stateKey, value: state})
-      .pipe(
-        map(() => true),
-        catchError((err: ApiError) => {
-          console.warn(`setUnitState Api-Error: ${err.code} ${err.info} `);
-          return of(false);
-        })
-      );
+      .subscribe({error: (err: ApiError) => console.error(`setUnitState Api-Error: ${err.code} ${err.info}`)});
   }
 
   setBookletState(testId: string, stateKey: string, state: string): Observable<boolean> {
