@@ -4,7 +4,7 @@ import { Subscription} from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core';
-import { TaggedString, PageData, LastStateKey, LogEntryKey } from '../test-controller.interfaces';
+import {TaggedString, PageData, LastStateKey, LogEntryKey} from '../test-controller.interfaces';
 
 declare var srcDoc: any;
 
@@ -26,18 +26,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private myUnitSequenceId = -1;
   private myUnitDbKey = '';
 
-  // :::::::::::::::::::::
   private postMessageSubscription: Subscription = null;
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
   private pendingUnitDefinition: TaggedString = null;
   private pendingUnitRestorePoint: TaggedString = null;
 
-  private itemplayerValidPages: string[] = [];
-  private itemplayerCurrentPage = '';
-  private pageList: PageData[] = [];
-
-
+  public pageList: PageData[] = [];
+  private knownPages: string[];
 
 
   constructor(
@@ -45,9 +41,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     private mds: MainDataService,
     private route: ActivatedRoute
   ) {
-    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-    // -- -- -- -- -- -- -- -- -- -- -- -- -- --
     this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData['type'];
@@ -59,7 +53,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       if ((msgType !== undefined) && (msgType !== null)) {
         switch (msgType) {
 
-          // // // // // // //
+
           case 'vo.FromPlayer.ReadyNotification':
             let pendingUnitDef = '';
             if (this.pendingUnitDefinition !== null) {
@@ -90,10 +84,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
             break;
 
-          // // // // // // //
+
           case 'vo.FromPlayer.StartedNotification':
             if (msgPlayerId === this.itemplayerSessionId) {
               this.setPageList(msgData['validPages'], msgData['currentPage']);
+
+              this.updateUnitStatePage(msgData['currentPage']);
               this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
 
               const presentationComplete = msgData['presentationComplete'];
@@ -107,11 +103,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
             }
             break;
 
-          // // // // // // //
+
           case 'vo.FromPlayer.ChangedDataTransfer':
             if (msgPlayerId === this.itemplayerSessionId) {
               this.setPageList(msgData['validPages'], msgData['currentPage']);
+
               if (msgData['currentPage'] !== undefined) {
+                this.updateUnitStatePage(msgData['currentPage']);
                 this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
               }
 
@@ -134,21 +132,21 @@ export class UnithostComponent implements OnInit, OnDestroy {
             }
             break;
 
-          // // // // // // // ;-)
+
           case 'vo.FromPlayer.PageNavigationRequest':
             if (msgPlayerId === this.itemplayerSessionId) {
               this.gotoPage(msgData['newPage']);
             }
             break;
 
-          // // // // // // //
+
           case 'vo.FromPlayer.UnitNavigationRequest':
             if (msgPlayerId === this.itemplayerSessionId) {
               this.tcs.setUnitNavigationRequest(msgData['navigationTarget']);
             }
             break;
 
-          // // // // // // //
+
           default:
             console.log('processMessagePost ignored message: ' + msgType);
             break;
@@ -157,7 +155,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     });
   }
 
-  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
   ngOnInit() {
     setTimeout(() => {
       this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
@@ -208,12 +205,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
           srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(currentUnit.unitDef.playerId));
         }
       });
-    })
+    });
   }
 
-  // ++++++++++++ page nav ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   setPageList(validPages: string[], currentPage: string) {
     if ((validPages instanceof Array)) {
+      this.knownPages = validPages.length ? validPages : [];
       const newPageList: PageData[] = [];
       if (validPages.length > 1) {
         for (let i = 0; i < validPages.length; i++) {
@@ -314,7 +311,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  // % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+  private updateUnitStatePage(newPage: string) {
+    if (this.knownPages.length > 1) {
+      this.tcs.newUnitStatePage(this.myUnitDbKey, newPage,
+          this.knownPages.indexOf(newPage) + 1, this.knownPages.length);
+    }
+  }
+
   ngOnDestroy() {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();

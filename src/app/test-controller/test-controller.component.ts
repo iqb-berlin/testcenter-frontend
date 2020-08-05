@@ -566,7 +566,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   bottomMargin() {
     this.isBottomMargin = !this.isBottomMargin;
-
   }
 
   ngOnDestroy() {

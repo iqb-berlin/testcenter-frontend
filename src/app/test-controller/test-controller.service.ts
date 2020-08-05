@@ -261,6 +261,14 @@ export class TestControllerService {
     }
   }
 
+  public newUnitStatePage(unitDbKey: string, pageName: string, pageNr: number, pagesCount: number) {
+    if (this.testMode.saveResponses) {
+      // TODO prove if state change can be logged to save calls (log is made in unithost)
+      const stateString = JSON.stringify({pageName, pageNr, pagesCount});
+      this.bs.setUnitState(this.testId, unitDbKey, UnitStateKey.PAGE, stateString);
+    }
+  }
+
   public startMaxTimer(testletId: string, timeLeftMinutes: number) {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
