@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {Observable, of} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
-import {UnitData, TaggedString, TestData} from './test-controller.interfaces';
+import {UnitData, TaggedString, TestData, UnitStateKey} from './test-controller.interfaces';
 import {ApiError} from '../app.interfaces';
 
 
@@ -104,7 +104,7 @@ export class BackendService {
       );
   }
 
-  setUnitState(testId: string, unitName: string, stateKey: string, state: string): void {
+  setUnitState(testId: string, unitName: string, stateKey: UnitStateKey, state: string): void {
     this.http
       .patch(this.serverUrl + `test/${testId}/unit/${unitName}/state`, {key: stateKey, value: state})
       .subscribe({error: (err: ApiError) => console.error(`setUnitState Api-Error: ${err.code} ${err.info}`)});

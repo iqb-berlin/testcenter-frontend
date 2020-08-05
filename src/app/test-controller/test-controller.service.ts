@@ -11,7 +11,7 @@ import {
   UnitNaviButtonData,
   UnitNavigationTarget,
   UnitResponseData,
-  UnitRestorePointData
+  UnitRestorePointData, UnitStateKey
 } from './test-controller.interfaces';
 import {BackendService} from './backend.service';
 import {Router} from '@angular/router';
@@ -247,15 +247,17 @@ export class TestControllerService {
   public newUnitStatePresentationComplete(unitDbKey: string, unitSequenceId: number, presentationComplete: string) {
     this.unitPresentationCompleteStates[unitSequenceId] = presentationComplete;
     if (this.testMode.saveResponses) {
+      // TODO prove if state change can be logged to save calls
       this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationComplete);
-      this.bs.setUnitState(this.testId, unitDbKey, LastStateKey.PRESENTATIONCOMPLETE, presentationComplete);
+      this.bs.setUnitState(this.testId, unitDbKey, UnitStateKey.PRESENTATIONCOMPLETE, presentationComplete);
     }
   }
 
   public newUnitStateResponsesGiven(unitDbKey: string, unitSequenceId: number, responsesGiven: string) {
     if (this.testMode.saveResponses) {
+      // TODO prove if state change can be logged to save calls
       this.addUnitLog(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
-      this.bs.setUnitState(this.testId, unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
+      this.bs.setUnitState(this.testId, unitDbKey, UnitStateKey.RESPONSESCOMPLETE, responsesGiven);
     }
   }
 
