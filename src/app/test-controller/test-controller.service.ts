@@ -199,7 +199,7 @@ export class TestControllerService {
         if (!ok) {
           console.warn('addBookletLog failed');
         }
-      });
+      }); // TODO error is handled by central error log, this subscription seems to be unnecessary- prove and delete
     }
   }
 
@@ -209,18 +209,18 @@ export class TestControllerService {
         if (!ok) {
           console.warn('setBookletState failed');
         }
-      });
+      }); // TODO error is handled by central error log, this subscription seems to be unnecessary- prove and delete
     }
   }
 
   public addUnitLog(unitDbKey: string, logKey: LogEntryKey, entry = '') {
     if (this.testMode.saveResponses && this.testStatus$.getValue() === TestStatus.RUNNING) {
-      this.bs.addUnitLog(this.testId, Date.now(), unitDbKey,
-            entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey).subscribe(ok => {
-        if (!ok) {
-          console.warn('addUnitLog failed');
-        }
-      });
+      this.bs.addUnitLog(this.testId, Date.now(), unitDbKey, entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey)
+          .subscribe(ok => {
+            if (!ok) {
+              console.warn('addUnitLog failed');
+            }
+          }); // TODO error is handled by central error log, this subscription seems to be unnecessary- prove and delete
     }
   }
 
@@ -248,16 +248,14 @@ export class TestControllerService {
     this.unitPresentationCompleteStates[unitSequenceId] = presentationComplete;
     if (this.testMode.saveResponses) {
       this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationComplete);
-      this.bs.setUnitState(this.testId, unitDbKey, LastStateKey.PRESENTATIONCOMPLETE, presentationComplete).subscribe(ok => {
-        if (!ok) {
-          console.warn('setUnitState failed');
-        }
-      });
+      this.bs.setUnitState(this.testId, unitDbKey, LastStateKey.PRESENTATIONCOMPLETE, presentationComplete);
     }
   }
+
   public newUnitStateResponsesGiven(unitDbKey: string, unitSequenceId: number, responsesGiven: string) {
     if (this.testMode.saveResponses) {
       this.addUnitLog(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
+      this.bs.setUnitState(this.testId, unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
     }
   }
 
