@@ -1,5 +1,7 @@
 // generates test-config.ts as class with all data from JSON:
 
+// TODO saveResponses should be renamed, since it affects more than only response saving (like logging etc. pp.)
+
 const fs = require("fs");
 const definitionOptionsFilename = '../app/config/mode-options.json';
 const definitionModesFilename = '../app/config/test-modes.json';
