@@ -129,7 +129,7 @@ export class BackendService {
       );
   }
 
-  lockBooklet(testId: string): Observable<boolean> {
+  lockTest(testId: string): Observable<boolean> {
     return this.http
       .patch<boolean>(this.serverUrl + `test/${testId}/lock`, {})
       .pipe(

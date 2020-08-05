@@ -297,7 +297,7 @@ export class TestControllerService {
       this.bs.addBookletLog(this.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE').add(OK => {
         // TODO who evaluates TestStatus when navigating to root?
         if (OK) {
-          this.bs.lockBooklet(this.testId).subscribe(bsOk => {
+          this.bs.lockTest(this.testId).subscribe(bsOk => {
             this.testStatus$.next(bsOk ? TestStatus.TERMINATED : TestStatus.ERROR);
             this.router.navigate(['/']);
           });

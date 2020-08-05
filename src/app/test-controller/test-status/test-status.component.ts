@@ -85,7 +85,7 @@ export class TestStatusComponent implements OnInit, OnDestroy {
                 if (!ok) {
                   console.error('failed to add log entry (locked)')
                 }
-                return this.bs.lockBooklet(this.tcs.testId).pipe(
+                return this.bs.lockTest(this.tcs.testId).pipe(
                   map((ok) => {
                     if (!ok) {
                       console.error('failed to lock test')
