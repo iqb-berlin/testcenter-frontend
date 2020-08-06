@@ -13,9 +13,9 @@ import {
   StartLockData
 } from '../test-controller.interfaces';
 import {MainDataService} from 'src/app/maindata.service';
-import {MatDialog} from "@angular/material/dialog";
+import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {TestControllerComponent} from "../test-controller.component";
+import {TestControllerComponent} from '../test-controller.component';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
@@ -109,7 +109,7 @@ export class UnitActivateGuard implements CanActivate {
     }
   }
 
-  // ****************************************************************************************
+
   checkAndSolve_Code(newUnit: UnitControllerData): Observable<Boolean> {
     if (newUnit.codeRequiringTestlets) {
       if (newUnit.codeRequiringTestlets.length > 0) {
@@ -175,7 +175,6 @@ export class UnitActivateGuard implements CanActivate {
     }
   }
 
-  // ****************************************************************************************
   checkAndSolve_DefLoaded(newUnit: UnitControllerData): Observable<Boolean> {
     if (this.tcs.loadComplete) {
       return of(true);
@@ -245,7 +244,7 @@ export class UnitActivateGuard implements CanActivate {
     }
   }
 
-  // ****************************************************************************************
+
   checkAndSolve_maxTime(newUnit: UnitControllerData): Observable<Boolean> {
     if (newUnit.maxTimerRequiringTestlet === null) {
 
@@ -332,19 +331,13 @@ export class UnitActivateGuard implements CanActivate {
     }
   }
 
-  // ****************************************************************************************
-  // ****************************************************************************************
-  canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-
+  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean>|boolean {
     const targetUnitSequenceId: number = Number(next.params['u']);
     if (this.tcs.currentUnitSequenceId > 0) {
       this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
     } else {
       this.tcs.updateMinMaxUnitSequenceId(targetUnitSequenceId);
     }
-
 
     let myreturn = false;
     if (this.tcs.rootTestlet === null) {
@@ -371,7 +364,6 @@ export class UnitActivateGuard implements CanActivate {
         myreturn = false;
         console.warn('unit canActivate: false (unit is locked)');
       } else {
-        // %%%%%%%%%%%%%%%%%%%%%%%%%%
 
         return this.checkAndSolve_PresentationCompleteCode(newUnit).pipe(
           switchMap(cAsPC => {
@@ -407,7 +399,7 @@ export class UnitActivateGuard implements CanActivate {
           }
         }));
 
-        // %%%%%%%%%%%%%%%%%%%%%%%%%%
+
       }
     }
 
@@ -415,17 +407,15 @@ export class UnitActivateGuard implements CanActivate {
   }
 }
 
-// 777777777777777777777777777777777777777777777777777777777777777777777777777777777
+
 @Injectable()
 export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   constructor(
     private tcs: TestControllerService
   ) {}
 
-  canDeactivate(
-    component: UnithostComponent,
-    currentRoute: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+  canDeactivate(component: UnithostComponent, currentRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot)
+      : Observable<boolean> | boolean {
 
     if (this.tcs.rootTestlet !== null) {
       const currentUnitSequenceId: number = Number(currentRoute.params['u']);
@@ -437,5 +427,4 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   }
 }
 
-// 777777777777777777777777777777777777777777777777777777777777777777777777777777777
 export const unitRouteGuards = [UnitActivateGuard, UnitDeactivateGuard];

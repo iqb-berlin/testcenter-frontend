@@ -159,7 +159,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       const oParser = new DOMParser();
       const oDOM = oParser.parseFromString(xmlString, 'text/xml');
       if (oDOM.documentElement.nodeName === 'Booklet') {
-        // ________________________
         const metadataElements = oDOM.documentElement.getElementsByTagName('Metadata');
         if (metadataElements.length > 0) {
           const metadataElement = metadataElements[0];
@@ -201,9 +200,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
       }
     } catch (error) {
-      console.log('error reading booklet XML:');
-      console.log(error);
-
+      console.error('error reading booklet XML:', error);
       rootTestlet = null;
     }
     return rootTestlet;
