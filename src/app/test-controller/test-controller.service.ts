@@ -11,7 +11,7 @@ import {
   UnitNaviButtonData,
   UnitNavigationTarget,
   UnitResponseData,
-  UnitRestorePointData, UnitStateKey
+  UnitRestorePointData
 } from './test-controller.interfaces';
 import {BackendService} from './backend.service';
 import {Router} from '@angular/router';
@@ -225,30 +225,30 @@ export class TestControllerService {
     }
   }
 
-  public newUnitStatePresentationComplete(unitDbKey: string, unitSequenceId: number, presentationComplete: string) {
+  public newUnitStatePresentationComplete(unitDbKey: string, unitSequenceId: number, presentationComplete: 'yes' | 'no') {
     this.unitPresentationCompleteStates[unitSequenceId] = presentationComplete;
     if (this.testMode.saveResponses) {
       // TODO prove if state change can be logged to save calls
       this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationComplete);
-      this.bs.setUnitState(this.testId, unitDbKey, UnitStateKey.PRESENTATIONCOMPLETE, presentationComplete);
+      this.bs.setUnitState(this.testId, unitDbKey, {PRESENTATIONCOMPLETE: presentationComplete});
     }
   }
 
-  public newUnitStateResponsesGiven(unitDbKey: string, unitSequenceId: number, responsesGiven: string) {
+  public newUnitStateResponsesGiven(unitDbKey: string, unitSequenceId: number, responsesGiven: 'yes' | 'no' | 'all') {
     if (this.testMode.saveResponses) {
       // TODO prove if state change can be logged to save calls
       this.addUnitLog(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
-      this.bs.setUnitState(this.testId, unitDbKey, UnitStateKey.RESPONSESCOMPLETE, responsesGiven);
+      this.bs.setUnitState(this.testId, unitDbKey, {RESPONSESCOMPLETE: responsesGiven});
     }
   }
 
   public newUnitStatePage(unitDbKey: string, pageName: string, pageNr: number, pagesCount: number) {
     if (this.testMode.saveResponses) {
-      // TODO prove if state change can be logged to save calls (log is made in unithost)
-      // TODO when backend can take several token at once, send this data as 3 token ...
-      // ... instead of stringified JSON
-      const stateString = JSON.stringify({pageName, pageNr, pagesCount});
-      this.bs.setUnitState(this.testId, unitDbKey, UnitStateKey.PAGE, stateString);
+      this.bs.setUnitState(this.testId, unitDbKey, {
+          PAGE_NR: pageNr,
+          PAGE_NAME: pageName,
+          PAGES_COUNT: pagesCount
+      });
     }
   }
 

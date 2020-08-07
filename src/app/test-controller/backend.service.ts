@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {Observable, of, Subscription} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
-import {UnitData, TaggedString, TestData, UnitStateKey} from './test-controller.interfaces';
+import {UnitData, TaggedString, TestData, UnitState} from './test-controller.interfaces';
 import {ApiError} from '../app.interfaces';
 
 
@@ -92,9 +92,9 @@ export class BackendService {
       .subscribe({error: (err: ApiError) => console.error(`addBookletLog Api-Error: ${err.code} ${err.info}`)});
   }
 
-  setUnitState(testId: string, unitName: string, stateKey: UnitStateKey, state: string): Subscription {
+  setUnitState(testId: string, unitName: string, unitState: UnitState): Subscription {
     return this.http
-      .patch(this.serverUrl + `test/${testId}/unit/${unitName}/state`, {key: stateKey, value: state})
+      .patch(this.serverUrl + `test/${testId}/unit/${unitName}/state`, unitState)
       .subscribe({error: (err: ApiError) => console.error(`setUnitState Api-Error: ${err.code} ${err.info}`)});
   }
 

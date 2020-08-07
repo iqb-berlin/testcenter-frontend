@@ -90,11 +90,14 @@ export enum LastStateKey {
     MAXTIMELEFT = 'MAXTIMELEFT'
 }
 
-export enum UnitStateKey {
-    PRESENTATIONCOMPLETE = 'PRESENTATIONCOMPLETE',
-    RESPONSESCOMPLETE = 'RESPONSESCOMPLETE',
-    PAGE = 'PAGE'
+export interface UnitState {
+    PRESENTATIONCOMPLETE?: 'yes' | 'no';
+    RESPONSESCOMPLETE?: 'yes' | 'no' | 'all';
+    PAGE_NR?: number;
+    PAGE_NAME?: string;
+    PAGES_COUNT?: number;
 }
+
 
 export enum LogEntryKey {
     UNITENTER = 'UNITENTER',
