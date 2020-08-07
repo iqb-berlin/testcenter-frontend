@@ -92,10 +92,46 @@ describe('TestViewComponent', () => {
   });
 
   describe('hasState()', () => {
-      xit('should check correctly if state is in state-object', () => {
-          // TOOD implement unit-test
+      it('should check correctly if state is in state-object', () => {
+          const stateObject = {
+              'first_key': 'first_value',
+              'second_key': null
+          };
+
+          let result = component.hasState(stateObject, 'first_key', 'first_value');
+          expect(result).withContext('key exists and has value').toBeTrue();
+
+          result = component.hasState(stateObject, 'first_key', 'something_else');
+          expect(result).withContext('key exists and not has value').toBeFalse();
+
+          result = component.hasState(stateObject, 'first_key');
+          expect(result).withContext('key exists').toBeTrue();
+
+          result = component.hasState(stateObject, 'non_existing_key');
+          expect(result).withContext('key exists not').toBeFalse();
       });
   });
+
+  describe('stateString()', () => {
+        it('should merge state object values if available', () => {
+            const stateObject = {
+                'first_key': 'first_value',
+                'second_key': 'second_value'
+            };
+
+            let result = component.stateString(stateObject, ['first_key'], '|');
+            let expectation = 'first_value';
+            expect(result).withContext('one existing value').toEqual(expectation);
+
+            result = component.stateString(stateObject, ['first_key', 'second_key'], '|');
+            expectation = 'first_value|second_value';
+            expect(result).withContext('two existing values').toEqual(expectation);
+
+            result = component.stateString(stateObject, ['first_key', 'second_key', 'not_existing'], '|');
+            expectation = 'first_value|second_value';
+            expect(result).withContext('two existing values and one not existing').toEqual(expectation);
+        });
+    });
 
   describe('parseJsonState()', () => {
     xit('should parse an string containing a state-object', () => {

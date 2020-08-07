@@ -92,8 +92,15 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
         return isUnit(testletOrUnit) ? 'unit' : 'testlet';
     }
 
-    hasState(stateObject: object, key: string, value: any = null): boolean {
-        return ((typeof stateObject[key] !== 'undefined') && ((value !== null) ? (stateObject[key] === value) : true));
+    hasState(state: object, key: string, value: any = null): boolean {
+        return ((typeof state[key] !== 'undefined') && ((value !== null) ? (state[key] === value) : true));
+    }
+
+    stateString(state: object, keys: string[], glue: string = ''): string {
+        return keys
+            .map((key: string) => this.hasState(state, key) ? state[key] : null)
+            .filter((value: string) => value !== null)
+            .join(glue);
     }
 
     parseJsonState(testStateObject: object, key: string): object|null {

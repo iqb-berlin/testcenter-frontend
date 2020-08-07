@@ -122,6 +122,16 @@
                   matTooltip="Fertig beantwortet"
             >done_all
         </mat-icon>
+
+        <mat-icon class="unit-badge"
+                  *ngIf="hasState(testSession.unitState, 'PAGE_NR')"
+                  matBadge="{{this.stateString(testSession.unitState, ['PAGE_NR', 'PAGES_COUNT'], '/')}}"
+                  matBadgeColor="accent"
+                  matTooltip="{{this.stateString(testSession.unitState, ['PAGE_NAME'])}}"
+        >description
+        </mat-icon>
+
+
     </div>
 </ng-template>
 
