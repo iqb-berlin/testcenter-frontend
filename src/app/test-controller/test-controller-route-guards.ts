@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanDeactivate, RouterStateSnapshot} from '@angular/router';
 import {Observable} from 'rxjs';
-import {TestControllerComponent} from "./test-controller.component";
-import {TestStatus, UnitNavigationTarget} from "./test-controller.interfaces";
-import {TestControllerService} from "./test-controller.service";
+import {TestControllerComponent} from './test-controller.component';
+import {TestStatus, UnitNavigationTarget} from './test-controller.interfaces';
+import {TestControllerService} from './test-controller.service';
 
 @Injectable({
   providedIn: 'root'
