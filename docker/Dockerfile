@@ -1,0 +1,23 @@
+FROM node:13.14.0
+
+# install chrome for protractor tests
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+RUN apt-get update && apt-get install -yq google-chrome-stable
+
+WORKDIR /app
+
+ENV PATH /app/node_modules/.bin:$PATH
+
+COPY package.json /app/package.json
+RUN npm install
+
+# install webdriver for browser testing
+RUN npm i --prefix=./node_modules/protractor --save webdriver-manager@latest
+RUN npx webdriver-manager update
+
+COPY . /app
+
+EXPOSE 4200
+
+CMD ng serve --disableHostCheck --host 0.0.0.0
