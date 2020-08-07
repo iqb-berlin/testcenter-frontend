@@ -92,6 +92,7 @@ export class BackendService {
       .subscribe({error: (err: ApiError) => console.error(`addBookletLog Api-Error: ${err.code} ${err.info}`)});
   }
 
+  // TODO collect those and send some together
   setUnitState(testId: string, unitName: string, unitState: UnitState): Subscription {
     return this.http
       .patch(this.serverUrl + `test/${testId}/unit/${unitName}/state`, unitState)
