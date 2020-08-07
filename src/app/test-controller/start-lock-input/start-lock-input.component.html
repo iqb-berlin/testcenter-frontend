@@ -4,8 +4,9 @@
   <mat-dialog-content>
     <p>{{ data.prompt }}</p>
     <mat-form-field *ngFor="let c of data.codes" fxLayout="column">
-      <p>{{ c.prompt }}</p>
-      <input matInput [formControlName]="c.testletId" (keyup.enter)="matform.submit()">
+      <label>{{ c.prompt }}
+        <input matInput [formControlName]="c.testletId">
+      </label>
     </mat-form-field>
   </mat-dialog-content>
 
