@@ -156,7 +156,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
   // private: reading booklet from xml
   // ''''''''''''''''''''''''''''''''''''''''''''''''''''
-  private getBookletFromXml(xmlString: string, loginMode: string): Testlet {
+  private getBookletFromXml(xmlString: string): Testlet {
     let rootTestlet: Testlet = null;
 
     try {
@@ -194,7 +194,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             if (bookletConfigElements.length > 0) {
               this.tcs.bookletConfig.setFromXml(bookletConfigElements[0]);
             }
-            this.tcs.testMode = new TestMode(loginMode);
 
             // recursive call through all testlets
             this.lastUnitSequenceId = 1;
@@ -378,15 +377,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.loadProgressValue = 0;
           this.tcs.loadComplete = false;
 
-          this.bs.getTestData(this.tcs.testId).subscribe(testDataUntyped => {
-            if (testDataUntyped === false) {
+          this.bs.getTestData(this.tcs.testId).subscribe((testData: TestData|boolean) => {
+            if ((testData === false) || (testData === true)) {
               this.mds.appError$.next({
                 label: "Konnte Testinformation nicht laden",
                 description: "TestController.Component: getTestData()",
                 category: "PROBLEM"
               });
             } else {
-              const testData = testDataUntyped as TestData;
+              this.tcs.testMode = new TestMode(testData.mode);
 
               let navTarget = 1;
               if (testData.laststate !== null) {
@@ -401,7 +400,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 }
               }
 
-              this.tcs.rootTestlet = this.getBookletFromXml(testData.xml, testData.mode);
+              this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
 
               document.documentElement.style.setProperty('--tc-unit-title-height', this.tcs.bookletConfig.unit_title === 'ON' ? this.mds.defaultTcUnitTitleHeight : '0');
               document.documentElement.style.setProperty('--tc-header-height', this.tcs.bookletConfig.unit_screenheader === 'OFF' ? '0' : this.mds.defaultTcHeaderHeight);
