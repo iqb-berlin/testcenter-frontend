@@ -23,7 +23,7 @@ import {CustomtextService} from 'iqb-components';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {BookletConfig} from '../config/booklet-config';
-import { TestMode } from '../config/test-mode';
+import {TestMode} from '../config/test-mode';
 
 
 @Component({
@@ -62,7 +62,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private cts: CustomtextService
-  ) { }
+  ) {
+    window['pause'] = () => {this.tcs.testStatus$.next(TestStatus.PAUSED); };
+  }
 
   private static getChildElements(element) {
     return Array.prototype.slice.call(element.childNodes)

@@ -6,7 +6,7 @@ import {FocusStatus} from './focus.service';
 
 @Component({
     selector: 'tc-detect-focus',
-    template: '<div style="color:white">{{status$ | async}}</div>'
+    template: '<span style="color:white">{{status$ | async}}</span>'
 })
 export class DetectFocusComponent {
     public status$: Subject<FocusStatus> = new Subject<FocusStatus>(); // TODO use debounce

@@ -1,4 +1,9 @@
-<tc-detect-focus></tc-detect-focus>
+<div style="color:orange; position: absolute; background:black; z-index:10000">
+    <div>STATUS: {{tcs.testStatus$ | async}}</div>
+    <div>TIMER: {{timerValue?.timeLeftString}}</div>
+    <div>MODE: {{tcs.testMode.modeId}}</div>
+    <div>FOCUS: <tc-detect-focus></tc-detect-focus></div>
+</div>
 
 <div id="header" fxLayout="row" fxLayoutAlign="end center">
     <p class="timer" *ngIf="tcs.testMode.showTimeLeft">{{ timerValue?.timeLeftString }}</p>
