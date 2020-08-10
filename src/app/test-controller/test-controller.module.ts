@@ -1,23 +1,23 @@
-import { IqbComponentsModule } from 'iqb-components';
+import {IqbComponentsModule} from 'iqb-components';
 
-export { TestControllerService } from './test-controller.service';
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+export {TestControllerService} from './test-controller.service';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
-import { TestControllerRoutingModule } from './test-controller-routing.module';
-import { UnithostComponent } from './unithost/unithost.component';
-import { TestControllerComponent } from './test-controller.component';
-import { ResizeIFrameChildDirective } from './resize-IFrameChild/resize-IFrameChild.directive';
-import { unitRouteGuards } from './unithost/unit-route-guards';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { StartLockInputComponent } from './start-lock-input/start-lock-input.component';
+import {TestControllerRoutingModule} from './test-controller-routing.module';
+import {UnithostComponent} from './unithost/unithost.component';
+import {TestControllerComponent} from './test-controller.component';
+import {ResizeIFrameChildDirective} from './resize-IFrameChild/resize-IFrameChild.directive';
+import {unitRouteGuards} from './unithost/unit-route-guards';
+import {FlexLayoutModule} from '@angular/flex-layout';
+import {ReviewDialogComponent} from './review-dialog/review-dialog.component';
+import {ReactiveFormsModule} from '@angular/forms';
+import {StartLockInputComponent} from './start-lock-input/start-lock-input.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-import { MatRadioModule } from '@angular/material/radio';
+import {MatRadioModule} from '@angular/material/radio';
 import {MatCardModule} from '@angular/material/card';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
@@ -27,7 +27,9 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
-import { TestStatusComponent } from './test-status/test-status.component';
+import {TestStatusComponent} from './test-status/test-status.component';
+import {DetectFocusComponent} from './detect-focus.component';
+import {FocusService} from './focus.service';
 
 
 @NgModule({
@@ -58,14 +60,16 @@ import { TestStatusComponent } from './test-status/test-status.component';
     ResizeIFrameChildDirective,
     ReviewDialogComponent,
     StartLockInputComponent,
-    TestStatusComponent
+    TestStatusComponent,
+    DetectFocusComponent
   ],
   entryComponents: [
     ReviewDialogComponent,
     StartLockInputComponent
   ],
   providers: [
-    unitRouteGuards
+    unitRouteGuards,
+    FocusService
   ],
   exports: [
     TestControllerComponent

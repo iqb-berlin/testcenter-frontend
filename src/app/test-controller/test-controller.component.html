@@ -1,3 +1,5 @@
+<tc-detect-focus></tc-detect-focus>
+
 <div id="header" fxLayout="row" fxLayoutAlign="end center">
     <p class="timer" *ngIf="tcs.testMode.showTimeLeft">{{ timerValue?.timeLeftString }}</p>
     <button mat-fab [disabled]="!tcs.unitPrevEnabled" *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)" color="accent"
