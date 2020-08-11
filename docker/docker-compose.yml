@@ -2,11 +2,11 @@ version: '3.7'
 
 services:
 
-  testcenter-frontend:
+  testcenter-frontend-dev:
     build:
       context: ../
       dockerfile: docker/Dockerfile
-    container_name: testcenter-frontend
+    container_name: testcenter-frontend-dev
     volumes:
       - ../:/app
       - /app/node_modules
