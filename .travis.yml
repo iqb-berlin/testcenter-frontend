@@ -8,6 +8,7 @@ install:
   - travis_wait docker-compose -f docker/docker-compose.yml up -d
 
 script:
+  - sleep 200
   - docker-compose -f docker/docker-compose.yml exec testcenter-frontend ng test --watch=false
 
 after-script:
