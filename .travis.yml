@@ -4,12 +4,11 @@ services:
   - docker
 
 install:
-  - docker-compose -f docker/docker-compose.yml pull
-  - travis_wait docker-compose -f docker/docker-compose.yml up -d
+  - make run-detached
 
 script:
   - sleep 200
-  - docker-compose -f docker/docker-compose.yml exec testcenter-frontend ng test --watch=false
+  - make test-units
 
 after-script:
-  - docker-compose -f docker/docker-compose.yml down
+  - make stop
