@@ -63,7 +63,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private cts: CustomtextService
   ) {
+    window['terminate'] = () => {this.tcs.testStatus$.next(TestStatus.TERMINATED); };
     window['pause'] = () => {this.tcs.testStatus$.next(TestStatus.PAUSED); };
+    window['error'] = () => {this.tcs.testStatus$.next(TestStatus.ERROR); };
   }
 
   private static getChildElements(element) {
