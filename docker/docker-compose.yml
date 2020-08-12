@@ -15,9 +15,7 @@ services:
 
   backend-mock:
     image: stoplight/prism:3
-    volumes:
-      - ./scripts:/api
     ports:
       - '8000:4010'
     command:
-      mock -h 0.0.0.0 "/api/specs.yml"
+        mock -h 0.0.0.0 'https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/master/docs/specs.yml'
