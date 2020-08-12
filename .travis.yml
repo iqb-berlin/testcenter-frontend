@@ -8,7 +8,7 @@ install:
 
 script:
   - sleep 200
-  - make test-units
+  - make test-unit
 
 after-script:
   - make stop

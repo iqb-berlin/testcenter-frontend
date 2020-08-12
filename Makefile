@@ -12,7 +12,7 @@ down:
 
 test: run-detached test-units test-e2e stop
 
-test-units:
+test-unit:
 	docker-compose -f docker/docker-compose.yml exec testcenter-frontend-dev ng test --watch=false
 
 test-e2e:
