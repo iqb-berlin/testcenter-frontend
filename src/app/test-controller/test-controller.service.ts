@@ -47,6 +47,7 @@ export class TestControllerService {
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
   }
+
   public set currentUnitSequenceId(v: number) {
     this.unitPrevEnabled = v > this.minUnitSequenceId;
     this.unitNextEnabled = v < this.maxUnitSequenceId;

@@ -63,11 +63,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private cts: CustomtextService,
-    public focusService: FocusService
+    public focusService: FocusService,
   ) {
-    window['terminate'] = () => {this.tcs.testStatus$.next(TestStatus.TERMINATED); };
-    window['pause'] = () => {this.tcs.testStatus$.next(TestStatus.PAUSED); };
-    window['error'] = () => {this.tcs.testStatus$.next(TestStatus.ERROR); };
   }
 
   private static getChildElements(element) {
@@ -299,7 +296,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   ngOnInit() {
     setTimeout(() => {
       this.mds.progressVisualEnabled = false;
-
+      // TODO rethink if different behaviour in production and normal mode is dangerous maybe
       if (this.isProductionMode && this.tcs.testMode.saveResponses) {
         this.mds.errorReportingSilent = true;
       }
@@ -316,6 +313,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             this.tcs.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
             break;
           case TestStatus.PAUSED:
+            // TODO pause time
             this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
             break;
         }

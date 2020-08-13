@@ -29,6 +29,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {TestStatusComponent} from './test-status/test-status.component';
 import {FocusService} from './focus.service';
+import {CommandService} from './command.service';
 
 
 @NgModule({
@@ -67,7 +68,8 @@ import {FocusService} from './focus.service';
   ],
   providers: [
     unitRouteGuards,
-    FocusService
+    FocusService,
+    CommandService
   ],
   exports: [
     TestControllerComponent

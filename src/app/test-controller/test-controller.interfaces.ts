@@ -160,3 +160,20 @@ export enum UnitNavigationTarget {
   MENU = '#menu',
   PAUSE = '#pause'
 }
+
+
+export const commandKeywords = [
+    'pause',
+    'goto',
+    'terminate',
+    'resume'
+];
+export type CommandKeyword = (typeof commandKeywords)[number];
+export function isKnownCommand (keyword: string): keyword is CommandKeyword {
+    return (commandKeywords as readonly string[]).includes(keyword);
+}
+
+export interface Command {
+    keyword: CommandKeyword;
+    arguments: string[];
+}
