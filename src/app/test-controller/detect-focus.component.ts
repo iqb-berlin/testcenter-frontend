@@ -1,17 +1,17 @@
 import {Component} from '@angular/core';
-import {Subject} from 'rxjs';
-import {FocusStatus} from './focus.service';
+import {FocusService} from './focus.service';
 
 
+// work in progress: read more info @ https://github.com/iqb-berlin/testcenter-frontend/issues/179
 
 @Component({
     selector: 'tc-detect-focus',
-    template: '<span style="color:white">{{status$ | async}}</span>'
+    template: '<span style="color:white"></span>'
 })
 export class DetectFocusComponent {
-    public status$: Subject<FocusStatus> = new Subject<FocusStatus>(); // TODO use debounce
-
-    constructor() {
+    constructor(
+        private focusService: FocusService
+    ) {
         // Set the name of the hidden property and the change event for visibility
         let hidden, visibilityChange;
         if (typeof document.hidden !== 'undefined') { // Opera 12.10 and Firefox 18 and later support
@@ -30,31 +30,24 @@ export class DetectFocusComponent {
 
         document.addEventListener(visibilityChange, (event: Event) => {
             console.log('visibilityChange event', event, document[hidden]);
-            this.status$.next(document[hidden] ? 'outside' : 'tab');
+            this.focusService.focus$.next(document[hidden] ? 'outside' : 'tab');
         }, false);
 
 
-        window.addEventListener('blur', (event: FocusEvent) => {
-
-            console.log('BLUR event', document.activeElement.tagName, event.target, document.hasFocus(), event.relatedTarget);
+        window.addEventListener('blur', () => {
             if (!document.hasFocus()) {
-                this.status$.next('outside');
-            } else if (document.activeElement.tagName.toLowerCase() === 'iframe') {
-                this.status$.next('player');
+                this.focusService.focus$.next('outside');
+            } else if (document.activeElement.tagName.toLowerCase() === 'iframe') { // works in chrome, not FF
+                this.focusService.focus$.next('player');
             }
         });
 
-        window.addEventListener('focus', (event: FocusEvent) => {
-            console.log('FOCUS event', document.activeElement.tagName, event.target, document.hasFocus());
-            this.status$.next('host');
+        window.addEventListener('focus', () => {
+            this.focusService.focus$.next('host');
         });
 
-        window.addEventListener('unload', (event) => {
-            console.log('UNLOAD event', event);
-            // navigator.sendBeacon('/log', analyticsData);
-            this.status$.next('closed_window');
+        window.addEventListener('unload', () => {
+            // navigator.sendBeacon('/log', analyticsData); // TODO use sendBacon to send tell BE page was left
         });
-
-        this.status$.subscribe((s) => console.log('STATUS: ' + s));
     }
 }

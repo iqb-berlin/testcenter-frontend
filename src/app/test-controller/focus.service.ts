@@ -2,15 +2,14 @@ import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
 
 
-export type FocusStatus =
+export type FocusTarget =
     'tab'
     | 'host'
     | 'player'
-    | 'outside'
-    | 'closed_window';
+    | 'outside';
 
 
 @Injectable()
 export class FocusService {
-    public status$: Subject<FocusStatus> = new Subject<FocusStatus>();
+    public focus$: Subject<FocusTarget> = new Subject<FocusTarget>();
 }

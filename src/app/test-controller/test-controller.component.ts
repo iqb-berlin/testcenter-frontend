@@ -24,6 +24,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {BookletConfig} from '../config/booklet-config';
 import {TestMode} from '../config/test-mode';
+import {FocusService} from './focus.service';
 
 
 @Component({
@@ -61,7 +62,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private router: Router,
     private route: ActivatedRoute,
-    private cts: CustomtextService
+    private cts: CustomtextService,
+    public focusService: FocusService
   ) {
     window['terminate'] = () => {this.tcs.testStatus$.next(TestStatus.TERMINATED); };
     window['pause'] = () => {this.tcs.testStatus$.next(TestStatus.PAUSED); };
