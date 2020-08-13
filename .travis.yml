@@ -4,6 +4,7 @@ services:
   - docker
 
 install:
+  - make init-config
   - make run-detached
 
 script:
