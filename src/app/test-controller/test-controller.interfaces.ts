@@ -75,7 +75,8 @@ export interface UnitLogData {
 
 export enum LastStateKey {
     LASTUNIT = 'LASTUNIT',
-    MAXTIMELEFT = 'MAXTIMELEFT'
+    MAXTIMELEFT = 'MAXTIMELEFT',
+    FOCUS = 'FOCUS'
 }
 
 export interface UnitState {

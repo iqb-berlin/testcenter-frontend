@@ -8,16 +8,17 @@ export class CommandService {
     public command$: Subject<Command> = new Subject<Command>();
 
     constructor (
-        @Inject('APP_VERSION') public appVersion: string,
         @Inject('IS_PRODUCTION_MODE') public isProductionMode,
         private tcs: TestControllerService
     ) {
-        this.setUpGlobalCommandsForDebug();
+        if (!this.isProductionMode) {
+            this.setUpGlobalCommandsForDebug();
+        }
         this.subscribeCommands();
     }
 
     private subscribeCommands() {
-        this.command$.subscribe((command: Command) => { // TODO move to tcs maybe?
+        this.command$.subscribe((command: Command) => {
             switch (command.keyword) {
                 case 'pause':
                     this.tcs.testStatus$.next(TestStatus.PAUSED);
@@ -35,12 +36,10 @@ export class CommandService {
     }
 
     private setUpGlobalCommandsForDebug() {
-        if (!this.isProductionMode) {
-            window['tc'] = {};
-            commandKeywords.forEach((keyword: string) => {
-                window['tc'][keyword] = (args) => {this.command(keyword, args); };
-            });
-        }
+        window['tc'] = {};
+        commandKeywords.forEach((keyword: string) => {
+            window['tc'][keyword] = (args) => {this.command(keyword, args); };
+        });
     }
 
     private command(command: string, args: string[]): void {

@@ -1,5 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
+import {TestControllerService} from './test-controller.service';
+import {BackendService} from './backend.service';
+import {distinctUntilChanged, map} from 'rxjs/operators';
+import {LastStateKey, TestStatus} from './test-controller.interfaces';
 
 // work in progress: read more info @ https://github.com/iqb-berlin/testcenter-frontend/issues/179
 
@@ -7,7 +11,8 @@ export type FocusTarget =
     'window'
     | 'host'
     | 'player'
-    | 'outside';
+    | 'outside'
+    | 'void';
 
 
 @Injectable()
@@ -15,7 +20,44 @@ export class FocusService {
     public focus$: Subject<FocusTarget> = new Subject<FocusTarget>();
 
     constructor(
+        private tcs: TestControllerService,
+        private bs: BackendService
     ) {
+        this.registerListeners();
+        this.registerReactions();
+    }
+
+    private registerReactions() {
+        this.focus$
+            .pipe(
+                map(
+                    (focus: FocusTarget) => ['window', 'host', 'player'].indexOf(focus) !== -1 ? 'window' : focus
+                ),
+                distinctUntilChanged()
+            )
+            .subscribe((focus: FocusTarget) => {
+                switch (focus) {
+                    case 'void':
+                        // TODO use navigator.sendBeacon to send tell BE page was left
+                        break;
+                    case 'outside':
+                        this.bs.addBookletLog(this.tcs.testId, Date.now(), 'FOCUS_LOST')
+                            .add(() => {
+                                this.tcs.setBookletState(LastStateKey.FOCUS, 'LOST');
+                                this.tcs.testStatus$.next(TestStatus.PAUSED);
+                            });
+                        break;
+                    case 'window':
+                        this.bs.addBookletLog(this.tcs.testId, Date.now(), 'FOCUS_GAINED')
+                            .add(() => {
+                                this.tcs.setBookletState(LastStateKey.FOCUS, 'GAINED');
+                            });
+                        break;
+                }
+            });
+    }
+
+    private registerListeners(): void {
         window.addEventListener('blur', () => {
             if (!document.hasFocus()) {
                 this.focus$.next('outside');
@@ -33,7 +75,7 @@ export class FocusService {
         });
 
         window.addEventListener('unload', () => {
-            // navigator.sendBeacon('/log', analyticsData); // TODO use sendBacon to send tell BE page was left
+            this.focus$.next('void');
         });
 
         // Set the name of the hidden property and the change event for visibility according to browser
@@ -55,7 +97,7 @@ export class FocusService {
             return;
         }
 
-        document.addEventListener(visibilityChange, (event: Event) => {
+        document.addEventListener(visibilityChange, () => {
             // returned from other tab, when document[hidden]
             // we *could* assume, it must be the player that has focus now
             // but, but it could also be an alert or so
