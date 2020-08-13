@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+
+  testcenter-frontend-dev:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    container_name: testcenter-frontend-dev
+    volumes:
+      - ../:/app
+      - /app/node_modules
+    ports:
+      - '4201:4200'
+
+  backend-mock:
+    image: stoplight/prism:3
+    ports:
+      - '8000:4010'
+    command:
+        mock -h 0.0.0.0 'https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/master/docs/specs.yml'
