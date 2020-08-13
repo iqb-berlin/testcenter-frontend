@@ -28,7 +28,6 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {TestStatusComponent} from './test-status/test-status.component';
-import {DetectFocusComponent} from './detect-focus.component';
 import {FocusService} from './focus.service';
 
 
@@ -61,7 +60,6 @@ import {FocusService} from './focus.service';
     ReviewDialogComponent,
     StartLockInputComponent,
     TestStatusComponent,
-    DetectFocusComponent
   ],
   entryComponents: [
     ReviewDialogComponent,

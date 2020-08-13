@@ -56,7 +56,9 @@ export class FocusService {
         }
 
         document.addEventListener(visibilityChange, (event: Event) => {
-            console.log('visibilityChange event', event, document[hidden]);
+            // returned from other tab, when document[hidden]
+            // we *could* assume, it must be the player that has focus now
+            // but, but it could also be an alert or so
             this.focus$.next(document[hidden] ? 'outside' : 'window');
         }, false);
     }
