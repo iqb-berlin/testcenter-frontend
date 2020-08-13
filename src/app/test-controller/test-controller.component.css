@@ -82,3 +82,15 @@ mat-toolbar {
   background-color: #bdbdbd;
 }
 
+.debug-pane {
+  color: orange;
+  position: absolute;
+  background: black;
+  z-index: 10000;
+  padding: 2px
+}
+
+.debug-pane b {
+  color: white;
+  font-weight: normal;
+}

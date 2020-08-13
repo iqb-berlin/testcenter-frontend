@@ -1,10 +1,8 @@
-<tc-detect-focus></tc-detect-focus>
-
-<div style="color:orange; position: absolute; background:black; z-index:10000">
-    <div><span class="color:white">STATUS:</span> {{tcs.testStatus$ | async}}</div>
-    <div><span class="color:white">TIMER:</span> {{timerValue?.timeLeftString}} {{timerValue?.testletId}} {{timerValue?.type}}</div>
-    <div><span class="color:white">MODE:</span> {{tcs.testMode.modeId}}</div>
-    <div><span class="color:white">FOCUS:</span> {{focusService.focus$ | async}}</div>
+<div class="debug-pane">
+    <div><b>STATUS:</b> {{tcs.testStatus$ | async}}</div>
+    <div><b>TIMER:</b> {{timerValue?.timeLeftString}}<b> {{timerValue?.testletId}} {{timerValue?.type}}</b></div>
+    <div><b>MODE:</b> {{tcs.testMode.modeId}}</div>
+    <div><b>FOCUS:</b> {{focusService.focus$ | async}}</div>
 </div>
 
 <div id="header" fxLayout="row" fxLayoutAlign="end center">
