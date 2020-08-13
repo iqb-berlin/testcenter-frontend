@@ -65,18 +65,6 @@ export interface UnitMenuButtonData {
 }
 
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++
-export interface BookletStateEntry {
-    bookletDbId: number;
-    timestamp: number;
-    entryKey: string;
-    entry: string;
-}
-
-export interface BookletLogData {
-    bookletDbId: number;
-    timestamp: number;
-    entry: string;
-}
 
 export interface UnitLogData {
     bookletDbId: number;
