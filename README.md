@@ -35,6 +35,9 @@ make test-unit
 make test-e2e
 ```
 
+There is also a Dockerfile for producing a production ready container
+using nginx as base, under `docker/Dockerfile-prod`.
+
 ### Manual Compilation
 #### Prerequisites
 * node 12+
@@ -46,7 +49,7 @@ npm install
 ng build --prod
 ```
 
-Find compiled App in src folder and open in Browser or serve with `ng serve`.
+Find the compiled app in src folder and open in Browser or serve with `ng serve`.
 
 
 ## Development
