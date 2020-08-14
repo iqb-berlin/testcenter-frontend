@@ -43,6 +43,7 @@ export class TestControllerService {
   public unitPrevEnabled = false;
   public unitNextEnabled = false;
   public unitListForNaviButtons: UnitNaviButtonData[] = [];
+  public debugPane = false;
 
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -295,18 +296,15 @@ export class TestControllerService {
 
   public terminateTest() {
     if (this.testMode.saveResponses) {
-      this.bs.addBookletLog(this.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE').add(OK => {
-        // TODO who evaluates TestStatus when navigating to root?
-        if (OK) {
-          this.bs.lockTest(this.testId).subscribe(bsOk => {
-            this.testStatus$.next(bsOk ? TestStatus.TERMINATED : TestStatus.ERROR);
-            this.router.navigate(['/']);
+      this.bs.addBookletLog(this.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE')
+          .add(() => {
+            console.log('AFTER LOG');
+            // TODO who evaluates TestStatus when navigating to root?
+            this.bs.lockTest(this.testId).subscribe(bsOk => {
+              this.testStatus$.next(bsOk ? TestStatus.TERMINATED : TestStatus.ERROR);
+              this.router.navigate(['/']);
+            });
           });
-        } else {
-          this.testStatus$.next(TestStatus.ERROR);
-          this.router.navigate(['/']);
-        }
-      });
     } else {
       this.testStatus$.next(TestStatus.TERMINATED);
       this.router.navigate(['/']);

@@ -155,7 +155,8 @@ export const commandKeywords = [
     'pause',
     'goto',
     'terminate',
-    'resume'
+    'resume',
+    'debug'
 ];
 export type CommandKeyword = (typeof commandKeywords)[number];
 export function isKnownCommand (keyword: string): keyword is CommandKeyword {

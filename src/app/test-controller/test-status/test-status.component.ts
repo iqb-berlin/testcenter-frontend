@@ -64,45 +64,6 @@ export class TestStatusComponent implements OnInit, OnDestroy {
   }
 
   terminateTest() {
-    /*
-    const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-      width: '500px',
-      data: <ConfirmDialogData>{
-        title: this.cts.getCustomText('booklet_warningLeaveTestTitle'),
-        content: this.cts.getCustomText('booklet_warningLeaveTestPrompt'),
-        confirmbuttonlabel: 'Trotzdem weiter',
-        confirmbuttonreturn: true,
-        showcancel: true
-      }
-    });
-    return dialogCDRef.afterClosed().pipe(
-      switchMap(cdresult => {
-          if ((typeof cdresult === 'undefined') || (cdresult === false)) {
-            return of(false);
-          } else {
-            this.bs.addBookletLog(this.tcs.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE').pipe(
-              switchMap((ok) => {
-                if (!ok) {
-                  console.error('failed to add log entry (locked)')
-                }
-                return this.bs.lockTest(this.tcs.testId).pipe(
-                  map((ok) => {
-                    if (!ok) {
-                      console.error('failed to lock test')
-                    }
-                    return true
-                  })
-                )
-              })
-            ).subscribe((ok) => {
-              if (ok) {
-                localStorage.removeItem(TestControllerComponent.localStorageTestKey);
-              }
-              return of(ok)
-            })
-          }
-        }
-      )); */
     this.tcs.terminateTest();
   }
 

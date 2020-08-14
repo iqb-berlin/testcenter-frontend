@@ -1,9 +1,9 @@
-import {Injectable, OnDestroy, OnInit} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 import {TestControllerService} from './test-controller.service';
 import {BackendService} from './backend.service';
 import {distinctUntilChanged, map} from 'rxjs/operators';
-import {LastStateKey, TestStatus} from './test-controller.interfaces';
+import {LastStateKey} from './test-controller.interfaces';
 
 // work in progress: read more info @ https://github.com/iqb-berlin/testcenter-frontend/issues/179
 
@@ -16,7 +16,7 @@ export type FocusTarget =
 
 
 @Injectable()
-export class FocusService implements OnInit, OnDestroy {
+export class FocusService implements OnDestroy {
     public focus$: Subject<FocusTarget> = new Subject<FocusTarget>();
     private focusReactionsSubscription: Subscription;
 
@@ -25,14 +25,11 @@ export class FocusService implements OnInit, OnDestroy {
         private bs: BackendService
     ) {
         this.registerListeners();
+        this.registerReactions();
     }
 
     ngOnDestroy(): void {
         this.focusReactionsSubscription.unsubscribe();
-    }
-
-    ngOnInit(): void {
-        this.registerReactions();
     }
 
     private registerReactions() {
@@ -46,13 +43,15 @@ export class FocusService implements OnInit, OnDestroy {
             .subscribe((focus: FocusTarget) => {
                 switch (focus) {
                     case 'void':
-                        // TODO use navigator.sendBeacon to send tell BE page was left
+                        // TODO use navigator.sendBeacon to send tell BE page was left...
+                        // see https://developer.mozilla.org/de/docs/Web/API/Navigator/sendBeacon
                         break;
                     case 'outside':
                         this.bs.addBookletLog(this.tcs.testId, Date.now(), 'FOCUS_LOST')
                             .add(() => {
                                 this.tcs.setBookletState(LastStateKey.FOCUS, 'LOST');
-                                this.tcs.testStatus$.next(TestStatus.PAUSED);
+                                // this.tcs.testStatus$.next(TestStatus.PAUSED);
+                                // TODO enable when player iframe is not treated as outside anymore
                             });
                         break;
                     case 'window':

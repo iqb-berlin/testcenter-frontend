@@ -43,11 +43,12 @@ export class CommandService implements OnDestroy {
                         break;
                     case 'goto':
                         this.tcs.setUnitNavigationRequest(command.arguments[0]);
+                        break;
+                    case 'debug':
+                        this.tcs.debugPane = command.arguments[0] !== 'off';
                 }
         });
     }
-
-
 
     private setUpGlobalCommandsForDebug() {
         window['tc'] = {};
@@ -65,6 +66,7 @@ export class CommandService implements OnDestroy {
         if (!this.isProductionMode) {
             console.log(`Command received: ${keyword}`);
         }
+        args = (typeof args === 'undefined') ? [] : args;
         this.command$.next({keyword, arguments: args, id});
     }
 }
