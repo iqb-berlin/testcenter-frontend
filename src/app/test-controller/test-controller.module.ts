@@ -75,4 +75,11 @@ import {CommandService} from './command.service';
     TestControllerComponent
   ]
 })
-export class TestControllerModule { }
+export class TestControllerModule {
+  // noinspection JSUnusedLocalSymbols
+  constructor(
+      private focusService: FocusService,
+      private commandService: CommandService
+  ) {
+  }
+}

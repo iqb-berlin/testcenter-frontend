@@ -1,5 +1,5 @@
-import {Injectable} from '@angular/core';
-import {Subject} from 'rxjs';
+import {Injectable, OnDestroy, OnInit} from '@angular/core';
+import {Subject, Subscription} from 'rxjs';
 import {TestControllerService} from './test-controller.service';
 import {BackendService} from './backend.service';
 import {distinctUntilChanged, map} from 'rxjs/operators';
@@ -16,19 +16,27 @@ export type FocusTarget =
 
 
 @Injectable()
-export class FocusService {
+export class FocusService implements OnInit, OnDestroy {
     public focus$: Subject<FocusTarget> = new Subject<FocusTarget>();
+    private focusReactionsSubscription: Subscription;
 
     constructor(
         private tcs: TestControllerService,
         private bs: BackendService
     ) {
         this.registerListeners();
+    }
+
+    ngOnDestroy(): void {
+        this.focusReactionsSubscription.unsubscribe();
+    }
+
+    ngOnInit(): void {
         this.registerReactions();
     }
 
     private registerReactions() {
-        this.focus$
+        this.focusReactionsSubscription = this.focus$
             .pipe(
                 map(
                     (focus: FocusTarget) => ['window', 'host', 'player'].indexOf(focus) !== -1 ? 'window' : focus
