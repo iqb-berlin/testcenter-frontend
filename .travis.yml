@@ -1,26 +1,15 @@
-language: node_js
-node_js:
-  - "10.16.3"
-
-sudo: true
 dist: bionic
 
-addons:
-  apt:
-    sources:
-      - google-chrome
-    packages:
-      - google-chrome-stable
+services:
+  - docker
 
 install:
-  - npm install
-  - npm i --prefix=./node_modules/protractor --save webdriver-manager@latest
-  - npx webdriver-manager update
-  # cp src/environments/environment.prod.ts src/environments/environment.ts
-  # cp e2e/travis.protractor.conf.js e2e/protractor.conf.js
+  - make init-config
+  - make run-detached
 
 script:
-  - google-chrome --version
-  - ng build
-  # ng e2e
-  - ng test --watch=false --browsers=ChromeHeadless
+  - sleep 200
+  - make test-unit
+
+after-script:
+  - make stop
