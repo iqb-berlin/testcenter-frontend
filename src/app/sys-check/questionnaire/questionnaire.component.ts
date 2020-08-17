@@ -27,11 +27,7 @@ export class QuestionnaireComponent implements OnInit {
       } else {
         this.questions = cc.questions;
         const group: any = {};
-
         this.questions.forEach(question => {
-          if (question.value.length > 0) {
-            question.options = question.value.split('#');
-          }
           group[question.id] = new FormControl('');
         });
         this.form = new FormGroup(group);
