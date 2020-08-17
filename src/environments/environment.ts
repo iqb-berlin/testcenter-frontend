@@ -10,7 +10,7 @@ export const environment = {
   // testcenterUrl: 'https://www.iqb-testcenter.de/',
   // testcenterUrl: 'http://localhost/api/',
   appPublisher: 'IQB - Institut zur Qualitätsentwicklung im Bildungswesen',
-  apiVersionExpected: '4.0.0'
+  apiVersionExpected: '5.0.0'
 };
 
 /*

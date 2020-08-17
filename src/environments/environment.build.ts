@@ -4,5 +4,5 @@ export const environment = {
   production: false,
   testcenterUrl: '/',
   appPublisher: 'IQB - Institut zur Qualitätsentwicklung im Bildungswesen',
-  apiVersionExpected: '4.0.0'
+  apiVersionExpected: '5.0.0'
 };
