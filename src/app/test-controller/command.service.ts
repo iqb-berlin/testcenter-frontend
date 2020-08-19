@@ -4,21 +4,52 @@ import {Command, commandKeywords, isKnownCommand, TestStatus} from './test-contr
 import {TestControllerService} from './test-controller.service';
 import {distinctUntilChanged} from 'rxjs/operators';
 import {Uuid} from '../shared/uuid';
+import {WebsocketBackendService} from '../shared/websocket-backend.service';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable()
-export class CommandService implements OnDestroy {
+export class CommandService extends WebsocketBackendService<Command[]> implements OnDestroy {
     public command$: Subject<Command> = new Subject<Command>();
     private commandSubscription: Subscription;
+    initialData: [{id: 'primary', keyword: 'debug', arguments: ['on']}];
+    pollingEndpoint = 'will_be_set';
+    pollingInterval = 5000;
+    wsChannelName = 'commands';
+    private commandHistory: string[] = [];
 
     constructor (
         @Inject('IS_PRODUCTION_MODE') public isProductionMode,
-        private tcs: TestControllerService
+        private tcs: TestControllerService,
+        @Inject('SERVER_URL') serverUrl: string,
+        http: HttpClient
     ) {
+        super(serverUrl, http);
+
         if (!this.isProductionMode) {
 
             this.setUpGlobalCommandsForDebug();
         }
         this.subscribeCommands();
+
+        this.tcs.testStatus$
+            .pipe(distinctUntilChanged())
+            .subscribe((testStatus: TestStatus) => {
+                const newPollingEndpoint = `test/${this.tcs.testId}/commands`;
+                if ((testStatus === TestStatus.RUNNING) && (newPollingEndpoint !== this.pollingEndpoint)) {
+                    this.pollingEndpoint = newPollingEndpoint;
+                    this.observeEndpointAndChannel().subscribe(
+                        (commands: Command[]) => {
+                            console.log('COMMANDS', commands);
+                            if (commands) {
+                                commands.forEach((command: Command) => {
+                                    this.command$.next(command);
+                                });
+                            }
+                        }
+                    );
+                }
+            });
+
     }
 
     ngOnDestroy() {
@@ -31,6 +62,12 @@ export class CommandService implements OnDestroy {
                 distinctUntilChanged((command1: Command, command2: Command): boolean => (command1.id === command2.id))
             )
             .subscribe((command: Command) => {
+
+                if (this.commandHistory.indexOf(command.id) >= 0) {
+                    console.warn('command already executed', command);
+                }
+
+                this.commandHistory.push(command.id);
                 switch (command.keyword) {
                     case 'pause':
                         this.tcs.testStatus$.next(TestStatus.PAUSED);
@@ -46,6 +83,9 @@ export class CommandService implements OnDestroy {
                         break;
                     case 'debug':
                         this.tcs.debugPane = command.arguments[0] !== 'off';
+                        break;
+                    default:
+                        console.warn(`command '${command.keyword}' is unknown`);
                 }
         });
     }

@@ -25,6 +25,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {BookletConfig} from '../config/booklet-config';
 import {TestMode} from '../config/test-mode';
 import {FocusService} from './focus.service';
+import {CommandService} from './command.service';
 
 
 @Component({
@@ -64,6 +65,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private cts: CustomtextService,
     public focusService: FocusService,
+    public commandService: CommandService,
   ) {
   }
 
@@ -320,7 +322,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       });
 
       this.routingSubscription = this.route.params.subscribe(params => {
-        console.log(this.tcs.testStatus$.getValue());
         if (this.tcs.testStatus$.getValue() !== TestStatus.ERROR) {
           this.tcs.testId = params['t'];
           localStorage.setItem(TestControllerComponent.localStorageTestKey, params['t']);

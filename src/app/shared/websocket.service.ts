@@ -48,7 +48,7 @@ export class WebsocketService {
           () => {},
 
           () => {
-            console.log('connection error');
+            console.error('connection error');
             this.closeConnection();
           },
 
