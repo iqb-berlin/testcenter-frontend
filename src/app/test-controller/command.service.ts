@@ -3,7 +3,7 @@ import {Subject, Subscription} from 'rxjs';
 import {Command, commandKeywords, isKnownCommand, TestStatus} from './test-controller.interfaces';
 import {TestControllerService} from './test-controller.service';
 import {distinctUntilChanged} from 'rxjs/operators';
-import {Uuid} from '../util/uuid';
+import {Uuid} from '../shared/uuid';
 
 @Injectable()
 export class CommandService implements OnDestroy {

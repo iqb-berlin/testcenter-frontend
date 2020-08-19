@@ -8,7 +8,7 @@ import {
   TestViewDisplayOptionKey,
 } from './group-monitor.interfaces';
 import {ActivatedRoute} from '@angular/router';
-import {ConnectionStatus} from './websocket-backend.service';
+import {ConnectionStatus} from '../shared/websocket-backend.service';
 import {map} from 'rxjs/operators';
 import {Sort} from '@angular/material/sort';
 
