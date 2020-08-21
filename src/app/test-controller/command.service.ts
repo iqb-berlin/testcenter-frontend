@@ -2,13 +2,16 @@ import {Inject, Injectable, OnDestroy} from '@angular/core';
 import {interval, of, Subject, Subscription} from 'rxjs';
 import {Command, commandKeywords, isKnownCommand, TestStatus} from './test-controller.interfaces';
 import {TestControllerService} from './test-controller.service';
-import {distinctUntilChanged, filter, map, mergeMap, switchMap, zip} from 'rxjs/operators';
+import {distinctUntilChanged, filter, map, mergeMap, switchMap, tap, zip} from 'rxjs/operators';
 import {Uuid} from '../shared/uuid';
 import {WebsocketBackendService} from '../shared/websocket-backend.service';
 import {HttpClient} from '@angular/common/http';
 
+type TestStartedOrStopped = 'started' | 'terminated' | '';
+
 @Injectable()
 export class CommandService extends WebsocketBackendService<Command[]> implements OnDestroy {
+
     constructor (
         @Inject('IS_PRODUCTION_MODE') public isProductionMode,
         private tcs: TestControllerService,
@@ -22,41 +25,57 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
         }
 
         this.subscribeCommands();
-        this.subscribeNewTestStarted();
+        this.subscribeTestStarted();
     }
 
     public command$: Subject<Command> = new Subject<Command>();
     private commandSubscription: Subscription;
     initialData = [];
-    pollingEndpoint = 'will_be_set';
+    pollingEndpoint = '';
     pollingInterval = 20000;
     wsChannelName = 'commands';
     private commandHistory: string[] = [];
-    private newPollingEndpointSubscription: Subscription;
+    private testStartedSubscription: Subscription;
 
     private static commandToString(command: Command): string {
         return `[${command.id}] ${command.keyword} ` + command.arguments.join(' ');
     }
 
-    ngOnDestroy() {
-        this.commandSubscription.unsubscribe();
-        this.newPollingEndpointSubscription.unsubscribe();
+    private static testStartedOrStopped(testStatus: TestStatus): TestStartedOrStopped {
+        if ((testStatus === TestStatus.RUNNING) || (testStatus === TestStatus.PAUSED)) {
+            return 'started';
+        }
+        if ((testStatus === TestStatus.TERMINATED) || (testStatus === TestStatus.ERROR)) {
+            return 'terminated';
+        }
+        return '';
     }
 
-    private subscribeNewTestStarted() {
-        if (typeof this.newPollingEndpointSubscription !== 'undefined') {
-            this.newPollingEndpointSubscription.unsubscribe();
+    ngOnDestroy() {
+        this.commandSubscription.unsubscribe();
+        this.testStartedSubscription.unsubscribe();
+    }
+
+    private subscribeTestStarted() {
+        if (typeof this.testStartedSubscription !== 'undefined') {
+            this.testStartedSubscription.unsubscribe();
         }
 
-        this.newPollingEndpointSubscription = this.tcs.testStatus$
+        this.testStartedSubscription = this.tcs.testStatus$
             .pipe(
                 distinctUntilChanged(),
-                filter(testStatus => (testStatus === TestStatus.RUNNING) || (testStatus === TestStatus.PAUSED)),
-                map(_ => `test/${this.tcs.testId}/commands`),
+                map(CommandService.testStartedOrStopped),
+                filter(testStartedOrStopped => testStartedOrStopped !== ''),
+                map(testStartedOrStopped => testStartedOrStopped ? `test/${this.tcs.testId}/commands` : ''),
                 filter(newPollingEndpoint => newPollingEndpoint !== this.pollingEndpoint),
                 switchMap((pollingEndpoint: string) => {
                     this.pollingEndpoint = pollingEndpoint;
-                    return this.observeEndpointAndChannel();
+                    if (this.pollingEndpoint) {
+                        return this.observeEndpointAndChannel();
+                    } else {
+                        this.cutConnection();
+                        return of([]);
+                    }
                 }),
                 switchMap(commands => of(...commands))
             ).subscribe(this.command$);
