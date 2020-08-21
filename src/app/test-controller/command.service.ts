@@ -2,7 +2,7 @@ import {Inject, Injectable, OnDestroy} from '@angular/core';
 import {interval, of, Subject, Subscription} from 'rxjs';
 import {Command, commandKeywords, isKnownCommand, TestStatus} from './test-controller.interfaces';
 import {TestControllerService} from './test-controller.service';
-import {distinctUntilChanged, filter, map, switchMap, zip} from 'rxjs/operators';
+import {distinctUntilChanged, filter, map, mergeMap, switchMap, zip} from 'rxjs/operators';
 import {Uuid} from '../shared/uuid';
 import {WebsocketBackendService} from '../shared/websocket-backend.service';
 import {HttpClient} from '@angular/common/http';
@@ -29,7 +29,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     private commandSubscription: Subscription;
     initialData = [];
     pollingEndpoint = 'will_be_set';
-    pollingInterval = 5000;
+    pollingInterval = 20000;
     wsChannelName = 'commands';
     private commandHistory: string[] = [];
     private newPollingEndpointSubscription: Subscription;
@@ -65,9 +65,9 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     private subscribeCommands() {
         this.commandSubscription = this.command$
             .pipe(
-                zip<Command, number>(interval(600)), // ensure that a minim to time is between two commands
+                zip<Command, number>(interval(150)), // ensure that a minim to time is between two commands
                 map(v => v[0]),
-                switchMap((command: Command) => {
+                mergeMap((command: Command) => {
                     console.log('try to execute' + CommandService.commandToString(command));
                     return this.http.patch(`${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed`, {})
                         .pipe(map(() => command));
@@ -80,7 +80,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
 
     private executeCommand(command: Command) {
 
-        console.log('execute command: ' + CommandService.commandToString(command));
+        console.log(Date.now() + '---- execute command: ' + CommandService.commandToString(command));
 
         if (this.commandHistory.indexOf(command.id) >= 0) {
             console.warn('command already executed' + CommandService.commandToString(command));
