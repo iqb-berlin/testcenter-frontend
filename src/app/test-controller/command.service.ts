@@ -9,7 +9,6 @@ import {HttpClient} from '@angular/common/http';
 
 @Injectable()
 export class CommandService extends WebsocketBackendService<Command[]> implements OnDestroy {
-
     constructor (
         @Inject('IS_PRODUCTION_MODE') public isProductionMode,
         private tcs: TestControllerService,
@@ -25,11 +24,12 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
         this.subscribeCommands();
         this.subscribeNewTestStarted();
     }
+
     public command$: Subject<Command> = new Subject<Command>();
     private commandSubscription: Subscription;
     initialData = [];
     pollingEndpoint = 'will_be_set';
-    pollingInterval = 15000;
+    pollingInterval = 5000;
     wsChannelName = 'commands';
     private commandHistory: string[] = [];
     private newPollingEndpointSubscription: Subscription;
@@ -44,40 +44,38 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     }
 
     private subscribeNewTestStarted() {
+        if (typeof this.newPollingEndpointSubscription !== 'undefined') {
+            this.newPollingEndpointSubscription.unsubscribe();
+        }
+
         this.newPollingEndpointSubscription = this.tcs.testStatus$
             .pipe(
                 distinctUntilChanged(),
                 filter(testStatus => (testStatus === TestStatus.RUNNING) || (testStatus === TestStatus.PAUSED)),
                 map(_ => `test/${this.tcs.testId}/commands`),
-                filter(newPollingEndpoint => newPollingEndpoint !== this.pollingEndpoint)
-            )
-            .subscribe((pollingEndpoint: string) => {
-                this.pollingEndpoint = pollingEndpoint;
-                this.observeEndpointAndChannel()
-                    .subscribe((commands: Command[]) => this.receiveChunkOfCommands(commands));
-            });
-    }
-
-    private receiveChunkOfCommands(commands: Command[]) {
-        console.log('commands received:', commands);
-        of(...commands)
-            .pipe(
-                zip<Command, number>(interval(1500)),
-                map(v => v[0])
-            ).subscribe((command: Command) => {this.command$.next(command); });
+                filter(newPollingEndpoint => newPollingEndpoint !== this.pollingEndpoint),
+                switchMap((pollingEndpoint: string) => {
+                    this.pollingEndpoint = pollingEndpoint;
+                    return this.observeEndpointAndChannel();
+                }),
+                switchMap(commands => of(...commands))
+            ).subscribe(this.command$);
     }
 
     private subscribeCommands() {
         this.commandSubscription = this.command$
             .pipe(
+                zip<Command, number>(interval(600)), // ensure that a minim to time is between two commands
+                map(v => v[0]),
                 switchMap((command: Command) => {
+                    console.log('try to execute' + CommandService.commandToString(command));
                     return this.http.patch(`${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed`, {})
                         .pipe(map(() => command));
                 })
             )
             .subscribe((command: Command) => {
                 this.executeCommand(command);
-            });
+            }, error => console.warn('error for command', error));
     }
 
     private executeCommand(command: Command) {
@@ -118,10 +116,10 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     }
 
     private commandFromTerminal(keyword: string, args: string[], id: string): void {
-        if (!this.isProductionMode) {
+
+        if (this.isProductionMode) {
             return;
         }
-
         args = (typeof args === 'undefined') ? [] : args;
         const command = {keyword, arguments: args, id, timestamp: Date.now()};
         if (!isKnownCommand(keyword)) {
@@ -129,6 +127,6 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
             return;
         }
 
-        this.command$.next(command);
+        this.executeCommand(command);
     }
 }
