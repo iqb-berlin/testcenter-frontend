@@ -1,8 +1,17 @@
 import {Inject, Injectable, OnDestroy} from '@angular/core';
-import {interval, of, Subject, Subscription} from 'rxjs';
+import {of, Subject, Subscription, timer} from 'rxjs';
 import {Command, commandKeywords, isKnownCommand, TestStatus} from './test-controller.interfaces';
 import {TestControllerService} from './test-controller.service';
-import {distinctUntilChanged, filter, map, mergeMap, switchMap, tap, zip} from 'rxjs/operators';
+import {
+    concatMap,
+    distinctUntilChanged,
+    filter,
+    ignoreElements,
+    map,
+    mergeMap,
+    startWith,
+    switchMap
+} from 'rxjs/operators';
 import {Uuid} from '../shared/uuid';
 import {WebsocketBackendService} from '../shared/websocket-backend.service';
 import {HttpClient} from '@angular/common/http';
@@ -84,8 +93,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     private subscribeCommands() {
         this.commandSubscription = this.command$
             .pipe(
-                zip<Command, number>(interval(150)), // ensure that a minim to time is between two commands
-                map(v => v[0]),
+                concatMap(item => timer(300).pipe(ignoreElements(), startWith(item))), // min delay between items
                 mergeMap((command: Command) => {
                     console.log('try to execute' + CommandService.commandToString(command));
                     return this.http.patch(`${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed`, {})
