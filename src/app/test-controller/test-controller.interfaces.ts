@@ -4,16 +4,15 @@ export interface TaggedString {
     value: string;
 }
 
-export interface UnitResponseData {
+export interface UnitStateData {
     unitDbKey: string;
-    response: string;
-    responseType: string;
+    dataPartsAllString: string;
+    unitStateDataType: string;
+}
+export interface KeyValuePairString {
+  [K: string]: string;
 }
 
-export interface UnitRestorePointData {
-    unitDbKey: string;
-    restorePoint: string;
-}
 
 // testcontroller restrictions +++++++++++++++++++++++++++++++++++
 export interface StartLockData {
@@ -79,9 +78,9 @@ export enum LastStateKey {
     FOCUS = 'FOCUS'
 }
 
-export interface UnitState {
-    PRESENTATIONCOMPLETE?: 'yes' | 'no';
-    RESPONSESCOMPLETE?: 'yes' | 'no' | 'all';
+export interface UnitStatus {
+    PRESENTATIONCOMPLETE?: string;
+    RESPONSESCOMPLETE?: string;
     PAGE_NR?: number;
     PAGE_NAME?: string;
     PAGES_COUNT?: number;

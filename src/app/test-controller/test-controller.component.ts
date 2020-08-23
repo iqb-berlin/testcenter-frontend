@@ -223,7 +223,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           } else {
             const myUnitData = myData as UnitData;
             if (myUnitData.restorepoint) {
-              this.tcs.newUnitRestorePoint(myUnit.id, sequenceId, JSON.parse(myUnitData.restorepoint), false);
+              this.tcs.addUnitStateData(myUnit.id, sequenceId, JSON.parse(myUnitData.restorepoint));
             }
             let playerId = null;
             let definitionRef = '';

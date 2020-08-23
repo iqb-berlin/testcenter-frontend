@@ -10,8 +10,7 @@ import {
   TestStatus,
   UnitNaviButtonData,
   UnitNavigationTarget,
-  UnitResponseData,
-  UnitRestorePointData
+  UnitStateData
 } from './test-controller.interfaces';
 import {BackendService} from './backend.service';
 import {Router} from '@angular/router';
@@ -77,33 +76,21 @@ export class TestControllerService {
 
   private players: {[filename: string]: string} = {};
   private unitDefinitions: {[sequenceId: number]: string} = {};
-  private unitRestorePoints: {[sequenceId: number]: string} = {};
+  private unitStateDataParts: {[sequenceId: number]: string} = {};
   private unitPresentationCompleteStates: {[sequenceId: number]: string} = {};
 
-  private restorePointsToSave$ = new Subject<UnitRestorePointData>();
-  private responsesToSave$ = new Subject<UnitResponseData>();
+  private unitStateDataToSave$ = new Subject<UnitStateData>();
 
   constructor (
     private router: Router,
     private bs: BackendService
   ) {
-    this.restorePointsToSave$.pipe(
-      debounceTime(200)).subscribe(restorePoint => {
-        this.bs.newUnitRestorePoint(this.testId, restorePoint.unitDbKey, Date.now(),
-              JSON.stringify(restorePoint.restorePoint)).subscribe(ok => {
+    this.unitStateDataToSave$.pipe(
+      debounceTime(200)).subscribe(unitStateData => {
+        this.bs.newUnitStateData(this.testId, Date.now(), unitStateData.unitDbKey,
+              JSON.stringify(unitStateData.dataPartsAllString), unitStateData.unitStateDataType).subscribe(ok => {
           if (!ok) {
             console.warn('newUnitRestorePoint failed');
-          }
-        });
-      }
-    );
-
-    this.responsesToSave$.pipe(
-      debounceTime(200)).subscribe(response => {
-        this.bs.newUnitResponse(this.testId, Date.now(), response.unitDbKey,
-              JSON.stringify(response.response), response.responseType).subscribe(ok => {
-          if (!ok) {
-            console.warn('newUnitResponse failed');
           }
         });
       }
@@ -113,7 +100,7 @@ export class TestControllerService {
   public resetDataStore() {
     this.players = {};
     this.unitDefinitions = {};
-    this.unitRestorePoints = {};
+    this.unitStateDataParts = {};
     this.rootTestlet = null;
     this.maxUnitSequenceId = 0;
     this.currentUnitSequenceId = 0;
@@ -174,11 +161,11 @@ export class TestControllerService {
   }
 
   // adding RestorePoint via newUnitRestorePoint below
-  public hasUnitRestorePoint (sequenceId: number): boolean {
-    return this.unitRestorePoints.hasOwnProperty(sequenceId);
+  public hasUnitStateData (sequenceId: number): boolean {
+    return this.unitStateDataParts.hasOwnProperty(sequenceId);
   }
-  public getUnitRestorePoint(sequenceId: number): string {
-    return this.unitRestorePoints[sequenceId];
+  public getUnitStateData(sequenceId: number): string {
+    return this.unitStateDataParts[sequenceId];
   }
 
   // adding PresentationComplete via newUnitStatePresentationComplete below
@@ -214,39 +201,37 @@ export class TestControllerService {
     }
   }
 
-  public newUnitResponse(unitDbKey: string, response: string, responseType: string) {
+  public addUnitStateData(unitDbKey: string, unitSequenceId: number, dataPartsAllString: string) {
+    this.unitStateDataParts[unitSequenceId] = dataPartsAllString;
+  }
+
+  public newUnitStateData(unitDbKey: string, unitSequenceId: number, dataPartsAllString: string, unitStateDataType: string) {
+    this.unitStateDataParts[unitSequenceId] = dataPartsAllString;
     if (this.testMode.saveResponses) {
-      this.responsesToSave$.next({unitDbKey, response, responseType});
+      this.unitStateDataToSave$.next({unitDbKey, dataPartsAllString: dataPartsAllString, unitStateDataType});
     }
   }
 
-  public newUnitRestorePoint(unitDbKey: string, unitSequenceId: number, restorePoint: string, postToServer: boolean) {
-    this.unitRestorePoints[unitSequenceId] = restorePoint;
-    if (postToServer && this.testMode.saveResponses) {
-      this.restorePointsToSave$.next({unitDbKey, restorePoint});
-    }
-  }
-
-  public newUnitStatePresentationComplete(unitDbKey: string, unitSequenceId: number, presentationComplete: 'yes' | 'no') {
-    this.unitPresentationCompleteStates[unitSequenceId] = presentationComplete;
+  public newUnitStatePresentationProgress(unitDbKey: string, unitSequenceId: number, presentationProgress: string) {
+    this.unitPresentationCompleteStates[unitSequenceId] = presentationProgress;
     if (this.testMode.saveResponses) {
       // TODO prove if state change can be logged to save calls
-      this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationComplete);
-      this.bs.setUnitState(this.testId, unitDbKey, {PRESENTATIONCOMPLETE: presentationComplete});
+      this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationProgress);
+      this.bs.setUnitStatus(this.testId, unitDbKey, {PRESENTATIONCOMPLETE: presentationProgress});
     }
   }
 
-  public newUnitStateResponsesGiven(unitDbKey: string, unitSequenceId: number, responsesGiven: 'yes' | 'no' | 'all') {
+  public newUnitStateResponseProgress(unitDbKey: string, unitSequenceId: number, responseProgress: string) {
     if (this.testMode.saveResponses) {
       // TODO prove if state change can be logged to save calls
-      this.addUnitLog(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responsesGiven);
-      this.bs.setUnitState(this.testId, unitDbKey, {RESPONSESCOMPLETE: responsesGiven});
+      this.addUnitLog(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responseProgress);
+      this.bs.setUnitStatus(this.testId, unitDbKey, {RESPONSESCOMPLETE: responseProgress});
     }
   }
 
   public newUnitStatePage(unitDbKey: string, pageName: string, pageNr: number, pagesCount: number) {
     if (this.testMode.saveResponses) {
-      this.bs.setUnitState(this.testId, unitDbKey, {
+      this.bs.setUnitStatus(this.testId, unitDbKey, {
           PAGE_NR: pageNr,
           PAGE_NAME: pageName,
           PAGES_COUNT: pagesCount

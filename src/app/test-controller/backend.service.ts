@@ -1,8 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {Observable, of, Subscription} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
-import {UnitData, TaggedString, TestData, UnitState} from './test-controller.interfaces';
+import {catchError, map, switchMap} from 'rxjs/operators';
+import {UnitData, TaggedString, TestData, UnitStatus} from './test-controller.interfaces';
 import {ApiError} from '../app.interfaces';
 
 
@@ -93,9 +93,9 @@ export class BackendService {
   }
 
   // TODO collect those and send some together
-  setUnitState(testId: string, unitName: string, unitState: UnitState): Subscription {
+  setUnitStatus(testId: string, unitName: string, newUnitStatus: UnitStatus): Subscription {
     return this.http
-      .patch(this.serverUrl + `test/${testId}/unit/${unitName}/state`, unitState)
+      .patch(this.serverUrl + `test/${testId}/unit/${unitName}/state`, newUnitStatus)
       .subscribe({error: (err: ApiError) => console.error(`setUnitState Api-Error: ${err.code} ${err.info}`)});
   }
 
@@ -105,26 +105,28 @@ export class BackendService {
       .subscribe({error: (err: ApiError) => console.error(`setBookletState Api-Error: ${err.code} ${err.info}`)});
   }
 
-  newUnitResponse(testId: string, timestamp: number, unitName: string, response: string, responseType: string)
+  newUnitStateData(testId: string, timestamp: number, unitName: string, dataPartsAllString: string, unitStateDataType: string)
     : Observable<boolean> {
+    // TODO remove after api changed
+    const response = dataPartsAllString;
+    const restorePoint = dataPartsAllString;
+    const responseType = unitStateDataType;
     return this.http
       .put(this.serverUrl + `test/${testId}/unit/${unitName}/response`, {timestamp, response, responseType})
       .pipe(
-        map(() => true),
+        switchMap(() => {
+          return this.http
+            .patch(this.serverUrl + `test/${testId}/unit/${unitName}/restorepoint`, {timestamp, restorePoint})
+            .pipe(
+              map(() => true),
+              catchError((err: ApiError) => {
+                console.warn(`newUnitStateData/restorepoint Api-Error: ${err.code} ${err.info} `);
+                return of(false);
+              })
+            );
+        }),
         catchError((err: ApiError) => {
-          console.warn(`newUnitResponse Api-Error: ${err.code} ${err.info} `);
-          return of(false);
-        })
-      );
-  }
-
-  newUnitRestorePoint(testId: string, unitName: string, timestamp: number, restorePoint: string): Observable<boolean> {
-    return this.http
-      .patch(this.serverUrl + `test/${testId}/unit/${unitName}/restorepoint`, {timestamp, restorePoint})
-      .pipe(
-        map(() => true),
-        catchError((err: ApiError) => {
-          console.warn(`newUnitRestorePoint Api-Error: ${err.code} ${err.info} `);
+          console.warn(`newUnitStateData/response Api-Error: ${err.code} ${err.info} `);
           return of(false);
         })
       );
