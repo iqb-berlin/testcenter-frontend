@@ -16,6 +16,7 @@ export class StatusCardComponent implements OnInit {
     @Inject('APP_PUBLISHER') public appPublisher: string,
     @Inject('APP_VERSION') public appVersion: string,
     @Inject('API_VERSION_EXPECTED') public apiVersionExpected: string,
+    @Inject('VERONA_API_VERSION_SUPPORTED') public veronaApiVersionSupported: string,
     @Inject('IS_PRODUCTION_MODE') public isProductionMode
   ) { }
 
