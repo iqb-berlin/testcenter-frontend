@@ -99,6 +99,7 @@ export class BackendService {
       .subscribe({error: (err: ApiError) => console.error(`setUnitState Api-Error: ${err.code} ${err.info}`)});
   }
 
+  // TODO rename to setBookletStatus
   setBookletState(testId: string, stateKey: string, state: string): Subscription {
     return this.http
       .patch(this.serverUrl + `test/${testId}/state`, {key: stateKey, value: state})
