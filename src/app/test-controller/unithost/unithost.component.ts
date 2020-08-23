@@ -1,7 +1,7 @@
 import { MainDataService } from '../../maindata.service';
 import { TestControllerService } from '../test-controller.service';
 import { Subscription} from 'rxjs';
-import { Component, OnInit } from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core';
 import {TaggedString, PageData, LastStateKey, LogEntryKey} from '../test-controller.interfaces';
@@ -206,6 +206,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
         }
       });
     });
+  }
+
+  @HostListener('window:resize')
+  public onResize(): any {
+    if (this.iFrameItemplayer && this.iFrameHostElement) {
+      const divHeight = this.iFrameHostElement.clientHeight;
+      this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
+      // TODO: Why minus 5px?
+    }
   }
 
   setPageList(validPages: string[], currentPage: string) {

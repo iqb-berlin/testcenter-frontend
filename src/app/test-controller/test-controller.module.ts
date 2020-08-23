@@ -7,7 +7,6 @@ import {CommonModule} from '@angular/common';
 import {TestControllerRoutingModule} from './test-controller-routing.module';
 import {UnithostComponent} from './unithost/unithost.component';
 import {TestControllerComponent} from './test-controller.component';
-import {ResizeIFrameChildDirective} from './resize-IFrameChild/resize-IFrameChild.directive';
 import {unitRouteGuards} from './unithost/unit-route-guards';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {ReviewDialogComponent} from './review-dialog/review-dialog.component';
@@ -57,7 +56,6 @@ import {CommandService} from './command.service';
   declarations: [
     UnithostComponent,
     TestControllerComponent,
-    ResizeIFrameChildDirective,
     ReviewDialogComponent,
     StartLockInputComponent,
     TestStatusComponent,
