@@ -10,7 +10,7 @@ import {
     map,
     mergeMap,
     startWith,
-    switchMap
+    switchMap, tap
 } from 'rxjs/operators';
 import {WebsocketBackendService} from '../shared/websocket-backend.service';
 import {HttpClient} from '@angular/common/http';
@@ -30,6 +30,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     private commandReceived$: Subject<Command> = new Subject<Command>();
     private commandSubscription: Subscription;
     private testStartedSubscription: Subscription;
+    private executedCommandIds: number[] = [];
 
     constructor (
         @Inject('IS_PRODUCTION_MODE') public isProductionMode,
@@ -45,11 +46,15 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
 
         this.command$ = this.commandReceived$
             .pipe(
-                concatMap(item => timer(300).pipe(ignoreElements(), startWith(item))), // min delay between items
+                filter((command: Command) => (this.executedCommandIds.indexOf(command.id) < 0)),
+                concatMap((command: Command) => timer(1000).pipe(ignoreElements(), startWith(command))), // min delay between items
                 mergeMap((command: Command) => {
                     console.log('try to execute' + CommandService.commandToString(command));
                     return this.http.patch(`${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed`, {})
-                        .pipe(map(() => command));
+                        .pipe(
+                            map(() => command),
+                            tap(cmd => this.executedCommandIds.push(cmd.id))
+                        );
                 })
             );
 
@@ -103,7 +108,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
 
     // TODO move to testcontroller maybe
     private subscribeCommands() {
-        this.commandSubscription = this.commandReceived$.subscribe(
+        this.commandSubscription = this.command$.subscribe(
             (command: Command) => {
                 console.log(Date.now() + '---- execute command: ' + CommandService.commandToString(command));
                 switch (command.keyword) {
