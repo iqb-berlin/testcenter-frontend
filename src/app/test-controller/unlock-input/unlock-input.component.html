@@ -1,0 +1,25 @@
+<div class="unlock-body">
+  <div fxLayout="row wrap" fxLayoutAlign="center stretch" #lookup>
+    <mat-card>
+      <mat-card-header>{{ 'Freigabewort' | customtext:'booklet_codeToEnterTitle':cts.updateCount }}</mat-card-header>
+      <mat-card-content>
+
+      </mat-card-content>
+
+      <form [formGroup]="startkeyform" fxLayout="column">
+          <p>{{ 'Bitte Freigabewort eingeben!' | customtext:'booklet_codeToEnterPrompt':cts.updateCount }}</p>
+          <mat-form-field *ngFor="let c of codes" fxLayout="column">
+            <label>{{ c.prompt }}
+              <input matInput [formControlName]="c.testletId">
+            </label>
+          </mat-form-field>
+      </form>
+      <mat-card-actions>
+        <button mat-raised-button *ngIf="returnTo" (click)="return()">Zurück</button>
+        <button mat-raised-button color="primary" type="submit"
+                [disabled]="!startkeyform.valid"
+                *ngIf="newUnit" (click)="continue()">Weiter</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

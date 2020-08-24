@@ -1,4 +1,4 @@
-<div class="debug-pane" *ngIf="tcs.debugPane">
+<div class="debug-pane" *ngIf="debugPane">
   <div><b>STATUS:</b> {{tcs.testStatus$ | async}}</div>
   <div><b>TIMER:</b> {{timerValue?.timeLeftString}}<b> {{timerValue?.testletId}} {{timerValue?.type}}</b></div>
   <div><b>MODE:</b> {{tcs.testMode.modeId}}</div>

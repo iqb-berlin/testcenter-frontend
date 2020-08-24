@@ -64,7 +64,7 @@ export class TestStatusComponent implements OnInit, OnDestroy {
   }
 
   terminateTest() {
-    this.tcs.terminateTest();
+    this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE');
   }
 
   ngOnDestroy() {

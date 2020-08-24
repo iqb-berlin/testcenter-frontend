@@ -7,6 +7,7 @@ import {TestControllerService} from './test-controller.service';
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {EnvironmentData, MaxTimerData, Testlet, UnitDef} from './test-controller.classes';
 import {
+  Command,
   LastStateKey,
   LogEntryKey,
   MaxTimerDataType,
@@ -19,12 +20,13 @@ import {
   WindowFocusState
 } from './test-controller.interfaces';
 import {from, Observable, of, Subscription, throwError} from 'rxjs';
-import {concatMap, debounceTime, map, switchMap} from 'rxjs/operators';
+import {concatMap, debounceTime, distinctUntilChanged, map, switchMap} from 'rxjs/operators';
 import {CustomtextService} from 'iqb-components';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {BookletConfig} from '../config/booklet-config';
 import {TestMode} from '../config/test-mode';
+import {CommandService} from "./command.service";
 
 
 @Component({
@@ -41,7 +43,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private unitLoadBlobSubscription: Subscription = null;
   private appWindowHasFocusSubscription: Subscription = null;
   private appFocusSubscription: Subscription = null;
-
+  private commandSubscription: Subscription = null;
   private lastUnitSequenceId = 0;
   public loadProgressValue = 0;
   private lastTestletIndex = 0;
@@ -53,6 +55,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   unitNavigationTarget = UnitNavigationTarget;
   isTopMargin = true;
   isBottomMargin = true;
+  debugPane = false;
+
 
   constructor (
     @Inject('APP_VERSION') public appVersion: string,
@@ -65,6 +69,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private cts: CustomtextService,
+    private cmd: CommandService
   ) {
   }
 
@@ -322,6 +327,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       this.appWindowHasFocusSubscription = this.mds.appWindowHasFocus$.subscribe(hasFocus =>{
         this.tcs.windowFocusState$.next(hasFocus ? WindowFocusState.HOST : WindowFocusState.UNKNOWN)
       });
+      this.commandSubscription = this.cmd.command$.pipe(
+          distinctUntilChanged((command1: Command, command2: Command): boolean => (command1.id === command2.id))
+        )
+        .subscribe((command: Command) => {
+          this.handleCommand(command.keyword, command.arguments);
+        });
 
       this.routingSubscription = this.route.params.subscribe(params => {
         console.log(this.tcs.testStatus$.getValue());
@@ -594,6 +605,25 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     this.isBottomMargin = !this.isBottomMargin;
   }
 
+  handleCommand(commandName: string, params: string[]) {
+    switch (commandName.toLowerCase()) {
+      case 'debug':
+        this.debugPane = params.length === 0 || params[0].toLowerCase() !== 'off';
+        if (this.debugPane) {
+          console.log('select (focus) app window to see the debugPane')
+        }
+        break;
+      case 'terminate':
+        this.tcs.terminateTest('BOOKLETLOCKEDbyOPERATOR');
+        break;
+      case 'goto':
+        if (params.length > 0) {
+          this.tcs.setUnitNavigationRequest(params[0], true);
+        }
+        break;
+    }
+  }
+
   ngOnDestroy() {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
@@ -609,6 +639,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
     if (this.appFocusSubscription !== null) {
       this.appFocusSubscription.unsubscribe();
+    }
+    if (this.commandSubscription !== null) {
+      this.commandSubscription.unsubscribe();
     }
     this.unsubscribeTestSubscriptions();
     this.mds.progressVisualEnabled = true;

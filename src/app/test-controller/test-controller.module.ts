@@ -28,6 +28,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {TestStatusComponent} from './test-status/test-status.component';
 import {CommandService} from './command.service';
+import { UnlockInputComponent } from './unlock-input/unlock-input.component';
 
 
 @NgModule({
@@ -58,6 +59,7 @@ import {CommandService} from './command.service';
     ReviewDialogComponent,
     StartLockInputComponent,
     TestStatusComponent,
+    UnlockInputComponent,
   ],
   entryComponents: [
     ReviewDialogComponent,

@@ -5,6 +5,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {TestStatusComponent} from './test-status/test-status.component';
 import {TestControllerDeactivateGuard} from './test-controller-route-guards';
+import {UnlockInputComponent} from "./unlock-input/unlock-input.component";
 
 const routes: Routes = [
   {
@@ -17,10 +18,14 @@ const routes: Routes = [
         component: TestStatusComponent
       },
       {
+        path: 'unlock',
+        component: UnlockInputComponent
+      },
+      {
         path: 'u/:u',
-          component: UnithostComponent,
-          canActivate: [UnitActivateGuard],
-          canDeactivate: [UnitDeactivateGuard]
+        component: UnithostComponent,
+        canActivate: [UnitActivateGuard],
+        canDeactivate: [UnitDeactivateGuard]
       }
     ]
   }

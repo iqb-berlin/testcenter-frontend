@@ -1,4 +1,3 @@
-import {StartLockInputComponent} from '../start-lock-input/start-lock-input.component';
 import {ConfirmDialogComponent, ConfirmDialogData, CustomtextService} from 'iqb-components';
 import {TestControllerService} from '../test-controller.service';
 import {filter, map, switchMap, take} from 'rxjs/operators';
@@ -7,11 +6,7 @@ import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, CanDeactivate, Router, RouterStateSnapshot} from '@angular/router';
 import {interval, Observable, of} from 'rxjs';
 import {UnitControllerData} from '../test-controller.classes';
-import {
-  CodeInputData,
-  LogEntryKey,
-  StartLockData
-} from '../test-controller.interfaces';
+import {CodeInputData, LogEntryKey} from '../test-controller.interfaces';
 import {MainDataService} from 'src/app/maindata.service';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -110,63 +105,35 @@ export class UnitActivateGuard implements CanActivate {
   }
 
 
-  checkAndSolve_Code(newUnit: UnitControllerData): Observable<Boolean> {
+  checkAndSolve_Code(newUnit: UnitControllerData, force: boolean): Observable<Boolean> {
     if (newUnit.codeRequiringTestlets) {
       if (newUnit.codeRequiringTestlets.length > 0) {
         const myCodes: CodeInputData[] = [];
         newUnit.codeRequiringTestlets.forEach(t => {
-          myCodes.push(<CodeInputData>{
-            testletId: t.id,
-            prompt: t.codePrompt,
-            code: t.codeToEnter.toUpperCase().trim(),
-            value: this.tcs.testMode.presetCode ? t.codeToEnter : ''
-          });
-        });
-
-        const dialogRef = this.startLockDialog.open(StartLockInputComponent, {
-          width: '500px',
-          autoFocus: true,
-          data: <StartLockData>{
-            title: this.cts.getCustomText('booklet_codeToEnterTitle'),
-            prompt: this.cts.getCustomText('booklet_codeToEnterPrompt'),
-            codes: myCodes
+          if (force) {
+            t.codeToEnter = '';
+          } else {
+            myCodes.push(<CodeInputData>{
+              testletId: t.id,
+              prompt: t.codePrompt,
+              code: t.codeToEnter.toUpperCase().trim(),
+              value: this.tcs.testMode.presetCode ? t.codeToEnter : ''
+            });
           }
         });
-        return dialogRef.afterClosed().pipe(
-          switchMap(result => {
-            if ((typeof result === 'undefined') || (result === false)) {
-              return of(false);
-            } else {
-              let codesOk = true;
-              for (const c of myCodes) {
-                const testeeInput = result[c.testletId];
-                if (testeeInput) {
-                  if (c.code.toUpperCase().trim() !== testeeInput.toUpperCase().trim()) {
-                    codesOk = false;
-                    break;
-                  }
-                } else {
-                  codesOk = false;
-                  break;
-                }
-              }
-              if (codesOk) {
-                newUnit.codeRequiringTestlets.forEach(t => {
-                  t.codeToEnter = '';
-                });
-
-                return of(true);
-
-              } else {
-                this.snackBar.open(
-                  'Die Eingabe war nicht korrekt.', this.cts.getCustomText('booklet_codeToEnterTitle'),
-                  {duration: 3000}
-                );
-                return of(false);
-              }
+        if (myCodes.length > 0) {
+          this.router.navigate([`/t/${this.tcs.testId}/unlock`], {
+            skipLocationChange: true,
+            state: {
+              returnTo: `/t/${this.tcs.testId}/u/${this.tcs.currentUnitSequenceId}`,
+              newUnit: newUnit,
+              codes: myCodes
             }
-          }
-        ));
+          });
+          return of(false);
+        } else {
+          return of(true);
+        }
       } else {
         return of(true);
       }
@@ -338,6 +305,11 @@ export class UnitActivateGuard implements CanActivate {
     } else {
       this.tcs.updateMinMaxUnitSequenceId(targetUnitSequenceId);
     }
+    let forceNavigation = false;
+    const routerStateObject = this.router.getCurrentNavigation();
+    if (routerStateObject.extras.state) {
+      forceNavigation = routerStateObject.extras.state['force'];
+    }
 
     let myreturn = false;
     if (this.tcs.rootTestlet === null) {
@@ -370,7 +342,7 @@ export class UnitActivateGuard implements CanActivate {
             if (!cAsPC) {
               return of(false);
             } else {
-              return this.checkAndSolve_Code(newUnit).pipe(
+              return this.checkAndSolve_Code(newUnit, forceNavigation).pipe(
                 switchMap(cAsC => {
                   if (!cAsC) {
                     return of(false);

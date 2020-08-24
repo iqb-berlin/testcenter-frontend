@@ -42,7 +42,6 @@ export class TestControllerService {
   public unitPrevEnabled = false;
   public unitNextEnabled = false;
   public unitListForNaviButtons: UnitNaviButtonData[] = [];
-  public debugPane = false;
 
   public get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
@@ -280,9 +279,9 @@ export class TestControllerService {
     }
   }
 
-  public terminateTest() {
+  public terminateTest(logEntryKey: string) {
     if (this.testMode.saveResponses) {
-      this.bs.addBookletLog(this.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE')
+      this.bs.addBookletLog(this.testId, Date.now(), logEntryKey)
           .add(() => {
             console.log('AFTER LOG');
             // TODO who evaluates TestStatus when navigating to root?
@@ -297,7 +296,7 @@ export class TestControllerService {
     }
   }
 
-  public setUnitNavigationRequest(navString: string = UnitNavigationTarget.NEXT) {
+  public setUnitNavigationRequest(navString: string, force = false) {
     if (!this.rootTestlet) {
       this.router.navigateByUrl(`/t/${this.testId}`);
     } else {
@@ -314,7 +313,7 @@ export class TestControllerService {
           }
           const nextUnitSequenceId = this.rootTestlet.getNextUnlockedUnitSequenceId(startWith);
           if (nextUnitSequenceId > 0) {
-            this.router.navigateByUrl(`/t/${this.testId}/u/${nextUnitSequenceId}`);
+            this.router.navigate([`/t/${this.testId}/u/${nextUnitSequenceId}`], {state: {force: force}});
           }
           break;
         case UnitNavigationTarget.PREVIOUS:
@@ -327,11 +326,11 @@ export class TestControllerService {
           this.router.navigateByUrl(`/t/${this.testId}/u/${this.maxUnitSequenceId}`);
           break;
         case UnitNavigationTarget.END:
-          this.terminateTest();
+          this.terminateTest('BOOKLETLOCKEDbyTESTEE');
           break;
 
         default:
-          this.router.navigateByUrl(`/t/${this.testId}/u/${navString}`);
+          this.router.navigate([`/t/${this.testId}/u/${navString}`], {state: {force: force}});
           break;
       }
     }
