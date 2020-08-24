@@ -8,10 +8,10 @@ import {WebsocketService} from './websocket.service';
 export type ConnectionStatus = 'initial' | 'ws-offline' | 'ws-online' | 'polling-sleep' | 'polling-fetch' | 'error';
 
 export abstract class WebsocketBackendService<T> extends WebsocketService implements OnDestroy {
-  abstract pollingEndpoint: string;
-  abstract pollingInterval: number;
-  abstract wsChannelName: string;
-  abstract initialData: T;
+  protected abstract pollingEndpoint: string;
+  protected abstract pollingInterval: number;
+  protected abstract wsChannelName: string;
+  protected abstract initialData: T;
 
   public data$: BehaviorSubject<T>;
   public connectionStatus$: BehaviorSubject<ConnectionStatus> = new BehaviorSubject<ConnectionStatus>('initial');

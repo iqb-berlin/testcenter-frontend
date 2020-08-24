@@ -1,5 +1,5 @@
 import {Inject, Injectable, OnDestroy} from '@angular/core';
-import {of, Subject, Subscription, timer} from 'rxjs';
+import {Observable, of, Subject, Subscription, timer} from 'rxjs';
 import {Command, commandKeywords, isKnownCommand, TestStatus} from './test-controller.interfaces';
 import {TestControllerService} from './test-controller.service';
 import {
@@ -20,11 +20,22 @@ type TestStartedOrStopped = 'started' | 'terminated' | '';
 @Injectable()
 export class CommandService extends WebsocketBackendService<Command[]> implements OnDestroy {
 
+    public command$: Observable<Command>;
+
+    protected initialData = [];
+    protected pollingEndpoint = '';
+    protected pollingInterval = 5000;
+    protected wsChannelName = 'commands';
+
+    private commandReceived$: Subject<Command> = new Subject<Command>();
+    private commandSubscription: Subscription;
+    private testStartedSubscription: Subscription;
+
     constructor (
         @Inject('IS_PRODUCTION_MODE') public isProductionMode,
         private tcs: TestControllerService,
         @Inject('SERVER_URL') serverUrl: string,
-        http: HttpClient
+        protected http: HttpClient
     ) {
         super(serverUrl, http);
 
@@ -32,18 +43,19 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
             this.setUpGlobalCommandsForDebug();
         }
 
+        this.command$ = this.commandReceived$
+            .pipe(
+                concatMap(item => timer(300).pipe(ignoreElements(), startWith(item))), // min delay between items
+                mergeMap((command: Command) => {
+                    console.log('try to execute' + CommandService.commandToString(command));
+                    return this.http.patch(`${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed`, {})
+                        .pipe(map(() => command));
+                })
+            );
+
         this.subscribeCommands();
         this.subscribeTestStarted();
     }
-
-    public command$: Subject<Command> = new Subject<Command>();
-    private commandSubscription: Subscription;
-    initialData = [];
-    pollingEndpoint = '';
-    pollingInterval = 20000;
-    wsChannelName = 'commands';
-    private commandHistory: number[] = [];
-    private testStartedSubscription: Subscription;
 
     private static commandToString(command: Command): string {
         return `[${command.id}] ${command.keyword} ` + command.arguments.join(' ');
@@ -86,74 +98,57 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
                     }
                 }),
                 switchMap(commands => of(...commands))
-            ).subscribe(this.command$);
+            ).subscribe(this.commandReceived$);
     }
 
+    // TODO move to testcontroller maybe
     private subscribeCommands() {
-        this.commandSubscription = this.command$
-            .pipe(
-                concatMap(item => timer(300).pipe(ignoreElements(), startWith(item))), // min delay between items
-                mergeMap((command: Command) => {
-                    console.log('try to execute' + CommandService.commandToString(command));
-                    return this.http.patch(`${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed`, {})
-                        .pipe(map(() => command));
-                })
-            )
-            .subscribe((command: Command) => {
-                this.executeCommand(command);
+        this.commandSubscription = this.commandReceived$.subscribe(
+            (command: Command) => {
+                console.log(Date.now() + '---- execute command: ' + CommandService.commandToString(command));
+                switch (command.keyword) {
+                    case 'pause':
+                        this.tcs.testStatus$.next(TestStatus.PAUSED);
+                        break;
+                    case 'resume':
+                        this.tcs.testStatus$.next(TestStatus.RUNNING);
+                        break;
+                    case 'terminate':
+                        this.tcs.terminateTest();
+                        break;
+                    case 'goto':
+                        this.tcs.setUnitNavigationRequest(command.arguments[0]);
+                        break;
+                    case 'debug':
+                        this.tcs.debugPane = command.arguments[0] !== 'off';
+                        break;
+                    default:
+                        console.warn(`Unknown command: ` + CommandService.commandToString(command));
+                }
             }, error => console.warn('error for command', error));
-    }
-
-    private executeCommand(command: Command) {
-
-        console.log(Date.now() + '---- execute command: ' + CommandService.commandToString(command));
-
-        if (this.commandHistory.indexOf(command.id) >= 0) {
-            console.warn('command already executed' + CommandService.commandToString(command));
-        }
-
-        this.commandHistory.push(command.id);
-        switch (command.keyword) {
-            case 'pause':
-                this.tcs.testStatus$.next(TestStatus.PAUSED);
-                break;
-            case 'resume':
-                this.tcs.testStatus$.next(TestStatus.RUNNING);
-                break;
-            case 'terminate':
-                this.tcs.terminateTest();
-                break;
-            case 'goto':
-                this.tcs.setUnitNavigationRequest(command.arguments[0]);
-                break;
-            case 'debug':
-                this.tcs.debugPane = command.arguments[0] !== 'off';
-                break;
-            default:
-                console.warn(`Unknown command: ` + CommandService.commandToString(command));
-        }
     }
 
     private setUpGlobalCommandsForDebug() {
         window['tc'] = {};
         commandKeywords.forEach((keyword: string) => {
-            const randomNumber = Math.round(Math.random() * -10000000);
-            window['tc'][keyword] = (args) => {this.commandFromTerminal(keyword, args, randomNumber); };
+
+            window['tc'][keyword] = (args) => {this.commandFromTerminal(keyword, args); };
         });
     }
 
-    private commandFromTerminal(keyword: string, args: string[], id: number): void {
+    private commandFromTerminal(keyword: string, args: string[]): void {
 
         if (this.isProductionMode) {
             return;
         }
         args = (typeof args === 'undefined') ? [] : args;
+        const id = Math.round(Math.random() * -10000000);
         const command = {keyword, arguments: args, id, timestamp: Date.now()};
         if (!isKnownCommand(keyword)) {
             console.warn(`Unknown command: ` + CommandService.commandToString(command));
             return;
         }
 
-        this.executeCommand(command);
+        this.commandReceived$.next(command);
     }
 }
