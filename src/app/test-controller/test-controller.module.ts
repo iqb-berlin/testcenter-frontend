@@ -27,7 +27,6 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {TestStatusComponent} from './test-status/test-status.component';
-import {FocusService} from './focus.service';
 import {CommandService} from './command.service';
 
 
@@ -66,7 +65,6 @@ import {CommandService} from './command.service';
   ],
   providers: [
     unitRouteGuards,
-    FocusService,
     CommandService
   ],
   exports: [
@@ -76,7 +74,6 @@ import {CommandService} from './command.service';
 export class TestControllerModule {
   // noinspection JSUnusedLocalSymbols
   constructor(
-      private focusService: FocusService,
       private commandService: CommandService
   ) {
   }

@@ -133,7 +133,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
               }
               break;
 
-            case 'vopWindowsFocusChangedNotification':
+            case 'vopWindowFocusChangedNotification':
               if (msgData['hasFocus']) {
                 this.tcs.windowFocusState$.next(WindowFocusState.PLAYER)
               } else if (document.hasFocus()) {

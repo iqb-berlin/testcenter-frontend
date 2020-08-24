@@ -19,13 +19,12 @@ import {
   WindowFocusState
 } from './test-controller.interfaces';
 import {from, Observable, of, Subscription, throwError} from 'rxjs';
-import {concatMap, map, switchMap} from 'rxjs/operators';
+import {concatMap, debounceTime, map, switchMap} from 'rxjs/operators';
 import {CustomtextService} from 'iqb-components';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {BookletConfig} from '../config/booklet-config';
 import {TestMode} from '../config/test-mode';
-import {FocusService} from './focus.service';
 
 
 @Component({
@@ -41,6 +40,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private unitLoadXmlSubscription: Subscription = null;
   private unitLoadBlobSubscription: Subscription = null;
   private appWindowHasFocusSubscription: Subscription = null;
+  private appFocusSubscription: Subscription = null;
 
   private lastUnitSequenceId = 0;
   public loadProgressValue = 0;
@@ -65,7 +65,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private cts: CustomtextService,
-    public focusService: FocusService,
   ) {
   }
 
@@ -481,6 +480,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                         if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
                           this.tcs.setUnitNavigationRequest(navTarget.toString());
                           this.tcs.testStatus$.next(TestStatus.RUNNING);
+                          this.addAppFocusSubscription();
                         }
                       }
                     );
@@ -488,6 +488,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
                       this.tcs.setUnitNavigationRequest(navTarget.toString());
                       this.tcs.testStatus$.next(TestStatus.RUNNING);
+                      this.addAppFocusSubscription();
                     }
 
                   } // complete
@@ -498,6 +499,27 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
       }); // routingSubscription
     }); // setTimeOut
+  }
+
+  private addAppFocusSubscription() {
+    if (this.appFocusSubscription !== null) {
+      this.appFocusSubscription.unsubscribe();
+    }
+    this.appFocusSubscription = this.tcs.windowFocusState$.pipe(
+      debounceTime(500)
+    ).subscribe((newState: WindowFocusState) => {
+      if (newState === WindowFocusState.UNKNOWN) {
+        this.bs.addBookletLog(this.tcs.testId, Date.now(), 'FOCUS_LOST')
+          .add(() => {
+            this.tcs.setBookletState(LastStateKey.FOCUS, 'LOST');
+          });
+      } else {
+        this.bs.addBookletLog(this.tcs.testId, Date.now(), 'FOCUS_GAINED')
+          .add(() => {
+            this.tcs.setBookletState(LastStateKey.FOCUS, 'GAINED');
+          });
+      }
+    });
   }
 
   showReviewDialog() {
@@ -584,6 +606,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
     if (this.appWindowHasFocusSubscription !== null) {
       this.appWindowHasFocusSubscription.unsubscribe();
+    }
+    if (this.appFocusSubscription !== null) {
+      this.appFocusSubscription.unsubscribe();
     }
     this.unsubscribeTestSubscriptions();
     this.mds.progressVisualEnabled = true;

@@ -2,8 +2,7 @@
   <div><b>STATUS:</b> {{tcs.testStatus$ | async}}</div>
   <div><b>TIMER:</b> {{timerValue?.timeLeftString}}<b> {{timerValue?.testletId}} {{timerValue?.type}}</b></div>
   <div><b>MODE:</b> {{tcs.testMode.modeId}}</div>
-  <div><b>FOCUS:</b> {{focusService.focus$ | async}}</div>
-  <div><b>FOCUS2:</b> {{tcs.windowFocusState$ | async}}</div>
+  <div><b>FOCUS:</b> {{tcs.windowFocusState$ | async}}</div>
 </div>
 
 <div id="header" fxLayout="row" fxLayoutAlign="end center">
