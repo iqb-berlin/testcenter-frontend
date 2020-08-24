@@ -88,6 +88,8 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
         clearTimeout(this.pollingTimeoutId);
         this.pollingTimeoutId = null;
     }
+
+    this.data$ = null;
   }
 
   private scheduleNextPoll(): void {
