@@ -165,7 +165,7 @@ export function isKnownCommand (keyword: string): keyword is CommandKeyword {
 
 export interface Command {
     keyword: CommandKeyword;
-    id: string; // a unique id for each command, to make sure each one get only performed once (even in polling mode)
+    id: number; // a unique id for each command, to make sure each one get only performed once (even in polling mode)
     arguments: string[];
     timestamp: number;
 }

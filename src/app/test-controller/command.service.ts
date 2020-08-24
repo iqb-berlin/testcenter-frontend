@@ -12,7 +12,6 @@ import {
     startWith,
     switchMap
 } from 'rxjs/operators';
-import {Uuid} from '../shared/uuid';
 import {WebsocketBackendService} from '../shared/websocket-backend.service';
 import {HttpClient} from '@angular/common/http';
 
@@ -43,7 +42,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     pollingEndpoint = '';
     pollingInterval = 20000;
     wsChannelName = 'commands';
-    private commandHistory: string[] = [];
+    private commandHistory: number[] = [];
     private testStartedSubscription: Subscription;
 
     private static commandToString(command: Command): string {
@@ -138,11 +137,12 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     private setUpGlobalCommandsForDebug() {
         window['tc'] = {};
         commandKeywords.forEach((keyword: string) => {
-            window['tc'][keyword] = (args) => {this.commandFromTerminal(keyword, args, Uuid.create()); };
+            const randomNumber = Math.round(Math.random() * -10000000);
+            window['tc'][keyword] = (args) => {this.commandFromTerminal(keyword, args, randomNumber); };
         });
     }
 
-    private commandFromTerminal(keyword: string, args: string[], id: string): void {
+    private commandFromTerminal(keyword: string, args: string[], id: number): void {
 
         if (this.isProductionMode) {
             return;
