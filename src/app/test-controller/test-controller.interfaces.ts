@@ -13,6 +13,11 @@ export interface KeyValuePairString {
   [K: string]: string;
 }
 
+export enum WindowFocusState {
+  PLAYER = 'PLAYER',
+  HOST = 'HOST',
+  UNKNOWN = 'UNKNOWN'
+}
 
 // testcontroller restrictions +++++++++++++++++++++++++++++++++++
 export interface StartLockData {

@@ -15,7 +15,8 @@ import {
   TestData,
   TestStatus,
   UnitData,
-  UnitNavigationTarget
+  UnitNavigationTarget,
+  WindowFocusState
 } from './test-controller.interfaces';
 import {from, Observable, of, Subscription, throwError} from 'rxjs';
 import {concatMap, map, switchMap} from 'rxjs/operators';
@@ -39,6 +40,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private maxTimerSubscription: Subscription = null;
   private unitLoadXmlSubscription: Subscription = null;
   private unitLoadBlobSubscription: Subscription = null;
+  private appWindowHasFocusSubscription: Subscription = null;
 
   private lastUnitSequenceId = 0;
   public loadProgressValue = 0;
@@ -318,6 +320,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             break;
         }
       });
+      this.appWindowHasFocusSubscription = this.mds.appWindowHasFocus$.subscribe(hasFocus =>{
+        this.tcs.windowFocusState$.next(hasFocus ? WindowFocusState.HOST : WindowFocusState.UNKNOWN)
+      });
 
       this.routingSubscription = this.route.params.subscribe(params => {
         console.log(this.tcs.testStatus$.getValue());
@@ -576,6 +581,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
     if (this.testStatusSubscription !== null) {
       this.testStatusSubscription.unsubscribe();
+    }
+    if (this.appWindowHasFocusSubscription !== null) {
+      this.appWindowHasFocusSubscription.unsubscribe();
     }
     this.unsubscribeTestSubscriptions();
     this.mds.progressVisualEnabled = true;

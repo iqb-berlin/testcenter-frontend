@@ -78,6 +78,8 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       });
 
+      this.setupFocusListeners();
+
       this.bs.getSysConfig().subscribe(sc => {
         if (sc) {
           this.cts.addCustomTexts(sc.customTexts);
@@ -105,6 +107,41 @@ export class AppComponent implements OnInit, OnDestroy {
       this.bs.getSysCheckInfo().subscribe(myConfigs => {
         this.mds.sysCheckAvailable = !!myConfigs;
       });
+    });
+  }
+
+  private setupFocusListeners() {
+    let hidden = '';
+    let visibilityChange = '';
+    if (typeof document.hidden !== 'undefined') { // Opera 12.10 and Firefox 18 and later support
+      hidden = 'hidden';
+      visibilityChange = 'visibilitychange';
+      // @ts-ignore
+    } else if (typeof document['msHidden'] !== 'undefined') {
+      hidden = 'msHidden';
+      visibilityChange = 'msvisibilitychange';
+      // @ts-ignore
+    } else if (typeof document['mozHidden'] !== 'undefined') {
+      hidden = 'mozHidden';
+      visibilityChange = 'mozHidden';
+      // @ts-ignore
+    } else if (typeof document['webkitHidden'] !== 'undefined') {
+      hidden = 'webkitHidden';
+      visibilityChange = 'webkitvisibilitychange';
+    }
+    if (hidden && visibilityChange) {
+      document.addEventListener(visibilityChange, () => {
+        this.mds.appWindowHasFocus$.next(!document[hidden])
+      }, false);
+    }
+    window.addEventListener('blur', () => {
+      this.mds.appWindowHasFocus$.next(document.hasFocus())
+    });
+    window.addEventListener('focus', () => {
+      this.mds.appWindowHasFocus$.next(document.hasFocus())
+    });
+    window.addEventListener('unload', () => {
+      this.mds.appWindowHasFocus$.next(!document[hidden])
     });
   }
 

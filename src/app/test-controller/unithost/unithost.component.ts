@@ -4,7 +4,14 @@ import { Subscription} from 'rxjs';
 import {Component, HostListener, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core';
-import {TaggedString, PageData, LastStateKey, LogEntryKey, KeyValuePairString} from '../test-controller.interfaces';
+import {
+  TaggedString,
+  PageData,
+  LastStateKey,
+  LogEntryKey,
+  KeyValuePairString,
+  WindowFocusState
+} from '../test-controller.interfaces';
 
 declare var srcDoc: any;
 
@@ -123,6 +130,16 @@ export class UnithostComponent implements OnInit, OnDestroy {
             case 'vopUnitNavigationRequestedNotification':
               if (msgPlayerId === this.itemplayerSessionId) {
                 this.tcs.setUnitNavigationRequest(msgData['targetRelative']);
+              }
+              break;
+
+            case 'vopWindowsFocusChangedNotification':
+              if (msgData['hasFocus']) {
+                this.tcs.windowFocusState$.next(WindowFocusState.PLAYER)
+              } else if (document.hasFocus()) {
+                this.tcs.windowFocusState$.next(WindowFocusState.HOST)
+              } else {
+                this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN)
               }
               break;
 

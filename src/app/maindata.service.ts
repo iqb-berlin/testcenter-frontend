@@ -30,6 +30,7 @@ export class MainDataService {
 
   // set by app.component.ts
   public postMessage$ = new Subject<MessageEvent>();
+  public appWindowHasFocus$ = new Subject<boolean>();
 
   static getAuthData(): AuthData {
     let myReturn: AuthData = null;

@@ -10,7 +10,7 @@ import {
   TestStatus,
   UnitNaviButtonData,
   UnitNavigationTarget,
-  UnitStateData
+  UnitStateData, WindowFocusState
 } from './test-controller.interfaces';
 import {BackendService} from './backend.service';
 import {Router} from '@angular/router';
@@ -80,6 +80,7 @@ export class TestControllerService {
   private unitPresentationCompleteStates: {[sequenceId: number]: string} = {};
 
   private unitStateDataToSave$ = new Subject<UnitStateData>();
+  public windowFocusState$ = new Subject<WindowFocusState>();
 
   constructor (
     private router: Router,
