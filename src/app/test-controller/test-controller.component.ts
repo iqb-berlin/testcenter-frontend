@@ -349,36 +349,44 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.unsubscribeTestSubscriptions();
 
           this.maxTimerSubscription = this.tcs.maxTimeTimer$.subscribe(maxTimerData => {
-            if (maxTimerData.type === MaxTimerDataType.STARTED) {
-              this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') + maxTimerData.timeLeftMinString, '', {duration: 3000});
-              this.timerValue = maxTimerData;
-            } else if (maxTimerData.type === MaxTimerDataType.ENDED) {
-              this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', {duration: 3000});
-              this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
-              this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
-              this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
-              this.timerRunning = false;
-              this.timerValue = null;
-              if (this.tcs.testMode.forceTimeRestrictions) {
-                this.tcs.setUnitNavigationRequest(UnitNavigationTarget.NEXT);
-              }
-            } else if (maxTimerData.type === MaxTimerDataType.CANCELLED) {
-              this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', {duration: 3000});
-              this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
-              this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
-              this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
-              this.timerValue = null;
-            } else {
-              this.timerValue = maxTimerData;
-              if ((maxTimerData.timeLeftSeconds % 15) === 0) {
-                this.tcs.LastMaxTimerState[maxTimerData.testletId] = Math.round(maxTimerData.timeLeftSeconds / 60);
+            switch (maxTimerData.type) {
+              case MaxTimerDataType.STARTED:
+                this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') + maxTimerData.timeLeftMinString, '', {duration: 3000});
+                this.timerValue = maxTimerData;
+                break;
+              case MaxTimerDataType.ENDED:
+                this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', {duration: 3000});
+                this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
+                this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
                 this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
-              }
-              if ((maxTimerData.timeLeftSeconds / 60) === 5) {
-                this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver5Minutes'), '', {duration: 3000});
-              } else if ((maxTimerData.timeLeftSeconds / 60) === 1) {
-                this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver1Minute'), '', {duration: 3000});
-              }
+                this.timerRunning = false;
+                this.timerValue = null;
+                if (this.tcs.testMode.forceTimeRestrictions) {
+                  this.tcs.setUnitNavigationRequest(UnitNavigationTarget.NEXT);
+                }
+                break;
+              case MaxTimerDataType.CANCELLED:
+                this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', {duration: 3000});
+                this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
+                this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
+                this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
+                this.timerValue = null;
+                break;
+              case MaxTimerDataType.INTERRUPTED:
+                this.timerValue = null;
+                break;
+              case MaxTimerDataType.STEP:
+                this.timerValue = maxTimerData;
+                if ((maxTimerData.timeLeftSeconds % 15) === 0) {
+                  this.tcs.LastMaxTimerState[maxTimerData.testletId] = Math.round(maxTimerData.timeLeftSeconds / 60);
+                  this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
+                }
+                if ((maxTimerData.timeLeftSeconds / 60) === 5) {
+                  this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver5Minutes'), '', {duration: 3000});
+                } else if ((maxTimerData.timeLeftSeconds / 60) === 1) {
+                  this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver1Minute'), '', {duration: 3000});
+                }
+                break;
             }
           });
 

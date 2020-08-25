@@ -107,6 +107,7 @@ export enum MaxTimerDataType {
     STARTED = 'STARTED',
     STEP = 'STEP',
     CANCELLED = 'CANCELLED',
+    INTERRUPTED = 'INTERRUPTED',
     ENDED = 'ENDED'
 }
 
