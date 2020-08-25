@@ -47,19 +47,19 @@ export class FocusService implements OnDestroy {
                         // see https://developer.mozilla.org/de/docs/Web/API/Navigator/sendBeacon
                         break;
                     case 'outside':
-                        this.bs.addBookletLog(this.tcs.testId, Date.now(), 'FOCUS_LOST')
-                            .add(() => {
-                                this.tcs.setBookletState(LastStateKey.FOCUS, 'LOST');
-                                // this.tcs.testStatus$.next(TestStatus.PAUSED);
-                                // TODO enable when player iframe is not treated as outside anymore
-                            });
+                        // this.bs.addBookletLog(this.tcs.testId, Date.now(), 'FOCUS_LOST')
+                        //     .add(() => {
+                        //         this.tcs.setBookletState(LastStateKey.FOCUS, 'LOST');
+                        //         // this.tcs.testStatus$.next(TestStatus.PAUSED);
+                        //         // TODO enable when player iframe is not treated as outside anymore
+                        //     });
                         break;
                     case 'window':
-                        this.bs.addBookletLog(this.tcs.testId, Date.now(), 'FOCUS_GAINED')
-                            .add(() => {
-                                this.tcs.setBookletState(LastStateKey.FOCUS, 'GAINED');
-                            });
-                        break;
+                        // this.bs.addBookletLog(this.tcs.testId, Date.now(), 'FOCUS_GAINED')
+                        //     .add(() => {
+                        //         this.tcs.setBookletState(LastStateKey.FOCUS, 'GAINED');
+                        //     });
+                        // break;
                 }
             });
     }
