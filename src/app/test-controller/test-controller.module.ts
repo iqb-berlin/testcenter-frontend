@@ -27,8 +27,9 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {TestStatusComponent} from './test-status/test-status.component';
-import {CommandService} from './command.service';
 import { UnlockInputComponent } from './unlock-input/unlock-input.component';
+import { UnitMenuComponent } from './unit-menu/unit-menu.component';
+import {testControllerRouteGuards} from "./test-controller-route-guards";
 
 
 @NgModule({
@@ -60,6 +61,7 @@ import { UnlockInputComponent } from './unlock-input/unlock-input.component';
     StartLockInputComponent,
     TestStatusComponent,
     UnlockInputComponent,
+    UnitMenuComponent,
   ],
   entryComponents: [
     ReviewDialogComponent,
@@ -67,16 +69,12 @@ import { UnlockInputComponent } from './unlock-input/unlock-input.component';
   ],
   providers: [
     unitRouteGuards,
-    CommandService
+    testControllerRouteGuards
   ],
   exports: [
     TestControllerComponent
   ]
 })
 export class TestControllerModule {
-  // noinspection JSUnusedLocalSymbols
-  constructor(
-      private commandService: CommandService
-  ) {
-  }
+
 }

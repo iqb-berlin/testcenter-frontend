@@ -1,0 +1,34 @@
+<div class="menu-body">
+  <div fxLayout="row wrap" fxLayoutAlign="center stretch">
+    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING) && (tcs.unitListForNaviButtons.length > 0)">
+      <mat-card-title>{{ 'Aufgaben' | customtext:'booklet_tasklisttitle':cts.updateCount }}</mat-card-title>
+      <mat-card-content>
+        <div fxLayout="column" fxLayoutAlign="center stretch">
+          <div *ngFor="let u of unitMenuButtonList" fxLayout="column" fxLayoutAlign="center stretch">
+            <div fxLayout="row" fxLayoutAlign="space-between stretch">
+              <div [class]="u.testletMarker" [matTooltip]="u.testletLabel" fxFlex="0 0 10px"></div>
+              <div [class]="u.isCurrent ? 'active-unit' : 'non-active-unit'" fxFlex fxLayout="column">
+                <button mat-flat-button (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())" [disabled]="u.isDisabled">
+                  {{u.label}}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button (click)="goBack()">Zurück</button>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="((tcs.testStatus$ | async) !== tcs.testStatusEnum.RUNNING) || (tcs.unitListForNaviButtons.length > 0)">
+      <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
+      <mat-card-content>
+        <p>Es wurde kein aktiver Test festgestellt</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button (click)="goBack()">Zurück</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {CustomtextService} from "iqb-components";
 import {CodeInputData} from "../test-controller.interfaces";
@@ -8,12 +8,10 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {TestControllerService} from "../test-controller.service";
 
 @Component({
-  selector: 'app-unlock-input',
   templateUrl: './unlock-input.component.html',
   styleUrls: ['./unlock-input.component.css']
 })
-export class UnlockInputComponent implements OnInit, AfterViewInit {
-  @ViewChild('lookup') lookupElement: ElementRef;
+export class UnlockInputComponent implements OnInit {
   startkeyform: FormGroup;
   returnTo: string;
   newUnit: UnitControllerData;
@@ -36,16 +34,11 @@ export class UnlockInputComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    // TODO set focus and handle keydown.enter
     this.codes.forEach(c => {
       this.formControls[c.testletId] = new FormControl(c.value, [Validators.required, Validators.minLength(3)]);
     });
     this.startkeyform = new FormGroup(this.formControls);
-  }
-
-  ngAfterViewInit() {
-    const formControls = this.lookupElement.nativeElement.getElementsByTagName("input");
-    console.log(formControls);
-    formControls[0].focus();
   }
 
   return() {

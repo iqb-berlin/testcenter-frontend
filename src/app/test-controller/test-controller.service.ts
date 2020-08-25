@@ -25,6 +25,7 @@ export class TestControllerService {
   public testStatus$ = new BehaviorSubject<TestStatus>(TestStatus.WAITING_LOAD_START);
   public testStatusEnum = TestStatus;
   public loadComplete = false;
+  public loadProgressValue = 0;
 
   public testMode = new TestMode();
   public bookletConfig = new BookletConfig();
@@ -298,13 +299,15 @@ export class TestControllerService {
 
   public setUnitNavigationRequest(navString: string, force = false) {
     if (!this.rootTestlet) {
-      this.router.navigateByUrl(`/t/${this.testId}`);
+      this.router.navigate([`/t/${this.testId}/status`], {skipLocationChange: true});
     } else {
       switch (navString) {
-        case UnitNavigationTarget.MENU:
         case UnitNavigationTarget.ERROR:
         case UnitNavigationTarget.PAUSE:
-          this.router.navigateByUrl(`/t/${this.testId}`);
+          this.router.navigate([`/t/${this.testId}/status`], {skipLocationChange: true});
+          break;
+        case UnitNavigationTarget.MENU:
+          this.router.navigate([`/t/${this.testId}/menu`], {skipLocationChange: true});
           break;
         case UnitNavigationTarget.NEXT:
           let startWith = this.currentUnitSequenceId;

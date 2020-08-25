@@ -36,17 +36,6 @@
     </div>
 </div>
 
-<mat-card *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.WAITING_LOAD_COMPLETE" class="progress-bar">
-  <mat-card-content fxLayout="column">
-    <h2>Lade Aufgaben... bitte warten</h2>
-    <mat-progress-bar
-        color="primary"
-        mode="determinate"
-        [value]="loadProgressValue">
-    </mat-progress-bar>
-  </mat-card-content>
-</mat-card>
-
 <div class="tc-body" fxLayout="row" fxLayoutAlign="start stretch">
     <router-outlet></router-outlet>
 </div>
