@@ -44,20 +44,8 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
             this.setUpGlobalCommandsForDebug();
         }
 
-        this.command$ = this.commandReceived$
-            .pipe(
-                filter((command: Command) => (this.executedCommandIds.indexOf(command.id) < 0)),
-                concatMap((command: Command) => timer(1000).pipe(ignoreElements(), startWith(command))), // min delay between items
-                mergeMap((command: Command) => {
-                    console.log('try to execute' + CommandService.commandToString(command));
-                    return this.http.patch(`${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed`, {})
-                        .pipe(
-                            map(() => command),
-                            tap(cmd => this.executedCommandIds.push(cmd.id))
-                        );
-                })
-            );
-
+        // as services don't have a OnInit Hook (see: https://v9.angular.io/api/core/OnInit) we subscribe here
+        this.subscribeReceivedCommands();
         this.subscribeCommands();
         this.subscribeTestStarted();
     }
@@ -76,9 +64,28 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
         return '';
     }
 
+    // services are normally meant to live forever, so unsubscription *should* be unnecessary
+    // this unsubscriptions are only for the case, the project's architecture will be changed dramatically once
+    // while not having a OnInit-hook services *do have* an OnDestroy-hook (see: https://v9.angular.io/api/core/OnDestroy)
     ngOnDestroy() {
         this.commandSubscription.unsubscribe();
         this.testStartedSubscription.unsubscribe();
+    }
+
+    private subscribeReceivedCommands() {
+        this.command$ = this.commandReceived$
+            .pipe(
+                filter((command: Command) => (this.executedCommandIds.indexOf(command.id) < 0)),
+                concatMap((command: Command) => timer(1000).pipe(ignoreElements(), startWith(command))), // min delay between items
+                mergeMap((command: Command) => {
+                    console.log('try to execute' + CommandService.commandToString(command));
+                    return this.http.patch(`${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed`, {})
+                        .pipe(
+                            map(() => command),
+                            tap(cmd => this.executedCommandIds.push(cmd.id))
+                        );
+                })
+            );
     }
 
     private subscribeTestStarted() {
@@ -91,7 +98,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
                 distinctUntilChanged(),
                 map(CommandService.testStartedOrStopped),
                 filter(testStartedOrStopped => testStartedOrStopped !== ''),
-                map(testStartedOrStopped => testStartedOrStopped ? `test/${this.tcs.testId}/commands` : ''),
+                map(testStartedOrStopped => (testStartedOrStopped === 'started') ? `test/${this.tcs.testId}/commands` : ''),
                 filter(newPollingEndpoint => newPollingEndpoint !== this.pollingEndpoint),
                 switchMap((pollingEndpoint: string) => {
                     this.pollingEndpoint = pollingEndpoint;
@@ -136,13 +143,11 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     private setUpGlobalCommandsForDebug() {
         window['tc'] = {};
         commandKeywords.forEach((keyword: string) => {
-
             window['tc'][keyword] = (args) => {this.commandFromTerminal(keyword, args); };
         });
     }
 
     private commandFromTerminal(keyword: string, args: string[]): void {
-
         if (this.isProductionMode) {
             return;
         }
@@ -153,7 +158,6 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
             console.warn(`Unknown command: ` + CommandService.commandToString(command));
             return;
         }
-
         this.commandReceived$.next(command);
     }
 }

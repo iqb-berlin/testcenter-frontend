@@ -62,7 +62,9 @@ export class WebsocketService {
 
   protected closeConnection(): void {
     this.wsConnected$.next(false);
-    this.wsSubscription.unsubscribe();
+    if (this.wsSubscription) {
+      this.wsSubscription.unsubscribe();
+    }
     if (this.wsSubject$) {
       this.wsSubject$.complete();
       this.wsSubject$ = null;
