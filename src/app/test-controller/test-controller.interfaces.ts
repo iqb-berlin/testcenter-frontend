@@ -52,7 +52,8 @@ export enum TestStatus {
   RUNNING = 'RUNNING',
   TERMINATED = 'TERMINATED',
   PAUSED = 'PAUSED',
-  ERROR = 'ERROR'
+  ERROR = 'ERROR',
+  TERMINATING = 'TERMINATING',
 }
 
 export interface UnitMenuButtonData {

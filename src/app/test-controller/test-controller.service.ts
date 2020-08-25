@@ -296,15 +296,17 @@ export class TestControllerService {
 
   public terminateTest() {
     if (this.testMode.saveResponses) {
-      this.bs.addBookletLog(this.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE')
-          .add(() => {
-            console.log('AFTER LOG');
-            // TODO who evaluates TestStatus when navigating to root?
-            this.bs.lockTest(this.testId).subscribe(bsOk => {
-              this.testStatus$.next(bsOk ? TestStatus.TERMINATED : TestStatus.ERROR);
-              this.router.navigate(['/']);
+      if (this.testStatus$.getValue() !== TestStatus.TERMINATING) {
+        this.testStatus$.next(TestStatus.TERMINATING); // sometimes terminateTest get called two times from player
+        this.bs.addBookletLog(this.testId, Date.now(), 'BOOKLETLOCKEDbyTESTEE')
+            .add(() => {
+              // TODO who evaluates TestStatus when navigating to root?
+              this.bs.lockTest(this.testId).subscribe(bsOk => {
+                this.testStatus$.next(bsOk ? TestStatus.TERMINATED : TestStatus.ERROR);
+                this.router.navigate(['/']);
+              });
             });
-          });
+      }
     } else {
       this.testStatus$.next(TestStatus.TERMINATED);
       this.router.navigate(['/']);
