@@ -229,10 +229,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           } else {
             const myUnitData = myData as UnitData;
             if (myUnitData.restorepoint) {
-              this.tcs.addUnitStateData(myUnit.id, sequenceId, JSON.parse(myUnitData.restorepoint));
+              this.tcs.addUnitStateData(sequenceId, JSON.parse(myUnitData.restorepoint));
             }
             let playerId = null;
             let definitionRef = '';
+            if (myUnitData.laststate && myUnitData.laststate['PRESENTATIONCOMPLETE']) {
+              this.tcs.addUnitPresentationComplete(sequenceId, myUnitData.laststate['PRESENTATIONCOMPLETE'])
+            }
 
             try {
               const oParser = new DOMParser();
@@ -408,7 +411,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               });
             } else {
               this.tcs.testMode = new TestMode(testData.mode);
-
+console.log(this.tcs.testMode);
               let navTarget = 1;
               if (testData.laststate !== null) {
                 if (testData.laststate.hasOwnProperty(LastStateKey.LASTUNIT)) {

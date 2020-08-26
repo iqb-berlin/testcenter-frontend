@@ -140,6 +140,12 @@ export enum NoUnitFlag {
   ERROR = 'error'
 }
 
+export interface PendingUnitData {
+  playerId: string;
+  unitState: string;
+  unitDefinition: string;
+}
+
 export interface KeyValuePairNumber {
   [K: string]: number;
 }

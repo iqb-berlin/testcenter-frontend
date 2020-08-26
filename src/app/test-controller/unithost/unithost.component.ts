@@ -5,12 +5,11 @@ import {Component, HostListener, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core';
 import {
-  TaggedString,
   PageData,
   LastStateKey,
   LogEntryKey,
   KeyValuePairString,
-  WindowFocusState
+  WindowFocusState, PendingUnitData
 } from '../test-controller.interfaces';
 
 declare var srcDoc: any;
@@ -35,8 +34,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private postMessageSubscription: Subscription = null;
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
-  private pendingUnitDefinition: TaggedString = null;
-  private pendingUnitRestorePoint: TaggedString = null;
+  private pendingUnitData: PendingUnitData = null;
 
   public pageList: PageData[] = [];
   private knownPages: string[];
@@ -63,19 +61,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
             case 'vopReadyNotification':
               // TODO add apiVersion check
               let pendingUnitDef = '';
-              if (this.pendingUnitDefinition !== null) {
-                if (this.pendingUnitDefinition.tag === msgPlayerId) {
-                  pendingUnitDef = this.pendingUnitDefinition.value;
-                  this.pendingUnitDefinition = null;
-                }
-              }
-
               let pendingUnitDataToRestore: KeyValuePairString = {};
-              if (this.pendingUnitRestorePoint !== null) {
-                if (this.pendingUnitRestorePoint.tag === msgPlayerId) {
-                  pendingUnitDataToRestore['all'] = this.pendingUnitRestorePoint.value;
-                  this.pendingUnitRestorePoint = null;
-                }
+              if (this.pendingUnitData && this.pendingUnitData.playerId === msgPlayerId) {
+                pendingUnitDef = this.pendingUnitData.unitDefinition;
+                pendingUnitDataToRestore['all'] = this.pendingUnitData.unitState;
+                this.pendingUnitData = null;
               }
               this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
 
@@ -181,19 +171,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
           this.iFrameItemplayer.setAttribute('class', 'unitHost');
           this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
 
-          if (this.tcs.hasUnitStateData(this.myUnitSequenceId)) {
-            this.pendingUnitRestorePoint = {tag: this.itemplayerSessionId, value: this.tcs.getUnitStateData(this.myUnitSequenceId)};
-          } else {
-            this.pendingUnitRestorePoint = null;
-          }
-
+          this.pendingUnitData = {
+            playerId: this.itemplayerSessionId,
+            unitDefinition: this.tcs.hasUnitDefinition(this.myUnitSequenceId) ? this.tcs.getUnitDefinition(this.myUnitSequenceId) : null,
+            unitState: this.tcs.hasUnitStateData(this.myUnitSequenceId) ? this.tcs.getUnitStateData(this.myUnitSequenceId) : null
+          };
           this.leaveWarning = false;
-
-          if (this.tcs.hasUnitDefinition(this.myUnitSequenceId)) {
-            this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: this.tcs.getUnitDefinition(this.myUnitSequenceId)};
-          } else {
-            this.pendingUnitDefinition = null;
-          }
           this.iFrameHostElement.appendChild(this.iFrameItemplayer);
           srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(currentUnit.unitDef.playerId));
         }

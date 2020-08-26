@@ -169,9 +169,9 @@ export class TestControllerService {
     return this.unitStateDataParts[sequenceId];
   }
 
-  // adding PresentationComplete via newUnitStatePresentationComplete below
-  public addUnitPresentationComplete (sequenceId: number, uPC: string) {
-    this.unitPresentationCompleteStates[sequenceId] = uPC;
+  // adding PresentationComplete after unit data loading: via newUnitStatePresentationComplete below!
+  public addUnitPresentationComplete (sequenceId: number, state: string) {
+    this.unitPresentationCompleteStates[sequenceId] = state;
   }
 
   public hasUnitPresentationComplete (sequenceId: number): boolean {
@@ -202,7 +202,7 @@ export class TestControllerService {
     }
   }
 
-  public addUnitStateData(unitDbKey: string, unitSequenceId: number, dataPartsAllString: string) {
+  public addUnitStateData(unitSequenceId: number, dataPartsAllString: string) {
     this.unitStateDataParts[unitSequenceId] = dataPartsAllString;
   }
 
@@ -214,7 +214,13 @@ export class TestControllerService {
   }
 
   public newUnitStatePresentationProgress(unitDbKey: string, unitSequenceId: number, presentationProgress: string) {
-    this.unitPresentationCompleteStates[unitSequenceId] = presentationProgress;
+    if (!this.unitPresentationCompleteStates[unitSequenceId] || this.unitPresentationCompleteStates[unitSequenceId] === 'none') {
+      this.unitPresentationCompleteStates[unitSequenceId] = presentationProgress;
+    } else if (this.unitPresentationCompleteStates[unitSequenceId] === 'some' && presentationProgress === 'complete'){
+      this.unitPresentationCompleteStates[unitSequenceId] = presentationProgress;
+    }
+
+    console.log(this.unitPresentationCompleteStates);
     if (this.testMode.saveResponses) {
       // TODO prove if state change can be logged to save calls
       this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationProgress);

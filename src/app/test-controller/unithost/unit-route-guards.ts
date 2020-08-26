@@ -19,93 +19,10 @@ export class UnitActivateGuard implements CanActivate {
     private mds: MainDataService,
     public startLockDialog: MatDialog,
     private router: Router,
-    public confirmDialog: MatDialog,
-    private snackBar: MatSnackBar,
-    private cts: CustomtextService
+    public confirmDialog: MatDialog
   ) {}
 
-
-  private checkAndSolve_PresentationCompleteCode(newUnit: UnitControllerData): Observable<Boolean> {
-    if ((this.tcs.bookletConfig.force_presentation_complete === 'ON') && this.tcs.currentUnitSequenceId > 0) {
-      if (this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
-        // go forwards ===================================
-        let myreturn = true;
-        let checkUnitSequenceId = newUnit.unitDef.sequenceId - 1;
-        while (myreturn && (checkUnitSequenceId >= this.tcs.currentUnitSequenceId)) {
-          const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
-          if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
-            if (this.tcs.hasUnitPresentationComplete(checkUnitSequenceId)) {
-              if (this.tcs.getUnitPresentationComplete(checkUnitSequenceId) !== 'complete') {
-                myreturn = false;
-              }
-            } else {
-              myreturn = false;
-            }
-          }
-          checkUnitSequenceId -= 1;
-        }
-        if (myreturn) {
-          return of(true);
-        } else {
-          if (this.tcs.testMode.forceNaviRestrictions) {
-            const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-              width: '500px',
-              // height: '300px',
-              data:  <ConfirmDialogData>{
-                title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitleNext'),
-                content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextNext'),
-                confirmbuttonlabel: 'OK',
-                confirmbuttonreturn: false,
-                showcancel: false
-              }
-            });
-            return dialogCDRef.afterClosed().pipe(map(() => false));
-          } else {
-            this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden (PresentationNotComplete).',
-                'Weiterblättern', {duration: 3000});
-            return of(true);
-          }
-        }
-      } else {
-        // go backwards ===================================
-        let myreturn = true;
-        if (this.tcs.hasUnitPresentationComplete(this.tcs.currentUnitSequenceId)) {
-          if (this.tcs.getUnitPresentationComplete(this.tcs.currentUnitSequenceId) !== 'complete') {
-            myreturn = false;
-          }
-        } else {
-          myreturn = false;
-        }
-        if (myreturn) {
-          return of(true);
-        } else {
-          if (this.tcs.testMode.forceNaviRestrictions) {
-            const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-              width: '500px',
-              // height: '300px',
-              data:  <ConfirmDialogData>{
-                title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitlePrev'),
-                content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextPrev'),
-                confirmbuttonlabel: 'Trotzdem zurück',
-                confirmbuttonreturn: true,
-                showcancel: true
-              }
-            });
-            return dialogCDRef.afterClosed();
-          } else {
-            this.snackBar.open('Im Hot-Modus käme eine Warnung (PresentationNotComplete).',
-                'Zurückblättern', {duration: 3000});
-            return of(true);
-          }
-        }
-      }
-    } else {
-      return of(true);
-    }
-  }
-
-
-  private checkAndSolve_Code(newUnit: UnitControllerData, force: boolean): Observable<Boolean> {
+  private checkAndSolve_Code(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
     if (newUnit.codeRequiringTestlets) {
       if (newUnit.codeRequiringTestlets.length > 0) {
         const myCodes: CodeInputData[] = [];
@@ -142,7 +59,7 @@ export class UnitActivateGuard implements CanActivate {
     }
   }
 
-  checkAndSolve_DefLoaded(newUnit: UnitControllerData): Observable<Boolean> {
+  checkAndSolve_DefLoaded(newUnit: UnitControllerData): Observable<boolean> {
     if (this.tcs.loadComplete) {
       return of(true);
     } else {
@@ -264,37 +181,30 @@ export class UnitActivateGuard implements CanActivate {
         console.warn('unit canActivate: false (unit is locked)');
       } else {
 
-        return this.checkAndSolve_PresentationCompleteCode(newUnit).pipe(
-          switchMap(cAsPC => {
-            if (!cAsPC) {
+        return this.checkAndSolve_Code(newUnit, forceNavigation).pipe(
+          switchMap(cAsC => {
+            if (!cAsC) {
               return of(false);
             } else {
-              return this.checkAndSolve_Code(newUnit, forceNavigation).pipe(
-                switchMap(cAsC => {
-                  if (!cAsC) {
+              return this.checkAndSolve_DefLoaded(newUnit).pipe(
+                switchMap(cAsDL => {
+                  this.mds.setSpinnerOff();
+                  if (!cAsDL) {
                     return of(false);
                   } else {
-                    return this.checkAndSolve_DefLoaded(newUnit).pipe(
-                      switchMap(cAsDL => {
-                        this.mds.setSpinnerOff();
-                        if (!cAsDL) {
-                          return of(false);
-                        } else {
-                            return this.checkAndSolve_maxTime(newUnit).pipe(
-                              switchMap(cAsMT => {
-                                if (!cAsMT) {
-                                  return of(false);
-                                } else {
-                                  this.tcs.currentUnitSequenceId = targetUnitSequenceId;
-                                  this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
-                                  this.tcs.addUnitLog(newUnit.unitDef.alias, LogEntryKey.UNITENTER);
-                                  return of(true);
-                                }
-                              }));
-                        }
-                      }));
-                }
-              }));
+                      return this.checkAndSolve_maxTime(newUnit).pipe(
+                        switchMap(cAsMT => {
+                          if (!cAsMT) {
+                            return of(false);
+                          } else {
+                            this.tcs.currentUnitSequenceId = targetUnitSequenceId;
+                            this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
+                            this.tcs.addUnitLog(newUnit.unitDef.alias, LogEntryKey.UNITENTER);
+                            return of(true);
+                          }
+                        }));
+                  }
+                }));
           }
         }));
       }
@@ -350,6 +260,93 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     }
   }
 
+  private checkAndSolve_PresentationCompleteCode(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
+    if (force) {
+      return of(true);
+    } else {
+      if ((this.tcs.bookletConfig.force_presentation_complete === 'ON') && this.tcs.currentUnitSequenceId > 0) {
+        if (!newUnit || this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
+          // go forwards ===================================
+          let myreturn = true;
+          let checkUnitSequenceId = this.tcs.currentUnitSequenceId;
+          if (newUnit) {
+            checkUnitSequenceId = newUnit.unitDef.sequenceId - 1;
+          }
+          while (myreturn && (checkUnitSequenceId >= this.tcs.currentUnitSequenceId)) {
+            const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
+            if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
+              if (this.tcs.hasUnitPresentationComplete(checkUnitSequenceId)) {
+                if (this.tcs.getUnitPresentationComplete(checkUnitSequenceId) !== 'complete') {
+                  myreturn = false;
+                }
+              } else {
+                myreturn = false;
+              }
+            }
+            console.log('checking ' + checkUnitSequenceId.toString() + ': ' + myreturn);
+            checkUnitSequenceId -= 1;
+          }
+          if (myreturn) {
+            return of(true);
+          } else {
+            if (this.tcs.testMode.forceNaviRestrictions) {
+              const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+                width: '500px',
+                // height: '300px',
+                data: <ConfirmDialogData>{
+                  title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitleNext'),
+                  content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextNext'),
+                  confirmbuttonlabel: 'OK',
+                  confirmbuttonreturn: false,
+                  showcancel: false
+                }
+              });
+              return dialogCDRef.afterClosed().pipe(map(() => false));
+            } else {
+              this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden (PresentationNotComplete).',
+                'Weiterblättern', {duration: 3000});
+              return of(true);
+            }
+          }
+        } else {
+          // go backwards ===================================
+          let myreturn = true;
+          if (this.tcs.hasUnitPresentationComplete(this.tcs.currentUnitSequenceId)) {
+            if (this.tcs.getUnitPresentationComplete(this.tcs.currentUnitSequenceId) !== 'complete') {
+              myreturn = false;
+            }
+          } else {
+            myreturn = false;
+          }
+          if (myreturn) {
+            return of(true);
+          } else {
+            if (this.tcs.testMode.forceNaviRestrictions) {
+              const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+                width: '500px',
+                // height: '300px',
+                data: <ConfirmDialogData>{
+                  title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitlePrev'),
+                  content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextPrev'),
+                  confirmbuttonlabel: 'Trotzdem zurück',
+                  confirmbuttonreturn: true,
+                  showcancel: true
+                }
+              });
+              return dialogCDRef.afterClosed();
+            } else {
+              this.snackBar.open('Im Hot-Modus käme eine Warnung (PresentationNotComplete).',
+                'Zurückblättern', {duration: 3000});
+              return of(true);
+            }
+          }
+        }
+      } else {
+        return of(true);
+      }
+    }
+  }
+
   canDeactivate(component: UnithostComponent, currentRoute: ActivatedRouteSnapshot,
                 currentState: RouterStateSnapshot, nextState: RouterStateSnapshot)
       : Observable<boolean> | boolean {
@@ -369,7 +366,14 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       const currentUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(currentUnitSequenceId);
       this.tcs.addUnitLog(currentUnit.unitDef.alias, LogEntryKey.UNITTRYLEAVE);
     }
-    return this.checkAndSolve_maxTime(newUnit, forceNavigation);
+    return this.checkAndSolve_maxTime(newUnit, forceNavigation).pipe(
+      switchMap(cAsC => {
+        if (!cAsC) {
+          return of(false);
+        } else {
+          return this.checkAndSolve_PresentationCompleteCode(newUnit, forceNavigation);
+        }
+      }))
   }
 }
 
