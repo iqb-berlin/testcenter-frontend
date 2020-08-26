@@ -356,7 +356,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 break;
               case MaxTimerDataType.ENDED:
                 this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', {duration: 3000});
-                this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
+                this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
                 this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
                 this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
                 this.timerRunning = false;
@@ -367,12 +367,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 break;
               case MaxTimerDataType.CANCELLED:
                 this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', {duration: 3000});
-                this.tcs.rootTestlet.setTimeLeftNull(maxTimerData.testletId);
+                this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
                 this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
                 this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
                 this.timerValue = null;
                 break;
               case MaxTimerDataType.INTERRUPTED:
+                this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, this.tcs.LastMaxTimerState[maxTimerData.testletId]);
                 this.timerValue = null;
                 break;
               case MaxTimerDataType.STEP:
@@ -644,6 +645,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         break;
       case 'pause':
+        this.tcs.interruptMaxTimer();
         this.tcs.testStatus$.next(TestStatus.PAUSED);
         break;
       case 'resume':
@@ -668,6 +670,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case 'goto':
         this.tcs.testStatus$.next(TestStatus.RUNNING);
         if (params.length > 0) {
+          this.tcs.interruptMaxTimer();
           this.tcs.setUnitNavigationRequest(params[0], true);
         }
         break;

@@ -35,7 +35,7 @@ export class UnitActivateGuard implements CanActivate {
           const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
           if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
             if (this.tcs.hasUnitPresentationComplete(checkUnitSequenceId)) {
-              if (this.tcs.getUnitPresentationComplete(checkUnitSequenceId) !== 'yes') {
+              if (this.tcs.getUnitPresentationComplete(checkUnitSequenceId) !== 'complete') {
                 myreturn = false;
               }
             } else {
@@ -70,7 +70,7 @@ export class UnitActivateGuard implements CanActivate {
         // go backwards ===================================
         let myreturn = true;
         if (this.tcs.hasUnitPresentationComplete(this.tcs.currentUnitSequenceId)) {
-          if (this.tcs.getUnitPresentationComplete(this.tcs.currentUnitSequenceId) !== 'yes') {
+          if (this.tcs.getUnitPresentationComplete(this.tcs.currentUnitSequenceId) !== 'complete') {
             myreturn = false;
           }
         } else {
@@ -212,89 +212,16 @@ export class UnitActivateGuard implements CanActivate {
   }
 
 
-  checkAndSolve_maxTime(newUnit: UnitControllerData): Observable<Boolean> {
+  checkAndSolve_maxTime(newUnit: UnitControllerData): Observable<boolean> {
     if (newUnit.maxTimerRequiringTestlet === null) {
-
-      // 1 targetUnit is not in timed block \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-      if (this.tcs.currentMaxTimerTestletId) {
-
-        // 1 a) leaving a timed block \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-        const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-          width: '500px',
-          // height: '300px',
-          data:  <ConfirmDialogData>{
-            title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
-            content: this.cts.getCustomText('booklet_warningLeaveTimerBlockPrompt'),
-            confirmbuttonlabel: 'Trotzdem weiter',
-            confirmbuttonreturn: true,
-            showcancel: true
-          }
-        });
-        return dialogCDRef.afterClosed().pipe(
-          switchMap(cdresult => {
-              if ((typeof cdresult === 'undefined') || (cdresult === false)) {
-                return of(false);
-              } else {
-                this.tcs.cancelMaxTimer();
-
-                return of(true);
-              }
-            }
-        ));
-      } else {
-
-        // 1 b) no timers \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-        return of(true);
-      }
-    } else if (this.tcs.currentMaxTimerTestletId && (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)) {
-
-      // 2 staying in timed block
-
       return of(true);
-
+    } else if (this.tcs.currentMaxTimerTestletId && (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)) {
+      return of(true);
     } else {
-
-      // 3 entering timed block
-
-      if (this.tcs.currentMaxTimerTestletId && (newUnit.maxTimerRequiringTestlet.id !== this.tcs.currentMaxTimerTestletId)) {
-
-        // 3 a) leaving a timed block \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-        const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-          width: '500px',
-          data:  <ConfirmDialogData>{
-            title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
-            content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
-            confirmbuttonlabel: 'Trotzdem weiter',
-            confirmbuttonreturn: true,
-            showcancel: true
-          }
-        });
-        return dialogCDRef.afterClosed().pipe(
-          switchMap(cdresult => {
-              if ((typeof cdresult === 'undefined') || (cdresult === false)) {
-                return of(false);
-              } else {
-                this.tcs.cancelMaxTimer();
-                this.tcs.rootTestlet.lockUnits_before(newUnit.maxTimerRequiringTestlet.id);
-                this.tcs.startMaxTimer(newUnit.maxTimerRequiringTestlet.id, newUnit.maxTimerRequiringTestlet.maxTimeLeft);
-
-                return of(true);
-              }
-            }
-        ));
-      } else {
-
-        // 3 b) just entering timed block, no timed block before
-
-        this.tcs.rootTestlet.lockUnits_before(newUnit.maxTimerRequiringTestlet.id);
-        this.tcs.startMaxTimer(newUnit.maxTimerRequiringTestlet.id, newUnit.maxTimerRequiringTestlet.maxTimeLeft);
-
-        return of(true);
-      }
+      this.tcs.cancelMaxTimer();
+      this.tcs.rootTestlet.lockUnits_before(newUnit.maxTimerRequiringTestlet.id);
+      this.tcs.startMaxTimer(newUnit.maxTimerRequiringTestlet.id, newUnit.maxTimerRequiringTestlet.maxTimeLeft);
+      return of(true);
     }
   }
 
@@ -307,14 +234,14 @@ export class UnitActivateGuard implements CanActivate {
     }
     let forceNavigation = false;
     const routerStateObject = this.router.getCurrentNavigation();
-    if (routerStateObject.extras.state['force']) {
+    if (routerStateObject.extras.state && routerStateObject.extras.state['force']) {
       forceNavigation = routerStateObject.extras.state['force'];
     }
 
-    let myreturn = false;
+    let myReturn = false;
     if (this.tcs.rootTestlet === null) {
       console.warn('unit canActivate: true (rootTestlet null)');
-      myreturn = false;
+      myReturn = false;
       const oldTestId = localStorage.getItem(TestControllerComponent.localStorageTestKey);
       if (oldTestId) {
         this.router.navigate([`/t/${oldTestId}`]);
@@ -323,17 +250,17 @@ export class UnitActivateGuard implements CanActivate {
       }
     } else if ((targetUnitSequenceId < this.tcs.minUnitSequenceId) || (targetUnitSequenceId > this.tcs.maxUnitSequenceId)) {
       console.warn('unit canActivate: false (unit# out of range)');
-      myreturn = false;
+      myReturn = false;
     } else {
       const newUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
       if (!newUnit) {
-        myreturn = false;
+        myReturn = false;
         console.warn('target unit null (targetUnitSequenceId: ' + targetUnitSequenceId.toString());
       } else if (newUnit.unitDef.locked) {
-        myreturn = false;
+        myReturn = false;
         console.warn('unit canActivate: locked');
       } else if (newUnit.unitDef.canEnter === 'n') {
-        myreturn = false;
+        myReturn = false;
         console.warn('unit canActivate: false (unit is locked)');
       } else {
 
@@ -370,12 +297,9 @@ export class UnitActivateGuard implements CanActivate {
               }));
           }
         }));
-
-
       }
     }
-
-    return myreturn;
+    return myReturn;
   }
 }
 
@@ -384,119 +308,68 @@ export class UnitActivateGuard implements CanActivate {
 export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   constructor(
     private tcs: TestControllerService,
+    private cts: CustomtextService,
+    public confirmDialog: MatDialog,
+    private snackBar: MatSnackBar,
     private router: Router
   ) {}
 
-  private checkAndSolve_maxTime(newUnit: UnitControllerData): Observable<Boolean> {
-    if (newUnit.maxTimerRequiringTestlet === null) {
-
-      // 1 targetUnit is not in timed block \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-      if (this.tcs.currentMaxTimerTestletId) {
-
-        // 1 a) leaving a timed block \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-        const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-          width: '500px',
-          // height: '300px',
-          data:  <ConfirmDialogData>{
-            title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
-            content: this.cts.getCustomText('booklet_warningLeaveTimerBlockPrompt'),
-            confirmbuttonlabel: 'Trotzdem weiter',
-            confirmbuttonreturn: true,
-            showcancel: true
-          }
-        });
-        return dialogCDRef.afterClosed().pipe(
-          switchMap(cdresult => {
-              if ((typeof cdresult === 'undefined') || (cdresult === false)) {
-                return of(false);
-              } else {
-                this.tcs.cancelMaxTimer();
-
-                return of(true);
-              }
-            }
-          ));
+  private checkAndSolve_maxTime(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
+    if (this.tcs.currentMaxTimerTestletId) {
+      if (newUnit && newUnit.maxTimerRequiringTestlet && (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)) {
+          return of(true);
       } else {
-
-        // 1 b) no timers \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-        return of(true);
+        if (force) {
+          this.tcs.interruptMaxTimer();
+          return of(true);
+        } else {
+          const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+            width: '500px',
+            data: <ConfirmDialogData>{
+              title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
+              content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
+              confirmbuttonlabel: 'Trotzdem weiter',
+              confirmbuttonreturn: true,
+              showcancel: true
+            }
+          });
+          return dialogCDRef.afterClosed().pipe(
+            switchMap(cdresult => {
+                if ((typeof cdresult === 'undefined') || (cdresult === false)) {
+                  return of(false);
+                } else {
+                  this.tcs.cancelMaxTimer();
+                  return of(true);
+                }
+              }
+            ));
+        }
       }
-    } else if (this.tcs.currentMaxTimerTestletId && (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)) {
-
-      // 2 staying in timed block
-
-      return of(true);
-
     } else {
-
-      // 3 entering timed block
-
-      if (this.tcs.currentMaxTimerTestletId && (newUnit.maxTimerRequiringTestlet.id !== this.tcs.currentMaxTimerTestletId)) {
-
-        // 3 a) leaving a timed block \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-        const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-          width: '500px',
-          data:  <ConfirmDialogData>{
-            title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
-            content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
-            confirmbuttonlabel: 'Trotzdem weiter',
-            confirmbuttonreturn: true,
-            showcancel: true
-          }
-        });
-        return dialogCDRef.afterClosed().pipe(
-          switchMap(cdresult => {
-              if ((typeof cdresult === 'undefined') || (cdresult === false)) {
-                return of(false);
-              } else {
-                this.tcs.cancelMaxTimer();
-                this.tcs.rootTestlet.lockUnits_before(newUnit.maxTimerRequiringTestlet.id);
-                this.tcs.startMaxTimer(newUnit.maxTimerRequiringTestlet.id, newUnit.maxTimerRequiringTestlet.maxTimeLeft);
-
-                return of(true);
-              }
-            }
-          ));
-      } else {
-
-        // 3 b) just entering timed block, no timed block before
-
-        this.tcs.rootTestlet.lockUnits_before(newUnit.maxTimerRequiringTestlet.id);
-        this.tcs.startMaxTimer(newUnit.maxTimerRequiringTestlet.id, newUnit.maxTimerRequiringTestlet.maxTimeLeft);
-
-        return of(true);
-      }
+      return of(true);
     }
   }
 
   canDeactivate(component: UnithostComponent, currentRoute: ActivatedRouteSnapshot,
                 currentState: RouterStateSnapshot, nextState: RouterStateSnapshot)
       : Observable<boolean> | boolean {
-    let targetUnitSequenceId = 0;
+    let newUnit: UnitControllerData = null;
     if (/t\/\d+\/u\/\d+$/.test(nextState.url)) {
-      targetUnitSequenceId = Number(nextState.url.match(/\d+$/)[0]);
+      const targetUnitSequenceId = Number(nextState.url.match(/\d+$/)[0]);
+      newUnit = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
     }
     let forceNavigation = false;
     const routerStateObject = this.router.getCurrentNavigation();
-    if (routerStateObject.extras.state['force']) {
+    if (routerStateObject.extras.state && routerStateObject.extras.state['force']) {
       forceNavigation = routerStateObject.extras.state['force'];
-    }
-    const newUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
-    if (!newUnit) {
-
     }
 
     if (this.tcs.rootTestlet !== null) {
       const currentUnitSequenceId: number = Number(currentRoute.params['u']);
       const currentUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(currentUnitSequenceId);
-
       this.tcs.addUnitLog(currentUnit.unitDef.alias, LogEntryKey.UNITTRYLEAVE);
     }
-    return true;
+    return this.checkAndSolve_maxTime(newUnit, forceNavigation);
   }
 }
 

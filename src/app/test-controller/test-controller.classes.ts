@@ -232,20 +232,22 @@ export class Testlet extends TestletContentElement {
     return myreturn;
   }
 
-  setTimeLeftNull(testletId = '') {
+  setTimeLeft(testletId: string , maxTimeLeft: number ) {
     if (testletId) {
       // find testlet
       const myTestlet = this.getTestlet(testletId);
       if (myTestlet) {
-        myTestlet.setTimeLeftNull();
-        myTestlet.lockUnits_allChildren();
+        myTestlet.setTimeLeft('', maxTimeLeft);
+        if (maxTimeLeft === 0) {
+          myTestlet.lockUnits_allChildren();
+        }
       }
     } else {
-      this.maxTimeLeft = 0;
+      this.maxTimeLeft = maxTimeLeft;
       for (const tce of this.children) {
         if (tce instanceof Testlet) {
           const localTestlet = tce as Testlet;
-          localTestlet.setTimeLeftNull();
+          localTestlet.setTimeLeft('', maxTimeLeft);
         }
       }
     }
