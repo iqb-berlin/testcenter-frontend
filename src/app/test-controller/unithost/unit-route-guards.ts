@@ -35,7 +35,7 @@ export class UnitActivateGuard implements CanActivate {
           const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
           if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
             if (this.tcs.hasUnitPresentationComplete(checkUnitSequenceId)) {
-              if (this.tcs.getUnitPresentationComplete(checkUnitSequenceId) !== 'yes') {
+              if (this.tcs.getUnitPresentationComplete(checkUnitSequenceId) !== 'complete') {
                 myreturn = false;
               }
             } else {
@@ -70,7 +70,7 @@ export class UnitActivateGuard implements CanActivate {
         // go backwards ===================================
         let myreturn = true;
         if (this.tcs.hasUnitPresentationComplete(this.tcs.currentUnitSequenceId)) {
-          if (this.tcs.getUnitPresentationComplete(this.tcs.currentUnitSequenceId) !== 'yes') {
+          if (this.tcs.getUnitPresentationComplete(this.tcs.currentUnitSequenceId) !== 'complete') {
             myreturn = false;
           }
         } else {
