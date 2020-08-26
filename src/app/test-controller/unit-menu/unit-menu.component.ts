@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {TestControllerService} from "../test-controller.service";
 import {UnitMenuButtonData} from "../test-controller.interfaces";
 import {CustomtextService} from "iqb-components";
+import {MainDataService} from "../../maindata.service";
 
 @Component({
   templateUrl: './unit-menu.component.html',
@@ -9,6 +10,7 @@ import {CustomtextService} from "iqb-components";
 })
 export class UnitMenuComponent implements OnInit {
   unitMenuButtonList: UnitMenuButtonData[] = [];
+  loginName = '??';
 
   constructor(
     public cts: CustomtextService,
@@ -18,6 +20,11 @@ export class UnitMenuComponent implements OnInit {
   ngOnInit(): void {
     this.unitMenuButtonList = [];
     setTimeout(() => {
+      const authData = MainDataService.getAuthData();
+      if (authData) {
+        this.loginName = authData.displayName;
+      }
+
       let testletMarkerSwitch = true;
       let prevTestletLabel = '';
       if (this.tcs.bookletConfig.unit_menu !== 'OFF' || this.tcs.testMode.showUnitMenu) {
@@ -47,7 +54,7 @@ export class UnitMenuComponent implements OnInit {
     });
   }
 
-  goBack() {
-    window.history.back();
+  terminateTest() {
+    this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE');
   }
 }

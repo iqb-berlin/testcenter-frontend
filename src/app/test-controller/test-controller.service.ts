@@ -320,7 +320,7 @@ export class TestControllerService {
           this.router.navigate([`/t/${this.testId}/status`], {skipLocationChange: true});
           break;
         case UnitNavigationTarget.MENU:
-          this.router.navigate([`/t/${this.testId}/menu`], {skipLocationChange: true});
+          this.router.navigate([`/t/${this.testId}/menu`]);
           break;
         case UnitNavigationTarget.NEXT:
           let startWith = this.currentUnitSequenceId;

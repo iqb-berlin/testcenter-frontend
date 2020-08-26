@@ -2,7 +2,7 @@
   <div fxLayout="row wrap" fxLayoutAlign="center stretch">
 
     <mat-card fxFlex="0 0 400px" fxLayout="column" class="mat-card-gray"
-              *ngIf="((tcs.testStatus$ | async) === tcs.testStatusEnum.ERROR) || ((tcs.testStatus$ | async) === tcs.testStatusEnum.PAUSED) || ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)">
+              *ngIf="tcs.currentUnitSequenceId > 0 && ((tcs.testStatus$ | async) === tcs.testStatusEnum.ERROR) || ((tcs.testStatus$ | async) === tcs.testStatusEnum.PAUSED) || ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)">
       <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
       <mat-card-content>
         <p><b>Angemeldet als "{{loginName}}"</b></p>
