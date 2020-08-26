@@ -264,11 +264,20 @@ export class TestControllerService {
       );
   }
 
-  public stopMaxTimer() {
+  public cancelMaxTimer() {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
       this.maxTimeIntervalSubscription = null;
       this.maxTimeTimer$.next(new MaxTimerData(0, this.currentMaxTimerTestletId, MaxTimerDataType.CANCELLED));
+    }
+    this.currentMaxTimerTestletId = '';
+  }
+
+  public interruptMaxTimer() {
+    if (this.maxTimeIntervalSubscription !== null) {
+      this.maxTimeIntervalSubscription.unsubscribe();
+      this.maxTimeIntervalSubscription = null;
+      this.maxTimeTimer$.next(new MaxTimerData(0, this.currentMaxTimerTestletId, MaxTimerDataType.INTERRUPTED));
     }
     this.currentMaxTimerTestletId = '';
   }
@@ -316,24 +325,29 @@ export class TestControllerService {
           }
           const nextUnitSequenceId = this.rootTestlet.getNextUnlockedUnitSequenceId(startWith);
           if (nextUnitSequenceId > 0) {
-            this.router.navigate([`/t/${this.testId}/u/${nextUnitSequenceId}`], {state: {force: force}});
+            this.router.navigate([`/t/${this.testId}/u/${nextUnitSequenceId}`],
+              {state: {force: force}});
           }
           break;
         case UnitNavigationTarget.PREVIOUS:
-          this.router.navigateByUrl(`/t/${this.testId}/u/${this.currentUnitSequenceId - 1}`);
+          this.router.navigate([`/t/${this.testId}/u/${this.currentUnitSequenceId - 1}`],
+            {state: {force: force}});
           break;
         case UnitNavigationTarget.FIRST:
-          this.router.navigateByUrl(`/t/${this.testId}/u/${this.minUnitSequenceId}`);
+          this.router.navigate([`/t/${this.testId}/u/${this.minUnitSequenceId}`],
+            {state: {force: force}});
           break;
         case UnitNavigationTarget.LAST:
-          this.router.navigateByUrl(`/t/${this.testId}/u/${this.maxUnitSequenceId}`);
+          this.router.navigate([`/t/${this.testId}/u/${this.maxUnitSequenceId}`],
+            {state: {force: force}});
           break;
         case UnitNavigationTarget.END:
-          this.terminateTest('BOOKLETLOCKEDbyTESTEE');
+          this.terminateTest(force ? 'BOOKLETLOCKEDforced' : 'BOOKLETLOCKEDbyTESTEE');
           break;
 
         default:
-          this.router.navigate([`/t/${this.testId}/u/${navString}`], {state: {force: force}});
+          this.router.navigate([`/t/${this.testId}/u/${navString}`],
+            {state: {force: force}});
           break;
       }
     }
