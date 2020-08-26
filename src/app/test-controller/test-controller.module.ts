@@ -11,7 +11,6 @@ import {unitRouteGuards} from './unithost/unit-route-guards';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {ReviewDialogComponent} from './review-dialog/review-dialog.component';
 import {ReactiveFormsModule} from '@angular/forms';
-import {StartLockInputComponent} from './start-lock-input/start-lock-input.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
@@ -58,14 +57,12 @@ import {testControllerRouteGuards} from "./test-controller-route-guards";
     UnithostComponent,
     TestControllerComponent,
     ReviewDialogComponent,
-    StartLockInputComponent,
     TestStatusComponent,
     UnlockInputComponent,
     UnitMenuComponent,
   ],
   entryComponents: [
-    ReviewDialogComponent,
-    StartLockInputComponent
+    ReviewDialogComponent
   ],
   providers: [
     unitRouteGuards,

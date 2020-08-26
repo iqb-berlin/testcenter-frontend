@@ -2,7 +2,7 @@
   <div fxLayout="row wrap" fxLayoutAlign="center stretch">
 
     <mat-card fxFlex="0 0 400px" fxLayout="column" class="mat-card-gray"
-              *ngIf="((tcs.testStatus$ | async) === tcs.testStatusEnum.ERROR) || ((tcs.testStatus$ | async) === tcs.testStatusEnum.PAUSED)">
+              *ngIf="((tcs.testStatus$ | async) === tcs.testStatusEnum.ERROR) || ((tcs.testStatus$ | async) === tcs.testStatusEnum.PAUSED) || ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)">
       <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
       <mat-card-content>
         <p><b>Angemeldet als "{{loginName}}"</b></p>
@@ -12,6 +12,9 @@
         </p>
         <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.PAUSED" style="color: chocolate">
           <b>{{ 'Testpause' | customtext:'booklet_pausedmessage':cts.updateCount }} </b>
+        </p>
+        <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING" style="color: chocolate">
+          <b>Der Test ist aktiv.</b>
         </p>
       </mat-card-content>
       <mat-card-actions>

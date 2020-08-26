@@ -411,7 +411,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               });
             } else {
               this.tcs.testMode = new TestMode(testData.mode);
-console.log(this.tcs.testMode);
               let navTarget = 1;
               if (testData.laststate !== null) {
                 if (testData.laststate.hasOwnProperty(LastStateKey.LASTUNIT)) {

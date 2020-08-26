@@ -283,7 +283,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
                 myreturn = false;
               }
             }
-            console.log('checking ' + checkUnitSequenceId.toString() + ': ' + myreturn);
             checkUnitSequenceId -= 1;
           }
           if (myreturn) {

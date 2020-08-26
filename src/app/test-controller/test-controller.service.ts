@@ -219,8 +219,6 @@ export class TestControllerService {
     } else if (this.unitPresentationCompleteStates[unitSequenceId] === 'some' && presentationProgress === 'complete'){
       this.unitPresentationCompleteStates[unitSequenceId] = presentationProgress;
     }
-
-    console.log(this.unitPresentationCompleteStates);
     if (this.testMode.saveResponses) {
       // TODO prove if state change can be logged to save calls
       this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationProgress);

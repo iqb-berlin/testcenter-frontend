@@ -42,7 +42,7 @@
       "ENABLED_ONLY": "Eingeschaltet - nur die Aufgaben anzeigen, die noch freigegeben sind",
       "FULL": "Eingeschaltet - auch die Aufgaben anzeigen, die nicht mehr freigegeben sind (gegraut)"
     },
-    "defaultvalue": "ENABLED_ONLY"
+    "defaultvalue": "OFF"
   },
   "force_presentation_complete": {
     "label": "Verhalten, wenn noch nicht alle Elemente der Aufgabe angezeigt wurden",
