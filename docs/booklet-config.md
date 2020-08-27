@@ -63,8 +63,8 @@ Navigationsbuttons für die Navigation zwischen den Aufgaben
 
 #### `unit_menu`
 Extra-Seite mit großen Buttons für Aufgaben zum direkten Springen
-  * "OFF": Ausgeschaltet
-  * "ENABLED_ONLY" (default): Eingeschaltet - nur die Aufgaben anzeigen, die noch freigegeben sind
+  * "OFF" (default): Ausgeschaltet
+  * "ENABLED_ONLY": Eingeschaltet - nur die Aufgaben anzeigen, die noch freigegeben sind
   * "FULL": Eingeschaltet - auch die Aufgaben anzeigen, die nicht mehr freigegeben sind (gegraut)
 
 #### `force_presentation_complete`
@@ -90,3 +90,8 @@ Legt fest, ob im obersten Seitenbereich Platz für Logo, Navigations-Buttons u. 
 Festlegung, ob oberhalb des Unitbereiches eine Zeile mit dem Unit-Titel gezeigt werden soll
   * "OFF": Keine Titelzeile
   * "ON" (default): Eine Zeile wird eingeblendet mit dem Unit-Titel (s. Booklet-XML).
+
+#### `unit_show_time_left`
+Festlegung, ob im obersten Seitenbereich bei einer festgelegten Maximalzeit für einen Testbereich die verbleibende Zeit angezeigt wird.
+  * "OFF" (default): Die verbleibende Zeit wird nicht angezeigt.
+  * "ON": Die verbleibende Zeit wird angezeigt.

@@ -1,5 +1,5 @@
 import {Inject, Injectable, OnDestroy} from '@angular/core';
-import {Observable, of, Subject, Subscription, timer} from 'rxjs';
+import {of, Subject, Subscription, timer} from 'rxjs';
 import {Command, commandKeywords, isKnownCommand, TestStatus} from './test-controller.interfaces';
 import {TestControllerService} from './test-controller.service';
 import {
@@ -17,10 +17,12 @@ import {HttpClient} from '@angular/common/http';
 
 type TestStartedOrStopped = 'started' | 'terminated' | '';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class CommandService extends WebsocketBackendService<Command[]> implements OnDestroy {
 
-    public command$: Observable<Command>;
+    public command$: Subject<Command> = new Subject<Command>();
 
     protected initialData = [];
     protected pollingEndpoint = '';
@@ -46,7 +48,6 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
 
         // as services don't have a OnInit Hook (see: https://v9.angular.io/api/core/OnInit) we subscribe here
         this.subscribeReceivedCommands();
-        this.subscribeCommands();
         this.subscribeTestStarted();
     }
 
@@ -73,7 +74,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     }
 
     private subscribeReceivedCommands() {
-        this.command$ = this.commandReceived$
+        this.commandReceived$
             .pipe(
                 filter((command: Command) => (this.executedCommandIds.indexOf(command.id) < 0)),
                 concatMap((command: Command) => timer(1000).pipe(ignoreElements(), startWith(command))), // min delay between items
@@ -85,7 +86,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
                             tap(cmd => this.executedCommandIds.push(cmd.id))
                         );
                 })
-            );
+            ).subscribe(command => this.command$.next(command));
     }
 
     private subscribeTestStarted() {
@@ -111,33 +112,6 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
                 }),
                 switchMap(commands => of(...commands))
             ).subscribe(this.commandReceived$);
-    }
-
-    // TODO move to testcontroller maybe
-    private subscribeCommands() {
-        this.commandSubscription = this.command$.subscribe(
-            (command: Command) => {
-                console.log(Date.now() + '---- execute command: ' + CommandService.commandToString(command));
-                switch (command.keyword) {
-                    case 'pause':
-                        this.tcs.testStatus$.next(TestStatus.PAUSED);
-                        break;
-                    case 'resume':
-                        this.tcs.testStatus$.next(TestStatus.RUNNING);
-                        break;
-                    case 'terminate':
-                        this.tcs.terminateTest();
-                        break;
-                    case 'goto':
-                        this.tcs.setUnitNavigationRequest(command.arguments[0]);
-                        break;
-                    case 'debug':
-                        this.tcs.debugPane = command.arguments[0] !== 'off';
-                        break;
-                    default:
-                        console.warn(`Unknown command: ` + CommandService.commandToString(command));
-                }
-            }, error => console.warn('error for command', error));
     }
 
     private setUpGlobalCommandsForDebug() {

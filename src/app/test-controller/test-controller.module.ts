@@ -7,12 +7,10 @@ import {CommonModule} from '@angular/common';
 import {TestControllerRoutingModule} from './test-controller-routing.module';
 import {UnithostComponent} from './unithost/unithost.component';
 import {TestControllerComponent} from './test-controller.component';
-import {ResizeIFrameChildDirective} from './resize-IFrameChild/resize-IFrameChild.directive';
 import {unitRouteGuards} from './unithost/unit-route-guards';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {ReviewDialogComponent} from './review-dialog/review-dialog.component';
 import {ReactiveFormsModule} from '@angular/forms';
-import {StartLockInputComponent} from './start-lock-input/start-lock-input.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
@@ -28,8 +26,9 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {TestStatusComponent} from './test-status/test-status.component';
-import {FocusService} from './focus.service';
-import {CommandService} from './command.service';
+import { UnlockInputComponent } from './unlock-input/unlock-input.component';
+import { UnitMenuComponent } from './unit-menu/unit-menu.component';
+import {testControllerRouteGuards} from "./test-controller-route-guards";
 
 
 @NgModule({
@@ -57,19 +56,17 @@ import {CommandService} from './command.service';
   declarations: [
     UnithostComponent,
     TestControllerComponent,
-    ResizeIFrameChildDirective,
     ReviewDialogComponent,
-    StartLockInputComponent,
     TestStatusComponent,
+    UnlockInputComponent,
+    UnitMenuComponent,
   ],
   entryComponents: [
-    ReviewDialogComponent,
-    StartLockInputComponent
+    ReviewDialogComponent
   ],
   providers: [
     unitRouteGuards,
-    FocusService,
-    CommandService
+    testControllerRouteGuards
   ],
   exports: [
     TestControllerComponent

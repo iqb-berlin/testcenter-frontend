@@ -4,15 +4,19 @@ export interface TaggedString {
     value: string;
 }
 
-export interface UnitResponseData {
+export interface UnitStateData {
     unitDbKey: string;
-    response: string;
-    responseType: string;
+    dataPartsAllString: string;
+    unitStateDataType: string;
+}
+export interface KeyValuePairString {
+  [K: string]: string;
 }
 
-export interface UnitRestorePointData {
-    unitDbKey: string;
-    restorePoint: string;
+export enum WindowFocusState {
+  PLAYER = 'PLAYER',
+  HOST = 'HOST',
+  UNKNOWN = 'UNKNOWN'
 }
 
 // testcontroller restrictions +++++++++++++++++++++++++++++++++++
@@ -80,9 +84,9 @@ export enum LastStateKey {
     FOCUS = 'FOCUS'
 }
 
-export interface UnitState {
-    PRESENTATIONCOMPLETE?: 'yes' | 'no';
-    RESPONSESCOMPLETE?: 'yes' | 'no' | 'all';
+export interface UnitStatus {
+    PRESENTATIONCOMPLETE?: string;
+    RESPONSESCOMPLETE?: string;
     PAGE_NR?: number;
     PAGE_NAME?: string;
     PAGES_COUNT?: number;
@@ -104,6 +108,7 @@ export enum MaxTimerDataType {
     STARTED = 'STARTED',
     STEP = 'STEP',
     CANCELLED = 'CANCELLED',
+    INTERRUPTED = 'INTERRUPTED',
     ENDED = 'ENDED'
 }
 
@@ -134,6 +139,12 @@ export interface ReviewDialogData {
 export enum NoUnitFlag {
   END = 'end',
   ERROR = 'error'
+}
+
+export interface PendingUnitData {
+  playerId: string;
+  unitState: string;
+  unitDefinition: string;
 }
 
 export interface KeyValuePairNumber {

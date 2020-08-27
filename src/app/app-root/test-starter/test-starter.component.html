@@ -20,9 +20,9 @@
     <mat-card-title>{{ 'app_title' | customtext:'app_title':cts.updateCount }}</mat-card-title>
 
     <mat-card-content>
-      <p *ngIf="booklets.length === 0">{{ 'login_bookletSelectPromptNull' | customtext: 'login_bookletSelectPromptNull':cts.updateCount}}</p>
-      <p *ngIf="booklets.length === 1">{{ 'login_bookletSelectPromptOne' | customtext: 'login_bookletSelectPromptOne':cts.updateCount}}</p>
-      <p *ngIf="booklets.length > 1">{{ 'login_bookletSelectPromptMany' | customtext: 'login_bookletSelectPromptMany':cts.updateCount}}</p>
+      <p *ngIf="openTestletsCount === 0">{{ 'login_bookletSelectPromptNull' | customtext: 'login_bookletSelectPromptNull':cts.updateCount}}</p>
+      <p *ngIf="openTestletsCount === 1">{{ 'login_bookletSelectPromptOne' | customtext: 'login_bookletSelectPromptOne':cts.updateCount}}</p>
+      <p *ngIf="openTestletsCount > 1">{{ 'login_bookletSelectPromptMany' | customtext: 'login_bookletSelectPromptMany':cts.updateCount}}</p>
 
       <status-card></status-card>
 

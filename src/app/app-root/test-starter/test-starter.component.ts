@@ -13,6 +13,7 @@ import {CustomtextService} from 'iqb-components';
 })
 export class TestStarterComponent implements OnInit, OnDestroy {
   booklets: BookletData[] = [];
+  openTestletsCount = 0;
   private getBookletDataSubscription: Subscription = null;
   public bookletSelectTitle = 'Bitte wählen';
   problemText = '';
@@ -43,6 +44,9 @@ export class TestStarterComponent implements OnInit, OnDestroy {
                   })).subscribe(
                     bData => {
                       this.booklets.push(bData);
+                      if (!(bData as BookletData).locked) {
+                        this.openTestletsCount += 1
+                      }
                     },
                     e => {
                       this.problemText = `Fehler in der Netzwerkverbindung (${e}).`;
