@@ -6,11 +6,12 @@ export class BookletConfig {
 	log_mode: "OFF" | "LEAN" | "RICH" = "RICH";
 	page_navibuttons: "OFF" | "MERGED" | "SEPARATE_TOP" | "SEPARATE_BOTTOM" = "SEPARATE_BOTTOM";
 	unit_navibuttons: "OFF" | "ARROWS_ONLY" | "FULL" = "FULL";
-	unit_menu: "OFF" | "ENABLED_ONLY" | "FULL" = "ENABLED_ONLY";
+	unit_menu: "OFF" | "ENABLED_ONLY" | "FULL" = "OFF";
 	force_presentation_complete: "OFF" | "ON" = "OFF";
 	force_responses_complete: "OFF" | "SOME" | "COMPLETE" | "COMPLETE_AND_VALID" = "OFF";
 	unit_screenheader: "OFF" | "WITH_UNIT_TITLE" | "WITH_BOOKLET_TITLE" | "EMPTY" = "EMPTY";
 	unit_title: "OFF" | "ON" = "ON";
+	unit_show_time_left: "OFF" | "ON" = "OFF";
 
 	public setFromKeyValuePairs(config) {
 		if (config) {
@@ -23,6 +24,7 @@ export class BookletConfig {
 			if (config['force_responses_complete']) { this.force_responses_complete = config['force_responses_complete']}
 			if (config['unit_screenheader']) { this.unit_screenheader = config['unit_screenheader']}
 			if (config['unit_title']) { this.unit_title = config['unit_title']}
+			if (config['unit_show_time_left']) { this.unit_show_time_left = config['unit_show_time_left']}
 		}
 	}
 
@@ -59,6 +61,9 @@ export class BookletConfig {
 						break;
 					case 'unit_title':
 						this.unit_title = configValue;
+						break;
+					case 'unit_show_time_left':
+						this.unit_show_time_left = configValue;
 						break;
 				}
 			}

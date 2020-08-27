@@ -6,5 +6,6 @@ export const environment = {
   production: false,
   testcenterUrl: 'http://localhost:8000/',
   appPublisher: 'IQB - Institut zur Qualitätsentwicklung im Bildungswesen',
-  apiVersionExpected: '5.0.1'
+  apiVersionExpected: '5.0.1',
+  veronaApiVersionSupported: '2.1.0'
 };

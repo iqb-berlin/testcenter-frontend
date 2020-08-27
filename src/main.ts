@@ -31,6 +31,10 @@ platformBrowserDynamic(<StaticProvider[]>[
     useValue: environment.apiVersionExpected
   },
   {
+    provide: 'VERONA_API_VERSION_SUPPORTED',
+    useValue: environment.veronaApiVersionSupported
+  },
+{
     provide: 'REPOSITORY_URL',
     useValue: repository.url
   },

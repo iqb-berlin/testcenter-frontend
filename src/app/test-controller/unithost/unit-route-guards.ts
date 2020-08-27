@@ -1,4 +1,3 @@
-import {StartLockInputComponent} from '../start-lock-input/start-lock-input.component';
 import {ConfirmDialogComponent, ConfirmDialogData, CustomtextService} from 'iqb-components';
 import {TestControllerService} from '../test-controller.service';
 import {filter, map, switchMap, take} from 'rxjs/operators';
@@ -7,11 +6,7 @@ import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, CanDeactivate, Router, RouterStateSnapshot} from '@angular/router';
 import {interval, Observable, of} from 'rxjs';
 import {UnitControllerData} from '../test-controller.classes';
-import {
-  CodeInputData,
-  LogEntryKey,
-  StartLockData
-} from '../test-controller.interfaces';
+import {CodeInputData, LogEntryKey} from '../test-controller.interfaces';
 import {MainDataService} from 'src/app/maindata.service';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -24,149 +19,38 @@ export class UnitActivateGuard implements CanActivate {
     private mds: MainDataService,
     public startLockDialog: MatDialog,
     private router: Router,
-    public confirmDialog: MatDialog,
-    private snackBar: MatSnackBar,
-    private cts: CustomtextService
+    public confirmDialog: MatDialog
   ) {}
 
-
-  checkAndSolve_PresentationCompleteCode(newUnit: UnitControllerData): Observable<Boolean> {
-    if ((this.tcs.bookletConfig.force_presentation_complete === 'ON') && this.tcs.currentUnitSequenceId > 0) {
-      if (this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
-        // go forwards ===================================
-        let myreturn = true;
-        let checkUnitSequenceId = newUnit.unitDef.sequenceId - 1;
-        while (myreturn && (checkUnitSequenceId >= this.tcs.currentUnitSequenceId)) {
-          const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
-          if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
-            if (this.tcs.hasUnitPresentationComplete(checkUnitSequenceId)) {
-              if (this.tcs.getUnitPresentationComplete(checkUnitSequenceId) !== 'yes') {
-                myreturn = false;
-              }
-            } else {
-              myreturn = false;
-            }
-          }
-          checkUnitSequenceId -= 1;
-        }
-        if (myreturn) {
-          return of(true);
-        } else {
-          if (this.tcs.testMode.forceNaviRestrictions) {
-            const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-              width: '500px',
-              // height: '300px',
-              data:  <ConfirmDialogData>{
-                title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitleNext'),
-                content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextNext'),
-                confirmbuttonlabel: 'OK',
-                confirmbuttonreturn: false,
-                showcancel: false
-              }
-            });
-            return dialogCDRef.afterClosed().pipe(map(() => false));
-          } else {
-            this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden (PresentationNotComplete).',
-                'Weiterblättern', {duration: 3000});
-            return of(true);
-          }
-        }
-      } else {
-        // go backwards ===================================
-        let myreturn = true;
-        if (this.tcs.hasUnitPresentationComplete(this.tcs.currentUnitSequenceId)) {
-          if (this.tcs.getUnitPresentationComplete(this.tcs.currentUnitSequenceId) !== 'yes') {
-            myreturn = false;
-          }
-        } else {
-          myreturn = false;
-        }
-        if (myreturn) {
-          return of(true);
-        } else {
-          if (this.tcs.testMode.forceNaviRestrictions) {
-            const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-              width: '500px',
-              // height: '300px',
-              data:  <ConfirmDialogData>{
-                title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitlePrev'),
-                content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextPrev'),
-                confirmbuttonlabel: 'Trotzdem zurück',
-                confirmbuttonreturn: true,
-                showcancel: true
-              }
-            });
-            return dialogCDRef.afterClosed();
-          } else {
-            this.snackBar.open('Im Hot-Modus käme eine Warnung (PresentationNotComplete).',
-                'Zurückblättern', {duration: 3000});
-            return of(true);
-          }
-        }
-      }
-    } else {
-      return of(true);
-    }
-  }
-
-
-  checkAndSolve_Code(newUnit: UnitControllerData): Observable<Boolean> {
+  private checkAndSolve_Code(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
     if (newUnit.codeRequiringTestlets) {
       if (newUnit.codeRequiringTestlets.length > 0) {
         const myCodes: CodeInputData[] = [];
         newUnit.codeRequiringTestlets.forEach(t => {
-          myCodes.push(<CodeInputData>{
-            testletId: t.id,
-            prompt: t.codePrompt,
-            code: t.codeToEnter.toUpperCase().trim(),
-            value: this.tcs.testMode.presetCode ? t.codeToEnter : ''
-          });
-        });
-
-        const dialogRef = this.startLockDialog.open(StartLockInputComponent, {
-          width: '500px',
-          autoFocus: true,
-          data: <StartLockData>{
-            title: this.cts.getCustomText('booklet_codeToEnterTitle'),
-            prompt: this.cts.getCustomText('booklet_codeToEnterPrompt'),
-            codes: myCodes
+          if (force) {
+            t.codeToEnter = '';
+          } else {
+            myCodes.push(<CodeInputData>{
+              testletId: t.id,
+              prompt: t.codePrompt,
+              code: t.codeToEnter.toUpperCase().trim(),
+              value: this.tcs.testMode.presetCode ? t.codeToEnter : ''
+            });
           }
         });
-        return dialogRef.afterClosed().pipe(
-          switchMap(result => {
-            if ((typeof result === 'undefined') || (result === false)) {
-              return of(false);
-            } else {
-              let codesOk = true;
-              for (const c of myCodes) {
-                const testeeInput = result[c.testletId];
-                if (testeeInput) {
-                  if (c.code.toUpperCase().trim() !== testeeInput.toUpperCase().trim()) {
-                    codesOk = false;
-                    break;
-                  }
-                } else {
-                  codesOk = false;
-                  break;
-                }
-              }
-              if (codesOk) {
-                newUnit.codeRequiringTestlets.forEach(t => {
-                  t.codeToEnter = '';
-                });
-
-                return of(true);
-
-              } else {
-                this.snackBar.open(
-                  'Die Eingabe war nicht korrekt.', this.cts.getCustomText('booklet_codeToEnterTitle'),
-                  {duration: 3000}
-                );
-                return of(false);
-              }
+        if (myCodes.length > 0) {
+          this.router.navigate([`/t/${this.tcs.testId}/unlock`], {
+            skipLocationChange: true,
+            state: {
+              returnTo: `/t/${this.tcs.testId}/u/${this.tcs.currentUnitSequenceId}`,
+              newUnit: newUnit,
+              codes: myCodes
             }
-          }
-        ));
+          });
+          return of(false);
+        } else {
+          return of(true);
+        }
       } else {
         return of(true);
       }
@@ -175,7 +59,7 @@ export class UnitActivateGuard implements CanActivate {
     }
   }
 
-  checkAndSolve_DefLoaded(newUnit: UnitControllerData): Observable<Boolean> {
+  checkAndSolve_DefLoaded(newUnit: UnitControllerData): Observable<boolean> {
     if (this.tcs.loadComplete) {
       return of(true);
     } else {
@@ -245,104 +129,36 @@ export class UnitActivateGuard implements CanActivate {
   }
 
 
-  checkAndSolve_maxTime(newUnit: UnitControllerData): Observable<Boolean> {
+  checkAndSolve_maxTime(newUnit: UnitControllerData): Observable<boolean> {
     if (newUnit.maxTimerRequiringTestlet === null) {
-
-      // 1 targetUnit is not in timed block \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-      if (this.tcs.currentMaxTimerTestletId) {
-
-        // 1 a) leaving a timed block \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-        const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-          width: '500px',
-          // height: '300px',
-          data:  <ConfirmDialogData>{
-            title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
-            content: this.cts.getCustomText('booklet_warningLeaveTimerBlockPrompt'),
-            confirmbuttonlabel: 'Trotzdem weiter',
-            confirmbuttonreturn: true,
-            showcancel: true
-          }
-        });
-        return dialogCDRef.afterClosed().pipe(
-          switchMap(cdresult => {
-              if ((typeof cdresult === 'undefined') || (cdresult === false)) {
-                return of(false);
-              } else {
-                this.tcs.stopMaxTimer();
-
-                return of(true);
-              }
-            }
-        ));
-      } else {
-
-        // 1 b) no timers \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-        return of(true);
-      }
-    } else if (this.tcs.currentMaxTimerTestletId && (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)) {
-
-      // 2 staying in timed block
-
       return of(true);
-
+    } else if (this.tcs.currentMaxTimerTestletId && (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)) {
+      return of(true);
     } else {
-
-      // 3 entering timed block
-
-      if (this.tcs.currentMaxTimerTestletId && (newUnit.maxTimerRequiringTestlet.id !== this.tcs.currentMaxTimerTestletId)) {
-
-        // 3 a) leaving a timed block \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-        const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-          width: '500px',
-          data:  <ConfirmDialogData>{
-            title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
-            content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
-            confirmbuttonlabel: 'Trotzdem weiter',
-            confirmbuttonreturn: true,
-            showcancel: true
-          }
-        });
-        return dialogCDRef.afterClosed().pipe(
-          switchMap(cdresult => {
-              if ((typeof cdresult === 'undefined') || (cdresult === false)) {
-                return of(false);
-              } else {
-                this.tcs.stopMaxTimer();
-                this.tcs.rootTestlet.lockUnits_before(newUnit.maxTimerRequiringTestlet.id);
-                this.tcs.startMaxTimer(newUnit.maxTimerRequiringTestlet.id, newUnit.maxTimerRequiringTestlet.maxTimeLeft);
-
-                return of(true);
-              }
-            }
-        ));
-      } else {
-
-        // 3 b) just entering timed block, no timed block before
-
-        this.tcs.rootTestlet.lockUnits_before(newUnit.maxTimerRequiringTestlet.id);
-        this.tcs.startMaxTimer(newUnit.maxTimerRequiringTestlet.id, newUnit.maxTimerRequiringTestlet.maxTimeLeft);
-
-        return of(true);
-      }
+      this.tcs.cancelMaxTimer();
+      this.tcs.rootTestlet.lockUnits_before(newUnit.maxTimerRequiringTestlet.id);
+      this.tcs.startMaxTimer(newUnit.maxTimerRequiringTestlet.id, newUnit.maxTimerRequiringTestlet.maxTimeLeft);
+      return of(true);
     }
   }
 
-  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean>|boolean {
-    const targetUnitSequenceId: number = Number(next.params['u']);
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean>|boolean {
+    const targetUnitSequenceId: number = Number(route.params['u']);
     if (this.tcs.currentUnitSequenceId > 0) {
       this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
     } else {
       this.tcs.updateMinMaxUnitSequenceId(targetUnitSequenceId);
     }
+    let forceNavigation = false;
+    const routerStateObject = this.router.getCurrentNavigation();
+    if (routerStateObject.extras.state && routerStateObject.extras.state['force']) {
+      forceNavigation = routerStateObject.extras.state['force'];
+    }
 
-    let myreturn = false;
+    let myReturn = false;
     if (this.tcs.rootTestlet === null) {
       console.warn('unit canActivate: true (rootTestlet null)');
-      myreturn = false;
+      myReturn = false;
       const oldTestId = localStorage.getItem(TestControllerComponent.localStorageTestKey);
       if (oldTestId) {
         this.router.navigate([`/t/${oldTestId}`]);
@@ -351,59 +167,49 @@ export class UnitActivateGuard implements CanActivate {
       }
     } else if ((targetUnitSequenceId < this.tcs.minUnitSequenceId) || (targetUnitSequenceId > this.tcs.maxUnitSequenceId)) {
       console.warn('unit canActivate: false (unit# out of range)');
-      myreturn = false;
+      myReturn = false;
     } else {
       const newUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
       if (!newUnit) {
-        myreturn = false;
+        myReturn = false;
         console.warn('target unit null (targetUnitSequenceId: ' + targetUnitSequenceId.toString());
       } else if (newUnit.unitDef.locked) {
-        myreturn = false;
+        myReturn = false;
         console.warn('unit canActivate: locked');
       } else if (newUnit.unitDef.canEnter === 'n') {
-        myreturn = false;
+        myReturn = false;
         console.warn('unit canActivate: false (unit is locked)');
       } else {
 
-        return this.checkAndSolve_PresentationCompleteCode(newUnit).pipe(
-          switchMap(cAsPC => {
-            if (!cAsPC) {
+        return this.checkAndSolve_Code(newUnit, forceNavigation).pipe(
+          switchMap(cAsC => {
+            if (!cAsC) {
               return of(false);
             } else {
-              return this.checkAndSolve_Code(newUnit).pipe(
-                switchMap(cAsC => {
-                  if (!cAsC) {
+              return this.checkAndSolve_DefLoaded(newUnit).pipe(
+                switchMap(cAsDL => {
+                  this.mds.setSpinnerOff();
+                  if (!cAsDL) {
                     return of(false);
                   } else {
-                    return this.checkAndSolve_DefLoaded(newUnit).pipe(
-                      switchMap(cAsDL => {
-                        this.mds.setSpinnerOff();
-                        if (!cAsDL) {
-                          return of(false);
-                        } else {
-                            return this.checkAndSolve_maxTime(newUnit).pipe(
-                              switchMap(cAsMT => {
-                                if (!cAsMT) {
-                                  return of(false);
-                                } else {
-                                  this.tcs.currentUnitSequenceId = targetUnitSequenceId;
-                                  this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
-                                  this.tcs.addUnitLog(newUnit.unitDef.alias, LogEntryKey.UNITENTER);
-                                  return of(true);
-                                }
-                              }));
-                        }
-                      }));
-                }
-              }));
+                      return this.checkAndSolve_maxTime(newUnit).pipe(
+                        switchMap(cAsMT => {
+                          if (!cAsMT) {
+                            return of(false);
+                          } else {
+                            this.tcs.currentUnitSequenceId = targetUnitSequenceId;
+                            this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
+                            this.tcs.addUnitLog(newUnit.unitDef.alias, LogEntryKey.UNITENTER);
+                            return of(true);
+                          }
+                        }));
+                  }
+                }));
           }
         }));
-
-
       }
     }
-
-    return myreturn;
+    return myReturn;
   }
 }
 
@@ -411,19 +217,162 @@ export class UnitActivateGuard implements CanActivate {
 @Injectable()
 export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   constructor(
-    private tcs: TestControllerService
+    private tcs: TestControllerService,
+    private cts: CustomtextService,
+    public confirmDialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {}
 
-  canDeactivate(component: UnithostComponent, currentRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot)
+  private checkAndSolve_maxTime(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
+    if (this.tcs.currentMaxTimerTestletId) {
+      if (newUnit && newUnit.maxTimerRequiringTestlet && (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)) {
+          return of(true);
+      } else {
+        if (force) {
+          this.tcs.interruptMaxTimer();
+          return of(true);
+        } else {
+          const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+            width: '500px',
+            data: <ConfirmDialogData>{
+              title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
+              content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
+              confirmbuttonlabel: 'Trotzdem weiter',
+              confirmbuttonreturn: true,
+              showcancel: true
+            }
+          });
+          return dialogCDRef.afterClosed().pipe(
+            switchMap(cdresult => {
+                if ((typeof cdresult === 'undefined') || (cdresult === false)) {
+                  return of(false);
+                } else {
+                  this.tcs.cancelMaxTimer();
+                  return of(true);
+                }
+              }
+            ));
+        }
+      }
+    } else {
+      return of(true);
+    }
+  }
+
+  private checkAndSolve_PresentationCompleteCode(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
+    if (force) {
+      return of(true);
+    } else {
+      if ((this.tcs.bookletConfig.force_presentation_complete === 'ON') && this.tcs.currentUnitSequenceId > 0) {
+        if (!newUnit || this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
+          // go forwards ===================================
+          let myreturn = true;
+          let checkUnitSequenceId = this.tcs.currentUnitSequenceId;
+          if (newUnit) {
+            checkUnitSequenceId = newUnit.unitDef.sequenceId - 1;
+          }
+          while (myreturn && (checkUnitSequenceId >= this.tcs.currentUnitSequenceId)) {
+            const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
+            if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
+              if (this.tcs.hasUnitPresentationComplete(checkUnitSequenceId)) {
+                if (this.tcs.getUnitPresentationComplete(checkUnitSequenceId) !== 'complete') {
+                  myreturn = false;
+                }
+              } else {
+                myreturn = false;
+              }
+            }
+            checkUnitSequenceId -= 1;
+          }
+          if (myreturn) {
+            return of(true);
+          } else {
+            if (this.tcs.testMode.forceNaviRestrictions) {
+              const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+                width: '500px',
+                // height: '300px',
+                data: <ConfirmDialogData>{
+                  title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitleNext'),
+                  content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextNext'),
+                  confirmbuttonlabel: 'OK',
+                  confirmbuttonreturn: false,
+                  showcancel: false
+                }
+              });
+              return dialogCDRef.afterClosed().pipe(map(() => false));
+            } else {
+              this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden (PresentationNotComplete).',
+                'Weiterblättern', {duration: 3000});
+              return of(true);
+            }
+          }
+        } else {
+          // go backwards ===================================
+          let myreturn = true;
+          if (this.tcs.hasUnitPresentationComplete(this.tcs.currentUnitSequenceId)) {
+            if (this.tcs.getUnitPresentationComplete(this.tcs.currentUnitSequenceId) !== 'complete') {
+              myreturn = false;
+            }
+          } else {
+            myreturn = false;
+          }
+          if (myreturn) {
+            return of(true);
+          } else {
+            if (this.tcs.testMode.forceNaviRestrictions) {
+              const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+                width: '500px',
+                // height: '300px',
+                data: <ConfirmDialogData>{
+                  title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitlePrev'),
+                  content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextPrev'),
+                  confirmbuttonlabel: 'Trotzdem zurück',
+                  confirmbuttonreturn: true,
+                  showcancel: true
+                }
+              });
+              return dialogCDRef.afterClosed();
+            } else {
+              this.snackBar.open('Im Hot-Modus käme eine Warnung (PresentationNotComplete).',
+                'Zurückblättern', {duration: 3000});
+              return of(true);
+            }
+          }
+        }
+      } else {
+        return of(true);
+      }
+    }
+  }
+
+  canDeactivate(component: UnithostComponent, currentRoute: ActivatedRouteSnapshot,
+                currentState: RouterStateSnapshot, nextState: RouterStateSnapshot)
       : Observable<boolean> | boolean {
+    let newUnit: UnitControllerData = null;
+    if (/t\/\d+\/u\/\d+$/.test(nextState.url)) {
+      const targetUnitSequenceId = Number(nextState.url.match(/\d+$/)[0]);
+      newUnit = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
+    }
+    let forceNavigation = false;
+    const routerStateObject = this.router.getCurrentNavigation();
+    if (routerStateObject.extras.state && routerStateObject.extras.state['force']) {
+      forceNavigation = routerStateObject.extras.state['force'];
+    }
 
     if (this.tcs.rootTestlet !== null) {
       const currentUnitSequenceId: number = Number(currentRoute.params['u']);
       const currentUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(currentUnitSequenceId);
-
       this.tcs.addUnitLog(currentUnit.unitDef.alias, LogEntryKey.UNITTRYLEAVE);
     }
-    return true;
+    return this.checkAndSolve_maxTime(newUnit, forceNavigation).pipe(
+      switchMap(cAsC => {
+        if (!cAsC) {
+          return of(false);
+        } else {
+          return this.checkAndSolve_PresentationCompleteCode(newUnit, forceNavigation);
+        }
+      }))
   }
 }
 

@@ -1,4 +1,4 @@
-.status-body {
+.menu-body {
   position: absolute;
   width: 100%;
 }
@@ -35,11 +35,4 @@ mat-card {
 
 .testlet-marker-b {
   background-color: mediumorchid;
-}
-.progress-bar {
-  position: absolute;
-  right: 150px;
-  top: 300px;
-  left: 150px;
-  z-index: 999;
 }

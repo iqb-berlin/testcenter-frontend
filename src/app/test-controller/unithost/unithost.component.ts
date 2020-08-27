@@ -1,10 +1,16 @@
 import { MainDataService } from '../../maindata.service';
 import { TestControllerService } from '../test-controller.service';
 import { Subscription} from 'rxjs';
-import { Component, OnInit } from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core';
-import {TaggedString, PageData, LastStateKey, LogEntryKey} from '../test-controller.interfaces';
+import {
+  PageData,
+  LastStateKey,
+  LogEntryKey,
+  KeyValuePairString,
+  WindowFocusState, PendingUnitData
+} from '../test-controller.interfaces';
 
 declare var srcDoc: any;
 
@@ -17,7 +23,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private iFrameHostElement: HTMLElement;
   private iFrameItemplayer: HTMLIFrameElement;
   private routingSubscription: Subscription = null;
-  public currentValidPages: string[] = [];
   public leaveWarning = false;
 
   public unitTitle = '';
@@ -29,8 +34,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private postMessageSubscription: Subscription = null;
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
-  private pendingUnitDefinition: TaggedString = null;
-  private pendingUnitRestorePoint: TaggedString = null;
+  private pendingUnitData: PendingUnitData = null;
 
   public pageList: PageData[] = [];
   private knownPages: string[];
@@ -40,123 +44,102 @@ export class UnithostComponent implements OnInit, OnDestroy {
     public tcs: TestControllerService,
     private mds: MainDataService,
     private route: ActivatedRoute
-  ) {
-
-    this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
-      const msgData = m.data;
-      const msgType = msgData['type'];
-      let msgPlayerId = msgData['sessionId'];
-      if ((msgPlayerId === undefined) || (msgPlayerId === null)) {
-        msgPlayerId = this.itemplayerSessionId;
-      }
-
-      if ((msgType !== undefined) && (msgType !== null)) {
-        switch (msgType) {
-
-
-          case 'vo.FromPlayer.ReadyNotification':
-            let pendingUnitDef = '';
-            if (this.pendingUnitDefinition !== null) {
-              if (this.pendingUnitDefinition.tag === msgPlayerId) {
-                pendingUnitDef = this.pendingUnitDefinition.value;
-                this.pendingUnitDefinition = null;
-              }
-            }
-
-            let pendingRestorePoint = '';
-            if (this.pendingUnitRestorePoint !== null) {
-              if (this.pendingUnitRestorePoint.tag === msgPlayerId) {
-                pendingRestorePoint = this.pendingUnitRestorePoint.value;
-                this.pendingUnitRestorePoint = null;
-              }
-            }
-            this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
-
-            this.postMessageTarget = m.source as Window;
-            if (typeof this.postMessageTarget !== 'undefined') {
-                this.postMessageTarget.postMessage({
-                type: 'vo.ToPlayer.DataTransfer',
-                sessionId: this.itemplayerSessionId,
-                unitDefinition: pendingUnitDef,
-                restorePoint: pendingRestorePoint
-              }, '*');
-            }
-
-            break;
-
-
-          case 'vo.FromPlayer.StartedNotification':
-            if (msgPlayerId === this.itemplayerSessionId) {
-              this.setPageList(msgData['validPages'], msgData['currentPage']);
-
-              this.updateUnitStatePage(msgData['currentPage']);
-              this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
-
-              const presentationComplete = msgData['presentationComplete'];
-              if (presentationComplete) {
-                this.tcs.newUnitStatePresentationComplete(this.myUnitDbKey, this.myUnitSequenceId, presentationComplete);
-              }
-              const responsesGiven = msgData['responsesGiven'];
-              if (responsesGiven) {
-                this.tcs.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responsesGiven);
-              }
-            }
-            break;
-
-
-          case 'vo.FromPlayer.ChangedDataTransfer':
-            if (msgPlayerId === this.itemplayerSessionId) {
-              this.setPageList(msgData['validPages'], msgData['currentPage']);
-
-              if (msgData['currentPage'] !== undefined) {
-                this.updateUnitStatePage(msgData['currentPage']);
-                this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, msgData['currentPage']);
-              }
-
-              const restorePoint = msgData['restorePoint'] as string;
-              if (restorePoint) {
-                this.tcs.newUnitRestorePoint(this.myUnitDbKey, this.myUnitSequenceId, restorePoint, true);
-              }
-              const response = msgData['response'] as string;
-              if (response !== undefined) {
-                this.tcs.newUnitResponse(this.myUnitDbKey, response, msgData['responseConverter']);
-              }
-              const presentationComplete = msgData['presentationComplete'];
-              if (presentationComplete) {
-                this.tcs.newUnitStatePresentationComplete(this.myUnitDbKey, this.myUnitSequenceId, presentationComplete);
-              }
-              const responsesGiven = msgData['responsesGiven'];
-              if (responsesGiven) {
-                this.tcs.newUnitStateResponsesGiven(this.myUnitDbKey, this.myUnitSequenceId, responsesGiven);
-              }
-            }
-            break;
-
-
-          case 'vo.FromPlayer.PageNavigationRequest':
-            if (msgPlayerId === this.itemplayerSessionId) {
-              this.gotoPage(msgData['newPage']);
-            }
-            break;
-
-
-          case 'vo.FromPlayer.UnitNavigationRequest':
-            if (msgPlayerId === this.itemplayerSessionId) {
-              this.tcs.setUnitNavigationRequest(msgData['navigationTarget']);
-            }
-            break;
-
-
-          default:
-            console.log('processMessagePost ignored message: ' + msgType);
-            break;
-        }
-      }
-    });
-  }
+  ) {  }
 
   ngOnInit() {
     setTimeout(() => {
+      this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
+        const msgData = m.data;
+        const msgType = msgData['type'];
+        let msgPlayerId = msgData['sessionId'];
+        if ((msgPlayerId === undefined) || (msgPlayerId === null)) {
+          msgPlayerId = this.itemplayerSessionId;
+        }
+
+        if ((msgType !== undefined) && (msgType !== null)) {
+          switch (msgType) {
+            case 'vopReadyNotification':
+              // TODO add apiVersion check
+              let pendingUnitDef = '';
+              let pendingUnitDataToRestore: KeyValuePairString = {};
+              if (this.pendingUnitData && this.pendingUnitData.playerId === msgPlayerId) {
+                pendingUnitDef = this.pendingUnitData.unitDefinition;
+                pendingUnitDataToRestore['all'] = this.pendingUnitData.unitState;
+                this.pendingUnitData = null;
+              }
+              this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
+
+              this.postMessageTarget = m.source as Window;
+              if (typeof this.postMessageTarget !== 'undefined') {
+                this.postMessageTarget.postMessage({
+                  type: 'vopStartCommand',
+                  sessionId: this.itemplayerSessionId,
+                  unitDefinition: pendingUnitDef,
+                  unitState: {
+                    dataParts: pendingUnitDataToRestore
+                  },
+                  playerConfig: {
+                    logPolicy: 'eager' // 'debug'
+                  }
+                }, '*');
+              }
+              break;
+
+            case 'vopStateChangedNotification':
+              if (msgPlayerId === this.itemplayerSessionId) {
+                if (msgData['playerState']) {
+                  const playerState = msgData['playerState'];
+                  this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
+                  if (playerState['currentPage'] !== undefined) {
+                    this.updateUnitStatePage(msgData['currentPage']);
+                    this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, playerState['currentPage']);
+                  }
+                }
+                if (msgData['unitState']) {
+                  const unitState = msgData['unitState'];
+                  const presentationProgress = unitState['presentationProgress'];
+                  if (presentationProgress) {
+                    this.tcs.newUnitStatePresentationProgress(this.myUnitDbKey, this.myUnitSequenceId, presentationProgress);
+                  }
+                  const responseProgress = unitState['responseProgress'];
+                  if (responseProgress) {
+                    this.tcs.newUnitStateResponseProgress(this.myUnitDbKey, this.myUnitSequenceId, responseProgress);
+                  }
+                  const unitData = unitState['dataParts'];
+                  if (unitData) {
+                    const dataPartsAllString = unitData['all'];
+                    if (dataPartsAllString) {
+                      this.tcs.newUnitStateData(this.myUnitDbKey, this.myUnitSequenceId, dataPartsAllString,
+                        unitState['unitStateDataType'])
+                    }
+                  }
+                }
+              }
+              break;
+
+            case 'vopUnitNavigationRequestedNotification':
+              if (msgPlayerId === this.itemplayerSessionId) {
+                this.tcs.setUnitNavigationRequest(msgData['targetRelative']);
+              }
+              break;
+
+            case 'vopWindowFocusChangedNotification':
+              if (msgData['hasFocus']) {
+                this.tcs.windowFocusState$.next(WindowFocusState.PLAYER)
+              } else if (document.hasFocus()) {
+                this.tcs.windowFocusState$.next(WindowFocusState.HOST)
+              } else {
+                this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN)
+              }
+              break;
+
+            default:
+              console.log('processMessagePost ignored message: ' + msgType);
+              break;
+          }
+        }
+      });
+
       this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
 
       this.iFrameItemplayer = null;
@@ -188,24 +171,26 @@ export class UnithostComponent implements OnInit, OnDestroy {
           this.iFrameItemplayer.setAttribute('class', 'unitHost');
           this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
 
-          if (this.tcs.hasUnitRestorePoint(this.myUnitSequenceId)) {
-            this.pendingUnitRestorePoint = {tag: this.itemplayerSessionId, value: this.tcs.getUnitRestorePoint(this.myUnitSequenceId)};
-          } else {
-            this.pendingUnitRestorePoint = null;
-          }
-
+          this.pendingUnitData = {
+            playerId: this.itemplayerSessionId,
+            unitDefinition: this.tcs.hasUnitDefinition(this.myUnitSequenceId) ? this.tcs.getUnitDefinition(this.myUnitSequenceId) : null,
+            unitState: this.tcs.hasUnitStateData(this.myUnitSequenceId) ? this.tcs.getUnitStateData(this.myUnitSequenceId) : null
+          };
           this.leaveWarning = false;
-
-          if (this.tcs.hasUnitDefinition(this.myUnitSequenceId)) {
-            this.pendingUnitDefinition = {tag: this.itemplayerSessionId, value: this.tcs.getUnitDefinition(this.myUnitSequenceId)};
-          } else {
-            this.pendingUnitDefinition = null;
-          }
           this.iFrameHostElement.appendChild(this.iFrameItemplayer);
           srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(currentUnit.unitDef.playerId));
         }
       });
     });
+  }
+
+  @HostListener('window:resize')
+  public onResize(): any {
+    if (this.iFrameItemplayer && this.iFrameHostElement) {
+      const divHeight = this.iFrameHostElement.clientHeight;
+      this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
+      // TODO: Why minus 5px?
+    }
   }
 
   setPageList(validPages: string[], currentPage: string) {
@@ -303,9 +288,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, nextPageId);
       if (typeof this.postMessageTarget !== 'undefined') {
         this.postMessageTarget.postMessage({
-          type: 'vo.ToPlayer.NavigateToPage',
+          type: 'vopPageNavigationCommand',
           sessionId: this.itemplayerSessionId,
-          newPage: nextPageId
+          target: nextPageId
         }, '*');
       }
     }

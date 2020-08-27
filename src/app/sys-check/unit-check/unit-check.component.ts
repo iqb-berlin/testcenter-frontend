@@ -125,6 +125,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     });
   }
 
+  // TODO: replace ResizeIFrameChildDirective by @HostListener('window:resize'); see testcontroller
 
   public loadUnitAndPlayer(checkConfig: CheckConfig): void {
 

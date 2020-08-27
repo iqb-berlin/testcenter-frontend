@@ -1,25 +1,8 @@
 <div class="status-body">
   <div fxLayout="row wrap" fxLayoutAlign="center stretch">
-    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING) && (tcs.unitListForNaviButtons.length > 0)">
-      <mat-card-title>{{ 'Aufgaben' | customtext:'booklet_tasklisttitle':cts.updateCount }}</mat-card-title>
-      <mat-card-content>
-        <div fxLayout="column" fxLayoutAlign="center stretch">
-          <div *ngFor="let u of unitMenuButtonList" fxLayout="column" fxLayoutAlign="center stretch">
-            <div fxLayout="row" fxLayoutAlign="space-between stretch">
-              <div [class]="u.testletMarker" [matTooltip]="u.testletLabel" fxFlex="0 0 10px"></div>
-              <div [class]="u.isCurrent ? 'active-unit' : 'non-active-unit'" fxFlex fxLayout="column">
-                <button mat-flat-button (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())" [disabled]="u.isDisabled">
-                  {{u.label}}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
 
     <mat-card fxFlex="0 0 400px" fxLayout="column" class="mat-card-gray"
-              *ngIf="((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING) || ((tcs.testStatus$ | async) === tcs.testStatusEnum.ERROR) || ((tcs.testStatus$ | async) === tcs.testStatusEnum.PAUSED)">
+              *ngIf="tcs.currentUnitSequenceId > 0 && ((tcs.testStatus$ | async) === tcs.testStatusEnum.ERROR) || ((tcs.testStatus$ | async) === tcs.testStatusEnum.PAUSED) || ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)">
       <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
       <mat-card-content>
         <p><b>Angemeldet als "{{loginName}}"</b></p>
@@ -30,6 +13,9 @@
         <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.PAUSED" style="color: chocolate">
           <b>{{ 'Testpause' | customtext:'booklet_pausedmessage':cts.updateCount }} </b>
         </p>
+        <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING" style="color: chocolate">
+          <b>Der Test ist aktiv.</b>
+        </p>
       </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button color="primary" (click)="terminateTest()">
@@ -37,5 +23,17 @@
         </button>
       </mat-card-actions>
     </mat-card>
+
+    <mat-card *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.WAITING_LOAD_COMPLETE" class="progress-bar">
+      <mat-card-title>{{ tcs.rootTestlet?.title }} - bitte warten</mat-card-title>
+      <mat-card-content fxLayout="column">
+        <mat-progress-bar
+          color="primary"
+          mode="determinate"
+          [value]="tcs.loadProgressValue">
+        </mat-progress-bar>
+      </mat-card-content>
+    </mat-card>
+
   </div>
 </div>

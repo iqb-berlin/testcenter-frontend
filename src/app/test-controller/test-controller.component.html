@@ -1,8 +1,8 @@
-<div class="debug-pane" *ngIf="tcs.debugPane">
-    <div><b>STATUS:</b> {{tcs.testStatus$ | async}}</div>
-    <div><b>TIMER:</b> {{timerValue?.timeLeftString}}<b> {{timerValue?.testletId}} {{timerValue?.type}}</b></div>
-    <div><b>MODE:</b> {{tcs.testMode.modeId}}</div>
-    <div><b>FOCUS:</b> {{focusService.focus$ | async}}</div>
+<div class="debug-pane" *ngIf="debugPane">
+  <div><b>STATUS:</b> {{tcs.testStatus$ | async}}</div>
+  <div><b>TIMER:</b> {{timerValue?.timeLeftString}}<b> {{timerValue?.testletId}} {{timerValue?.type}}</b></div>
+  <div><b>MODE:</b> {{tcs.testMode.modeId}}</div>
+  <div><b>FOCUS:</b> {{tcs.windowFocusState$ | async}}</div>
 </div>
 
 <div id="header" fxLayout="row" fxLayoutAlign="end center">
@@ -35,17 +35,6 @@
       </button>
     </div>
 </div>
-
-<mat-card *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.WAITING_LOAD_COMPLETE" class="progress-bar">
-  <mat-card-content fxLayout="column">
-    <h2>Lade Aufgaben... bitte warten</h2>
-    <mat-progress-bar
-        color="primary"
-        mode="determinate"
-        [value]="loadProgressValue">
-    </mat-progress-bar>
-  </mat-card-content>
-</mat-card>
 
 <div class="tc-body" fxLayout="row" fxLayoutAlign="start stretch">
     <router-outlet></router-outlet>
