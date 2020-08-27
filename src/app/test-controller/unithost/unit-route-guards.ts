@@ -359,7 +359,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     if (routerStateObject.extras.state && routerStateObject.extras.state['force']) {
       forceNavigation = routerStateObject.extras.state['force'];
     }
-
     if (this.tcs.rootTestlet !== null) {
       const currentUnitSequenceId: number = Number(currentRoute.params['u']);
       const currentUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(currentUnitSequenceId);

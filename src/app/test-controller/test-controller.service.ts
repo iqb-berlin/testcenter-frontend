@@ -301,12 +301,12 @@ export class TestControllerService {
             // TODO who evaluates TestStatus when navigating to root?
             this.bs.lockTest(this.testId).subscribe(bsOk => {
               this.testStatus$.next(bsOk ? TestStatus.TERMINATED : TestStatus.ERROR);
-              this.router.navigate(['/']);
+              this.router.navigate(['/'], {state: {force: true}});
             });
           });
     } else {
       this.testStatus$.next(TestStatus.TERMINATED);
-      this.router.navigate(['/']);
+      this.router.navigate(['/'], {state: {force: true}});
     }
   }
 
@@ -317,10 +317,10 @@ export class TestControllerService {
       switch (navString) {
         case UnitNavigationTarget.ERROR:
         case UnitNavigationTarget.PAUSE:
-          this.router.navigate([`/t/${this.testId}/status`], {skipLocationChange: true});
+          this.router.navigate([`/t/${this.testId}/status`], {skipLocationChange: true, state: {force: force}});
           break;
         case UnitNavigationTarget.MENU:
-          this.router.navigate([`/t/${this.testId}/menu`]);
+          this.router.navigate([`/t/${this.testId}/menu`], {state: {force: force}});
           break;
         case UnitNavigationTarget.NEXT:
           let startWith = this.currentUnitSequenceId;

@@ -53,8 +53,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private loadedUnitCount = 0;
   private unitLoadQueue: TaggedString[] = [];
   unitNavigationTarget = UnitNavigationTarget;
-  isTopMargin = true;
-  isBottomMargin = true;
   debugPane = false;
 
 
@@ -326,7 +324,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             if (this.tcs.currentUnitSequenceId > 0 && this.getTestStatusFromLocalStorage() === TestStatus.RUNNING) {
               localStorage.setItem(TestControllerComponent.localStoragePausedKey, this.tcs.testId + '##' + this.tcs.currentUnitSequenceId.toString());
             }
-            this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
+            this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE, true);
             break;
           case TestStatus.RUNNING:
             localStorage.removeItem(TestControllerComponent.localStoragePausedKey);
@@ -634,10 +632,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
-  bottomMargin() {
-    this.isBottomMargin = !this.isBottomMargin;
-  }
-
   handleCommand(commandName: string, params: string[]) {
     switch (commandName.toLowerCase()) {
       case 'debug':
@@ -662,9 +656,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               navTarget = dataSplits[1];
             }
           }
-          this.tcs.testStatus$.next(TestStatus.RUNNING);
-          this.tcs.setUnitNavigationRequest(navTarget, true);
         }
+        this.tcs.testStatus$.next(TestStatus.RUNNING);
+        this.tcs.setUnitNavigationRequest(navTarget, true);
         break;
       case 'terminate':
         this.tcs.terminateTest('BOOKLETLOCKEDbyOPERATOR');
