@@ -72,6 +72,4 @@ import {testControllerRouteGuards} from "./test-controller-route-guards";
     TestControllerComponent
   ]
 })
-export class TestControllerModule {
-
-}
+export class TestControllerModule {}

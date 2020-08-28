@@ -55,7 +55,6 @@ export class TestStarterComponent implements OnInit, OnDestroy {
                     () => {
                       this.problemText = this.booklets.length > 0 ? '' : 'Für diese Anmeldung wurde kein Test gefunden.';
                       this.mds.setSpinnerOff();
-                      console.log(this.openTestletsCount);
                     }
                   );
               }

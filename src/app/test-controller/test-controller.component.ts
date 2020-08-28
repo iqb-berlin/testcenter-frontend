@@ -342,7 +342,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       });
 
       this.routingSubscription = this.route.params.subscribe(params => {
-        console.log(this.tcs.testStatus$.getValue());
         if (this.tcs.testStatus$.getValue() !== TestStatus.ERROR) {
           this.tcs.testId = params['t'];
           localStorage.setItem(TestControllerComponent.localStorageTestKey, params['t']);

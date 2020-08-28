@@ -56,7 +56,8 @@ export enum TestStatus {
   RUNNING = 'RUNNING',
   TERMINATED = 'TERMINATED',
   PAUSED = 'PAUSED',
-  ERROR = 'ERROR'
+  ERROR = 'ERROR',
+  TERMINATING = 'TERMINATING',
 }
 
 export interface UnitMenuButtonData {
@@ -176,6 +177,7 @@ export function isKnownCommand (keyword: string): keyword is CommandKeyword {
 
 export interface Command {
     keyword: CommandKeyword;
-    id: string; // a unique id for each command, to make sure each one get only performed once (even in polling mode)
+    id: number; // a unique id for each command, to make sure each one get only performed once (even in polling mode)
     arguments: string[];
+    timestamp: number;
 }

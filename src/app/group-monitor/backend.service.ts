@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {BookletError, GroupData, TestSession} from './group-monitor.interfaces';
-import {WebsocketBackendService} from './websocket-backend.service';
+import {WebsocketBackendService} from '../shared/websocket-backend.service';
 import {HttpHeaders} from '@angular/common/http';
 import {ApiError} from '../app.interfaces';
 

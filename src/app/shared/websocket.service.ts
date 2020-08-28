@@ -48,7 +48,7 @@ export class WebsocketService {
           () => {},
 
           () => {
-            console.log('connection error');
+            console.error('connection error');
             this.closeConnection();
           },
 
@@ -62,9 +62,13 @@ export class WebsocketService {
 
   protected closeConnection(): void {
     this.wsConnected$.next(false);
-    this.wsSubscription.unsubscribe();
-    this.wsSubject$.complete();
-    this.wsSubject$ = null;
+    if (this.wsSubscription) {
+      this.wsSubscription.unsubscribe();
+    }
+    if (this.wsSubject$) {
+      this.wsSubject$.complete();
+      this.wsSubject$ = null;
+    }
   }
 
   public send(event: string, data: any) {
