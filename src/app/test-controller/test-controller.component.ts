@@ -664,6 +664,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         break;
       case 'goto':
         this.tcs.testStatus$.next(TestStatus.RUNNING);
+        console.log('goto');
         if (params.length > 0) {
           this.tcs.interruptMaxTimer();
           this.tcs.setUnitNavigationRequest(params[0], true);

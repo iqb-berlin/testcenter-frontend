@@ -132,6 +132,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
             console.warn(`Unknown command: ` + CommandService.commandToString(command));
             return;
         }
-        this.commandReceived$.next(command);
+        this.command$.next(command);
+        // this.commandReceived$.next(command);
     }
 }
