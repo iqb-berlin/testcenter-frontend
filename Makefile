@@ -10,6 +10,9 @@ stop:
 down:
 	docker-compose -f docker/docker-compose.yml down
 
+build:
+	docker-compose -f docker/docker-compose.yml build
+
 # TODO does not wait for server to start and fails
 # test: run-detached test-unit test-e2e stop
 
