@@ -1,4 +1,4 @@
-FROM node:14.8
+FROM node:13.14.0 as dev
 
 # install chrome for protractor tests
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
@@ -18,6 +18,20 @@ RUN npx webdriver-manager update
 
 COPY . /app
 
+RUN ng test --watch=false
+
+RUN ng build --output-path=dist
+
 EXPOSE 4200
 
 CMD ng serve --disableHostCheck --host 0.0.0.0
+
+# ===========================================
+
+FROM nginx:1.19.1-alpine as prod
+
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
