@@ -63,6 +63,8 @@ export class UnlockInputComponent implements OnInit {
           break;
         }
       }
+      console.log(this.newUnit.unitDef.sequenceId);
+console.log(codesOk);
       if (codesOk) {
         this.newUnit.codeRequiringTestlets.forEach(t => {
           t.codeToEnter = '';

@@ -359,14 +359,17 @@ export class TestControllerService {
           this.router.navigate([`/t/${this.testId}/u/${navString}`],
             {state: {force: force}}).then(navOk => {
               if (!navOk) {
-                let startWith = this.currentUnitSequenceId;
-                if (startWith < this.minUnitSequenceId) {
-                  startWith = this.minUnitSequenceId - 1;
-                }
-                const nextUnitSequenceId = this.rootTestlet.getNextUnlockedUnitSequenceId(startWith);
-                if (nextUnitSequenceId > 0) {
-                  this.router.navigate([`/t/${this.testId}/u/${nextUnitSequenceId}`],
-                    {state: {force: force}});
+                const navTarget = Number(navString);
+                if (!isNaN(navTarget)) {
+                  let startWith = this.currentUnitSequenceId;
+                  if (startWith < this.minUnitSequenceId) {
+                    startWith = this.minUnitSequenceId - 1;
+                  }
+                  const nextUnitSequenceId = this.rootTestlet.getNextUnlockedUnitSequenceId(startWith);
+                  if (nextUnitSequenceId > 0 && nextUnitSequenceId !== navTarget) {
+                    this.router.navigate([`/t/${this.testId}/u/${nextUnitSequenceId}`],
+                      {state: {force: force}});
+                  }
                 }
               }
           });
