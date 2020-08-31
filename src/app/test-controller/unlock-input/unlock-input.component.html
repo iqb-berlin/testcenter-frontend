@@ -6,8 +6,8 @@
 
       </mat-card-content>
 
-      <form [formGroup]="startkeyform" fxLayout="column">
-          <p>{{ 'Bitte Freigabewort eingeben!' | customtext:'booklet_codeToEnterPrompt':cts.updateCount }}</p>
+      <form [formGroup]="startkeyform" fxLayout="column" (ngSubmit)="continue()">
+          <div class="prompt">{{ 'Bitte Freigabewort eingeben!' | customtext:'booklet_codeToEnterPrompt':cts.updateCount }}</div>
           <mat-form-field *ngFor="let c of codes" fxLayout="column">
             <label>{{ c.prompt }}
               <input matInput [formControlName]="c.testletId">
@@ -18,7 +18,7 @@
         <button mat-raised-button *ngIf="returnTo" (click)="return()">Zurück</button>
         <button mat-raised-button color="primary" type="submit"
                 [disabled]="!startkeyform.valid"
-                *ngIf="newUnit" (click)="continue()">Weiter</button>
+                *ngIf="newUnit">Weiter</button>
       </mat-card-actions>
     </mat-card>
   </div>

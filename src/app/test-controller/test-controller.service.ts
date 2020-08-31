@@ -322,7 +322,11 @@ export class TestControllerService {
           this.router.navigate([`/t/${this.testId}/status`], {skipLocationChange: true, state: {force: force}});
           break;
         case UnitNavigationTarget.MENU:
-          this.router.navigate([`/t/${this.testId}/menu`], {state: {force: force}});
+          this.router.navigate([`/t/${this.testId}/menu`], {state: {force: force}}).then(navOk => {
+            if (!navOk) {
+              this.router.navigate([`/t/${this.testId}/status`], {skipLocationChange: true, state: {force: force}});
+            }
+          });
           break;
         case UnitNavigationTarget.NEXT:
           let startWith = this.currentUnitSequenceId;
@@ -353,7 +357,19 @@ export class TestControllerService {
 
         default:
           this.router.navigate([`/t/${this.testId}/u/${navString}`],
-            {state: {force: force}});
+            {state: {force: force}}).then(navOk => {
+              if (!navOk) {
+                let startWith = this.currentUnitSequenceId;
+                if (startWith < this.minUnitSequenceId) {
+                  startWith = this.minUnitSequenceId - 1;
+                }
+                const nextUnitSequenceId = this.rootTestlet.getNextUnlockedUnitSequenceId(startWith);
+                if (nextUnitSequenceId > 0) {
+                  this.router.navigate([`/t/${this.testId}/u/${nextUnitSequenceId}`],
+                    {state: {force: force}});
+                }
+              }
+          });
           break;
       }
     }
