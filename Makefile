@@ -28,3 +28,9 @@ init-dev-config:
 
 init-prod-docker-config:
 	cp src/environments/environment.prod.docker.ts src/environments/environment.ts
+
+build-image:
+	docker build -t iqbberlin/testcenter-frontend -f docker/Dockerfile .
+
+push-image:
+	docker push iqbberlin/testcenter-frontend:latest
