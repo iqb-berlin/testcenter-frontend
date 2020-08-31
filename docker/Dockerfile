@@ -30,7 +30,7 @@ CMD ng serve --disableHostCheck --host 0.0.0.0
 
 FROM nginx:1.19.1-alpine as prod
 
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=dev /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
