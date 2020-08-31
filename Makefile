@@ -20,8 +20,8 @@ test-unit:
 	docker-compose -f docker/docker-compose.yml exec testcenter-frontend-dev ng test --watch=false
 
 # TODO fails for yet unknown reason
-# test-e2e:
-# 	docker-compose -f docker/docker-compose.yml exec testcenter-frontend-dev ng e2e --webdriver-update=false --port 4202
+test-e2e:
+	docker-compose -f docker/docker-compose.yml exec testcenter-frontend-dev ng e2e --webdriver-update=false --port 4202
 
 init-dev-config:
 	cp src/environments/environment.dev.ts src/environments/environment.ts
