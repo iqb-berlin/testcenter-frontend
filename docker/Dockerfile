@@ -20,7 +20,7 @@ COPY . /app
 
 RUN ng test --watch=false
 
-RUN ng build --output-path=dist
+RUN ng build -c production-docker --output-path=dist
 
 EXPOSE 4200
 
