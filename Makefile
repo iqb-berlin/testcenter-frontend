@@ -26,8 +26,8 @@ test-e2e:
 init-dev-config:
 	cp src/environments/environment.dev.ts src/environments/environment.ts
 
-init-prod-docker-config:
-	cp src/environments/environment.prod.docker.ts src/environments/environment.ts
+init-prod-config:
+	cp src/environments/environment.prod.ts src/environments/environment.ts
 
 build-image:
 	docker build -t iqbberlin/testcenter-frontend -f docker/Dockerfile .
