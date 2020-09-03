@@ -3,8 +3,8 @@ import { BackendService } from '../backend.service';
 import { SysCheckDataService } from '../sys-check-data.service';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { OnDestroy } from '@angular/core';
-import { Subscription, BehaviorSubject, combineLatest} from 'rxjs';
-import {CheckConfig, UnitAndPlayerContainer} from '../sys-check.interfaces';
+import { Subscription} from 'rxjs';
+import {UnitAndPlayerContainer} from '../sys-check.interfaces';
 import { ServerError } from 'iqb-components';
 
 declare var srcDoc: any;
@@ -17,15 +17,15 @@ declare var srcDoc: any;
 export class UnitCheckComponent implements OnInit, OnDestroy {
   @ViewChild('iFrameHost', {static: true}) iFrameHostElement: ElementRef;
 
+  public pageList: PageData[] = [];
   private iFrameItemplayer: HTMLIFrameElement = null;
   private postMessageSubscription: Subscription = null;
   private taskSubscription: Subscription = null;
-  private itemplayerPageRequestSubscription = null;
-  private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
+  private itemplayerSessionId = '';
 
-  private pendingItemDefinition$ = new BehaviorSubject(null);
-  waitforloading = true;
+  private pendingUnitDef = '';
+  waitForLoading = true;
 
   public errorMessage = '';
 
@@ -37,26 +37,11 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
-    this.taskSubscription = combineLatest(
-      this.ds.task$,
-      this.ds.checkConfig$
-      ).subscribe(([task, checkConfig]) => {
+    this.taskSubscription = this.ds.task$.subscribe((task) => {
         if (task === 'loadunit') {
-            this.loadUnitAndPlayer(checkConfig);
+            this.loadUnitAndPlayer();
         }
     });
-
-    this.itemplayerPageRequestSubscription = this.ds.itemplayerPageRequest$.subscribe((newPage: string) => {
-      if (newPage.length > 0) {
-        this.postMessageTarget.postMessage({
-          type: 'vo.ToPlayer.NavigateToPage',
-          sessionId: this.itemplayerSessionId,
-          newPage: newPage
-        }, '*');
-      }
-    });
-
     this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
       const msgData = m.data;
       const msgType = msgData['type'];
@@ -65,55 +50,28 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
       if ((msgType !== undefined) && (msgType !== null)) {
         switch (msgType) {
 
-          case 'vo.FromPlayer.ReadyNotification':
+          case 'vopReadyNotification':
+            // TODO häh?
             this.iFrameItemplayer.setAttribute('height', String(Math.trunc(this.iFrameHostElement.nativeElement.clientHeight)));
-            let hasData = false;
-
-            const pendingSpec = this.pendingItemDefinition$.getValue();
-            if ((pendingSpec !== null) && (pendingSpec.length > 0)) {
-              hasData = true;
-              this.pendingItemDefinition$.next(null);
-            }
-
-            if (hasData) {
+            this.postMessageTarget = m.source as Window;
+            if (typeof this.postMessageTarget !== 'undefined') {
               this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
-              this.postMessageTarget = m.source as Window;
               this.postMessageTarget.postMessage({
-                type: 'vo.ToPlayer.DataTransfer',
+                type: 'vopStartCommand',
                 sessionId: this.itemplayerSessionId,
-                unitDefinition: pendingSpec
+                unitDefinition: this.pendingUnitDef,
+                playerConfig: {
+                  logPolicy: 'disabled',
+                  stateReportPolicy: 'none'
+                }
               }, '*');
             }
             break;
 
-          case 'vo.FromPlayer.StartedNotification':
-            this.iFrameItemplayer.setAttribute('height', String(Math.trunc(this.iFrameHostElement.nativeElement.clientHeight)));
-            const validPages = msgData['validPages'];
-            if ((validPages instanceof Array) && (validPages.length > 1)) {
-              this.ds.itemplayerValidPages$.next(validPages);
-              let currentPage = msgData['currentPage'];
-              if (currentPage  === undefined) {
-                currentPage = validPages[0];
-              }
-              this.ds.itemplayerCurrentPage$.next(currentPage);
-            } else {
-              this.ds.itemplayerValidPages$.next([]);
-              this.ds.itemplayerCurrentPage$.next('');
-            }
-            this.waitforloading = false;
-            break;
-
-          case 'vo.FromPlayer.ChangedDataTransfer':
-            const validPagesChanged = msgData['validPages'];
-            let currentPageChanged = msgData['currentPage'];
-            if ((validPagesChanged instanceof Array)) {
-              this.ds.itemplayerValidPages$.next(validPagesChanged);
-              if (currentPageChanged  === undefined) {
-                currentPageChanged = validPagesChanged[0];
-              }
-            }
-            if (currentPageChanged  !== undefined) {
-              this.ds.itemplayerCurrentPage$.next(currentPageChanged);
+          case 'vopStateChangedNotification':
+            if (msgData['playerState']) {
+              const playerState = msgData['playerState'];
+              this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
             }
             break;
 
@@ -125,13 +83,113 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     });
   }
 
+  setPageList(validPages: string[], currentPage: string) {
+    if ((validPages instanceof Array)) {
+      const newPageList: PageData[] = [];
+      if (validPages.length > 1) {
+        for (let i = 0; i < validPages.length; i++) {
+          if (i === 0) {
+            newPageList.push({
+              index: -1,
+              id: '#previous',
+              disabled: validPages[i] === currentPage,
+              type: '#previous'
+            });
+          }
+
+          newPageList.push({
+            index: i + 1,
+            id: validPages[i],
+            disabled: validPages[i] === currentPage,
+            type: '#goto'
+          });
+
+          if (i === validPages.length - 1) {
+            newPageList.push({
+              index: -1,
+              id: '#next',
+              disabled: validPages[i] === currentPage,
+              type: '#next'
+            });
+          }
+        }
+      }
+      this.pageList = newPageList;
+
+    } else if ((this.pageList.length > 1) && (currentPage !== undefined)) {
+      let currentPageIndex = 0;
+      for (let i = 0; i < this.pageList.length; i++) {
+        if (this.pageList[i].type === '#goto') {
+          if (this.pageList[i].id === currentPage) {
+            this.pageList[i].disabled = true;
+            currentPageIndex = i;
+          } else {
+            this.pageList[i].disabled = false;
+          }
+        }
+      }
+      if (currentPageIndex === 1) {
+        this.pageList[0].disabled = true;
+        this.pageList[this.pageList.length - 1].disabled = false;
+      } else {
+        this.pageList[0].disabled = false;
+        this.pageList[this.pageList.length - 1].disabled = currentPageIndex === this.pageList.length - 2;
+      }
+    }
+  }
+
+  gotoPage(action: string, index = 0) {
+    let nextPageId = '';
+    // currentpage is detected by disabled-attribute of page
+    if (action === '#next') {
+      let currentPageIndex = 0;
+      for (let i = 0; i < this.pageList.length; i++) {
+        if ((this.pageList[i].index > 0) && (this.pageList[i].disabled)) {
+          currentPageIndex = i;
+          break;
+        }
+      }
+      if ((currentPageIndex > 0) && (currentPageIndex < this.pageList.length - 2)) {
+        nextPageId = this.pageList[currentPageIndex + 1].id;
+      }
+    } else if (action === '#previous') {
+      let currentPageIndex = 0;
+      for (let i = 0; i < this.pageList.length; i++) {
+        if ((this.pageList[i].index > 0) && (this.pageList[i].disabled)) {
+          currentPageIndex = i;
+          break;
+        }
+      }
+      if (currentPageIndex > 1) {
+        nextPageId = this.pageList[currentPageIndex - 1].id;
+      }
+    } else if (action === '#goto') {
+      if ((index > 0) && (index < this.pageList.length - 1)) {
+        nextPageId = this.pageList[index].id;
+      }
+    } else if (index === 0) {
+      // call from player
+      nextPageId = action;
+    }
+
+    if (nextPageId.length > 0) {
+      if (typeof this.postMessageTarget !== 'undefined') {
+        this.postMessageTarget.postMessage({
+          type: 'vopPageNavigationCommand',
+          sessionId: this.itemplayerSessionId,
+          target: nextPageId
+        }, '*');
+      }
+    }
+  }
+
   // TODO: replace ResizeIFrameChildDirective by @HostListener('window:resize'); see testcontroller
 
-  public loadUnitAndPlayer(checkConfig: CheckConfig): void {
-
-    this.clearPlayerElement();
-    this.bs.getUnitAndPlayer(checkConfig.workspaceId, checkConfig.name).subscribe((unitAndPlayer: UnitAndPlayerContainer | ServerError) => {
-
+  private loadUnitAndPlayer(): void {
+    while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
+      this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
+    }
+    this.bs.getUnitAndPlayer(this.ds.checkConfig.workspaceId, this.ds.checkConfig.name).subscribe((unitAndPlayer: UnitAndPlayerContainer | ServerError) => {
       if (unitAndPlayer instanceof ServerError) {
         this.errorMessage = 'Konnte Unit-Player nicht laden: ' + unitAndPlayer.labelNice;
         this.ds.unitData$.next([
@@ -154,41 +212,32 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
         {id: '0', type: 'unit/player', label: 'loading time', value: unitAndPlayer.duration.toString(), warning: false}
       ]);
 
-      this.pendingItemDefinition$.next(unitAndPlayer.def);
-      this.createPlayerElement(unitAndPlayer.player);
+      this.pendingUnitDef = unitAndPlayer.def;
+      this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
+      // this.iFrameItemplayer.setAttribute('srcdoc', playerCode);
+      this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
+      this.iFrameItemplayer.setAttribute('class', 'unitHost');
+      this.iFrameItemplayer.setAttribute('height', '100');
+      this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
+      srcDoc.set(this.iFrameItemplayer, unitAndPlayer.player);
 
       this.ds.nextTask();
   });
-  }
-
-
-  private clearPlayerElement(): void  {
-    while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
-      this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
-    }
-  }
-
-  private createPlayerElement(playerCode: string): void {
-
-    this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-    // this.iFrameItemplayer.setAttribute('srcdoc', playerCode);
-    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
-    this.iFrameItemplayer.setAttribute('class', 'unitHost');
-    this.iFrameItemplayer.setAttribute('height', '100');
-    this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
-    srcDoc.set(this.iFrameItemplayer, playerCode);
-
   }
 
   ngOnDestroy() {
     if (this.taskSubscription !== null) {
       this.taskSubscription.unsubscribe();
     }
-    if (this.itemplayerPageRequestSubscription !== null) {
-      this.itemplayerPageRequestSubscription.unsubscribe();
-    }
     if (this.postMessageSubscription !== null) {
       this.postMessageSubscription.unsubscribe();
     }
   }
+}
+
+export interface PageData {
+  index: number;
+  id: string;
+  type: '#next' | '#previous' | '#goto';
+  disabled: boolean;
 }

@@ -40,7 +40,7 @@ export class SysCheckComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.loading = true;
         this.bs.getCheckConfigData(workspaceId, sysCheckName).subscribe(checkConfig => {
-          this.ds.checkConfig$.next(checkConfig);
+          this.ds.checkConfig = checkConfig;
           if (checkConfig) {
             this.title = checkConfig.label;
             this.unitCheck = checkConfig.hasUnit;

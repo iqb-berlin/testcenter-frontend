@@ -17,7 +17,6 @@ import { UnitCheckComponent } from './unit-check/unit-check.component';
 import { QuestionnaireComponent } from './questionnaire/questionnaire.component';
 import { ReportComponent } from './report/report.component';
 import { SaveReportComponent } from './report/save-report/save-report.component';
-import { UnitNaviButtonsComponent } from './unit-check/tc-navi-buttons/unit-navi-buttons.component';
 
 import { TcSpeedChartComponent } from './network-check/tc-speed-chart.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
@@ -67,7 +66,6 @@ import {MatStepperModule} from '@angular/material/stepper';
     ResizeIFrameChildDirective,
     ReportComponent,
     SaveReportComponent,
-    UnitNaviButtonsComponent,
     TcSpeedChartComponent
   ],
   entryComponents: [

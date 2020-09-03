@@ -61,11 +61,10 @@ export class ReportComponent implements OnDestroy {
         if (result !== false) {
           const reportKey = result.get('key').value as string;
           const reportTitle = result.get('title').value as string;
-          const cd = this.ds.checkConfig$.getValue();
           console.log('result', result);
           this.bs.saveReport(
-              cd.workspaceId,
-              cd.name,
+            this.ds.checkConfig.workspaceId,
+            this.ds.checkConfig.name,
               {
                 keyPhrase: reportKey,
                 title: reportTitle,

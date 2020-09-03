@@ -1,0 +1,45 @@
+.navButtonsContainer {
+  position: absolute;
+  z-index: 100;
+  top: 1em;
+  right: 1em;
+}
+
+.mat-fab {
+  margin-right: 4px
+}
+
+.mat-fab[disabled], .mat-mini-fab[disabled] {
+  background-color: grey;
+}
+#pageNav {
+  position: absolute;
+  width: 100%;
+  height: 45px;
+  bottom: 0;
+  padding: 0 30px;
+  font-size: 1.2em;
+}
+
+#pageNavPrompt {
+  padding: 2px 8px;
+  color: white;
+}
+
+#pageNav button {
+  font-size: 1.1em;
+}
+
+#pageNav button i {
+  font-size: 1.2em;
+}
+
+.pageNavDisabled {
+  height: 5px;
+  background-color: orangered;
+}
+
+.pageNavEnabled {
+  height: 5px;
+  background-color: darkgrey;
+}
