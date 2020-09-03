@@ -1,16 +1,17 @@
-import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {BackendService} from './backend.service';
 import {BehaviorSubject, combineLatest, Observable, Subject, Subscription} from 'rxjs';
 import {
   GroupData,
   TestSession,
   TestViewDisplayOptions,
-  TestViewDisplayOptionKey,
+  TestViewDisplayOptionKey, Testlet, Unit,
 } from './group-monitor.interfaces';
 import {ActivatedRoute} from '@angular/router';
 import {ConnectionStatus} from '../shared/websocket-backend.service';
 import {map} from 'rxjs/operators';
 import {Sort} from '@angular/material/sort';
+import {MatSidenav} from '@angular/material/sidenav';
 
 
 @Component({
@@ -35,11 +36,18 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   displayOptions: TestViewDisplayOptions = {
     view: 'full',
-    groupColumn: 'hide'
+    groupColumn: 'hide',
+    selectionMode: 'block',
+    testSelectionMode: 'single'
   };
+
+  selectedElement: Testlet|Unit|null = null;
+  markedElement: Testlet|Unit|null = null;
 
   private bookletIdsViewIsAdjustedFor: string[] = [];
   private lastWindowSize = Infinity;
+
+  @ViewChild('sidenav', {static: true}) sidenav: MatSidenav;
 
   ngOnInit(): void {
     this.routingSubscription = this.route.params.subscribe(params => {
@@ -129,5 +137,14 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   setDisplayOption(option: string, value: TestViewDisplayOptions[TestViewDisplayOptionKey]): void {
     this.displayOptions[option] = value;
+  }
+
+  selectElement(testletOrUnit: Testlet|Unit|null) {
+    this.selectedElement = testletOrUnit;
+    this.sidenav.toggle(testletOrUnit != null);
+  }
+
+  markElement(testletOrUnit: Testlet|Unit|null) {
+    this.markedElement = testletOrUnit;
   }
 }

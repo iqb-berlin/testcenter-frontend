@@ -10,8 +10,9 @@
     background-color: white;
     min-height: 85%;
     margin: 15px;
-    padding: 25px;
+    padding: 5px 25px 25px 25px;
 }
+
 
 .test-view-table-wrapper {
     overflow-x: auto;
@@ -95,8 +96,35 @@
     }
 }
 
+
+.toolbar .mat-radio-button ~ .mat-radio-button {
+    margin-left: 16px;
+}
+
+
+
+
+
+.sidenav {
+    max-width: 350px;
+}
+
+.mat-drawer-container {
+    background: none;
+}
+
+.mat-drawer {
+    margin: 15px 0 0 0;
+}
+
 .settings-button {
     position: absolute;
     right: 14px;
+    top: 14px;
+}
+
+.drawer-button {
+    position: absolute;
+    right: 40px;
     top: 14px;
 }

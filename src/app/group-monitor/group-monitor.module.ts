@@ -18,6 +18,9 @@ import {FlexModule} from '@angular/flex-layout';
 import {MatSortModule} from '@angular/material/sort';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {FormsModule} from '@angular/forms';
 
 
 @NgModule({
@@ -38,6 +41,9 @@ import {MatButtonModule} from '@angular/material/button';
         MatSortModule,
         MatMenuModule,
         MatButtonModule,
+        MatRadioModule,
+        FormsModule,
+        MatSidenavModule
     ],
     providers: [
         BackendService,

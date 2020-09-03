@@ -74,4 +74,6 @@ export type TestViewDisplayOptionKey = 'view' | 'groupColumn';
 export interface TestViewDisplayOptions {
     view: 'full' | 'medium' | 'small';
     groupColumn: 'show' | 'hide';
+    selectionMode: 'block' | 'unit';
+    testSelectionMode: 'single' | 'selected' | 'all';
 }

@@ -72,6 +72,25 @@ mat-icon + h1 {
     color: #003333;
 }
 
+.unit.marked,
+.unit.selected {
+    border: orange;
+    cursor: pointer;
+    color: black
+}
+
+.unit.marked {
+    background: rgba(242, 248, 193, 0.5);
+}
+
+.unit.selected {
+    background: rgba(242, 248, 193, 0.7);
+}
+
+.unit.marked.selected {
+    background: rgba(242, 248, 193, 0.9);
+}
+
 .locked .unit.current {
     background: #b2b2b2;
     color: #333333;
@@ -83,6 +102,37 @@ mat-icon + h1 {
     margin: 2px;
     border-radius: 20px;
     border: 2px solid #003333;
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+.testlet.selected {
+    cursor: pointer;
+}
+
+.testlet.marked::after,
+.testlet.selected::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    content: " ";
+    margin: -13px -2px;
+    transform: translateZ(-10px);
+    cursor: pointer
+}
+
+.testlet.marked::after {
+    background: rgba(242, 248, 193, 0.5);
+}
+
+.testlet.selected::after {
+    background: rgba(242, 248, 193, 0.7);
+}
+
+.testlet.marked.selected::after {
+    background: rgba(242, 248, 193, 0.9);
 }
 
 .locked .testlet {

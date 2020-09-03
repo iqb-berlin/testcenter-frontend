@@ -31,7 +31,11 @@ interface UnitContext {
 export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     @Input() testSession: TestSession;
     @Input() displayOptions: TestViewDisplayOptions;
+    @Input() markedElement: Testlet|Unit|null = null;
+    @Input() selectedElement: Testlet|Unit|null = null;
     @Output() bookletId$ = new EventEmitter<string>();
+    @Output() markedElement$ = new EventEmitter<Testlet>();
+    @Output() selectedElement$ = new EventEmitter<Testlet>();
 
     public testSession$: Subject<TestSession> = new Subject<TestSession>();
     public booklet$: Observable<Booklet|BookletError>;
@@ -190,5 +194,34 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         return result;
+    }
+
+    mark(testletOrUnit: Testlet|Unit|null = null) {
+        if (testletOrUnit == null) {
+            this.markedElement = null;
+            this.markedElement$.emit(null);
+        } else if (isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'unit') {
+            console.log('mark', testletOrUnit);
+            this.markedElement = testletOrUnit;
+        } else if (!isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'block') {
+            console.log('mark', testletOrUnit);
+            this.markedElement$.emit(testletOrUnit);
+            this.markedElement = testletOrUnit;
+        }
+    }
+
+    select(testletOrUnit: Testlet|Unit) {
+        if ((this.selectedElement != null)
+            && (this.selectedElement.id === testletOrUnit.id)
+            && (isUnit(testletOrUnit) === isUnit(this.selectedElement))
+        ) {
+            this.selectedElement = null;
+            this.selectedElement$.emit(null);
+        } else if (isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'unit') {
+            this.selectedElement = testletOrUnit;
+        } else if (!isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'block') {
+            this.selectedElement$.emit(testletOrUnit);
+            this.selectedElement = testletOrUnit;
+        }
     }
 }
