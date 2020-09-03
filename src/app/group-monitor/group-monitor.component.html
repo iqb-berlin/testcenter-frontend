@@ -71,7 +71,10 @@
             <hr>
 
             <div class="selection-info">
-                <ng-container *ngIf="selectedElement">Auswahl: Block `{{selectedElement.label}} + ` in x Tests ausgewählt.</ng-container>
+                <ng-container *ngIf="selectedElement">
+                    Auswahl: Block `{{selectedElement.label}} `
+                    in {{selectedSessions.length}} Tests ausgewählt.
+                </ng-container>
             </div>
         </mat-sidenav>
 
@@ -92,6 +95,7 @@
 
                         <thead>
                         <tr class="mat-sort-container">
+                            <td mat-sort-header="selected">°</td>
                             <td mat-sort-header="personLabel">Benutzer</td>
                             <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">Gruppe</td>
                             <td mat-sort-header="bookletName">Testheft</td>
@@ -99,8 +103,13 @@
                         </tr>
                         </thead>
 
-                        <tc-test-view
-                                *ngFor="let session of sessions$ | async; trackBy: trackSession"
+                        <ng-container *ngFor="let session of sessions$ | async; trackBy: trackSession">
+
+                            <td>
+                                <mat-checkbox (change)="selectSession($event, session)"></mat-checkbox>
+                            </td>
+
+                            <tc-test-view
                                 [testSession]="session"
                                 [displayOptions]="displayOptions"
                                 [markedElement]="markedElement"
@@ -108,8 +117,10 @@
                                 [selectedElement]="selectedElement"
                                 (selectedElement$)="selectElement($event)"
                                 (bookletId$)="adjustViewModeOnBookletLoad($event)"
-                        >
-                        </tc-test-view>
+                            >
+                            </tc-test-view>
+
+                        </ng-container>
                     </table>
                 </div>
             </div>

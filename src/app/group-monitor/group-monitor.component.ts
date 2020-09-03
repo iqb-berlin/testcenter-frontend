@@ -12,6 +12,7 @@ import {ConnectionStatus} from '../shared/websocket-backend.service';
 import {map} from 'rxjs/operators';
 import {Sort} from '@angular/material/sort';
 import {MatSidenav} from '@angular/material/sidenav';
+import {MatCheckboxChange} from '@angular/material/checkbox';
 
 
 @Component({
@@ -43,6 +44,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   selectedElement: Testlet|Unit|null = null;
   markedElement: Testlet|Unit|null = null;
+  selectedSessions: TestSession[] = [];
 
   private bookletIdsViewIsAdjustedFor: string[] = [];
   private lastWindowSize = Infinity;
@@ -146,5 +148,14 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   markElement(testletOrUnit: Testlet|Unit|null) {
     this.markedElement = testletOrUnit;
+  }
+
+  selectSession(event: MatCheckboxChange, session: TestSession) {
+    if (event.checked) {
+      this.selectedSessions.push(session);
+    } else {
+      this.selectedSessions.splice(this.selectedSessions.indexOf(session), 1);
+    }
+    console.log('select', event.checked, session, this.selectedSessions);
   }
 }

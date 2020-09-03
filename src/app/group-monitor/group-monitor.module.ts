@@ -21,6 +21,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {FormsModule} from '@angular/forms';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 
 @NgModule({
@@ -43,7 +44,8 @@ import {FormsModule} from '@angular/forms';
         MatButtonModule,
         MatRadioModule,
         FormsModule,
-        MatSidenavModule
+        MatSidenavModule,
+        MatCheckboxModule
     ],
     providers: [
         BackendService,
