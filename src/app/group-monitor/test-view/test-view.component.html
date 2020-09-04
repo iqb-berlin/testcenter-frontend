@@ -88,7 +88,7 @@
         </ng-template>
     </ng-container>
 
-    <ng-container *ngIf="displayOptions.view === 'full'">
+    <ng-container *ngIf="displayOptions.view === 'full' && !hasState(testSession.testState, 'status', 'locked')">
         <ng-container *ngTemplateOutlet="featuredUnit"></ng-container>
     </ng-container>
 </td>
