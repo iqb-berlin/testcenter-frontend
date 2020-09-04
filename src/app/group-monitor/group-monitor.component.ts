@@ -166,11 +166,17 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   testCommandResume() {
-
+    const testIds = this.selectedSessions
+        .filter(session => session.testId && session.testId > -1) // TODO only paused tests...
+        .map(session => session.testId);
+    this.bs.command('resume', [], testIds);
   }
 
   testCommandPause() {
-
+    const testIds = this.selectedSessions
+        .filter(session => session.testId && session.testId > -1)
+        .map(session => session.testId);
+    this.bs.command('pause', [], testIds);
   }
 
   testCommandGoto() {
@@ -180,7 +186,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   selectAll(event: MatCheckboxChange) {
     this.selectedSessions = [];
     if (event.checked) {
-      this.selectedSessions.push(...this.sessions$.getValue().filter(session => session.testId > -1));
+      this.selectedSessions.push(...this.sessions$.getValue().filter(session => session.testId && session.testId > -1));
       this.allTestsSelected = true;
     } else {
       this.allTestsSelected = false;

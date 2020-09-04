@@ -10,7 +10,7 @@
     background-color: white;
     min-height: 85%;
     margin: 15px;
-    padding: 5px 25px 25px 25px;
+    padding: 15px 25px 25px 25px;
 }
 
 
@@ -96,17 +96,25 @@
     }
 }
 
+.toolbar {
+    padding: 15px;
+}
 
 .toolbar .mat-radio-button ~ .mat-radio-button {
     margin-left: 16px;
 }
 
+.toolbar-section {
+    margin-bottom: 1em
+}
 
+.toolbar .control {
+    margin-bottom: 15px;
+    display: block;
+}
 
-
-
-.sidenav {
-    max-width: 350px;
+mat-sidenav {
+    width: 350px;
 }
 
 .mat-drawer-container {
@@ -127,4 +135,10 @@
     position: absolute;
     right: 40px;
     top: 14px;
+}
+
+.emph {
+    color: yellow;
+    font-style: italic;
+    text-transform: uppercase;
 }
