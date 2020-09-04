@@ -100,6 +100,11 @@
     padding: 15px;
 }
 
+.toolbar h2 {
+    margin-top: 0;
+    font-size: 1.5em;
+}
+
 .toolbar .mat-radio-button ~ .mat-radio-button {
     margin-left: 16px;
 }
@@ -108,9 +113,8 @@
     margin-bottom: 1em
 }
 
-.toolbar .control {
-    margin-bottom: 15px;
-    display: block;
+.toolbar .control ~ .control {
+    margin-left: 15px;
 }
 
 mat-sidenav {
@@ -125,20 +129,14 @@ mat-sidenav {
     margin: 15px 0 0 0;
 }
 
-.settings-button {
+.corner-menu {
     position: absolute;
     right: 14px;
     top: 14px;
 }
 
-.drawer-button {
-    position: absolute;
-    right: 40px;
-    top: 14px;
-}
-
 .emph {
-    color: yellow;
+    color: #b2ff59;
     font-style: italic;
     text-transform: uppercase;
 }

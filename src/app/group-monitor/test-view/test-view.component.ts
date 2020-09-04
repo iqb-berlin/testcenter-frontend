@@ -4,6 +4,7 @@ import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
 import {Booklet, TestSession, Testlet, Unit, TestViewDisplayOptions, BookletError} from '../group-monitor.interfaces';
 import {map} from 'rxjs/operators';
 import {TestMode} from '../../config/test-mode';
+import {MatCheckboxChange} from '@angular/material/checkbox';
 
 // TODO find good place for this typeguard
 function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
@@ -33,6 +34,8 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     @Input() displayOptions: TestViewDisplayOptions;
     @Input() markedElement: Testlet|Unit|null = null;
     @Input() selectedElement: Testlet|Unit|null = null;
+    @Input() checked: boolean;
+    @Output() checked$ = new EventEmitter<boolean>();
     @Output() bookletId$ = new EventEmitter<string>();
     @Output() markedElement$ = new EventEmitter<Testlet>();
     @Output() selectedElement$ = new EventEmitter<Testlet>();
@@ -80,8 +83,14 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
-        this.testSession$.next(this.testSession);
-        this.maxTimeLeft = this.parseJsonState(this.testSession.testState, 'MAXTIMELEFT');
+        if (typeof changes['testSession'] !== 'undefined') {
+            this.testSession$.next(this.testSession);
+            this.maxTimeLeft = this.parseJsonState(this.testSession.testState, 'MAXTIMELEFT');
+        }
+        if (typeof changes['selectedElement'] !== 'undefined') {
+            console.log('passivly select', this.selectedElement, changes);
+            // this.checkIfSelection();
+        }
     }
 
     ngOnDestroy() {
@@ -219,9 +228,24 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
             this.selectedElement$.emit(null);
         } else if (isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'unit') {
             this.selectedElement = testletOrUnit;
+            this.selectedElement$.emit(null);
         } else if (!isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'block') {
-            this.selectedElement$.emit(testletOrUnit);
             this.selectedElement = testletOrUnit;
+            this.selectedElement$.emit(testletOrUnit);
         }
+        this.checkIfSelection();
+    }
+
+    checkIfSelection() {
+        if (this.selectedElement == null) {
+            this.checked = false;
+        } else {
+            // TODO check if booklet contains selectedElement!
+        }
+        this.checked$.emit(this.checked);
+    }
+
+    check($event: MatCheckboxChange) {
+        this.checked$.emit($event.checked);
     }
 }

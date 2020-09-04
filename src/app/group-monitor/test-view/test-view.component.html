@@ -1,4 +1,14 @@
 <td>
+    <mat-checkbox
+            *ngIf="testSession.testId >= 0"
+            (change)="check($event)"
+            [checked]="checked"
+    >
+    </mat-checkbox>
+</td>
+
+
+<td>
     <div class="vertical-align-middle">
         <ng-container *ngIf="getMode(testSession.mode) as mode" >
 

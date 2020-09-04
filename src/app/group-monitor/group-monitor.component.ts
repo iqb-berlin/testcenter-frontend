@@ -38,13 +38,12 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     view: 'full',
     groupColumn: 'hide',
     selectionMode: 'block',
-    testSelectionMode: 'single'
   };
 
   selectedElement: Testlet|Unit|null = null;
   markedElement: Testlet|Unit|null = null;
-  selectedSessions: TestSession[] = [];
-  allTestsSelected = false;
+  checkedSessions: TestSession[] = [];
+  allSessionsChecked = false;
 
   private bookletIdsViewIsAdjustedFor: string[] = [];
   private lastWindowSize = Infinity;
@@ -128,6 +127,9 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
           if (sort.active === 'timestamp') {
             return (testSession2.timestamp - testSession1.timestamp) * (sort.direction === 'asc' ? 1 : -1);
           }
+          if (sort.active === 'selected') {
+            return this.checkedSessions.indexOf(testSession1) * (sort.direction === 'asc' ? -1 : 1);
+          }
           const stringA = (testSession1[sort.active] || 'zzzzz');
           const stringB = (testSession2[sort.active] || 'zzzzz');
           return stringA.localeCompare(stringB) * (sort.direction === 'asc' ? 1 : -1);
@@ -150,30 +152,37 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.sidenav.toggle(testletOrUnit != null);
   }
 
+  // checkAllSessionsWithSelected() {
+  //   this.checkedSessions = [];
+  //   this.sessions$.getValue()
+  //       .filter(session => session.)
+  // }
+
   markElement(testletOrUnit: Testlet|Unit|null) {
     this.markedElement = testletOrUnit;
   }
 
-  selectSession(event: MatCheckboxChange, session: TestSession) {
-    const selectionIndex = this.selectedSessions.indexOf(session);
-    if ((event.checked) && (selectionIndex === -1)) {
-      this.selectedSessions.push(session);
-    } else if ((!event.checked) && (selectionIndex > -1)) {
-      this.selectedSessions.splice(selectionIndex, 1);
+  checkSession(checked: boolean, session: TestSession) {
+    const selectionIndex = this.checkedSessions.indexOf(session);
+    if ((checked) && (selectionIndex === -1)) {
+      this.checkedSessions.push(session);
+    } else if ((!checked) && (selectionIndex > -1)) {
+      this.checkedSessions.splice(selectionIndex, 1);
     }
-    this.allTestsSelected = (this.sessions$.getValue().length === this.selectedSessions.length);
-    console.log('select', event.checked, session, this.selectedSessions);
+    this.allSessionsChecked = (this.sessions$.getValue().length === this.checkedSessions.length);
+    this.sidenav.toggle(this.checkedSessions.length > 0);
+    console.log('select', checked, session, this.checkedSessions);
   }
 
   testCommandResume() {
-    const testIds = this.selectedSessions
+    const testIds = this.checkedSessions
         .filter(session => session.testId && session.testId > -1) // TODO only paused tests...
         .map(session => session.testId);
     this.bs.command('resume', [], testIds);
   }
 
   testCommandPause() {
-    const testIds = this.selectedSessions
+    const testIds = this.checkedSessions
         .filter(session => session.testId && session.testId > -1)
         .map(session => session.testId);
     this.bs.command('pause', [], testIds);
@@ -184,12 +193,13 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   selectAll(event: MatCheckboxChange) {
-    this.selectedSessions = [];
+    this.checkedSessions = [];
     if (event.checked) {
-      this.selectedSessions.push(...this.sessions$.getValue().filter(session => session.testId && session.testId > -1));
-      this.allTestsSelected = true;
+      this.checkedSessions.push(...this.sessions$.getValue().filter(session => session.testId && session.testId > -1));
+      this.allSessionsChecked = true;
     } else {
-      this.allTestsSelected = false;
+      this.allSessionsChecked = false;
     }
+    this.sidenav.toggle(this.allSessionsChecked);
   }
 }

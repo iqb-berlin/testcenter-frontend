@@ -80,15 +80,15 @@ mat-icon + h1 {
 }
 
 .unit.marked {
-    background: rgba(242, 248, 193, 0.5);
+    background: #b2ff59;
 }
 
 .unit.selected {
-    background: rgba(242, 248, 193, 0.7);
+    background: #b2ff59;
 }
 
 .unit.marked.selected {
-    background: rgba(242, 248, 193, 0.9);
+    background: #b2ff59;
 }
 
 .locked .unit.current {
@@ -124,15 +124,15 @@ mat-icon + h1 {
 }
 
 .testlet.marked::after {
-    background: rgba(242, 248, 193, 0.5);
+    background: rgba(178, 255, 89, 0.5);
 }
 
 .testlet.selected::after {
-    background: rgba(242, 248, 193, 0.7);
+    background: rgba(178, 255, 89, 0.7);
 }
 
 .testlet.marked.selected::after {
-    background: rgba(242, 248, 193, 0.9);
+    background: rgba(178, 255, 89, 0.9);
 }
 
 .locked .testlet {
