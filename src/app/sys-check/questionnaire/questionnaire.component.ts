@@ -14,7 +14,7 @@ export class QuestionnaireComponent implements OnInit {
   form: FormGroup;
 
   constructor(
-    private ds: SysCheckDataService,
+    public ds: SysCheckDataService,
     public cts: CustomtextService
   ) {
   }
@@ -22,9 +22,11 @@ export class QuestionnaireComponent implements OnInit {
   ngOnInit() {
     setTimeout(() => {
       const group: any = {};
-      this.ds.checkConfig.questions.forEach(question => {
-        group[question.id] = new FormControl('');
-      });
+      if (this.ds.checkConfig) {
+        this.ds.checkConfig.questions.forEach(question => {
+          group[question.id] = new FormControl('');
+        });
+      }
       this.form = new FormGroup(group);
       this.form.valueChanges.subscribe(() => {this.updateReport(); });
       this.updateReport();
@@ -33,13 +35,21 @@ export class QuestionnaireComponent implements OnInit {
 
   private updateReport() {
     const myReportEntries: ReportEntry[] = [];
-    this.ds.checkConfig.questions.forEach(element => {
-      if (element.type !== 'header') {
-        const value = this.form.controls[element.id].value;
-        const warning = (['string', 'select', 'radio', 'text'].indexOf(element.type) > -1) && (value === '') && (element.required);
-        myReportEntries.push({'id': element.id, 'type': element.type, 'label': element.prompt, 'value': value, warning: warning});
-      }
-    });
+    if (this.ds.checkConfig) {
+      this.ds.checkConfig.questions.forEach(element => {
+        if (element.type !== 'header') {
+          const value = this.form.controls[element.id].value;
+          const warning = (['string', 'select', 'radio', 'text'].indexOf(element.type) > -1) && (value === '') && (element.required);
+          myReportEntries.push({
+            'id': element.id,
+            'type': element.type,
+            'label': element.prompt,
+            'value': value,
+            warning: warning
+          });
+        }
+      });
+    }
     this.ds.questionnaireData$.next(myReportEntries);
   }
 }

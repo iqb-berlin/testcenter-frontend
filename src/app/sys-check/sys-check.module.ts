@@ -1,4 +1,3 @@
-import { ResizeIFrameChildDirective } from './unit-check/resize-IFrameChild/resize-IFrameChild.directive';
 import { SysCheckDataService } from './sys-check-data.service';
 import { BackendService } from './backend.service';
 import { NgModule } from '@angular/core';
@@ -63,7 +62,6 @@ import {MatStepperModule} from '@angular/material/stepper';
     NetworkCheckComponent,
     UnitCheckComponent,
     QuestionnaireComponent,
-    ResizeIFrameChildDirective,
     ReportComponent,
     SaveReportComponent,
     TcSpeedChartComponent

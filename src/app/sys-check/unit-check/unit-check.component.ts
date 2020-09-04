@@ -51,7 +51,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
         switch (msgType) {
 
           case 'vopReadyNotification':
-            // TODO häh?
             this.iFrameItemplayer.setAttribute('height', String(Math.trunc(this.iFrameHostElement.nativeElement.clientHeight)));
             this.postMessageTarget = m.source as Window;
             if (typeof this.postMessageTarget !== 'undefined') {
@@ -183,8 +182,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     }
   }
 
-  // TODO: replace ResizeIFrameChildDirective by @HostListener('window:resize'); see testcontroller
-
   private loadUnitAndPlayer(): void {
     while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
       this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
@@ -222,6 +219,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
       srcDoc.set(this.iFrameItemplayer, unitAndPlayer.player);
 
       this.ds.nextTask();
+      this.waitForLoading = false
   });
   }
 

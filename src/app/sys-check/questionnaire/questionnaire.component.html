@@ -5,7 +5,7 @@
 
 <mat-card-content style="height: 610px; overflow: auto">
   <div #questionnaireBody>
-    <div [formGroup]="form" class="formList" fxLayout="column">
+    <div [formGroup]="form" class="formList" fxLayout="column" *ngIf="form">
       <div *ngFor="let q of ds.checkConfig?.questions">
         <div [ngSwitch]="q.type" class="formEntry" fxLayout="column" fxLayoutGap="5px">
           <h3 *ngSwitchCase="'header'">{{ q.prompt }}{{ q.value }}</h3>
