@@ -8,7 +8,7 @@ import {
     Unit,
     TestViewDisplayOptions,
     BookletError,
-    UnitContext, isUnit
+    UnitContext, isUnit, Selected
 } from '../group-monitor.interfaces';
 import {map} from 'rxjs/operators';
 import {TestMode} from '../../config/test-mode';
@@ -25,10 +25,11 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     @Input() markedElement: Testlet|Unit|null = null;
     @Input() selectedElement: Testlet|Unit|null = null;
     @Input() checked: boolean;
-    @Output() checked$ = new EventEmitter<boolean>();
+
     @Output() bookletId$ = new EventEmitter<string>();
     @Output() markedElement$ = new EventEmitter<Testlet>();
-    @Output() selectedElement$ = new EventEmitter<Testlet|Unit|null>();
+    @Output() selectedElement$ = new EventEmitter<Selected|null>();
+    @Output() checked$ = new EventEmitter<boolean>();
 
     public testSession$: Subject<TestSession> = new Subject<TestSession>();
     public booklet$: Observable<Booklet|BookletError>;
@@ -76,10 +77,6 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
         if (typeof changes['testSession'] !== 'undefined') {
             this.testSession$.next(this.testSession);
             this.maxTimeLeft = this.parseJsonState(this.testSession.testState, 'MAXTIMELEFT');
-        }
-        if (typeof changes['selectedElement'] !== 'undefined') {
-            console.log('passivly select', this.selectedElement, changes);
-            // this.checkIfSelection();
         }
     }
 
@@ -159,7 +156,6 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
         };
 
         let i = -1;
-
         while (i++ < testlet.children.length - 1) {
 
             const testletOrUnit = testlet.children[i];
@@ -200,10 +196,8 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
             this.markedElement = null;
             this.markedElement$.emit(null);
         } else if (isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'unit') {
-            console.log('mark', testletOrUnit);
             this.markedElement = testletOrUnit;
         } else if (!isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'block') {
-            console.log('mark', testletOrUnit);
             this.markedElement$.emit(testletOrUnit);
             this.markedElement = testletOrUnit;
         }
@@ -221,18 +215,8 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
             this.selectedElement$.emit(null);
         } else if (!isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'block') {
             this.selectedElement = testletOrUnit;
-            this.selectedElement$.emit(testletOrUnit);
+            this.selectedElement$.emit({element: testletOrUnit, contextBookletId: this.testSession.bookletName});
         }
-        this.checkIfSelection();
-    }
-
-    checkIfSelection() {
-        if (this.selectedElement == null) {
-            this.checked = false;
-        } else {
-            // TODO check if booklet contains selectedElement!
-        }
-        this.checked$.emit(this.checked);
     }
 
     check($event: MatCheckboxChange) {

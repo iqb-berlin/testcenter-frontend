@@ -5,7 +5,7 @@ import {
   GroupData,
   TestSession,
   TestViewDisplayOptions,
-  TestViewDisplayOptionKey, Testlet, Unit, isUnit,
+  TestViewDisplayOptionKey, Testlet, Unit, isUnit, Selected,
 } from './group-monitor.interfaces';
 import {ActivatedRoute} from '@angular/router';
 import {ConnectionStatus} from '../shared/websocket-backend.service';
@@ -40,10 +40,11 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     selectionMode: 'block',
   };
 
-  selectedElement: Testlet|Unit|null = null;
+  selectedElement: Selected = null;
   markedElement: Testlet|Unit|null = null;
   checkedSessions: TestSession[] = [];
   allSessionsChecked = false;
+  sessionCheckedGroupCount: number;
 
   private bookletIdsViewIsAdjustedFor: string[] = [];
   private lastWindowSize = Infinity;
@@ -157,16 +158,14 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.displayOptions[option] = value;
   }
 
-  selectElement(testletOrUnit: Testlet|Unit|null) {
-    this.selectedElement = testletOrUnit;
-    this.sidenav.toggle(testletOrUnit != null);
+  selectElement(selected: Selected) {
+    this.selectedElement = selected;
+    this.checkedSessions = this.sessions$.getValue()
+        .filter(session => session.bookletName === selected.contextBookletId);
+    this.updateCheckedGroupedCount();
+    this.allSessionsChecked = (this.sessions$.getValue().length === this.checkedSessions.length);
+    this.sidenav.toggle(this.checkedSessions.length > 0);
   }
-
-  // checkAllSessionsWithSelected() {
-  //   this.checkedSessions = [];
-  //   this.sessions$.getValue()
-  //       .filter(session => session.)
-  // }
 
   markElement(testletOrUnit: Testlet|Unit|null) {
     this.markedElement = testletOrUnit;
@@ -179,9 +178,12 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     } else if ((!checked) && (selectionIndex > -1)) {
       this.checkedSessions.splice(selectionIndex, 1);
     }
+    this.updateCheckedGroupedCount();
+    if (this.sessionCheckedGroupCount > 1) {
+      this.selectedElement = null;
+    }
     this.allSessionsChecked = (this.sessions$.getValue().length === this.checkedSessions.length);
     this.sidenav.toggle(this.checkedSessions.length > 0);
-    console.log('select', checked, session, this.checkedSessions);
   }
 
   testCommandResume() {
@@ -199,26 +201,32 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   testCommandGoto() {
-    const checkedSessionsByBooklet: {[bookletName: string]: TestSession[]} = this.checkedSessions
-        .filter(session => session.testId && session.testId > -1 && session.bookletName) // TODO filter locked tests also
-        .reduce((sessionsGrouped, session) => {
-          (sessionsGrouped[session.bookletName] = sessionsGrouped[session.bookletName] || []).push(session);
-          return sessionsGrouped;
-        }, {});
-    Object.keys(checkedSessionsByBooklet).forEach(bookletName => {
-      const testIds = checkedSessionsByBooklet[bookletName].map(session => session.testId);
-      this.bs.command('goto', ['id', GroupMonitorComponent.getFirstUnit(this.selectedElement).id], testIds);
-      // TODO find first Unit in same-id having block in this specific booklet!
-    });
+    if ((this.sessionCheckedGroupCount === 1) && (this.checkedSessions.length > 0)) {
+      const testIds = this.checkedSessions
+          .filter(session => session.testId && session.testId > -1) // TODO filter paused tests...
+          .map(session => session.testId);
+      this.bs.command('goto', ['id', GroupMonitorComponent.getFirstUnit(this.selectedElement.element).id], testIds);
+    }
   }
 
-  selectAll(event: MatCheckboxChange) {
+  updateCheckedGroupedCount() {
+    this.sessionCheckedGroupCount = this.checkedSessions
+        .map(session => session.bookletName)
+        .filter((value, index, self) => self.indexOf(value) === index)
+        .length;
+  }
+
+  checkAll(event: MatCheckboxChange) {
     this.checkedSessions = [];
     if (event.checked) {
       this.checkedSessions.push(...this.sessions$.getValue().filter(session => session.testId && session.testId > -1));
       this.allSessionsChecked = true;
     } else {
       this.allSessionsChecked = false;
+    }
+    this.updateCheckedGroupedCount();
+    if (this.sessionCheckedGroupCount > 1) {
+      this.selectedElement = null;
     }
     this.sidenav.toggle(this.allSessionsChecked);
   }

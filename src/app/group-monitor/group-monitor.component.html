@@ -58,7 +58,9 @@
             <div class="selection-info">
                 <ng-container *ngIf="checkedSessions.length">
                     {{allSessionsChecked ? ' Alle' : ''}} {{checkedSessions.length}}
-                    Test{{checkedSessions.length > 1 ? 's' : ''}} ausgewählt .
+                    Test{{checkedSessions.length !== 1 ? 's' : ''}}
+                    mit {{sessionCheckedGroupCount}} Testheft{{sessionCheckedGroupCount !== 1 ? 'en' : ''}}
+                    ausgewählt.
                 </ng-container>
                 <ng-container *ngIf="!checkedSessions.length">
                     Kein Test gewählt.
@@ -77,8 +79,9 @@
             </div>
 
             <div class="toolbar-section">
-                <button mat-raised-button class="control" color="primary" (click)="testCommandGoto()" [disabled]="!selectedElement">
-                    <mat-icon>arrow_forward</mat-icon>SPRINGE ZU <span class="emph">{{selectedElement?.label}}</span>
+                <button mat-raised-button class="control" color="primary" (click)="testCommandGoto()"
+                        [disabled]="!selectedElement || sessionCheckedGroupCount !== 1">
+                    <mat-icon>arrow_forward</mat-icon>SPRINGE ZU <span class="emph">{{selectedElement?.element?.label}}</span>
                 </button>
             </div>
 
@@ -113,7 +116,7 @@
                         <thead>
                             <tr class="mat-sort-container">
                                 <td mat-sort-header="selected">
-                                    <mat-checkbox (change)="selectAll($event)" [checked]="allSessionsChecked"></mat-checkbox>
+                                    <mat-checkbox (change)="checkAll($event)" [checked]="allSessionsChecked"></mat-checkbox>
                                 </td>
                                 <td mat-sort-header="personLabel">Benutzer</td>
                                 <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">Gruppe</td>
@@ -128,7 +131,7 @@
                                 [displayOptions]="displayOptions"
                                 [markedElement]="markedElement"
                                 (markedElement$)="markElement($event)"
-                                [selectedElement]="selectedElement"
+                                [selectedElement]="selectedElement?.element"
                                 (selectedElement$)="selectElement($event)"
                                 (bookletId$)="adjustViewModeOnBookletLoad($event)"
                                 [checked]="checkedSessions.indexOf(session) > -1"

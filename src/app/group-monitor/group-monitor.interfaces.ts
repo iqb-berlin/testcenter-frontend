@@ -94,3 +94,8 @@ export interface UnitContext {
     indexAncestor: number;
     unitCountAncestor: number;
 }
+
+export interface Selected {
+    element: Unit|Testlet;
+    contextBookletId: string;
+}
