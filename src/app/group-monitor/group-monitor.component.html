@@ -73,9 +73,24 @@
             <div class="selection-info">
                 <ng-container *ngIf="selectedElement">
                     Auswahl: Block `{{selectedElement.label}} `
-                    in {{selectedSessions.length}} Tests ausgewählt.
+                    in {{selectedSessions.length}} Tests ausgewählt {{allTestsSelected ? ' (alle)' : ''}}.
                 </ng-container>
             </div>
+
+            <hr>
+
+            <button mat-icon-button (click)="testCommandResume()">
+                <mat-icon>play_arrow</mat-icon>
+            </button>
+
+            <button mat-icon-button (click)="testCommandPause()">
+                <mat-icon>pause</mat-icon>
+            </button>
+
+            <button mat-icon-button (click)="testCommandGoto()">
+                <mat-icon>double_arrow</mat-icon>
+            </button>
+
         </mat-sidenav>
 
         <mat-sidenav-content>
@@ -95,7 +110,9 @@
 
                         <thead>
                         <tr class="mat-sort-container">
-                            <td mat-sort-header="selected">°</td>
+                            <td mat-sort-header="selected">
+                                <mat-checkbox (change)="selectAll($event)" [checked]="allTestsSelected"></mat-checkbox>
+                            </td>
                             <td mat-sort-header="personLabel">Benutzer</td>
                             <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">Gruppe</td>
                             <td mat-sort-header="bookletName">Testheft</td>
@@ -106,7 +123,12 @@
                         <ng-container *ngFor="let session of sessions$ | async; trackBy: trackSession">
 
                             <td>
-                                <mat-checkbox (change)="selectSession($event, session)"></mat-checkbox>
+                                <mat-checkbox
+                                        *ngIf="session.testId >= 0"
+                                        (change)="selectSession($event, session)"
+                                        [checked]="selectedSessions.indexOf(session) > -1"
+                                >
+                                </mat-checkbox>
                             </td>
 
                             <tc-test-view

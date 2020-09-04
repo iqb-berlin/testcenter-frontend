@@ -26,14 +26,13 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       private route: ActivatedRoute,
       private bs: BackendService,
   ) {}
-  private routingSubscription: Subscription = null;
 
   ownGroup$: Observable<GroupData>;
 
   monitor$: Observable<TestSession[]>;
   connectionStatus$: Observable<ConnectionStatus>;
   sortBy$: Subject<Sort>;
-  sessions$: Observable<TestSession[]>;
+  sessions$: BehaviorSubject<TestSession[]>;
 
   displayOptions: TestViewDisplayOptions = {
     view: 'full',
@@ -45,9 +44,11 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   selectedElement: Testlet|Unit|null = null;
   markedElement: Testlet|Unit|null = null;
   selectedSessions: TestSession[] = [];
+  allTestsSelected = false;
 
   private bookletIdsViewIsAdjustedFor: string[] = [];
   private lastWindowSize = Infinity;
+  private routingSubscription: Subscription = null;
 
   @ViewChild('sidenav', {static: true}) sidenav: MatSidenav;
 
@@ -60,8 +61,11 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
     this.monitor$ = this.bs.observeSessionsMonitor();
 
-    this.sessions$ = combineLatest<[Sort, TestSession[]]>([this.sortBy$, this.monitor$])
-        .pipe(map(data => this.sortSessions(...data)));
+    this.sessions$ = new BehaviorSubject<TestSession[]>([]);
+
+    combineLatest<[Sort, TestSession[]]>([this.sortBy$, this.monitor$])
+      .pipe(map(data => this.sortSessions(...data)))
+      .subscribe(this.sessions$);
 
     this.connectionStatus$ = this.bs.connectionStatus$;
   }
@@ -151,11 +155,35 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   selectSession(event: MatCheckboxChange, session: TestSession) {
-    if (event.checked) {
+    const selectionIndex = this.selectedSessions.indexOf(session);
+    if ((event.checked) && (selectionIndex === -1)) {
       this.selectedSessions.push(session);
-    } else {
-      this.selectedSessions.splice(this.selectedSessions.indexOf(session), 1);
+    } else if ((!event.checked) && (selectionIndex > -1)) {
+      this.selectedSessions.splice(selectionIndex, 1);
     }
+    this.allTestsSelected = (this.sessions$.getValue().length === this.selectedSessions.length);
     console.log('select', event.checked, session, this.selectedSessions);
+  }
+
+  testCommandResume() {
+
+  }
+
+  testCommandPause() {
+
+  }
+
+  testCommandGoto() {
+
+  }
+
+  selectAll(event: MatCheckboxChange) {
+    this.selectedSessions = [];
+    if (event.checked) {
+      this.selectedSessions.push(...this.sessions$.getValue().filter(session => session.testId > -1));
+      this.allTestsSelected = true;
+    } else {
+      this.allTestsSelected = false;
+    }
   }
 }
