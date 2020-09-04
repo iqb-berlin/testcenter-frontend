@@ -1,28 +1,18 @@
 import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChange} from '@angular/core';
 import {BookletService} from '../booklet.service';
 import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
-import {Booklet, TestSession, Testlet, Unit, TestViewDisplayOptions, BookletError} from '../group-monitor.interfaces';
+import {
+    Booklet,
+    TestSession,
+    Testlet,
+    Unit,
+    TestViewDisplayOptions,
+    BookletError,
+    UnitContext, isUnit
+} from '../group-monitor.interfaces';
 import {map} from 'rxjs/operators';
 import {TestMode} from '../../config/test-mode';
 import {MatCheckboxChange} from '@angular/material/checkbox';
-
-// TODO find good place for this typeguard
-function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
-    return !('children' in testletOrUnit);
-}
-
-
-interface UnitContext {
-    unit?: Unit;
-    parent?: Testlet;
-    ancestor?: Testlet;
-    unitCount: number;
-    unitCountGlobal: number;
-    indexGlobal: number;
-    indexLocal: number;
-    indexAncestor: number;
-    unitCountAncestor: number;
-}
 
 @Component({
   selector: 'tc-test-view',
@@ -38,7 +28,7 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     @Output() checked$ = new EventEmitter<boolean>();
     @Output() bookletId$ = new EventEmitter<string>();
     @Output() markedElement$ = new EventEmitter<Testlet>();
-    @Output() selectedElement$ = new EventEmitter<Testlet>();
+    @Output() selectedElement$ = new EventEmitter<Testlet|Unit|null>();
 
     public testSession$: Subject<TestSession> = new Subject<TestSession>();
     public booklet$: Observable<Booklet|BookletError>;

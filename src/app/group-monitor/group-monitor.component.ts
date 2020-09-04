@@ -5,7 +5,7 @@ import {
   GroupData,
   TestSession,
   TestViewDisplayOptions,
-  TestViewDisplayOptionKey, Testlet, Unit,
+  TestViewDisplayOptionKey, Testlet, Unit, isUnit,
 } from './group-monitor.interfaces';
 import {ActivatedRoute} from '@angular/router';
 import {ConnectionStatus} from '../shared/websocket-backend.service';
@@ -50,6 +50,16 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription = null;
 
   @ViewChild('sidenav', {static: true}) sidenav: MatSidenav;
+
+  static getFirstUnit(testletOrUnit: Testlet|Unit): Unit|null {
+    while (!isUnit(testletOrUnit)) {
+      if (!testletOrUnit.children.length) {
+        return null;
+      }
+      testletOrUnit = testletOrUnit.children[0];
+    }
+    return testletOrUnit;
+  }
 
   ngOnInit(): void {
     this.routingSubscription = this.route.params.subscribe(params => {
@@ -183,13 +193,23 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   testCommandPause() {
     const testIds = this.checkedSessions
-        .filter(session => session.testId && session.testId > -1)
+        .filter(session => session.testId && session.testId > -1) // TODO filter paused tests...
         .map(session => session.testId);
     this.bs.command('pause', [], testIds);
   }
 
   testCommandGoto() {
-
+    const checkedSessionsByBooklet: {[bookletName: string]: TestSession[]} = this.checkedSessions
+        .filter(session => session.testId && session.testId > -1 && session.bookletName) // TODO filter locked tests also
+        .reduce((sessionsGrouped, session) => {
+          (sessionsGrouped[session.bookletName] = sessionsGrouped[session.bookletName] || []).push(session);
+          return sessionsGrouped;
+        }, {});
+    Object.keys(checkedSessionsByBooklet).forEach(bookletName => {
+      const testIds = checkedSessionsByBooklet[bookletName].map(session => session.testId);
+      this.bs.command('goto', ['id', GroupMonitorComponent.getFirstUnit(this.selectedElement).id], testIds);
+      // TODO find first Unit in same-id having block in this specific booklet!
+    });
   }
 
   selectAll(event: MatCheckboxChange) {
