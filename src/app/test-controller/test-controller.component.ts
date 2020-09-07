@@ -325,6 +325,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               localStorage.setItem(TestControllerComponent.localStoragePausedKey, this.tcs.testId
                   + '##' + this.tcs.currentUnitSequenceId.toString());
             }
+            this.tcs.setBookletState(LastStateKey.PAUSED, '');
             this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE, true);
             break;
           case TestStatus.RUNNING:
