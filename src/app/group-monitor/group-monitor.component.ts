@@ -42,7 +42,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   selectedElement: Selected = null;
   markedElement: Testlet|Unit|null = null;
-  checkedSessions: TestSession[] = [];
+  checkedSessions: {[sessionTestSessionId: number]: TestSession} = {};
   allSessionsChecked = false;
   sessionCheckedGroupCount: number;
 
@@ -60,6 +60,10 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       testletOrUnit = testletOrUnit.children[0];
     }
     return testletOrUnit;
+  }
+
+  private static getPersonXTestId(session: TestSession): number {
+    return session.personId * 10000 +  session.testId;
   }
 
   ngOnInit(): void {
@@ -129,7 +133,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   trackSession(index: number, session: TestSession): number {
-    return session.personId * 10000 +  session.testId;
+    return GroupMonitorComponent.getPersonXTestId(session);
   }
 
   sortSessions(sort: Sort, sessions: TestSession[]): TestSession[] {
@@ -139,7 +143,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
             return (testSession2.timestamp - testSession1.timestamp) * (sort.direction === 'asc' ? 1 : -1);
           }
           if (sort.active === 'selected') {
-            return this.checkedSessions.indexOf(testSession1) * (sort.direction === 'asc' ? -1 : 1);
+            return (typeof this.checkedSessions[GroupMonitorComponent.getPersonXTestId(testSession1)] === 'undefined' ? 1 : 0)
+                * (sort.direction === 'asc' ? -1 : 1);
           }
           const stringA = (testSession1[sort.active] || 'zzzzz');
           const stringB = (testSession2[sort.active] || 'zzzzz');
@@ -158,76 +163,87 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.displayOptions[option] = value;
   }
 
-  selectElement(selected: Selected) {
-    this.selectedElement = selected;
-    this.checkedSessions = this.sessions$.getValue()
-        .filter(session => session.bookletName === selected.contextBookletId);
-    this.updateCheckedGroupedCount();
-    this.allSessionsChecked = (this.sessions$.getValue().length === this.checkedSessions.length);
-    this.sidenav.toggle(this.checkedSessions.length > 0);
-  }
-
-  markElement(testletOrUnit: Testlet|Unit|null) {
-    this.markedElement = testletOrUnit;
-  }
-
-  checkSession(checked: boolean, session: TestSession) {
-    const selectionIndex = this.checkedSessions.indexOf(session);
-    if ((checked) && (selectionIndex === -1)) {
-      this.checkedSessions.push(session);
-    } else if ((!checked) && (selectionIndex > -1)) {
-      this.checkedSessions.splice(selectionIndex, 1);
-    }
-    this.updateCheckedGroupedCount();
-    if (this.sessionCheckedGroupCount > 1) {
-      this.selectedElement = null;
-    }
-    this.allSessionsChecked = (this.sessions$.getValue().length === this.checkedSessions.length);
-    this.sidenav.toggle(this.checkedSessions.length > 0);
-  }
-
   testCommandResume() {
-    const testIds = this.checkedSessions
+    const testIds = Object.values(this.checkedSessions)
         .filter(session => session.testId && session.testId > -1) // TODO only paused tests...
         .map(session => session.testId);
     this.bs.command('resume', [], testIds);
   }
 
   testCommandPause() {
-    const testIds = this.checkedSessions
+    const testIds = Object.values(this.checkedSessions)
         .filter(session => session.testId && session.testId > -1) // TODO filter paused tests...
         .map(session => session.testId);
     this.bs.command('pause', [], testIds);
   }
 
   testCommandGoto() {
-    if ((this.sessionCheckedGroupCount === 1) && (this.checkedSessions.length > 0)) {
-      const testIds = this.checkedSessions
+    if ((this.sessionCheckedGroupCount === 1) && (Object.keys(this.checkedSessions).length > 0)) {
+      const testIds = Object.values(this.checkedSessions)
           .filter(session => session.testId && session.testId > -1) // TODO filter paused tests...
           .map(session => session.testId);
       this.bs.command('goto', ['id', GroupMonitorComponent.getFirstUnit(this.selectedElement.element).id], testIds);
     }
   }
 
-  updateCheckedGroupedCount() {
-    this.sessionCheckedGroupCount = this.checkedSessions
+  selectElement(selected: Selected) {
+    this.selectedElement = selected;
+    this.checkedSessions = this.sessions$.getValue()
+        .filter(session => session.bookletName === selected.contextBookletId);
+    this.onCheckedChanged();
+  }
+
+  markElement(testletOrUnit: Testlet|Unit|null) {
+    this.markedElement = testletOrUnit;
+  }
+
+  toggleChecked(checked: boolean, session: TestSession) {
+    if (!this.isChecked(session)) {
+      this.checkSession(session);
+    } else {
+      this.uncheckSession(session);
+    }
+    this.onCheckedChanged();
+  }
+
+  toggleCheckAll(event: MatCheckboxChange) {
+    this.checkedSessions = [];
+    if (event.checked) {
+      this.sessions$.getValue().forEach(session => {
+        this.checkSession(session);
+      });
+    }
+    this.onCheckedChanged();
+  }
+
+  countCheckedSessions(): number {
+    return Object.values(this.checkedSessions).length;
+  }
+
+  isChecked(session: TestSession): boolean {
+    return (typeof this.checkedSessions[GroupMonitorComponent.getPersonXTestId(session)] !== 'undefined');
+  }
+
+  private checkSession(session: TestSession) {
+    this.checkedSessions[GroupMonitorComponent.getPersonXTestId(session)] = session;
+  }
+
+  private uncheckSession(session: TestSession) {
+    if (this.isChecked(session)) {
+      delete this.checkedSessions[GroupMonitorComponent.getPersonXTestId(session)];
+    }
+  }
+
+  private onCheckedChanged() {
+    this.sessionCheckedGroupCount = Object.values(this.checkedSessions)
         .map(session => session.bookletName)
         .filter((value, index, self) => self.indexOf(value) === index)
         .length;
-  }
-
-  checkAll(event: MatCheckboxChange) {
-    this.checkedSessions = [];
-    if (event.checked) {
-      this.checkedSessions.push(...this.sessions$.getValue().filter(session => session.testId && session.testId > -1));
-      this.allSessionsChecked = true;
-    } else {
-      this.allSessionsChecked = false;
-    }
-    this.updateCheckedGroupedCount();
+    console.log('EGAL', this.sessions$.getValue().length , this.countCheckedSessions());
+    this.allSessionsChecked = (this.sessions$.getValue().length === this.countCheckedSessions());
+    this.sidenav.toggle(this.sessionCheckedGroupCount > 0);
     if (this.sessionCheckedGroupCount > 1) {
       this.selectedElement = null;
     }
-    this.sidenav.toggle(this.allSessionsChecked);
   }
 }
