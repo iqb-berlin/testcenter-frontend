@@ -55,6 +55,14 @@
                           matTooltip="Testheft abgeschlossen"
                     >done_all
                 </mat-icon>
+
+
+                <mat-icon class="unit-badge danger"
+                          *ngIf="hasState(testSession.testState, 'FOCUS', 'LOST')"
+                          matTooltip="Fenster/Tab wurde verlassen!"
+                >report_problem
+                </mat-icon>
+
             </div>
         </ng-container>
     </ng-container>
