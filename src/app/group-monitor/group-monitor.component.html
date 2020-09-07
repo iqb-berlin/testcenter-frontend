@@ -51,7 +51,7 @@
 
 <div class="page-body">
     <mat-sidenav-container>
-        <mat-sidenav #sidenav mode="side" class="toolbar" fixedInViewport="true" fixedTopGap="70">
+        <mat-sidenav #sidenav mode="side" class="toolbar" fixedInViewport="true" fixedTopGap="55">
 
             <h2>Test-Steuerung</h2>
 
@@ -81,7 +81,8 @@
             <div class="toolbar-section">
                 <button mat-raised-button class="control" color="primary" (click)="testCommandGoto()"
                         [disabled]="!selectedElement || sessionCheckedGroupCount !== 1">
-                    <mat-icon>arrow_forward</mat-icon>SPRINGE ZU <span class="emph">{{selectedElement?.element?.label}}</span>
+                    <mat-icon>arrow_forward</mat-icon>SPRINGE ZU
+                    <span class="emph">{{selectedElement?.element?.label || selectedElement?.element?.id}}</span>
                 </button>
             </div>
 
