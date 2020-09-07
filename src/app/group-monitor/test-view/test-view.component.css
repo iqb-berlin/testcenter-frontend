@@ -21,6 +21,7 @@ mat-icon + h1 {
     display: inline-block;
     position: relative;
     white-space: nowrap;
+    transform-style: preserve-3d;
 }
 
 .units:before {
@@ -41,12 +42,13 @@ mat-icon + h1 {
     margin: 2px;
     border-radius: 16px;
     align-items: center;
-    cursor: default;
     text-transform: uppercase;
     color: white;
     background: #003333;
     min-width: 1em;
     text-align: center;
+    cursor: pointer;
+    transform-style: preserve-3d;
 }
 
 .unit.aggregated {
@@ -72,25 +74,6 @@ mat-icon + h1 {
     color: #003333;
 }
 
-.unit.marked,
-.unit.selected {
-    border: orange;
-    cursor: pointer;
-    color: black
-}
-
-.unit.marked {
-    background: #b2ff59;
-}
-
-.unit.selected {
-    background: #b2ff59;
-}
-
-.unit.marked.selected {
-    background: #b2ff59;
-}
-
 .locked .unit.current {
     background: #b2b2b2;
     color: #333333;
@@ -104,34 +87,40 @@ mat-icon + h1 {
     border: 2px solid #003333;
     position: relative;
     transform-style: preserve-3d;
-}
-
-.testlet.selected {
     cursor: pointer;
 }
 
-.testlet.marked::after,
-.testlet.selected::after {
+.unit.marked::before,
+.unit.selected::before,
+.testlet.marked::before,
+.testlet.selected::before {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     content: " ";
-    margin: -13px -2px;
     transform: translateZ(-10px);
-    cursor: pointer
+    margin: -18px -10px;
 }
 
-.testlet.marked::after {
+.testlet.marked::before,
+.testlet.selected::before {
+    margin: -13px -2px;
+}
+
+.unit.marked::before,
+.testlet.marked::before {
     background: rgba(178, 200, 160, 0.5);
 }
 
-.testlet.selected::after {
+.unit.selected::before,
+.testlet.selected::before {
     background: rgba(178, 200, 160, 0.7);
 }
 
-.testlet.marked.selected::after {
+.unit.marked.selected::before,
+.testlet.marked.selected::before {
     background: rgba(178, 200, 160, 0.9);
 }
 

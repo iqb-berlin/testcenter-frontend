@@ -229,15 +229,31 @@
             <ng-container *ngIf="featuredUnit; else: unFeaturedTestlet">
                 <span
                         *ngIf="featuredUnit.ancestor.id === testletOrUnit.id; else: unFeaturedTestlet"
-                        class="unit current aggregated"
+                        [class]="{
+                            unit: true,
+                            aggregated: true,
+                            selected: selectedElement?.id === testletOrUnit.id,
+                            marked: markedElement?.id === testletOrUnit.id
+                        }"
                         matTooltip="{{featuredUnit.unit.label}}"
                         matTooltipPosition="above"
+                        (mouseenter)="mark(testletOrUnit)"
+                        (click)="select(testletOrUnit)"
                 >{{featuredUnit.indexAncestor + 1}} / {{featuredUnit.unitCountAncestor}}
                 </span>
             </ng-container>
 
             <ng-template #unFeaturedTestlet>
-                <span class="unit aggregated">{{testletOrUnit.descendantCount}}</span>
+                <span
+                        [class]="{
+                            unit: true,
+                            aggregated: true,
+                            selected: selectedElement?.id === testletOrUnit.id,
+                            marked: markedElement?.id === testletOrUnit.id
+                        }"
+                        (mouseenter)="mark(testletOrUnit)"
+                        (click)="select(testletOrUnit)"
+                >{{testletOrUnit.descendantCount}}</span>
             </ng-template>
         </span>
     </ng-container>
