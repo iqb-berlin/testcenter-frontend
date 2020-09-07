@@ -103,10 +103,20 @@
             <div class="adminbackground">
 
                 <div class="corner-menu">
-                    <button class="drawer-button" mat-icon-button (click)="sidenav.toggle()">
+                    <button class="drawer-button"
+                            mat-icon-button
+                            (click)="sidenav.toggle()"
+                            matTooltip="Test-Steuerung {{sidenav.opened ? 'schließen' : 'öffnen'}}"
+                            matTooltipPosition="above"
+                        >
                         <mat-icon>menu_open</mat-icon>
                     </button>
-                    <button class="settings-button" mat-icon-button [matMenuTriggerFor]="rootMenu">
+                    <button class="settings-button"
+                            mat-icon-button
+                            [matMenuTriggerFor]="rootMenu"
+                            matTooltip="Ansicht"
+                            matTooltipPosition="above"
+                        >
                         <mat-icon>settings</mat-icon>
                     </button>
                 </div>
