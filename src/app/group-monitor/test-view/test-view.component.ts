@@ -45,8 +45,6 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnInit() {
-        console.log('NEW test-view component:' + this.testSession.personId, this.testSession.bookletName);
-
         this.booklet$ = this.bookletsService.getBooklet(this.testSession.bookletName || '');
 
         this.bookletSubscription = this.booklet$.subscribe((booklet: Booklet|BookletError) => {

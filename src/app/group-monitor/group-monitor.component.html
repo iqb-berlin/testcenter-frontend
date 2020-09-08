@@ -56,15 +56,15 @@
             <h2>Test-Steuerung</h2>
 
             <div class="selection-info">
-                <ng-container *ngIf="countCheckedSessions() as checkedSessionsCount; else: noCheckedSession">
+                <ng-container *ngIf="countCheckedSessions() as checkedSessionsCount; else noCheckedSession">
                     {{allSessionsChecked ? ' Alle' : ''}} {{checkedSessionsCount}}
                     Test{{checkedSessionsCount !== 1 ? 's' : ''}}
                     mit {{sessionCheckedGroupCount}} Testheft{{sessionCheckedGroupCount !== 1 ? 'en' : ''}}
                     ausgewählt.
                 </ng-container>
-                <ng-container #noCheckedSession>
+                <ng-template #noCheckedSession>
                     Kein Test gewählt.
-                </ng-container>
+                </ng-template>
                 <hr>
             </div>
 

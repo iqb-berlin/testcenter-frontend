@@ -188,8 +188,13 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   selectElement(selected: Selected) {
     this.selectedElement = selected;
-    this.checkedSessions = this.sessions$.getValue()
-        .filter(session => session.bookletName === selected.contextBookletId);
+    this.checkedSessions = {};
+    this.sessions$.getValue()
+        .filter(session => session.testId && session.testId > -1)
+        .filter(session => session.bookletName === selected.contextBookletId)
+        .forEach(session => {
+            this.checkedSessions[GroupMonitorComponent.getPersonXTestId(session)] = session;
+        });
     this.onCheckedChanged();
   }
 
@@ -239,7 +244,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         .map(session => session.bookletName)
         .filter((value, index, self) => self.indexOf(value) === index)
         .length;
-    console.log('EGAL', this.sessions$.getValue().length , this.countCheckedSessions());
     this.allSessionsChecked = (this.sessions$.getValue().length === this.countCheckedSessions());
     this.sidenav.toggle(this.sessionCheckedGroupCount > 0);
     if (this.sessionCheckedGroupCount > 1) {
