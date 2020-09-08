@@ -143,7 +143,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
             return (testSession2.timestamp - testSession1.timestamp) * (sort.direction === 'asc' ? 1 : -1);
           }
           if (sort.active === 'selected') {
-            return (typeof this.checkedSessions[GroupMonitorComponent.getPersonXTestId(testSession1)] === 'undefined' ? 1 : 0)
+            return (this.isChecked(testSession1) === this.isChecked(testSession2) ? 0 : this.isChecked(testSession1) ? 1 : -1)
                 * (sort.direction === 'asc' ? -1 : 1);
           }
           const stringA = (testSession1[sort.active] || 'zzzzz');
