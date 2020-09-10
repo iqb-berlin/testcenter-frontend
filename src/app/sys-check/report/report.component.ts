@@ -74,7 +74,7 @@ export class ReportComponent implements OnInit {
     setTimeout(() => {
       this.ds.setNewCurrentStep('r');
       this.questionnaireDataWarnings = [];
-      if (this.ds.checkConfig.questions.length > 0) {
+      if (this.ds.checkConfig && this.ds.checkConfig.questions.length > 0) {
         if (this.ds.questionnaireReport.length > 0) {
           this.ds.questionnaireReport.forEach(re => {
             if (re.warning) {

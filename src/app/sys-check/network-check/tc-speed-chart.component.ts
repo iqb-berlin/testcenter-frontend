@@ -87,34 +87,27 @@ export class TcSpeedChartComponent {
   }
 
   public plotData(dataPoints: Array<[number, number]>, color: string = null, style: 'line' | 'dots' = 'line') {
-
     if (!dataPoints.length) {
       return;
     }
-
     color = color || this.randomColor();
-
     const coordinates = this.dataPointsToCoordinates(dataPoints);
-
     color = color || this.randomColor();
     const oldStrokeColor = this.context.strokeStyle;
     const oldFillColor = this.context.fillStyle;
     this.context.strokeStyle = color;
     this.context.fillStyle = color;
-
     if (style === 'line') {
       this.paintLine(coordinates);
     }
     if (style === 'dots') {
       this.paintDots(coordinates);
     }
-
     this.context.strokeStyle = oldStrokeColor;
     this.context.fillStyle = oldFillColor;
   }
 
   private dataPointsToCoordinates(dataPoints: Array<[number, number]>): Array<[number, number]> {
-
     return dataPoints
       .map((xy): [number, number] => [ // apply projection
         this.config.xProject(xy[0]),

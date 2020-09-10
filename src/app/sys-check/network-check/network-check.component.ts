@@ -58,10 +58,8 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
           networkType: connection.type || null,
         };
       }
-      if (this.ds.networkReport.length === 0) {
+      if (this.ds.checkConfig && this.ds.networkReport.length === 0) {
         this.startCheck();
-      } else {
-
       }
     })
   }
@@ -86,29 +84,31 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
   }
 
   private plotPrepare(isDownloadPart: boolean) {
-    const testSizes = (isDownloadPart) ? this.ds.checkConfig.downloadSpeed.sequenceSizes : this.ds.checkConfig.uploadSpeed.sequenceSizes;
-    const plotterSettings = {
-      css: 'border: 1px solid silver; margin: 2px; width: 100%;',
-      width: 800,
-      height: 240,
-      labelPadding: 4,
-      xAxisMaxValue: 16 + Math.max(...testSizes),
-      xAxisMinValue: Math.min(...testSizes),
-      yAxisMaxValue: (isDownloadPart) ? 1200 : 2500,
-      yAxisMinValue: (isDownloadPart) ? 20 : 100,
-      xAxisStepSize: 4,
-      yAxisStepSize: (isDownloadPart) ? 50 : 100,
-      lineWidth: 5,
-      xProject: x => (x === 0 ) ? 0 : Math.sign(x) * Math.log2(Math.abs(x)),
-      yProject: y => (y === 0 ) ? 0 : Math.sign(y) * Math.log(Math.abs(y)),
-      xAxisLabels: (x) => (testSizes.indexOf(x) > -1) ? this.humanReadableBytes(x, false, true) : '',
-      yAxisLabels: (y, i) => (i < 10) ? this.humanReadableMilliseconds(y) : ' ',
-    };
+    if (this.ds.checkConfig) {
+      const testSizes = (isDownloadPart) ? this.ds.checkConfig.downloadSpeed.sequenceSizes : this.ds.checkConfig.uploadSpeed.sequenceSizes;
+      const plotterSettings = {
+        css: 'border: 1px solid silver; margin: 2px; width: 100%;',
+        width: 800,
+        height: 240,
+        labelPadding: 4,
+        xAxisMaxValue: 16 + Math.max(...testSizes),
+        xAxisMinValue: Math.min(...testSizes),
+        yAxisMaxValue: (isDownloadPart) ? 1200 : 2500,
+        yAxisMinValue: (isDownloadPart) ? 20 : 100,
+        xAxisStepSize: 4,
+        yAxisStepSize: (isDownloadPart) ? 50 : 100,
+        lineWidth: 5,
+        xProject: x => (x === 0 ) ? 0 : Math.sign(x) * Math.log2(Math.abs(x)),
+        yProject: y => (y === 0 ) ? 0 : Math.sign(y) * Math.log(Math.abs(y)),
+        xAxisLabels: (x) => (testSizes.indexOf(x) > -1) ? this.humanReadableBytes(x, false, true) : '',
+        yAxisLabels: (y, i) => (i < 10) ? this.humanReadableMilliseconds(y) : ' ',
+      };
 
-    if (isDownloadPart) {
-      this.downloadPlotter.reset(plotterSettings);
-    } else {
-      this.uploadPlotter.reset(plotterSettings);
+      if (isDownloadPart) {
+        this.downloadPlotter.reset(plotterSettings);
+      } else {
+        this.uploadPlotter.reset(plotterSettings);
+      }
     }
   }
 
