@@ -28,7 +28,7 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
 
     @Output() bookletId$ = new EventEmitter<string>();
     @Output() markedElement$ = new EventEmitter<Testlet>();
-    @Output() selectedElement$ = new EventEmitter<Selected|null>();
+    @Output() selectedElement$ = new EventEmitter<Selected>();
     @Output() checked$ = new EventEmitter<boolean>();
 
     public testSession$: Subject<TestSession> = new Subject<TestSession>();
@@ -38,6 +38,7 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     public maxTimeLeft: object|null; // TODO make observable maybe
 
     private bookletSubscription: Subscription;
+    private selectedElementSpreading = true;
 
     constructor(
         private bookletsService: BookletService,
@@ -201,20 +202,31 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
-    select(testletOrUnit: Testlet|Unit) {
-        if ((this.selectedElement != null)
-            && (this.selectedElement.id === testletOrUnit.id)
-            && (isUnit(testletOrUnit) === isUnit(this.selectedElement))
-        ) {
-            this.selectedElement = null;
-            this.selectedElement$.emit(null);
-        } else if (isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'unit') {
-            this.selectedElement = testletOrUnit;
-            this.selectedElement$.emit(null);
-        } else if (!isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'block') {
-            this.selectedElement = testletOrUnit;
-            this.selectedElement$.emit({element: testletOrUnit, contextBookletId: this.testSession.bookletName});
+    select($event: Event, testletOrUnit: Testlet|Unit|null) {
+        console.log(
+            'SELECT',
+            this.selectedElement !== null ? this.selectedElement.id : null,
+            testletOrUnit !== null ? testletOrUnit.id : null
+        );
+
+        if ((isUnit(testletOrUnit) ? 'unit' : 'block') !== this.displayOptions.selectionMode) {
+            return;
         }
+
+        $event.stopPropagation();
+
+        this.selectedElement = testletOrUnit;
+
+        this.selectedElementSpreading = (this.selectedElement != null) && (this.selectedElement.id === testletOrUnit.id)
+            ? !this.selectedElementSpreading
+            : true;
+
+        this.selectedElement$.emit({
+            element: this.selectedElement,
+            contextBookletId: this.testSession.bookletName,
+            session: this.testSession,
+            spreading: this.selectedElementSpreading
+        });
     }
 
     check($event: MatCheckboxChange) {

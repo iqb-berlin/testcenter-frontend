@@ -75,8 +75,8 @@ export interface TestViewDisplayOptions {
     view: 'full' | 'medium' | 'small';
     groupColumn: 'show' | 'hide';
     selectionMode: 'block' | 'unit';
+    selectionSpreading: 'booklet' | 'all';
 }
-
 
 export function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
     return !('children' in testletOrUnit);
@@ -96,6 +96,8 @@ export interface UnitContext {
 }
 
 export interface Selected {
-    element: Unit|Testlet;
+    element: Unit|Testlet|null;
     contextBookletId: string;
+    session?: TestSession;
+    spreading: boolean;
 }

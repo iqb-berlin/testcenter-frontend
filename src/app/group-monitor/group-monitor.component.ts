@@ -38,6 +38,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     view: 'full',
     groupColumn: 'hide',
     selectionMode: 'block',
+    selectionSpreading: 'booklet'
   };
 
   selectedElement: Selected = null;
@@ -189,12 +190,20 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   selectElement(selected: Selected) {
     this.selectedElement = selected;
     this.checkedSessions = {};
-    this.sessions$.getValue()
-        .filter(session => session.testId && session.testId > -1)
-        .filter(session => session.bookletName === selected.contextBookletId)
-        .forEach(session => {
-            this.checkedSessions[GroupMonitorComponent.getPersonXTestId(session)] = session;
-        });
+    if (selected.element) {
+      if (!selected.spreading) {
+        this.checkedSessions[GroupMonitorComponent.getPersonXTestId(selected.session)] = selected.session;
+      } else {
+        // TODO the 2nd filter should depend on this.displayOptions.selectionSpreading is 'all' or 'booklet' ...
+        // ... can be implemented if it's clear how to broadcast commands to different targets
+        this.sessions$.getValue()
+            .filter(session => session.testId && session.testId > -1)
+            .filter(session => session.bookletName === selected.contextBookletId)
+            .forEach(session => {
+              this.checkedSessions[GroupMonitorComponent.getPersonXTestId(session)] = session;
+            });
+      }
+    }
     this.onCheckedChanged();
   }
 

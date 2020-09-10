@@ -96,6 +96,10 @@
                 </mat-radio-group>
             </div>
 
+            <div class="toolbar-section">
+                <pre>{{this.displayOptions | json}}</pre>
+            </div>
+
         </mat-sidenav>
 
         <mat-sidenav-content>
@@ -121,7 +125,7 @@
                     </button>
                 </div>
 
-                <div class="test-view-table-wrapper">
+                <div class="test-view-table-wrapper" (click)="selectElement({element: null, spreading: true, contextBookletId: ''})">
                     <table class="test-view-table" matSort (matSortChange)="setTableSorting($event)">
 
                         <thead>

@@ -175,7 +175,7 @@
                 marked: markedElement?.id === testletOrUnit.id
               }"
               (mouseenter)="mark(testletOrUnit)"
-              (click)="select(testletOrUnit)"
+              (click)="select($event, testletOrUnit)"
               matTooltip="{{testletOrUnit.label}}"
               matTooltipPosition="above"
             >{{testletOrUnit.labelShort || "&nbsp;"}}
@@ -188,7 +188,7 @@
                 marked: markedElement?.id === testletOrUnit.id
               }"
               (mouseenter)="mark(testletOrUnit)"
-              (click)="select(testletOrUnit)"
+              (click)="select($event, testletOrUnit)"
               matTooltip="{{testletOrUnit.label}}"
             >
             <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testletOrUnit}"></ng-container>
@@ -239,7 +239,7 @@
                         matTooltip="{{featuredUnit.unit.label}}"
                         matTooltipPosition="above"
                         (mouseenter)="mark(testletOrUnit)"
-                        (click)="select(testletOrUnit)"
+                        (click)="select($event, testletOrUnit)"
                 >{{featuredUnit.indexAncestor + 1}} / {{featuredUnit.unitCountAncestor}}
                 </span>
             </ng-container>
@@ -253,7 +253,7 @@
                             marked: markedElement?.id === testletOrUnit.id
                         }"
                         (mouseenter)="mark(testletOrUnit)"
-                        (click)="select(testletOrUnit)"
+                        (click)="select($event, testletOrUnit)"
                 >{{testletOrUnit.descendantCount}}</span>
             </ng-template>
         </span>
