@@ -26,7 +26,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {BookletConfig} from '../config/booklet-config';
 import {TestMode} from '../config/test-mode';
-import {CommandService} from "./command.service";
+import {CommandService} from './command.service';
 
 
 @Component({
@@ -67,7 +67,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private cts: CustomtextService,
-    private cmd: CommandService
+    public cmd: CommandService
   ) {
   }
 
@@ -232,7 +232,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             let playerId = null;
             let definitionRef = '';
             if (myUnitData.laststate && myUnitData.laststate['PRESENTATIONCOMPLETE']) {
-              this.tcs.addUnitPresentationComplete(sequenceId, myUnitData.laststate['PRESENTATIONCOMPLETE'])
+              this.tcs.addUnitPresentationComplete(sequenceId, myUnitData.laststate['PRESENTATIONCOMPLETE']);
             }
 
             try {
@@ -322,7 +322,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           case TestStatus.PAUSED:
             // TODO pause time
             if (this.tcs.currentUnitSequenceId > 0 && this.getTestStatusFromLocalStorage() === TestStatus.RUNNING) {
-              localStorage.setItem(TestControllerComponent.localStoragePausedKey, this.tcs.testId + '##' + this.tcs.currentUnitSequenceId.toString());
+              localStorage.setItem(TestControllerComponent.localStoragePausedKey, this.tcs.testId
+                  + '##' + this.tcs.currentUnitSequenceId.toString());
             }
             this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE, true);
             break;
@@ -331,8 +332,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             break;
         }
       });
-      this.appWindowHasFocusSubscription = this.mds.appWindowHasFocus$.subscribe(hasFocus =>{
-        this.tcs.windowFocusState$.next(hasFocus ? WindowFocusState.HOST : WindowFocusState.UNKNOWN)
+      this.appWindowHasFocusSubscription = this.mds.appWindowHasFocus$.subscribe(hasFocus => {
+        this.tcs.windowFocusState$.next(hasFocus ? WindowFocusState.HOST : WindowFocusState.UNKNOWN);
       });
       this.commandSubscription = this.cmd.command$.pipe(
           distinctUntilChanged((command1: Command, command2: Command): boolean => (command1.id === command2.id))
@@ -351,7 +352,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.maxTimerSubscription = this.tcs.maxTimeTimer$.subscribe(maxTimerData => {
             switch (maxTimerData.type) {
               case MaxTimerDataType.STARTED:
-                this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') + maxTimerData.timeLeftMinString, '', {duration: 3000});
+                this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted')
+                    + maxTimerData.timeLeftMinString, '', {duration: 3000});
                 this.timerValue = maxTimerData;
                 break;
               case MaxTimerDataType.ENDED:
@@ -535,7 +537,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       const dataSplits = pauseStatus.split('##');
       if (dataSplits.length > 1) {
         if (dataSplits[0] === this.tcs.testId) {
-          myReturn = TestStatus.PAUSED
+          myReturn = TestStatus.PAUSED;
         }
       }
     }
@@ -636,7 +638,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case 'debug':
         this.debugPane = params.length === 0 || params[0].toLowerCase() !== 'off';
         if (this.debugPane) {
-          console.log('select (focus) app window to see the debugPane')
+          console.log('select (focus) app window to see the debugPane');
         }
         break;
       case 'pause':
@@ -664,10 +666,17 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         break;
       case 'goto':
         this.tcs.testStatus$.next(TestStatus.RUNNING);
-        console.log('goto');
-        if (params.length > 0) {
+        let gotoTarget: string;
+        console.log('goto', this.allUnitIds);
+        if ((params.length === 2) && (params[0] === 'id')) {
+          gotoTarget = (this.allUnitIds.indexOf(params[1]) + 1).toString(10);
+        } else if (params.length === 1) {
+          gotoTarget = params[0];
+        }
+        if (gotoTarget && gotoTarget !== '0') {
+          console.log('YES', gotoTarget);
           this.tcs.interruptMaxTimer();
-          this.tcs.setUnitNavigationRequest(params[0], true);
+          this.tcs.setUnitNavigationRequest(gotoTarget, true);
         }
         break;
     }

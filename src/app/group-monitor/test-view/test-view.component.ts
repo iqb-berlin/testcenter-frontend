@@ -1,27 +1,18 @@
 import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChange} from '@angular/core';
 import {BookletService} from '../booklet.service';
 import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
-import {Booklet, TestSession, Testlet, Unit, TestViewDisplayOptions, BookletError} from '../group-monitor.interfaces';
+import {
+    Booklet,
+    TestSession,
+    Testlet,
+    Unit,
+    TestViewDisplayOptions,
+    BookletError,
+    UnitContext, isUnit, Selected
+} from '../group-monitor.interfaces';
 import {map} from 'rxjs/operators';
 import {TestMode} from '../../config/test-mode';
-
-// TODO find good place for this typeguard
-function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
-    return !('children' in testletOrUnit);
-}
-
-
-interface UnitContext {
-    unit?: Unit;
-    parent?: Testlet;
-    ancestor?: Testlet;
-    unitCount: number;
-    unitCountGlobal: number;
-    indexGlobal: number;
-    indexLocal: number;
-    indexAncestor: number;
-    unitCountAncestor: number;
-}
+import {MatCheckboxChange} from '@angular/material/checkbox';
 
 @Component({
   selector: 'tc-test-view',
@@ -31,7 +22,14 @@ interface UnitContext {
 export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     @Input() testSession: TestSession;
     @Input() displayOptions: TestViewDisplayOptions;
+    @Input() markedElement: Testlet|Unit|null = null;
+    @Input() selectedElement: Testlet|Unit|null = null;
+    @Input() checked: boolean;
+
     @Output() bookletId$ = new EventEmitter<string>();
+    @Output() markedElement$ = new EventEmitter<Testlet>();
+    @Output() selectedElement$ = new EventEmitter<Selected|null>();
+    @Output() checked$ = new EventEmitter<boolean>();
 
     public testSession$: Subject<TestSession> = new Subject<TestSession>();
     public booklet$: Observable<Booklet|BookletError>;
@@ -47,8 +45,6 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnInit() {
-        console.log('NEW test-view component:' + this.testSession.personId, this.testSession.bookletName);
-
         this.booklet$ = this.bookletsService.getBooklet(this.testSession.bookletName || '');
 
         this.bookletSubscription = this.booklet$.subscribe((booklet: Booklet|BookletError) => {
@@ -76,8 +72,10 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
-        this.testSession$.next(this.testSession);
-        this.maxTimeLeft = this.parseJsonState(this.testSession.testState, 'MAXTIMELEFT');
+        if (typeof changes['testSession'] !== 'undefined') {
+            this.testSession$.next(this.testSession);
+            this.maxTimeLeft = this.parseJsonState(this.testSession.testState, 'MAXTIMELEFT');
+        }
     }
 
     ngOnDestroy() {
@@ -156,7 +154,6 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
         };
 
         let i = -1;
-
         while (i++ < testlet.children.length - 1) {
 
             const testletOrUnit = testlet.children[i];
@@ -190,5 +187,37 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         return result;
+    }
+
+    mark(testletOrUnit: Testlet|Unit|null = null) {
+        if (testletOrUnit == null) {
+            this.markedElement = null;
+            this.markedElement$.emit(null);
+        } else if (isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'unit') {
+            this.markedElement = testletOrUnit;
+        } else if (!isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'block') {
+            this.markedElement$.emit(testletOrUnit);
+            this.markedElement = testletOrUnit;
+        }
+    }
+
+    select(testletOrUnit: Testlet|Unit) {
+        if ((this.selectedElement != null)
+            && (this.selectedElement.id === testletOrUnit.id)
+            && (isUnit(testletOrUnit) === isUnit(this.selectedElement))
+        ) {
+            this.selectedElement = null;
+            this.selectedElement$.emit(null);
+        } else if (isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'unit') {
+            this.selectedElement = testletOrUnit;
+            this.selectedElement$.emit(null);
+        } else if (!isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'block') {
+            this.selectedElement = testletOrUnit;
+            this.selectedElement$.emit({element: testletOrUnit, contextBookletId: this.testSession.bookletName});
+        }
+    }
+
+    check($event: MatCheckboxChange) {
+        this.checked$.emit($event.checked);
     }
 }

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, of} from 'rxjs';
+import {Observable, of, Subscription} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {BookletError, GroupData, TestSession} from './group-monitor.interfaces';
 import {WebsocketBackendService} from '../shared/websocket-backend.service';
@@ -8,17 +8,14 @@ import {ApiError} from '../app.interfaces';
 
 @Injectable()
 export class BackendService extends WebsocketBackendService<TestSession[]> {
-
     public pollingEndpoint = '/monitor/test-sessions';
     public pollingInterval = 5000;
     public wsChannelName = 'test-sessions';
     public initialData: TestSession[] = [];
 
-
     public observeSessionsMonitor(): Observable<TestSession[]> {
         return this.observeEndpointAndChannel();
     }
-
 
     public getBooklet(bookletName: string): Observable<string|BookletError> {
         console.log('load booklet for ' + bookletName);
@@ -46,7 +43,6 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
             );
     }
 
-
     public getGroupData(groupName: string): Observable<GroupData> {
         return this.http
             .get<GroupData>(this.serverUrl +  `monitor/group/${groupName}`)
@@ -59,5 +55,23 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
                     label: 'error',
                 });
             }));
+    }
+
+    public command(keyword: string, args: string[], testIds: number[]): Subscription {
+        console.log('SEND COMMAND: ' + keyword + ' ' + args.join(' ') + ' to ' + testIds.join(', '));
+        return this.http
+            .put(
+                this.serverUrl +  `monitor/command`,
+                {keyword, arguments: args, timestamp: Date.now() / 1000, testIds}
+            )
+            .pipe(
+                catchError(() => {
+                    // TODO interceptor should have interfered and moved to error-page ...
+                    // https://github.com/iqb-berlin/testcenter-frontend/issues/53
+                    console.warn(`failed: command`, keyword, args, testIds);
+                    return of(false);
+                })
+            )
+            .subscribe();
     }
 }

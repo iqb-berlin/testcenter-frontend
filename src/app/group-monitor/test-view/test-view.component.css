@@ -21,6 +21,7 @@ mat-icon + h1 {
     display: inline-block;
     position: relative;
     white-space: nowrap;
+    transform-style: preserve-3d;
 }
 
 .units:before {
@@ -41,12 +42,13 @@ mat-icon + h1 {
     margin: 2px;
     border-radius: 16px;
     align-items: center;
-    cursor: default;
     text-transform: uppercase;
     color: white;
     background: #003333;
     min-width: 1em;
     text-align: center;
+    cursor: pointer;
+    transform-style: preserve-3d;
 }
 
 .unit.aggregated {
@@ -83,6 +85,43 @@ mat-icon + h1 {
     margin: 2px;
     border-radius: 20px;
     border: 2px solid #003333;
+    position: relative;
+    transform-style: preserve-3d;
+    cursor: pointer;
+}
+
+.unit.marked::before,
+.unit.selected::before,
+.testlet.marked::before,
+.testlet.selected::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    content: " ";
+    transform: translateZ(-10px);
+    margin: -18px -10px;
+}
+
+.testlet.marked::before,
+.testlet.selected::before {
+    margin: -13px -2px;
+}
+
+.unit.marked::before,
+.testlet.marked::before {
+    background: rgba(178, 200, 160, 0.5);
+}
+
+.unit.selected::before,
+.testlet.selected::before {
+    background: rgba(178, 200, 160, 0.7);
+}
+
+.unit.marked.selected::before,
+.testlet.marked.selected::before {
+    background: rgba(178, 200, 160, 0.9);
 }
 
 .locked .testlet {
@@ -104,4 +143,8 @@ mat-icon + h1 {
 .warning {
     color: red;
     font-weight: bold
+}
+
+.unit-badge.danger {
+    color: red;
 }
