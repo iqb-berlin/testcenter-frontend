@@ -74,4 +74,28 @@ export type TestViewDisplayOptionKey = 'view' | 'groupColumn';
 export interface TestViewDisplayOptions {
     view: 'full' | 'medium' | 'small';
     groupColumn: 'show' | 'hide';
+    selectionMode: 'block' | 'unit';
+}
+
+
+export function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
+    return !('children' in testletOrUnit);
+}
+
+
+export interface UnitContext {
+    unit?: Unit;
+    parent?: Testlet;
+    ancestor?: Testlet;
+    unitCount: number;
+    unitCountGlobal: number;
+    indexGlobal: number;
+    indexLocal: number;
+    indexAncestor: number;
+    unitCountAncestor: number;
+}
+
+export interface Selected {
+    element: Unit|Testlet;
+    contextBookletId: string;
 }
