@@ -1,23 +1,45 @@
-<mat-card-header>
-  <mat-card-title>Bericht</mat-card-title>
-  <mat-card-subtitle *ngIf="canSave">Dieser System-Check wurde so konfiguriert, dass nach Abschluss ein Bericht geschickt werden kann. Hierfür ist ein Kennwort erforderlich.</mat-card-subtitle>
-  <mat-card-subtitle *ngIf="!canSave">Für diesen System-Check ist nicht vorgesehen, dass nach Abschluss ein Bericht geschickt wird.</mat-card-subtitle>
-</mat-card-header>
+<div class="sys-check-body">
+  <div fxLayout="row wrap" fxLayoutAlign="center stretch">
+    <mat-card fxFlex="0 0 700px">
+      <mat-card-header>
+        <mat-card-title>Bericht</mat-card-title>
+      </mat-card-header>
 
-<mat-card-content id="report-cointainer" fxLayout.gt-md="row" fxLayout="column" *ngIf="canSave">
-  <p *ngIf="questionnaireDataWarnings.length > 0">Bitte prüfen Sie die Eingaben:</p>
-  <ul>
-      <li *ngFor="let qd of questionnaireDataWarnings">
-        {{qd.label}}
-      </li>
-  </ul>
-</mat-card-content>
+      <mat-card-content>
+        <p *ngIf="questionnaireDataWarnings.length > 0" style="color: goldenrod; font-weight: bold">Bitte prüfen Sie die Eingaben (unvollständig):</p>
+        <ul>
+            <li *ngFor="let qd of questionnaireDataWarnings">
+              {{qd.label}}
+            </li>
+        </ul>
+        <h2 *ngIf="ds.environmentReport.length > 0">Computer (Betriebssystem, Browser)</h2>
+        <ul>
+          <li *ngFor="let reportData of ds.environmentReport">
+            {{reportData.label}}: {{reportData.value}}
+          </li>
+        </ul>
+        <h2 *ngIf="ds.networkReport.length > 0">Netzwerk/Internetverbindung</h2>
+        <ul>
+          <li *ngFor="let reportData of ds.networkReport">
+            {{reportData.label}}: {{reportData.value}}
+          </li>
+        </ul>
+        <h2 *ngIf="ds.questionnaireReport.length > 0">Fragen</h2>
+        <ul>
+          <li *ngFor="let reportData of ds.questionnaireReport">
+            {{reportData.label}}: {{reportData.value}}
+          </li>
+        </ul>
+      </mat-card-content>
 
-<label *ngIf="csvReport">Export als CSV für Copy&Paste
-  <textarea style="width:100%; height: 8em">{{csvReport}}</textarea>
-</label>
+      <label *ngIf="csvReport">Export als CSV für Copy&Paste
+        <textarea style="width:100%; height: 8em">{{csvReport}}</textarea>
+      </label>
 
-<mat-card-actions>
-  <button [disabled]="!isReady() || !canSave" mat-raised-button color="primary" (click)="saveReport()" class="save_button">Bericht senden</button>
-<!--    <button *ngIf="isReady()" mat-raised-button (click)="exportReport()" class="save_button">Als CSV zum kopieren</button>-->
-</mat-card-actions>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="saveReport()" class="save_button">Bericht senden</button>
+      <!--    <button *ngIf="isReady()" mat-raised-button (click)="exportReport()" class="save_button">Als CSV zum kopieren</button>-->
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

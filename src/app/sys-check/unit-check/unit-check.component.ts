@@ -1,11 +1,9 @@
 import { MainDataService } from '../../maindata.service';
 import { BackendService } from '../backend.service';
 import { SysCheckDataService } from '../sys-check-data.service';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {Component, OnInit, HostListener} from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { Subscription} from 'rxjs';
-import {UnitAndPlayerContainer} from '../sys-check.interfaces';
-import { ServerError } from 'iqb-components';
 
 declare var srcDoc: any;
 
@@ -15,19 +13,14 @@ declare var srcDoc: any;
   styleUrls: ['./unit-check.component.css']
 })
 export class UnitCheckComponent implements OnInit, OnDestroy {
-  @ViewChild('iFrameHost', {static: true}) iFrameHostElement: ElementRef;
-
   public pageList: PageData[] = [];
+  private iFrameHostElement: HTMLElement;
   private iFrameItemplayer: HTMLIFrameElement = null;
   private postMessageSubscription: Subscription = null;
   private taskSubscription: Subscription = null;
   private postMessageTarget: Window = null;
   private itemplayerSessionId = '';
-
   private pendingUnitDef = '';
-  waitForLoading = true;
-
-  public errorMessage = '';
 
   constructor(
     private ds: SysCheckDataService,
@@ -36,50 +29,69 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   ) {
   }
 
+  @HostListener('window:resize')
+  public onResize(): any {
+    if (this.iFrameItemplayer && this.iFrameHostElement) {
+      const divHeight = this.iFrameHostElement.clientHeight;
+      this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
+      // TODO: Why minus 5px?
+    }
+  }
+
   ngOnInit() {
-    this.taskSubscription = this.ds.task$.subscribe((task) => {
-        if (task === 'loadunit') {
-            this.loadUnitAndPlayer();
+    setTimeout(() => {
+      this.ds.setNewCurrentStep('u');
+      this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
+      this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
+        const msgData = m.data;
+        const msgType = msgData['type'];
+
+        if ((msgType !== undefined) && (msgType !== null)) {
+          switch (msgType) {
+
+            case 'vopReadyNotification':
+              this.iFrameItemplayer.setAttribute('height', String(Math.trunc(this.iFrameHostElement.clientHeight)));
+              this.postMessageTarget = m.source as Window;
+              if (typeof this.postMessageTarget !== 'undefined') {
+                this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+                this.postMessageTarget.postMessage({
+                  type: 'vopStartCommand',
+                  sessionId: this.itemplayerSessionId,
+                  unitDefinition: this.pendingUnitDef,
+                  playerConfig: {
+                    logPolicy: 'disabled',
+                    stateReportPolicy: 'none'
+                  }
+                }, '*');
+              }
+              break;
+
+            case 'vopStateChangedNotification':
+              if (msgData['playerState']) {
+                const playerState = msgData['playerState'];
+                this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
+              }
+              break;
+
+            default:
+              console.log('processMessagePost ignored message: ' + msgType);
+              break;
+          }
         }
-    });
-    this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
-      const msgData = m.data;
-      const msgType = msgData['type'];
-      console.log(msgData);
+      });
 
-      if ((msgType !== undefined) && (msgType !== null)) {
-        switch (msgType) {
-
-          case 'vopReadyNotification':
-            this.iFrameItemplayer.setAttribute('height', String(Math.trunc(this.iFrameHostElement.nativeElement.clientHeight)));
-            this.postMessageTarget = m.source as Window;
-            if (typeof this.postMessageTarget !== 'undefined') {
-              this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
-              this.postMessageTarget.postMessage({
-                type: 'vopStartCommand',
-                sessionId: this.itemplayerSessionId,
-                unitDefinition: this.pendingUnitDef,
-                playerConfig: {
-                  logPolicy: 'disabled',
-                  stateReportPolicy: 'none'
-                }
-              }, '*');
-            }
-            break;
-
-          case 'vopStateChangedNotification':
-            if (msgData['playerState']) {
-              const playerState = msgData['playerState'];
-              this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
-            }
-            break;
-
-          default:
-            console.log('processMessagePost ignored message: ' + msgType);
-            break;
-        }
+      while (this.iFrameHostElement.hasChildNodes()) {
+        this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
       }
-    });
+      this.pendingUnitDef = this.ds.unitAndPlayerContainer.def;
+      this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
+      this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
+      this.iFrameItemplayer.setAttribute('class', 'unitHost');
+      this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
+      this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+      srcDoc.set(this.iFrameItemplayer, this.ds.unitAndPlayerContainer.player);
+    })
+
   }
 
   setPageList(validPages: string[], currentPage: string) {
@@ -180,47 +192,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
         }, '*');
       }
     }
-  }
-
-  private loadUnitAndPlayer(): void {
-    while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
-      this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
-    }
-    this.bs.getUnitAndPlayer(this.ds.checkConfig.workspaceId, this.ds.checkConfig.name).subscribe((unitAndPlayer: UnitAndPlayerContainer | ServerError) => {
-      if (unitAndPlayer instanceof ServerError) {
-        this.errorMessage = 'Konnte Unit-Player nicht laden: ' + unitAndPlayer.labelNice;
-        this.ds.unitData$.next([
-          {id: '0', type: 'unit/player', label: 'loading error', value: 'Error: ' + unitAndPlayer.labelSystem, warning: true}
-        ]);
-        return '';
-      }
-
-      if (unitAndPlayer.player.length === 0) {
-        this.errorMessage = 'Konnte Unit-Player nicht laden';
-        this.ds.unitData$.next([
-          {id: '0', type: 'unit/player', label: 'loading error', warning: true, value: 'Response invalid'},
-          {id: '0', type: 'unit/player', label: 'loading time', value: unitAndPlayer.duration.toString(), warning: false}
-        ]);
-        console.warn(unitAndPlayer);
-        return '';
-      }
-
-      this.ds.unitData$.next([
-        {id: '0', type: 'unit/player', label: 'loading time', value: unitAndPlayer.duration.toString(), warning: false}
-      ]);
-
-      this.pendingUnitDef = unitAndPlayer.def;
-      this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-      // this.iFrameItemplayer.setAttribute('srcdoc', playerCode);
-      this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
-      this.iFrameItemplayer.setAttribute('class', 'unitHost');
-      this.iFrameItemplayer.setAttribute('height', '100');
-      this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
-      srcDoc.set(this.iFrameItemplayer, unitAndPlayer.player);
-
-      this.ds.nextTask();
-      this.waitForLoading = false
-  });
   }
 
   ngOnDestroy() {

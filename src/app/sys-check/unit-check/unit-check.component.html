@@ -1,12 +1,17 @@
-<mat-card-header>
-  <mat-card-title>
-    Test-Aufgabe
-    <span *ngIf="waitForLoading" style="color:red"> - wird geladen, bitte warten.</span>
-  </mat-card-title>
-  <mat-card-subtitle>Bitte beachten Sie die Anweisungen in den einzelnen Aufgaben und bearbeiten Sie hierzu die Fragen auf der rechten Seite.</mat-card-subtitle>
+<div class="unit-check-body" fxLayout="row" fxLayoutAlign="start stretch">
+  <div id="unit-title" fxLayout="column" fxLayoutAlign="center center">
+    <p>Bitte prüfen Sie die folgenden Aufgaben-Elemente</p>
+  </div>
 
-  <div class="navButtonsContainer"  fxLayout="row">
-    <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="pageList.length > 0">
+  <div id="iFrameHost">
+  </div>
+
+  <div id="pageNav" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px">
+    <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="pageList.length > 1">
+      <div id="pageNavPrompt">
+        Wähle hier andere Seiten dieser Aufgabe:
+      </div>
+
       <div *ngFor="let p of pageList">
         <button *ngIf="p.type === '#previous'" (click)="gotoPage(p.type)" [disabled]="p.disabled" fxLayout="row" fxLayoutAlign="center center">
           <i class="material-icons">chevron_left</i>
@@ -24,9 +29,4 @@
       </div>
     </div>
   </div>
-</mat-card-header>
-
-<mat-card-content style="height: 610px; overflow: auto">
-  <div style="color:red; position: absolute" *ngIf="errorMessage">{{errorMessage}}</div>
-  <div #iFrameHost style="height:99%"></div>
-</mat-card-content>
+</div>

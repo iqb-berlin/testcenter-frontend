@@ -1,22 +1,22 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EnvironmentCheckComponent } from './environment-check.component';
+import { WelcomeComponent } from './welcome.component';
 import {MatCardModule} from "@angular/material/card";
 
-describe('EnvironmentCheckComponent', () => {
-  let component: EnvironmentCheckComponent;
-  let fixture: ComponentFixture<EnvironmentCheckComponent>;
+describe('WelcomeComponent', () => {
+  let component: WelcomeComponent;
+  let fixture: ComponentFixture<WelcomeComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EnvironmentCheckComponent ],
+      declarations: [ WelcomeComponent ],
       imports: [MatCardModule]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EnvironmentCheckComponent);
+    fixture = TestBed.createComponent(WelcomeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

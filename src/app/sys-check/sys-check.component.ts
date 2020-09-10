@@ -1,31 +1,21 @@
 import { SysCheckDataService } from './sys-check-data.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { BackendService } from './backend.service';
-import { Subscription } from 'rxjs';
-import { CustomtextService } from 'iqb-components';
+import {CustomtextService, ServerError} from 'iqb-components';
 import {MainDataService} from '../maindata.service';
+import {UnitAndPlayerContainer} from "./sys-check.interfaces";
 
 @Component({
   templateUrl: './sys-check.component.html',
-  styleUrls: ['./sys-check.component.scss']
+  styleUrls: ['./sys-check.component.css']
 })
 
-export class SysCheckComponent implements OnInit, OnDestroy {
-  private taskSubscription: Subscription = null;
-
-  loading = false;
-  unitCheck = false;
-  questions = false;
-  networkCheck = false;
-  reportEnabled = false;
-  isError = false;
-
-  title = 'Lade - bitte warten';
-
+export class SysCheckComponent implements OnInit {
+  checkLabel = 'Bitte warten';
   constructor(
     private bs: BackendService,
-    private ds: SysCheckDataService,
+    public ds: SysCheckDataService,
     private route: ActivatedRoute,
     private mds: MainDataService,
     private cts: CustomtextService
@@ -34,26 +24,14 @@ export class SysCheckComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.paramMap.subscribe((params: ParamMap) => {
-
-      const sysCheckName = params.get('sys-check-name');
+      const sysCheckId = params.get('sys-check-name');
       const workspaceId = parseInt(params.get('workspace-id'), 10);
       setTimeout(() => {
-        this.loading = true;
-        this.bs.getCheckConfigData(workspaceId, sysCheckName).subscribe(checkConfig => {
+        this.mds.setSpinnerOn();
+        this.bs.getCheckConfigData(workspaceId, sysCheckId).subscribe(checkConfig => {
           this.ds.checkConfig = checkConfig;
           if (checkConfig) {
-            this.title = checkConfig.label;
-            this.unitCheck = checkConfig.hasUnit;
-            this.networkCheck = !checkConfig.skipNetwork;
-            this.questions = checkConfig.questions.length > 0;
-            this.reportEnabled = checkConfig.canSave;
-
-            if (this.unitCheck) {
-              this.ds.taskQueue.push('loadunit');
-            }
-            if (this.networkCheck) {
-              this.ds.taskQueue.push('speedtest');
-            }
+            this.checkLabel = checkConfig.label;
             if (checkConfig.customTexts.length > 0) {
               const myCustomTexts: {[key: string]: string} = {};
               checkConfig.customTexts.forEach(ct => {
@@ -61,24 +39,33 @@ export class SysCheckComponent implements OnInit, OnDestroy {
               });
               this.cts.addCustomTexts(myCustomTexts);
             }
-            this.ds.nextTask();
-            this.taskSubscription = this.ds.task$.subscribe(task => {
-              this.loading = (typeof task !== 'undefined') && (this.ds.taskQueue.length > 0);
-            });
-            this.isError = false;
+            if (checkConfig.hasUnit) {
+              this.bs.getUnitAndPlayer(this.ds.checkConfig.workspaceId, this.ds.checkConfig.name).subscribe((unitAndPlayer: UnitAndPlayerContainer | ServerError) => {
+                if (unitAndPlayer instanceof ServerError || unitAndPlayer.player.length === 0) {
+                  console.error('Konnte Unit-Player nicht laden');
+                  this.ds.checkConfig.hasUnit = false;
+                  // this.ds.unitReport.push({id: 'UNIT-PLAYER-ERROR', type: 'unit/player', label: 'loading error', value: 'Error', warning: true});
+                } else {
+                  this.ds.unitAndPlayerContainer = unitAndPlayer
+                }
+                this.completeConfig();
+              })
+            } else {
+              this.completeConfig();
+            }
           } else {
-            this.title = 'Fehler beim Laden der Daten für den System-Check';
-            this.loading = false;
-            this.isError = true;
+            this.checkLabel = 'Fehler beim Laden der Konfiguration ' + workspaceId + '/' + sysCheckId;
+            this.completeConfig();
           }
         });
       });
     });
   }
 
-  ngOnDestroy() {
-    if (this.taskSubscription !== null) {
-      this.taskSubscription.unsubscribe();
-    }
+  private completeConfig() {
+    this.mds.setSpinnerOff();
+    this.ds.loadConfigComplete = true;
+    this.ds.setSteps();
+    this.ds.setNewCurrentStep('w');
   }
 }

@@ -90,3 +90,8 @@ export interface SysCheckReport {
   questionnaire: ReportEntry[];
   unit: ReportEntry[];
 }
+
+export interface StepDef {
+  route: string;
+  label: string;
+}

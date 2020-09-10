@@ -3,14 +3,14 @@ import { BackendService } from './backend.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { SysCheckRoutingModule } from './sys-check-routing.module';
+import {SysCheckChildCanActivateGuard, SysCheckRoutingModule} from './sys-check-routing.module';
 import { SysCheckComponent } from './sys-check.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { EnvironmentCheckComponent } from './environment-check/environment-check.component';
+import { WelcomeComponent } from './welcome/welcome.component';
 import { NetworkCheckComponent } from './network-check/network-check.component';
 import { UnitCheckComponent } from './unit-check/unit-check.component';
 import { QuestionnaireComponent } from './questionnaire/questionnaire.component';
@@ -58,7 +58,7 @@ import {MatStepperModule} from '@angular/material/stepper';
   ],
   declarations: [
     SysCheckComponent,
-    EnvironmentCheckComponent,
+    WelcomeComponent,
     NetworkCheckComponent,
     UnitCheckComponent,
     QuestionnaireComponent,
@@ -71,7 +71,8 @@ import {MatStepperModule} from '@angular/material/stepper';
   ],
   providers: [
     BackendService,
-    SysCheckDataService
+    SysCheckDataService,
+    SysCheckChildCanActivateGuard
   ]
 })
 export class SysCheckModule { }

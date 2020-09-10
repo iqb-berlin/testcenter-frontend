@@ -1,17 +1,31 @@
-.navButtonsContainer {
+.unit-check-body {
+  overflow-x: auto;
   position: absolute;
-  z-index: 100;
-  top: 1em;
-  right: 1em;
+  width: 100%;
+  top: 10px;
+  bottom: 0;
 }
 
-.mat-fab {
-  margin-right: 4px
+#iFrameHost {
+  position: absolute;
+  width: 100%;
+  top: var(--tc-unit-title-height);
+  bottom: var(--tc-unit-page-nav-height);
+  padding: 0;
+  background-color: white;
 }
 
-.mat-fab[disabled], .mat-mini-fab[disabled] {
-  background-color: grey;
+#unit-title {
+  position: absolute;
+  width: 100%;
+  /* top: set by .tc-body */
+  height: 39px;
+  padding: 0;
+  font-size: 1.5em;
+  background-color: white;
+  border-bottom: solid 1px black;
 }
+
 #pageNav {
   position: absolute;
   width: 100%;

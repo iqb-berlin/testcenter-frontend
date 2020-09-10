@@ -27,7 +27,7 @@ export interface TcSpeedChartSettings {
 })
 export class TcSpeedChartComponent {
 
-  private canvas;
+  private canvas: HTMLCanvasElement;
   private context;
   private el;
   private xScale;
@@ -65,8 +65,8 @@ export class TcSpeedChartComponent {
 
     this.config = {...this.config, ...config};
     this.canvas.setAttribute('style', this.config.css);
-    this.canvas.setAttribute('height', this.config.height);
-    this.canvas.setAttribute('width', this.config.width);
+    this.canvas.setAttribute('height', this.config.height.toString() + 'px');
+    // this.canvas.setAttribute('width', this.config.width);
 
     this.context.setTransform(1, 0, 0, 1, 0, 0);
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
