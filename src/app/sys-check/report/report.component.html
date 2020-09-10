@@ -2,7 +2,7 @@
   <div fxLayout="row wrap" fxLayoutAlign="center stretch">
     <mat-card fxFlex="0 0 700px">
       <mat-card-header>
-        <mat-card-title>Bericht</mat-card-title>
+        <mat-card-title>Bericht {{ saved ? ' - gespeichert' : ''}}</mat-card-title>
       </mat-card-header>
 
       <mat-card-content>
@@ -37,7 +37,8 @@
       </label>
 
       <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="saveReport()" class="save_button">Bericht senden</button>
+        <button mat-raised-button color="primary" [disabled]="saved" (click)="saveReport()" class="save_button">Bericht senden</button>
+        <button mat-raised-button [routerLink]="['/r/check-starter']" class="save_button">{{saved ? 'Zurück' : 'Abbrechen'}}</button>
       <!--    <button *ngIf="isReady()" mat-raised-button (click)="exportReport()" class="save_button">Als CSV zum kopieren</button>-->
       </mat-card-actions>
     </mat-card>

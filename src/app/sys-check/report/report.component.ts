@@ -3,7 +3,6 @@ import { SysCheckDataService } from '../sys-check-data.service';
 import {Component, OnInit} from '@angular/core';
 import { SaveReportComponent } from './save-report/save-report.component';
 import { ReportEntry } from '../sys-check.interfaces';
-import {ServerError} from 'iqb-components';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
@@ -13,6 +12,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 })
 export class ReportComponent implements OnInit {
   csvReport = '';
+  saved = false;
   questionnaireDataWarnings: ReportEntry[] = [];
 
   constructor(
@@ -33,7 +33,6 @@ export class ReportComponent implements OnInit {
         if (result !== false) {
           const reportKey = result.get('key').value as string;
           const reportTitle = result.get('title').value as string;
-          console.log('result', result);
           this.bs.saveReport(
             this.ds.checkConfig.workspaceId,
             this.ds.checkConfig.name,
@@ -45,11 +44,12 @@ export class ReportComponent implements OnInit {
                 questionnaire: this.ds.questionnaireReport,
                 unit: []
               }
-          ).subscribe((saveReportResult: boolean|ServerError) => {
-            if (saveReportResult instanceof ServerError) {
-              this.snackBar.open('Konnte Bericht nicht speichern.', '', {duration: 3000});
-            } else {
+          ).subscribe((saveReportResult: boolean) => {
+            if (saveReportResult) {
               this.snackBar.open('Bericht gespeichert.', '', {duration: 3000});
+              this.saved = true;
+            } else {
+              this.snackBar.open('Konnte Bericht nicht speichern.', '', {duration: 3000});
             }
           });
         }

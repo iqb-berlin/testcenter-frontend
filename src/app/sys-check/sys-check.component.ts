@@ -2,7 +2,7 @@ import { SysCheckDataService } from './sys-check-data.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import {Component, OnInit} from '@angular/core';
 import { BackendService } from './backend.service';
-import {CustomtextService, ServerError} from 'iqb-components';
+import {CustomtextService} from 'iqb-components';
 import {MainDataService} from '../maindata.service';
 import {UnitAndPlayerContainer} from "./sys-check.interfaces";
 
@@ -40,13 +40,13 @@ export class SysCheckComponent implements OnInit {
               this.cts.addCustomTexts(myCustomTexts);
             }
             if (checkConfig.hasUnit) {
-              this.bs.getUnitAndPlayer(this.ds.checkConfig.workspaceId, this.ds.checkConfig.name).subscribe((unitAndPlayer: UnitAndPlayerContainer | ServerError) => {
-                if (unitAndPlayer instanceof ServerError || unitAndPlayer.player.length === 0) {
+              this.bs.getUnitAndPlayer(this.ds.checkConfig.workspaceId, this.ds.checkConfig.name).subscribe((unitAndPlayer: UnitAndPlayerContainer | boolean) => {
+                if (unitAndPlayer !== false && (unitAndPlayer as UnitAndPlayerContainer).player.length > 0) {
+                  this.ds.unitAndPlayerContainer = unitAndPlayer as UnitAndPlayerContainer
+                } else {
                   console.error('Konnte Unit-Player nicht laden');
                   this.ds.checkConfig.hasUnit = false;
                   // this.ds.unitReport.push({id: 'UNIT-PLAYER-ERROR', type: 'unit/player', label: 'loading error', value: 'Error', warning: true});
-                } else {
-                  this.ds.unitAndPlayerContainer = unitAndPlayer
                 }
                 this.completeConfig();
               })

@@ -8,7 +8,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { ErrorHandler, ServerError } from 'iqb-components';
+import {ApiError} from "../app.interfaces";
 
 
 @Injectable({
@@ -33,22 +33,31 @@ export class BackendService {
       );
   }
 
-
-  public saveReport(workspaceId: number, sysCheckName: string, sysCheckReport: SysCheckReport): Observable<Boolean|ServerError> {
+  saveReport(workspaceId: number, sysCheckName: string, sysCheckReport: SysCheckReport): Observable<boolean> {
     return this.http
-      .put<boolean>(this.serverUrl + `workspace/${workspaceId}/sys-check/${sysCheckName}/report`, {...sysCheckReport});
+      .put(this.serverUrl + `workspace/${workspaceId}/sys-check/${sysCheckName}/report`, {body: {...sysCheckReport}})
+      .pipe(
+        map(() => true),
+        catchError((err: ApiError) => {
+          console.warn(`saveReport Api-Error: ${err.code} ${err.info} `);
+          return of(false);
+        })
+      );
   }
 
-
-  public getUnitAndPlayer(workspaceId: number, sysCheckName: string): Observable<UnitAndPlayerContainer|ServerError> {
+  public getUnitAndPlayer(workspaceId: number, sysCheckName: string): Observable<UnitAndPlayerContainer|boolean> {
     const startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
     return this.http
       .get<UnitAndPlayerContainer>(this.serverUrl + `workspace/${workspaceId}/sys-check/${sysCheckName}/unit-and-player`)
-      .pipe(map(data => {
+      .pipe(
+        map(data => {
           data.duration = BackendService.getMostPreciseTimestampBrowserCanProvide() - startingTime;
           return data;
         }),
-        catchError(ErrorHandler.handle)
+        catchError((err: ApiError) => {
+          console.warn(`getUnitAndPlayer Api-Error: ${err.code} ${err.info} `);
+          return of(false);
+        })
       );
   }
 
