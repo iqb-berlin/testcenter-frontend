@@ -130,9 +130,12 @@ mat-sidenav {
 }
 
 .corner-menu {
-    position: absolute;
+    position: fixed;
     right: 30px;
-    top: 2px;
+    top: 70px;
+    background: white;
+    z-index: 10000;
+    border-bottom-left-radius: 10px;
 }
 
 .emph {
