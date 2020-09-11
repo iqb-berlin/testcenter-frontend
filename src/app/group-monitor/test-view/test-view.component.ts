@@ -23,7 +23,11 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     @Input() testSession: TestSession;
     @Input() displayOptions: TestViewDisplayOptions;
     @Input() markedElement: Testlet|Unit|null = null;
-    @Input() selectedElement: Testlet|Unit|null = null;
+    @Input() selected: Selected = {
+        contextBookletId: '',
+        element: undefined,
+        spreading: false
+    };
     @Input() checked: boolean;
 
     @Output() bookletId$ = new EventEmitter<string>();
@@ -38,7 +42,6 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     public maxTimeLeft: object|null; // TODO make observable maybe
 
     private bookletSubscription: Subscription;
-    private selectedElementSpreading = true;
 
     constructor(
         private bookletsService: BookletService,
@@ -203,30 +206,39 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     select($event: Event, testletOrUnit: Testlet|Unit|null) {
-        console.log(
-            'SELECT',
-            this.selectedElement !== null ? this.selectedElement.id : null,
-            testletOrUnit !== null ? testletOrUnit.id : null
-        );
-
         if ((isUnit(testletOrUnit) ? 'unit' : 'block') !== this.displayOptions.selectionMode) {
             return;
         }
 
         $event.stopPropagation();
 
-        this.selectedElement = testletOrUnit;
+        this.applySelection(testletOrUnit);
+    }
 
-        this.selectedElementSpreading = (this.selectedElement != null) && (this.selectedElement.id === testletOrUnit.id)
-            ? !this.selectedElementSpreading
-            : true;
+    deselect($event: MouseEvent) {
+        if ($event.currentTarget === $event.target) {
+            this.applySelection();
+        }
+    }
 
-        this.selectedElement$.emit({
-            element: this.selectedElement,
+    private applySelection(testletOrUnit: Testlet|Unit|null = null) {
+
+
+        console.log(
+            'a',
+            (this.selected != null),
+            'b',
+            (this.selected?.element?.id === testletOrUnit?.id),
+            this.selected?.element?.id , testletOrUnit?.id
+        );
+        this.selected = {
+            element: testletOrUnit,
             contextBookletId: this.testSession.bookletName,
             session: this.testSession,
-            spreading: this.selectedElementSpreading
-        });
+            spreading: (this.selected?.element?.id === testletOrUnit?.id) ? !this.selected?.spreading : true
+        };
+
+        this.selectedElement$.emit(this.selected);
     }
 
     check($event: MatCheckboxChange) {

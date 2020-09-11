@@ -80,7 +80,7 @@
 
             <div class="toolbar-section">
                 <button mat-raised-button class="control" color="primary" (click)="testCommandGoto()"
-                        [disabled]="!selectedElement || sessionCheckedGroupCount !== 1">
+                        [disabled]="!selectedElement?.element || sessionCheckedGroupCount !== 1">
                     <mat-icon>arrow_forward</mat-icon>SPRINGE ZU
                     <span class="emph">{{selectedElement?.element?.label || selectedElement?.element?.id}}</span>
                 </button>
@@ -125,7 +125,7 @@
                     </button>
                 </div>
 
-                <div class="test-view-table-wrapper" (click)="selectElement({element: null, spreading: true, contextBookletId: ''})">
+                <div class="test-view-table-wrapper">
                     <table class="test-view-table" matSort (matSortChange)="setTableSorting($event)">
 
                         <thead>
@@ -140,13 +140,13 @@
                             </tr>
                         </thead>
 
-                        <ng-container *ngFor="let session of sessions$ | async; trackBy: trackSession as sessionSuperId">
+                        <ng-container *ngFor="let session of sessions$ | async; trackBy: trackSession">
                             <tc-test-view
                                 [testSession]="session"
                                 [displayOptions]="displayOptions"
                                 [markedElement]="markedElement"
                                 (markedElement$)="markElement($event)"
-                                [selectedElement]="selectedElement?.element"
+                                [selected]="selectedElement"
                                 (selectedElement$)="selectElement($event)"
                                 (bookletId$)="adjustViewModeOnBookletLoad($event)"
                                 [checked]="isChecked(session)"

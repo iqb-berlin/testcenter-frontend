@@ -41,7 +41,11 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     selectionSpreading: 'booklet'
   };
 
-  selectedElement: Selected = null;
+  selectedElement: Selected = {
+    contextBookletId: '',
+    element: undefined,
+    spreading: false
+  };
   markedElement: Testlet|Unit|null = null;
   checkedSessions: {[sessionTestSessionId: number]: TestSession} = {};
   allSessionsChecked = false;
