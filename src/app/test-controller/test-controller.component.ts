@@ -4,7 +4,7 @@ import {MainDataService} from '../maindata.service';
 import {BackendService} from './backend.service';
 
 import {TestControllerService} from './test-controller.service';
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, Inject, OnDestroy, OnInit} from '@angular/core';
 import {EnvironmentData, MaxTimerData, Testlet, UnitDef} from './test-controller.classes';
 import {
   Command,
@@ -298,6 +298,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           }
         })
       );
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(): void {
+    navigator.sendBeacon('sss', null);
   }
 
   ngOnInit() {

@@ -86,10 +86,10 @@ export class BackendService {
       .subscribe({error: (err: ApiError) => console.error(`addUnitLog Api-Error: ${err.code} ${err.info}`)});
   }
 
-  addBookletLog(testId: string, timestamp: number, entry: string): Subscription {
+  addTestLog(testId: string, timestamp: number, entry: string): Subscription {
     return this.http
       .put(this.serverUrl + `test/${testId}/log`, {timestamp, entry})
-      .subscribe({error: (err: ApiError) => console.error(`addBookletLog Api-Error: ${err.code} ${err.info}`)});
+      .subscribe({error: (err: ApiError) => console.error(`addTestLog Api-Error: ${err.code} ${err.info}`)});
   }
 
   // TODO collect those and send some together
