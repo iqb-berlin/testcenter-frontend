@@ -222,15 +222,6 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     private applySelection(testletOrUnit: Testlet|Unit|null = null) {
-
-
-        console.log(
-            'a',
-            (this.selected != null),
-            'b',
-            (this.selected?.element?.id === testletOrUnit?.id),
-            this.selected?.element?.id , testletOrUnit?.id
-        );
         this.selected = {
             element: testletOrUnit,
             contextBookletId: this.testSession.bookletName,
