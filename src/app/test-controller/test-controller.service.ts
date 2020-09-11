@@ -88,7 +88,7 @@ export class TestControllerService {
   ) {
     this.unitStateDataToSave$.pipe(
       debounceTime(200)).subscribe(unitStateData => {
-        this.bs.newUnitStateData(this.testId, Date.now(), unitStateData.unitDbKey,
+        this.bs.updateUnitStateData(this.testId, Date.now(), unitStateData.unitDbKey,
               JSON.stringify(unitStateData.dataPartsAllString), unitStateData.unitStateDataType).subscribe(ok => {
           if (!ok) {
             console.warn('newUnitRestorePoint failed');
@@ -182,16 +182,9 @@ export class TestControllerService {
     return this.unitPresentationCompleteStates[sequenceId];
   }
 
-  public addBookletLog(logKey: LogEntryKey, entry = '') {
+  public updateTestState(stateKey: LastStateKey, state: string) {
     if (this.testMode.saveResponses) {
-      const entryData = entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey;
-      this.bs.addBookletLog(this.testId, Date.now(), entryData);
-    }
-  }
-
-  public setBookletState(stateKey: LastStateKey, state: string) {
-    if (this.testMode.saveResponses) {
-      this.bs.setBookletState(this.testId, stateKey, state);
+      this.bs.updateTestState(this.testId, stateKey, state);
     }
   }
 
@@ -222,7 +215,7 @@ export class TestControllerService {
     if (this.testMode.saveResponses) {
       // TODO prove if state change can be logged to save calls
       this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationProgress);
-      this.bs.setUnitStatus(this.testId, unitDbKey, {PRESENTATIONCOMPLETE: presentationProgress});
+      this.bs.updateUnitState(this.testId, unitDbKey, {PRESENTATIONCOMPLETE: presentationProgress});
     }
   }
 
@@ -230,13 +223,13 @@ export class TestControllerService {
     if (this.testMode.saveResponses) {
       // TODO prove if state change can be logged to save calls
       this.addUnitLog(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responseProgress);
-      this.bs.setUnitStatus(this.testId, unitDbKey, {RESPONSESCOMPLETE: responseProgress});
+      this.bs.updateUnitState(this.testId, unitDbKey, {RESPONSESCOMPLETE: responseProgress});
     }
   }
 
   public newUnitStatePage(unitDbKey: string, pageName: string, pageNr: number, pagesCount: number) {
     if (this.testMode.saveResponses) {
-      this.bs.setUnitStatus(this.testId, unitDbKey, {
+      this.bs.updateUnitState(this.testId, unitDbKey, {
           PAGE_NR: pageNr,
           PAGE_NAME: pageName,
           PAGES_COUNT: pagesCount
@@ -297,7 +290,7 @@ export class TestControllerService {
     if (this.testMode.saveResponses) {
       if (this.testStatus$.getValue() !== TestStatus.TERMINATING) {
         this.testStatus$.next(TestStatus.TERMINATING); // sometimes terminateTest get called two times from player
-        this.bs.addBookletLog(this.testId, Date.now(), logEntryKey)
+        this.bs.addTestLog(this.testId, Date.now(), logEntryKey)
             .add(() => {
               // TODO who evaluates TestStatus when navigating to root?
               this.bs.lockTest(this.testId).subscribe(bsOk => {

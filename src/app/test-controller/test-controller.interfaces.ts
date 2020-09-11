@@ -81,7 +81,8 @@ export interface UnitLogData {
 export enum LastStateKey {
     LASTUNIT = 'LASTUNIT',
     MAXTIMELEFT = 'MAXTIMELEFT',
-    FOCUS = 'FOCUS'
+    FOCUS = 'FOCUS',
+    DEAD = 'DEAD'
 }
 
 export interface UnitStatus {
@@ -96,7 +97,6 @@ export interface UnitStatus {
 export enum LogEntryKey {
     UNITENTER = 'UNITENTER',
     UNITTRYLEAVE = 'UNITTRYLEAVE',
-    BOOKLETLOADSTART = 'BOOKLETLOADSTART',
     BOOKLETLOADCOMPLETE = 'BOOKLETLOADCOMPLETE',
     PAGENAVIGATIONSTART = 'PAGENAVIGATIONSTART',
     PAGENAVIGATIONCOMPLETE = 'PAGENAVIGATIONCOMPLETE',

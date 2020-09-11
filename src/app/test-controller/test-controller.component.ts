@@ -302,7 +302,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(): void {
-    navigator.sendBeacon('sss', null);
+    if (this.tcs.testMode.saveResponses) {
+      this.bs.notifyDyingTest(this.tcs.testId);
+    }
   }
 
   ngOnInit() {
@@ -365,7 +367,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', {duration: 3000});
                 this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
                 this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
-                this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
+                this.tcs.updateTestState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
                 this.timerRunning = false;
                 this.timerValue = null;
                 if (this.tcs.testMode.forceTimeRestrictions) {
@@ -376,7 +378,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', {duration: 3000});
                 this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
                 this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
-                this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
+                this.tcs.updateTestState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
                 this.timerValue = null;
                 break;
               case MaxTimerDataType.INTERRUPTED:
@@ -387,7 +389,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 this.timerValue = maxTimerData;
                 if ((maxTimerData.timeLeftSeconds % 15) === 0) {
                   this.tcs.LastMaxTimerState[maxTimerData.testletId] = Math.round(maxTimerData.timeLeftSeconds / 60);
-                  this.tcs.setBookletState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
+                  this.tcs.updateTestState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
                 }
                 if ((maxTimerData.timeLeftSeconds / 60) === 5) {
                   this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver5Minutes'), '', {duration: 3000});
@@ -400,8 +402,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
           this.tcs.resetDataStore();
           const envData = new EnvironmentData(this.appVersion);
-
-          this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADSTART, JSON.stringify(envData));
           this.tcs.testStatus$.next(TestStatus.WAITING_LOAD_COMPLETE);
           this.tcs.loadProgressValue = 0;
           this.tcs.loadComplete = false;
@@ -507,14 +507,19 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                         this.tcs.testStatus$.next(TestStatus.ERROR);
                       },
                       () => { // complete
-                        this.tcs.addBookletLog(LogEntryKey.BOOKLETLOADCOMPLETE);
+                        if (this.tcs.testMode.saveResponses) {
+                          const entryData = LogEntryKey.BOOKLETLOADCOMPLETE + ': ' + JSON.stringify(envData);
+                          this.bs.addTestLog(this.tcs.testId, Date.now(), entryData);
+                        }
                         this.tcs.loadProgressValue = 100;
 
                         this.tcs.loadComplete = true;
                         if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
                           this.tcs.setUnitNavigationRequest(navTarget.toString());
                           this.tcs.testStatus$.next(this.getTestStatusFromLocalStorage());
-                          this.addAppFocusSubscription();
+                          if (this.tcs.testMode.saveResponses) {
+                            this.addAppFocusSubscription();
+                          }
                         }
                       }
                     );
@@ -522,7 +527,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
                       this.tcs.setUnitNavigationRequest(navTarget.toString());
                       this.tcs.testStatus$.next(this.getTestStatusFromLocalStorage());
-                      this.addAppFocusSubscription();
+                      if (this.tcs.testMode.saveResponses) {
+                        this.addAppFocusSubscription();
+                      }
                     }
 
                   } // complete
@@ -557,14 +564,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       debounceTime(500)
     ).subscribe((newState: WindowFocusState) => {
       if (newState === WindowFocusState.UNKNOWN) {
-        this.bs.addBookletLog(this.tcs.testId, Date.now(), 'FOCUS_LOST')
+        this.bs.addTestLog(this.tcs.testId, Date.now(), 'FOCUS_LOST')
           .add(() => {
-            this.tcs.setBookletState(LastStateKey.FOCUS, 'LOST');
+            this.tcs.updateTestState(LastStateKey.FOCUS, 'LOST');
           });
       } else {
-        this.bs.addBookletLog(this.tcs.testId, Date.now(), 'FOCUS_GAINED')
+        this.bs.addTestLog(this.tcs.testId, Date.now(), 'FOCUS_GAINED')
           .add(() => {
-            this.tcs.setBookletState(LastStateKey.FOCUS, 'GAINED');
+            this.tcs.updateTestState(LastStateKey.FOCUS, 'GAINED');
           });
       }
     });

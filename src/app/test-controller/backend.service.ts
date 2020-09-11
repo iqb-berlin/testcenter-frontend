@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {Observable, of, Subscription} from 'rxjs';
 import {catchError, map, switchMap} from 'rxjs/operators';
-import {UnitData, TaggedString, TestData, UnitStatus} from './test-controller.interfaces';
+import {UnitData, TaggedString, TestData, UnitStatus, LastStateKey} from './test-controller.interfaces';
 import {ApiError} from '../app.interfaces';
 
 
@@ -92,21 +92,27 @@ export class BackendService {
       .subscribe({error: (err: ApiError) => console.error(`addTestLog Api-Error: ${err.code} ${err.info}`)});
   }
 
-  // TODO collect those and send some together
-  setUnitStatus(testId: string, unitName: string, newUnitStatus: UnitStatus): Subscription {
+  updateUnitState(testId: string, unitName: string, newUnitState: UnitStatus): Subscription {
     return this.http
-      .patch(this.serverUrl + `test/${testId}/unit/${unitName}/state`, newUnitStatus)
+      .patch(this.serverUrl + `test/${testId}/unit/${unitName}/state`, newUnitState)
       .subscribe({error: (err: ApiError) => console.error(`setUnitState Api-Error: ${err.code} ${err.info}`)});
   }
 
-  // TODO rename to setBookletStatus
-  setBookletState(testId: string, stateKey: string, state: string): Subscription {
+  updateTestState(testId: string, stateKey: string, state: string): Subscription {
     return this.http
       .patch(this.serverUrl + `test/${testId}/state`, {key: stateKey, value: state})
-      .subscribe({error: (err: ApiError) => console.error(`setBookletState Api-Error: ${err.code} ${err.info}`)});
+      .subscribe({error: (err: ApiError) => console.error(`updateTestState Api-Error: ${err.code} ${err.info}`)});
   }
 
-  newUnitStateData(testId: string, timestamp: number, unitName: string, dataPartsAllString: string, unitStateDataType: string)
+  notifyDyingTest(testId: string) {
+    // TODO add auth header (?)
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(this.serverUrl + `test/${testId}/state`, JSON.stringify({key: LastStateKey.DEAD, value: Date.now().toString()}));
+      navigator.sendBeacon(this.serverUrl + `test/${testId}/log`, JSON.stringify({timestamp: Date.now(), entry: LastStateKey.DEAD}));
+    }
+  }
+
+  updateUnitStateData(testId: string, timestamp: number, unitName: string, dataPartsAllString: string, unitStateDataType: string)
     : Observable<boolean> {
     // TODO remove after api changed
     const response = dataPartsAllString;

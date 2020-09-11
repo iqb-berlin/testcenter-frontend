@@ -154,7 +154,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         }
 
         if ((this.myUnitSequenceId >= 1) && (this.myUnitSequenceId === this.myUnitSequenceId) && (this.tcs.rootTestlet !== null)) {
-          this.tcs.setBookletState(LastStateKey.LASTUNIT, params['u']);
+          this.tcs.updateTestState(LastStateKey.LASTUNIT, params['u']);
 
           const currentUnit = this.tcs.rootTestlet.getUnitAt(this.myUnitSequenceId);
           this.unitTitle = currentUnit.unitDef.title;

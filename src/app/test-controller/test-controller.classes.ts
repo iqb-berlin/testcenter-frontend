@@ -376,11 +376,13 @@ export class EnvironmentData {
   public osName = '';
   public screenSizeWidth = 0;
   public screenSizeHeight = 0;
+  public readonly detectionTimeStamp: number;
   public get screenSizeTxt(): string {
     return `Bildschirmgröße ist ${this.screenSizeWidth} x ${this.screenSizeWidth}`;
   }
 
   constructor (appVersion: string) {
+    this.detectionTimeStamp = Date.now();
     this.appVersion = appVersion;
     const deviceInfo = window.navigator.userAgent;
 
