@@ -4,9 +4,7 @@
     <mat-card fxFlex="0 0 400px">
       <mat-card-title>{{ ds.loadConfigComplete ? ds.checkConfig?.label : 'Bitte warten' }}</mat-card-title>
       <mat-card-content *ngIf="ds.loadConfigComplete">
-        <p>
-          Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte
-          Befragung oder Testung geeignet ist.
+        <p>{{'Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte Befragung oder Testung geeignet ist.'| customtext:'syscheck_intro':cts.updateCount}}
         </p>
         <h3>Schritte</h3>
         <ol>

@@ -6,7 +6,7 @@
       </mat-card-header>
 
       <mat-card-content>
-        <p *ngIf="questionnaireDataWarnings.length > 0" style="color: goldenrod; font-weight: bold">Bitte prüfen Sie die Eingaben (unvollständig):</p>
+        <p *ngIf="questionnaireDataWarnings.length > 0" style="color: goldenrod; font-weight: bold">{{'Bitte prüfen Sie die Eingaben (unvollständig):'| customtext:'syscheck_questionsRequiredMessage':cts.updateCount}}</p>
         <ul>
             <li *ngFor="let qd of questionnaireDataWarnings">
               {{qd.label}}
@@ -32,14 +32,9 @@
         </ul>
       </mat-card-content>
 
-      <label *ngIf="csvReport">Export als CSV für Copy&Paste
-        <textarea style="width:100%; height: 8em">{{csvReport}}</textarea>
-      </label>
-
       <mat-card-actions>
         <button mat-raised-button color="primary" [disabled]="saved" (click)="saveReport()" class="save_button">Bericht senden</button>
-        <button mat-raised-button [routerLink]="['/r/check-starter']" class="save_button">{{saved ? 'Zurück' : 'Abbrechen'}}</button>
-      <!--    <button *ngIf="isReady()" mat-raised-button (click)="exportReport()" class="save_button">Als CSV zum kopieren</button>-->
+        <button mat-raised-button [routerLink]="['/r/check-starter']" class="save_button">{{saved ? 'Zurück' : 'System-Check Abbrechen'}}</button>
       </mat-card-actions>
     </mat-card>
   </div>
