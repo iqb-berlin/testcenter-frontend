@@ -61,7 +61,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
       if (this.ds.checkConfig && this.ds.networkReport.length === 0) {
         this.startCheck();
       }
-    })
+    });
   }
 
   public startCheck() {
@@ -73,7 +73,6 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
       avgDownloadSpeedBytesPerSecond: -1
     };
 
-    // ?? const myConfig = this.ds.checkConfig$.getValue();
     this.plotPrepare(true);
     this.plotPrepare(false);
 
@@ -93,8 +92,8 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
         labelPadding: 4,
         xAxisMaxValue: 16 + Math.max(...testSizes),
         xAxisMinValue: Math.min(...testSizes),
-        yAxisMaxValue: (isDownloadPart) ? 1200 : 2500,
-        yAxisMinValue: (isDownloadPart) ? 20 : 100,
+        yAxisMaxValue: (isDownloadPart) ? 1200 : 5000,
+        yAxisMinValue: (isDownloadPart) ? 20 : 0,
         xAxisStepSize: 4,
         yAxisStepSize: (isDownloadPart) ? 50 : 100,
         lineWidth: 5,
@@ -338,7 +337,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
     this.networkRating = awardedNetworkRating;
   }
 
-  private humanReadableBytes(bytes: number, useBits: boolean = false, base1024: boolean = false): string {
+  humanReadableBytes(bytes: number, useBits: boolean = false, base1024: boolean = false): string {
     const suffix = {
       B: {
         1000: ['B', 'kB', 'MB', 'GB', 'TB'],
