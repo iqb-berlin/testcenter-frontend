@@ -206,11 +206,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
             .filter(session => selected.inversion ? !this.isChecked(session) : true);
       }
     }
-    this.checkedSessions = {};
-    toCheck.forEach(session => {
-      this.checkedSessions[GroupMonitorComponent.getPersonXTestId(session)] = session;
-    });
-    this.onCheckedChanged();
+    this.replaceCheckedSessions(toCheck);
   }
 
   markElement(testletOrUnit: Testlet|Unit|null) {
@@ -227,13 +223,14 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   toggleCheckAll(event: MatCheckboxChange) {
-    this.checkedSessions = {};
     if (event.checked) {
-      this.sessions$.getValue()
-          .filter(session => session.testId && session.testId > -1)
-          .forEach(session => this.checkSession(session));
+      this.replaceCheckedSessions(
+          this.sessions$.getValue()
+              .filter(session => session.testId && session.testId > -1)
+      );
+    } else {
+      this.replaceCheckedSessions([]);
     }
-    this.onCheckedChanged();
   }
 
   invertChecked(event: Event): boolean {
@@ -241,10 +238,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     const unChecked = this.sessions$.getValue()
         .filter(session => session.testId && session.testId > -1)
         .filter(session => !this.isChecked(session));
-
-    this.checkedSessions = {};
-    unChecked.forEach(session => this.checkSession(session));
-    this.onCheckedChanged();
+    this.replaceCheckedSessions(unChecked);
     return false;
   }
 
@@ -264,6 +258,14 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     if (this.isChecked(session)) {
       delete this.checkedSessions[GroupMonitorComponent.getPersonXTestId(session)];
     }
+  }
+
+  private replaceCheckedSessions(sessionsToCheck: TestSession[]) {
+    const newCheckedSessions = {};
+    sessionsToCheck
+        .forEach(session => newCheckedSessions[GroupMonitorComponent.getPersonXTestId(session)] = session);
+    this.checkedSessions = newCheckedSessions;
+    this.onCheckedChanged();
   }
 
   private onCheckedChanged() {
