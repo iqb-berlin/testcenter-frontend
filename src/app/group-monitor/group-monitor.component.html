@@ -23,14 +23,22 @@
 </div>
 
 <mat-menu #rootMenu="matMenu">
+    <button mat-menu-item [matMenuTriggerFor]="filters">Sitzungen ausblenden</button>
     <button mat-menu-item [matMenuTriggerFor]="group">Spalten</button>
     <button mat-menu-item [matMenuTriggerFor]="activity">Aktivität</button>
+</mat-menu>
+
+<mat-menu #filters="matMenu">
+    <button mat-menu-item *ngFor="let filterOption of filterOptions; let i = index" (click)="switchFilter(i)">
+        <mat-icon *ngIf="filterOption.selected">check</mat-icon>
+        <span>{{filterOption.label}}</span>
+    </button>
 </mat-menu>
 
 <mat-menu #group="matMenu">
     <button mat-menu-item (click)="setDisplayOption('groupColumn', (displayOptions.groupColumn === 'hide') ? 'show' : 'hide')">
         <mat-icon *ngIf="displayOptions.groupColumn === 'show'">check</mat-icon>
-        <span>Spalte anzeigen</span>
+        <span>Gruppe</span>
     </button>
 </mat-menu>
 

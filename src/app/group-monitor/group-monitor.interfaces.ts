@@ -1,7 +1,6 @@
 import {BookletConfig} from '../config/booklet-config';
 
 export interface TestSession {
-
     personId: number;
     personLabel?: string;
     groupName?: string;
@@ -70,6 +69,13 @@ export interface GroupData {
 }
 
 export type TestViewDisplayOptionKey = 'view' | 'groupColumn';
+
+export interface TestSessionFilter {
+    type: 'groupName' | 'bookletName' | 'testState' | 'mode';
+    value: string;
+    subValue?: string;
+    not?: true;
+}
 
 export interface TestViewDisplayOptions {
     view: 'full' | 'medium' | 'small';
