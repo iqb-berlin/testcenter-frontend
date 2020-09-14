@@ -100,4 +100,5 @@ export interface Selected {
     contextBookletId: string;
     session?: TestSession;
     spreading: boolean;
+    inversion?: boolean;
 }

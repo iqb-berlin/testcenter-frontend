@@ -215,20 +215,33 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
         this.applySelection(testletOrUnit);
     }
 
-    deselect($event: MouseEvent) {
-        if ($event.currentTarget === $event.target) {
+    deselect($event: MouseEvent|null) {
+        if ($event && ($event.currentTarget === $event.target)) {
             this.applySelection();
         }
     }
 
-    private applySelection(testletOrUnit: Testlet|Unit|null = null) {
+    deselectForce($event: Event): boolean {
+        this.applySelection();
+        $event.stopImmediatePropagation();
+        $event.stopPropagation();
+        $event.preventDefault();
+        return false;
+    }
+
+    invertSelectionTestheftWide(): boolean {
+        this.applySelection(this.selected.element, true);
+        return false;
+    }
+
+    private applySelection(testletOrUnit: Testlet|Unit|null = null, inversion: boolean = false) {
         this.selected = {
             element: testletOrUnit,
             contextBookletId: this.testSession.bookletName,
             session: this.testSession,
-            spreading: (this.selected?.element?.id === testletOrUnit?.id) ? !this.selected?.spreading : true
+            spreading: (this.selected?.element?.id === testletOrUnit?.id) && !inversion ? !this.selected?.spreading : true,
+            inversion
         };
-
         this.selectedElement$.emit(this.selected);
     }
 

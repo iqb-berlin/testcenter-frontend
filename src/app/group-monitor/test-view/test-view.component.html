@@ -2,13 +2,14 @@
     <mat-checkbox
             *ngIf="testSession.testId >= 0"
             (change)="check($event)"
+            (contextmenu)="invertSelectionTestheftWide()"
             [checked]="checked"
     >
     </mat-checkbox>
 </td>
 
 
-<td (click)="deselect($event)">
+<td (click)="deselect($event)" (contextmenu)="deselectForce($event)">
     <div class="vertical-align-middle">
         <ng-container *ngIf="getMode(testSession.mode) as mode" >
 
@@ -25,11 +26,11 @@
 </td>
 
 
-<td *ngIf="displayOptions.groupColumn === 'show'" (click)="deselect($event)">
+<td *ngIf="displayOptions.groupColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
     <div class="vertical-align-middle">{{testSession.groupLabel}}</div>
 </td>
 
-<td class="booklet" (click)="deselect($event)">
+<td class="booklet" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
 
     <ng-container *ngIf="(booklet$ | async) as booklet">
         <ng-container *ngIf="isBooklet(booklet); else: noBooklet">
@@ -74,7 +75,7 @@
     </ng-template>
 </td>
 
-<td class="activity" (click)="deselect($event)">
+<td class="activity" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
     <ng-container *ngIf="(booklet$ | async) as booklet">
         <ng-container *ngIf="isBooklet(booklet); else: noBookletReason">
 

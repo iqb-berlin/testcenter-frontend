@@ -131,7 +131,11 @@
                         <thead>
                             <tr class="mat-sort-container">
                                 <td mat-sort-header="selected">
-                                    <mat-checkbox (change)="toggleCheckAll($event)" [checked]="allSessionsChecked"></mat-checkbox>
+                                    <mat-checkbox
+                                        (change)="toggleCheckAll($event)"
+                                        [checked]="allSessionsChecked"
+                                        (contextmenu)="invertChecked($event)"
+                                    ></mat-checkbox>
                                 </td>
                                 <td mat-sort-header="personLabel">Benutzer</td>
                                 <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">Gruppe</td>

@@ -193,21 +193,23 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   selectElement(selected: Selected) {
     this.selectedElement = selected;
-    this.checkedSessions = {};
+    let toCheck: TestSession[] = [];
     if (selected.element) {
       if (!selected.spreading) {
-        this.checkedSessions[GroupMonitorComponent.getPersonXTestId(selected.session)] = selected.session;
+        toCheck = [selected.session];
       } else {
         // TODO the 2nd filter should depend on this.displayOptions.selectionSpreading is 'all' or 'booklet' ...
         // ... can be implemented if it's clear how to broadcast commands to different targets
-        this.sessions$.getValue()
+        toCheck = this.sessions$.getValue()
             .filter(session => session.testId && session.testId > -1)
             .filter(session => session.bookletName === selected.contextBookletId)
-            .forEach(session => {
-              this.checkedSessions[GroupMonitorComponent.getPersonXTestId(session)] = session;
-            });
+            .filter(session => selected.inversion ? !this.isChecked(session) : true);
       }
     }
+    this.checkedSessions = {};
+    toCheck.forEach(session => {
+      this.checkedSessions[GroupMonitorComponent.getPersonXTestId(session)] = session;
+    });
     this.onCheckedChanged();
   }
 
@@ -225,13 +227,25 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   toggleCheckAll(event: MatCheckboxChange) {
-    this.checkedSessions = [];
+    this.checkedSessions = {};
     if (event.checked) {
-      this.sessions$.getValue().forEach(session => {
-        this.checkSession(session);
-      });
+      this.sessions$.getValue()
+          .filter(session => session.testId && session.testId > -1)
+          .forEach(session => this.checkSession(session));
     }
     this.onCheckedChanged();
+  }
+
+  invertChecked(event: Event): boolean {
+    event.preventDefault();
+    const unChecked = this.sessions$.getValue()
+        .filter(session => session.testId && session.testId > -1)
+        .filter(session => !this.isChecked(session));
+
+    this.checkedSessions = {};
+    unChecked.forEach(session => this.checkSession(session));
+    this.onCheckedChanged();
+    return false;
   }
 
   countCheckedSessions(): number {
@@ -257,7 +271,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         .map(session => session.bookletName)
         .filter((value, index, self) => self.indexOf(value) === index)
         .length;
-    this.allSessionsChecked = (this.sessions$.getValue().length === this.countCheckedSessions());
+    const checkableSessions = this.sessions$.getValue().filter(session => session.testId && session.testId > -1);
+    this.allSessionsChecked = (checkableSessions.length === this.countCheckedSessions());
     this.sidenav.toggle(this.sessionCheckedGroupCount > 0);
     if (this.sessionCheckedGroupCount > 1) {
       this.selectedElement = null;
