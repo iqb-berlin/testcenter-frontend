@@ -24,7 +24,6 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     @Input() displayOptions: TestViewDisplayOptions;
     @Input() markedElement: Testlet|Unit|null = null;
     @Input() selected: Selected = {
-        contextBookletId: '',
         element: undefined,
         spreading: false
     };
@@ -237,7 +236,6 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     private applySelection(testletOrUnit: Testlet|Unit|null = null, inversion: boolean = false) {
         this.selected = {
             element: testletOrUnit,
-            contextBookletId: this.testSession.bookletName,
             session: this.testSession,
             spreading: (this.selected?.element?.id === testletOrUnit?.id) && !inversion ? !this.selected?.spreading : true,
             inversion

@@ -64,7 +64,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   ];
 
   selectedElement: Selected = {
-    contextBookletId: '',
+    session: null,
     element: undefined,
     spreading: false
   };
@@ -264,7 +264,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         // ... can be implemented if it's clear how to broadcast commands to different targets
         toCheck = this.sessions$.getValue()
             .filter(session => session.testId && session.testId > -1)
-            .filter(session => session.bookletName === selected.contextBookletId)
+            .filter(session => session.bookletName === selected.session.bookletName)
             .filter(session => selected.inversion ? !this.isChecked(session) : true);
       }
     }

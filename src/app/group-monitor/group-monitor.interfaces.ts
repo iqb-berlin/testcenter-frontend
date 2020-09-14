@@ -103,7 +103,6 @@ export interface UnitContext {
 
 export interface Selected {
     element: Unit|Testlet|null;
-    contextBookletId: string;
     session?: TestSession;
     spreading: boolean;
     inversion?: boolean;
