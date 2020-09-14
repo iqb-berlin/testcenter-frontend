@@ -2,13 +2,14 @@
     <mat-checkbox
             *ngIf="testSession.testId >= 0"
             (change)="check($event)"
+            (contextmenu)="invertSelectionTestheftWide()"
             [checked]="checked"
     >
     </mat-checkbox>
 </td>
 
 
-<td>
+<td (click)="deselect($event)" (contextmenu)="deselectForce($event)">
     <div class="vertical-align-middle">
         <ng-container *ngIf="getMode(testSession.mode) as mode" >
 
@@ -25,11 +26,11 @@
 </td>
 
 
-<td *ngIf="displayOptions.groupColumn === 'show'">
+<td *ngIf="displayOptions.groupColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
     <div class="vertical-align-middle">{{testSession.groupLabel}}</div>
 </td>
 
-<td class="booklet">
+<td class="booklet" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
 
     <ng-container *ngIf="(booklet$ | async) as booklet">
         <ng-container *ngIf="isBooklet(booklet); else: noBooklet">
@@ -74,7 +75,7 @@
     </ng-template>
 </td>
 
-<td class="activity">
+<td class="activity" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
     <ng-container *ngIf="(booklet$ | async) as booklet">
         <ng-container *ngIf="isBooklet(booklet); else: noBookletReason">
 
@@ -83,6 +84,7 @@
                  [class]="hasState(testSession.testState, 'status', 'locked') ? 'locked' : ''"
                  [ngSwitch]="displayOptions.view"
                  (mouseleave)="mark()"
+                 (click)="deselect($event)"
             >
                 <div class="units full" *ngSwitchCase="'full'" >
                     <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testlet}"></ng-container>
@@ -171,11 +173,11 @@
               [class]="{
                 unit: true,
                 current: testSession.unitName === testletOrUnit.id,
-                selected: selectedElement?.id === testletOrUnit.id,
+                selected: (selected?.element?.id === testletOrUnit.id) && checked,
                 marked: markedElement?.id === testletOrUnit.id
               }"
               (mouseenter)="mark(testletOrUnit)"
-              (click)="select(testletOrUnit)"
+              (click)="select($event, testletOrUnit)"
               matTooltip="{{testletOrUnit.label}}"
               matTooltipPosition="above"
             >{{testletOrUnit.labelShort || "&nbsp;"}}
@@ -184,11 +186,11 @@
         <span *ngSwitchCase="'testlet'"
               [class]="{
                 testlet: true,
-                selected: selectedElement?.id === testletOrUnit.id,
+                selected: (selected?.element?.id === testletOrUnit.id) && checked,
                 marked: markedElement?.id === testletOrUnit.id
               }"
               (mouseenter)="mark(testletOrUnit)"
-              (click)="select(testletOrUnit)"
+              (click)="select($event, testletOrUnit)"
               matTooltip="{{testletOrUnit.label}}"
             >
             <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testletOrUnit}"></ng-container>
@@ -233,13 +235,13 @@
                             unit: true,
                             aggregated: true,
                             current: true,
-                            selected: selectedElement?.id === testletOrUnit.id,
+                            selected: (selected?.element?.id === testletOrUnit.id) && checked,
                             marked: markedElement?.id === testletOrUnit.id
                         }"
                         matTooltip="{{featuredUnit.unit.label}}"
                         matTooltipPosition="above"
                         (mouseenter)="mark(testletOrUnit)"
-                        (click)="select(testletOrUnit)"
+                        (click)="select($event, testletOrUnit)"
                 >{{featuredUnit.indexAncestor + 1}} / {{featuredUnit.unitCountAncestor}}
                 </span>
             </ng-container>
@@ -249,11 +251,11 @@
                         [class]="{
                             unit: true,
                             aggregated: true,
-                            selected: selectedElement?.id === testletOrUnit.id,
+                            selected: (selected?.element?.id === testletOrUnit.id) && checked,
                             marked: markedElement?.id === testletOrUnit.id
                         }"
                         (mouseenter)="mark(testletOrUnit)"
-                        (click)="select(testletOrUnit)"
+                        (click)="select($event, testletOrUnit)"
                 >{{testletOrUnit.descendantCount}}</span>
             </ng-template>
         </span>

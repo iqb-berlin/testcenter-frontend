@@ -5,7 +5,7 @@ import {
   GroupData,
   TestSession,
   TestViewDisplayOptions,
-  TestViewDisplayOptionKey, Testlet, Unit, isUnit, Selected,
+  TestViewDisplayOptionKey, Testlet, Unit, isUnit, Selected, TestSessionFilter,
 } from './group-monitor.interfaces';
 import {ActivatedRoute} from '@angular/router';
 import {ConnectionStatus} from '../shared/websocket-backend.service';
@@ -32,15 +32,42 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   monitor$: Observable<TestSession[]>;
   connectionStatus$: Observable<ConnectionStatus>;
   sortBy$: Subject<Sort>;
+  filters$: Subject<TestSessionFilter[]>;
   sessions$: BehaviorSubject<TestSession[]>;
 
   displayOptions: TestViewDisplayOptions = {
     view: 'full',
     groupColumn: 'hide',
     selectionMode: 'block',
+    selectionSpreading: 'booklet'
   };
+  filterOptions: {label: string, filter: TestSessionFilter, selected: boolean}[] = [
+    {
+      label: 'beendete',
+      selected: false,
+      filter: {
+        type: 'testState',
+        value: 'status',
+        subValue: 'locked'
+      }
+    },
+    {
+      label: 'nicht gestartete',
+      selected: false,
+      filter: {
+        type: 'testState',
+        value: 'status',
+        subValue: 'running',
+        not: true
+      }
+    },
+  ];
 
-  selectedElement: Selected = null;
+  selectedElement: Selected = {
+    session: null,
+    element: undefined,
+    spreading: false
+  };
   markedElement: Testlet|Unit|null = null;
   checkedSessions: {[sessionTestSessionId: number]: TestSession} = {};
   allSessionsChecked = false;
@@ -71,14 +98,17 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.ownGroup$ = this.bs.getGroupData(params['group-name']);
     });
 
-    this.sortBy$ = new BehaviorSubject<Sort>({direction: 'asc', active: 'bookletName'});
+    this.sortBy$ = new BehaviorSubject<Sort>({direction: 'asc', active: 'personLabel'});
+    this.filters$ = new BehaviorSubject<TestSessionFilter[]>([]);
 
     this.monitor$ = this.bs.observeSessionsMonitor();
 
     this.sessions$ = new BehaviorSubject<TestSession[]>([]);
 
-    combineLatest<[Sort, TestSession[]]>([this.sortBy$, this.monitor$])
-      .pipe(map(data => this.sortSessions(...data)))
+    combineLatest<[Sort, TestSessionFilter[], TestSession[]]>([this.sortBy$, this.filters$, this.monitor$])
+      .pipe(
+          map(([sortBy, filters, sessions]) => this.sortSessions(sortBy, this.filterSessions(sessions, filters))),
+      )
       .subscribe(this.sessions$);
 
     this.connectionStatus$ = this.bs.connectionStatus$;
@@ -99,6 +129,43 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.growViewIfPossible();
     }
     this.lastWindowSize = window.innerWidth;
+  }
+
+  switchFilter(indexInFilterOptions: number) {
+    this.filterOptions[indexInFilterOptions].selected = !this.filterOptions[indexInFilterOptions].selected;
+    this.filters$.next(
+        this.filterOptions
+          .filter(filterOption => filterOption.selected)
+          .map(filterOption => filterOption.filter)
+    );
+  }
+
+  private filterSessions(sessions: TestSession[], filters: TestSessionFilter[]): TestSession[] {
+    console.log('F', filters);
+    return sessions.filter(session => this.applyFilters(session, filters));
+  }
+
+  private applyFilters(session: TestSession, filters: TestSessionFilter[]): boolean {
+    const applyNot = (isMatching, not: boolean): boolean => not ? !isMatching : isMatching;
+    return filters.reduce((keep: boolean, nextFilter: TestSessionFilter) => {
+      switch (nextFilter.type) {
+        case 'groupName': {
+          return keep && applyNot(session.groupName !== nextFilter.value, nextFilter.not);
+        }
+        case 'bookletName': {
+          return keep && applyNot(session.bookletName !== nextFilter.value, nextFilter.not);
+        }
+        case 'testState': {
+          const keyExists = (typeof session.testState[nextFilter.value] !== 'undefined');
+          const valueMatches = keyExists && (session.testState[nextFilter.value] === nextFilter.subValue);
+          const keepIn = (typeof nextFilter.subValue !== 'undefined') ? !valueMatches : !keyExists;
+          return keep && applyNot(keepIn, nextFilter.not);
+        }
+        case 'mode': {
+          return keep && applyNot(session.mode !== nextFilter.value, nextFilter.not);
+        }
+      }
+    }, true);
   }
 
   adjustViewModeOnBookletLoad(bookletId: string): void {
@@ -188,14 +255,20 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   selectElement(selected: Selected) {
     this.selectedElement = selected;
-    this.checkedSessions = {};
-    this.sessions$.getValue()
-        .filter(session => session.testId && session.testId > -1)
-        .filter(session => session.bookletName === selected.contextBookletId)
-        .forEach(session => {
-            this.checkedSessions[GroupMonitorComponent.getPersonXTestId(session)] = session;
-        });
-    this.onCheckedChanged();
+    let toCheck: TestSession[] = [];
+    if (selected.element) {
+      if (!selected.spreading) {
+        toCheck = [selected.session];
+      } else {
+        // TODO the 2nd filter should depend on this.displayOptions.selectionSpreading is 'all' or 'booklet' ...
+        // ... can be implemented if it's clear how to broadcast commands to different targets
+        toCheck = this.sessions$.getValue()
+            .filter(session => session.testId && session.testId > -1)
+            .filter(session => session.bookletName === selected.session.bookletName)
+            .filter(session => selected.inversion ? !this.isChecked(session) : true);
+      }
+    }
+    this.replaceCheckedSessions(toCheck);
   }
 
   markElement(testletOrUnit: Testlet|Unit|null) {
@@ -212,13 +285,23 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   toggleCheckAll(event: MatCheckboxChange) {
-    this.checkedSessions = [];
     if (event.checked) {
-      this.sessions$.getValue().forEach(session => {
-        this.checkSession(session);
-      });
+      this.replaceCheckedSessions(
+          this.sessions$.getValue()
+              .filter(session => session.testId && session.testId > -1)
+      );
+    } else {
+      this.replaceCheckedSessions([]);
     }
-    this.onCheckedChanged();
+  }
+
+  invertChecked(event: Event): boolean {
+    event.preventDefault();
+    const unChecked = this.sessions$.getValue()
+        .filter(session => session.testId && session.testId > -1)
+        .filter(session => !this.isChecked(session));
+    this.replaceCheckedSessions(unChecked);
+    return false;
   }
 
   countCheckedSessions(): number {
@@ -239,12 +322,21 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     }
   }
 
+  private replaceCheckedSessions(sessionsToCheck: TestSession[]) {
+    const newCheckedSessions = {};
+    sessionsToCheck
+        .forEach(session => newCheckedSessions[GroupMonitorComponent.getPersonXTestId(session)] = session);
+    this.checkedSessions = newCheckedSessions;
+    this.onCheckedChanged();
+  }
+
   private onCheckedChanged() {
     this.sessionCheckedGroupCount = Object.values(this.checkedSessions)
         .map(session => session.bookletName)
         .filter((value, index, self) => self.indexOf(value) === index)
         .length;
-    this.allSessionsChecked = (this.sessions$.getValue().length === this.countCheckedSessions());
+    const checkableSessions = this.sessions$.getValue().filter(session => session.testId && session.testId > -1);
+    this.allSessionsChecked = (checkableSessions.length === this.countCheckedSessions());
     this.sidenav.toggle(this.sessionCheckedGroupCount > 0);
     if (this.sessionCheckedGroupCount > 1) {
       this.selectedElement = null;

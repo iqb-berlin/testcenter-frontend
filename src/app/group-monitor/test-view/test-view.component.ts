@@ -23,12 +23,15 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     @Input() testSession: TestSession;
     @Input() displayOptions: TestViewDisplayOptions;
     @Input() markedElement: Testlet|Unit|null = null;
-    @Input() selectedElement: Testlet|Unit|null = null;
+    @Input() selected: Selected = {
+        element: undefined,
+        spreading: false
+    };
     @Input() checked: boolean;
 
     @Output() bookletId$ = new EventEmitter<string>();
     @Output() markedElement$ = new EventEmitter<Testlet>();
-    @Output() selectedElement$ = new EventEmitter<Selected|null>();
+    @Output() selectedElement$ = new EventEmitter<Selected>();
     @Output() checked$ = new EventEmitter<boolean>();
 
     public testSession$: Subject<TestSession> = new Subject<TestSession>();
@@ -201,20 +204,43 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
-    select(testletOrUnit: Testlet|Unit) {
-        if ((this.selectedElement != null)
-            && (this.selectedElement.id === testletOrUnit.id)
-            && (isUnit(testletOrUnit) === isUnit(this.selectedElement))
-        ) {
-            this.selectedElement = null;
-            this.selectedElement$.emit(null);
-        } else if (isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'unit') {
-            this.selectedElement = testletOrUnit;
-            this.selectedElement$.emit(null);
-        } else if (!isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'block') {
-            this.selectedElement = testletOrUnit;
-            this.selectedElement$.emit({element: testletOrUnit, contextBookletId: this.testSession.bookletName});
+    select($event: Event, testletOrUnit: Testlet|Unit|null) {
+        if ((isUnit(testletOrUnit) ? 'unit' : 'block') !== this.displayOptions.selectionMode) {
+            return;
         }
+
+        $event.stopPropagation();
+
+        this.applySelection(testletOrUnit);
+    }
+
+    deselect($event: MouseEvent|null) {
+        if ($event && ($event.currentTarget === $event.target)) {
+            this.applySelection();
+        }
+    }
+
+    deselectForce($event: Event): boolean {
+        this.applySelection();
+        $event.stopImmediatePropagation();
+        $event.stopPropagation();
+        $event.preventDefault();
+        return false;
+    }
+
+    invertSelectionTestheftWide(): boolean {
+        this.applySelection(this.selected.element, true);
+        return false;
+    }
+
+    private applySelection(testletOrUnit: Testlet|Unit|null = null, inversion: boolean = false) {
+        this.selected = {
+            element: testletOrUnit,
+            session: this.testSession,
+            spreading: (this.selected?.element?.id === testletOrUnit?.id) && !inversion ? !this.selected?.spreading : true,
+            inversion
+        };
+        this.selectedElement$.emit(this.selected);
     }
 
     check($event: MatCheckboxChange) {

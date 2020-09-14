@@ -1,7 +1,6 @@
 import {BookletConfig} from '../config/booklet-config';
 
 export interface TestSession {
-
     personId: number;
     personLabel?: string;
     groupName?: string;
@@ -71,12 +70,19 @@ export interface GroupData {
 
 export type TestViewDisplayOptionKey = 'view' | 'groupColumn';
 
+export interface TestSessionFilter {
+    type: 'groupName' | 'bookletName' | 'testState' | 'mode';
+    value: string;
+    subValue?: string;
+    not?: true;
+}
+
 export interface TestViewDisplayOptions {
     view: 'full' | 'medium' | 'small';
     groupColumn: 'show' | 'hide';
     selectionMode: 'block' | 'unit';
+    selectionSpreading: 'booklet' | 'all';
 }
-
 
 export function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
     return !('children' in testletOrUnit);
@@ -96,6 +102,8 @@ export interface UnitContext {
 }
 
 export interface Selected {
-    element: Unit|Testlet;
-    contextBookletId: string;
+    element: Unit|Testlet|null;
+    session?: TestSession;
+    spreading: boolean;
+    inversion?: boolean;
 }
