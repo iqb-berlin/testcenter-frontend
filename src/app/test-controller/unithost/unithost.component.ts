@@ -6,11 +6,11 @@ import { ActivatedRoute } from '@angular/router';
 import { OnDestroy } from '@angular/core';
 import {
   PageData,
-  LastStateKey,
-  LogEntryKey,
+  TestStateKey,
   KeyValuePairString,
-  WindowFocusState, PendingUnitData
+  WindowFocusState, PendingUnitData, StateReportEntry, UnitStateKey, UnitPlayerState
 } from '../test-controller.interfaces';
+import {BackendService} from "../backend.service";
 
 declare var srcDoc: any;
 
@@ -43,6 +43,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   constructor(
     public tcs: TestControllerService,
     private mds: MainDataService,
+    private bs: BackendService,
     private route: ActivatedRoute
   ) {  }
 
@@ -67,7 +68,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
                 pendingUnitDataToRestore['all'] = this.pendingUnitData.unitState;
                 this.pendingUnitData = null;
               }
-              this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, '#first');
+              this.bs.updateUnitState(this.tcs.testId, this.myUnitDbKey, [<StateReportEntry>{
+                key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.RUNNING
+              }]);
 
               this.postMessageTarget = m.source as Window;
               if (typeof this.postMessageTarget !== 'undefined') {
@@ -92,7 +95,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
                   this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
                   if (playerState['currentPage'] !== undefined) {
                     this.updateUnitStatePage(msgData['currentPage']);
-                    this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONCOMPLETE, playerState['currentPage']);
+                    this.bs.updateUnitState(this.tcs.testId, this.myUnitDbKey, [<StateReportEntry>{
+                      key: UnitStateKey.CURRENT_PAGE_ID, timeStamp: Date.now(), content: playerState['currentPage']
+                    }]);
                   }
                 }
                 if (msgData['unitState']) {
@@ -113,6 +118,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
                         unitState['unitStateDataType'])
                     }
                   }
+                }
+                if (msgData['log']) {
+                  this.bs.addUnitLog(this.tcs.testId, this.myUnitDbKey, msgData['log']);
                 }
               }
               break;
@@ -154,11 +162,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
         }
 
         if ((this.myUnitSequenceId >= 1) && (this.myUnitSequenceId === this.myUnitSequenceId) && (this.tcs.rootTestlet !== null)) {
-          this.tcs.updateTestState(LastStateKey.LASTUNIT, params['u']);
-
           const currentUnit = this.tcs.rootTestlet.getUnitAt(this.myUnitSequenceId);
           this.unitTitle = currentUnit.unitDef.title;
           this.myUnitDbKey = currentUnit.unitDef.alias;
+          this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
+            key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.myUnitDbKey
+          }]);
+          this.bs.updateUnitState(this.tcs.testId, this.myUnitDbKey, [<StateReportEntry>{
+            key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.LOADING
+          }]);
           this.tcs.currentUnitDbKey = this.myUnitDbKey;
           this.tcs.currentUnitTitle = this.unitTitle;
           this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
@@ -284,22 +296,18 @@ export class UnithostComponent implements OnInit, OnDestroy {
       nextPageId = action;
     }
 
-    if (nextPageId.length > 0) {
-      this.tcs.addUnitLog(this.myUnitDbKey, LogEntryKey.PAGENAVIGATIONSTART, nextPageId);
-      if (typeof this.postMessageTarget !== 'undefined') {
-        this.postMessageTarget.postMessage({
-          type: 'vopPageNavigationCommand',
-          sessionId: this.itemplayerSessionId,
-          target: nextPageId
-        }, '*');
-      }
+    if (nextPageId.length > 0 && typeof this.postMessageTarget !== 'undefined') {
+      this.postMessageTarget.postMessage({
+        type: 'vopPageNavigationCommand',
+        sessionId: this.itemplayerSessionId,
+        target: nextPageId
+      }, '*');
     }
   }
 
   private updateUnitStatePage(newPage: string) {
-    if (this.knownPages.length > 1) {
-      this.tcs.newUnitStatePage(this.myUnitDbKey, newPage,
-          this.knownPages.indexOf(newPage) + 1, this.knownPages.length);
+    if (this.knownPages.length > 1 && this.knownPages.indexOf(newPage) >= 0) {
+      this.tcs.newUnitStatePage(this.myUnitDbKey,this.knownPages.indexOf(newPage) + 1);
     }
   }
 

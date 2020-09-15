@@ -2,7 +2,13 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {Observable, of, Subscription} from 'rxjs';
 import {catchError, map, switchMap} from 'rxjs/operators';
-import {UnitData, TaggedString, TestData, UnitStatus, LastStateKey} from './test-controller.interfaces';
+import {
+  UnitData,
+  TaggedString,
+  TestData,
+  TestStateKey,
+  StateReportEntry, AppFocusState
+} from './test-controller.interfaces';
 import {ApiError} from '../app.interfaces';
 
 
@@ -80,35 +86,36 @@ export class BackendService {
       );
   }
 
-  addUnitLog(testId: string, timestamp: number, unitName: string, entry: string): Subscription {
+  updateTestState(testId: string, newState: StateReportEntry[]): Subscription {
     return this.http
-      .put(this.serverUrl + `test/${testId}/unit/${unitName}/log`, {timestamp, entry})
-      .subscribe({error: (err: ApiError) => console.error(`addUnitLog Api-Error: ${err.code} ${err.info}`)});
-  }
-
-  addTestLog(testId: string, timestamp: number, entry: string): Subscription {
-    return this.http
-      .put(this.serverUrl + `test/${testId}/log`, {timestamp, entry})
-      .subscribe({error: (err: ApiError) => console.error(`addTestLog Api-Error: ${err.code} ${err.info}`)});
-  }
-
-  updateUnitState(testId: string, unitName: string, newUnitState: UnitStatus): Subscription {
-    return this.http
-      .patch(this.serverUrl + `test/${testId}/unit/${unitName}/state`, newUnitState)
-      .subscribe({error: (err: ApiError) => console.error(`setUnitState Api-Error: ${err.code} ${err.info}`)});
-  }
-
-  updateTestState(testId: string, stateKey: string, state: string): Subscription {
-    return this.http
-      .patch(this.serverUrl + `test/${testId}/state`, {key: stateKey, value: state})
+      .patch(this.serverUrl + `test/${testId}/state`,  newState)
       .subscribe({error: (err: ApiError) => console.error(`updateTestState Api-Error: ${err.code} ${err.info}`)});
   }
 
+  addTestLog(testId: string, logEntries: StateReportEntry[]): Subscription {
+    return this.http
+      .put(this.serverUrl + `test/${testId}/log`, logEntries)
+      .subscribe({error: (err: ApiError) => console.error(`addTestLog Api-Error: ${err.code} ${err.info}`)});
+  }
+
+  updateUnitState(testId: string, unitName: string, newState: StateReportEntry[]): Subscription {
+    return this.http
+      .patch(this.serverUrl + `test/${testId}/unit/${unitName}/state`, newState)
+      .subscribe({error: (err: ApiError) => console.error(`setUnitState Api-Error: ${err.code} ${err.info}`)});
+  }
+
+  addUnitLog(testId: string, unitName: string, logEntries: StateReportEntry[]): Subscription {
+    return this.http
+      .put(this.serverUrl + `test/${testId}/unit/${unitName}/log`, logEntries)
+      .subscribe({error: (err: ApiError) => console.error(`addUnitLog Api-Error: ${err.code} ${err.info}`)});
+  }
+
   notifyDyingTest(testId: string) {
-    // TODO add auth header (?)
+    // TODO add auth or change end point
     if (navigator.sendBeacon) {
-      navigator.sendBeacon(this.serverUrl + `test/${testId}/state`, JSON.stringify({key: LastStateKey.DEAD, value: Date.now().toString()}));
-      navigator.sendBeacon(this.serverUrl + `test/${testId}/log`, JSON.stringify({timestamp: Date.now(), entry: LastStateKey.DEAD}));
+      navigator.sendBeacon(this.serverUrl + `test/${testId}/state`, JSON.stringify(<StateReportEntry>{
+        key: TestStateKey.FOCUS, timeStamp: Date.now(), content: AppFocusState.DEAD
+      }));
     }
   }
 
@@ -139,9 +146,9 @@ export class BackendService {
       );
   }
 
-  lockTest(testId: string): Observable<boolean> {
+  lockTest(testId: string, timeStamp: number, content: string): Observable<boolean> {
     return this.http
-      .patch<boolean>(this.serverUrl + `test/${testId}/lock`, {})
+      .patch<boolean>(this.serverUrl + `test/${testId}/lock`, {timeStamp, content})
       .pipe(
         map(() => true),
         catchError((err: ApiError) => {

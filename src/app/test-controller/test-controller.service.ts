@@ -4,13 +4,11 @@ import {Injectable} from '@angular/core';
 import {MaxTimerData, Testlet} from './test-controller.classes';
 import {
   KeyValuePairNumber,
-  LastStateKey,
-  LogEntryKey,
-  MaxTimerDataType,
-  TestStatus,
+  MaxTimerDataType, StateReportEntry,
+  TestControllerState,
   UnitNaviButtonData,
   UnitNavigationTarget,
-  UnitStateData, WindowFocusState
+  UnitStateData, UnitStateKey, WindowFocusState
 } from './test-controller.interfaces';
 import {BackendService} from './backend.service';
 import {Router} from '@angular/router';
@@ -22,8 +20,8 @@ import {BookletConfig} from '../config/booklet-config';
 })
 export class TestControllerService {
   public testId = '';
-  public testStatus$ = new BehaviorSubject<TestStatus>(TestStatus.WAITING_LOAD_START);
-  public testStatusEnum = TestStatus;
+  public testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
+  public testStatusEnum = TestControllerState;
   public loadComplete = false;
   public loadProgressValue = 0;
 
@@ -182,19 +180,6 @@ export class TestControllerService {
     return this.unitPresentationCompleteStates[sequenceId];
   }
 
-  public updateTestState(stateKey: LastStateKey, state: string) {
-    if (this.testMode.saveResponses) {
-      this.bs.updateTestState(this.testId, stateKey, state);
-    }
-  }
-
-  public addUnitLog(unitDbKey: string, logKey: LogEntryKey, entry = '') {
-    if (this.testMode.saveResponses && this.testStatus$.getValue() === TestStatus.RUNNING) {
-      const entryString = entry.length > 0 ? logKey + ': ' + JSON.stringify(entry) : logKey;
-      this.bs.addUnitLog(this.testId, Date.now(), unitDbKey, entryString);
-    }
-  }
-
   public addUnitStateData(unitSequenceId: number, dataPartsAllString: string) {
     this.unitStateDataParts[unitSequenceId] = dataPartsAllString;
   }
@@ -213,27 +198,25 @@ export class TestControllerService {
       this.unitPresentationCompleteStates[unitSequenceId] = presentationProgress;
     }
     if (this.testMode.saveResponses) {
-      // TODO prove if state change can be logged to save calls
-      this.addUnitLog(unitDbKey, LogEntryKey.PRESENTATIONCOMPLETE, presentationProgress);
-      this.bs.updateUnitState(this.testId, unitDbKey, {PRESENTATIONCOMPLETE: presentationProgress});
+      this.bs.updateUnitState(this.testId, unitDbKey, [<StateReportEntry>{
+        key: UnitStateKey.PRESENTATION_PROGRESS, timeStamp: Date.now(), content: presentationProgress
+      }]);
     }
   }
 
   public newUnitStateResponseProgress(unitDbKey: string, unitSequenceId: number, responseProgress: string) {
     if (this.testMode.saveResponses) {
-      // TODO prove if state change can be logged to save calls
-      this.addUnitLog(unitDbKey, LogEntryKey.RESPONSESCOMPLETE, responseProgress);
-      this.bs.updateUnitState(this.testId, unitDbKey, {RESPONSESCOMPLETE: responseProgress});
+      this.bs.updateUnitState(this.testId, unitDbKey, [<StateReportEntry>{
+        key: UnitStateKey.RESPONSE_PROGRESS, timeStamp: Date.now(), content: responseProgress
+      }]);
     }
   }
 
-  public newUnitStatePage(unitDbKey: string, pageName: string, pageNr: number, pagesCount: number) {
+  public newUnitStatePage(unitDbKey: string, pageNr: number) {
     if (this.testMode.saveResponses) {
-      this.bs.updateUnitState(this.testId, unitDbKey, {
-          PAGE_NR: pageNr,
-          PAGE_NAME: pageName,
-          PAGES_COUNT: pagesCount
-      });
+      this.bs.updateUnitState(this.testId, unitDbKey, [<StateReportEntry>{
+        key: UnitStateKey.CURRENT_PAGE_ID, timeStamp: Date.now(), content: pageNr.toString()
+      }]);
     }
   }
 
@@ -288,19 +271,15 @@ export class TestControllerService {
 
   public terminateTest(logEntryKey: string) {
     if (this.testMode.saveResponses) {
-      if (this.testStatus$.getValue() !== TestStatus.TERMINATING) {
-        this.testStatus$.next(TestStatus.TERMINATING); // sometimes terminateTest get called two times from player
-        this.bs.addTestLog(this.testId, Date.now(), logEntryKey)
-            .add(() => {
-              // TODO who evaluates TestStatus when navigating to root?
-              this.bs.lockTest(this.testId).subscribe(bsOk => {
-                this.testStatus$.next(bsOk ? TestStatus.TERMINATED : TestStatus.ERROR);
-                this.router.navigate(['/'], {state: {force: true}});
-              });
-            });
+      if (this.testStatus$.getValue() !== TestControllerState.TERMINATING) {
+        this.testStatus$.next(TestControllerState.TERMINATING); // sometimes terminateTest get called two times from player
+        this.bs.lockTest(this.testId, Date.now(), logEntryKey).subscribe(bsOk => {
+          this.testStatus$.next(bsOk ? TestControllerState.TERMINATED : TestControllerState.ERROR);
+          this.router.navigate(['/'], {state: {force: true}});
+        });
       }
     } else {
-      this.testStatus$.next(TestStatus.TERMINATED);
+      this.testStatus$.next(TestControllerState.TERMINATED);
       this.router.navigate(['/'], {state: {force: true}});
     }
   }

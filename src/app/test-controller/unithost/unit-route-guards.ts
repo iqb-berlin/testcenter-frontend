@@ -6,7 +6,7 @@ import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, CanDeactivate, Router, RouterStateSnapshot} from '@angular/router';
 import {interval, Observable, of} from 'rxjs';
 import {UnitControllerData} from '../test-controller.classes';
-import {CodeInputData, LogEntryKey} from '../test-controller.interfaces';
+import {CodeInputData} from '../test-controller.interfaces';
 import {MainDataService} from 'src/app/maindata.service';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -17,9 +17,7 @@ export class UnitActivateGuard implements CanActivate {
   constructor(
     private tcs: TestControllerService,
     private mds: MainDataService,
-    public startLockDialog: MatDialog,
-    private router: Router,
-    public confirmDialog: MatDialog
+    private router: Router
   ) {}
 
   private checkAndSolve_Code(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
@@ -199,7 +197,6 @@ export class UnitActivateGuard implements CanActivate {
                           } else {
                             this.tcs.currentUnitSequenceId = targetUnitSequenceId;
                             this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
-                            this.tcs.addUnitLog(newUnit.unitDef.alias, LogEntryKey.UNITENTER);
                             return of(true);
                           }
                         }));
@@ -358,11 +355,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     const routerStateObject = this.router.getCurrentNavigation();
     if (routerStateObject.extras.state && routerStateObject.extras.state['force']) {
       forceNavigation = routerStateObject.extras.state['force'];
-    }
-    if (this.tcs.rootTestlet !== null) {
-      const currentUnitSequenceId: number = Number(currentRoute.params['u']);
-      const currentUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(currentUnitSequenceId);
-      this.tcs.addUnitLog(currentUnit.unitDef.alias, LogEntryKey.UNITTRYLEAVE);
     }
     return this.checkAndSolve_maxTime(newUnit, forceNavigation).pipe(
       switchMap(cAsC => {

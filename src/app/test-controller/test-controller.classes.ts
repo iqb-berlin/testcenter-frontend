@@ -191,6 +191,25 @@ export class Testlet extends TestletContentElement {
     return myreturn;
   }
 
+  getSequenceIdByUnitAlias(alias: string): number {
+    let myReturn = -1;
+    for (const tce of this.children) {
+      if (tce instanceof Testlet) {
+        const localTestlet = tce as Testlet;
+        myReturn = localTestlet.getSequenceIdByUnitAlias(alias);
+        if (myReturn >= 0) {
+          break;
+        }
+      } else if (tce instanceof UnitDef) {
+        if (tce.alias === alias) {
+          myReturn = (tce as UnitDef).sequenceId;
+          break;
+        }
+      }
+    }
+    return myReturn;
+  }
+
   getTestlet(testletId: string): Testlet {
     let myreturn = null;
     if (this.id === testletId) {
@@ -376,13 +395,12 @@ export class EnvironmentData {
   public osName = '';
   public screenSizeWidth = 0;
   public screenSizeHeight = 0;
-  public readonly detectionTimeStamp: number;
+  public loadTime: number = 0;
   public get screenSizeTxt(): string {
     return `Bildschirmgröße ist ${this.screenSizeWidth} x ${this.screenSizeWidth}`;
   }
 
   constructor (appVersion: string) {
-    this.detectionTimeStamp = Date.now();
     this.appVersion = appVersion;
     const deviceInfo = window.navigator.userAgent;
 

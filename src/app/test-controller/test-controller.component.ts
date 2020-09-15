@@ -8,16 +8,15 @@ import {Component, HostListener, Inject, OnDestroy, OnInit} from '@angular/core'
 import {EnvironmentData, MaxTimerData, Testlet, UnitDef} from './test-controller.classes';
 import {
   Command,
-  LastStateKey,
-  LogEntryKey,
+  TestStateKey,
   MaxTimerDataType,
   ReviewDialogData,
   TaggedString,
   TestData,
-  TestStatus,
+  TestControllerState,
   UnitData,
   UnitNavigationTarget,
-  WindowFocusState
+  WindowFocusState, TestLogEntryKey, StateReportEntry, AppFocusState
 } from './test-controller.interfaces';
 import {from, Observable, of, Subscription, throwError} from 'rxjs';
 import {concatMap, debounceTime, distinctUntilChanged, map, switchMap} from 'rxjs/operators';
@@ -318,23 +317,26 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         if (this.isProductionMode && this.tcs.testMode.saveResponses) {
           console.error(e.label + ' / ' + e.description);
         }
-        this.tcs.testStatus$.next(TestStatus.ERROR);
+        this.tcs.testStatus$.next(TestControllerState.ERROR);
       });
       this.testStatusSubscription = this.tcs.testStatus$.subscribe(ts => {
+        this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
+          key: TestStateKey.CONTROLLER, timeStamp: Date.now(), content: ts
+        }]);
         switch (ts) {
-          case TestStatus.ERROR:
+          case TestControllerState.ERROR:
             this.tcs.loadProgressValue = 0;
             this.tcs.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
             break;
-          case TestStatus.PAUSED:
+          case TestControllerState.PAUSED:
             // TODO pause time
-            if (this.tcs.currentUnitSequenceId > 0 && this.getTestStatusFromLocalStorage() === TestStatus.RUNNING) {
+            if (this.tcs.currentUnitSequenceId > 0 && this.getTestStatusFromLocalStorage() === TestControllerState.RUNNING) {
               localStorage.setItem(TestControllerComponent.localStoragePausedKey, this.tcs.testId
                   + '##' + this.tcs.currentUnitSequenceId.toString());
             }
             this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE, true);
             break;
-          case TestStatus.RUNNING:
+          case TestControllerState.RUNNING:
             localStorage.removeItem(TestControllerComponent.localStoragePausedKey);
             break;
         }
@@ -350,7 +352,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       });
 
       this.routingSubscription = this.route.params.subscribe(params => {
-        if (this.tcs.testStatus$.getValue() !== TestStatus.ERROR) {
+        if (this.tcs.testStatus$.getValue() !== TestControllerState.ERROR) {
           this.tcs.testId = params['t'];
           localStorage.setItem(TestControllerComponent.localStorageTestKey, params['t']);
 
@@ -367,7 +369,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', {duration: 3000});
                 this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
                 this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
-                this.tcs.updateTestState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
+                if (this.tcs.testMode.saveResponses) {
+                  this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
+                    key: TestStateKey.TESTLETS_TIMELEFT, timeStamp: Date.now(), content: JSON.stringify(this.tcs.LastMaxTimerState)
+                  }]);
+                }
                 this.timerRunning = false;
                 this.timerValue = null;
                 if (this.tcs.testMode.forceTimeRestrictions) {
@@ -378,7 +384,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', {duration: 3000});
                 this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
                 this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
-                this.tcs.updateTestState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
+                if (this.tcs.testMode.saveResponses) {
+                  this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
+                    key: TestStateKey.TESTLETS_TIMELEFT, timeStamp: Date.now(), content: JSON.stringify(this.tcs.LastMaxTimerState)
+                  }]);
+                }
                 this.timerValue = null;
                 break;
               case MaxTimerDataType.INTERRUPTED:
@@ -389,7 +399,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 this.timerValue = maxTimerData;
                 if ((maxTimerData.timeLeftSeconds % 15) === 0) {
                   this.tcs.LastMaxTimerState[maxTimerData.testletId] = Math.round(maxTimerData.timeLeftSeconds / 60);
-                  this.tcs.updateTestState(LastStateKey.MAXTIMELEFT, JSON.stringify(this.tcs.LastMaxTimerState));
+                  if (this.tcs.testMode.saveResponses) {
+                    this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
+                      key: TestStateKey.TESTLETS_TIMELEFT, timeStamp: Date.now(), content: JSON.stringify(this.tcs.LastMaxTimerState)
+                    }]);
+                  }
                 }
                 if ((maxTimerData.timeLeftSeconds / 60) === 5) {
                   this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver5Minutes'), '', {duration: 3000});
@@ -401,8 +415,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           });
 
           this.tcs.resetDataStore();
+          const loadStartTimeStamp = Date.now();
           const envData = new EnvironmentData(this.appVersion);
-          this.tcs.testStatus$.next(TestStatus.WAITING_LOAD_COMPLETE);
+          this.tcs.testStatus$.next(TestControllerState.LOADING);
           this.tcs.loadProgressValue = 0;
           this.tcs.loadComplete = false;
 
@@ -415,17 +430,18 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               });
             } else {
               this.tcs.testMode = new TestMode(testData.mode);
-              let navTarget = 1;
+              let navTargetUnitId = '';
               if (testData.laststate !== null) {
-                if (testData.laststate.hasOwnProperty(LastStateKey.LASTUNIT)) {
-                  const navTargetTemp = Number(testData.laststate[LastStateKey.LASTUNIT]);
-                  if (!isNaN(navTargetTemp)) {
-                    navTarget = navTargetTemp;
+                testData.laststate.forEach(stateEntry => {
+                  switch (stateEntry.key) {
+                    case (TestStateKey.CURRENT_UNIT_ID):
+                      navTargetUnitId = stateEntry.content;
+                      break;
+                    case (TestStateKey.TESTLETS_TIMELEFT):
+                      this.tcs.LastMaxTimerState = JSON.parse(stateEntry.content);
+                      break;
                   }
-                }
-                if (testData.laststate.hasOwnProperty(LastStateKey.MAXTIMELEFT) && (this.tcs.testMode.saveResponses)) {
-                  this.tcs.LastMaxTimerState = JSON.parse(testData.laststate[LastStateKey.MAXTIMELEFT]);
-                }
+                });
               }
 
               this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
@@ -443,7 +459,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                   description: 'TestController.Component: getBookletFromXml(testData.xml)',
                   category: 'PROBLEM'
                 });
-                this.tcs.testStatus$.next(TestStatus.ERROR);
+                this.tcs.testStatus$.next(TestControllerState.ERROR);
               } else {
                 this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
 
@@ -470,6 +486,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                   },
                   () => {
                     this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
+                    let navTarget = 1;
+                    if (navTargetUnitId) {
+                      const tmpNavTarget = this.tcs.rootTestlet.getSequenceIdByUnitAlias(navTargetUnitId);
+                      if (tmpNavTarget > 0) {
+                        navTarget = tmpNavTarget;
+                      }
+                    }
                     this.tcs.updateMinMaxUnitSequenceId(navTarget);
                     this.loadedUnitCount = 0;
 
@@ -504,12 +527,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                           description: errorMessage,
                           category: 'PROBLEM'
                         });
-                        this.tcs.testStatus$.next(TestStatus.ERROR);
+                        this.tcs.testStatus$.next(TestControllerState.ERROR);
                       },
                       () => { // complete
                         if (this.tcs.testMode.saveResponses) {
-                          const entryData = LogEntryKey.BOOKLETLOADCOMPLETE + ': ' + JSON.stringify(envData);
-                          this.bs.addTestLog(this.tcs.testId, Date.now(), entryData);
+                          envData.loadTime = Date.now() - loadStartTimeStamp;
+                          this.bs.addTestLog(this.tcs.testId, [<StateReportEntry>{
+                            key: TestLogEntryKey.LOADCOMPLETE, timeStamp: Date.now(), content: JSON.stringify(envData)
+                          }]);
                         }
                         this.tcs.loadProgressValue = 100;
 
@@ -542,14 +567,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }); // setTimeOut
   }
 
-  private getTestStatusFromLocalStorage(): TestStatus {
-    let myReturn = TestStatus.RUNNING;
+  private getTestStatusFromLocalStorage(): TestControllerState {
+    let myReturn = TestControllerState.RUNNING;
     const pauseStatus = localStorage.getItem(TestControllerComponent.localStoragePausedKey);
     if (pauseStatus) {
       const dataSplits = pauseStatus.split('##');
       if (dataSplits.length > 1) {
         if (dataSplits[0] === this.tcs.testId) {
-          myReturn = TestStatus.PAUSED;
+          myReturn = TestControllerState.PAUSED;
         }
       }
     }
@@ -564,15 +589,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       debounceTime(500)
     ).subscribe((newState: WindowFocusState) => {
       if (newState === WindowFocusState.UNKNOWN) {
-        this.bs.addTestLog(this.tcs.testId, Date.now(), 'FOCUS_LOST')
-          .add(() => {
-            this.tcs.updateTestState(LastStateKey.FOCUS, 'LOST');
-          });
+          this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
+            key: TestStateKey.FOCUS, timeStamp: Date.now(), content: AppFocusState.HAS_NOT
+          }]);
       } else {
-        this.bs.addTestLog(this.tcs.testId, Date.now(), 'FOCUS_GAINED')
-          .add(() => {
-            this.tcs.updateTestState(LastStateKey.FOCUS, 'GAINED');
-          });
+        this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
+          key: TestStateKey.FOCUS, timeStamp: Date.now(), content: AppFocusState.HAS
+        }]);
       }
     });
   }
@@ -655,7 +678,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         break;
       case 'pause':
         this.tcs.interruptMaxTimer();
-        this.tcs.testStatus$.next(TestStatus.PAUSED);
+        this.tcs.testStatus$.next(TestControllerState.PAUSED);
         break;
       case 'resume':
         let navTarget: string = UnitNavigationTarget.FIRST;
@@ -670,14 +693,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             }
           }
         }
-        this.tcs.testStatus$.next(TestStatus.RUNNING);
+        this.tcs.testStatus$.next(TestControllerState.RUNNING);
         this.tcs.setUnitNavigationRequest(navTarget, true);
         break;
       case 'terminate':
         this.tcs.terminateTest('BOOKLETLOCKEDbyOPERATOR');
         break;
       case 'goto':
-        this.tcs.testStatus$.next(TestStatus.RUNNING);
+        this.tcs.testStatus$.next(TestControllerState.RUNNING);
         let gotoTarget: string;
         console.log('goto', this.allUnitIds);
         if ((params.length === 2) && (params[0] === 'id')) {
