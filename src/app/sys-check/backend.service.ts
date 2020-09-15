@@ -35,7 +35,7 @@ export class BackendService {
 
   saveReport(workspaceId: number, sysCheckName: string, sysCheckReport: SysCheckReport): Observable<boolean> {
     return this.http
-      .put(this.serverUrl + `workspace/${workspaceId}/sys-check/${sysCheckName}/report`, {body: {...sysCheckReport}})
+      .put(this.serverUrl + `workspace/${workspaceId}/sys-check/${sysCheckName}/report`, {...sysCheckReport})
       .pipe(
         map(() => true),
         catchError((err: ApiError) => {
