@@ -3,13 +3,12 @@ import { SysCheckDataService } from '../sys-check-data.service';
 import { ReportEntry } from '../sys-check.interfaces';
 
 @Component({
-  selector: 'iqb-environment-check',
-  templateUrl: './environment-check.component.html'
+  styleUrls: ['../sys-check.component.css'],
+  templateUrl: './welcome.component.html'
 })
-export class EnvironmentCheckComponent implements OnInit {
+export class WelcomeComponent implements OnInit {
 
   private report: Map<string, ReportEntry> = new Map<string, ReportEntry>();
-  data: ReportEntry[] = [];
 
   private rating = {
     browser: {
@@ -27,35 +26,27 @@ export class EnvironmentCheckComponent implements OnInit {
   };
 
   constructor(
-    private ds: SysCheckDataService
+    public ds: SysCheckDataService
   ) { }
 
   ngOnInit() {
+    setTimeout(() => {
+      this.ds.setNewCurrentStep('w');
+      this.getBrowser(); // fallback if UAParser does not work
+      this.setOS(); // fallback if UAParser does not work
+      this.setScreenData();
+      this.getFromUAParser();
+      this.setNavigatorInfo();
+      this.setBrowserPluginInfo();
+      this.rateBrowser();
 
-    this.getBrowser(); // fallback if UAParser does not work
-    this.getOS(); // fallback if UAParser does not work
-
-    this.getResolution();
-    this.getFromUAParser();
-    this.getFromNavigator();
-    this.getBrowserPlugins();
-
-    this.rateBrowser();
-
-    const report = Array.from(this.report.values())
-      .sort((item1: ReportEntry, item2: ReportEntry) => (item1.label > item2.label) ? 1 : -1);
-
-    this.data = Object.values(report);
-    this.ds.environmentData$.next(this.data);
+      const report = Array.from(this.report.values())
+        .sort((item1: ReportEntry, item2: ReportEntry) => (item1.label > item2.label) ? 1 : -1);
+      this.ds.environmentReport = Object.values(report);
+    })
   }
 
-  private reportPush(key: string, value: string, warning: boolean = false) {
-
-    this.report.set(key, {'id': '0', 'type': 'environment', 'label': key, 'value': value, 'warning': warning});
-  }
-
-  getBrowser() {
-
+  private getBrowser() {
     const userAgent = window.navigator.userAgent;
     // tslint:disable-next-line:max-line-length
     const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/;
@@ -64,12 +55,11 @@ export class EnvironmentCheckComponent implements OnInit {
     const helperRegex = /[^.]*/;
     const browserInfo = helperRegex.exec(deviceInfoSplits[0]);
     const browserInfoSplits = browserInfo[0].split('/');
-    this.reportPush('Browser', browserInfoSplits[0]);
-    this.reportPush('Browser-Version', browserInfoSplits[1]);
+    this.report.set('Browser', {'id': 'browser', 'type': 'environment', 'label': 'Browser', 'value': browserInfoSplits[0], 'warning': false});
+    this.report.set('Browser-Version', {'id': 'browser-version', 'type': 'environment', 'label': 'Browser-Version', 'value': browserInfoSplits[1], 'warning': false});
   }
 
-  getFromUAParser() {
-
+  private getFromUAParser() {
     if (typeof window['UAParser'] === 'undefined') {
       return;
     }
@@ -85,41 +75,35 @@ export class EnvironmentCheckComponent implements OnInit {
       ['os', 'version', 'Betriebsystem-Version']
     ].forEach((item: Array<string>) => {
       if ((typeof uaInfos[item[0]] !== 'undefined') && (typeof uaInfos[item[0]][item[1]] !== 'undefined')) {
-        this.reportPush(item[2], uaInfos[item[0]][item[1]]);
+        this.report.set(item[2], {'id': item[2], 'type': 'environment', 'label': item[2], 'value': uaInfos[item[0]][item[1]], 'warning': false});
       }
     });
   }
 
-  rateBrowser() {
-
+  private rateBrowser() {
     const browser = this.report.get('Browser').value;
     const browserVersion = this.report.get('Browser-Version').value;
-
     if ((typeof this.rating.browser[browser] !== 'undefined') && (browserVersion < this.rating.browser[browser])) {
       this.report.get('Browser-Version').warning = true;
     }
-
     if (browser === 'Internet Explorer') {
       this.report.get('Browser').warning = true;
     }
-
   }
 
-  getFromNavigator() {
-
+  private setNavigatorInfo() {
     [
       ['hardwareConcurrency', 'CPU-Kerne'],
       ['cookieEnabled', 'Browser-Cookies aktiviert'],
       ['language', 'Browser-Sprache']
     ].forEach((item: string[]) => {
       if (typeof navigator[item[0]] !== 'undefined') {
-        this.reportPush(item[1], navigator[item[0]]);
+        this.report.set(item[1], {'id': item[0], 'type': 'environment', 'label': item[1], 'value': navigator[item[0]], 'warning': false});
       }
     });
   }
 
-  getBrowserPlugins() {
-
+  private setBrowserPluginInfo() {
     if ((typeof navigator.plugins === 'undefined') || (!navigator.plugins.length)) {
       return;
     }
@@ -127,11 +111,10 @@ export class EnvironmentCheckComponent implements OnInit {
     for (let i = 0; i < navigator.plugins.length; i++) {
       pluginNames.push(navigator.plugins[i].name);
     }
-    this.reportPush('Browser-Plugins:', pluginNames.join(', '));
+    this.report.set('Browser-Plugins', {'id': 'browser-plugins', 'type': 'environment', 'label': 'Browser-Plugins', 'value': pluginNames.join(', '), 'warning': false});
   }
 
-  getOS() {
-
+  private setOS() {
     const userAgent = window.navigator.userAgent;
     let osName;
     if (userAgent.indexOf('Windows') !== -1) {
@@ -157,16 +140,14 @@ export class EnvironmentCheckComponent implements OnInit {
     } else {
       osName = window.navigator.platform;
     }
-    this.reportPush('Betriebsystem', osName);
+    this.report.set('Betriebsystem', {'id': 'os', 'type': 'environment', 'label': 'Betriebsystem', 'value': osName, 'warning': false});
   }
 
-  getResolution() {
-
+  private setScreenData() {
     const isLargeEnough = (window.screen.width >= this.rating.screen.width) && (window.screen.height >= this.rating.screen.height);
-    this.reportPush('Bildschirm-Auflösung', window.screen.width + ' x ' + window.screen.height, !isLargeEnough);
+    this.report.set('Bildschirm-Auflösung', {'id': 'screen-resolution', 'type': 'environment', 'label': 'Bildschirm-Auflösung', 'value': window.screen.width + ' x ' + window.screen.height, 'warning': !isLargeEnough});
     const windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.offsetWidth;
     const windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.offsetHeight;
-    this.reportPush('Fenster-Größe', windowWidth + ' x ' + windowHeight);
+    this.report.set('Fenster-Größe', {'id': 'screen-size', 'type': 'environment', 'label': 'Fenster-Größe', 'value': windowWidth + ' x ' + windowHeight, 'warning': false});
   }
-
 }

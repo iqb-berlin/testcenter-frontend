@@ -1,27 +1,15 @@
-<div class="page-header">
-  <p>System-Check: {{title}}</p>
+<div id="header" fxLayout="row" fxLayoutAlign="center center">
+  <p>System-Check: {{checkLabel}}</p>
+  <button mat-fab [disabled]="!ds.prevStep || !ds.loadConfigComplete || !ds.networkCheckStatus.done" color="accent"
+          [routerLink]="[ds.prevStep]" matTooltip="Zurück" fxFlex="none">
+    <i class="material-icons">chevron_left</i>
+  </button>
+  <button mat-fab [disabled]="!ds.nextStep || !ds.loadConfigComplete || !ds.networkCheckStatus.done" color="accent"
+          [routerLink]="[ds.nextStep]" matTooltip="Weiter" fxFlex="none">
+    <i class="material-icons">chevron_right</i>
+  </button>
 </div>
 
 <div class="page-body">
-  <div fxLayout="column" fxLayoutAlign="center stretch" class="cardhost">
-    <div fxLayout="raw wrap" fxLayoutAlign="center stretch" fxFlex>
-      <mat-card fxFlex *ngIf="!loading">
-        <iqb-environment-check></iqb-environment-check>
-      </mat-card>
-      <mat-card fxFlex="2 0 800px" *ngIf="networkCheck">
-        <iqb-network-check [measureNetwork]="networkCheck"></iqb-network-check>
-      </mat-card>
-    </div>
-    <div fxLayout="row" fxLayoutAlign="center stretch" *ngIf="unitCheck || questions">
-      <mat-card [fxFlex]="(questions) ? '2 0 800px' : ''" *ngIf="unitCheck">
-        <iqb-unit-check></iqb-unit-check>
-      </mat-card>
-      <mat-card fxFlex *ngIf="questions">
-        <iqb-questionnaire></iqb-questionnaire>
-      </mat-card>
-    </div>
-    <mat-card *ngIf="reportEnabled">
-      <iqb-report [canSave]="reportEnabled"></iqb-report>
-    </mat-card>
-  </div>
+  <router-outlet></router-outlet>
 </div>

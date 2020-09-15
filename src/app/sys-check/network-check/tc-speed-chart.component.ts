@@ -27,7 +27,7 @@ export interface TcSpeedChartSettings {
 })
 export class TcSpeedChartComponent {
 
-  private canvas;
+  private canvas: HTMLCanvasElement;
   private context;
   private el;
   private xScale;
@@ -65,8 +65,8 @@ export class TcSpeedChartComponent {
 
     this.config = {...this.config, ...config};
     this.canvas.setAttribute('style', this.config.css);
-    this.canvas.setAttribute('height', this.config.height);
-    this.canvas.setAttribute('width', this.config.width);
+    this.canvas.setAttribute('height', this.config.height.toString() + 'px');
+    // this.canvas.setAttribute('width', this.config.width);
 
     this.context.setTransform(1, 0, 0, 1, 0, 0);
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -87,34 +87,27 @@ export class TcSpeedChartComponent {
   }
 
   public plotData(dataPoints: Array<[number, number]>, color: string = null, style: 'line' | 'dots' = 'line') {
-
     if (!dataPoints.length) {
       return;
     }
-
     color = color || this.randomColor();
-
     const coordinates = this.dataPointsToCoordinates(dataPoints);
-
     color = color || this.randomColor();
     const oldStrokeColor = this.context.strokeStyle;
     const oldFillColor = this.context.fillStyle;
     this.context.strokeStyle = color;
     this.context.fillStyle = color;
-
     if (style === 'line') {
       this.paintLine(coordinates);
     }
     if (style === 'dots') {
       this.paintDots(coordinates);
     }
-
     this.context.strokeStyle = oldStrokeColor;
     this.context.fillStyle = oldFillColor;
   }
 
   private dataPointsToCoordinates(dataPoints: Array<[number, number]>): Array<[number, number]> {
-
     return dataPoints
       .map((xy): [number, number] => [ // apply projection
         this.config.xProject(xy[0]),

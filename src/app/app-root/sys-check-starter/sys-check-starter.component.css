@@ -1,7 +1,10 @@
 .check-title {
   font-size: 16pt;
+  margin-top: 4px;
   margin-bottom: 0;
-  height: 24px
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 130%;
 }
 
 .check-description {

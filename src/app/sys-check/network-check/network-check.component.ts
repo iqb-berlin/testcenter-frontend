@@ -1,22 +1,20 @@
 import { SysCheckDataService } from '../sys-check-data.service';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {BackendService} from '../backend.service';
-import { combineLatest } from 'rxjs';
 import {
   DetectedNetworkInformation,
-  NetworkCheckStatus,
-  NetworkRating, NetworkRequestTestResult, ReportEntry
+  NetworkRating, NetworkRequestTestResult
 } from '../sys-check.interfaces';
 
 @Component({
-  selector: 'iqb-network-check',
+  styleUrls: ['../sys-check.component.css'],
   templateUrl: './network-check.component.html'
 })
 
-export class NetworkCheckComponent implements OnInit {
+export class NetworkCheckComponent implements OnInit, OnDestroy {
 
   constructor(
-    private ds: SysCheckDataService,
+    public ds: SysCheckDataService,
     private bs: BackendService
   ) {}
 
@@ -24,14 +22,6 @@ export class NetworkCheckComponent implements OnInit {
   @ViewChild('uploadChart', {static: true}) uploadPlotter;
 
   @Input() measureNetwork: boolean;
-
-  public status: NetworkCheckStatus = {
-    done: true,
-    message: 'Messung noch nicht gestartet',
-    avgUploadSpeedBytesPerSecond: -1,
-    avgDownloadSpeedBytesPerSecond: -1
-  };
-
   private networkStatsDownload: number[] = [];
   private networkStatsUpload: number[] = [];
 
@@ -41,44 +31,48 @@ export class NetworkCheckComponent implements OnInit {
     overallRating: 'N/A'
   };
 
-  public detectedNetworkInformations: DetectedNetworkInformation = {
+  public detectedNetworkInformation: DetectedNetworkInformation = {
     downlinkMegabitPerSecond: null,
     effectiveNetworkType: null,
     roundTripTimeMs: null,
     networkType: null,
     available: false
   };
+  private humanReadableMilliseconds = (milliseconds: number): string => (milliseconds / 1000).toString() + ' sec';
 
   // tslint:disable-next-line:member-ordering
   private static calculateAverageSpeedBytePerSecond(testResults: Array<NetworkRequestTestResult>): number {
-
     return testResults.reduce((sum, result) => sum + (result.size / (result.duration / 1000)), 0) / testResults.length;
   }
 
   ngOnInit() {
-
-    this.getBrowsersNativeNetworkInformation();
-    const report: ReportEntry[] = [];
-    this.addBrowsersNativeNetworkInformationToReport(report);
-    this.ds.networkData$.next(report);
-
-    combineLatest(this.ds.task$, this.ds.checkConfig$).subscribe(([task]) => {
-      if (task === 'speedtest') {
+    setTimeout(() => {
+      this.ds.setNewCurrentStep('n');
+      const connection = navigator['connection'] || navigator['mozConnection'] || navigator['webkitConnection'];
+      if (connection) {
+        this.detectedNetworkInformation = {
+          available: true,
+          downlinkMegabitPerSecond: connection.downlink || null,
+          effectiveNetworkType: connection.effectiveType || null,
+          roundTripTimeMs: connection.rtt || null,
+          networkType: connection.type || null,
+        };
+      }
+      if (this.ds.checkConfig && this.ds.networkReport.length === 0) {
         this.startCheck();
       }
     });
   }
 
   public startCheck() {
-
-    this.status = {
+    this.ds.networkReport = [];
+    this.ds.networkCheckStatus = {
       done: false,
       message: 'Netzwerk-Analyse wird gestartet',
       avgUploadSpeedBytesPerSecond: -1,
       avgDownloadSpeedBytesPerSecond: -1
     };
 
-    // ?? const myConfig = this.ds.checkConfig$.getValue();
     this.plotPrepare(true);
     this.plotPrepare(false);
 
@@ -89,41 +83,41 @@ export class NetworkCheckComponent implements OnInit {
   }
 
   private plotPrepare(isDownloadPart: boolean) {
-    const myConfig = this.ds.checkConfig$.getValue();
-    const testSizes = (isDownloadPart) ? myConfig.downloadSpeed.sequenceSizes : myConfig.uploadSpeed.sequenceSizes;
-    const plotterSettings = {
-      css: 'border: 1px solid silver; margin: 2px; width: 100%;',
-      width: 800,
-      height: 240,
-      labelPadding: 4,
-      xAxisMaxValue: 16 + Math.max(...testSizes),
-      xAxisMinValue: Math.min(...testSizes),
-      yAxisMaxValue: (isDownloadPart) ? 1200 : 2500,
-      yAxisMinValue: (isDownloadPart) ? 20 : 100,
-      xAxisStepSize: 4,
-      yAxisStepSize: (isDownloadPart) ? 50 : 100,
-      lineWidth: 5,
-      xProject: x => (x === 0 ) ? 0 : Math.sign(x) * Math.log2(Math.abs(x)),
-      yProject: y => (y === 0 ) ? 0 : Math.sign(y) * Math.log(Math.abs(y)),
-      xAxisLabels: (x) => (testSizes.indexOf(x) > -1) ? this.humanReadableBytes(x, false, true) : '',
-      yAxisLabels: (y, i) => (i < 10) ? this.humanReadableMilliseconds(y) : ' ',
-    };
+    if (this.ds.checkConfig) {
+      const testSizes = (isDownloadPart) ? this.ds.checkConfig.downloadSpeed.sequenceSizes : this.ds.checkConfig.uploadSpeed.sequenceSizes;
+      const plotterSettings = {
+        css: 'border: 1px solid silver; margin: 2px; width: 100%;',
+        width: 800,
+        height: 240,
+        labelPadding: 4,
+        xAxisMaxValue: 16 + Math.max(...testSizes),
+        xAxisMinValue: Math.min(...testSizes),
+        yAxisMaxValue: (isDownloadPart) ? 1200 : 5000,
+        yAxisMinValue: (isDownloadPart) ? 20 : 0,
+        xAxisStepSize: 4,
+        yAxisStepSize: (isDownloadPart) ? 50 : 100,
+        lineWidth: 5,
+        xProject: x => (x === 0 ) ? 0 : Math.sign(x) * Math.log2(Math.abs(x)),
+        yProject: y => (y === 0 ) ? 0 : Math.sign(y) * Math.log(Math.abs(y)),
+        xAxisLabels: (x) => (testSizes.indexOf(x) > -1) ? this.humanReadableBytes(x, false, true) : '',
+        yAxisLabels: (y, i) => (i < 10) ? this.humanReadableMilliseconds(y) : ' ',
+      };
 
-    if (isDownloadPart) {
-      this.downloadPlotter.reset(plotterSettings);
-    } else {
-      this.uploadPlotter.reset(plotterSettings);
+      if (isDownloadPart) {
+        this.downloadPlotter.reset(plotterSettings);
+      } else {
+        this.uploadPlotter.reset(plotterSettings);
+      }
     }
   }
 
   private loopBenchmarkSequence(isDownloadPart: boolean): Promise<void> {
     if (isDownloadPart) {
-      this.updateStatus(`Benchmark Loop Download nr.:`  + this.networkStatsDownload.length);
+      this.ds.networkCheckStatus.message = `Benchmark Loop Download nr.:`  + this.networkStatsDownload.length;
     } else {
-      this.updateStatus(`Benchmark Loop Upload nr.:`  + this.networkStatsUpload.length);
+      this.ds.networkCheckStatus.message = `Benchmark Loop Upload nr.:`  + this.networkStatsUpload.length;
     }
-    const myConfig = this.ds.checkConfig$.getValue();
-    const benchmarkDefinition = (isDownloadPart) ? myConfig.downloadSpeed : myConfig.uploadSpeed;
+    const benchmarkDefinition = (isDownloadPart) ? this.ds.checkConfig.downloadSpeed : this.ds.checkConfig.uploadSpeed;
     return new Promise((resolve, reject) => {
       this.benchmarkSequence(isDownloadPart)
         .then(results => {
@@ -169,8 +163,7 @@ export class NetworkCheckComponent implements OnInit {
   }
 
   private benchmarkSequence(isDownloadPart: boolean): Promise<Array<NetworkRequestTestResult>> {
-    const myConfig = this.ds.checkConfig$.getValue();
-    const benchmarkDefinition = (isDownloadPart) ? myConfig.downloadSpeed : myConfig.uploadSpeed;
+    const benchmarkDefinition = (isDownloadPart) ? this.ds.checkConfig.downloadSpeed : this.ds.checkConfig.uploadSpeed;
 
     return benchmarkDefinition.sequenceSizes.reduce(
       (sequence, testSize) => sequence.then(results => this.benchmark(isDownloadPart, testSize)
@@ -188,10 +181,10 @@ export class NetworkCheckComponent implements OnInit {
     const testRound = (isDownloadPart) ? (this.networkStatsDownload.length + 1) : (this.networkStatsUpload.length + 1);
     const testPackage = this.humanReadableBytes(requestSize);
     if (isDownloadPart) {
-      this.updateStatus(`Downloadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage} bytes`);
+      this.ds.networkCheckStatus.message = `Downloadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage} bytes`;
       return this.bs.benchmarkDownloadRequest(requestSize);
     } else {
-      this.updateStatus(`Uploadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage})`);
+      this.ds.networkCheckStatus.message = `Uploadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage})`;
       return this.bs.benchmarkUploadRequest(requestSize);
     }
   }
@@ -200,9 +193,9 @@ export class NetworkCheckComponent implements OnInit {
   private showBenchmarkSequenceResults(isDownloadPart: boolean, avgBytesPerSecond: number, results: Array<NetworkRequestTestResult> = []) {
 
     if (isDownloadPart) {
-      this.status.avgDownloadSpeedBytesPerSecond = avgBytesPerSecond;
+      this.ds.networkCheckStatus.avgDownloadSpeedBytesPerSecond = avgBytesPerSecond;
     } else {
-      this.status.avgUploadSpeedBytesPerSecond = avgBytesPerSecond;
+      this.ds.networkCheckStatus.avgUploadSpeedBytesPerSecond = avgBytesPerSecond;
     }
 
     this.plotStatistics(isDownloadPart, results);
@@ -225,7 +218,6 @@ export class NetworkCheckComponent implements OnInit {
   }
 
   private reportResults(isInstable: boolean = false): void {
-
     if (!isInstable) {
       this.updateNetworkRating();
     } else {
@@ -235,50 +227,75 @@ export class NetworkCheckComponent implements OnInit {
         overallRating: 'unstable'
       };
     }
-
-    this.updateStatus(`Die folgenden Netzwerkeigenschaften wurden festgestellt:`);
-    this.status.done = true;
+    this.ds.networkCheckStatus.message = `Die folgenden Netzwerkeigenschaften wurden festgestellt:`;
+    this.ds.networkCheckStatus.done = true;
 
     const downAvg = this.getAverageNetworkStat(true);
     const upAvg = this.getAverageNetworkStat(false);
 
-    const testConfig = this.ds.checkConfig$.getValue();
+    this.ds.networkReport.push({
+      id: 'nw-download', type: 'network', label: 'Downloadgeschwindigkeit', warning: false,
+      value: this.humanReadableBytes(downAvg, true) + '/s'
+    });
+    this.ds.networkReport.push({
+      id: 'nw-download-needed', type: 'network', label: 'Downloadgeschwindigkeit benötigt', warning: false,
+      value: this.humanReadableBytes(this.ds.checkConfig.downloadSpeed.min, true) + '/s'
+    });
+    this.ds.networkReport.push({
+      id: 'nw-download-evaluation', type: 'network', label: 'Downloadbewertung', warning: this.networkRating.downloadRating === 'insufficient',
+      value: this.networkRating.downloadRating
+    });
+    this.ds.networkReport.push({
+      id: 'nw-upload', type: 'network', label: 'Uploadgeschwindigkeit', warning: false,
+      value: this.humanReadableBytes(upAvg, true) + '/s'
+    });
+    this.ds.networkReport.push({
+      id: 'nw-upload-needed', type: 'network', label: 'Uploadgeschwindigkeit benötigt', warning: false,
+      value: this.humanReadableBytes(this.ds.checkConfig.uploadSpeed.min, true) + '/s'
+    });
+    this.ds.networkReport.push({
+      id: 'nw-upload-evaluation', type: 'network', label: 'Uploadbewertung', warning: this.networkRating.uploadRating === 'insufficient',
+      value: this.networkRating.uploadRating
+    });
+    this.ds.networkReport.push({
+      id: 'nw-overall', type: 'network', label: 'Gesamtbewertung', warning: this.networkRating.overallRating === 'insufficient',
+      value: this.networkRating.overallRating
+    });
 
-    const report: ReportEntry[] = [];
-    const reportEntry = (key: string, value: string, warning: boolean = false): void => {
-      report.push({
-        id: '0',
-        type: 'network',
-        label: key,
-        value: value,
-        warning: warning
+    if (this.detectedNetworkInformation.available) {
+      if (this.detectedNetworkInformation.roundTripTimeMs) {
+        this.ds.networkReport.push({
+          id: 'bnni-roundtrip', type: 'network', label: 'RoundTrip in Ms', warning: false,
+          value: this.detectedNetworkInformation.roundTripTimeMs.toString()
+        });
+      }
+      if (this.detectedNetworkInformation.effectiveNetworkType) {
+        this.ds.networkReport.push({
+          id: 'bnni-effective-network-type', type: 'network', label: 'Netzwerktyp nach Leistung', warning: false,
+          value: this.detectedNetworkInformation.effectiveNetworkType
+        });
+      }
+      if (this.detectedNetworkInformation.networkType) {
+        this.ds.networkReport.push({
+          id: 'bnni-network-type', type: 'network', label: 'Netzwerktyp', warning: false,
+          value: this.detectedNetworkInformation.networkType
+        });
+      }
+      if (this.detectedNetworkInformation.downlinkMegabitPerSecond) {
+        this.ds.networkReport.push({
+          id: 'bnni-downlink', type: 'network', label: 'Downlink MB/s', warning: false,
+          value: this.detectedNetworkInformation.downlinkMegabitPerSecond.toString()
+        });
+      }
+    } else {
+      this.ds.networkReport.push({
+        id: 'bnni-fail', type: 'network', label: 'Netzwerkprofil des Browsers', warning: true,
+        value: 'nicht verfügbar'
       });
-    };
-
-    reportEntry('Downloadgeschwindigkeit', this.humanReadableBytes(downAvg, true) + '/s');
-    reportEntry('Downloadgeschwindigkeit benötigt', this.humanReadableBytes(testConfig.downloadSpeed.min, true) + '/s');
-    reportEntry('Downloadbewertung', this.networkRating.downloadRating, this.networkRating.downloadRating === 'insufficient');
-    reportEntry('Uploadgeschwindigkeit', this.humanReadableBytes(upAvg, true) + '/s');
-    reportEntry('Uploadgeschwindigkeit benötigt', this.humanReadableBytes(testConfig.uploadSpeed.min, true) + '/s');
-    reportEntry('Uploadbewertung', this.networkRating.uploadRating, this.networkRating.uploadRating === 'insufficient');
-    reportEntry('Gesamtbewertung', this.networkRating.overallRating, this.networkRating.overallRating === 'insufficient');
-
-    this.addBrowsersNativeNetworkInformationToReport(report);
-
-    this.ds.nextTask();
-    this.ds.networkData$.next(report);
+    }
   }
-
-  private updateStatus(newStatus: string): void {
-
-    this.status.message = newStatus;
-  }
-
 
   public updateNetworkRating(): void {
-
-    const testConfig = this.ds.checkConfig$.getValue();
-
     const awardedNetworkRating: NetworkRating = {
         downloadRating: 'N/A',
         uploadRating: 'N/A',
@@ -293,18 +310,18 @@ export class NetworkCheckComponent implements OnInit {
     // the ratings are calculated individually, by a "how low can you go" approach
 
     awardedNetworkRating.downloadRating = 'good';
-    if (nd.avgDownloadSpeed < testConfig.downloadSpeed.good) {
+    if (nd.avgDownloadSpeed < this.ds.checkConfig.downloadSpeed.good) {
         awardedNetworkRating.downloadRating = 'ok';
     }
-    if (nd.avgDownloadSpeed < testConfig.downloadSpeed.min) {
+    if (nd.avgDownloadSpeed < this.ds.checkConfig.downloadSpeed.min) {
         awardedNetworkRating.downloadRating = 'insufficient';
     }
 
     awardedNetworkRating.uploadRating = 'good';
-    if (nd.avgUploadSpeed < testConfig.uploadSpeed.good) {
+    if (nd.avgUploadSpeed < this.ds.checkConfig.uploadSpeed.good) {
         awardedNetworkRating.uploadRating = 'ok';
     }
-    if (nd.avgUploadSpeed < testConfig.uploadSpeed.min) {
+    if (nd.avgUploadSpeed < this.ds.checkConfig.uploadSpeed.min) {
         awardedNetworkRating.uploadRating = 'insufficient';
     }
 
@@ -320,60 +337,7 @@ export class NetworkCheckComponent implements OnInit {
     this.networkRating = awardedNetworkRating;
   }
 
-
-  private getBrowsersNativeNetworkInformation() {
-
-    const connection = navigator['connection'] || navigator['mozConnection'] || navigator['webkitConnection'];
-    if (connection) {
-      this.detectedNetworkInformations = {
-        available: true,
-        downlinkMegabitPerSecond: connection.downlink || null,
-        effectiveNetworkType: connection.effectiveType || null,
-        roundTripTimeMs: connection.rtt || null,
-        networkType: connection.type || null,
-      };
-    }
-  }
-
-  private addBrowsersNativeNetworkInformationToReport(report: ReportEntry[]): ReportEntry[] {
-
-    if (this.detectedNetworkInformations.available) {
-      if (this.detectedNetworkInformations.roundTripTimeMs) {
-        report.push({
-         id: '0', type: 'network', label: 'RoundTrip in Ms', warning: false,
-         value: this.detectedNetworkInformations.roundTripTimeMs.toString()
-      });
-      }
-      if (this.detectedNetworkInformations.effectiveNetworkType) {
-        report.push({
-          id: '0', type: 'network', label: 'Netzwerktyp nach Leistung', warning: false,
-          value: this.detectedNetworkInformations.effectiveNetworkType
-        });
-      }
-      if (this.detectedNetworkInformations.networkType) {
-        report.push({
-          id: '0', type: 'network', label: 'Netzwerktyp', warning: false,
-          value: this.detectedNetworkInformations.networkType
-        });
-      }
-      if (this.detectedNetworkInformations.downlinkMegabitPerSecond) {
-        report.push({
-          id: '0', type: 'network', label: 'Downlink MB/s', warning: false,
-          value: this.detectedNetworkInformations.downlinkMegabitPerSecond.toString()
-        });
-      }
-    } else {
-      report.push({
-        id: '0', type: 'network', label: 'Netzwerkprofil des Browsers', warning: true,
-        value: 'nicht verfügbar'
-      });
-    }
-    return report;
-  }
-
-
-  private humanReadableBytes(bytes: number, useBits: boolean = false, base1024: boolean = false): string {
-
+  humanReadableBytes(bytes: number, useBits: boolean = false, base1024: boolean = false): string {
     const suffix = {
       B: {
         1000: ['B', 'kB', 'MB', 'GB', 'TB'],
@@ -384,18 +348,15 @@ export class NetworkCheckComponent implements OnInit {
         1024: ['bit', 'kibit', 'Mibit', 'Gibit', 'Tibit']
       }
     };
-
     if (useBits) {
       bytes *= 8;
     }
-
     const base = base1024 ? 1024 : 1000;
-
     const i = Math.floor(Math.log(bytes) / Math.log(base));
-
     return !bytes && '0' || (bytes / Math.pow(base, i)).toFixed(2) + ' ' + suffix[!useBits ? 'B' : 'bit'][base][i];
   }
 
-  private humanReadableMilliseconds = (milliseconds: number): string => (milliseconds / 1000).toString() + ' sec';
-
+  ngOnDestroy() {
+    // TODO: destroy network testing promises
+  }
 }
