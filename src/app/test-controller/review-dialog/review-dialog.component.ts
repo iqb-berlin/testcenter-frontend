@@ -8,7 +8,7 @@ import {ReviewDialogData} from '../test-controller.interfaces';
 })
 export class ReviewDialogComponent {
   reviewform = new FormGroup({
-    target: new FormControl ('b', Validators.required),
+    target: new FormControl ('u', Validators.required),
     priority: new FormControl('', Validators.required),
     tech: new FormControl(''),
     content: new FormControl(''),
