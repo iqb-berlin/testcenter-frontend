@@ -432,13 +432,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               this.tcs.testMode = new TestMode(testData.mode);
               let navTargetUnitId = '';
               if (testData.laststate !== null) {
-                testData.laststate.forEach(stateEntry => {
-                  switch (stateEntry.key) {
+                Object.keys(testData.laststate).forEach(stateKey => {
+                  switch (stateKey) {
                     case (TestStateKey.CURRENT_UNIT_ID):
-                      navTargetUnitId = stateEntry.content;
+                      navTargetUnitId = testData.laststate[stateKey];
                       break;
                     case (TestStateKey.TESTLETS_TIMELEFT):
-                      this.tcs.LastMaxTimerState = JSON.parse(stateEntry.content);
+                      this.tcs.LastMaxTimerState = JSON.parse(testData.laststate[stateKey]);
                       break;
                   }
                 });
