@@ -24,6 +24,10 @@ mat-icon + h1 {
     transform-style: preserve-3d;
 }
 
+.error .units {
+    background: rgba(255, 0, 0, 0.3);
+}
+
 .units:before {
     background: #003333;
     /*width: 100%;*/
@@ -55,6 +59,10 @@ mat-icon + h1 {
     width: 5em;
 }
 
+.paused .unit {
+    background: #001C1C;
+}
+
 .locked .unit {
     background: #333333;
 }
@@ -72,6 +80,11 @@ mat-icon + h1 {
 .unit.current {
     background: #b2ff59;
     color: #003333;
+}
+
+.paused .unit.current {
+    background: #446122;
+    color: #333333;
 }
 
 .locked .unit.current {

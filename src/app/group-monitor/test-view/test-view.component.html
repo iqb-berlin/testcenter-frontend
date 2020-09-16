@@ -47,8 +47,20 @@
 
                 <mat-icon class="unit-badge"
                           *ngIf="!hasState(testSession.testState, 'status', 'locked')"
-                          matTooltip="Testheft gesperrt"
+                          matTooltip="Testheft nicht gesperrt"
                     >lock_open
+                </mat-icon>
+
+                <mat-icon class="unit-badge"
+                          *ngIf="hasState(testSession.testState, 'CONTROLLER', 'PAUSED')"
+                          matTooltip="Testheft nicht gesperrt"
+                    >pause
+                </mat-icon>
+
+                <mat-icon class="unit-badge"
+                          *ngIf="hasState(testSession.testState, 'CONTROLLER', 'ERROR')"
+                          matTooltip="Es ist ein Fehler aufgetreten"
+                >error
                 </mat-icon>
 
                 <mat-icon class="unit-badge"
@@ -86,7 +98,11 @@
 
             <div *ngIf="booklet.units as testlet"
                  class="units-container"
-                 [class]="hasState(testSession.testState, 'status', 'locked') ? 'locked' : ''"
+                 [class]="{
+                    locked: hasState(testSession.testState, 'status', 'locked'),
+                    paused: hasState(testSession.testState, 'CONTROLLER', 'PAUSED'),
+                    error: hasState(testSession.testState, 'CONTROLLER', 'ERROR')
+                 }"
                  [ngSwitch]="displayOptions.view"
                  (mouseleave)="mark()"
                  (click)="deselect($event)"
