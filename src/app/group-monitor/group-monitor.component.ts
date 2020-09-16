@@ -9,7 +9,7 @@ import {
 } from './group-monitor.interfaces';
 import {ActivatedRoute} from '@angular/router';
 import {ConnectionStatus} from '../shared/websocket-backend.service';
-import {map} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {Sort} from '@angular/material/sort';
 import {MatSidenav} from '@angular/material/sidenav';
 import {MatCheckboxChange} from '@angular/material/checkbox';
@@ -112,6 +112,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     combineLatest<[Sort, TestSessionFilter[], TestSession[]]>([this.sortBy$, this.filters$, this.monitor$])
       .pipe(
           map(([sortBy, filters, sessions]) => this.sortSessions(sortBy, this.filterSessions(sessions, filters))),
+          tap(sessions => this.updateChecked(sessions))
       )
       .subscribe(this.sessions$);
 
@@ -170,6 +171,18 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         }
       }
     }, true);
+  }
+
+  private updateChecked(sessions: TestSession[]): void {
+    const newCheckedSessions: {[sessionFullId: number]: TestSession} = {};
+    sessions
+        .forEach(session => {
+            const sessionFullId = GroupMonitorComponent.getPersonXTestId(session);
+            if (typeof this.checkedSessions[sessionFullId] !== 'undefined') {
+              newCheckedSessions[sessionFullId] = session;
+            }
+    });
+    this.checkedSessions = newCheckedSessions;
   }
 
   adjustViewModeOnBookletLoad(bookletId: string): void {
