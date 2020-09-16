@@ -125,18 +125,18 @@ export class BackendService {
     }
   }
 
-  updateUnitStateData(testId: string, timestamp: number, unitName: string, dataPartsAllString: string, unitStateDataType: string)
+  updateUnitStateData(testId: string, timeStamp: number, unitName: string, dataPartsAllString: string, unitStateDataType: string)
     : Observable<boolean> {
     // TODO remove after api changed
     const response = dataPartsAllString;
     const restorePoint = dataPartsAllString;
     const responseType = unitStateDataType;
     return this.http
-      .put(this.serverUrl + `test/${testId}/unit/${unitName}/response`, {timestamp, response, responseType})
+      .put(this.serverUrl + `test/${testId}/unit/${unitName}/response`, {timeStamp, response, responseType})
       .pipe(
         switchMap(() => {
           return this.http
-            .patch(this.serverUrl + `test/${testId}/unit/${unitName}/restorepoint`, {timestamp, restorePoint})
+            .patch(this.serverUrl + `test/${testId}/unit/${unitName}/restorepoint`, {timeStamp, restorePoint})
             .pipe(
               map(() => true),
               catchError((err: ApiError) => {
