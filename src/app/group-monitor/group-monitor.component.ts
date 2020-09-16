@@ -146,7 +146,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   private filterSessions(sessions: TestSession[], filters: TestSessionFilter[]): TestSession[] {
-    console.log('F', filters);
     return sessions.filter(session => this.applyFilters(session, filters));
   }
 
