@@ -55,13 +55,18 @@
                           *ngIf="hasState(testSession.testState, 'BOOKLETLOCKEDbyTESTEE')"
                           matTooltip="Testheft abgeschlossen"
                     >done_all
-                </mat-icon>
-
+                </mat-icon><!-- TODO read correct state -->
 
                 <mat-icon class="unit-badge danger"
-                          *ngIf="hasState(testSession.testState, 'FOCUS', 'LOST')"
+                          *ngIf="hasState(testSession.testState, 'FOCUS', 'HAS_NOT')"
                           matTooltip="Fenster/Tab wurde verlassen!"
-                >report_problem
+                >warning
+                </mat-icon>
+
+                <mat-icon class="unit-badge danger"
+                          *ngIf="hasState(testSession.testState, 'FOCUS', 'DEAD')"
+                          matTooltip="Fenster geschlossen!"
+                >error
                 </mat-icon>
 
             </div>
@@ -133,22 +138,22 @@
         <h2>{{unitContext.unit.label || unitContext.unit.labelShort || unitContext.unit.id}}</h2>
 
         <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.unitState, 'PRESENTATIONCOMPLETE', 'yes')"
+                  *ngIf="hasState(testSession.unitState, 'PRESENTATION_PROGRESS', 'complete')"
                   matTooltip="Vollständig betrachtet / angehört"
             >remove_red_eye
         </mat-icon>
 
         <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.unitState, 'RESPONSESCOMPLETE', 'all')"
+                  *ngIf="hasState(testSession.unitState, 'RESPONSE_PROGRESS', 'complete')"
                   matTooltip="Fertig beantwortet"
             >done_all
         </mat-icon>
 
         <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.unitState, 'PAGE_NR')"
-                  matBadge="{{this.stateString(testSession.unitState, ['PAGE_NR', 'PAGES_COUNT'], '/')}}"
+                  *ngIf="hasState(testSession.unitState, 'CURRENT_PAGE_NR')"
+                  matBadge="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_NR', 'PAGES_COUNT'], '/')}}"
                   matBadgeColor="accent"
-                  matTooltip="{{this.stateString(testSession.unitState, ['PAGE_NAME'])}}"
+                  matTooltip="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_ID'])}}"
         >description
         </mat-icon>
 
