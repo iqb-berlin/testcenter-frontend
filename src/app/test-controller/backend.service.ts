@@ -87,8 +87,14 @@ export class BackendService {
   }
 
   updateTestState(testId: string, newState: StateReportEntry[]): Subscription {
+
+    if (!testId) { // TODO find out why does this happen at tst start and get rid of it
+        console.warn('called without testID', newState);
+        return of().subscribe();
+    }
+
     return this.http
-      .patch(this.serverUrl + `test/${testId}/state`,  newState)
+      .patch(this.serverUrl + `test/${testId}/state`, newState)
       .subscribe({error: (err: ApiError) => console.error(`updateTestState Api-Error: ${err.code} ${err.info}`)});
   }
 
