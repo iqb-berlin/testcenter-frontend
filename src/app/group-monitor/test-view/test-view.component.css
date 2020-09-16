@@ -63,6 +63,7 @@ mat-icon + h1 {
     background: #001C1C;
 }
 
+.pending .unit,
 .locked .unit {
     background: #333333;
 }
@@ -87,6 +88,7 @@ mat-icon + h1 {
     color: #333333;
 }
 
+.pending .unit.current,
 .locked .unit.current {
     background: #b2b2b2;
     color: #333333;

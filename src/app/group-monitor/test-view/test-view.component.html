@@ -101,7 +101,8 @@
                  [class]="{
                     locked: hasState(testSession.testState, 'status', 'locked'),
                     paused: hasState(testSession.testState, 'CONTROLLER', 'PAUSED'),
-                    error: hasState(testSession.testState, 'CONTROLLER', 'ERROR')
+                    error: hasState(testSession.testState, 'CONTROLLER', 'ERROR'),
+                    pending: !hasState(testSession.testState, 'CONTROLLER')
                  }"
                  [ngSwitch]="displayOptions.view"
                  (mouseleave)="mark()"

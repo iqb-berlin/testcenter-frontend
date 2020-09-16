@@ -93,6 +93,10 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     return session.personId * 10000 +  session.testId;
   }
 
+  private static hasState(state: object, key: string, value: any = null): boolean {
+    return ((typeof state[key] !== 'undefined') && ((value !== null) ? (state[key] === value) : true));
+  }
+
   ngOnInit(): void {
     this.routingSubscription = this.route.params.subscribe(params => {
       this.ownGroup$ = this.bs.getGroupData(params['group-name']);
@@ -232,14 +236,16 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   testCommandResume() {
     const testIds = Object.values(this.checkedSessions)
-        .filter(session => session.testId && session.testId > -1) // TODO only paused tests...
+        .filter(session => session.testId && session.testId > -1)
+        .filter(session => GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
         .map(session => session.testId);
     this.bs.command('resume', [], testIds);
   }
 
   testCommandPause() {
     const testIds = Object.values(this.checkedSessions)
-        .filter(session => session.testId && session.testId > -1) // TODO filter paused tests...
+        .filter(session => session.testId && session.testId > -1)
+        .filter(session => !GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
         .map(session => session.testId);
     this.bs.command('pause', [], testIds);
   }
@@ -247,7 +253,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   testCommandGoto() {
     if ((this.sessionCheckedGroupCount === 1) && (Object.keys(this.checkedSessions).length > 0)) {
       const testIds = Object.values(this.checkedSessions)
-          .filter(session => session.testId && session.testId > -1) // TODO filter paused tests...
+          .filter(session => session.testId && session.testId > -1)
           .map(session => session.testId);
       this.bs.command('goto', ['id', GroupMonitorComponent.getFirstUnit(this.selectedElement.element).id], testIds);
     }
@@ -341,5 +347,17 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     if (this.sessionCheckedGroupCount > 1) {
       this.selectedElement = null;
     }
+  }
+
+  isPauseAllowed(): boolean {
+    return Object.values(this.checkedSessions)
+        .filter(session => GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
+        .length === 0;
+  }
+
+  isResumeAllowed() {
+    return Object.values(this.checkedSessions)
+        .filter(session => !GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
+        .length === 0;
   }
 }
