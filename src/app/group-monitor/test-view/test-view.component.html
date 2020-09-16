@@ -40,18 +40,6 @@
                 <h1>{{booklet.metadata.label}}</h1>
 
                 <mat-icon class="unit-badge"
-                          *ngIf="hasState(testSession.testState, 'status', 'locked')"
-                          matTooltip="Testheft gesperrt"
-                    >lock
-                </mat-icon>
-
-                <mat-icon class="unit-badge"
-                          *ngIf="!hasState(testSession.testState, 'status', 'locked')"
-                          matTooltip="Testheft nicht gesperrt"
-                    >lock_open
-                </mat-icon>
-
-                <mat-icon class="unit-badge"
                           *ngIf="hasState(testSession.testState, 'CONTROLLER', 'PAUSED')"
                           matTooltip="Testheft nicht gesperrt"
                     >pause
@@ -62,12 +50,6 @@
                           matTooltip="Es ist ein Fehler aufgetreten"
                 >error
                 </mat-icon>
-
-                <mat-icon class="unit-badge"
-                          *ngIf="hasState(testSession.testState, 'BOOKLETLOCKEDbyTESTEE')"
-                          matTooltip="Testheft abgeschlossen"
-                    >done_all
-                </mat-icon><!-- TODO read correct state -->
 
                 <mat-icon class="unit-badge danger"
                           *ngIf="hasState(testSession.testState, 'FOCUS', 'HAS_NOT')"
@@ -81,6 +63,23 @@
                 >error
                 </mat-icon>
 
+                <mat-icon class="unit-badge"
+                          *ngIf="hasState(testSession.testState, 'status', 'locked')"
+                          matTooltip="Testheft gesperrt"
+                >lock
+                </mat-icon>
+
+                <mat-icon class="unit-badge"
+                          *ngIf="hasState(testSession.testState, 'status', 'running')"
+                          matTooltip="Testheft nicht gesperrt"
+                >lock_open
+                </mat-icon>
+
+                <mat-icon class="unit-badge"
+                          *ngIf="hasState(testSession.testState, 'status', 'pending')"
+                          matTooltip="Testheft noch nicht gestartet"
+                >hourglass_empty
+                </mat-icon>
             </div>
         </ng-container>
     </ng-container>
