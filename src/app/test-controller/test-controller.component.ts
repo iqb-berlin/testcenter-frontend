@@ -319,11 +319,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         this.tcs.testStatus$.next(TestControllerState.ERROR);
       });
-      this.testStatusSubscription = this.tcs.testStatus$.subscribe(ts => {
-        this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
-          key: TestStateKey.CONTROLLER, timeStamp: Date.now(), content: ts
-        }]);
-        switch (ts) {
+      this.testStatusSubscription = this.tcs.testStatus$.subscribe(testContollerState => {
+
+        if ([TestControllerState.FINISHED, TestControllerState.INIT].indexOf(testContollerState) === -1) {
+          this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
+            key: TestStateKey.CONTROLLER, timeStamp: Date.now(), content: testContollerState
+          }]);
+        }
+
+        switch (testContollerState) {
           case TestControllerState.ERROR:
             this.tcs.loadProgressValue = 0;
             this.tcs.setUnitNavigationRequest(UnitNavigationTarget.ERROR);

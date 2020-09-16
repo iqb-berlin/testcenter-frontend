@@ -273,15 +273,15 @@ export class TestControllerService {
 
   public terminateTest(logEntryKey: string) {
     if (this.testMode.saveResponses) {
-      if (this.testStatus$.getValue() !== TestControllerState.TERMINATING) {
-        this.testStatus$.next(TestControllerState.TERMINATING); // sometimes terminateTest get called two times from player
+      if (this.testStatus$.getValue() !== TestControllerState.TERMINATED) {
+        this.testStatus$.next(TestControllerState.TERMINATED); // sometimes terminateTest get called two times from player
         this.bs.lockTest(this.testId, Date.now(), logEntryKey).subscribe(bsOk => {
-          this.testStatus$.next(bsOk ? TestControllerState.TERMINATED : TestControllerState.ERROR);
+          this.testStatus$.next(bsOk ? TestControllerState.FINISHED : TestControllerState.ERROR);
           this.router.navigate(['/'], {state: {force: true}});
         });
       }
     } else {
-      this.testStatus$.next(TestControllerState.TERMINATED);
+      this.testStatus$.next(TestControllerState.FINISHED);
       this.router.navigate(['/'], {state: {force: true}});
     }
   }
@@ -335,13 +335,13 @@ export class TestControllerService {
               if (!navOk) {
                 const navTarget = Number(navString);
                 if (!isNaN(navTarget)) {
-                  let startWith = this.currentUnitSequenceId;
-                  if (startWith < this.minUnitSequenceId) {
-                    startWith = this.minUnitSequenceId - 1;
+                  let unitSequenceId = this.currentUnitSequenceId;
+                  if (unitSequenceId < this.minUnitSequenceId) {
+                    unitSequenceId = this.minUnitSequenceId - 1;
                   }
-                  const nextUnitSequenceId = this.rootTestlet.getNextUnlockedUnitSequenceId(startWith);
-                  if (nextUnitSequenceId > 0 && nextUnitSequenceId !== navTarget) {
-                    this.router.navigate([`/t/${this.testId}/u/${nextUnitSequenceId}`],
+                  const unitSequenceIdNext = this.rootTestlet.getNextUnlockedUnitSequenceId(unitSequenceId);
+                  if (unitSequenceIdNext > 0 && unitSequenceIdNext !== navTarget) {
+                    this.router.navigate([`/t/${this.testId}/u/${unitSequenceIdNext}`],
                       {state: {force: force}});
                   }
                 }

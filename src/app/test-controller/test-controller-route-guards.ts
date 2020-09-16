@@ -19,7 +19,7 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
 
     if (this.tcs.testMode.saveResponses) {
       const testStatus: TestControllerState = this.tcs.testStatus$.getValue();
-      if ((testStatus !== TestControllerState.ERROR) && (testStatus !== TestControllerState.TERMINATED)) {
+      if ((testStatus !== TestControllerState.ERROR) && (testStatus !== TestControllerState.FINISHED)) {
         if (this.tcs.bookletConfig.unit_menu !== 'OFF' || this.tcs.testMode.showUnitMenu) {
           this.tcs.setUnitNavigationRequest(UnitNavigationTarget.MENU);
         } else {
@@ -48,7 +48,9 @@ export class TestControllerErrorPausedActivateGuard implements CanActivate {
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
     const testStatus: TestControllerState = this.tcs.testStatus$.getValue();
-    return (testStatus !== TestControllerState.ERROR) && (testStatus !== TestControllerState.TERMINATED) && (testStatus !== TestControllerState.PAUSED)
+    return (testStatus !== TestControllerState.ERROR)
+        && (testStatus !== TestControllerState.FINISHED)
+        && (testStatus !== TestControllerState.PAUSED);
   }
 }
 

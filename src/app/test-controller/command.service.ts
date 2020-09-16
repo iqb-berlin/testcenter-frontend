@@ -59,7 +59,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
         if ((testStatus === TestControllerState.RUNNING) || (testStatus === TestControllerState.PAUSED)) {
             return 'started';
         }
-        if ((testStatus === TestControllerState.TERMINATED) || (testStatus === TestControllerState.ERROR)) {
+        if ((testStatus === TestControllerState.FINISHED) || (testStatus === TestControllerState.ERROR)) {
             return 'terminated';
         }
         return '';
