@@ -75,7 +75,7 @@ export enum TestLogEntryKey {
 export interface StateReportEntry {
   key: string; // TestStateKey | TestLogEntryKey | UnitStateKey | PlayerLogKey (unknown, up to the player)
   timeStamp: number;
-  content: string
+  content: string;
 }
 
 export interface UnitStateData {
@@ -94,6 +94,8 @@ export enum UnitStateKey {
   PRESENTATION_PROGRESS = 'PRESENTATION_PROGRESS',
   RESPONSE_PROGRESS = 'RESPONSE_PROGRESS',
   CURRENT_PAGE_ID = 'CURRENT_PAGE_ID',
+  CURRENT_PAGE_NR = 'CURRENT_PAGE_NR',
+  PAGE_COUNT = 'PAGE_COUNT',
   PLAYER = 'PLAYER'
 }
 

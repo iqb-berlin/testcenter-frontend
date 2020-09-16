@@ -194,7 +194,7 @@ export class TestControllerService {
   public newUnitStatePresentationProgress(unitDbKey: string, unitSequenceId: number, presentationProgress: string) {
     if (!this.unitPresentationCompleteStates[unitSequenceId] || this.unitPresentationCompleteStates[unitSequenceId] === 'none') {
       this.unitPresentationCompleteStates[unitSequenceId] = presentationProgress;
-    } else if (this.unitPresentationCompleteStates[unitSequenceId] === 'some' && presentationProgress === 'complete'){
+    } else if (this.unitPresentationCompleteStates[unitSequenceId] === 'some' && presentationProgress === 'complete') {
       this.unitPresentationCompleteStates[unitSequenceId] = presentationProgress;
     }
     if (this.testMode.saveResponses) {
@@ -212,11 +212,13 @@ export class TestControllerService {
     }
   }
 
-  public newUnitStatePage(unitDbKey: string, pageNr: number) {
+  public newUnitStatePage(unitDbKey: string, pageNr: number, pageId: string, pageCount: number) {
     if (this.testMode.saveResponses) {
-      this.bs.updateUnitState(this.testId, unitDbKey, [<StateReportEntry>{
-        key: UnitStateKey.CURRENT_PAGE_ID, timeStamp: Date.now(), content: pageNr.toString()
-      }]);
+      this.bs.updateUnitState(this.testId, unitDbKey, [
+          <StateReportEntry>{key: UnitStateKey.CURRENT_PAGE_NR, timeStamp: Date.now(), content: pageNr.toString()},
+          <StateReportEntry>{key: UnitStateKey.CURRENT_PAGE_ID, timeStamp: Date.now(), content: pageId},
+          <StateReportEntry>{key: UnitStateKey.PAGE_COUNT, timeStamp: Date.now(), content: pageCount.toString()}
+      ]);
     }
   }
 

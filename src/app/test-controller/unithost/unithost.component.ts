@@ -10,7 +10,7 @@ import {
   KeyValuePairString,
   WindowFocusState, PendingUnitData, StateReportEntry, UnitStateKey, UnitPlayerState
 } from '../test-controller.interfaces';
-import {BackendService} from "../backend.service";
+import {BackendService} from '../backend.service';
 
 declare var srcDoc: any;
 
@@ -62,7 +62,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
             case 'vopReadyNotification':
               // TODO add apiVersion check
               let pendingUnitDef = '';
-              let pendingUnitDataToRestore: KeyValuePairString = {};
+              const pendingUnitDataToRestore: KeyValuePairString = {};
               if (this.pendingUnitData && this.pendingUnitData.playerId === msgPlayerId) {
                 pendingUnitDef = this.pendingUnitData.unitDefinition;
                 pendingUnitDataToRestore['all'] = this.pendingUnitData.unitState;
@@ -93,11 +93,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
                 if (msgData['playerState']) {
                   const playerState = msgData['playerState'];
                   this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
-                  if (playerState['currentPage'] !== undefined) {
-                    this.updateUnitStatePage(msgData['currentPage']);
-                    this.bs.updateUnitState(this.tcs.testId, this.myUnitDbKey, [<StateReportEntry>{
-                      key: UnitStateKey.CURRENT_PAGE_ID, timeStamp: Date.now(), content: playerState['currentPage']
-                    }]);
+                  if (typeof playerState['currentPage'] !== 'undefined') {
+                    const pageId = playerState['currentPage'];
+                    const pageNr = this.knownPages.indexOf(playerState['currentPage']) + 1;
+                    const pageCount = this.knownPages.length;
+                    if (this.knownPages.length > 1 && this.knownPages.indexOf(playerState['currentPage']) >= 0) {
+                      this.tcs.newUnitStatePage(this.myUnitDbKey, pageNr, pageId, pageCount);
+                    }
                   }
                 }
                 if (msgData['unitState']) {
@@ -115,7 +117,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
                     const dataPartsAllString = unitData['all'];
                     if (dataPartsAllString) {
                       this.tcs.newUnitStateData(this.myUnitDbKey, this.myUnitSequenceId, dataPartsAllString,
-                        unitState['unitStateDataType'])
+                        unitState['unitStateDataType']);
                     }
                   }
                 }
@@ -133,11 +135,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
             case 'vopWindowFocusChangedNotification':
               if (msgData['hasFocus']) {
-                this.tcs.windowFocusState$.next(WindowFocusState.PLAYER)
+                this.tcs.windowFocusState$.next(WindowFocusState.PLAYER);
               } else if (document.hasFocus()) {
-                this.tcs.windowFocusState$.next(WindowFocusState.HOST)
+                this.tcs.windowFocusState$.next(WindowFocusState.HOST);
               } else {
-                this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN)
+                this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
               }
               break;
 
@@ -302,12 +304,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
         sessionId: this.itemplayerSessionId,
         target: nextPageId
       }, '*');
-    }
-  }
-
-  private updateUnitStatePage(newPage: string) {
-    if (this.knownPages.length > 1 && this.knownPages.indexOf(newPage) >= 0) {
-      this.tcs.newUnitStatePage(this.myUnitDbKey,this.knownPages.indexOf(newPage) + 1);
     }
   }
 
