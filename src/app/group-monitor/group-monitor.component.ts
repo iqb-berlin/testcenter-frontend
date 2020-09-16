@@ -43,7 +43,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   };
   filterOptions: {label: string, filter: TestSessionFilter, selected: boolean}[] = [
     {
-      label: 'beendete',
+      label: 'gesperrte',
       selected: false,
       filter: {
         type: 'testState',
@@ -52,12 +52,12 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       }
     },
     {
-      label: 'nicht gestartete',
+      label: 'nicht aktive',
       selected: false,
       filter: {
         type: 'testState',
-        value: 'status',
-        subValue: 'running',
+        value: 'CONTROLLER',
+        subValue: 'RUNNING',
         not: true
       }
     },
