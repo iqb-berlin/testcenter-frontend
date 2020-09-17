@@ -38,7 +38,8 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     public booklet$: Observable<Booklet|BookletError>;
     public featuredUnit$: Observable<UnitContext|null>;
 
-    public maxTimeLeft: object|null; // TODO make observable maybe
+    public testletsTimeleft: object|null; // TODO make observable maybe
+    public testletsClearedCode: object | null;
 
     private bookletSubscription: Subscription;
 
@@ -77,7 +78,8 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
         if (typeof changes['testSession'] !== 'undefined') {
             this.testSession$.next(this.testSession);
-            this.maxTimeLeft = this.parseJsonState(this.testSession.testState, 'TESTLETS_TIMELEFT');
+            this.testletsTimeleft = this.parseJsonState(this.testSession.testState, 'TESTLETS_TIMELEFT');
+            this.testletsClearedCode = this.parseJsonState(this.testSession.testState, 'TESTLETS_CLEARED_CODE');
         }
     }
 

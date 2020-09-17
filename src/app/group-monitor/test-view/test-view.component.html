@@ -142,8 +142,8 @@
         <h1>{{unitContext.parent.label || 'Aktueller Abschnitt'}}</h1>
 
         <mat-icon class="unit-badge"
-                  *ngIf="maxTimeLeft && (maxTimeLeft[unitContext.parent.id] !== undefined)"
-                  matBadge="{{maxTimeLeft[unitContext.parent.id].toString()}}"
+                  *ngIf="testletsTimeleft && (testletsTimeleft[unitContext.parent.id] !== undefined)"
+                  matBadge="{{testletsTimeleft[unitContext.parent.id].toString()}}"
                   matBadgeColor="accent"
                   matTooltip="Verbleibende Zeit"
             >alarm
@@ -185,7 +185,7 @@
           matTooltip="Freigabewort: {{codeToEnter.code.toUpperCase()}}"
           matTooltipPosition="above"
         >
-        <mat-icon>sms</mat-icon>
+        <mat-icon>{{testletsClearedCode && (testletsClearedCode.indexOf(testlet.id) > -1) ? 'lock_open' : 'lock'}}</mat-icon>
     </span>
 
     <ng-container *ngFor="let testletOrUnit of testlet.children; trackBy: trackUnits" [ngSwitch]="getTestletType(testletOrUnit)">
