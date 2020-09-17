@@ -690,7 +690,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case 'goto':
         this.tcs.testStatus$.next(TestControllerState.RUNNING);
         let gotoTarget: string;
-        console.log('goto', this.allUnitIds);
         if ((params.length === 2) && (params[0] === 'id')) {
           gotoTarget = (this.allUnitIds.indexOf(params[1]) + 1).toString(10);
         } else if (params.length === 1) {

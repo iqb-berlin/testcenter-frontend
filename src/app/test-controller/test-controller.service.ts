@@ -346,6 +346,8 @@ export class TestControllerService {
           this.router.navigate([`/t/${this.testId}/u/${navString}`],
             {state: {force: force}}).then(navOk => {
               if (!navOk) {
+                console.log('navigation failed ("' + navString + '"');
+                /*
                 const navTarget = Number(navString);
                 if (!isNaN(navTarget)) {
                   let unitSequenceId = this.currentUnitSequenceId;
@@ -358,6 +360,7 @@ export class TestControllerService {
                       {state: {force: force}});
                   }
                 }
+                 */
               }
           });
           break;
