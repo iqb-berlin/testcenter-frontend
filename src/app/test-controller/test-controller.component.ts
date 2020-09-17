@@ -18,7 +18,7 @@ import {
   TestLogEntryKey,
   TestStateKey,
   UnitData,
-  UnitNavigationTarget,
+  UnitNavigationTarget, UnitStateKey,
   WindowFocusState
 } from './test-controller.interfaces';
 import {from, Observable, of, Subscription, throwError} from 'rxjs';
@@ -233,8 +233,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             }
             let playerId = null;
             let definitionRef = '';
-            if (myUnitData.laststate && myUnitData.laststate['PRESENTATIONCOMPLETE']) {
-              this.tcs.addUnitPresentationComplete(sequenceId, myUnitData.laststate['PRESENTATIONCOMPLETE']);
+            if (myUnitData.laststate && myUnitData.laststate[UnitStateKey.PRESENTATION_PROGRESS]) {
+              this.tcs.setOldUnitPresentationComplete(sequenceId, myUnitData.laststate[UnitStateKey.PRESENTATION_PROGRESS]);
             }
 
             try {

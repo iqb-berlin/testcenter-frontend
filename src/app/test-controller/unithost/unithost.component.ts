@@ -106,7 +106,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
                   const unitState = msgData['unitState'];
                   const presentationProgress = unitState['presentationProgress'];
                   if (presentationProgress) {
-                    this.tcs.newUnitStatePresentationProgress(this.myUnitDbKey, this.myUnitSequenceId, presentationProgress);
+                    this.tcs.updateUnitStatePresentationProgress(this.myUnitDbKey, this.myUnitSequenceId, presentationProgress);
                   }
                   const responseProgress = unitState['responseProgress'];
                   if (responseProgress) {

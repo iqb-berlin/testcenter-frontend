@@ -118,6 +118,7 @@ export class TestControllerService {
     this.currentMaxTimerTestletId = '';
     this.LastMaxTimerState = {};
     this.unitListForNaviButtons = [];
+    this.unitPresentationCompleteStates = {};
     // this.dataLoading = false; TODO set test status?
     // this.bookletLoadComplete = false;
   }
@@ -171,8 +172,7 @@ export class TestControllerService {
     return this.unitStateDataParts[sequenceId];
   }
 
-  // adding PresentationComplete after unit data loading: via newUnitStatePresentationComplete below!
-  public addUnitPresentationComplete (sequenceId: number, state: string) {
+  public setOldUnitPresentationComplete (sequenceId: number, state: string) {
     this.unitPresentationCompleteStates[sequenceId] = state;
   }
 
@@ -204,7 +204,7 @@ export class TestControllerService {
     }
   }
 
-  public newUnitStatePresentationProgress(unitDbKey: string, unitSequenceId: number, presentationProgress: string) {
+  public updateUnitStatePresentationProgress(unitDbKey: string, unitSequenceId: number, presentationProgress: string) {
     if (!this.unitPresentationCompleteStates[unitSequenceId] || this.unitPresentationCompleteStates[unitSequenceId] === 'none') {
       this.unitPresentationCompleteStates[unitSequenceId] = presentationProgress;
     } else if (this.unitPresentationCompleteStates[unitSequenceId] === 'some' && presentationProgress === 'complete') {
