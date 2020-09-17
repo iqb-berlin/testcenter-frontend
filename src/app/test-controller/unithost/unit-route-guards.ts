@@ -27,6 +27,7 @@ export class UnitActivateGuard implements CanActivate {
         newUnit.codeRequiringTestlets.forEach(t => {
           if (force) {
             t.codeToEnter = '';
+            this.tcs.addClearedCodeTestlet(t.id);
           } else {
             myCodes.push(<CodeInputData>{
               testletId: t.id,

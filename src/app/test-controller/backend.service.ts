@@ -35,13 +35,13 @@ export class BackendService {
       );
   }
 
-  saveBookletReview(testId: string, priority: number, categories: string, entry: string): Observable<boolean> {
+  saveTestReview(testId: string, priority: number, categories: string, entry: string): Observable<boolean> {
     return this.http
       .put(this.serverUrl + `test/${testId}/review`, {priority, categories, entry})
       .pipe(
         map(() => true),
         catchError((err: ApiError) => {
-          console.warn(`saveBookletReview Api-Error: ${err.code} ${err.info} `);
+          console.warn(`saveTestReview Api-Error: ${err.code} ${err.info} `);
           return of(false);
         })
       );

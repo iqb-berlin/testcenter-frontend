@@ -5,7 +5,7 @@ import {MaxTimerData, Testlet} from './test-controller.classes';
 import {
   KeyValuePairNumber,
   MaxTimerDataType, StateReportEntry,
-  TestControllerState,
+  TestControllerState, TestStateKey,
   UnitNaviButtonData,
   UnitNavigationTarget,
   UnitStateData, UnitStateKey, WindowFocusState
@@ -24,6 +24,7 @@ export class TestControllerService {
   public testStatusEnum = TestControllerState;
   public loadComplete = false;
   public loadProgressValue = 0;
+  public clearCodeTestlets: string[] = [];
 
   public testMode = new TestMode();
   public bookletConfig = new BookletConfig();
@@ -47,6 +48,8 @@ export class TestControllerService {
   }
 
   public set currentUnitSequenceId(v: number) {
+    console.log('currentUnitSequenceId', v);
+
     this.unitPrevEnabled = v > this.minUnitSequenceId;
     this.unitNextEnabled = v < this.maxUnitSequenceId;
     if (this.rootTestlet && (this.bookletConfig.unit_navibuttons !== 'OFF') ) {
@@ -102,6 +105,7 @@ export class TestControllerService {
     this.unitStateDataParts = {};
     this.rootTestlet = null;
     this.maxUnitSequenceId = 0;
+    this.clearCodeTestlets = [];
     this.currentUnitSequenceId = 0;
     this.currentUnitDbKey = '';
     this.currentUnitTitle = '';
@@ -188,6 +192,15 @@ export class TestControllerService {
     this.unitStateDataParts[unitSequenceId] = dataPartsAllString;
     if (this.testMode.saveResponses) {
       this.unitStateDataToSave$.next({unitDbKey, dataPartsAllString: dataPartsAllString, unitStateDataType});
+    }
+  }
+
+  public addClearedCodeTestlet(testletId: string) {
+    if (this.clearCodeTestlets.indexOf(testletId) < 0) {
+      this.clearCodeTestlets.push(testletId);
+      this.bs.updateTestState(this.testId, [<StateReportEntry>{
+        key: TestStateKey.TESTLETS_CLEARED_CODE, timeStamp: Date.now(), content: JSON.stringify(this.clearCodeTestlets)
+      }])
     }
   }
 

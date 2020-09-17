@@ -7,16 +7,19 @@ import {TestControllerService} from './test-controller.service';
 import {Component, HostListener, Inject, OnDestroy, OnInit} from '@angular/core';
 import {EnvironmentData, MaxTimerData, Testlet, UnitDef} from './test-controller.classes';
 import {
+  AppFocusState,
   Command,
-  TestStateKey,
   MaxTimerDataType,
   ReviewDialogData,
+  StateReportEntry,
   TaggedString,
-  TestData,
   TestControllerState,
+  TestData,
+  TestLogEntryKey,
+  TestStateKey,
   UnitData,
   UnitNavigationTarget,
-  WindowFocusState, TestLogEntryKey, StateReportEntry, AppFocusState
+  WindowFocusState
 } from './test-controller.interfaces';
 import {from, Observable, of, Subscription, throwError} from 'rxjs';
 import {concatMap, debounceTime, distinctUntilChanged, map, switchMap} from 'rxjs/operators';
@@ -50,6 +53,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private allUnitIds: string[] = [];
   private loadedUnitCount = 0;
   private unitLoadQueue: TaggedString[] = [];
+  private resumeTargetUnitId = 0;
   unitNavigationTarget = UnitNavigationTarget;
   debugPane = false;
 
@@ -319,7 +323,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.testStatus$.next(TestControllerState.ERROR);
       });
       this.testStatusSubscription = this.tcs.testStatus$.subscribe(testControllerState => {
-        if ([TestControllerState.FINISHED, TestControllerState.INIT].indexOf(testControllerState) === -1) {
+        if ([TestControllerState.FINISHED, TestControllerState.INIT, TestControllerState.LOADING].indexOf(testControllerState) === -1) {
           this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
             key: TestStateKey.CONTROLLER, timeStamp: Date.now(), content: testControllerState
           }]);
@@ -437,12 +441,16 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                       this.tcs.LastMaxTimerState = JSON.parse(testData.laststate[stateKey]);
                       break;
                     case (TestStateKey.CONTROLLER):
-                      newTestStatus = testData.laststate[stateKey];
+                      if (testData.laststate[stateKey] === TestControllerState.PAUSED) {
+                        newTestStatus = TestControllerState.PAUSED;
+                      }
+                      break;
+                    case (TestStateKey.TESTLETS_CLEARED_CODE):
+                      this.tcs.clearCodeTestlets = JSON.parse(testData.laststate[stateKey]);
                       break;
                   }
                 });
               }
-
               this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
 
               document.documentElement.style.setProperty('--tc-unit-title-height',
@@ -461,6 +469,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 this.tcs.testStatus$.next(TestControllerState.ERROR);
               } else {
                 this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
+                if (this.tcs.clearCodeTestlets.length > 0) {
+                  this.tcs.rootTestlet.clearTestletCodes(this.tcs.clearCodeTestlets);
+                }
 
                 this.loadedUnitCount = 0;
                 const sequArray = [];
@@ -539,6 +550,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
                         this.tcs.loadComplete = true;
                         if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
+                          this.resumeTargetUnitId = navTarget;
                           this.tcs.setUnitNavigationRequest(navTarget.toString());
                           this.tcs.testStatus$.next(newTestStatus);
                           if (this.tcs.testMode.saveResponses) {
@@ -549,6 +561,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     );
 
                     if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
+                      this.resumeTargetUnitId = navTarget;
                       this.tcs.setUnitNavigationRequest(navTarget.toString());
                       this.tcs.testStatus$.next(newTestStatus);
                       if (this.tcs.testMode.saveResponses) {
@@ -619,7 +632,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                   }
                 });
             } else {
-              this.bs.saveBookletReview(
+              this.bs.saveTestReview(
                 this.tcs.testId,
                 result['priority'],
                 dialogRef.componentInstance.getCategories(),
@@ -664,9 +677,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case 'pause':
         this.tcs.interruptMaxTimer();
         this.tcs.testStatus$.next(TestControllerState.PAUSED);
+        this.resumeTargetUnitId = this.tcs.currentUnitSequenceId;
         break;
       case 'resume':
-        const navTarget = (this.tcs.currentUnitSequenceId > 0) ? this.tcs.currentUnitSequenceId.toString() : UnitNavigationTarget.FIRST;
+        const navTarget = (this.resumeTargetUnitId > 0) ? this.resumeTargetUnitId.toString() : UnitNavigationTarget.FIRST;
         this.tcs.testStatus$.next(TestControllerState.RUNNING);
         this.tcs.setUnitNavigationRequest(navTarget, true);
         break;
@@ -684,6 +698,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         if (gotoTarget && gotoTarget !== '0') {
           console.log('YES', gotoTarget);
+          this.resumeTargetUnitId = 0;
           this.tcs.interruptMaxTimer();
           this.tcs.setUnitNavigationRequest(gotoTarget, true);
         }
