@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, CanDeactivate, RouterStateSnapshot} from '@angular/router';
 import {Observable} from 'rxjs';
 import {TestControllerComponent} from './test-controller.component';
-import {TestStatus, UnitNavigationTarget} from './test-controller.interfaces';
+import {TestControllerState, UnitNavigationTarget} from './test-controller.interfaces';
 import {TestControllerService} from './test-controller.service';
 
 @Injectable()
@@ -18,8 +18,8 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
 
     if (this.tcs.testMode.saveResponses) {
-      const testStatus: TestStatus = this.tcs.testStatus$.getValue();
-      if ((testStatus !== TestStatus.ERROR) && (testStatus !== TestStatus.TERMINATED)) {
+      const testStatus: TestControllerState = this.tcs.testStatus$.getValue();
+      if ((testStatus !== TestControllerState.ERROR) && (testStatus !== TestControllerState.FINISHED)) {
         if (this.tcs.bookletConfig.unit_menu !== 'OFF' || this.tcs.testMode.showUnitMenu) {
           this.tcs.setUnitNavigationRequest(UnitNavigationTarget.MENU);
         } else {
@@ -47,8 +47,10 @@ export class TestControllerErrorPausedActivateGuard implements CanActivate {
   }
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
-    const testStatus: TestStatus = this.tcs.testStatus$.getValue();
-    return (testStatus !== TestStatus.ERROR) && (testStatus !== TestStatus.TERMINATED) && (testStatus !== TestStatus.PAUSED)
+    const testStatus: TestControllerState = this.tcs.testStatus$.getValue();
+    return (testStatus !== TestControllerState.ERROR)
+        && (testStatus !== TestControllerState.FINISHED)
+        && (testStatus !== TestControllerState.PAUSED);
   }
 }
 

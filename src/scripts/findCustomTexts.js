@@ -75,7 +75,7 @@ for (const f of foundSourceFiles) {
 
 console.log();
 console.log('\x1b[33m%s\x1b[0m', 'not used:');
-for (const k of Object.keys(defaults)) {
+for (const k of Object.keys(defaults).sort()) {
   if (!foundKeys[k]) {
     console.log(`  ${k}`);
   }
@@ -85,7 +85,7 @@ if (!foundError) {
   console.log('');
   console.log('writing markdown');
   let mdContent = fs.readFileSync(mdSourceFilename, 'utf8').toString();
-  for (const k of Object.keys(defaults)) {
+  for (const k of Object.keys(defaults).sort()) {
     mdContent += '|`' + k + '`|' + defaults[k].label + '|' + defaults[k].defaultvalue + '|' + '\n';
   }
   fs.writeFileSync(mdTargetFilename, mdContent, "utf8");

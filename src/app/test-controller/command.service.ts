@@ -1,6 +1,6 @@
 import {Inject, Injectable, OnDestroy} from '@angular/core';
 import {of, Subject, Subscription, timer} from 'rxjs';
-import {Command, commandKeywords, isKnownCommand, TestStatus} from './test-controller.interfaces';
+import {Command, commandKeywords, isKnownCommand, TestControllerState} from './test-controller.interfaces';
 import {TestControllerService} from './test-controller.service';
 import {
     concatMap,
@@ -55,11 +55,11 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
         return `[${command.id}] ${command.keyword} ` + command.arguments.join(' ');
     }
 
-    private static testStartedOrStopped(testStatus: TestStatus): TestStartedOrStopped {
-        if ((testStatus === TestStatus.RUNNING) || (testStatus === TestStatus.PAUSED)) {
+    private static testStartedOrStopped(testStatus: TestControllerState): TestStartedOrStopped {
+        if ((testStatus === TestControllerState.RUNNING) || (testStatus === TestControllerState.PAUSED)) {
             return 'started';
         }
-        if ((testStatus === TestStatus.TERMINATED) || (testStatus === TestStatus.ERROR)) {
+        if ((testStatus === TestControllerState.FINISHED) || (testStatus === TestControllerState.ERROR)) {
             return 'terminated';
         }
         return '';

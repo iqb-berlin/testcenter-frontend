@@ -5,6 +5,7 @@ import { SaveReportComponent } from './save-report/save-report.component';
 import { ReportEntry } from '../sys-check.interfaces';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {CustomtextService} from "iqb-components";
 
 @Component({
   templateUrl: './report.component.html',
@@ -18,6 +19,7 @@ export class ReportComponent implements OnInit {
   constructor(
     private bs: BackendService,
     public ds: SysCheckDataService,
+    public cts: CustomtextService,
     private saveDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {

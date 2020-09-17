@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SysCheckDataService } from '../sys-check-data.service';
 import { ReportEntry } from '../sys-check.interfaces';
+import {CustomtextService} from "iqb-components";
 
 @Component({
   styleUrls: ['../sys-check.component.css'],
@@ -26,6 +27,7 @@ export class WelcomeComponent implements OnInit {
   };
 
   constructor(
+    public cts: CustomtextService,
     public ds: SysCheckDataService
   ) { }
 

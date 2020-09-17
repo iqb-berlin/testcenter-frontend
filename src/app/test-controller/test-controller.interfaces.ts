@@ -4,11 +4,6 @@ export interface TaggedString {
     value: string;
 }
 
-export interface UnitStateData {
-    unitDbKey: string;
-    dataPartsAllString: string;
-    unitStateDataType: string;
-}
 export interface KeyValuePairString {
   [K: string]: string;
 }
@@ -47,18 +42,71 @@ export interface UnitData {
 export interface TestData {
   xml: string;
   mode: string;
-  laststate: KeyValuePair[];
+  laststate: StateReportEntry[];
 }
 
-export enum TestStatus {
-  WAITING_LOAD_COMPLETE = 'WAITING_LOAD_COMPLETE',
-  WAITING_LOAD_START = 'WAITING_LOAD_START',
+export enum TestControllerState {
+  INIT = 'INIT',
+  LOADING = 'LOADING',
   RUNNING = 'RUNNING',
   TERMINATED = 'TERMINATED',
+  FINISHED = 'FINISHED',
   PAUSED = 'PAUSED',
-  ERROR = 'ERROR',
-  TERMINATING = 'TERMINATING',
+  ERROR = 'ERROR'
 }
+
+export enum AppFocusState {
+  HAS = 'HAS',
+  HAS_NOT = 'HAS_NOT',
+  DEAD = 'DEAD'
+}
+
+export enum TestStateKey {
+  CURRENT_UNIT_ID = 'CURRENT_UNIT_ID',
+  TESTLETS_TIMELEFT = 'TESTLETS_TIMELEFT',
+  FOCUS = 'FOCUS',
+  CONTROLLER = 'CONTROLLER'
+}
+
+export enum TestLogEntryKey {
+  LOADCOMPLETE = 'LOADCOMPLETE',
+}
+
+export interface StateReportEntry {
+  key: string; // TestStateKey | TestLogEntryKey | UnitStateKey | PlayerLogKey (unknown, up to the player)
+  timeStamp: number;
+  content: string;
+}
+
+export interface UnitStateData {
+  unitDbKey: string;
+  dataPartsAllString: string;
+  unitStateDataType: string;
+}
+
+export enum UnitPlayerState {
+  LOADING = 'LOADING',
+  RUNNING = 'RUNNING',
+  PAGE_NAVIGATING = 'PAGE_NAVIGATING',
+}
+
+export enum UnitStateKey {
+  PRESENTATION_PROGRESS = 'PRESENTATION_PROGRESS',
+  RESPONSE_PROGRESS = 'RESPONSE_PROGRESS',
+  CURRENT_PAGE_ID = 'CURRENT_PAGE_ID',
+  CURRENT_PAGE_NR = 'CURRENT_PAGE_NR',
+  PAGE_COUNT = 'PAGE_COUNT',
+  PLAYER = 'PLAYER'
+}
+
+export interface UnitLogData {
+  bookletDbId: number;
+  unitDbKey: string;
+  timestamp: number;
+  entry: string;
+}
+
+
 
 export interface UnitMenuButtonData {
   sequenceId: number;
@@ -71,38 +119,10 @@ export interface UnitMenuButtonData {
 
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++
 
-export interface UnitLogData {
-    bookletDbId: number;
-    unitDbKey: string;
-    timestamp: number;
-    entry: string;
-}
-
-export enum LastStateKey {
-    LASTUNIT = 'LASTUNIT',
-    MAXTIMELEFT = 'MAXTIMELEFT',
-    FOCUS = 'FOCUS'
-}
-
-export interface UnitStatus {
-    PRESENTATIONCOMPLETE?: string;
-    RESPONSESCOMPLETE?: string;
-    PAGE_NR?: number;
-    PAGE_NAME?: string;
-    PAGES_COUNT?: number;
-}
 
 
-export enum LogEntryKey {
-    UNITENTER = 'UNITENTER',
-    UNITTRYLEAVE = 'UNITTRYLEAVE',
-    BOOKLETLOADSTART = 'BOOKLETLOADSTART',
-    BOOKLETLOADCOMPLETE = 'BOOKLETLOADCOMPLETE',
-    PAGENAVIGATIONSTART = 'PAGENAVIGATIONSTART',
-    PAGENAVIGATIONCOMPLETE = 'PAGENAVIGATIONCOMPLETE',
-    PRESENTATIONCOMPLETE = 'PRESENTATIONCOMPLETE',
-    RESPONSESCOMPLETE = 'RESPONSESCOMPLETE'
-}
+
+
 
 export enum MaxTimerDataType {
     STARTED = 'STARTED',

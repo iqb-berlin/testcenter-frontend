@@ -40,30 +40,46 @@
                 <h1>{{booklet.metadata.label}}</h1>
 
                 <mat-icon class="unit-badge"
-                          *ngIf="hasState(testSession.testState, 'status', 'locked')"
-                          matTooltip="Testheft gesperrt"
-                    >lock
+                          *ngIf="hasState(testSession.testState, 'CONTROLLER', 'PAUSED')"
+                          matTooltip="Testheft nicht gesperrt"
+                    >pause
                 </mat-icon>
 
                 <mat-icon class="unit-badge"
-                          *ngIf="!hasState(testSession.testState, 'status', 'locked')"
-                          matTooltip="Testheft gesperrt"
-                    >lock_open
+                          *ngIf="hasState(testSession.testState, 'CONTROLLER', 'ERROR')"
+                          matTooltip="Es ist ein Fehler aufgetreten"
+                >error
                 </mat-icon>
-
-                <mat-icon class="unit-badge"
-                          *ngIf="hasState(testSession.testState, 'BOOKLETLOCKEDbyTESTEE')"
-                          matTooltip="Testheft abgeschlossen"
-                    >done_all
-                </mat-icon>
-
 
                 <mat-icon class="unit-badge danger"
-                          *ngIf="hasState(testSession.testState, 'FOCUS', 'LOST')"
+                          *ngIf="hasState(testSession.testState, 'FOCUS', 'HAS_NOT')"
                           matTooltip="Fenster/Tab wurde verlassen!"
-                >report_problem
+                >warning
                 </mat-icon>
 
+                <mat-icon class="unit-badge danger"
+                          *ngIf="hasState(testSession.testState, 'FOCUS', 'DEAD')"
+                          matTooltip="Fenster geschlossen!"
+                >error
+                </mat-icon>
+
+                <mat-icon class="unit-badge"
+                          *ngIf="hasState(testSession.testState, 'status', 'locked')"
+                          matTooltip="Testheft gesperrt"
+                >lock
+                </mat-icon>
+
+                <mat-icon class="unit-badge"
+                          *ngIf="hasState(testSession.testState, 'status', 'running')"
+                          matTooltip="Testheft nicht gesperrt"
+                >lock_open
+                </mat-icon>
+
+                <mat-icon class="unit-badge"
+                          *ngIf="hasState(testSession.testState, 'status', 'pending')"
+                          matTooltip="Testheft noch nicht gestartet"
+                >hourglass_empty
+                </mat-icon>
             </div>
         </ng-container>
     </ng-container>
@@ -81,7 +97,12 @@
 
             <div *ngIf="booklet.units as testlet"
                  class="units-container"
-                 [class]="hasState(testSession.testState, 'status', 'locked') ? 'locked' : ''"
+                 [class]="{
+                    locked: hasState(testSession.testState, 'status', 'locked'),
+                    paused: hasState(testSession.testState, 'CONTROLLER', 'PAUSED'),
+                    error: hasState(testSession.testState, 'CONTROLLER', 'ERROR'),
+                    pending: !hasState(testSession.testState, 'CONTROLLER')
+                 }"
                  [ngSwitch]="displayOptions.view"
                  (mouseleave)="mark()"
                  (click)="deselect($event)"
@@ -133,22 +154,22 @@
         <h2>{{unitContext.unit.label || unitContext.unit.labelShort || unitContext.unit.id}}</h2>
 
         <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.unitState, 'PRESENTATIONCOMPLETE', 'yes')"
+                  *ngIf="hasState(testSession.unitState, 'PRESENTATION_PROGRESS', 'complete')"
                   matTooltip="Vollständig betrachtet / angehört"
             >remove_red_eye
         </mat-icon>
 
         <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.unitState, 'RESPONSESCOMPLETE', 'all')"
+                  *ngIf="hasState(testSession.unitState, 'RESPONSE_PROGRESS', 'complete')"
                   matTooltip="Fertig beantwortet"
             >done_all
         </mat-icon>
 
         <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.unitState, 'PAGE_NR')"
-                  matBadge="{{this.stateString(testSession.unitState, ['PAGE_NR', 'PAGES_COUNT'], '/')}}"
+                  *ngIf="hasState(testSession.unitState, 'CURRENT_PAGE_NR')"
+                  matBadge="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_NR', 'PAGES_COUNT'], '/')}}"
                   matBadgeColor="accent"
-                  matTooltip="{{this.stateString(testSession.unitState, ['PAGE_NAME'])}}"
+                  matTooltip="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_ID'])}}"
         >description
         </mat-icon>
 

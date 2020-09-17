@@ -24,7 +24,7 @@
       </mat-card-actions>
     </mat-card>
 
-    <mat-card *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.WAITING_LOAD_COMPLETE" class="progress-bar">
+    <mat-card *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.LOADING" class="progress-bar">
       <mat-card-title>{{ tcs.rootTestlet?.title }} - bitte warten</mat-card-title>
       <mat-card-content fxLayout="column">
         <mat-progress-bar

@@ -77,11 +77,11 @@
             </div>
 
             <div class="toolbar-section">
-                <button mat-raised-button class="control" color="primary" (click)="testCommandResume()" [disabled]="!countCheckedSessions()">
+                <button mat-raised-button class="control" color="primary" (click)="testCommandResume()" [disabled]="!isResumeAllowed()">
                     <mat-icon>play_arrow</mat-icon>WEITER
                 </button>
 
-                <button mat-raised-button class="control" color="primary" (click)="testCommandPause()" [disabled]="!countCheckedSessions()">
+                <button mat-raised-button class="control" color="primary" (click)="testCommandPause()" [disabled]="!isPauseAllowed()">
                     <mat-icon>pause</mat-icon>PAUSE
                 </button>
             </div>

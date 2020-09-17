@@ -7,14 +7,6 @@
     "label": "Begrüßungstext auf der Startseite (Text nach IQB-Link)",
     "defaultvalue": "betreibt auf diesen Seiten eine Anwendung für das computerbasierte Leistungstesten von Schülerinnen und Schülern. Der Zugang zu einem Test ist nur möglich, wenn Sie von Testverantwortlichen Zugangsdaten erhalten haben. Es sind keine weiteren Seiten öffentlich verfügbar."
   },
-  "login_testRunningText": {
-    "label": "Kurznachricht, dass ein Test (Booklet) gestartet ist",
-    "defaultvalue": "Ein Testheft ist gestartet"
-  },
-  "login_testRunningTextAndClick": {
-    "label": "Nachricht, dass ein Test (Booklet) gestartet ist, mit Aufforderung zum Klicken",
-    "defaultvalue": "Es wird gerade ein Test ausgeführt. Bitte durch Klicken auf eine der beiden Schaltflächen links wählen, ob der Test fortgesetzt oder beendet werden soll!"
-  },
   "login_testEndButtonLabel": {
     "label": "Schalterbeschriftung für 'Test beenden'",
     "defaultvalue": "Test beenden"
@@ -22,10 +14,6 @@
   "booklet_warningLeaveTimerBlockTextPrompt": {
     "label": "Schalterbeschriftung für 'Zurück zum Test'",
     "defaultvalue": "Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?"
-  },
-  "login_testReturnButtonLabel": {
-    "label": "Schalterbeschriftung für 'Zurück zum Test'",
-    "defaultvalue": "Zum Test zurückkehren"
   },
   "login_bookletSelectPromptNull": {
     "label": "Nachricht für den Fall, dass Booklet(s) beendet wurden und keine weiteren zur Verfügung stehen",
@@ -95,21 +83,9 @@
     "label": "Titel für Warnung (Dialogbox) vor dem vorzeitigen Verlassen eines Abschnittes mit Timer",
     "defaultvalue": "Aufgabenabschnitt verlassen?"
   },
-  "booklet_warningLeaveTimerBlockPrompt": {
-    "label": "Warnung vor dem vorzeitigen Verlassen eines Abschnittes mit Timer",
-    "defaultvalue": "Wenn du jetzt weiterblätterst, beendest du vorzeitig die Bearbeitung dieses Aufgabenabschnitts und du kannst nicht mehr zurück."
-  },
   "booklet_tasklisttitle": {
     "label": "Titel für die Auflistung der Aufgaben (Schalter)",
     "defaultvalue": "Aufgaben"
-  },
-  "booklet_warningLeaveTestTitle": {
-    "label": "Titel für Warnung (Dialogbox) vor dem vorzeitigen Verlassen des Tests",
-    "defaultvalue": "Test verlassen?"
-  },
-  "booklet_warningLeaveTestPrompt": {
-    "label": "Warnung vor dem vorzeitigen Verlassen des Tests",
-    "defaultvalue": "Der Test ist noch nicht beendet. Möchtest Du den Test trotzdem verlassen?"
   },
   "syscheck_questionsintro": {
     "label": "Aufforderung, die Fragen (Questionnaire) zu beantworten",
@@ -122,5 +98,17 @@
   "booklet_pausedmessage": {
     "label": "Nachricht an die Testperson, wenn der Test vom System unterbrochen wurde",
     "defaultvalue": "Der Test wurde kurz angehalten."
+  },
+  "syscheck_questionsRequiredMessage": {
+    "label": "Nachricht an die Testperson, wenn einige Fragen, die als 'required' markiert sind, nicht beantwortet wurden",
+    "defaultvalue": "Bitte prüfen Sie die Eingaben (unvollständig):"
+  },
+  "syscheck_unitPrompt": {
+    "label": "Titelzeile über der Aufgabe",
+    "defaultvalue": "Bitte prüfen Sie die folgenden Aufgaben-Elemente"
+  },
+  "syscheck_intro": {
+    "label": "Text auf der ersten Seite des System-Checks",
+    "defaultvalue": "Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte Befragung oder Testung geeignet ist."
   }
 }

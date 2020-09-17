@@ -77,7 +77,7 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
         if (typeof changes['testSession'] !== 'undefined') {
             this.testSession$.next(this.testSession);
-            this.maxTimeLeft = this.parseJsonState(this.testSession.testState, 'MAXTIMELEFT');
+            this.maxTimeLeft = this.parseJsonState(this.testSession.testState, 'TESTLETS_TIMELEFT');
         }
     }
 

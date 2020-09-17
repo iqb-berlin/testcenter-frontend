@@ -4,6 +4,7 @@ import { SysCheckDataService } from '../sys-check-data.service';
 import {Component, OnInit, HostListener} from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { Subscription} from 'rxjs';
+import {CustomtextService} from "iqb-components";
 
 declare var srcDoc: any;
 
@@ -25,6 +26,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   constructor(
     private ds: SysCheckDataService,
     private bs: BackendService,
+    public cts: CustomtextService,
     private mds: MainDataService
   ) {
   }
