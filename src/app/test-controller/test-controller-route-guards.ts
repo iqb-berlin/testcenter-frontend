@@ -28,12 +28,10 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
         return false;
       } else {
         localStorage.removeItem(TestControllerComponent.localStorageTestKey);
-        localStorage.removeItem(TestControllerComponent.localStoragePausedKey);
         return true;
       }
     } else {
       localStorage.removeItem(TestControllerComponent.localStorageTestKey);
-      localStorage.removeItem(TestControllerComponent.localStoragePausedKey);
       return true;
     }
   }

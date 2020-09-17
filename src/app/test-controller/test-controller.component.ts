@@ -34,7 +34,6 @@ import {CommandService} from './command.service';
 })
 export class TestControllerComponent implements OnInit, OnDestroy {
   static localStorageTestKey = 'iqb-tc-t';
-  static localStoragePausedKey = 'iqb-tc-p';
   private errorReportingSubscription: Subscription = null;
   private testStatusSubscription: Subscription = null;
   private routingSubscription: Subscription = null;
@@ -319,29 +318,21 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         this.tcs.testStatus$.next(TestControllerState.ERROR);
       });
-      this.testStatusSubscription = this.tcs.testStatus$.subscribe(testContollerState => {
-
-        if ([TestControllerState.FINISHED, TestControllerState.INIT].indexOf(testContollerState) === -1) {
+      this.testStatusSubscription = this.tcs.testStatus$.subscribe(testControllerState => {
+        if ([TestControllerState.FINISHED, TestControllerState.INIT].indexOf(testControllerState) === -1) {
           this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
-            key: TestStateKey.CONTROLLER, timeStamp: Date.now(), content: testContollerState
+            key: TestStateKey.CONTROLLER, timeStamp: Date.now(), content: testControllerState
           }]);
         }
 
-        switch (testContollerState) {
+        switch (testControllerState) {
           case TestControllerState.ERROR:
             this.tcs.loadProgressValue = 0;
             this.tcs.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
             break;
           case TestControllerState.PAUSED:
             // TODO pause time
-            if (this.tcs.currentUnitSequenceId > 0 && this.getTestStatusFromLocalStorage() === TestControllerState.RUNNING) {
-              localStorage.setItem(TestControllerComponent.localStoragePausedKey, this.tcs.testId
-                  + '##' + this.tcs.currentUnitSequenceId.toString());
-            }
             this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE, true);
-            break;
-          case TestControllerState.RUNNING:
-            localStorage.removeItem(TestControllerComponent.localStoragePausedKey);
             break;
         }
       });
@@ -435,6 +426,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             } else {
               this.tcs.testMode = new TestMode(testData.mode);
               let navTargetUnitId = '';
+              let newTestStatus = TestControllerState.RUNNING;
               if (testData.laststate !== null) {
                 Object.keys(testData.laststate).forEach(stateKey => {
                   switch (stateKey) {
@@ -443,6 +435,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                       break;
                     case (TestStateKey.TESTLETS_TIMELEFT):
                       this.tcs.LastMaxTimerState = JSON.parse(testData.laststate[stateKey]);
+                      break;
+                    case (TestStateKey.CONTROLLER):
+                      newTestStatus = testData.laststate[stateKey];
                       break;
                   }
                 });
@@ -545,7 +540,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                         this.tcs.loadComplete = true;
                         if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
                           this.tcs.setUnitNavigationRequest(navTarget.toString());
-                          this.tcs.testStatus$.next(this.getTestStatusFromLocalStorage());
+                          this.tcs.testStatus$.next(newTestStatus);
                           if (this.tcs.testMode.saveResponses) {
                             this.addAppFocusSubscription();
                           }
@@ -555,7 +550,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
                     if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
                       this.tcs.setUnitNavigationRequest(navTarget.toString());
-                      this.tcs.testStatus$.next(this.getTestStatusFromLocalStorage());
+                      this.tcs.testStatus$.next(newTestStatus);
                       if (this.tcs.testMode.saveResponses) {
                         this.addAppFocusSubscription();
                       }
@@ -569,20 +564,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
       }); // routingSubscription
     }); // setTimeOut
-  }
-
-  private getTestStatusFromLocalStorage(): TestControllerState {
-    let myReturn = TestControllerState.RUNNING;
-    const pauseStatus = localStorage.getItem(TestControllerComponent.localStoragePausedKey);
-    if (pauseStatus) {
-      const dataSplits = pauseStatus.split('##');
-      if (dataSplits.length > 1) {
-        if (dataSplits[0] === this.tcs.testId) {
-          myReturn = TestControllerState.PAUSED;
-        }
-      }
-    }
-    return myReturn;
   }
 
   private addAppFocusSubscription() {
@@ -685,18 +666,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.testStatus$.next(TestControllerState.PAUSED);
         break;
       case 'resume':
-        let navTarget: string = UnitNavigationTarget.FIRST;
-        if (this.tcs.currentUnitSequenceId > 0) {
-          navTarget = this.tcs.currentUnitSequenceId.toString();
-        } else {
-          const pauseStatus = localStorage.getItem(TestControllerComponent.localStoragePausedKey);
-          if (pauseStatus) {
-            const dataSplits = pauseStatus.split('##');
-            if (dataSplits.length > 1) {
-              navTarget = dataSplits[1];
-            }
-          }
-        }
+        const navTarget = (this.tcs.currentUnitSequenceId > 0) ? this.tcs.currentUnitSequenceId.toString() : UnitNavigationTarget.FIRST;
         this.tcs.testStatus$.next(TestControllerState.RUNNING);
         this.tcs.setUnitNavigationRequest(navTarget, true);
         break;
