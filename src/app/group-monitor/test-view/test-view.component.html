@@ -39,16 +39,10 @@
 
                 <h1>{{booklet.metadata.label}}</h1>
 
-                <mat-icon class="unit-badge"
-                          *ngIf="hasState(testSession.testState, 'CONTROLLER', 'PAUSED')"
-                          matTooltip="Testheft nicht gesperrt"
-                    >pause
-                </mat-icon>
-
-                <mat-icon class="unit-badge"
-                          *ngIf="hasState(testSession.testState, 'CONTROLLER', 'ERROR')"
-                          matTooltip="Es ist ein Fehler aufgetreten"
-                >error
+                <mat-icon class="unit-badge danger"
+                          *ngIf="hasState(testSession.testState, 'FOCUS', 'HAS')"
+                          matTooltip="Fenster/Tab wurde verlassen!"
+                >
                 </mat-icon>
 
                 <mat-icon class="unit-badge danger"
@@ -60,6 +54,18 @@
                 <mat-icon class="unit-badge danger"
                           *ngIf="hasState(testSession.testState, 'FOCUS', 'DEAD')"
                           matTooltip="Fenster geschlossen!"
+                >error
+                </mat-icon>
+
+                <mat-icon class="unit-badge"
+                          *ngIf="hasState(testSession.testState, 'CONTROLLER', 'PAUSED')"
+                          matTooltip="Testheft pausiert"
+                >pause
+                </mat-icon>
+
+                <mat-icon class="unit-badge"
+                          *ngIf="hasState(testSession.testState, 'CONTROLLER', 'ERROR')"
+                          matTooltip="Es ist ein Fehler aufgetreten"
                 >error
                 </mat-icon>
 

@@ -138,6 +138,21 @@ mat-sidenav {
     border-bottom-left-radius: 10px;
 }
 
+.drawer-button-open {
+    top: 50%;
+    left: 320px;
+    position: fixed;
+    z-index: 10000;
+}
+
+.drawer-button-close {
+    top: 50%;
+    left: -12px;
+    color: white;
+    position: fixed;
+    z-index: 10000;
+}
+
 .emph {
     color: #b2ff59;
     font-style: italic;
