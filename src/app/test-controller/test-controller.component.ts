@@ -323,7 +323,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.testStatus$.next(TestControllerState.ERROR);
       });
       this.testStatusSubscription = this.tcs.testStatus$.subscribe(testControllerState => {
-        if ([TestControllerState.FINISHED, TestControllerState.INIT, TestControllerState.LOADING].indexOf(testControllerState) === -1) {
+        if (this.tcs.testMode.saveResponses && [TestControllerState.FINISHED, TestControllerState.INIT, TestControllerState.LOADING].indexOf(testControllerState) === -1) {
           this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
             key: TestStateKey.CONTROLLER, timeStamp: Date.now(), content: testControllerState
           }]);
