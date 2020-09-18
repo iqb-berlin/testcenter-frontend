@@ -129,6 +129,7 @@
                             <tr class="mat-sort-container">
                                 <td mat-sort-header="selected">
                                     <mat-checkbox
+                                        (click)="$event.stopPropagation()"
                                         (change)="toggleCheckAll($event)"
                                         [checked]="allSessionsChecked"
                                         (contextmenu)="invertChecked($event)"
