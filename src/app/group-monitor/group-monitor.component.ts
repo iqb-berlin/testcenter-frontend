@@ -355,7 +355,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         .length;
     const checkableSessions = this.sessions$.getValue().filter(session => session.testId && session.testId > -1);
     this.allSessionsChecked = (checkableSessions.length === this.countCheckedSessions());
-    this.sidenav.toggle(this.sessionCheckedGroupCount > 0);
     if (this.sessionCheckedGroupCount > 1) {
       this.selectedElement = null;
     }

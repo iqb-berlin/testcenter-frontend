@@ -58,8 +58,9 @@
 </mat-menu>
 
 <div class="page-body">
+
     <mat-sidenav-container>
-        <mat-sidenav #sidenav mode="side" class="toolbar" fixedInViewport="true" fixedTopGap="55">
+        <mat-sidenav #sidenav opened="true" mode="side" class="toolbar" fixedInViewport="true" fixedTopGap="55">
 
             <h2>Test-Steuerung</h2>
 
@@ -110,14 +111,7 @@
             <div class="adminbackground">
 
                 <div class="corner-menu">
-                    <button class="drawer-button"
-                            mat-icon-button
-                            (click)="sidenav.toggle()"
-                            matTooltip="Test-Steuerung {{sidenav.opened ? 'schließen' : 'öffnen'}}"
-                            matTooltipPosition="above"
-                        >
-                        <mat-icon>menu_open</mat-icon>
-                    </button>
+
                     <button class="settings-button"
                             mat-icon-button
                             [matMenuTriggerFor]="rootMenu"
@@ -167,7 +161,27 @@
 
         </mat-sidenav-content>
 
+
     </mat-sidenav-container>
 
+    <button
+            class="drawer-button-close"
+            mat-icon-button
+            (click)="sidenav.toggle()"
+            matTooltip="Test-Steuerung zeigen"
+            matTooltipPosition="right"
+    >
+        <mat-icon>chevron_right</mat-icon>
+    </button>
+
+    <button *ngIf="sidenav.opened"
+            class="drawer-button-open"
+            mat-icon-button
+            (click)="sidenav.toggle()"
+            matTooltip="Test-Steuerung verbergen"
+            matTooltipPosition="above"
+    >
+        <mat-icon>chevron_left</mat-icon>
+    </button>
 
 </div>
