@@ -79,6 +79,7 @@ export class TestControllerService {
   private unitDefinitions: {[sequenceId: number]: string} = {};
   private unitStateDataParts: {[sequenceId: number]: string} = {};
   private unitPresentationCompleteStates: {[sequenceId: number]: string} = {};
+  private unitResponseCompleteStates: {[sequenceId: number]: string} = {};
 
   private unitStateDataToSave$ = new Subject<UnitStateData>();
   public windowFocusState$ = new Subject<WindowFocusState>();
@@ -198,19 +199,24 @@ export class TestControllerService {
   public addClearedCodeTestlet(testletId: string) {
     if (this.clearCodeTestlets.indexOf(testletId) < 0) {
       this.clearCodeTestlets.push(testletId);
-      this.bs.updateTestState(this.testId, [<StateReportEntry>{
-        key: TestStateKey.TESTLETS_CLEARED_CODE, timeStamp: Date.now(), content: JSON.stringify(this.clearCodeTestlets)
-      }])
+      if (this.testMode.saveResponses) {
+        this.bs.updateTestState(this.testId, [<StateReportEntry>{
+          key: TestStateKey.TESTLETS_CLEARED_CODE, timeStamp: Date.now(), content: JSON.stringify(this.clearCodeTestlets)
+        }])
+      }
     }
   }
 
   public updateUnitStatePresentationProgress(unitDbKey: string, unitSequenceId: number, presentationProgress: string) {
+    let stateChanged = false;
     if (!this.unitPresentationCompleteStates[unitSequenceId] || this.unitPresentationCompleteStates[unitSequenceId] === 'none') {
       this.unitPresentationCompleteStates[unitSequenceId] = presentationProgress;
+      stateChanged = true;
     } else if (this.unitPresentationCompleteStates[unitSequenceId] === 'some' && presentationProgress === 'complete') {
       this.unitPresentationCompleteStates[unitSequenceId] = presentationProgress;
+      stateChanged = true;
     }
-    if (this.testMode.saveResponses) {
+    if (stateChanged && this.testMode.saveResponses) {
       this.bs.updateUnitState(this.testId, unitDbKey, [<StateReportEntry>{
         key: UnitStateKey.PRESENTATION_PROGRESS, timeStamp: Date.now(), content: presentationProgress
       }]);
@@ -219,9 +225,12 @@ export class TestControllerService {
 
   public newUnitStateResponseProgress(unitDbKey: string, unitSequenceId: number, responseProgress: string) {
     if (this.testMode.saveResponses) {
-      this.bs.updateUnitState(this.testId, unitDbKey, [<StateReportEntry>{
-        key: UnitStateKey.RESPONSE_PROGRESS, timeStamp: Date.now(), content: responseProgress
-      }]);
+      if (!this.unitResponseCompleteStates[unitSequenceId] || this.unitResponseCompleteStates[unitSequenceId] !== responseProgress) {
+        this.unitResponseCompleteStates[unitSequenceId] = responseProgress;
+        this.bs.updateUnitState(this.testId, unitDbKey, [<StateReportEntry>{
+          key: UnitStateKey.RESPONSE_PROGRESS, timeStamp: Date.now(), content: responseProgress
+        }]);
+      }
     }
   }
 

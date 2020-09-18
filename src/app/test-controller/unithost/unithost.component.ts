@@ -68,10 +68,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
                 pendingUnitDataToRestore['all'] = this.pendingUnitData.unitState;
                 this.pendingUnitData = null;
               }
-              this.bs.updateUnitState(this.tcs.testId, this.myUnitDbKey, [<StateReportEntry>{
-                key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.RUNNING
-              }]);
-
+              if (this.tcs.testMode.saveResponses) {
+                this.bs.updateUnitState(this.tcs.testId, this.myUnitDbKey, [<StateReportEntry>{
+                  key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.RUNNING
+                }])
+              }
               this.postMessageTarget = m.source as Window;
               if (typeof this.postMessageTarget !== 'undefined') {
                 this.postMessageTarget.postMessage({
@@ -167,12 +168,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
           const currentUnit = this.tcs.rootTestlet.getUnitAt(this.myUnitSequenceId);
           this.unitTitle = currentUnit.unitDef.title;
           this.myUnitDbKey = currentUnit.unitDef.alias;
-          this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
-            key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.myUnitDbKey
-          }]);
-          this.bs.updateUnitState(this.tcs.testId, this.myUnitDbKey, [<StateReportEntry>{
-            key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.LOADING
-          }]);
+          if (this.tcs.testMode.saveResponses) {
+            this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
+              key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.myUnitDbKey
+            }]);
+            this.bs.updateUnitState(this.tcs.testId, this.myUnitDbKey, [<StateReportEntry>{
+              key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.LOADING
+            }])
+          }
           this.tcs.currentUnitDbKey = this.myUnitDbKey;
           this.tcs.currentUnitTitle = this.unitTitle;
           this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
