@@ -361,13 +361,13 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   isPauseAllowed(): boolean {
-    return Object.values(this.checkedSessions)
+    return Object.values(this.checkedSessions).length && Object.values(this.checkedSessions)
         .filter(session => GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
         .length === 0;
   }
 
   isResumeAllowed() {
-    return Object.values(this.checkedSessions)
+    return Object.values(this.checkedSessions).length && Object.values(this.checkedSessions)
         .filter(session => !GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
         .length === 0;
   }
