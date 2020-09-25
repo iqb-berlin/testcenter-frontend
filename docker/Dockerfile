@@ -14,7 +14,7 @@ RUN npm install
 
 # install webdriver for browser testing
 RUN npm i --prefix=./node_modules/protractor --save webdriver-manager@latest
-RUN npx webdriver-manager update
+RUN npx webdriver-manager update --versions.chrome=`google-chrome --product-version`
 
 COPY . /app
 
