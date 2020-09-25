@@ -249,6 +249,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   testCommandResume() {
     const testIds = Object.values(this.checkedSessions)
         .filter(session => session.testId && session.testId > -1)
+        .filter(session => GroupMonitorComponent.hasState(session.testState, 'status', 'running'))
         .filter(session => GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
         .map(session => session.testId);
     this.bs.command('resume', [], testIds);
@@ -257,6 +258,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   testCommandPause() {
     const testIds = Object.values(this.checkedSessions)
         .filter(session => session.testId && session.testId > -1)
+        .filter(session => GroupMonitorComponent.hasState(session.testState, 'status', 'running'))
         .filter(session => !GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
         .map(session => session.testId);
     this.bs.command('pause', [], testIds);
@@ -361,13 +363,18 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   isPauseAllowed(): boolean {
-    return Object.values(this.checkedSessions).length && Object.values(this.checkedSessions)
+    const activeSessions = Object.values(this.checkedSessions).length && Object.values(this.checkedSessions)
+        .filter(session => GroupMonitorComponent.hasState(session.testState, 'status', 'running'));
+    return activeSessions.length && activeSessions
+        .filter(session => GroupMonitorComponent.hasState(session.testState, 'status', 'running'))
         .filter(session => GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
         .length === 0;
   }
 
   isResumeAllowed() {
-    return Object.values(this.checkedSessions).length && Object.values(this.checkedSessions)
+    const activeSessions = Object.values(this.checkedSessions)
+        .filter(session => GroupMonitorComponent.hasState(session.testState, 'status', 'running'));
+    return activeSessions.length && activeSessions
         .filter(session => !GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
         .length === 0;
   }
