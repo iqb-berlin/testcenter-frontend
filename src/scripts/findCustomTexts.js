@@ -2,6 +2,7 @@
 // listing of all used keys for customText
 
 const fs = require("fs");
+
 const definitionFilename = '../app/config/custom-texts.json';
 const startFolder = '../app';
 const mdSourceFilename = '../app/config/custom-texts.md';

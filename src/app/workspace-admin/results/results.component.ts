@@ -1,6 +1,6 @@
 import { LogData } from '../workspace.interfaces';
 import { WorkspaceDataService } from '../workspacedata.service';
-import {ConfirmDialogComponent, ConfirmDialogData} from 'iqb-components';
+import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { BackendService } from '../backend.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -10,8 +10,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
 import { ResultData, UnitResponse, ReviewData } from '../workspace.interfaces';
-import {MainDataService} from '../../maindata.service';
-
+import { MainDataService } from '../../maindata.service';
 
 @Component({
   templateUrl: './results.component.html',
@@ -242,20 +241,20 @@ export class ResultsComponent implements OnInit {
         width: '400px',
         data: <ConfirmDialogData>{
           title: 'Löschen von Gruppendaten',
-          content: prompt + 'gelöscht. Fortsetzen?',
+          content: `${prompt}gelöscht. Fortsetzen?`,
           confirmbuttonlabel: 'Gruppendaten löschen',
           showcancel: true
         }
       });
 
-      dialogRef.afterClosed().subscribe(result => {
+      dialogRef.afterClosed().subscribe((result) => {
         if (result !== false) {
           this.mds.setSpinnerOn();
           this.bs.deleteData(selectedGroups).subscribe((ok: boolean) => {
             if (ok) {
-              this.snackBar.open('Löschen erfolgreich.', 'Ok.', {duration: 3000});
+              this.snackBar.open('Löschen erfolgreich.', 'Ok.', { duration: 3000 });
             } else {
-              this.snackBar.open('Löschen nicht erfolgreich.', 'Fehler', {duration: 3000});
+              this.snackBar.open('Löschen nicht erfolgreich.', 'Fehler', { duration: 3000 });
             }
             this.tableselectionCheckbox.clear();
             this.updateTable();

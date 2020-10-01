@@ -1,11 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientModule } from '@angular/common/http';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { SyscheckComponent } from './syscheck.component';
-import {HttpClientModule} from '@angular/common/http';
-import {BackendService} from '../backend.service';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {WorkspaceDataService} from '../workspacedata.service';
+import { BackendService } from '../backend.service';
+import { WorkspaceDataService } from '../workspacedata.service';
 
 describe('Workspace-Admin: SyscheckComponent', () => {
   let component: SyscheckComponent;
@@ -13,7 +13,7 @@ describe('Workspace-Admin: SyscheckComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SyscheckComponent ],
+      declarations: [SyscheckComponent],
       imports: [
         HttpClientModule,
         MatDialogModule,
@@ -24,7 +24,7 @@ describe('Workspace-Admin: SyscheckComponent', () => {
         WorkspaceDataService
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

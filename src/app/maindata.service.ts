@@ -1,12 +1,12 @@
-import {BackendService} from './backend.service';
-import {BehaviorSubject, Subject} from 'rxjs';
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { CustomtextService } from 'iqb-components';
 import {
   AppError,
   AuthData, KeyValuePairs
 } from './app.interfaces';
-import {CustomtextService} from 'iqb-components';
-import {AppConfig} from './config/app.config';
+import { BackendService } from './backend.service';
+import { AppConfig } from './config/app.config';
 
 const localStorageAuthDataKey = 'iqb-tc-a';
 const localStorageTestConfigKey = 'iqb-tc-c';
@@ -78,11 +78,11 @@ export class MainDataService {
     this.appConfig = new AppConfig(cts);
   }
 
-  setSpinnerOn() {
+  setSpinnerOn(): void {
     this.isSpinnerOn$.next(true);
   }
 
-  setSpinnerOff() {
+  setSpinnerOff(): void {
     this.isSpinnerOn$.next(false);
   }
 

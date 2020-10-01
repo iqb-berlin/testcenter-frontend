@@ -1,9 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Observable, of } from 'rxjs';
 
 import { TestViewComponent } from './test-view.component';
-import {Observable, of} from 'rxjs';
-import {Booklet, BookletError, TestSession} from '../group-monitor.interfaces';
-import {BookletService} from '../booklet.service';
+import { Booklet, BookletError, TestSession } from '../group-monitor.interfaces';
+import { BookletService } from '../booklet.service';
 
 const exampleBooklet: Booklet = { // labels are: {global index}-{ancestor index}-{local index}
   config: undefined,
@@ -42,11 +42,9 @@ const exampleSession: TestSession = {
 };
 
 class MockBookletService {
-
   public booklets: Observable<Booklet>[] = [of(exampleBooklet)];
 
   public getBooklet(bookletName: string): Observable<Booklet|BookletError> {
-
     if (!bookletName) {
       return of({'error' : 'general'});
     }
@@ -61,7 +59,6 @@ class MockBookletService {
 
 
 describe('TestViewComponent', () => {
-
   let component: TestViewComponent;
   let fixture: ComponentFixture<TestViewComponent>;
 
@@ -87,7 +84,6 @@ describe('TestViewComponent', () => {
   });
 
   it('should create', () => {
-
     expect(component).toBeTruthy();
   });
 
@@ -135,13 +131,13 @@ describe('TestViewComponent', () => {
 
   describe('parseJsonState()', () => {
     xit('should parse an string containing a state-object', () => {
-        // TOOD implement unit-test
+      // TOOD implement unit-test
     });
   });
 
   describe('getMode()', () => {
     xit('should transform mode-string into label', () => {
-        // TOOD implement unit-test
+      // TOOD implement unit-test
     });
   });
 

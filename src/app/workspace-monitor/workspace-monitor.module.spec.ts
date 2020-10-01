@@ -1,4 +1,4 @@
-import {WorkspaceMonitorModule} from "./workspace-monitor.module";
+import { WorkspaceMonitorModule } from './workspace-monitor.module';
 
 describe('WorkspaceMonitorModule', () => {
   let workspaceMonitorModule: WorkspaceMonitorModule;

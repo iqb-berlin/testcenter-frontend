@@ -1,15 +1,7 @@
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { BackendService } from './backend.service';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NgModule} from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { WorkspaceDataService } from './workspacedata.service';
-
-import { WorkspaceRoutingModule } from './workspace-routing.module';
-import { WorkspaceComponent } from './workspace.component';
-import { FilesComponent } from './files/files.component';
-import { ResultsComponent } from './results/results.component';
-
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -27,9 +19,16 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { SyscheckComponent } from './syscheck/syscheck.component';
+
 import { IqbComponentsModule } from 'iqb-components';
-import {IqbFilesModule} from './files/iqb-files';
+import { BackendService } from './backend.service';
+import { WorkspaceDataService } from './workspacedata.service';
+import { WorkspaceRoutingModule } from './workspace-routing.module';
+import { WorkspaceComponent } from './workspace.component';
+import { FilesComponent } from './files/files.component';
+import { ResultsComponent } from './results/results.component';
+import { SyscheckComponent } from './syscheck/syscheck.component';
+import { IqbFilesModule } from './files/iqb-files';
 
 @NgModule({
   imports: [
@@ -70,7 +69,7 @@ import {IqbFilesModule} from './files/iqb-files';
   providers: [
     BackendService,
     WorkspaceDataService
-  ],
+  ]
 })
 
 export class WorkspaceModule { }

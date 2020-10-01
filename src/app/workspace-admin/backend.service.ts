@@ -1,17 +1,18 @@
-import {GetFileResponseData, CheckWorkspaceResponseData, SysCheckStatistics,
-  ReviewData, LogData, UnitResponse, ResultData} from './workspace.interfaces';
-import {Injectable, Inject} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable, of} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
-import {WorkspaceDataService} from './workspacedata.service';
-import {ApiError, WorkspaceData} from '../app.interfaces';
+import { Injectable, Inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import {
+  GetFileResponseData, CheckWorkspaceResponseData, SysCheckStatistics,
+  ReviewData, LogData, UnitResponse, ResultData
+} from './workspace.interfaces';
+import { WorkspaceDataService } from './workspacedata.service';
+import { ApiError, WorkspaceData } from '../app.interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BackendService {
-
   constructor(
     @Inject('SERVER_URL') private readonly serverUrl: string,
     private wds: WorkspaceDataService,

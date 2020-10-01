@@ -1,13 +1,13 @@
-import { MainDataService } from './maindata.service';
 import { Injectable } from '@angular/core';
+import { Router, RouterState, RouterStateSnapshot } from '@angular/router';
 import {
   HttpInterceptor, HttpRequest,
   HttpHandler, HttpEvent, HttpErrorResponse
 } from '@angular/common/http';
-import {Observable, throwError} from 'rxjs';
-import {catchError} from 'rxjs/operators';
-import {Router, RouterState, RouterStateSnapshot} from '@angular/router';
-import {ApiError} from './app.interfaces';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { MainDataService } from './maindata.service';
+import { ApiError } from './app.interfaces';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -16,7 +16,8 @@ export class AuthInterceptor implements HttpInterceptor {
     private router: Router
   ) {}
 
-  // TODO separation of concerns: split into two interceptors, one for error handling, one for auth token addition
+  // TODO separation of concerns: split into two interceptors,
+  // one for error handling, one for auth token addition
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (this.mds.isApiValid) {
       let tokenStr = '';
@@ -34,7 +35,7 @@ export class AuthInterceptor implements HttpInterceptor {
       });
 
       return next.handle(requestA).pipe(
-        catchError(e => {
+        catchError((e) => {
           const apiError = new ApiError(999);
           if (e instanceof HttpErrorResponse) { // TODO is the opposite case even possible?
             const httpError = e as HttpErrorResponse;

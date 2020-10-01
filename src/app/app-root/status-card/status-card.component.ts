@@ -3,7 +3,6 @@ import {MainDataService} from '../../maindata.service';
 import {AuthAccessKeyType, AuthFlagType} from '../../app.interfaces';
 
 @Component({
-  // tslint:disable-next-line:component-selector TODO rename component instead
   selector: 'status-card',
   templateUrl: './status-card.component.html'
 })

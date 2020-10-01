@@ -1,19 +1,23 @@
-import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {BackendService} from './backend.service';
-import {BehaviorSubject, combineLatest, Observable, Subject, Subscription} from 'rxjs';
+import {
+  Component, HostListener, OnDestroy, OnInit, ViewChild
+} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Sort } from '@angular/material/sort';
+import { MatSidenav } from '@angular/material/sidenav';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import {
+  BehaviorSubject, combineLatest, Observable, Subject, Subscription
+} from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+
+import { BackendService } from './backend.service';
 import {
   GroupData,
   TestSession,
   TestViewDisplayOptions,
-  TestViewDisplayOptionKey, Testlet, Unit, isUnit, Selected, TestSessionFilter,
+  TestViewDisplayOptionKey, Testlet, Unit, isUnit, Selected, TestSessionFilter
 } from './group-monitor.interfaces';
-import {ActivatedRoute} from '@angular/router';
-import {ConnectionStatus} from '../shared/websocket-backend.service';
-import {map, tap} from 'rxjs/operators';
-import {Sort} from '@angular/material/sort';
-import {MatSidenav} from '@angular/material/sidenav';
-import {MatCheckboxChange} from '@angular/material/checkbox';
-
+import { ConnectionStatus } from '../shared/websocket-backend.service';
 
 @Component({
   selector: 'app-group-monitor',
@@ -21,10 +25,9 @@ import {MatCheckboxChange} from '@angular/material/checkbox';
   styleUrls: ['./group-monitor.component.css']
 })
 export class GroupMonitorComponent implements OnInit, OnDestroy {
-
   constructor(
-      private route: ActivatedRoute,
-      private bs: BackendService,
+    private route: ActivatedRoute,
+    private bs: BackendService
   ) {}
 
   ownGroup$: Observable<GroupData>;
@@ -41,6 +44,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     selectionMode: 'block',
     selectionSpreading: 'booklet'
   };
+
   filterOptions: {label: string, filter: TestSessionFilter, selected: boolean}[] = [
     {
       label: 'gesperrte',
@@ -60,7 +64,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         subValue: 'RUNNING',
         not: true
       }
-    },
+    }
   ];
 
   selectedElement: Selected = {
@@ -68,6 +72,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     element: undefined,
     spreading: false
   };
+
   markedElement: Testlet|Unit|null = null;
   checkedSessions: {[sessionTestSessionId: number]: TestSession} = {};
   allSessionsChecked = false;
@@ -119,7 +124,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.connectionStatus$ = this.bs.connectionStatus$;
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
     }
@@ -146,7 +151,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   private filterSessions(sessions: TestSession[], filters: TestSessionFilter[]): TestSession[] {
-    return sessions.filter(session => this.applyFilters(session, filters));
+    return sessions.filter((session) => this.applyFilters(session, filters));
   }
 
   private applyFilters(session: TestSession, filters: TestSessionFilter[]): boolean {
@@ -175,12 +180,12 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   private updateChecked(sessions: TestSession[]): void {
     const newCheckedSessions: {[sessionFullId: number]: TestSession} = {};
     sessions
-        .forEach(session => {
-            const sessionFullId = GroupMonitorComponent.getPersonXTestId(session);
-            if (typeof this.checkedSessions[sessionFullId] !== 'undefined') {
-              newCheckedSessions[sessionFullId] = session;
-            }
-    });
+      .forEach((session) => {
+        const sessionFullId = GroupMonitorComponent.getPersonXTestId(session);
+        if (typeof this.checkedSessions[sessionFullId] !== 'undefined') {
+          newCheckedSessions[sessionFullId] = session;
+        }
+      });
     this.checkedSessions = newCheckedSessions;
   }
 
@@ -248,27 +253,27 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   testCommandResume() {
     const testIds = Object.values(this.checkedSessions)
-        .filter(session => session.testId && session.testId > -1)
-        .filter(session => GroupMonitorComponent.hasState(session.testState, 'status', 'running'))
-        .filter(session => GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
-        .map(session => session.testId);
+      .filter((session) => session.testId && session.testId > -1)
+      .filter((session) => GroupMonitorComponent.hasState(session.testState, 'status', 'running'))
+      .filter((session) => GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
+      .map((session) => session.testId);
     this.bs.command('resume', [], testIds);
   }
 
   testCommandPause() {
     const testIds = Object.values(this.checkedSessions)
-        .filter(session => session.testId && session.testId > -1)
-        .filter(session => GroupMonitorComponent.hasState(session.testState, 'status', 'running'))
-        .filter(session => !GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
-        .map(session => session.testId);
+      .filter((session) => session.testId && session.testId > -1)
+      .filter((session) => GroupMonitorComponent.hasState(session.testState, 'status', 'running'))
+      .filter((session) => !GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
+      .map((session) => session.testId);
     this.bs.command('pause', [], testIds);
   }
 
   testCommandGoto() {
     if ((this.sessionCheckedGroupCount === 1) && (Object.keys(this.checkedSessions).length > 0)) {
       const testIds = Object.values(this.checkedSessions)
-          .filter(session => session.testId && session.testId > -1)
-          .map(session => session.testId);
+        .filter((session) => session.testId && session.testId > -1)
+        .map((session) => session.testId);
       this.bs.command('goto', ['id', GroupMonitorComponent.getFirstUnit(this.selectedElement.element).id], testIds);
     }
   }
@@ -318,8 +323,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   invertChecked(event: Event): boolean {
     event.preventDefault();
     const unChecked = this.sessions$.getValue()
-        .filter(session => session.testId && session.testId > -1)
-        .filter(session => !this.isChecked(session));
+      .filter((session) => session.testId && session.testId > -1)
+      .filter((session) => !this.isChecked(session));
     this.replaceCheckedSessions(unChecked);
     return false;
   }
@@ -345,16 +350,16 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   private replaceCheckedSessions(sessionsToCheck: TestSession[]) {
     const newCheckedSessions = {};
     sessionsToCheck
-        .forEach(session => newCheckedSessions[GroupMonitorComponent.getPersonXTestId(session)] = session);
+      .forEach((session) => newCheckedSessions[GroupMonitorComponent.getPersonXTestId(session)] = session);
     this.checkedSessions = newCheckedSessions;
     this.onCheckedChanged();
   }
 
   private onCheckedChanged() {
     this.sessionCheckedGroupCount = Object.values(this.checkedSessions)
-        .map(session => session.bookletName)
-        .filter((value, index, self) => self.indexOf(value) === index)
-        .length;
+      .map((session) => session.bookletName)
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .length;
     const checkableSessions = this.sessions$.getValue().filter(session => session.testId && session.testId > -1);
     this.allSessionsChecked = (checkableSessions.length === this.countCheckedSessions());
     if (this.sessionCheckedGroupCount > 1) {
@@ -364,7 +369,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   isPauseAllowed(): boolean {
     const activeSessions = Object.values(this.checkedSessions).length && Object.values(this.checkedSessions)
-        .filter(session => GroupMonitorComponent.hasState(session.testState, 'status', 'running'));
+      .filter((session) => GroupMonitorComponent.hasState(session.testState, 'status', 'running'));
     return activeSessions.length && activeSessions
         .filter(session => GroupMonitorComponent.hasState(session.testState, 'status', 'running'))
         .filter(session => GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
@@ -373,9 +378,9 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   isResumeAllowed() {
     const activeSessions = Object.values(this.checkedSessions)
-        .filter(session => GroupMonitorComponent.hasState(session.testState, 'status', 'running'));
+      .filter((session) => GroupMonitorComponent.hasState(session.testState, 'status', 'running'));
     return activeSessions.length && activeSessions
-        .filter(session => !GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
-        .length === 0;
+      .filter((session) => !GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
+      .length === 0;
   }
 }

@@ -1,4 +1,4 @@
-import {WorkspaceModule} from "./workspace.module";
+import { WorkspaceModule } from './workspace.module';
 
 describe('WorkspaceModule', () => {
   let workspaceModule: WorkspaceModule;

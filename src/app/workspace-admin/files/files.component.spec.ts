@@ -1,12 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientModule } from '@angular/common/http';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { FilesComponent } from './files.component';
-import {HttpClientModule} from '@angular/common/http';
-import {BackendService} from '../backend.service';
-import {WorkspaceDataService} from '../workspacedata.service';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {MainDataService} from '../../maindata.service';
+import { BackendService } from '../backend.service';
+import { WorkspaceDataService } from '../workspacedata.service';
+import { MainDataService } from '../../maindata.service';
 
 describe('FilesComponent', () => {
   let component: FilesComponent;
@@ -14,7 +14,7 @@ describe('FilesComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FilesComponent ],
+      declarations: [FilesComponent],
       imports: [
         HttpClientModule,
         MatDialogModule,
@@ -26,7 +26,7 @@ describe('FilesComponent', () => {
         MainDataService
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

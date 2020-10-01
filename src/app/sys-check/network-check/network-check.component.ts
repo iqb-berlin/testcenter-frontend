@@ -40,7 +40,6 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
   };
   private humanReadableMilliseconds = (milliseconds: number): string => (milliseconds / 1000).toString() + ' sec';
 
-  // tslint:disable-next-line:member-ordering
   private static calculateAverageSpeedBytePerSecond(testResults: Array<NetworkRequestTestResult>): number {
     return testResults.reduce((sum, result) => sum + (result.size / (result.duration / 1000)), 0) / testResults.length;
   }

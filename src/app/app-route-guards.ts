@@ -1,9 +1,9 @@
-import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
-import {MainDataService} from './maindata.service';
-import {Observable} from 'rxjs';
-import {AuthAccessKeyType, AuthData, AuthFlagType} from './app.interfaces';
-import {BackendService} from './backend.service';
+import { Injectable } from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { MainDataService } from './maindata.service';
+import { Observable } from 'rxjs';
+import { AuthAccessKeyType, AuthData, AuthFlagType } from './app.interfaces';
+import { BackendService } from './backend.service';
 
 @Injectable()
 export class RouteDispatcherActivateGuard implements CanActivate {

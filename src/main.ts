@@ -1,4 +1,4 @@
-import {enableProdMode, StaticProvider} from '@angular/core';
+import { enableProdMode, StaticProvider } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
@@ -34,7 +34,7 @@ platformBrowserDynamic(<StaticProvider[]>[
     provide: 'VERONA_API_VERSION_SUPPORTED',
     useValue: environment.veronaApiVersionSupported
   },
-{
+  {
     provide: 'REPOSITORY_URL',
     useValue: repository.url
   },
@@ -43,4 +43,4 @@ platformBrowserDynamic(<StaticProvider[]>[
     useValue: environment.production
   }
 ]).bootstrapModule(AppModule)
-  .catch(err => console.log(err));
+  .catch((err) => console.log(err));

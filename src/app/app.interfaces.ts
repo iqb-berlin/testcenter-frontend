@@ -55,7 +55,9 @@ export interface AppError {
 
 export class ApiError {
   code: number;
+
   info: string;
+
   constructor(code: number, info = '') {
     this.code = code;
     this.info = info;

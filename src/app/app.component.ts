@@ -1,26 +1,29 @@
+import {
+  Component, Inject, OnDestroy, OnInit
+} from '@angular/core';
+import { Subscription } from 'rxjs';
+import { CustomtextService } from 'iqb-components';
 import { MainDataService } from './maindata.service';
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import { BackendService } from './backend.service';
-import {CustomtextService} from 'iqb-components';
-import {Subscription} from 'rxjs';
-import {AppError} from './app.interfaces';
+import { AppError } from './app.interfaces';
 
 @Component({
   selector: 'tc-root',
   templateUrl: './app.component.html'
 })
 
-
 export class AppComponent implements OnInit, OnDestroy {
   private appErrorSubscription: Subscription = null;
+
   showError = false;
+
   errorData: AppError;
 
-  constructor (
+  constructor(
     public mds: MainDataService,
     private bs: BackendService,
     private cts: CustomtextService,
-    @Inject('API_VERSION_EXPECTED') private readonly expectedApiVersion: string,
+    @Inject('API_VERSION_EXPECTED') private readonly expectedApiVersion: string
   ) { }
 
   private static isValidVersion(expectedVersion: string, reportedVersion: string): boolean {
@@ -53,11 +56,11 @@ export class AppComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  closeErrorBox() {
+  closeErrorBox(): void {
     this.showError = false;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     setTimeout(() => {
       this.mds.appConfig.setDefaultCustomTexts();
 
@@ -80,7 +83,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
       this.setupFocusListeners();
 
-      this.bs.getSysConfig().subscribe(sc => {
+      this.bs.getSysConfig().subscribe((sc) => {
         if (sc) {
           this.cts.addCustomTexts(sc.customTexts);
           const authData = MainDataService.getAuthData();
@@ -91,7 +94,7 @@ export class AppComponent implements OnInit, OnDestroy {
           if (!this.mds.isApiValid) {
             this.mds.appError$.next({
               label: 'Server-Problem: API-Version ungültig',
-              description: 'erwartet: ' + this.expectedApiVersion + ', gefunden: ' + sc.version,
+              description: `erwartet: ${this.expectedApiVersion}, gefunden: ${sc.version}`,
               category: 'FATAL'
             });
           }
@@ -104,7 +107,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       });
 
-      this.bs.getSysCheckInfo().subscribe(myConfigs => {
+      this.bs.getSysCheckInfo().subscribe((myConfigs) => {
         this.mds.sysCheckAvailable = !!myConfigs;
       });
     });
@@ -116,36 +119,33 @@ export class AppComponent implements OnInit, OnDestroy {
     if (typeof document.hidden !== 'undefined') { // Opera 12.10 and Firefox 18 and later support
       hidden = 'hidden';
       visibilityChange = 'visibilitychange';
-      // @ts-ignore
     } else if (typeof document['msHidden'] !== 'undefined') {
       hidden = 'msHidden';
       visibilityChange = 'msvisibilitychange';
-      // @ts-ignore
     } else if (typeof document['mozHidden'] !== 'undefined') {
       hidden = 'mozHidden';
       visibilityChange = 'mozHidden';
-      // @ts-ignore
     } else if (typeof document['webkitHidden'] !== 'undefined') {
       hidden = 'webkitHidden';
       visibilityChange = 'webkitvisibilitychange';
     }
     if (hidden && visibilityChange) {
       document.addEventListener(visibilityChange, () => {
-        this.mds.appWindowHasFocus$.next(!document[hidden])
+        this.mds.appWindowHasFocus$.next(!document[hidden]);
       }, false);
     }
     window.addEventListener('blur', () => {
-      this.mds.appWindowHasFocus$.next(document.hasFocus())
+      this.mds.appWindowHasFocus$.next(document.hasFocus());
     });
     window.addEventListener('focus', () => {
-      this.mds.appWindowHasFocus$.next(document.hasFocus())
+      this.mds.appWindowHasFocus$.next(document.hasFocus());
     });
     window.addEventListener('unload', () => {
-      this.mds.appWindowHasFocus$.next(!document[hidden])
+      this.mds.appWindowHasFocus$.next(!document[hidden]);
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.appErrorSubscription !== null) {
       this.appErrorSubscription.unsubscribe();
     }

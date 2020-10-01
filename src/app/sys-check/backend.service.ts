@@ -83,7 +83,6 @@ export class BackendService {
         if (xhr.status !== 200) {
           testResult.error = `Error ${xhr.statusText} (${xhr.status}) `;
         }
-        // tslint:disable-next-line:triple-equals
         if (xhr.response.toString().length != requestedDownloadSize) {
           testResult.error = `Error: Data package has wrong size! ${requestedDownloadSize} ` + xhr.response.toString().length;
         }
@@ -146,7 +145,6 @@ export class BackendService {
           const response = JSON.parse(xhr.response);
 
           const arrivingSize = parseFloat(response['packageReceivedSize']);
-          // tslint:disable-next-line:triple-equals
           if (arrivingSize != requestedUploadSize) {
             testResult.error = `Error: Data package has wrong size! ${requestedUploadSize} != ${arrivingSize}`;
           }
@@ -177,7 +175,6 @@ export class BackendService {
   }
 
 
-  // tslint:disable-next-line:member-ordering
   private static getMostPreciseTimestampBrowserCanProvide(): number {
     if (typeof performance !== 'undefined') {
       const timeOrigin = (typeof performance.timeOrigin !== 'undefined') ? performance.timeOrigin : performance.timing.navigationStart;
@@ -189,7 +186,6 @@ export class BackendService {
   }
 
 
-  // tslint:disable-next-line:member-ordering
   private static generateRandomContent(length: number): string {
     const base64Characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz0123456789+/';
     let randomString = '';
@@ -200,4 +196,3 @@ export class BackendService {
     return randomString;
   }
 }
-

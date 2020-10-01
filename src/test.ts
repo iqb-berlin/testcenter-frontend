@@ -6,8 +6,8 @@ import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
-import {StaticProvider} from "@angular/core";
-import {environment} from "./environments/environment";
+import { StaticProvider } from '@angular/core';
+import { environment } from './environments/environment';
 import { name, version, repository } from '../package.json';
 
 declare const require: any;

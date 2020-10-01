@@ -1,16 +1,20 @@
-import { WorkspaceDataService } from '../workspacedata.service';
-import { GetFileResponseData, CheckWorkspaceResponseData } from '../workspace.interfaces';
-import { ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType } from 'iqb-components';
+import {
+  Component, OnInit, Inject, ViewChild
+} from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {BackendService, FileDeletionReport} from '../backend.service';
-import { Component, OnInit, Inject } from '@angular/core';
-import { ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
+
 import { saveAs } from 'file-saver';
-import {MainDataService} from '../../maindata.service';
+import {
+  ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
+  MessageDialogData, MessageType
+} from 'iqb-components';
+import { WorkspaceDataService } from '../workspacedata.service';
+import { GetFileResponseData, CheckWorkspaceResponseData } from '../workspace.interfaces';
+import { BackendService, FileDeletionReport } from '../backend.service';
+import { MainDataService } from '../../maindata.service';
 
 @Component({
   templateUrl: './files.component.html',
@@ -41,7 +45,7 @@ export class FilesComponent implements OnInit {
     public snackBar: MatSnackBar
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.uploadUrl = `${this.serverUrl}workspace/${this.wds.wsId}/file`;
     setTimeout(() => {
       this.mds.setSpinnerOn();
@@ -50,7 +54,7 @@ export class FilesComponent implements OnInit {
   }
 
   checkAll(isChecked: boolean) {
-    this.serverfiles.data.forEach(element => {
+    this.serverfiles.data.forEach((element) => {
       element.isChecked = isChecked;
     });
   }
@@ -62,9 +66,9 @@ export class FilesComponent implements OnInit {
       this.checkInfos = [];
 
       const filesToDelete = [];
-      this.serverfiles.data.forEach(element => {
+      this.serverfiles.data.forEach((element) => {
         if (element.isChecked) {
-          filesToDelete.push(element.type + '/' + element.filename);
+          filesToDelete.push(`${element.type}/${element.filename}`);
         }
       });
 
@@ -79,7 +83,7 @@ export class FilesComponent implements OnInit {
           width: '400px',
           data: <ConfirmDialogData>{
             title: 'Löschen von Dateien',
-            content: prompt + ' diese gelöscht werden?',
+            content: `${prompt} diese gelöscht werden?`,
             confirmbuttonlabel: 'Löschen',
             showcancel: true
           }
@@ -114,8 +118,7 @@ export class FilesComponent implements OnInit {
     }
   }
 
-
-  updateFileList(empty = false) {
+  updateFileList(empty = false): void {
     this.checkErrors = [];
     this.checkWarnings = [];
     this.checkInfos = [];
@@ -147,7 +150,7 @@ export class FilesComponent implements OnInit {
       );
   }
 
-  checkWorkspace() {
+  checkWorkspace(): void {
     this.checkErrors = [];
     this.checkWarnings = [];
     this.checkInfos = [];

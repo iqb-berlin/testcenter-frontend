@@ -1,6 +1,7 @@
 // generates booklet-config.ts as class with all data from JSON:
 
 const fs = require("fs");
+
 const definitionFilename = '../app/config/booklet-config.json';
 const targetTsFilename = '../app/config/booklet-config.ts';
 const mdSourceFilename = '../app/config/booklet-config.md';
