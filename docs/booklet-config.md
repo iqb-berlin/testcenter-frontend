@@ -42,11 +42,24 @@ Ladeverhalten beim Start
   * "LAZY" (default): Start sobald wie möglich, Laden im Hintergrund fortsetzen
   * "EAGER": Testheft erst dann starten, wenn alle Inhalte geladen sind
 
-#### `log_mode`
+#### `logPolicy`
 Erfassen und Speichern von Log-Daten
-  * "OFF": Ausgeschaltet
-  * "LEAN": Nur wichtige Meldungen
-  * "RICH" (default): Alles
+  * "disabled": Ausgeschaltet
+  * "lean": Nur wichtige Meldungen
+  * "rich" (default): Alles außer debug-informationen
+  * "debug": Auch debug-informationen
+
+#### `pagingMode`
+pagingMode (https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand)
+  * "separate" (default): pages are separated
+  * "concat-scroll": concat-scroll
+  * "concat-scroll-snap": concat-scroll-snap
+
+#### `stateReportPolicy`
+stateReportPolicy (https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand)
+  * "none": pages are separated
+  * "eager" (default): concat-scroll
+  * "on-demand": concat-scroll-snap
 
 #### `page_navibuttons`
 Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)

@@ -7,14 +7,33 @@
     },
     "defaultvalue": "LAZY"
   },
-  "log_mode": {
+  "logPolicy": {
     "label": "Erfassen und Speichern von Log-Daten",
     "options": {
-      "OFF": "Ausgeschaltet",
-      "LEAN": "Nur wichtige Meldungen",
-      "RICH": "Alles"
+      "disabled": "Ausgeschaltet",
+      "lean": "Nur wichtige Meldungen",
+      "rich": "Alles außer debug-informationen",
+      "debug": "Auch debug-informationen"
     },
-    "defaultvalue": "RICH"
+    "defaultvalue": "rich"
+  },
+  "pagingMode": {
+    "label": "pagingMode (https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand)",
+    "options": {
+      "separate": "pages are separated",
+      "concat-scroll": "concat-scroll",
+      "concat-scroll-snap": "concat-scroll-snap"
+    },
+    "defaultvalue": "separate"
+  },
+  "stateReportPolicy": {
+    "label": "stateReportPolicy (https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand)",
+    "options": {
+      "none": "pages are separated",
+      "eager": "concat-scroll",
+      "on-demand": "concat-scroll-snap"
+    },
+    "defaultvalue": "eager"
   },
   "page_navibuttons": {
     "label": "Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)",
