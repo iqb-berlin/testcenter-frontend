@@ -49,7 +49,7 @@ export class SyscheckComponent implements OnInit {
     );
   }
 
-  isAllSelected(): void {
+  isAllSelected(): boolean {
     const numSelected = this.tableselectionCheckbox.selected.length;
     const numRows = this.resultDataSource.data.length;
     return numSelected === numRows;
