@@ -83,7 +83,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
                     dataParts: pendingUnitDataToRestore
                   },
                   playerConfig: {
-                    logPolicy: 'eager' // 'debug'
+                    logPolicy: this.tcs.bookletConfig.logPolicy,
+                    unitNumber: this.myUnitSequenceId,
+                    unitTitle: this.unitTitle,
+                    unitId: this.myUnitDbKey,
+                    unitCount: this.tcs.maxUnitSequenceId,
+                    stateReportPolicy: this.tcs.bookletConfig.stateReportPolicy,
+                    pagingMode: this.tcs.bookletConfig.pagingMode
                   }
                 }, '*');
               }

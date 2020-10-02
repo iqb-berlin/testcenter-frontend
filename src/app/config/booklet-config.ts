@@ -3,7 +3,9 @@ export class BookletConfig {
 	// do not change anything here directly!
 
 	loading_mode: "LAZY" | "EAGER" = "LAZY";
-	log_mode: "OFF" | "LEAN" | "RICH" = "RICH";
+	logPolicy: "disabled" | "lean" | "rich" | "debug" = "rich";
+	pagingMode: "separate" | "concat-scroll" | "concat-scroll-snap" = "separate";
+	stateReportPolicy: "none" | "eager" | "on-demand" = "eager";
 	page_navibuttons: "OFF" | "MERGED" | "SEPARATE_TOP" | "SEPARATE_BOTTOM" = "SEPARATE_BOTTOM";
 	unit_navibuttons: "OFF" | "ARROWS_ONLY" | "FULL" = "FULL";
 	unit_menu: "OFF" | "ENABLED_ONLY" | "FULL" = "OFF";
@@ -16,7 +18,9 @@ export class BookletConfig {
 	public setFromKeyValuePairs(config) {
 		if (config) {
 			if (config['loading_mode']) { this.loading_mode = config['loading_mode']}
-			if (config['log_mode']) { this.log_mode = config['log_mode']}
+			if (config['logPolicy']) { this.logPolicy = config['logPolicy']}
+			if (config['pagingMode']) { this.pagingMode = config['pagingMode']}
+			if (config['stateReportPolicy']) { this.stateReportPolicy = config['stateReportPolicy']}
 			if (config['page_navibuttons']) { this.page_navibuttons = config['page_navibuttons']}
 			if (config['unit_navibuttons']) { this.unit_navibuttons = config['unit_navibuttons']}
 			if (config['unit_menu']) { this.unit_menu = config['unit_menu']}
@@ -38,8 +42,14 @@ export class BookletConfig {
 					case 'loading_mode':
 						this.loading_mode = configValue;
 						break;
-					case 'log_mode':
-						this.log_mode = configValue;
+					case 'logPolicy':
+						this.logPolicy = configValue;
+						break;
+					case 'pagingMode':
+						this.pagingMode = configValue;
+						break;
+					case 'stateReportPolicy':
+						this.stateReportPolicy = configValue;
 						break;
 					case 'page_navibuttons':
 						this.page_navibuttons = configValue;
