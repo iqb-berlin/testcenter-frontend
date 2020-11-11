@@ -1,4 +1,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Travis (.com)](https://img.shields.io/travis/com/iqb-berlin/testcenter-frontend?style=flat-square)](https://travis-ci.com/iqb-berlin/verona-player-testbed)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/iqb-berlin/testcenter-frontend?style=flat-square)
 
 # Testcenter Frontend
 
