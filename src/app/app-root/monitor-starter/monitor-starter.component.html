@@ -4,7 +4,7 @@
     <mat-card-content>
       <div fxLayoutGap="10px" fxLayout="column">
         <p *ngIf="accessObjects.length === 0">
-          Sie sind angemeldet. Aktuell sind keine Bereiche zur Überwachung für Sie freigegeben.
+          Sie sind angemeldet. Aktuell sind keine Testgruppen zur Überwachung für Sie freigegeben.
         </p>
         <button mat-raised-button color="primary" (click)="buttonGotoMonitor(accessObject)"
                 *ngFor="let accessObject of accessObjects">

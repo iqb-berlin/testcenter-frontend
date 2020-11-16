@@ -1,11 +1,13 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AccessObject, AuthAccessKeyType, AuthData, WorkspaceData} from '../../app.interfaces';
-import {from, Subscription} from 'rxjs';
-import {Router} from '@angular/router';
-import {BackendService} from '../../backend.service';
-import {MainDataService} from '../../maindata.service';
-import {concatMap} from 'rxjs/operators';
-import {CustomtextService} from 'iqb-components';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { from, Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { concatMap } from 'rxjs/operators';
+import { CustomtextService } from 'iqb-components';
+import { BackendService } from '../../backend.service';
+import { MainDataService } from '../../maindata.service';
+import {
+  AccessObject, AuthAccessKeyType, AuthData, WorkspaceData
+} from '../../app.interfaces';
 
 @Component({
   templateUrl: './monitor-starter.component.html',
@@ -16,7 +18,7 @@ import {CustomtextService} from 'iqb-components';
 })
 export class MonitorStarterComponent implements OnInit, OnDestroy {
   accessObjects: (WorkspaceData|AccessObject)[] = [];
-  isWorkspaceMonitor = false;
+
   private getWorkspaceDataSubscription: Subscription = null;
 
   constructor(
@@ -26,10 +28,10 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
     private mds: MainDataService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     setTimeout(() => {
       this.mds.setSpinnerOn();
-      this.bs.getSessionData().subscribe(authDataUntyped => {
+      this.bs.getSessionData().subscribe((authDataUntyped) => {
         if (typeof authDataUntyped !== 'number') {
           const authData = authDataUntyped as AuthData;
           if (authData) {
@@ -38,23 +40,24 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
               let scopeIdList = [];
               if (authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
                 scopeIdList = authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR];
-                this.isWorkspaceMonitor = false;
-              } else if (authData.access[AuthAccessKeyType.WORKSPACE_MONITOR]) {
-                scopeIdList = authData.access[AuthAccessKeyType.WORKSPACE_MONITOR];
-                this.isWorkspaceMonitor = true;
               }
               if (this.getWorkspaceDataSubscription !== null) {
                 this.getWorkspaceDataSubscription.unsubscribe();
               }
               this.getWorkspaceDataSubscription = from(scopeIdList).pipe(
-                concatMap(monitorScopeId => {
+                concatMap((monitorScopeId) => {
+                  let functionReturn = null;
                   if (authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
-                    return this.bs.getGroupData(monitorScopeId);
-                  } else if (authData.access[AuthAccessKeyType.WORKSPACE_MONITOR]) {
-                    return this.bs.getWorkspaceData(monitorScopeId);
+                    functionReturn = this.bs.getGroupData(monitorScopeId);
                   }
-                })).subscribe(
-                wsData => this.accessObjects.push(wsData),
+                  return functionReturn;
+                })
+              ).subscribe(
+                (wsData: AccessObject) => {
+                  if (wsData) {
+                    this.accessObjects.push(wsData);
+                  }
+                },
                 () => this.mds.setSpinnerOff(),
                 () => this.mds.setSpinnerOff()
               );
@@ -74,21 +77,16 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
     });
   }
 
-  buttonGotoMonitor(accessObject: AccessObject) {
-
-    if (this.isWorkspaceMonitor) {
-      this.router.navigateByUrl('/wm/' + accessObject.id.toString());
-    } else {
-      this.router.navigateByUrl('/gm/' + accessObject.id.toString());
-    }
+  buttonGotoMonitor(accessObject: AccessObject): void {
+    this.router.navigateByUrl(`/gm/${accessObject.id.toString()}`);
   }
 
-  resetLogin() {
+  resetLogin(): void {
     this.mds.setAuthData();
     this.router.navigate(['/']);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.getWorkspaceDataSubscription !== null) {
       this.getWorkspaceDataSubscription.unsubscribe();
     }
