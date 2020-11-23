@@ -208,12 +208,8 @@ export class GroupMonitorActivateGuard implements CanActivate {
   canActivate(): boolean {
     const authData = MainDataService.getAuthData();
 
-    if (authData) {
-      if (authData.access) {
-        if (authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
+    if (authData && authData.access && authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
           return true;
-        }
-      }
     }
     this.router.navigate(['/r']);
     return false;
