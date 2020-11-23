@@ -67,7 +67,7 @@ const routes: Routes = [
       {
         path: 'monitor-starter',
         component: MonitorStarterComponent,
-        canActivate: [GroupMonitorActivateGuard] // TODO, also: workspaceMonitor
+        canActivate: [GroupMonitorActivateGuard]
       }
     ]
   },
@@ -88,10 +88,6 @@ const routes: Routes = [
     path: 'superadmin',
     loadChildren: () => import('./superadmin/superadmin.module').then((m) => m.SuperadminModule),
     canActivate: [SuperAdminComponentActivateGuard]
-  },
-  {
-    path: 'wm',
-    loadChildren: () => import('./workspace-monitor/workspace-monitor.module').then((m) => m.WorkspaceMonitorModule)
   },
   {
     path: 'gm',
