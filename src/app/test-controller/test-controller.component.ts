@@ -302,11 +302,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       );
   }
 
-  @HostListener('window:beforeunload', ['$event'])
-  onBeforeUnload(): void {
-    if (this.tcs.testMode.saveResponses) {
-      this.bs.notifyDyingTest(this.tcs.testId);
-    }
+  @HostListener('window:unload', ['$event'])
+  unloadHandler() {
+    this.bs.notifyDyingTest(this.tcs.testId);
   }
 
   ngOnInit() {
@@ -576,6 +574,20 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           }); // getTestData
         }
       }); // routingSubscription
+
+      this.cmd.connectionStatus$
+          .pipe(
+              map(status => status === 'ws-online'),
+              distinctUntilChanged()
+          )
+          .subscribe(isWsConnected => {
+              this.bs.updateTestState(this.tcs.testId, [{
+                key: TestStateKey.CONNECTION,
+                content: isWsConnected ? 'websocket' : 'polling',
+                timeStamp: Date.now()
+              }]);
+          });
+
     }); // setTimeOut
   }
 

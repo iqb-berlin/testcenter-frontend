@@ -6,8 +6,7 @@ import {
   UnitData,
   TaggedString,
   TestData,
-  TestStateKey,
-  StateReportEntry, AppFocusState
+  StateReportEntry
 } from './test-controller.interfaces';
 import {ApiError} from '../app.interfaces';
 
@@ -110,13 +109,15 @@ export class BackendService {
       .subscribe({error: (err: ApiError) => console.error(`addUnitLog Api-Error: ${err.code} ${err.info}`)});
   }
 
-  notifyDyingTest(testId: string) {
-    // TODO add auth or change end point
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon(this.serverUrl + `test/${testId}/state`, JSON.stringify(<StateReportEntry>{
-        key: TestStateKey.FOCUS, timeStamp: Date.now(), content: AppFocusState.DEAD
-      }));
-    }
+  notifyDyingTest(testId: string): void {
+      if (navigator.sendBeacon) {
+          navigator.sendBeacon(this.serverUrl + `test/${testId}/connection-lost`);
+      } else {
+          fetch(this.serverUrl + `test/${testId}/connection-lost`, {
+              keepalive: true,
+              method: 'POST'
+          });
+      }
   }
 
   updateUnitStateData(testId: string, timeStamp: number, unitName: string, dataPartsAllString: string, unitStateDataType: string)
