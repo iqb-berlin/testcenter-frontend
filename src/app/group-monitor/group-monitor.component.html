@@ -40,6 +40,10 @@
         <mat-icon *ngIf="displayOptions.groupColumn === 'show'">check</mat-icon>
         <span>Gruppe</span>
     </button>
+    <button mat-menu-item (click)="setDisplayOption('bookletColumn', (displayOptions.bookletColumn === 'hide') ? 'show' : 'hide')">
+        <mat-icon *ngIf="displayOptions.bookletColumn === 'show'">check</mat-icon>
+        <span>Testheft</span>
+    </button>
 </mat-menu>
 
 <mat-menu #activity="matMenu">
@@ -137,7 +141,7 @@
                                 </td>
                                 <td mat-sort-header="personLabel">Benutzer</td>
                                 <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">Gruppe</td>
-                                <td mat-sort-header="bookletName">Testheft</td>
+                                <td mat-sort-header="bookletName" *ngIf="displayOptions.bookletColumn === 'show'">Testheft</td>
                                 <td mat-sort-header="timestamp">Aktivität</td>
                             </tr>
                         </thead>
@@ -150,7 +154,6 @@
                                 (markedElement$)="markElement($event)"
                                 [selected]="selectedElement"
                                 (selectedElement$)="selectElement($event)"
-                                (bookletId$)="adjustViewModeOnBookletLoad($event)"
                                 [checked]="isChecked(session)"
                                 (checked$)="toggleChecked($event, session)"
                             >

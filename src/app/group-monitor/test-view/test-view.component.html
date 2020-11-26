@@ -12,7 +12,6 @@
 <td (click)="deselect($event)" (contextmenu)="deselectForce($event)">
     <div class="vertical-align-middle">
         <ng-container *ngIf="getMode(testSession.mode) as mode" >
-
             <mat-icon *ngIf="mode.modeId === 'HOT'">face</mat-icon>
             <mat-icon *ngIf="mode.modeId === 'REVIEW'">rate_review</mat-icon>
             <mat-icon *ngIf="mode.modeId === 'TRIAL'">remove_red_eye</mat-icon>
@@ -22,6 +21,53 @@
             <mat-icon *ngIf="mode.modeId === 'monitor-study'">supervisor_account</mat-icon>
         </ng-container>
         <h1>{{testSession.personLabel}}</h1>
+        <mat-icon class="unit-badge danger"
+                  *ngIf="hasState(testSession.testState, 'FOCUS', 'HAS')"
+                  matTooltip="Fenster/Tab wurde verlassen!"
+        >
+        </mat-icon>
+
+        <mat-icon class="unit-badge danger"
+                  *ngIf="hasState(testSession.testState, 'FOCUS', 'HAS_NOT')"
+                  matTooltip="Fenster/Tab wurde verlassen!"
+        >warning
+        </mat-icon>
+
+        <mat-icon class="unit-badge danger"
+                  *ngIf="hasState(testSession.testState, 'FOCUS', 'DEAD')"
+                  matTooltip="Fenster geschlossen!"
+        >error
+        </mat-icon>
+
+        <mat-icon class="unit-badge"
+                  *ngIf="hasState(testSession.testState, 'CONTROLLER', 'PAUSED')"
+                  matTooltip="Testheft pausiert"
+        >pause
+        </mat-icon>
+
+        <mat-icon class="unit-badge"
+                  *ngIf="hasState(testSession.testState, 'CONTROLLER', 'ERROR')"
+                  matTooltip="Es ist ein Fehler aufgetreten"
+        >error
+        </mat-icon>
+
+        <mat-icon class="unit-badge"
+                  *ngIf="hasState(testSession.testState, 'status', 'locked')"
+                  matTooltip="Testheft gesperrt"
+        >lock
+        </mat-icon>
+
+        <mat-icon class="unit-badge"
+                  *ngIf="hasState(testSession.testState, 'status', 'running')"
+                  matTooltip="Testheft nicht gesperrt"
+        >lock_open
+        </mat-icon>
+
+        <mat-icon class="unit-badge"
+                  *ngIf="hasState(testSession.testState, 'status', 'pending')"
+                  matTooltip="Testheft noch nicht gestartet"
+        >hourglass_empty
+        </mat-icon>
     </div>
 </td>
 
@@ -30,62 +76,12 @@
     <div class="vertical-align-middle">{{testSession.groupLabel}}</div>
 </td>
 
-<td class="booklet" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+<td class="booklet" *ngIf="displayOptions.bookletColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
 
     <ng-container *ngIf="(booklet$ | async) as booklet">
         <ng-container *ngIf="isBooklet(booklet); else: noBooklet">
-
             <div class="vertical-align-middle">
-
                 <h1>{{booklet.metadata.label}}</h1>
-
-                <mat-icon class="unit-badge danger"
-                          *ngIf="hasState(testSession.testState, 'FOCUS', 'HAS')"
-                          matTooltip="Fenster/Tab wurde verlassen!"
-                >
-                </mat-icon>
-
-                <mat-icon class="unit-badge danger"
-                          *ngIf="hasState(testSession.testState, 'FOCUS', 'HAS_NOT')"
-                          matTooltip="Fenster/Tab wurde verlassen!"
-                >warning
-                </mat-icon>
-
-                <mat-icon class="unit-badge danger"
-                          *ngIf="hasState(testSession.testState, 'FOCUS', 'DEAD')"
-                          matTooltip="Fenster geschlossen!"
-                >error
-                </mat-icon>
-
-                <mat-icon class="unit-badge"
-                          *ngIf="hasState(testSession.testState, 'CONTROLLER', 'PAUSED')"
-                          matTooltip="Testheft pausiert"
-                >pause
-                </mat-icon>
-
-                <mat-icon class="unit-badge"
-                          *ngIf="hasState(testSession.testState, 'CONTROLLER', 'ERROR')"
-                          matTooltip="Es ist ein Fehler aufgetreten"
-                >error
-                </mat-icon>
-
-                <mat-icon class="unit-badge"
-                          *ngIf="hasState(testSession.testState, 'status', 'locked')"
-                          matTooltip="Testheft gesperrt"
-                >lock
-                </mat-icon>
-
-                <mat-icon class="unit-badge"
-                          *ngIf="hasState(testSession.testState, 'status', 'running')"
-                          matTooltip="Testheft nicht gesperrt"
-                >lock_open
-                </mat-icon>
-
-                <mat-icon class="unit-badge"
-                          *ngIf="hasState(testSession.testState, 'status', 'pending')"
-                          matTooltip="Testheft noch nicht gestartet"
-                >hourglass_empty
-                </mat-icon>
             </div>
         </ng-container>
     </ng-container>

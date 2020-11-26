@@ -41,6 +41,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   displayOptions: TestViewDisplayOptions = {
     view: 'full',
     groupColumn: 'hide',
+    bookletColumn: 'hide',
     selectionMode: 'block',
     selectionSpreading: 'booklet'
   };
@@ -78,8 +79,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   allSessionsChecked = false;
   sessionCheckedGroupCount: number;
 
-  private bookletIdsViewIsAdjustedFor: string[] = [];
-  private lastWindowSize = Infinity;
   private routingSubscription: Subscription = null;
 
   @ViewChild('sidenav', {static: true}) sidenav: MatSidenav;
@@ -131,16 +130,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.bs.cutConnection();
   }
 
-  @HostListener('window:resize', ['$event'])
-  adjustViewModeOnWindowResize(): void {
-    if (this.lastWindowSize > window.innerWidth) {
-      this.shrinkViewIfNecessary();
-    } else {
-      this.growViewIfPossible();
-    }
-    this.lastWindowSize = window.innerWidth;
-  }
-
   switchFilter(indexInFilterOptions: number) {
     this.filterOptions[indexInFilterOptions].selected = !this.filterOptions[indexInFilterOptions].selected;
     this.filters$.next(
@@ -187,37 +176,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         }
       });
     this.checkedSessions = newCheckedSessions;
-  }
-
-  adjustViewModeOnBookletLoad(bookletId: string): void {
-    if (bookletId && this.bookletIdsViewIsAdjustedFor.indexOf(bookletId) === -1) {
-      this.bookletIdsViewIsAdjustedFor.push(bookletId);
-      this.growViewIfPossible();
-    }
-  }
-
-  private growViewIfPossible() {
-    if (this.getOverflow() <= 0) {
-      this.displayOptions.view = 'full';
-      setTimeout(() => this.shrinkViewIfNecessary(), 15);
-    }
-  }
-
-  private shrinkViewIfNecessary(): void {
-    if (this.getOverflow() > 0) {
-      if (this.displayOptions.view === 'full') {
-        this.displayOptions.view = 'medium';
-        setTimeout(() => this.shrinkViewIfNecessary(), 15);
-      } else if (this.displayOptions.view === 'medium') {
-        this.displayOptions.view = 'small';
-      }
-    }
-  }
-
-  private getOverflow = (): number => {
-    const backgroundElement = document.querySelector('.adminbackground');
-    const testViewTableElement = document.querySelector('.test-view-table');
-    return testViewTableElement.scrollWidth - (backgroundElement.clientWidth - 50); // 50 = adminbackground's padding *2
   }
 
   trackSession(index: number, session: TestSession): number {

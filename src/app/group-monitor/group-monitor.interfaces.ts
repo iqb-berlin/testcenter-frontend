@@ -80,6 +80,7 @@ export interface TestSessionFilter {
 export interface TestViewDisplayOptions {
   view: 'full' | 'medium' | 'small';
   groupColumn: 'show' | 'hide';
+  bookletColumn: 'show' | 'hide';
   selectionMode: 'block' | 'unit';
   selectionSpreading: 'booklet' | 'all';
 }
