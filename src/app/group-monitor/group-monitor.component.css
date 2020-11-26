@@ -15,6 +15,7 @@
     padding: 15px 25px 25px 25px;
     height: 100%;
     overflow: auto;
+    scroll-behavior: smooth;
 }
 
 .page-header {
@@ -143,9 +144,39 @@ mat-sidenav {
     position: fixed;
     right: 30px;
     top: 70px;
-    background: white;
     z-index: 10000;
     border-bottom-left-radius: 10px;
+}
+
+.scroll-hint {
+    position: fixed;
+    right: 30px;
+    bottom: 25px;
+    background: rgba(0,199,0,1);
+    box-shadow: 0 0 10px 0 rgba(0,0,0,0.75);
+    border-radius: 20Px;
+    height: 40px;
+    width: 40px;
+    line-height: 20px;
+    text-align: center;
+    z-index: 9000;
+    color: white;
+}
+
+.hide-scroll-hint .scroll-hint {
+    animation: fade 0.3s reverse forwards;
+}
+
+@keyframes fade {
+    0% {
+        opacity: 0;
+        transform: scale(0)
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1)
+    }
 }
 
 .drawer-button-open {

@@ -112,10 +112,9 @@
 
         <mat-sidenav-content>
 
-            <div class="adminbackground">
+            <div #adminbackground class="adminbackground" (scroll)="updateScrollHint()">
 
                 <div class="corner-menu">
-
                     <button class="settings-button"
                             mat-icon-button
                             [matMenuTriggerFor]="rootMenu"
@@ -123,6 +122,16 @@
                             matTooltipPosition="above"
                         >
                         <mat-icon>settings</mat-icon>
+                    </button>
+                </div>
+
+                <div class="scroll-hint" *ngIf="isScrollable">
+                    <button mat-icon-button
+                            (click)="scrollDown()"
+                            matTooltip="Ganz nach unten"
+                            matTooltipPosition="above"
+                    >
+                        <mat-icon>keyboard_arrow_down</mat-icon>
                     </button>
                 </div>
 

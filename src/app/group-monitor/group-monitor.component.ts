@@ -1,5 +1,5 @@
 import {
-  Component, HostListener, OnDestroy, OnInit, ViewChild
+  Component, ElementRef, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Sort } from '@angular/material/sort';
@@ -78,6 +78,9 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   checkedSessions: {[sessionTestSessionId: number]: TestSession} = {};
   allSessionsChecked = false;
   sessionCheckedGroupCount: number;
+
+  isScrollable = false;
+  @ViewChild('adminbackground') mainElem:ElementRef;
 
   private routingSubscription: Subscription = null;
 
@@ -340,5 +343,19 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     return activeSessions.length && activeSessions
       .filter((session) => !GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
       .length === 0;
+  }
+
+  ngAfterViewChecked() {
+    this.isScrollable = this.mainElem.nativeElement.clientHeight < this.mainElem.nativeElement.scrollHeight;
+  }
+
+  scrollDown() {
+    this.mainElem.nativeElement.scrollTo(0, this.mainElem.nativeElement.scrollHeight);
+  }
+
+  updateScrollHint() {
+    const elem = this.mainElem.nativeElement;
+    const reachedBottom = (elem.scrollTop + elem.clientHeight === elem.scrollHeight);
+    elem.classList[reachedBottom ? 'add' : 'remove']('hide-scroll-hint');
   }
 }
