@@ -14,6 +14,12 @@ import {
 } from '../group-monitor.interfaces';
 import { TestMode } from '../../config/test-mode';
 
+interface IconData {
+  icon: string,
+  tooltip: string,
+  class?: string
+}
+
 @Component({
   selector: 'tc-test-view',
   templateUrl: './test-view.component.html',
@@ -97,6 +103,33 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
 
   hasState(state: object, key: string, value: any = null): boolean {
     return ((typeof state[key] !== 'undefined') && ((value !== null) ? (state[key] === value) : true));
+  }
+
+  getSuperStateIcon(state: object): IconData {
+    if (this.hasState(state, 'status', 'pending')) {
+      return {tooltip: 'Test noch nicht gestartet', icon: 'hourglass_empty'}
+    }
+    if (this.hasState(state, 'status', 'locked')) {
+      return {tooltip: 'Test gesperrt', icon: 'lock_closed'}
+    }
+    if (this.hasState(state, 'CONTROLLER', 'error')) {
+      return {tooltip: 'Es ist ein Fehler aufgetreten!', icon: 'error', class: 'danger'}
+    }
+    if (this.hasState(state, 'CONNECTION', 'LOST')) {
+      return {tooltip: 'Seite wurde verlassen oder Browserfenster geschlossen!', icon: 'error', class: 'danger'}
+    }
+    if (this.hasState(state, 'CONTROLLER', 'PAUSED')) {
+      return {tooltip: 'Test pausiert', icon: 'pause'}
+    }
+    if (this.hasState(state, 'FOCUS', 'HAS_NOT')) {
+      return {tooltip: 'Fenster/Tab wurde verlassen!', icon: 'warning', class: 'danger'}
+    }
+    if (this.hasState(state, 'CONNECTION', 'WEBSOCKET')) {
+      return {tooltip: 'Test läuft, Verbindung ist live', icon: 'play_circle_outline', class: 'success'}
+    }
+    if (this.hasState(state, 'CONNECTION', 'POLLING')) {
+      return {tooltip: 'Test läuft', icon: 'play_circle_filled', class: 'success'}
+    }
   }
 
   stateString(state: object, keys: string[], glue: string = ''): string {

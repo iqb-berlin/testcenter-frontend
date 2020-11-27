@@ -163,3 +163,6 @@ mat-icon + h1 {
 .unit-badge.danger {
     color: red;
 }
+.unit-badge.success {
+    color: #b2ff59
+}

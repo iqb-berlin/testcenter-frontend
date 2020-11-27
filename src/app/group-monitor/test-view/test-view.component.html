@@ -21,68 +21,16 @@
             <mat-icon *ngIf="mode.modeId === 'monitor-study'">supervisor_account</mat-icon>
         </ng-container>
         <h1>{{testSession.personLabel}}</h1>
-        <mat-icon class="unit-badge danger"
-                  *ngIf="hasState(testSession.testState, 'FOCUS', 'HAS')"
-                  matTooltip="Fenster/Tab wurde verlassen!"
-        >
-        </mat-icon>
-
-        <mat-icon class="unit-badge danger"
-                  *ngIf="hasState(testSession.testState, 'FOCUS', 'HAS_NOT')"
-                  matTooltip="Fenster/Tab wurde verlassen!"
-        >warning
-        </mat-icon>
-
-        <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.testState, 'CONTROLLER', 'PAUSED')"
-                  matTooltip="Testheft pausiert"
-        >pause
-        </mat-icon>
-
-        <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.testState, 'CONTROLLER', 'ERROR')"
-                  matTooltip="Es ist ein Fehler aufgetreten"
-        >error
-        </mat-icon>
-
-        <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.testState, 'status', 'locked')"
-                  matTooltip="Testheft gesperrt"
-        >lock
-        </mat-icon>
-
-        <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.testState, 'status', 'running')"
-                  matTooltip="Testheft nicht gesperrt"
-        >lock_open
-        </mat-icon>
-
-        <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.testState, 'status', 'pending')"
-                  matTooltip="Testheft noch nicht gestartet"
-        >hourglass_empty
-        </mat-icon>
-
-        <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.testState, 'CONNECTION', 'WEBSOCKET')"
-                  matTooltip="Live-Verbindung"
-        >wifi_tethering
-        </mat-icon>
-
-        <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.testState, 'CONNECTION', 'POLLING')"
-                  matTooltip="Polling-Verbindung"
-        >loop
-        </mat-icon>
-
-        <mat-icon class="unit-badge danger"
-                  *ngIf="hasState(testSession.testState, 'CONNECTION', 'LOST')"
-                  matTooltip="Verbindung unbekannt: Seite wurde verlassen oder Browser geschlossen"
-        >error
-        </mat-icon>
     </div>
 </td>
 
+<td class="state-status" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+    <div class="vertical-align-middle" *ngIf="getSuperStateIcon(testSession.testState) as iconData">
+        <mat-icon class="unit-badge {{iconData?.class}}" matTooltip="{{iconData.tooltip}}">
+            {{iconData.icon}}
+        </mat-icon>
+    </div>
+</td>
 
 <td *ngIf="displayOptions.groupColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
     <div class="vertical-align-middle">{{testSession.groupLabel}}</div>
