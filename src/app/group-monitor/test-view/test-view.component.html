@@ -33,12 +33,6 @@
         >warning
         </mat-icon>
 
-        <mat-icon class="unit-badge danger"
-                  *ngIf="hasState(testSession.testState, 'FOCUS', 'DEAD')"
-                  matTooltip="Fenster geschlossen!"
-        >error
-        </mat-icon>
-
         <mat-icon class="unit-badge"
                   *ngIf="hasState(testSession.testState, 'CONTROLLER', 'PAUSED')"
                   matTooltip="Testheft pausiert"
@@ -67,6 +61,24 @@
                   *ngIf="hasState(testSession.testState, 'status', 'pending')"
                   matTooltip="Testheft noch nicht gestartet"
         >hourglass_empty
+        </mat-icon>
+
+        <mat-icon class="unit-badge"
+                  *ngIf="hasState(testSession.testState, 'CONNECTION', 'WEBSOCKET')"
+                  matTooltip="Live-Verbindung"
+        >wifi_tethering
+        </mat-icon>
+
+        <mat-icon class="unit-badge"
+                  *ngIf="hasState(testSession.testState, 'CONNECTION', 'POLLING')"
+                  matTooltip="Polling-Verbindung"
+        >loop
+        </mat-icon>
+
+        <mat-icon class="unit-badge danger"
+                  *ngIf="hasState(testSession.testState, 'CONNECTION', 'LOST')"
+                  matTooltip="Verbindung unbekannt: Seite wurde verlassen oder Browser geschlossen"
+        >error
         </mat-icon>
     </div>
 </td>

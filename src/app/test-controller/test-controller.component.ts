@@ -304,7 +304,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   @HostListener('window:unload', ['$event'])
   unloadHandler() {
-    this.bs.notifyDyingTest(this.tcs.testId);
+    if (this.cmd.connectionStatus$.getValue() !== 'ws-online') {
+      this.bs.notifyDyingTest(this.tcs.testId);
+    }
   }
 
   ngOnInit() {
@@ -583,7 +585,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           .subscribe(isWsConnected => {
               this.bs.updateTestState(this.tcs.testId, [{
                 key: TestStateKey.CONNECTION,
-                content: isWsConnected ? 'websocket' : 'polling',
+                content: isWsConnected ? 'WEBSOCKET' : 'POLLING',
                 timeStamp: Date.now()
               }]);
           });
