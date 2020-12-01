@@ -99,6 +99,12 @@
                 </button>
             </div>
 
+            <div class="toolbar-section">
+                <button mat-raised-button class="control" color="primary" (click)="testCommandUnlock()" [disabled]="!isUnlockAllowed()">
+                    <mat-icon>lock-open</mat-icon>ENTSPERREN
+                </button>
+            </div>
+
             <hr>
 
             <div class="toolbar-section">
@@ -107,6 +113,12 @@
                     <mat-radio-button value="block">Block</mat-radio-button>
                     <mat-radio-button value="unit" disabled>Aufgabe</mat-radio-button>
                 </mat-radio-group>
+            </div>
+
+            <div class="toolbar-section">
+                <div *ngFor="let warning of warnings | keyvalue" class="alert-warning">
+                    <mat-icon>warning</mat-icon>{{warning.value.text}}
+                </div>
             </div>
         </mat-sidenav>
 
@@ -172,10 +184,7 @@
                     </table>
                 </div>
             </div>
-
         </mat-sidenav-content>
-
-
     </mat-sidenav-container>
 
     <button

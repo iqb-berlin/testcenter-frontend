@@ -75,4 +75,19 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
       )
       .subscribe();
   }
+
+    unlock(group_name: string, testIds: number[]): Subscription {
+
+        return this.http
+            .post(this.serverUrl +  `monitor/group/${group_name}/tests/unlock`, {testIds})
+            .pipe(
+                catchError(() => {
+                    // TODO interceptor should have interfered and moved to error-page ...
+                    // https://github.com/iqb-berlin/testcenter-frontend/issues/53
+                    console.warn(`unlocking failed: command`, testIds);
+                    return of(false);
+                })
+            )
+            .subscribe();
+    }
 }

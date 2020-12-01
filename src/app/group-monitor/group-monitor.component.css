@@ -51,7 +51,7 @@
 }
 
 .connection-status.error {
-    background: red
+    background: #821123
 }
 
 .connection-status.ws-offline {
@@ -164,10 +164,10 @@ mat-sidenav {
 }
 
 .hide-scroll-hint .scroll-hint {
-    animation: fade 0.3s reverse forwards;
+    animation: fade-and-shrink 0.3s reverse forwards;
 }
 
-@keyframes fade {
+@keyframes fade-and-shrink {
     0% {
         opacity: 0;
         transform: scale(0)
@@ -200,11 +200,32 @@ mat-sidenav {
     text-transform: uppercase;
 }
 
+.alert-warning {
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin: 0 0 0.5em 0;
+    width: 100%;
+    padding: 14px 16px;
+    min-height: 48px;
+    color: hsla(0,0%,100%,.7);
+    background: #821123;
+    display: inline-flex;
+    vertical-align: middle;
+    align-items: center;
+    animation: fade 30s reverse forwards;
+}
 
+.alert-warning mat-icon {
+    margin-right: 4px;
+}
 
+@keyframes fade {
+    0% {
+        opacity: 0;
+    }
 
-
-
-
-
+    100% {
+        opacity: 1;
+    }
+}
 

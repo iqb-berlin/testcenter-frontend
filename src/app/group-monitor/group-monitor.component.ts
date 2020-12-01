@@ -31,6 +31,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   ) {}
 
   ownGroup$: Observable<GroupData>;
+  private ownGroupName: string = '';
 
   monitor$: Observable<TestSession[]>;
   connectionStatus$: Observable<ConnectionStatus>;
@@ -80,11 +81,13 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   sessionCheckedGroupCount: number;
 
   isScrollable = false;
+
+  warnings: {[key: string]: {text: string, timeout: number}} = {};
+
   @ViewChild('adminbackground') mainElem:ElementRef;
+  @ViewChild('sidenav', {static: true}) sidenav: MatSidenav;
 
   private routingSubscription: Subscription = null;
-
-  @ViewChild('sidenav', {static: true}) sidenav: MatSidenav;
 
   static getFirstUnit(testletOrUnit: Testlet|Unit): Unit|null {
     while (!isUnit(testletOrUnit)) {
@@ -107,6 +110,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.routingSubscription = this.route.params.subscribe(params => {
       this.ownGroup$ = this.bs.getGroupData(params['group-name']);
+      this.ownGroupName = params['group-name'];
     });
 
     this.sortBy$ = new BehaviorSubject<Sort>({direction: 'asc', active: 'personLabel'});
@@ -118,8 +122,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
     combineLatest<[Sort, TestSessionFilter[], TestSession[]]>([this.sortBy$, this.filters$, this.monitor$])
       .pipe(
-          map(([sortBy, filters, sessions]) => this.sortSessions(sortBy, this.filterSessions(sessions, filters))),
-          tap(sessions => this.updateChecked(sessions))
+        map(([sortBy, filters, sessions]) => this.sortSessions(sortBy, this.filterSessions(sessions, filters))),
+        tap(sessions => this.updateChecked(sessions)),
       )
       .subscribe(this.sessions$);
 
@@ -230,16 +234,40 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.bs.command('pause', [], testIds);
   }
 
-  testCommandGoto() {
+  testCommandGoto(): void {
     if ((this.sessionCheckedGroupCount === 1) && (Object.keys(this.checkedSessions).length > 0)) {
       const testIds = Object.values(this.checkedSessions)
-        .filter((session) => session.testId && session.testId > -1)
-        .map((session) => session.testId);
+        .filter(session => session.testId && session.testId > -1)
+        .map(session => session.testId);
       this.bs.command('goto', ['id', GroupMonitorComponent.getFirstUnit(this.selectedElement.element).id], testIds);
     }
   }
 
-  selectElement(selected: Selected) {
+  testCommandUnlock(): void {
+    const sessions = Object.values(this.checkedSessions)
+      .filter(session => GroupMonitorComponent.hasState(session.testState, 'status', 'locked'))
+    this.bs.unlock(this.ownGroupName, sessions.map(session => session.testId)).add(() => {
+      const plural = sessions.length > 1;
+      this.addWarning('reload-some-clients',
+          `${plural ? sessions.length : 'Ein'} Test${plural ? 's': ''} 
+          wurde${plural ? 'n': ''} entsperrt. ${plural ? 'Die': 'Der'} Teilnehmer 
+          ${plural ? 'müssen': 'muss'} die Webseite aufrufen bzw. neuladen, 
+          damit ${plural ? 'die': 'der'} Test${plural ? 's': ''} wieder aufgenommen werden kann!`
+      );
+    });
+  }
+
+  private addWarning(key, text): void {
+    if (typeof this.warnings[key] !== "undefined") {
+      window.clearTimeout(this.warnings[key].timeout);
+    }
+    this.warnings[key] = {
+      text,
+      timeout: window.setTimeout(() => delete this.warnings[key], 30000)
+    }
+  }
+
+  selectElement(selected: Selected): void {
     this.selectedElement = selected;
     let toCheck: TestSession[] = [];
     if (selected.element) {
@@ -332,30 +360,42 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     const activeSessions = Object.values(this.checkedSessions).length && Object.values(this.checkedSessions)
       .filter((session) => GroupMonitorComponent.hasState(session.testState, 'status', 'running'));
     return activeSessions.length && activeSessions
-        .filter(session => GroupMonitorComponent.hasState(session.testState, 'status', 'running'))
-        .filter(session => GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
-        .length === 0;
-  }
-
-  isResumeAllowed() {
-    const activeSessions = Object.values(this.checkedSessions)
-      .filter((session) => GroupMonitorComponent.hasState(session.testState, 'status', 'running'));
-    return activeSessions.length && activeSessions
-      .filter((session) => !GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
+      .filter(session => GroupMonitorComponent.hasState(session.testState, 'status', 'running'))
+      .filter(session => GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
       .length === 0;
   }
 
-  ngAfterViewChecked() {
+  isResumeAllowed(): boolean {
+    const activeSessions = Object.values(this.checkedSessions)
+        .filter((session) => GroupMonitorComponent.hasState(session.testState, 'status', 'running'));
+    return activeSessions.length && activeSessions
+        .filter((session) => !GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
+        .length === 0;
+  }
+
+  isUnlockAllowed(): boolean {
+    const lockedSessions = Object.values(this.checkedSessions)
+        .filter(session => GroupMonitorComponent.hasState(session.testState, 'status', 'locked'));
+    return lockedSessions.length && (lockedSessions.length === Object.values(this.checkedSessions).length);
+  }
+
+  ngAfterViewChecked(): void {
     this.isScrollable = this.mainElem.nativeElement.clientHeight < this.mainElem.nativeElement.scrollHeight;
   }
 
-  scrollDown() {
+  scrollDown(): void {
     this.mainElem.nativeElement.scrollTo(0, this.mainElem.nativeElement.scrollHeight);
   }
 
-  updateScrollHint() {
+  updateScrollHint(): void {
     const elem = this.mainElem.nativeElement;
     const reachedBottom = (elem.scrollTop + elem.clientHeight === elem.scrollHeight);
     elem.classList[reachedBottom ? 'add' : 'remove']('hide-scroll-hint');
+  }
+
+  showClientsMustBeReloadedWarning(): boolean {
+    return true;
+    // return this.sessionsMustBeReloaded && this.sessions$.getValue()
+    //     .filter(session => this.sessionsMustBeReloaded.indexOf(session.testId)) // STAND sessiosn filtern
   }
 }

@@ -112,8 +112,12 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     if (this.hasState(state, 'status', 'locked')) {
       return {tooltip: 'Test gesperrt', icon: 'lock_closed'}
     }
-    if (this.hasState(state, 'CONTROLLER', 'error')) {
+    if (this.hasState(state, 'CONTROLLER', 'ERROR')) {
       return {tooltip: 'Es ist ein Fehler aufgetreten!', icon: 'error', class: 'danger'}
+    }
+    if (this.hasState(state, 'CONTROLLER', 'TERMINATED')) {
+      return {tooltip: 'Testausführung wurde beendet und kann wieder aufgenommen werden. ' +
+            'Der Browser des Teilnehmers muss ggf. neu geladen werden!', icon: 'warning', class: 'danger'}
     }
     if (this.hasState(state, 'CONNECTION', 'LOST')) {
       return {tooltip: 'Seite wurde verlassen oder Browserfenster geschlossen!', icon: 'error', class: 'danger'}
