@@ -11,6 +11,18 @@
       "showUnitMenu": false
     }
   },
+  "MONITOR-GROUP": {
+    "label": "Testgruppen-Monitor (Demo)",
+    "config": {
+      "canReview": false,
+      "saveResponses": false,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
+      "presetCode": true,
+      "showTimeLeft": true,
+      "showUnitMenu": false
+    }
+  },
   "HOT": {
     "label": "Durchführung Test/Befragung",
     "config": {

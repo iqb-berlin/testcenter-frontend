@@ -17,7 +17,7 @@ export class TestMode {
 
 	public constructor (loginMode: string = 'DEMO') {
 		if (loginMode) {
-			const regExPattern = /(DEMO|HOT|REVIEW|TRIAL)/;
+			const regExPattern = /(DEMO|MONITOR-GROUP|HOT|REVIEW|TRIAL)/;
 			if (regExPattern.test(loginMode.toUpperCase())) {
 				const mode = loginMode.toUpperCase().match(regExPattern)[0];
 				const modeConfig = testModes[mode];
