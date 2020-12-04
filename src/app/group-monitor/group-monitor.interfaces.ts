@@ -19,8 +19,9 @@ export interface TestSession {
   timestamp: number;
 }
 
-export type TestSessionSuperState = 'pending' | 'locked' | 'error' | 'controller_terminated' |
-'connection_lost' | 'paused' | 'focus_lost' | 'connection_websocket' | 'connection_polling' | 'ok';
+export type TestSessionSuperState = 'monitor_group' | 'demo' | 'pending' | 'locked' | 'error'
+| 'controller_terminated' | 'connection_lost' | 'paused' | 'focus_lost'
+| 'connection_websocket' | 'connection_polling' | 'ok';
 
 export interface Booklet {
   metadata: BookletMetadata;

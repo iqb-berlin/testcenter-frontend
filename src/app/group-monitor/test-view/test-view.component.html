@@ -1,4 +1,4 @@
-<td>
+<td class="selected">
     <mat-checkbox
             *ngIf="testSession.testId >= 0"
             (change)="check($event)"
@@ -8,102 +8,21 @@
     </mat-checkbox>
 </td>
 
-
-<td (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-    <div class="vertical-align-middle">
-        <ng-container *ngIf="getMode(testSession.mode) as mode" >
-            <mat-icon *ngIf="mode.modeId === 'HOT'">face</mat-icon>
-            <mat-icon *ngIf="mode.modeId === 'REVIEW'">rate_review</mat-icon>
-            <mat-icon *ngIf="mode.modeId === 'TRIAL'">remove_red_eye</mat-icon>
-            <mat-icon *ngIf="mode.modeId === 'DEMO'">ondemand_video</mat-icon>
-            <mat-icon *ngIf="mode.modeId === 'monitor-group'">supervisor_account</mat-icon>
-        </ng-container>
-        <h1>{{testSession.personLabel}}</h1>
-    </div>
-</td>
-
-<td class="state-status" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-    <div class="vertical-align-middle" *ngIf="superStateIcons[getSuperState(testSession.testState)] as iconData">
+<td class="super-state" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+    <div class="vertical-align-middle" *ngIf="superStateIcons[getSuperState(testSession)] as iconData">
         <mat-icon class="unit-badge {{iconData?.class}}" matTooltip="{{iconData.tooltip}}">
             {{iconData.icon}}
         </mat-icon>
     </div>
 </td>
 
-<td *ngIf="displayOptions.groupColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-    <div class="vertical-align-middle">{{testSession.groupLabel}}</div>
+<td class="user" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+    <div class="vertical-align-middle">
+        <h1>{{testSession.personLabel}}</h1>
+    </div>
 </td>
 
-<td class="booklet" *ngIf="displayOptions.bookletColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-    <ng-container *ngIf="(booklet$ | async) as booklet">
-        <ng-container *ngIf="isBooklet(booklet); else: noBooklet">
-            <div class="vertical-align-middle">
-                <h1>{{booklet.metadata.label}}</h1>
-            </div>
-        </ng-container>
-    </ng-container>
-
-    <ng-template #noBooklet>
-        <div class="vertical-align-middle">
-            <h1 class="warning">{{testSession.bookletName}}</h1>
-        </div>
-    </ng-template>
-</td>
-
-<ng-container *ngIf="featuredUnit$ | async as unitContext; else: noFeaturedUnit">
-
-    <td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-        <div *ngIf="featuredUnit$ | async as unitContext" class="vertical-align-middle">
-            {{
-              unitContext.parent.label
-                || (unitContext.parentIndexGlobal ? 'Block '+ unitContext.parentIndexGlobal + '/' + unitContext.testletCountGlobal : '')
-            }}
-
-            <mat-icon class="unit-badge"
-              *ngIf="testletsTimeleft && (testletsTimeleft[unitContext.parent.id] !== undefined)"
-              matBadge="{{testletsTimeleft[unitContext.parent.id].toString()}}"
-              matBadgeColor="accent"
-              matTooltip="Verbleibende Zeit"
-            >schedule
-            </mat-icon>
-        </div>
-    </td>
-
-
-
-    <td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-        <div class="vertical-align-middle">
-
-            <h2 matTooltip="{{unitContext.unit.label}}">{{unitContext.unit.labelShort || unitContext.unit.id}}</h2>
-
-            <mat-icon class="unit-badge"
-                      *ngIf="hasState(testSession.unitState, 'PRESENTATION_PROGRESS', 'complete')"
-                      matTooltip="Vollständig betrachtet / angehört"
-            >remove_red_eye
-            </mat-icon>
-
-            <mat-icon class="unit-badge"
-                      *ngIf="hasState(testSession.unitState, 'RESPONSE_PROGRESS', 'complete')"
-                      matTooltip="Fertig beantwortet"
-            >done_all
-            </mat-icon>
-            <mat-icon class="unit-badge"
-                      *ngIf="hasState(testSession.unitState, 'CURRENT_PAGE_NR')"
-                      matBadge="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_NR', 'PAGES_COUNT'], '/')}}"
-                      matBadgeColor="accent"
-                      matTooltip="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_ID'])}}"
-            >description
-            </mat-icon>
-        </div>
-    </td>
-</ng-container>
-
-<ng-template #noFeaturedUnit>
-    <td></td>
-    <td></td>
-</ng-template>
-
-<td class="activity" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+<td class="test" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
     <ng-container *ngIf="(booklet$ | async) as booklet">
         <ng-container *ngIf="isBooklet(booklet); else: noBookletReason">
 
@@ -272,4 +191,75 @@
 </ng-template>
 
 
+<td class="group" *ngIf="displayOptions.groupColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+    <div class="vertical-align-middle">{{testSession.groupLabel}}</div>
+</td>
 
+<td class="booklet" *ngIf="displayOptions.bookletColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+    <ng-container *ngIf="(booklet$ | async) as booklet">
+        <ng-container *ngIf="isBooklet(booklet); else: noBooklet">
+            <div class="vertical-align-middle">
+                <h1>{{booklet.metadata.label}}</h1>
+            </div>
+        </ng-container>
+    </ng-container>
+
+    <ng-template #noBooklet>
+        <div class="vertical-align-middle">
+            <h1 class="warning">{{testSession.bookletName}}</h1>
+        </div>
+    </ng-template>
+</td>
+
+<ng-container *ngIf="featuredUnit$ | async as unitContext; else: noFeaturedUnit">
+
+    <td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+        <div *ngIf="featuredUnit$ | async as unitContext" class="vertical-align-middle">
+            {{
+          unitContext.parent.label
+          || (unitContext.parentIndexGlobal ? 'Block '+ unitContext.parentIndexGlobal + '/' + unitContext.testletCountGlobal : '')
+            }}
+
+            <mat-icon class="unit-badge"
+                      *ngIf="testletsTimeleft && (testletsTimeleft[unitContext.parent.id] !== undefined)"
+                      matBadge="{{testletsTimeleft[unitContext.parent.id].toString()}}"
+                      matBadgeColor="accent"
+                      matTooltip="Verbleibende Zeit"
+            >schedule
+            </mat-icon>
+        </div>
+    </td>
+
+
+
+    <td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+        <div class="vertical-align-middle">
+
+            <h2 matTooltip="{{unitContext.unit.label}}">{{unitContext.unit.labelShort || unitContext.unit.id}}</h2>
+
+            <mat-icon class="unit-badge"
+                      *ngIf="hasState(testSession.unitState, 'PRESENTATION_PROGRESS', 'complete')"
+                      matTooltip="Vollständig betrachtet / angehört"
+            >remove_red_eye
+            </mat-icon>
+
+            <mat-icon class="unit-badge"
+                      *ngIf="hasState(testSession.unitState, 'RESPONSE_PROGRESS', 'complete')"
+                      matTooltip="Fertig beantwortet"
+            >done_all
+            </mat-icon>
+            <mat-icon class="unit-badge"
+                      *ngIf="hasState(testSession.unitState, 'CURRENT_PAGE_NR')"
+                      matBadge="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_NR', 'PAGES_COUNT'], '/')}}"
+                      matBadgeColor="accent"
+                      matTooltip="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_ID'])}}"
+            >description
+            </mat-icon>
+        </div>
+    </td>
+</ng-container>
+
+<ng-template #noFeaturedUnit>
+    <td></td>
+    <td></td>
+</ng-template>

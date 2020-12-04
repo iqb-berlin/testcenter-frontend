@@ -50,7 +50,9 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
   public testletsClearedCode: Record<string, unknown> | null;
 
   public superStateIcons: {[key: string]: IconData} = {
-    pending: { tooltip: 'Test noch nicht gestartet', icon: 'hourglass_empty' },
+    monitor_group: { tooltip: 'Testleiter', icon: 'supervisor_account' },
+    demo: { tooltip: 'Testleiter', icon: 'preview' },
+    pending: { tooltip: 'Test noch nicht gestartet', icon: 'person_outline' },
     locked: { tooltip: 'Test gesperrt', icon: 'lock' },
     error: { tooltip: 'Es ist ein Fehler aufgetreten!', icon: 'error', class: 'danger' },
     controller_terminated: {
@@ -66,8 +68,8 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     },
     paused: { tooltip: 'Test pausiert', icon: 'pause' },
     focus_lost: { tooltip: 'Fenster/Tab wurde verlassen!', icon: 'warning', class: 'danger' },
-    connection_websocket: { tooltip: 'Test läuft, Verbindung ist live', icon: 'play_circle_outline', class: 'success' },
-    connection_polling: { tooltip: 'Test läuft', icon: 'play_circle_filled', class: 'success' },
+    connection_websocket: { tooltip: 'Test läuft, Verbindung ist live', icon: 'play_circle_filled', class: 'success' },
+    connection_polling: { tooltip: 'Test läuft', icon: 'play_circle_outline', class: 'success' },
     ok: { tooltip: 'Test läuft', icon: 'play_circle_filled' }
   };
 
@@ -124,23 +126,6 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
   stateString = TestSessionService.stateString;
 
   hasState = TestSessionService.hasState;
-
-  getMode = (modeString: string): { modeId: string, modeLabel: string } => {
-    const untranslatedModes = ['monitor-group', 'monitor-workspace', 'monitor-study'];
-
-    if (untranslatedModes.indexOf(modeString) > -1) {
-      return {
-        modeId: modeString,
-        modeLabel: 'Testleiter'
-      };
-    }
-
-    const testMode = new TestMode(modeString);
-    return {
-      modeId: testMode.modeId,
-      modeLabel: testMode.modeLabel
-    };
-  };
 
   isBooklet = (bookletOrError: Booklet|BookletError): bookletOrError is Booklet => !('error' in bookletOrError);
 

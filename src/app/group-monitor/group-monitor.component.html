@@ -160,13 +160,13 @@
                                         (contextmenu)="invertChecked($event)"
                                     ></mat-checkbox>
                                 </td>
+                                <td><!-- super state --></td>
                                 <td mat-sort-header="personLabel">Benutzer</td>
-                                <td></td>
+                                <td mat-sort-header="timestamp">Test</td>
                                 <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">Gruppe</td>
                                 <td mat-sort-header="bookletName" *ngIf="displayOptions.bookletColumn === 'show'">Testheft</td>
                                 <td>Block</td>
                                 <td>Aufgabe</td>
-                                <td mat-sort-header="timestamp">Aktivität</td>
                             </tr>
                         </thead>
 
