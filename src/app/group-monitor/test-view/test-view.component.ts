@@ -13,6 +13,7 @@ import {
   BookletError, UnitContext, isUnit, Selected
 } from '../group-monitor.interfaces';
 import { TestMode } from '../../config/test-mode';
+import { TestSessionService } from '../test-session.service';
 
 interface IconData {
   icon: string,
@@ -33,6 +34,7 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     element: undefined,
     spreading: false
   };
+
   @Input() checked: boolean;
 
   @Output() bookletId$ = new EventEmitter<string>();
@@ -44,17 +46,39 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
   public booklet$: Observable<Booklet|BookletError>;
   public featuredUnit$: Observable<UnitContext|null>;
 
-  public testletsTimeleft: object|null; // TODO make observable maybe
-  public testletsClearedCode: object | null;
+  public testletsTimeleft: Record<string, unknown>|null; // TODO make observable maybe
+  public testletsClearedCode: Record<string, unknown> | null;
+
+  public superStateIcons: {[key: string]: IconData} = {
+    pending: { tooltip: 'Test noch nicht gestartet', icon: 'hourglass_empty' },
+    locked: { tooltip: 'Test gesperrt', icon: 'lock_closed' },
+    error: { tooltip: 'Es ist ein Fehler aufgetreten!', icon: 'error', class: 'danger' },
+    controller_terminated: {
+      tooltip: 'Testausführung wurde beendet und kann wieder aufgenommen werden. ' +
+        'Der Browser des Teilnehmers muss ggf. neu geladen werden!',
+      icon: 'warning',
+      class: 'danger'
+    },
+    connection_lost: {
+      tooltip: 'Seite wurde verlassen oder Browserfenster geschlossen!',
+      icon: 'error',
+      class: 'danger'
+    },
+    paused: { tooltip: 'Test pausiert', icon: 'pause' },
+    focus_lost: { tooltip: 'Fenster/Tab wurde verlassen!', icon: 'warning', class: 'danger' },
+    connection_websocket: { tooltip: 'Test läuft, Verbindung ist live', icon: 'play_circle_outline', class: 'success' },
+    connection_polling: { tooltip: 'Test läuft', icon: 'play_circle_filled', class: 'success' },
+    ok: { tooltip: 'Test läuft', icon: 'play_circle_filled' }
+  };
 
   private bookletSubscription: Subscription;
 
   constructor(
-      private bookletsService: BookletService,
+    private bookletsService: BookletService
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.booklet$ = this.bookletsService.getBooklet(this.testSession.bookletName || '');
 
     this.bookletSubscription = this.booklet$.subscribe((booklet: Booklet|BookletError) => {
@@ -72,93 +96,36 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
         if (this.testSession.unitName) {
           return this.getUnitContext(booklet.units, this.testSession.unitName);
         }
+
+        return null;
       }));
 
     // use setTimeout to put this event at the end of js task queue, so testSession$-initialization happens
     // after (!) subscription from async-pipe
     setTimeout(() => {
-        this.testSession$.next(this.testSession);
+      this.testSession$.next(this.testSession);
     });
   }
 
-  ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
-    if (typeof changes['testSession'] !== 'undefined') {
+  ngOnChanges(changes: {[propertyName: string]: SimpleChange}): void {
+    if (typeof changes.testSession !== 'undefined') {
       this.testSession$.next(this.testSession);
-      this.testletsTimeleft = this.parseJsonState(this.testSession.testState, 'TESTLETS_TIMELEFT');
-      this.testletsClearedCode = this.parseJsonState(this.testSession.testState, 'TESTLETS_CLEARED_CODE');
+      this.testletsTimeleft = TestSessionService.parseJsonState(this.testSession.testState, 'TESTLETS_TIMELEFT');
+      this.testletsClearedCode = TestSessionService.parseJsonState(this.testSession.testState, 'TESTLETS_CLEARED_CODE');
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.bookletSubscription.unsubscribe();
   }
 
-  isBooklet(bookletOrBookletError: Booklet|BookletError): bookletOrBookletError is Booklet {
-    return !('error' in bookletOrBookletError);
-  }
+  getSuperState = TestSessionService.getSuperState;
 
-  getTestletType(testletOrUnit: Unit|Testlet): 'testlet'|'unit' {
-    return isUnit(testletOrUnit) ? 'unit' : 'testlet';
-  }
+  stateString = TestSessionService.stateString;
 
-  hasState(state: object, key: string, value: any = null): boolean {
-    return ((typeof state[key] !== 'undefined') && ((value !== null) ? (state[key] === value) : true));
-  }
+  hasState = TestSessionService.hasState;
 
-  getSuperStateIcon(state: object): IconData {
-    if (this.hasState(state, 'status', 'pending')) {
-      return {tooltip: 'Test noch nicht gestartet', icon: 'hourglass_empty'}
-    }
-    if (this.hasState(state, 'status', 'locked')) {
-      return {tooltip: 'Test gesperrt', icon: 'lock_closed'}
-    }
-    if (this.hasState(state, 'CONTROLLER', 'ERROR')) {
-      return {tooltip: 'Es ist ein Fehler aufgetreten!', icon: 'error', class: 'danger'}
-    }
-    if (this.hasState(state, 'CONTROLLER', 'TERMINATED')) {
-      return {tooltip: 'Testausführung wurde beendet und kann wieder aufgenommen werden. ' +
-            'Der Browser des Teilnehmers muss ggf. neu geladen werden!', icon: 'warning', class: 'danger'}
-    }
-    if (this.hasState(state, 'CONNECTION', 'LOST')) {
-      return {tooltip: 'Seite wurde verlassen oder Browserfenster geschlossen!', icon: 'error', class: 'danger'}
-    }
-    if (this.hasState(state, 'CONTROLLER', 'PAUSED')) {
-      return {tooltip: 'Test pausiert', icon: 'pause'}
-    }
-    if (this.hasState(state, 'FOCUS', 'HAS_NOT')) {
-      return {tooltip: 'Fenster/Tab wurde verlassen!', icon: 'warning', class: 'danger'}
-    }
-    if (this.hasState(state, 'CONNECTION', 'WEBSOCKET')) {
-      return {tooltip: 'Test läuft, Verbindung ist live', icon: 'play_circle_outline', class: 'success'}
-    }
-    if (this.hasState(state, 'CONNECTION', 'POLLING')) {
-      return {tooltip: 'Test läuft', icon: 'play_circle_filled', class: 'success'}
-    }
-  }
-
-  stateString(state: object, keys: string[], glue: string = ''): string {
-    return keys
-      .map((key: string) => this.hasState(state, key) ? state[key] : null)
-      .filter((value: string) => value !== null)
-      .join(glue);
-  }
-
-  parseJsonState(testStateObject: object, key: string): object|null {
-    if (typeof testStateObject[key] === 'undefined') {
-      return null;
-    }
-
-    const stateValueString = testStateObject[key];
-
-    try {
-      return JSON.parse(stateValueString);
-    } catch (error) {
-      console.warn(`state ${key} is no valid JSON`, stateValueString, error);
-      return null;
-    }
-  }
-
-  getMode(modeString: string): {modeId: string, modeLabel: string} {
+  getMode = (modeString: string): { modeId: string, modeLabel: string } => {
     const untranslatedModes = ['monitor-group', 'monitor-workspace', 'monitor-study'];
 
     if (untranslatedModes.indexOf(modeString) > -1) {
@@ -173,13 +140,15 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
       modeId: testMode.modeId,
       modeLabel: testMode.modeLabel
     };
-  }
+  };
 
-  trackUnits(index: number, testlet: Testlet|Unit): string {
-      return testlet['id'] || index.toString();
-  }
+  isBooklet = (bookletOrError: Booklet|BookletError): bookletOrError is Booklet => !('error' in bookletOrError);
 
-  getUnitContext(testlet: Testlet, unitName: String, level: number = 0, countGlobal = 0,
+  getTestletType = (testletOrUnit: Unit|Testlet): 'testlet'|'unit' => (isUnit(testletOrUnit) ? 'unit' : 'testlet');
+
+  trackUnits = (index: number, testlet: Testlet|Unit): string => testlet.id || index.toString();
+
+  getUnitContext(testlet: Testlet, unitName: string, level = 0, countGlobal = 0,
                  countAncestor = 0, ancestor: Testlet = null): UnitContext {
     let result: UnitContext = {
       unit: null,
@@ -190,10 +159,11 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
       unitCountAncestor: countAncestor,
       indexGlobal: -1,
       indexLocal: -1,
-      indexAncestor: -1,
+      indexAncestor: -1
     };
 
     let i = -1;
+    // eslint-disable-next-line no-plusplus
     while (i++ < testlet.children.length - 1) {
       const testletOrUnit = testlet.children[i];
 
@@ -206,25 +176,24 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
           result.parent = testlet;
         }
 
-        result.unitCount++;
-        result.unitCountGlobal++;
-        result.unitCountAncestor++;
-
-    } else {
+        result.unitCount += 1;
+        result.unitCountGlobal += 1;
+        result.unitCountAncestor += 1;
+      } else {
         const subResult = this.getUnitContext(testletOrUnit, unitName, level + 1, result.unitCountGlobal,
-            (level < 1) ? 0 : result.unitCountAncestor, result.ancestor);
+          (level < 1) ? 0 : result.unitCountAncestor, result.ancestor);
         result.unitCountGlobal = subResult.unitCountGlobal;
         result.unitCountAncestor = (level < 1) ? result.unitCountAncestor : subResult.unitCountAncestor;
 
         if (subResult.indexLocal >= 0) {
-            result = subResult;
+          result = subResult;
         }
       }
     }
     return result;
   }
 
-  mark(testletOrUnit: Testlet|Unit|null = null) {
+  mark(testletOrUnit: Testlet|Unit|null = null): void {
     if (testletOrUnit == null) {
       this.markedElement = null;
       this.markedElement$.emit(null);
@@ -236,7 +205,7 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  select($event: Event, testletOrUnit: Testlet|Unit|null) {
+  select($event: Event, testletOrUnit: Testlet|Unit|null): void {
     if ((isUnit(testletOrUnit) ? 'unit' : 'block') !== this.displayOptions.selectionMode) {
       return;
     }
@@ -245,7 +214,7 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     this.applySelection(testletOrUnit);
   }
 
-  deselect($event: MouseEvent|null) {
+  deselect($event: MouseEvent|null): void {
     if ($event && ($event.currentTarget === $event.target)) {
       this.applySelection();
     }
@@ -264,7 +233,7 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     return false;
   }
 
-  private applySelection(testletOrUnit: Testlet|Unit|null = null, inversion: boolean = false) {
+  private applySelection(testletOrUnit: Testlet|Unit|null = null, inversion = false) {
     this.selected = {
       element: testletOrUnit,
       session: this.testSession,
@@ -274,7 +243,7 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedElement$.emit(this.selected);
   }
 
-  check($event: MatCheckboxChange) {
+  check($event: MatCheckboxChange): void {
     this.checked$.emit($event.checked);
   }
 }

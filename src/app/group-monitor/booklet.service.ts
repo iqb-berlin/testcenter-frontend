@@ -4,8 +4,9 @@ import { map, shareReplay } from 'rxjs/operators';
 import { MainDataService } from '../maindata.service';
 import { BackendService } from './backend.service';
 import {
-  Booklet, BookletError, BookletMetadata, Restrictions, Testlet, Unit
+  Booklet, BookletError, BookletMetadata, isUnit, Restrictions, Testlet, Unit
 } from './group-monitor.interfaces';
+// eslint-disable-next-line import/extensions
 import { BookletConfig } from '../config/booklet-config';
 
 @Injectable()
@@ -16,13 +17,24 @@ export class BookletService {
     private bs: BackendService
   ) { }
 
+  static getFirstUnit(testletOrUnit: Testlet|Unit): Unit|null {
+    while (!isUnit(testletOrUnit)) {
+      if (!testletOrUnit.children.length) {
+        return null;
+      }
+      // eslint-disable-next-line no-param-reassign,prefer-destructuring
+      testletOrUnit = testletOrUnit.children[0];
+    }
+    return testletOrUnit;
+  }
+
   private static parseBookletXml(xmlString: string): Booklet|BookletError {
     try {
       const domParser = new DOMParser();
       const bookletElement = domParser.parseFromString(xmlString, 'text/xml').documentElement;
 
       if (bookletElement.nodeName !== 'Booklet') {
-        console.warn('XML-root is not `Booklet`');
+        // console.warn('XML-root is not `Booklet`');
         return { error: 'xml' };
       }
 
@@ -32,7 +44,7 @@ export class BookletService {
         config: BookletService.parseBookletConfig(bookletElement)
       };
     } catch (error) {
-      console.warn('Error reading booklet XML:', error);
+      // console.warn('Error reading booklet XML:', error);
       return { error: 'xml' };
     }
   }
@@ -56,10 +68,9 @@ export class BookletService {
     };
   }
 
-private static parseTestlet(testletElement: Element): Testlet {
-    // TODO id will be mandatory (https://github.com/iqb-berlin/testcenter-iqb-php/issues/116), the remove fallback to ''
+  private static parseTestlet(testletElement: Element): Testlet {
     return {
-      id: testletElement.getAttribute('id') || '',
+      id: testletElement.getAttribute('id'),
       label: testletElement.getAttribute('label') || '',
       restrictions: BookletService.parseRestrictions(testletElement),
       children: BookletService.xmlGetDirectChildrenByTagName(testletElement, ['Unit', 'Testlet'])
@@ -101,7 +112,7 @@ private static parseTestlet(testletElement: Element): Testlet {
     return restrictions;
   }
 
-  private static xmlGetChildIfExists(element: Element, childName: string, isOptional: boolean = false): Element {
+  private static xmlGetChildIfExists(element: Element, childName: string, isOptional = false): Element {
     const elements = BookletService.xmlGetDirectChildrenByTagName(element, [childName]);
     if (!elements.length && !isOptional) {
       throw new Error(`Missing field: '${childName}'`);
@@ -109,7 +120,7 @@ private static parseTestlet(testletElement: Element): Testlet {
     return elements.length ? elements[0] : null;
   }
 
-  private static xmlGetChildTextIfExists(element: Element, childName: string, isOptional: boolean = false): string {
+  private static xmlGetChildTextIfExists(element: Element, childName: string, isOptional = false): string {
     const childElement = BookletService.xmlGetChildIfExists(element, childName, isOptional);
     return childElement ? childElement.textContent : '';
   }
@@ -126,19 +137,15 @@ private static parseTestlet(testletElement: Element): Testlet {
 
   public getBooklet(bookletName: string): Observable<Booklet|BookletError> {
     if (typeof this.booklets[bookletName] !== 'undefined') {
-      // console.log('FORWARDING booklet for ' + bookletName + '');
       return this.booklets[bookletName];
     }
     if (bookletName === '') {
-      // console.log("EMPTY bookletID");
       this.booklets[bookletName] = of<Booklet|BookletError>({ error: 'missing-id' });
     } else {
-      // console.log('LOADING testletOrUnit data for ' + bookletName + ' not available. loading');
       this.booklets[bookletName] = this.bs.getBooklet(bookletName)
         .pipe(
-          map((response: string|BookletError) => {
-            return (typeof response === 'string') ? BookletService.parseBookletXml(response) : response;
-          }),
+          // eslint-disable-next-line max-len
+          map((response: string|BookletError) => (typeof response === 'string' ? BookletService.parseBookletXml(response) : response)),
           shareReplay(1)
         );
     }

@@ -1,11 +1,13 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {from, Subscription} from 'rxjs';
-import {Router} from '@angular/router';
-import {concatMap, map} from 'rxjs/operators';
-import {CustomtextService} from 'iqb-components';
-import {BackendService} from '../../backend.service';
-import {MainDataService} from '../../maindata.service';
-import {AccessObject, AuthAccessKeyType, AuthData, BookletData} from '../../app.interfaces';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { from, Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { concatMap, map } from 'rxjs/operators';
+import { CustomtextService } from 'iqb-components';
+import { BackendService } from '../../backend.service';
+import { MainDataService } from '../../maindata.service';
+import {
+  AccessObject, AuthAccessKeyType, AuthData, BookletData
+} from '../../app.interfaces';
 
 @Component({
   templateUrl: './monitor-starter.component.html',
@@ -27,7 +29,7 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.mds.setSpinnerOn();
-      this.bs.getSessionData().subscribe((authDataUntyped) => {
+      this.bs.getSessionData().subscribe(authDataUntyped => {
         if (typeof authDataUntyped === 'number') {
           this.mds.setSpinnerOff();
           return;
@@ -40,15 +42,15 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
         }
         this.accessObjects = {};
 
-        let scopeIdList: {[id: string]: {id: string, type: AuthAccessKeyType}} = {};
+        const scopeIdList: {[id: string]: {id: string, type: AuthAccessKeyType}} = {};
         [AuthAccessKeyType.TEST_GROUP_MONITOR, AuthAccessKeyType.TEST]
-            .forEach(accessType => {
-              this.accessObjects[accessType] = [];
-              (authData.access[accessType] || [])
-                .forEach(accessObjectId => {
-                  scopeIdList[accessObjectId] = {id: accessObjectId, type: accessType};
-                });
-            });
+          .forEach(accessType => {
+            this.accessObjects[accessType] = [];
+            (authData.access[accessType] || [])
+              .forEach(accessObjectId => {
+                scopeIdList[accessObjectId] = { id: accessObjectId, type: accessType };
+              });
+          });
 
         if (this.getMonitorDataSubscription !== null) {
           this.getMonitorDataSubscription.unsubscribe();
@@ -58,30 +60,32 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
           from(Object.keys(scopeIdList))
             .pipe(
               map((accessType: AuthAccessKeyType) => scopeIdList[accessType]),
-              concatMap((accessIdAndType) => {
+              concatMap(accessIdAndType => {
                 if (accessIdAndType.type === AuthAccessKeyType.TEST_GROUP_MONITOR) {
                   return this.bs.getGroupData(accessIdAndType.id);
-                } else if (authData.access[AuthAccessKeyType.TEST]) {
+                }
+                if (authData.access[AuthAccessKeyType.TEST]) {
                   return this.bs.getBookletData(accessIdAndType.id);
                 }
+                return null;
               })
             )
             .subscribe(
-          (wsData: AccessObject) => {
-              if (wsData) {
-                this.accessObjects[scopeIdList[wsData.id].type].push(wsData);
-              }
-            },
-          () => this.mds.setSpinnerOff(),
-          () => this.mds.setSpinnerOff()
-          );
+              (wsData: AccessObject) => {
+                if (wsData) {
+                  this.accessObjects[scopeIdList[wsData.id].type].push(wsData);
+                }
+              },
+              () => this.mds.setSpinnerOff(),
+              () => this.mds.setSpinnerOff()
+            );
 
         this.mds.setAuthData(authData);
       });
     });
   }
 
-  startTest(b: BookletData) {
+  startTest(b: BookletData): void {
     this.bs.startTest(b.id).subscribe(testId => {
       if (typeof testId === 'number') {
         const errCode = testId as number;

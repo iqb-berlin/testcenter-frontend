@@ -20,6 +20,7 @@ import { GroupMonitorComponent } from './group-monitor.component';
 import { BackendService } from './backend.service';
 import { BookletService } from './booklet.service';
 import { TestViewComponent } from './test-view/test-view.component';
+import { TestSessionService } from './test-session.service';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { TestViewComponent } from './test-view/test-view.component';
   ],
   providers: [
     BackendService,
-    BookletService
+    BookletService,
+    TestSessionService
   ]
 })
 export class GroupMonitorModule {

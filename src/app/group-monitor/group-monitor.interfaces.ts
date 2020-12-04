@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/extensions
 import { BookletConfig } from '../config/booklet-config';
 
 export interface TestSession {
@@ -17,6 +18,9 @@ export interface TestSession {
   };
   timestamp: number;
 }
+
+export type TestSessionSuperState = 'pending' | 'locked' | 'error' | 'controller_terminated' |
+'connection_lost' | 'paused' | 'focus_lost' | 'connection_websocket' | 'connection_polling' | 'ok';
 
 export interface Booklet {
   metadata: BookletMetadata;

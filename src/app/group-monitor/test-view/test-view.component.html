@@ -17,15 +17,13 @@
             <mat-icon *ngIf="mode.modeId === 'TRIAL'">remove_red_eye</mat-icon>
             <mat-icon *ngIf="mode.modeId === 'DEMO'">ondemand_video</mat-icon>
             <mat-icon *ngIf="mode.modeId === 'monitor-group'">supervisor_account</mat-icon>
-            <mat-icon *ngIf="mode.modeId === 'monitor-workspace'">supervisor_account</mat-icon>
-            <mat-icon *ngIf="mode.modeId === 'monitor-study'">supervisor_account</mat-icon>
         </ng-container>
         <h1>{{testSession.personLabel}}</h1>
     </div>
 </td>
 
 <td class="state-status" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-    <div class="vertical-align-middle" *ngIf="getSuperStateIcon(testSession.testState) as iconData">
+    <div class="vertical-align-middle" *ngIf="superStateIcons[getSuperState(testSession.testState)] as iconData">
         <mat-icon class="unit-badge {{iconData?.class}}" matTooltip="{{iconData.tooltip}}">
             {{iconData.icon}}
         </mat-icon>
