@@ -1,15 +1,15 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ReviewDialogData } from '../test-controller.interfaces';
 import { ReviewDialogComponent } from './review-dialog.component';
-import {ReactiveFormsModule} from "@angular/forms";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogModule} from "@angular/material/dialog";
-import {MatRadioModule} from "@angular/material/radio";
-import {MatCheckboxModule} from "@angular/material/checkbox";
-import {MatInputModule} from "@angular/material/input";
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {ReviewDialogData} from "../test-controller.interfaces";
-import {MatIconModule} from "@angular/material/icon";
-import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 
 describe('ReviewDialogComponent', () => {
   let component: ReviewDialogComponent;
@@ -24,7 +24,7 @@ describe('ReviewDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ReviewDialogComponent ],
+      declarations: [ReviewDialogComponent],
       imports: [
         MatDialogModule,
         ReactiveFormsModule,
@@ -32,7 +32,7 @@ describe('ReviewDialogComponent', () => {
         MatInputModule,
         MatFormFieldModule,
         MatIconModule,
-        MatCheckboxModule,
+        MatCheckboxModule, MatTooltipModule,
         NoopAnimationsModule
       ],
       providers: [
@@ -40,7 +40,7 @@ describe('ReviewDialogComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: matDialogDataStub }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

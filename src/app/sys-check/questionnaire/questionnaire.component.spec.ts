@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { IqbComponentsModule } from 'iqb-components';
+import { MatCardModule } from '@angular/material/card';
 import { QuestionnaireComponent } from './questionnaire.component';
-import {IqbComponentsModule} from "iqb-components";
 
 describe('QuestionnaireComponent', () => {
   let component: QuestionnaireComponent;
@@ -9,10 +9,10 @@ describe('QuestionnaireComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ QuestionnaireComponent ],
-      imports: [IqbComponentsModule]
+      declarations: [QuestionnaireComponent],
+      imports: [IqbComponentsModule, MatCardModule]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

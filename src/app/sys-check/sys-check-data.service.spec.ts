@@ -1,5 +1,4 @@
 import { TestBed, inject } from '@angular/core/testing';
-
 import { SysCheckDataService } from './sys-check-data.service';
 
 describe('SyscheckDataService', () => {

@@ -1,11 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { ReactiveFormsModule } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NewpasswordComponent } from './newpassword.component';
-import {ReactiveFormsModule} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogModule} from '@angular/material/dialog';
-import {MatInputModule} from '@angular/material/input';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('NewpasswordComponent', () => {
   let component: NewpasswordComponent;
@@ -13,7 +12,7 @@ describe('NewpasswordComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NewpasswordComponent ],
+      declarations: [NewpasswordComponent],
       imports: [
         MatDialogModule,
         ReactiveFormsModule,
@@ -26,7 +25,7 @@ describe('NewpasswordComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: 'Harry Sack' }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

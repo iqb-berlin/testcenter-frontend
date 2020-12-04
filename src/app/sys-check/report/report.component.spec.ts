@@ -1,10 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { HttpClientModule } from '@angular/common/http';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCardModule } from '@angular/material/card';
+import { RouterModule } from '@angular/router';
+import { APP_BASE_HREF } from '@angular/common';
+import { BackendService } from '../backend.service';
 import { ReportComponent } from './report.component';
-import {HttpClientModule} from "@angular/common/http";
-import {BackendService} from "../backend.service";
-import {MatDialogModule} from "@angular/material/dialog";
-import {MatSnackBarModule} from "@angular/material/snack-bar";
 
 describe('ReportComponent', () => {
   let component: ReportComponent;
@@ -12,17 +14,23 @@ describe('ReportComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ReportComponent ],
+      declarations: [ReportComponent],
       imports: [
         HttpClientModule,
         MatDialogModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatCardModule,
+        RouterModule.forRoot([])
       ],
       providers: [
-        BackendService
+        BackendService,
+        {
+          provide: APP_BASE_HREF,
+          useValue: 'http://nothing/'
+        }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

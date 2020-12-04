@@ -1,3 +1,5 @@
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
 import { TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { BookletService } from './booklet.service';
@@ -21,7 +23,8 @@ describe('BookletService', () => {
           provide: BackendService,
           useValue: new MockBackendService()
         }
-      ]
+      ],
+      imports: [MatTableModule, MatIconModule]
     });
     service = TestBed.inject(BookletService);
   });

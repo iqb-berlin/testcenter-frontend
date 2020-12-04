@@ -2,7 +2,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SyscheckComponent } from './syscheck.component';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
@@ -17,7 +19,10 @@ describe('Workspace-Admin: SyscheckComponent', () => {
       imports: [
         HttpClientModule,
         MatDialogModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatIconModule,
+        MatTableModule,
+        MatCheckboxModule
       ],
       providers: [
         BackendService,

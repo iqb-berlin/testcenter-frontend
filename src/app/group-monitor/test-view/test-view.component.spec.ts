@@ -1,3 +1,5 @@
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 
@@ -109,7 +111,8 @@ describe('TestViewComponent', () => {
           provide: BookletService,
           useValue: new MockBookletService()
         }
-      ]
+      ],
+      imports: [MatIconModule, MatTooltipModule]
     })
       .compileComponents();
   }));

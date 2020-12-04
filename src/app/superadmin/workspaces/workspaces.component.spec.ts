@@ -1,11 +1,13 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { WorkspacesComponent } from './workspaces.component';
-import {HttpClientModule} from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { BackendService } from '../backend.service';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {MainDataService} from '../../maindata.service';
+import { WorkspacesComponent } from './workspaces.component';
+import { MainDataService } from '../../maindata.service';
 
 describe('WorkspacesComponent', () => {
   let component: WorkspacesComponent;
@@ -13,18 +15,21 @@ describe('WorkspacesComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ WorkspacesComponent ],
+      declarations: [WorkspacesComponent],
       imports: [
         HttpClientModule,
         MatDialogModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatIconModule,
+        MatTableModule,
+        MatCheckboxModule
       ],
       providers: [
         BackendService,
         MainDataService
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
