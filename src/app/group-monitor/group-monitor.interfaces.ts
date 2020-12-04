@@ -103,6 +103,8 @@ export interface UnitContext {
   indexLocal: number;
   indexAncestor: number;
   unitCountAncestor: number;
+  testletCountGlobal: number;
+  parentIndexGlobal: number;
 }
 
 export interface Selected {

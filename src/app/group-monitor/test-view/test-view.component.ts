@@ -51,7 +51,7 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
 
   public superStateIcons: {[key: string]: IconData} = {
     pending: { tooltip: 'Test noch nicht gestartet', icon: 'hourglass_empty' },
-    locked: { tooltip: 'Test gesperrt', icon: 'lock_closed' },
+    locked: { tooltip: 'Test gesperrt', icon: 'lock' },
     error: { tooltip: 'Es ist ein Fehler aufgetreten!', icon: 'error', class: 'danger' },
     controller_terminated: {
       tooltip: 'Testausführung wurde beendet und kann wieder aufgenommen werden. ' +
@@ -149,7 +149,7 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
   trackUnits = (index: number, testlet: Testlet|Unit): string => testlet.id || index.toString();
 
   getUnitContext(testlet: Testlet, unitName: string, level = 0, countGlobal = 0,
-                 countAncestor = 0, ancestor: Testlet = null): UnitContext {
+                 countAncestor = 0, ancestor: Testlet = null, testletCount = 0): UnitContext {
     let result: UnitContext = {
       unit: null,
       parent: null,
@@ -159,7 +159,9 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
       unitCountAncestor: countAncestor,
       indexGlobal: -1,
       indexLocal: -1,
-      indexAncestor: -1
+      indexAncestor: -1,
+      testletCountGlobal: testletCount,
+      parentIndexGlobal: -1
     };
 
     let i = -1;
@@ -174,16 +176,25 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
           result.indexAncestor = result.unitCountAncestor;
           result.unit = testletOrUnit;
           result.parent = testlet;
+          result.parentIndexGlobal = result.testletCountGlobal;
         }
 
         result.unitCount += 1;
         result.unitCountGlobal += 1;
         result.unitCountAncestor += 1;
       } else {
-        const subResult = this.getUnitContext(testletOrUnit, unitName, level + 1, result.unitCountGlobal,
-          (level < 1) ? 0 : result.unitCountAncestor, result.ancestor);
+        const subResult = this.getUnitContext(
+          testletOrUnit,
+          unitName,
+          level + 1,
+          result.unitCountGlobal,
+          (level < 1) ? 0 : result.unitCountAncestor,
+          result.ancestor,
+          result.testletCountGlobal + 1
+        );
         result.unitCountGlobal = subResult.unitCountGlobal;
         result.unitCountAncestor = (level < 1) ? result.unitCountAncestor : subResult.unitCountAncestor;
+        result.testletCountGlobal = subResult.testletCountGlobal;
 
         if (subResult.indexLocal >= 0) {
           result = subResult;

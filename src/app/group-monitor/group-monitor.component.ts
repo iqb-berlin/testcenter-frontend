@@ -42,7 +42,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   sessions$: BehaviorSubject<TestSession[]>;
 
   displayOptions: TestViewDisplayOptions = {
-    view: 'full',
+    view: 'medium',
     groupColumn: 'hide',
     bookletColumn: 'hide',
     selectionMode: 'block',
@@ -178,6 +178,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   sortSessions(sort: Sort, sessions: TestSession[]): TestSession[] {
     return sessions
       .sort((testSession1, testSession2) => {
+        // TODO how to sort by superstate/block/unit?
         if (sort.active === 'timestamp') {
           return (testSession2.timestamp - testSession1.timestamp) * (sort.direction === 'asc' ? 1 : -1);
         }

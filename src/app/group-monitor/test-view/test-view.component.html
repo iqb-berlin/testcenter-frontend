@@ -35,7 +35,6 @@
 </td>
 
 <td class="booklet" *ngIf="displayOptions.bookletColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-
     <ng-container *ngIf="(booklet$ | async) as booklet">
         <ng-container *ngIf="isBooklet(booklet); else: noBooklet">
             <div class="vertical-align-middle">
@@ -50,6 +49,59 @@
         </div>
     </ng-template>
 </td>
+
+<ng-container *ngIf="featuredUnit$ | async as unitContext; else: noFeaturedUnit">
+
+    <td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+        <div *ngIf="featuredUnit$ | async as unitContext" class="vertical-align-middle">
+            {{
+              unitContext.parent.label
+                || (unitContext.parentIndexGlobal ? 'Block '+ unitContext.parentIndexGlobal + '/' + unitContext.testletCountGlobal : '')
+            }}
+
+            <mat-icon class="unit-badge"
+              *ngIf="testletsTimeleft && (testletsTimeleft[unitContext.parent.id] !== undefined)"
+              matBadge="{{testletsTimeleft[unitContext.parent.id].toString()}}"
+              matBadgeColor="accent"
+              matTooltip="Verbleibende Zeit"
+            >schedule
+            </mat-icon>
+        </div>
+    </td>
+
+
+
+    <td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+        <div class="vertical-align-middle">
+
+            <h2 matTooltip="{{unitContext.unit.label}}">{{unitContext.unit.labelShort || unitContext.unit.id}}</h2>
+
+            <mat-icon class="unit-badge"
+                      *ngIf="hasState(testSession.unitState, 'PRESENTATION_PROGRESS', 'complete')"
+                      matTooltip="Vollständig betrachtet / angehört"
+            >remove_red_eye
+            </mat-icon>
+
+            <mat-icon class="unit-badge"
+                      *ngIf="hasState(testSession.unitState, 'RESPONSE_PROGRESS', 'complete')"
+                      matTooltip="Fertig beantwortet"
+            >done_all
+            </mat-icon>
+            <mat-icon class="unit-badge"
+                      *ngIf="hasState(testSession.unitState, 'CURRENT_PAGE_NR')"
+                      matBadge="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_NR', 'PAGES_COUNT'], '/')}}"
+                      matBadgeColor="accent"
+                      matTooltip="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_ID'])}}"
+            >description
+            </mat-icon>
+        </div>
+    </td>
+</ng-container>
+
+<ng-template #noFeaturedUnit>
+    <td></td>
+    <td></td>
+</ng-template>
 
 <td class="activity" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
     <ng-container *ngIf="(booklet$ | async) as booklet">
@@ -88,54 +140,7 @@
             <span *ngIf="booklet.error == 'general'" class="warning">Fehler beim Zugriff aus Testheft-Datei!</span>
         </ng-template>
     </ng-container>
-
-    <ng-container *ngIf="displayOptions.view === 'full' && !hasState(testSession.testState, 'status', 'locked')">
-        <ng-container *ngTemplateOutlet="featuredUnit"></ng-container>
-    </ng-container>
 </td>
-
-
-
-<ng-template #featuredUnit>
-    <div class="featured-unit" *ngIf="featuredUnit$ | async as unitContext">
-
-        <h1>{{unitContext.parent.label || 'Aktueller Abschnitt'}}</h1>
-
-        <mat-icon class="unit-badge"
-                  *ngIf="testletsTimeleft && (testletsTimeleft[unitContext.parent.id] !== undefined)"
-                  matBadge="{{testletsTimeleft[unitContext.parent.id].toString()}}"
-                  matBadgeColor="accent"
-                  matTooltip="Verbleibende Zeit"
-            >schedule
-        </mat-icon>
-
-        <h1>:</h1>
-
-        <h2>{{unitContext.unit.label || unitContext.unit.labelShort || unitContext.unit.id}}</h2>
-
-        <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.unitState, 'PRESENTATION_PROGRESS', 'complete')"
-                  matTooltip="Vollständig betrachtet / angehört"
-            >remove_red_eye
-        </mat-icon>
-
-        <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.unitState, 'RESPONSE_PROGRESS', 'complete')"
-                  matTooltip="Fertig beantwortet"
-            >done_all
-        </mat-icon>
-
-        <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.unitState, 'CURRENT_PAGE_NR')"
-                  matBadge="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_NR', 'PAGES_COUNT'], '/')}}"
-                  matBadgeColor="accent"
-                  matTooltip="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_ID'])}}"
-        >description
-        </mat-icon>
-
-
-    </div>
-</ng-template>
 
 
 <ng-template #testletFull let-testlet>
