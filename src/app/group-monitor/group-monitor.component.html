@@ -44,6 +44,14 @@
         <mat-icon *ngIf="displayOptions.bookletColumn === 'show'">check</mat-icon>
         <span>Testheft</span>
     </button>
+    <button mat-menu-item (click)="setDisplayOption('blockColumn', (displayOptions.blockColumn === 'hide') ? 'show' : 'hide')">
+        <mat-icon *ngIf="displayOptions.blockColumn === 'show'">check</mat-icon>
+        <span>Block</span>
+    </button>
+    <button mat-menu-item (click)="setDisplayOption('unitColumn', (displayOptions.unitColumn === 'hide') ? 'show' : 'hide')">
+        <mat-icon *ngIf="displayOptions.unitColumn === 'show'">check</mat-icon>
+        <span>Aufgabe</span>
+    </button>
 </mat-menu>
 
 <mat-menu #activity="matMenu">
@@ -165,8 +173,8 @@
                                 <td mat-sort-header="timestamp">Test</td>
                                 <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">Gruppe</td>
                                 <td mat-sort-header="bookletName" *ngIf="displayOptions.bookletColumn === 'show'">Testheft</td>
-                                <td>Block</td>
-                                <td>Aufgabe</td>
+                                <td *ngIf="displayOptions.blockColumn === 'show'">Block</td>
+                                <td *ngIf="displayOptions.unitColumn === 'show'">Aufgabe</td>
                             </tr>
                         </thead>
 

@@ -198,22 +198,18 @@
 <td class="booklet" *ngIf="displayOptions.bookletColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
     <ng-container *ngIf="(booklet$ | async) as booklet">
         <ng-container *ngIf="isBooklet(booklet); else: noBooklet">
-            <div class="vertical-align-middle">
-                <h1>{{booklet.metadata.label}}</h1>
-            </div>
+            <div class="vertical-align-middle">{{booklet.metadata.label}}</div>
         </ng-container>
     </ng-container>
 
     <ng-template #noBooklet>
-        <div class="vertical-align-middle">
-            <h1 class="warning">{{testSession.bookletName}}</h1>
-        </div>
+        <div class="vertical-align-middle">{{testSession.bookletName}}</div>
     </ng-template>
 </td>
 
 <ng-container *ngIf="featuredUnit$ | async as unitContext; else: noFeaturedUnit">
 
-    <td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+    <td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.blockColumn === 'show'">
         <div *ngIf="featuredUnit$ | async as unitContext" class="vertical-align-middle">
             {{
           unitContext.parent.label
@@ -230,9 +226,7 @@
         </div>
     </td>
 
-
-
-    <td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+    <td class="current-unit" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.unitColumn === 'show'">
         <div class="vertical-align-middle">
 
             <h2 matTooltip="{{unitContext.unit.label}}">{{unitContext.unit.labelShort || unitContext.unit.id}}</h2>

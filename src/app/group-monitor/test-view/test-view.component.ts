@@ -12,7 +12,6 @@ import {
   Booklet, TestSession, Testlet, Unit, TestViewDisplayOptions,
   BookletError, UnitContext, isUnit, Selected
 } from '../group-monitor.interfaces';
-import { TestMode } from '../../config/test-mode';
 import { TestSessionService } from '../test-session.service';
 
 interface IconData {

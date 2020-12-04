@@ -45,6 +45,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     view: 'medium',
     groupColumn: 'hide',
     bookletColumn: 'hide',
+    blockColumn: 'hide',
+    unitColumn: 'hide',
     selectionMode: 'block',
     selectionSpreading: 'booklet'
   };

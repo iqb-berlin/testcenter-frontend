@@ -83,6 +83,8 @@ export interface TestSessionFilter {
 }
 
 export interface TestViewDisplayOptions {
+  blockColumn: 'show' | 'hide';
+  unitColumn: 'show' | 'hide';
   view: 'full' | 'medium' | 'small';
   groupColumn: 'show' | 'hide';
   bookletColumn: 'show' | 'hide';
