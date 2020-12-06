@@ -232,22 +232,22 @@
             <h2 matTooltip="{{unitContext.unit.label}}">{{unitContext.unit.labelShort || unitContext.unit.id}}</h2>
 
             <mat-icon class="unit-badge"
-                      *ngIf="hasState(testSession.unitState, 'PRESENTATION_PROGRESS', 'complete')"
-                      matTooltip="Vollständig betrachtet / angehört"
-            >remove_red_eye
+                  *ngIf="hasState(testSession.unitState, 'PRESENTATION_PROGRESS', 'complete')"
+                  matTooltip="Vollständig betrachtet / angehört"
+                >remove_red_eye
             </mat-icon>
 
             <mat-icon class="unit-badge"
-                      *ngIf="hasState(testSession.unitState, 'RESPONSE_PROGRESS', 'complete')"
-                      matTooltip="Fertig beantwortet"
-            >done_all
+                  *ngIf="hasState(testSession.unitState, 'RESPONSE_PROGRESS', 'complete')"
+                  matTooltip="Fertig beantwortet"
+                >done_all
             </mat-icon>
             <mat-icon class="unit-badge"
-                      *ngIf="hasState(testSession.unitState, 'CURRENT_PAGE_NR')"
-                      matBadge="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_NR', 'PAGES_COUNT'], '/')}}"
-                      matBadgeColor="accent"
-                      matTooltip="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_ID'])}}"
-            >description
+                  *ngIf="hasState(testSession.unitState, 'CURRENT_PAGE_NR')"
+                  matBadge="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_NR', 'PAGES_COUNT'], '/')}}"
+                  matBadgeColor="accent"
+                  matTooltip="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_ID'])}}"
+                >description
             </mat-icon>
         </div>
     </td>

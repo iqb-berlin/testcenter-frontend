@@ -7,6 +7,7 @@ export interface SysConfig {
   version: string;
   mainLogo: string;
   testConfig: KeyValuePairs;
+  serverTimestamp: number;
 }
 
 export class AppConfig {
@@ -15,11 +16,11 @@ export class AppConfig {
   ) {
   }
 
-  setDefaultCustomTexts() {
+  setDefaultCustomTexts(): void {
     const ctDefaults = {};
-    for (const k of Object.keys(customTextsDefault)) {
-      ctDefaults[k] = customTextsDefault[k].defaultvalue
-    }
+    Object.keys(customTextsDefault).forEach(key => {
+      ctDefaults[key] = customTextsDefault[key].defaultvalue;
+    });
     this.cts.addCustomTexts(ctDefaults);
   }
 }
