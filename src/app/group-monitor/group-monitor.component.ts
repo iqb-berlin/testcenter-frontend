@@ -1,7 +1,7 @@
 import {
   Component, ElementRef, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Sort } from '@angular/material/sort';
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -10,6 +10,8 @@ import {
 } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { BackendService } from './backend.service';
 import {
   GroupData,
@@ -28,8 +30,10 @@ import { BookletService } from './booklet.service';
 })
 export class GroupMonitorComponent implements OnInit, OnDestroy {
   constructor(
+    public dialog: MatDialog,
     private route: ActivatedRoute,
-    private bs: BackendService
+    private bs: BackendService,
+    private router: Router
   ) {}
 
   ownGroup$: Observable<GroupData>;
@@ -84,6 +88,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   sessionCheckedGroupCount: number;
 
   isScrollable = false;
+  isClosing = false;
 
   warnings: {[key: string]: {text: string, timeout: number}} = {};
 
@@ -380,5 +385,35 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     const elem = this.mainElem.nativeElement;
     const reachedBottom = (elem.scrollTop + elem.clientHeight === elem.scrollHeight);
     elem.classList[reachedBottom ? 'add' : 'remove']('hide-scroll-hint');
+  }
+
+  finishEverythingCommand(): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: 'auto',
+      data: <ConfirmDialogData>{
+        title: 'Testdurchführung Beenden',
+        content: 'Achtung! Diese Aktion sperrt und beendet sämtliche Tests dieser Sitzung.',
+        confirmbuttonlabel: 'Ja, ich möchte die Testdurchführung Beenden',
+        showcancel: true
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.finishEverything();
+      }
+    });
+  }
+
+  private finishEverything(): void {
+    this.isClosing = true;
+    const sessions = Object.values(this.sessions$.getValue())
+      .filter(session => session.testId > 0)
+      .filter(session => !TestSessionService.hasState(session.testState, 'status', 'locked'));
+    this.bs.lock(this.ownGroupName, sessions.map(session => session.testId)).add(() => {
+      setTimeout(() => {
+        this.router.navigateByUrl('/r/login');
+      }, 6000);
+    });
   }
 }

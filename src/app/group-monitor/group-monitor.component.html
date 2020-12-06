@@ -113,6 +113,12 @@
                 </button>
             </div>
 
+            <div class="toolbar-section">
+                <button mat-raised-button class="control" color="primary" (click)="finishEverythingCommand()">
+                    <mat-icon>stop</mat-icon>TESTUNG BEENDEN
+                </button>
+            </div>
+
             <hr>
 
             <div class="toolbar-section">
@@ -218,3 +224,5 @@
     </button>
 
 </div>
+
+<div id="shield" *ngIf="isClosing"></div>

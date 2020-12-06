@@ -75,4 +75,13 @@ export class BackendService extends WebsocketBackendService<TestSession[]> {
       .pipe(catchError(() => of(false)))
       .subscribe();
   }
+
+  lock(group_name: string, testIds: number[]): Subscription {
+    // TODO interceptor should have interfered and moved to error-page ...
+    // https://github.com/iqb-berlin/testcenter-frontend/issues/53
+    return this.http
+      .post(`${this.serverUrl}monitor/group/${group_name}/tests/lock`, { testIds })
+      .pipe(catchError(() => of(false)))
+      .subscribe();
+  }
 }
