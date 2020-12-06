@@ -14,8 +14,9 @@
     background: rgba(255, 255, 255, 0.8);
 }
 
-.test-view-table thead td {
-    padding-top: 15px
+.test-view-table td {
+    padding-top: 15px;
+    margin-right: 1em;
 }
 
 .adminbackground {

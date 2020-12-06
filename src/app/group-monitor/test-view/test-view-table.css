@@ -7,7 +7,15 @@ td {
     padding-bottom: 0.2em;
     padding-top: 0.2em;
     border-bottom: 1px solid silver;
+    padding-right: 2em;
 }
+
+td.super-state,
+td.selected,
+td:last-child {
+    padding-right: 0;
+}
+
 
 td:last-child {
     min-width: 100%;

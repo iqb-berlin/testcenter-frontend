@@ -3,17 +3,10 @@ h2 {
     font-size: 100%;
     display: inline-block;
     margin: 0 0.3em 0 0;
-    white-space: nowrap;
 }
 
 h2 {
     font-weight: normal;
-}
-
-
-
-.block {
-    white-space: nowrap;
 }
 
 .units-container {
@@ -152,6 +145,7 @@ h2 {
     display: inline-flex;
     vertical-align: middle;
     align-items: center;
+    white-space: nowrap;
 }
 
 .warning {

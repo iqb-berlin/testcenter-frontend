@@ -216,7 +216,6 @@
 </td>
 
 <ng-container *ngIf="featuredUnit$ | async as unitContext; else: noFeaturedUnit">
-
     <td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.blockColumn === 'show'">
         <div *ngIf="featuredUnit$ | async as unitContext" class="vertical-align-middle">
             {{unitContext.parent.label || (unitContext.parentIndexGlobal ? blockName(unitContext.parentIndexGlobal) : '')}}
@@ -258,6 +257,6 @@
 </ng-container>
 
 <ng-template #noFeaturedUnit>
-    <td></td>
-    <td></td>
+    <td *ngIf="displayOptions.blockColumn === 'show'"></td>
+    <td *ngIf="displayOptions.unitColumn === 'show'"></td>
 </ng-template>
