@@ -7,11 +7,22 @@
     display: table;
 }
 
+.test-view-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.test-view-table thead td {
+    padding-top: 15px
+}
+
 .adminbackground {
     box-shadow: 5px 10px 20px black;
     background-color: white;
-    margin: 0 15px 0 15px;
-    padding: 15px 25px 25px 25px;
+    margin: 0 0 0 15px;
+    padding: 0 25px 25px 25px;
     height: 100%;
     overflow: auto;
     scroll-behavior: smooth;
@@ -125,7 +136,7 @@ mat-sidenav {
     top: 0;
     left: 0;
     right: 0;
-    bottom: 40px;
+    bottom: 25px;
     overflow: initial;
     height: initial;
 }
@@ -141,8 +152,8 @@ mat-sidenav {
 
 .corner-menu {
     position: fixed;
-    right: 30px;
-    top: 70px;
+    right: 10px;
+    top: 72px;
     z-index: 10000;
     border-bottom-left-radius: 10px;
 }
