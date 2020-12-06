@@ -62,13 +62,12 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       }
     },
     {
-      label: 'nicht aktive',
+      label: 'nicht gestartete',
       selected: false,
       filter: {
         type: 'testState',
-        value: 'CONTROLLER',
-        subValue: 'RUNNING',
-        not: true
+        value: 'status',
+        subValue: 'pending'
       }
     }
   ];
