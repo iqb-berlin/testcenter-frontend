@@ -51,6 +51,9 @@ export class TestSessionService {
     if (this.hasState(state, 'FOCUS', 'HAS_NOT')) {
       return 'focus_lost';
     }
+    if (TestSessionService.idleSinceMinutes(session) > 5) {
+      return 'idle';
+    }
     if (this.hasState(state, 'CONNECTION', 'WEBSOCKET')) {
       return 'connection_websocket';
     }
@@ -58,6 +61,10 @@ export class TestSessionService {
       return 'connection_polling';
     }
     return 'ok';
+  }
+
+  static idleSinceMinutes(testSession: TestSession): number {
+    return (Date.now() - testSession.timestamp * 1000) / (1000 * 60);
   }
 
   static parseJsonState(testStateObject: Record<string, string>, key: string): Record<string, string>|null {

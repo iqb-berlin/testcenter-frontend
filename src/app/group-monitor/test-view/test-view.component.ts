@@ -67,6 +67,7 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
     },
     paused: { tooltip: 'Test pausiert', icon: 'pause' },
     focus_lost: { tooltip: 'Fenster/Tab wurde verlassen!', icon: 'warning', class: 'danger' },
+    idle: { tooltip: 'Test ist 5 Minuten oder länger inaktiv!', icon: 'hourglass_full', class: 'danger' },
     connection_websocket: { tooltip: 'Test läuft, Verbindung ist live', icon: 'play_circle_filled', class: 'success' },
     connection_polling: { tooltip: 'Test läuft', icon: 'play_circle_outline', class: 'success' },
     ok: { tooltip: 'Test läuft', icon: 'play_circle_filled' }

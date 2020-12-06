@@ -20,7 +20,7 @@ export interface TestSession {
 }
 
 export type TestSessionSuperState = 'monitor_group' | 'demo' | 'pending' | 'locked' | 'error'
-| 'controller_terminated' | 'connection_lost' | 'paused' | 'focus_lost'
+| 'controller_terminated' | 'connection_lost' | 'paused' | 'focus_lost' | 'idle'
 | 'connection_websocket' | 'connection_polling' | 'ok';
 
 export interface Booklet {
