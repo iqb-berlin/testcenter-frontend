@@ -133,6 +133,14 @@
 
         <span *ngSwitchCase="'testlet'" class="testlet" matTooltip="{{testletOrUnit.label}}">
 
+            <span *ngIf="testletOrUnit.restrictions && testletOrUnit.restrictions.codeToEnter as codeToEnter"
+                  class="unit restriction"
+                  matTooltip="Freigabewort: {{codeToEnter.code.toUpperCase()}}"
+                  matTooltipPosition="above"
+            >
+                <mat-icon>{{testletsClearedCode && (testletsClearedCode.indexOf(testletOrUnit.id) > -1) ? 'lock_open' : 'lock'}}</mat-icon>
+            </span>
+
             <ng-container *ngIf="featuredUnit; else: unFeaturedTestlet">
                 <span
                         *ngIf="featuredUnit.ancestor.id === testletOrUnit.id; else: unFeaturedTestlet"
@@ -211,11 +219,7 @@
 
     <td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.blockColumn === 'show'">
         <div *ngIf="featuredUnit$ | async as unitContext" class="vertical-align-middle">
-            {{
-          unitContext.parent.label
-          || (unitContext.parentIndexGlobal ? 'Block '+ unitContext.parentIndexGlobal + '/' + unitContext.testletCountGlobal : '')
-            }}
-
+            {{unitContext.parent.label || (unitContext.parentIndexGlobal ? blockName(unitContext.parentIndexGlobal) : '')}}
             <mat-icon class="unit-badge"
                       *ngIf="testletsTimeleft && (testletsTimeleft[unitContext.parent.id] !== undefined)"
                       matBadge="{{testletsTimeleft[unitContext.parent.id].toString()}}"

@@ -133,6 +133,8 @@ export class TestViewComponent implements OnInit, OnChanges, OnDestroy {
 
   trackUnits = (index: number, testlet: Testlet|Unit): string => testlet.id || index.toString();
 
+  blockName = (blockNumber: number): string => `Block ${String.fromCodePoint(64 + blockNumber)}`;
+
   getUnitContext(testlet: Testlet, unitName: string, level = 0, countGlobal = 0,
                  countAncestor = 0, ancestor: Testlet = null, testletCount = 0): UnitContext {
     let result: UnitContext = {
