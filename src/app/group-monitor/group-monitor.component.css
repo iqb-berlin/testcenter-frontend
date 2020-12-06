@@ -3,7 +3,6 @@
 }
 
 .test-view-table {
-    width: 100%;
     border-collapse: collapse;
     display: table;
 }

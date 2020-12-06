@@ -9,6 +9,10 @@ td {
     border-bottom: 1px solid silver;
 }
 
+td:last-child {
+    min-width: 100%;
+}
+
 :host(test-view:last-child) td {
     border-bottom: none;
 
