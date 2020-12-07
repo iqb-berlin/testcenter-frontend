@@ -135,7 +135,7 @@ export class BookletService {
     return element.querySelectorAll(tagNames.join(', ')).length;
   }
 
-  public getBooklet(bookletName: string): Observable<Booklet|BookletError> {
+  public getBooklet(bookletName = ''): Observable<Booklet|BookletError> {
     if (typeof this.booklets[bookletName] !== 'undefined') {
       return this.booklets[bookletName];
     }

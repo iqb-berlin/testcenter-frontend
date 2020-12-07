@@ -4,7 +4,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 
 import { TestViewComponent } from './test-view.component';
-import { Booklet, BookletError, TestSession, TestViewDisplayOptions } from '../group-monitor.interfaces';
+import { Booklet, BookletError, TestSessionData, TestViewDisplayOptions } from '../group-monitor.interfaces';
 import { BookletService } from '../booklet.service';
 
 const exampleBooklet: Booklet = { // labels are: {global index}-{ancestor index}-{local index}
@@ -76,7 +76,7 @@ const exampleBooklet: Booklet = { // labels are: {global index}-{ancestor index}
   }
 };
 
-const exampleSession: TestSession = {
+const exampleSession: TestSessionData = {
   personId: 0,
   testState: {},
   timestamp: 0,

@@ -90,6 +90,13 @@
             </div>
 
             <div class="toolbar-section">
+                <button mat-raised-button class="control" color="primary" (click)="testCommandAllNext()" [disabled]="!isAllNextAllowed()">
+                    <mat-icon>play_arrow</mat-icon>ALLE IN DEN NÄCHSTEN BLOCK
+                </button>
+            </div>
+
+
+            <div class="toolbar-section">
                 <button mat-raised-button class="control" color="primary" (click)="testCommandResume()" [disabled]="!isResumeAllowed()">
                     <mat-icon>play_arrow</mat-icon>WEITER
                 </button>
@@ -166,7 +173,7 @@
 
                         <thead>
                             <tr class="mat-sort-container">
-                                <td mat-sort-header="selected">
+                                <td mat-sort-header="_selected">
                                     <mat-checkbox
                                         (click)="$event.stopPropagation()"
                                         (change)="toggleCheckAll($event)"
@@ -174,13 +181,13 @@
                                         (contextmenu)="invertChecked($event)"
                                     ></mat-checkbox>
                                 </td>
-                                <td><!-- super state --></td>
+                                <td mat-sort-header="_superState"></td>
                                 <td mat-sort-header="personLabel">Benutzer</td>
                                 <td mat-sort-header="timestamp">Test</td>
                                 <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">Gruppe</td>
                                 <td mat-sort-header="bookletName" *ngIf="displayOptions.bookletColumn === 'show'">Testheft</td>
-                                <td *ngIf="displayOptions.blockColumn === 'show'">Block</td>
-                                <td *ngIf="displayOptions.unitColumn === 'show'">Aufgabe</td>
+                                <td mat-sort-header="_currentBlock" *ngIf="displayOptions.blockColumn === 'show'">Block</td>
+                                <td mat-sort-header="_currentUnit" *ngIf="displayOptions.unitColumn === 'show'">Aufgabe</td>
                             </tr>
                         </thead>
 

@@ -1,6 +1,6 @@
 <td class="selected">
     <mat-checkbox
-            *ngIf="testSession.testId >= 0"
+            *ngIf="testSession.data.testId >= 0"
             (change)="check($event)"
             (contextmenu)="invertSelectionTestheftWide()"
             [checked]="checked"
@@ -9,7 +9,7 @@
 </td>
 
 <td class="super-state" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-    <div class="vertical-align-middle" *ngIf="superStateIcons[getSuperState(testSession)] as iconData">
+    <div class="vertical-align-middle" *ngIf="superStateIcons[testSession.state] as iconData">
         <mat-icon class="unit-badge {{iconData?.class}}" matTooltip="{{iconData.tooltip}}">
             {{iconData.icon}}
         </mat-icon>
@@ -18,47 +18,45 @@
 
 <td class="user" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
     <div class="vertical-align-middle">
-        <h1>{{testSession.personLabel}}</h1>
+        <h1>{{testSession.data.personLabel}}</h1>
     </div>
 </td>
 
 <td class="test" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-    <ng-container *ngIf="(booklet$ | async) as booklet">
-        <ng-container *ngIf="isBooklet(booklet); else: noBookletReason">
+    <ng-container *ngIf="!testSession.booklet.error; else: noBookletReason">
 
-            <div *ngIf="booklet.units as testlet"
-                 class="units-container"
-                 [class]="{
-                    locked: hasState(testSession.testState, 'status', 'locked'),
-                    paused: hasState(testSession.testState, 'CONTROLLER', 'PAUSED'),
-                    error: hasState(testSession.testState, 'CONTROLLER', 'ERROR'),
-                    pending: !hasState(testSession.testState, 'CONTROLLER')
-                 }"
-                 [ngSwitch]="displayOptions.view"
-                 (mouseleave)="mark()"
-                 (click)="deselect($event)"
-            >
-                <div class="units full" *ngSwitchCase="'full'" >
-                    <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testlet}"></ng-container>
-                </div>
-
-                <div class="units medium" *ngSwitchCase="'medium'" >
-                    <ng-container *ngTemplateOutlet="bookletMedium; context: {$implicit: testlet}"></ng-container>
-                </div>
-
-                <div class="units small" *ngSwitchCase="'small'" >
-                    <ng-container *ngTemplateOutlet="bookletSmall; context: {$implicit: testlet}"></ng-container>
-                </div>
+        <div *ngIf="testSession.booklet.units as testlet"
+             class="units-container"
+             [class]="{
+                locked: hasState(testSession.data.testState, 'status', 'locked'),
+                paused: hasState(testSession.data.testState, 'CONTROLLER', 'PAUSED'),
+                error: hasState(testSession.data.testState, 'CONTROLLER', 'ERROR'),
+                pending: !hasState(testSession.data.testState, 'CONTROLLER')
+             }"
+             [ngSwitch]="displayOptions.view"
+             (mouseleave)="mark()"
+             (click)="deselect($event)"
+        >
+            <div class="units full" *ngSwitchCase="'full'" >
+                <ng-container *ngTemplateOutlet="testletFull; context: {$implicit: testlet}"></ng-container>
             </div>
-        </ng-container>
 
-        <ng-template #noBookletReason>
-            <span *ngIf="booklet.error == 'missing-id'">Kein Testheft zugeordnet</span>
-            <span *ngIf="booklet.error == 'missing-file'" class="warning">Kein Zugriff auf Testheft-Datei!</span>
-            <span *ngIf="booklet.error == 'xml'" class="warning">Konnte Testheft-Datei nicht lesen!</span>
-            <span *ngIf="booklet.error == 'general'" class="warning">Fehler beim Zugriff aus Testheft-Datei!</span>
-        </ng-template>
+            <div class="units medium" *ngSwitchCase="'medium'" >
+                <ng-container *ngTemplateOutlet="bookletMedium; context: {$implicit: testlet}"></ng-container>
+            </div>
+
+            <div class="units small" *ngSwitchCase="'small'" >
+                <ng-container *ngTemplateOutlet="bookletSmall; context: {$implicit: testlet}"></ng-container>
+            </div>
+        </div>
     </ng-container>
+
+    <ng-template #noBookletReason>
+        <span *ngIf="testSession.booklet.error == 'missing-id'">Kein Testheft zugeordnet</span>
+        <span *ngIf="testSession.booklet.error == 'missing-file'" class="warning">Kein Zugriff auf Testheft-Datei!</span>
+        <span *ngIf="testSession.booklet.error == 'xml'" class="warning">Konnte Testheft-Datei nicht lesen!</span>
+        <span *ngIf="testSession.booklet.error == 'general'" class="warning">Fehler beim Zugriff aus Testheft-Datei!</span>
+    </ng-template>
 </td>
 
 
@@ -69,7 +67,7 @@
           matTooltip="Freigabewort: {{codeToEnter.code.toUpperCase()}}"
           matTooltipPosition="above"
         >
-        <mat-icon>{{testletsClearedCode && (testletsClearedCode.indexOf(testlet.id) > -1) ? 'lock_open' : 'lock'}}</mat-icon>
+        <mat-icon>{{testSession.clearedCodes && (testSession.clearedCodes.indexOf(testlet.id) > -1) ? 'lock_open' : 'lock'}}</mat-icon>
     </span>
 
     <ng-container *ngFor="let testletOrUnit of testlet.children; trackBy: trackUnits" [ngSwitch]="getTestletType(testletOrUnit)">
@@ -77,7 +75,7 @@
         <span *ngSwitchCase="'unit'"
               [class]="{
                 unit: true,
-                current: testSession.unitName === testletOrUnit.id,
+                current: testSession.data.unitName === testletOrUnit.id,
                 selected: (selected?.element?.id === testletOrUnit.id) && checked,
                 marked: markedElement?.id === testletOrUnit.id
               }"
@@ -107,25 +105,17 @@
 
 
 <ng-template #bookletMedium let-testlet>
-
-    <ng-container *ngIf="featuredUnit$ | async as featuredUnit; else: nonFeaturedTestlet">
-        <ng-container *ngTemplateOutlet="testletTemplateMedium; context: {testlet: testlet, featuredUnit: featuredUnit}">
-        </ng-container>
+    <ng-container *ngTemplateOutlet="testletTemplateMedium; context: {testlet: testlet}">
     </ng-container>
-
-    <ng-template #nonFeaturedTestlet>
-        <ng-container *ngTemplateOutlet="testletTemplateMedium; context: {testlet: testlet, featuredUnit: false}">
-        </ng-container>
-    </ng-template>
 </ng-template>
 
 
-<ng-template #testletTemplateMedium let-testlet="testlet" let-featuredUnit="featuredUnit">
+<ng-template #testletTemplateMedium let-testlet="testlet">
 
     <ng-container *ngFor="let testletOrUnit of testlet.children; let i = index; trackBy: trackUnits" [ngSwitch]="getTestletType(testletOrUnit)">
 
         <span *ngSwitchCase="'unit'"
-              [class]="(testSession.unitName === testletOrUnit.id) ? 'unit current': 'unit'"
+              [class]="(testSession.data.unitName === testletOrUnit.id) ? 'unit current': 'unit'"
               matTooltip="{{testletOrUnit.label}}"
               matTooltipPosition="above"
         >·
@@ -138,12 +128,12 @@
                   matTooltip="Freigabewort: {{codeToEnter.code.toUpperCase()}}"
                   matTooltipPosition="above"
             >
-                <mat-icon>{{testletsClearedCode && (testletsClearedCode.indexOf(testletOrUnit.id) > -1) ? 'lock_open' : 'lock'}}</mat-icon>
+                <mat-icon>{{testSession.clearedCodes && (testSession.clearedCodes.indexOf(testletOrUnit.id) > -1) ? 'lock_open' : 'lock'}}</mat-icon>
             </span>
 
-            <ng-container *ngIf="featuredUnit; else: unFeaturedTestlet">
+            <ng-container *ngIf="testSession.current; else: unFeaturedTestlet">
                 <span
-                        *ngIf="featuredUnit.ancestor.id === testletOrUnit.id; else: unFeaturedTestlet"
+                        *ngIf="testSession.current.ancestor.id === testletOrUnit.id; else: unFeaturedTestlet"
                         [class]="{
                             unit: true,
                             aggregated: true,
@@ -151,11 +141,11 @@
                             selected: (selected?.element?.id === testletOrUnit.id) && checked,
                             marked: markedElement?.id === testletOrUnit.id
                         }"
-                        matTooltip="{{featuredUnit.unit.label}}"
+                        matTooltip="{{testSession.current.unit.label}}"
                         matTooltipPosition="above"
                         (mouseenter)="mark(testletOrUnit)"
                         (click)="select($event, testletOrUnit)"
-                >{{featuredUnit.indexAncestor + 1}} / {{featuredUnit.unitCountAncestor}}
+                >{{testSession.current.indexAncestor + 1}} / {{testSession.current.unitCountAncestor}}
                 </span>
             </ng-container>
 
@@ -177,17 +167,17 @@
 
 
 <ng-template #bookletSmall let-testlet>
-
     <span
-            class="testlet" *ngIf="featuredUnit$ | async as featuredUnit; else: unFeaturedTestlet"
-            matTooltip="{{featuredUnit.parent.label}}"
+            class="testlet" *ngIf="testSession.current; else: unFeaturedTestlet"
+            matTooltip="{{testSession.current.parent?.label}}"
         >
         <span
                 class="unit current aggregated"
-                matTooltip="{{featuredUnit.unit.label}}"
+                matTooltip="{{testSession.current.unit.label}}"
                 matTooltipPosition="above"
             >
-            {{featuredUnit.indexGlobal + 1}} / {{featuredUnit.unitCountGlobal}}
+
+            {{testSession.current.indexGlobal + 1}} / {{testSession.current.unitCountGlobal}}
         </span>
     </span>
 
@@ -200,63 +190,50 @@
 
 
 <td class="group" *ngIf="displayOptions.groupColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-    <div class="vertical-align-middle">{{testSession.groupLabel}}</div>
+    <div class="vertical-align-middle">{{testSession.data.groupLabel}}</div>
 </td>
 
 <td class="booklet" *ngIf="displayOptions.bookletColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-    <ng-container *ngIf="(booklet$ | async) as booklet">
-        <ng-container *ngIf="isBooklet(booklet); else: noBooklet">
-            <div class="vertical-align-middle">{{booklet.metadata.label}}</div>
-        </ng-container>
+    <ng-container *ngIf="!testSession.booklet.error; else: noBooklet">
+        <div class="vertical-align-middle">{{testSession.booklet.metadata.label}}</div>
     </ng-container>
-
     <ng-template #noBooklet>
-        <div class="vertical-align-middle">{{testSession.bookletName}}</div>
+        <div class="vertical-align-middle">{{testSession.data.bookletName}}</div>
     </ng-template>
 </td>
 
-<ng-container *ngIf="featuredUnit$ | async as unitContext; else: noFeaturedUnit">
-    <td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.blockColumn === 'show'">
-        <div *ngIf="featuredUnit$ | async as unitContext" class="vertical-align-middle">
-            {{unitContext.parent.label || (unitContext.parentIndexGlobal ? blockName(unitContext.parentIndexGlobal) : '')}}
-            <mat-icon class="unit-badge"
-                      *ngIf="testletsTimeleft && (testletsTimeleft[unitContext.parent.id] !== undefined)"
-                      matBadge="{{testletsTimeleft[unitContext.parent.id].toString()}}"
-                      matBadgeColor="accent"
-                      matTooltip="Verbleibende Zeit"
-            >schedule
-            </mat-icon>
-        </div>
-    </td>
-
-    <td class="current-unit" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.unitColumn === 'show'">
-        <div class="vertical-align-middle">
-
-            <h2 matTooltip="{{unitContext.unit.label}}">{{unitContext.unit.labelShort || unitContext.unit.id}}</h2>
-
-            <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.unitState, 'PRESENTATION_PROGRESS', 'complete')"
-                  matTooltip="Vollständig betrachtet / angehört"
-                >remove_red_eye
-            </mat-icon>
-
-            <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.unitState, 'RESPONSE_PROGRESS', 'complete')"
-                  matTooltip="Fertig beantwortet"
-                >done_all
-            </mat-icon>
-            <mat-icon class="unit-badge"
-                  *ngIf="hasState(testSession.unitState, 'CURRENT_PAGE_NR')"
-                  matBadge="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_NR', 'PAGES_COUNT'], '/')}}"
+<td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.blockColumn === 'show'">
+    <div *ngIf="testSession.current as current;" class="vertical-align-middle">
+        {{current.parent.label || (current.parentIndexGlobal ? blockName(current.parentIndexGlobal) : '')}}
+        <mat-icon class="unit-badge"
+                  *ngIf="testSession.timeLeft && (testSession.timeLeft[current.parent.id] !== undefined)"
+                  matBadge="{{testSession.timeLeft[current.parent.id].toString()}}"
                   matBadgeColor="accent"
-                  matTooltip="{{this.stateString(testSession.unitState, ['CURRENT_PAGE_ID'])}}"
-                >description
-            </mat-icon>
-        </div>
-    </td>
-</ng-container>
+                  matTooltip="Verbleibende Zeit"
+        >schedule
+        </mat-icon>
+    </div>
+</td>
 
-<ng-template #noFeaturedUnit>
-    <td *ngIf="displayOptions.blockColumn === 'show'"></td>
-    <td *ngIf="displayOptions.unitColumn === 'show'"></td>
-</ng-template>
+<td class="current-unit" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.unitColumn === 'show'">
+    <div *ngIf="testSession.current as current;" class="vertical-align-middle">
+        <h2 matTooltip="{{current.unit.label}}">{{current.unit.labelShort || current.unit.id}}</h2>
+        <mat-icon class="unit-badge"
+              *ngIf="hasState(testSession.data.unitState, 'PRESENTATION_PROGRESS', 'complete')"
+              matTooltip="Vollständig betrachtet / angehört"
+            >remove_red_eye
+        </mat-icon>
+        <mat-icon class="unit-badge"
+              *ngIf="hasState(testSession.data.unitState, 'RESPONSE_PROGRESS', 'complete')"
+              matTooltip="Fertig beantwortet"
+            >done_all
+        </mat-icon>
+        <mat-icon class="unit-badge"
+              *ngIf="hasState(testSession.data.unitState, 'CURRENT_PAGE_NR')"
+              matBadge="{{this.stateString(testSession.data.unitState, ['CURRENT_PAGE_NR', 'PAGES_COUNT'], '/')}}"
+              matBadgeColor="accent"
+              matTooltip="{{this.stateString(testSession.data.unitState, ['CURRENT_PAGE_ID'])}}"
+            >description
+        </mat-icon>
+    </div>
+</td>

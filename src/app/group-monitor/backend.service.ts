@@ -3,18 +3,18 @@ import { HttpHeaders } from '@angular/common/http';
 import { Observable, of, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-import { BookletError, GroupData, TestSession } from './group-monitor.interfaces';
+import { BookletError, GroupData, TestSessionData } from './group-monitor.interfaces';
 import { WebsocketBackendService } from '../shared/websocket-backend.service';
 import { ApiError } from '../app.interfaces';
 
 @Injectable()
-export class BackendService extends WebsocketBackendService<TestSession[]> {
+export class BackendService extends WebsocketBackendService<TestSessionData[]> {
   public pollingEndpoint = '/monitor/test-sessions';
   public pollingInterval = 5000;
   public wsChannelName = 'test-sessions';
-  public initialData: TestSession[] = [];
+  public initialData: TestSessionData[] = [];
 
-  public observeSessionsMonitor(): Observable<TestSession[]> {
+  public observeSessionsMonitor(): Observable<TestSessionData[]> {
     return this.observeEndpointAndChannel();
   }
 

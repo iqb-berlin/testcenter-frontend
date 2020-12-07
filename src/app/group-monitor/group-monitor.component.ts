@@ -6,18 +6,17 @@ import { Sort } from '@angular/material/sort';
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import {
-  BehaviorSubject, combineLatest, Observable, Subject, Subscription
+  BehaviorSubject, combineLatest, Observable, Subject, Subscription, zip
 } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { BackendService } from './backend.service';
 import {
   GroupData,
-  TestSession,
   TestViewDisplayOptions,
-  TestViewDisplayOptionKey, Testlet, Unit, Selected, TestSessionFilter
+  TestViewDisplayOptionKey, Testlet, Unit, Selected, TestSessionFilter, TestSession, TestSessionsSuperStates
 } from './group-monitor.interfaces';
 import { ConnectionStatus } from '../shared/websocket-backend.service';
 import { TestSessionService } from './test-session.service';
@@ -33,6 +32,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private route: ActivatedRoute,
     private bs: BackendService,
+    private bookletService: BookletService,
     private router: Router
   ) {}
 
@@ -106,10 +106,14 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.sortBy$ = new BehaviorSubject<Sort>({ direction: 'asc', active: 'personLabel' });
     this.filters$ = new BehaviorSubject<TestSessionFilter[]>([]);
 
-    this.monitor$ = this.bs.observeSessionsMonitor();
+    this.monitor$ = this.bs.observeSessionsMonitor()
+      .pipe(
+        switchMap(sessions => zip(...sessions
+          .map(session => this.bookletService.getBooklet(session.bookletName)
+            .pipe(map(booklet => TestSessionService.analyzeTestSession(session, booklet))))))
+      );
 
     this.sessions$ = new BehaviorSubject<TestSession[]>([]);
-
     combineLatest<[Sort, TestSessionFilter[], TestSession[]]>([this.sortBy$, this.filters$, this.monitor$])
       .pipe(
         // eslint-disable-next-line max-len
@@ -147,19 +151,19 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     return filters.reduce((keep: boolean, nextFilter: TestSessionFilter) => {
       switch (nextFilter.type) {
         case 'groupName': {
-          return keep && applyNot(session.groupName !== nextFilter.value, nextFilter.not);
+          return keep && applyNot(session.data.groupName !== nextFilter.value, nextFilter.not);
         }
         case 'bookletName': {
-          return keep && applyNot(session.bookletName !== nextFilter.value, nextFilter.not);
+          return keep && applyNot(session.data.bookletName !== nextFilter.value, nextFilter.not);
         }
         case 'testState': {
-          const keyExists = (typeof session.testState[nextFilter.value] !== 'undefined');
-          const valueMatches = keyExists && (session.testState[nextFilter.value] === nextFilter.subValue);
+          const keyExists = (typeof session.data.testState[nextFilter.value] !== 'undefined');
+          const valueMatches = keyExists && (session.data.testState[nextFilter.value] === nextFilter.subValue);
           const keepIn = (typeof nextFilter.subValue !== 'undefined') ? !valueMatches : !keyExists;
           return keep && applyNot(keepIn, nextFilter.not);
         }
         case 'mode': {
-          return keep && applyNot(session.mode !== nextFilter.value, nextFilter.not);
+          return keep && applyNot(session.data.mode !== nextFilter.value, nextFilter.not);
         }
         default:
           return false;
@@ -171,7 +175,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     const newCheckedSessions: {[sessionFullId: number]: TestSession} = {};
     sessions
       .forEach(session => {
-        const sessionFullId = TestSessionService.getPersonXTestId(session);
+        const sessionFullId = session.id;
         if (typeof this.checkedSessions[sessionFullId] !== 'undefined') {
           newCheckedSessions[sessionFullId] = session;
         }
@@ -179,24 +183,37 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.checkedSessions = newCheckedSessions;
   }
 
-  trackSession = (index: number, session: TestSession): number => TestSessionService.getPersonXTestId(session);
+  trackSession = (index: number, session: TestSession): number => session.id;
 
-  sortSessions(sort: Sort, sessions: TestSession[]): TestSession[] {
+  sortSessions(sort: Sort, sessions: TestSession[]): TestSession[] { // STAND
     return sessions
-      .sort((testSession1, testSession2) => {
-        // TODO how to sort by superstate/block/unit?
+      .sort((session1, session2) => {
+        const sortDirectionFactor = (sort.direction === 'asc' ? -1 : 1);
         if (sort.active === 'timestamp') {
-          return (testSession2.timestamp - testSession1.timestamp) * (sort.direction === 'asc' ? 1 : -1);
+          return (session2.data.timestamp - session1.data.timestamp) * sortDirectionFactor;
         }
-        if (sort.active === 'selected') {
-          const session1checkedFactor = (this.isChecked(testSession1) ? 1 : -1);
-          return (this.isChecked(testSession1) ===
-              this.isChecked(testSession2) ? 0 : session1checkedFactor) *
-              (sort.direction === 'asc' ? -1 : 1);
+        if (sort.active === '_selected') {
+          const session1checkedFactor = (this.isChecked(session1) ? 1 : -1);
+          return (this.isChecked(session1) ===
+              this.isChecked(session2) ? 0 : session1checkedFactor) * sortDirectionFactor;
         }
-        const stringA = (testSession1[sort.active] || 'zzzzz');
-        const stringB = (testSession2[sort.active] || 'zzzzz');
-        return stringA.localeCompare(stringB) * (sort.direction === 'asc' ? 1 : -1);
+        if (sort.active === '_superState') {
+          return (TestSessionsSuperStates.indexOf(session1.state) -
+            TestSessionsSuperStates.indexOf(session2.state)) * sortDirectionFactor;
+        }
+        if (sort.active === '_currentBlock') {
+          const s1curBlock = session1.current && session1.current.parent ? session1.current.parentIndexGlobal : 100000;
+          const s2curBlock = session2.current && session2.current.parent ? session2.current.parentIndexGlobal : 100000;
+          return (s1curBlock - s2curBlock) * sortDirectionFactor;
+        }
+        if (sort.active === '_currentUnit') {
+          const s1currentUnit = session1.current ? session1.current.unit.label : 'zzzzzzzzzz';
+          const s2currentUnit = session2.current ? session2.current.unit.label : 'zzzzzzzzzz';
+          return s1currentUnit.localeCompare(s2currentUnit) * sortDirectionFactor;
+        }
+        const stringA = (session1.data[sort.active] || 'zzzzzzzzzz');
+        const stringB = (session2.data[sort.active] || 'zzzzzzzzzz');
+        return stringA.localeCompare(stringB) * sortDirectionFactor;
       });
   }
 
@@ -213,35 +230,35 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   testCommandResume(): void {
     const testIds = Object.values(this.checkedSessions)
-      .filter(session => session.testId && session.testId > -1)
-      .filter(session => TestSessionService.hasState(session.testState, 'status', 'running'))
-      .filter(session => TestSessionService.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
-      .map(session => session.testId);
+      .filter(session => session.data.testId && session.data.testId > -1)
+      .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'running'))
+      .filter(session => TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'PAUSED'))
+      .map(session => session.data.testId);
     this.bs.command('resume', [], testIds);
   }
 
   testCommandPause(): void {
     const testIds = Object.values(this.checkedSessions)
-      .filter(session => session.testId && session.testId > -1)
-      .filter(session => TestSessionService.hasState(session.testState, 'status', 'running'))
-      .filter(session => !TestSessionService.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
-      .map(session => session.testId);
+      .filter(session => session.data.testId && session.data.testId > -1)
+      .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'running'))
+      .filter(session => !TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'PAUSED'))
+      .map(session => session.data.testId);
     this.bs.command('pause', [], testIds);
   }
 
   testCommandGoto(): void {
     if ((this.sessionCheckedGroupCount === 1) && (Object.keys(this.checkedSessions).length > 0)) {
       const testIds = Object.values(this.checkedSessions)
-        .filter(session => session.testId && session.testId > -1)
-        .map(session => session.testId);
+        .filter(session => session.data.testId && session.data.testId > -1)
+        .map(session => session.data.testId);
       this.bs.command('goto', ['id', BookletService.getFirstUnit(this.selectedElement.element).id], testIds);
     }
   }
 
   testCommandUnlock(): void {
     const sessions = Object.values(this.checkedSessions)
-      .filter(session => TestSessionService.hasState(session.testState, 'status', 'locked'));
-    this.bs.unlock(this.ownGroupName, sessions.map(session => session.testId)).add(() => {
+      .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'locked'));
+    this.bs.unlock(this.ownGroupName, sessions.map(session => session.data.testId)).add(() => {
       const plural = sessions.length > 1;
       this.addWarning('reload-some-clients',
         `${plural ? sessions.length : 'Ein'} Test${plural ? 's' : ''} 
@@ -249,6 +266,14 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         ${plural ? 'müssen' : 'muss'} die Webseite aufrufen bzw. neuladen, 
         damit ${plural ? 'die' : 'der'} Test${plural ? 's' : ''} wieder aufgenommen werden kann!`);
     });
+  }
+
+  testCommandAllNext(): void {
+    this.sessions$.getValue()
+      .filter(session => session.data.testId && session.data.bookletName)
+      .forEach(session => {
+        console.log(session);
+      });
   }
 
   private addWarning(key, text): void {
@@ -271,8 +296,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         // TODO the 2nd filter should depend on this.displayOptions.selectionSpreading is 'all' or 'booklet' ...
         // ... can be implemented if it's clear how to broadcast commands to different targets
         toCheck = this.sessions$.getValue()
-          .filter(session => session.testId && session.testId > -1)
-          .filter(session => session.bookletName === selected.session.bookletName)
+          .filter(session => session.data.testId && session.data.testId > -1)
+          .filter(session => session.data.bookletName === selected.session.data.bookletName)
           .filter(session => (selected.inversion ? !this.isChecked(session) : true));
       }
     }
@@ -296,7 +321,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     if (event.checked) {
       this.replaceCheckedSessions(
         this.sessions$.getValue()
-          .filter(session => session.testId && session.testId > -1)
+          .filter(session => session.data.testId && session.data.testId > -1)
       );
     } else {
       this.replaceCheckedSessions([]);
@@ -306,7 +331,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   invertChecked(event: Event): boolean {
     event.preventDefault();
     const unChecked = this.sessions$.getValue()
-      .filter(session => session.testId && session.testId > -1)
+      .filter(session => session.data.testId && session.data.testId > -1)
       .filter(session => !this.isChecked(session));
     this.replaceCheckedSessions(unChecked);
     return false;
@@ -317,34 +342,34 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   isChecked(session: TestSession): boolean {
-    return (typeof this.checkedSessions[TestSessionService.getPersonXTestId(session)] !== 'undefined');
+    return (typeof this.checkedSessions[session.id] !== 'undefined');
   }
 
-  private checkSession(session: TestSession) {
-    this.checkedSessions[TestSessionService.getPersonXTestId(session)] = session;
+  private checkSession(session: TestSession): void {
+    this.checkedSessions[session.id] = session;
   }
 
-  private uncheckSession(session: TestSession) {
+  private uncheckSession(session: TestSession): void {
     if (this.isChecked(session)) {
-      delete this.checkedSessions[TestSessionService.getPersonXTestId(session)];
+      delete this.checkedSessions[session.id];
     }
   }
 
   private replaceCheckedSessions(sessionsToCheck: TestSession[]) {
     const newCheckedSessions = {};
     sessionsToCheck
-      .forEach(session => { newCheckedSessions[TestSessionService.getPersonXTestId(session)] = session; });
+      .forEach(session => { newCheckedSessions[session.id] = session; });
     this.checkedSessions = newCheckedSessions;
     this.onCheckedChanged();
   }
 
   private onCheckedChanged() {
     this.sessionCheckedGroupCount = Object.values(this.checkedSessions)
-      .map(session => session.bookletName)
+      .map(session => session.data.bookletName)
       .filter((value, index, self) => self.indexOf(value) === index)
       .length;
-    const checkableSessions = this.sessions$.getValue().filter(session => session.testId && session.testId > -1);
-    this.allSessionsChecked = (checkableSessions.length === this.countCheckedSessions());
+    const checkable = this.sessions$.getValue().filter(session => session.data.testId && session.data.testId > -1);
+    this.allSessionsChecked = (checkable.length === this.countCheckedSessions());
     if (this.sessionCheckedGroupCount > 1) {
       this.selectedElement = null;
     }
@@ -352,25 +377,29 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   isPauseAllowed(): boolean {
     const activeSessions = Object.values(this.checkedSessions).length && Object.values(this.checkedSessions)
-      .filter(session => TestSessionService.hasState(session.testState, 'status', 'running'));
+      .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'running'));
     return activeSessions.length && activeSessions
-      .filter(session => TestSessionService.hasState(session.testState, 'status', 'running'))
-      .filter(session => TestSessionService.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
+      .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'running'))
+      .filter(session => TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'PAUSED'))
       .length === 0;
   }
 
   isResumeAllowed(): boolean {
     const activeSessions = Object.values(this.checkedSessions)
-      .filter(session => TestSessionService.hasState(session.testState, 'status', 'running'));
+      .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'running'));
     return activeSessions.length && activeSessions
-      .filter(session => !TestSessionService.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
+      .filter(session => !TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'PAUSED'))
       .length === 0;
   }
 
   isUnlockAllowed(): boolean {
     const lockedSessions = Object.values(this.checkedSessions)
-      .filter(session => TestSessionService.hasState(session.testState, 'status', 'locked'));
+      .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'locked'));
     return lockedSessions.length && (lockedSessions.length === Object.values(this.checkedSessions).length);
+  }
+
+  isAllNextAllowed(): boolean {
+    return true;
   }
 
   ngAfterViewChecked(): void {
@@ -408,9 +437,9 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   private finishEverything(): void {
     this.isClosing = true;
     const sessions = Object.values(this.sessions$.getValue())
-      .filter(session => session.testId > 0)
-      .filter(session => !TestSessionService.hasState(session.testState, 'status', 'locked'));
-    this.bs.lock(this.ownGroupName, sessions.map(session => session.testId)).add(() => {
+      .filter(session => session.data.testId > 0)
+      .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked'));
+    this.bs.lock(this.ownGroupName, sessions.map(session => session.data.testId)).add(() => {
       setTimeout(() => {
         this.router.navigateByUrl('/r/login');
       }, 6000);
