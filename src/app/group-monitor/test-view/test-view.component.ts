@@ -41,8 +41,8 @@ export class TestViewComponent {
     error: { tooltip: 'Es ist ein Fehler aufgetreten!', icon: 'error', class: 'danger' },
     controller_terminated: {
       tooltip: 'Testausführung wurde beendet und kann wieder aufgenommen werden. ' +
-        'Der Browser des Teilnehmers muss ggf. neu geladen werden!',
-      icon: 'warning',
+        'Der Browser des Teilnehmers ist nicht verbunden und muss neu geladen werden!',
+      icon: 'announcement',
       class: 'danger'
     },
     connection_lost: {
