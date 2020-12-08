@@ -23,12 +23,12 @@ export class TestViewComponent {
   @Input() testSession: TestSession;
   @Input() displayOptions: TestViewDisplayOptions;
   @Input() markedElement: Testlet|Unit|null = null;
+  @Input() checked: boolean;
   @Input() selected: Selected = {
     element: undefined,
     spreading: false
   };
 
-  @Input() checked: boolean;
   @Output() markedElement$ = new EventEmitter<Testlet>();
   @Output() selectedElement$ = new EventEmitter<Selected>();
   @Output() checked$ = new EventEmitter<boolean>();
@@ -42,7 +42,7 @@ export class TestViewComponent {
     controller_terminated: {
       tooltip: 'Testausführung wurde beendet und kann wieder aufgenommen werden. ' +
         'Der Browser des Teilnehmers ist nicht verbunden und muss neu geladen werden!',
-      icon: 'announcement',
+      icon: 'sync_problem',
       class: 'danger'
     },
     connection_lost: {

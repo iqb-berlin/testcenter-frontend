@@ -4,6 +4,76 @@ import { TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { BookletService } from './booklet.service';
 import { BackendService } from './backend.service';
+import { Booklet } from './group-monitor.interfaces';
+
+export const exampleBooklet: Booklet = { // labels are: {global index}-{ancestor index}-{local index}
+  config: undefined,
+  metadata: undefined,
+  units: {
+    id: 'root',
+    label: 'Root',
+    descendantCount: 10,
+    children: [
+      { id: 'unit-1', label: '0-0-0', labelShort: 'unit' },
+      {
+        id: 'zara',
+        label: 'Testlet-0',
+        children: [],
+        descendantCount: 6
+      },
+      { id: 'unit-2', label: '1-1-1', labelShort: 'unit' },
+      {
+        id: 'alf',
+        label: 'Testlet-1',
+        descendantCount: 4,
+        children: [
+          { id: 'unit-3', label: '2-0-0', labelShort: 'unit' },
+          {
+            id: 'ben',
+            label: 'Testlet-2',
+            descendantCount: 3,
+            children: [
+              { id: 'unit-4', label: '3-1-0', labelShort: 'unit' },
+              {
+                id: 'cara',
+                label: 'Testlet-3',
+                descendantCount: 2,
+                children: []
+              },
+              { id: 'unit-5', label: '4-2-1', labelShort: 'unit' },
+              {
+                id: 'dolf',
+                label: 'Testlet-4',
+                descendantCount: 1,
+                children: [
+                  { id: 'unit-6', label: '5-3-0', labelShort: 'unit' }
+                ]
+              }
+            ]
+          },
+          { id: 'unit-7', label: '6-4-1', labelShort: 'unit' }
+        ]
+      },
+      { id: 'unit-8', label: '7-2-2', labelShort: 'unit' },
+      {
+        id: 'ellie',
+        label: 'Testlet-5',
+        descendantCount: 2,
+        children: [
+          { id: 'unit-9', label: '8-0-0', labelShort: 'unit' },
+          {
+            id: 'fred',
+            label: 'Testlet-6',
+            descendantCount: 1,
+            children: [
+              { id: 'unit-10', label: '9-1-0', labelShort: 'unit' }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+};
 
 class MockBackendService {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars,class-methods-use-this
