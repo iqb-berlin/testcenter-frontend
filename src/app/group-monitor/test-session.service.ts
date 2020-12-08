@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   Booklet,
-  BookletError,
+  BookletError, isBooklet,
   isUnit,
   Testlet,
   TestSession,
@@ -13,20 +13,17 @@ import { TestMode } from '../config/test-mode';
 
 @Injectable()
 export class TestSessionService {
-  static isBooklet = (bookletOrError: Booklet|BookletError): bookletOrError is Booklet => !('error' in bookletOrError);
-
   static hasState(state: Record<string, unknown>, key: string, value = null): boolean {
     return ((typeof state[key] !== 'undefined') && ((value !== null) ? (state[key] === value) : true));
   }
 
   static analyzeTestSession(session: TestSessionData, booklet: Booklet | BookletError): TestSession {
-    const currentUnitContext = TestSessionService.isBooklet(booklet) ?
-      TestSessionService.getCurrent(booklet.units, session.unitName) : null;
+    const current = isBooklet(booklet) ? TestSessionService.getCurrent(booklet.units, session.unitName) : null;
     return {
       data: session,
       id: TestSessionService.getId(session),
       state: TestSessionService.getSuperState(session),
-      current: currentUnitContext && currentUnitContext.unit ? currentUnitContext : null,
+      current: current && current.unit ? current : null,
       booklet,
       timeLeft: TestSessionService.parseJsonState(session.testState, 'TESTLETS_TIMELEFT'),
       clearedCodes: TestSessionService.parseJsonState(session.testState, 'TESTLETS_CLEARED_CODE')

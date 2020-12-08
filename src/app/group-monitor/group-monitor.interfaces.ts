@@ -45,6 +45,10 @@ export interface BookletError {
   error: 'xml' | 'missing-id' | 'missing-file' | 'general';
 }
 
+export function isBooklet(bookletOrError: Booklet|BookletError): bookletOrError is Booklet {
+  return !('error' in bookletOrError);
+}
+
 export interface BookletMetadata {
   id: string;
   label: string;
@@ -105,6 +109,10 @@ export interface TestViewDisplayOptions {
 
 export function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
   return !('children' in testletOrUnit);
+}
+
+export function isTestlet(testletOrUnit: Testlet|Unit): testletOrUnit is Testlet {
+  return ('children' in testletOrUnit);
 }
 
 export interface UnitContext {

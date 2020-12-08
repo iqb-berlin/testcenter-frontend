@@ -4,7 +4,7 @@ import { map, shareReplay } from 'rxjs/operators';
 import { MainDataService } from '../maindata.service';
 import { BackendService } from './backend.service';
 import {
-  Booklet, BookletError, BookletMetadata, isUnit, Restrictions, Testlet, Unit
+  Booklet, BookletError, BookletMetadata, isUnit, Restrictions, Testlet, Unit, UnitContext
 } from './group-monitor.interfaces';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../config/booklet-config';
@@ -26,6 +26,37 @@ export class BookletService {
       testletOrUnit = testletOrUnit.children[0];
     }
     return testletOrUnit;
+  }
+
+  static getNextBlock(current: UnitContext, booklet: Booklet): Testlet|null {
+    if (!current.ancestor) {
+      return null;
+    }
+    const startIndex = !current.ancestor.id ?
+      booklet.units.children.indexOf(current.unit) : booklet.units.children.indexOf(current.ancestor);
+    for (let i = startIndex + 1; i < booklet.units.children.length; i++) {
+      if (!isUnit(booklet.units.children[i])) {
+        return <Testlet>booklet.units.children[i];
+      }
+    }
+    return null;
+  }
+
+  public getBooklet(bookletName = ''): Observable<Booklet|BookletError> {
+    if (typeof this.booklets[bookletName] !== 'undefined') {
+      return this.booklets[bookletName];
+    }
+    if (bookletName === '') {
+      this.booklets[bookletName] = of<Booklet|BookletError>({ error: 'missing-id' });
+    } else {
+      this.booklets[bookletName] = this.bs.getBooklet(bookletName)
+        .pipe(
+          // eslint-disable-next-line max-len
+          map((response: string|BookletError) => (typeof response === 'string' ? BookletService.parseBookletXml(response) : response)),
+          shareReplay(1)
+        );
+    }
+    return this.booklets[bookletName];
   }
 
   private static parseBookletXml(xmlString: string): Booklet|BookletError {
@@ -133,22 +164,5 @@ export class BookletService {
 
   private static xmlCountChildrenOfTagNames(element: Element, tagNames: string[]): number {
     return element.querySelectorAll(tagNames.join(', ')).length;
-  }
-
-  public getBooklet(bookletName = ''): Observable<Booklet|BookletError> {
-    if (typeof this.booklets[bookletName] !== 'undefined') {
-      return this.booklets[bookletName];
-    }
-    if (bookletName === '') {
-      this.booklets[bookletName] = of<Booklet|BookletError>({ error: 'missing-id' });
-    } else {
-      this.booklets[bookletName] = this.bs.getBooklet(bookletName)
-        .pipe(
-          // eslint-disable-next-line max-len
-          map((response: string|BookletError) => (typeof response === 'string' ? BookletService.parseBookletXml(response) : response)),
-          shareReplay(1)
-        );
-    }
-    return this.booklets[bookletName];
   }
 }

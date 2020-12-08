@@ -6,7 +6,7 @@ import { Sort } from '@angular/material/sort';
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import {
-  BehaviorSubject, combineLatest, Observable, Subject, Subscription, zip
+  BehaviorSubject, combineLatest, Observable, of, Subject, Subscription, zip
 } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 
@@ -16,7 +16,7 @@ import { BackendService } from './backend.service';
 import {
   GroupData,
   TestViewDisplayOptions,
-  TestViewDisplayOptionKey, Testlet, Unit, Selected, TestSessionFilter, TestSession, TestSessionsSuperStates
+  TestViewDisplayOptionKey, Testlet, Unit, Selected, TestSessionFilter, TestSession, TestSessionsSuperStates, isBooklet
 } from './group-monitor.interfaces';
 import { ConnectionStatus } from '../shared/websocket-backend.service';
 import { TestSessionService } from './test-session.service';
@@ -269,11 +269,25 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   testCommandAllNext(): void {
-    this.sessions$.getValue()
-      .filter(session => session.data.testId && session.data.bookletName)
-      .forEach(session => {
-        console.log(session);
-      });
+    const sessionsWithNextUnit = this.sessions$.getValue()
+      .filter(session => session.data.testId && session.data.bookletName && session.current)
+      .map(session => {
+        if (!isBooklet(session.booklet)) {
+          return null;
+        }
+        const nextBlock = BookletService.getNextBlock(session.current, session.booklet);
+        if (!nextBlock) {
+          return null;
+        }
+        const nextBlockFirstUnit = BookletService.getFirstUnit(nextBlock);
+        return { gotoId: nextBlockFirstUnit.id, session };
+      })
+      .filter(sessionAndUnit => !!sessionAndUnit);
+    const commands = sessionsWithNextUnit
+      .map(params => this.bs.command('goto', ['id', params.gotoId], [params.session.data.testId]));
+    of(commands).subscribe(() => {
+      this.replaceCheckedSessions(sessionsWithNextUnit.map(sessionAndUnit => sessionAndUnit.session));
+    });
   }
 
   private addWarning(key, text): void {
@@ -396,10 +410,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     const lockedSessions = Object.values(this.checkedSessions)
       .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'locked'));
     return lockedSessions.length && (lockedSessions.length === Object.values(this.checkedSessions).length);
-  }
-
-  isAllNextAllowed(): boolean {
-    return true;
   }
 
   ngAfterViewChecked(): void {
