@@ -5,6 +5,7 @@ import { Observable, of } from 'rxjs';
 import { BookletService } from './booklet.service';
 import { BackendService } from './backend.service';
 import { Booklet } from './group-monitor.interfaces';
+import { TestSessionService } from './test-session.service';
 
 export const exampleBooklet: Booklet = { // labels are: {global index}-{ancestor index}-{local index}
   config: undefined,
@@ -75,6 +76,47 @@ export const exampleBooklet: Booklet = { // labels are: {global index}-{ancestor
   }
 };
 
+export const exampleBooklet2: Booklet = {
+  config: undefined,
+  metadata: undefined,
+  units: {
+    id: 'root',
+    label: 'Root',
+    descendantCount: 4,
+    children: [
+      {
+        id: 'zara',
+        label: 'Testlet-0',
+        descendantCount: 3,
+        children: [
+          {
+            id: 'alf',
+            label: 'Testlet-1',
+            descendantCount: 2,
+            children: [
+              {
+                id: 'alf',
+                label: 'Testlet-1',
+                descendantCount: 1,
+                children: [
+                  { id: 'unit-1', label: '0-0-0', labelShort: 'unit' }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      { id: 'unit-2', label: '1-1-1', labelShort: 'unit' },
+      {
+        id: 'ben',
+        label: 'Testlet-2',
+        descendantCount: 0,
+        children: []
+      }
+    ]
+  }
+};
+
 class MockBackendService {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars,class-methods-use-this
   public getBooklet(bookletName: string): Observable<string> {
@@ -101,6 +143,32 @@ describe('BookletService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('getFirstUnit() should get first unit if a testlet, regardless of nested sub-testlets', () => {
+    expect(BookletService.getFirstUnit(exampleBooklet.units).id).toEqual('unit-1');
+    expect(BookletService.getFirstUnit(exampleBooklet2.units).id).toEqual('unit-1');
+    expect(BookletService.getFirstUnit(exampleBooklet2.units.children[2])).toBeNull();
+  });
+
+  describe('getNextBlock()', () => {
+    // eslint-disable-next-line @typescript-eslint/dot-notation,prefer-destructuring
+    const getCurrent = TestSessionService['getCurrent'];
+
+    it('should get next block at root-level, when blockless unit is selected', () => {
+      const result = BookletService.getNextBlock(getCurrent(exampleBooklet.units, 'unit-1'), exampleBooklet);
+      expect(result.id).toEqual('zara');
+    });
+
+    it('should get next block at root-level, when unit in nested testlet is selected', () => {
+      const result = BookletService.getNextBlock(getCurrent(exampleBooklet.units, 'unit-3'), exampleBooklet);
+      expect(result.id).toEqual('ellie');
+    });
+
+    it('should return null, if there is no next block on root-level', () => {
+      const result = BookletService.getNextBlock(getCurrent(exampleBooklet.units, 'unit-9'), exampleBooklet);
+      expect(result).toBeNull();
+    });
   });
 
   xit('parseBookletXml() should parse a Booklet-Xml to a Booklet-Object', () => {
