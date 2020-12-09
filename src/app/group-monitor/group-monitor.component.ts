@@ -188,14 +188,20 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   sortSessions(sort: Sort, sessions: TestSession[]): TestSession[] { // STAND
     return sessions
       .sort((session1, session2) => {
-        const sortDirectionFactor = (sort.direction === 'asc' ? -1 : 1);
+        const sortDirectionFactor = (sort.direction === 'asc' ? 1 : -1);
         if (sort.active === 'timestamp') {
-          return (session2.data.timestamp - session1.data.timestamp) * sortDirectionFactor;
+          return (session1.data.timestamp - session2.data.timestamp) * sortDirectionFactor;
         }
-        if (sort.active === '_selected') {
-          const session1checkedFactor = (this.isChecked(session1) ? 1 : -1);
-          return (this.isChecked(session1) ===
-              this.isChecked(session2) ? 0 : session1checkedFactor) * sortDirectionFactor;
+        if (sort.active === '_checked') {
+          const session1isChecked = this.isChecked(session1);
+          const session2isChecked = this.isChecked(session2);
+          if (!session1isChecked && session2isChecked) {
+            return 1 * sortDirectionFactor;
+          }
+          if (session1isChecked && !session2isChecked) {
+            return -1 * sortDirectionFactor;
+          }
+          return 0;
         }
         if (sort.active === '_superState') {
           return (TestSessionsSuperStates.indexOf(session1.state) -
