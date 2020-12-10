@@ -120,11 +120,7 @@
                 </button>
             </div>
 
-            <div class="toolbar-section">
-                <button mat-raised-button class="control" color="primary" (click)="finishEverythingCommand()">
-                    <mat-icon>stop</mat-icon>TESTUNG BEENDEN
-                </button>
-            </div>
+
 
             <hr>
 
@@ -141,6 +137,15 @@
                     <mat-icon>warning</mat-icon>{{warning.value.text}}
                 </div>
             </div>
+
+            <hr>
+
+            <div class="toolbar-section toolbar-section-button">
+                <button mat-raised-button class="control" color="primary" (click)="finishEverythingCommand()">
+                    <mat-icon>stop</mat-icon>TESTUNG BEENDEN
+                </button>
+            </div>
+
         </mat-sidenav>
 
         <mat-sidenav-content>
@@ -181,7 +186,9 @@
                                         (contextmenu)="invertChecked($event)"
                                     ></mat-checkbox>
                                 </td>
-                                <td mat-sort-header="_superState"></td>
+                                <td mat-sort-header="_superState">
+                                    <mat-icon>person</mat-icon>
+                                </td>
                                 <td mat-sort-header="personLabel">Benutzer</td>
                                 <td mat-sort-header="timestamp">Aktivität</td>
                                 <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">Gruppe</td>
