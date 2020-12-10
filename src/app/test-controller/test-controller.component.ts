@@ -578,18 +578,19 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       }); // routingSubscription
 
       this.cmd.connectionStatus$
-          .pipe(
-              map(status => status === 'ws-online'),
-              distinctUntilChanged()
-          )
-          .subscribe(isWsConnected => {
-              this.bs.updateTestState(this.tcs.testId, [{
-                key: TestStateKey.CONNECTION,
-                content: isWsConnected ? 'WEBSOCKET' : 'POLLING',
-                timeStamp: Date.now()
-              }]);
-          });
-
+        .pipe(
+          map(status => status === 'ws-online'),
+          distinctUntilChanged()
+        )
+        .subscribe(isWsConnected => {
+          if (this.tcs.testMode.saveResponses) {
+            this.bs.updateTestState(this.tcs.testId, [{
+              key: TestStateKey.CONNECTION,
+              content: isWsConnected ? 'WEBSOCKET' : 'POLLING',
+              timeStamp: Date.now()
+            }]);
+          }
+        });
     }); // setTimeOut
   }
 
