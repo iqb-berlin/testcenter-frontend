@@ -17,7 +17,7 @@ export interface TestSessionData {
   readonly groupName?: string;
   readonly groupLabel?: string;
   readonly mode?: string;
-  readonly testId?: number;
+  readonly testId: number;
   readonly bookletName?: string;
   readonly testState: {
     [testStateKey: string]: string
