@@ -114,6 +114,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
         map(testEvent => ((testEvent === 'started') ? `test/${this.tcs.testId}/commands` : '')),
         filter(newPollingEndpoint => newPollingEndpoint !== this.pollingEndpoint),
         switchMap((pollingEndpoint: string) => {
+          this.executedCommandIds = [];
           this.pollingEndpoint = pollingEndpoint;
           if (this.pollingEndpoint) {
             return this.observeEndpointAndChannel();
