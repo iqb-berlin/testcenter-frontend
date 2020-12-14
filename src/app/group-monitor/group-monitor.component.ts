@@ -452,13 +452,25 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   private finishEverything(): void {
     this.isClosing = true;
-    const sessions = Object.values(this.sessions$.getValue())
+
+    const getUnlockedConnectedTestIds = () => Object.values(this.sessions$.getValue())
+      .filter(session => session.data.testId > 0 &&
+        !TestSessionService.hasState(session.data.testState, 'status', 'locked') &&
+        !TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'TERMINATED') &&
+        (TestSessionService.hasState(session.data.testState, 'CONNECTION', 'POLLING') ||
+          TestSessionService.hasState(session.data.testState, 'CONNECTION', 'WEBSOCKET')))
+      .map(session => session.data.testId);
+    const getUnlockedTestIds = () => Object.values(this.sessions$.getValue())
       .filter(session => session.data.testId > 0)
-      .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked'));
-    this.bs.lock(this.ownGroupName, sessions.map(session => session.data.testId)).add(() => {
-      setTimeout(() => {
-        this.router.navigateByUrl('/r/login');
-      }, 6000);
-    });
+      .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked'))
+      .map(session => session.data.testId);
+
+    this.bs.command('terminate', [], getUnlockedConnectedTestIds()) // kill running tests
+      .add(() => {
+        setTimeout(() => this.bs.lock(this.ownGroupName, getUnlockedTestIds()), 2000); // lock everything
+      })
+      .add(() => {
+        setTimeout(() => { this.router.navigateByUrl('/r/login'); }, 5000); // go away
+      });
   }
 }
