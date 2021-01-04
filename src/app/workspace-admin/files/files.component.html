@@ -38,7 +38,7 @@
                 <div *ngFor="let message of element.report[level]">
                   <div class="vertical-align-middle">
                     <mat-icon class="report-{{level}}">{{level}}</mat-icon>
-                    <span>{{message}}</span>
+                    <alert text="{{message}}"></alert>
                   </div>
                 </div>
               </ng-container>
