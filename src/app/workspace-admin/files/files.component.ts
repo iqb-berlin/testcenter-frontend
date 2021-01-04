@@ -34,6 +34,7 @@ export class FilesComponent implements OnInit {
   public checkInfos = [];
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
+  private fileStats: {[type: string]: number};
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
@@ -131,10 +132,25 @@ export class FilesComponent implements OnInit {
         (fileList: GetFileResponseData[]) => {
           this.serverfiles = new MatTableDataSource(fileList);
           this.serverfiles.sort = this.sort;
+          this.fileStats = FilesComponent.getStats(fileList);
           this.mds.setSpinnerOff();
         }
       );
     }
+  }
+
+  private static getStats(fileList: GetFileResponseData[]): {[type: string]: number} {
+    const stats: {[type: string]: number} = {};
+    // TODO filter validity
+    return fileList.reduce((carry, file) => {
+      if (typeof carry[file.type] === 'undefined') {
+        // eslint-disable-next-line no-param-reassign
+        carry[file.type] = 0;
+      }
+      // eslint-disable-next-line no-param-reassign
+      carry[file.type] += 1;
+      return carry;
+    }, stats);
   }
 
   download(element: GetFileResponseData): void {
