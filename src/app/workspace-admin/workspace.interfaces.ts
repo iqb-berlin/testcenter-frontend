@@ -13,6 +13,11 @@ export interface GetFileResponseData {
   type: string;
   typelabel: string;
   isChecked: boolean;
+  report: {
+    error: string[];
+    warning: string[];
+    info: string[];
+  }
 }
 
 export interface CheckWorkspaceResponseData {

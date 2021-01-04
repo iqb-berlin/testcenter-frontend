@@ -22,7 +22,7 @@ import { MainDataService } from '../../maindata.service';
 })
 export class FilesComponent implements OnInit {
   public serverfiles: MatTableDataSource<GetFileResponseData>;
-  public displayedColumns = ['checked', 'filename', 'typelabel', 'filesize', 'filedatetime'];
+  public displayedColumns = ['checked', 'filename', 'status', 'typelabel', 'filesize', 'filedatetime'];
 
   // for fileupload
   public uploadUrl = '';
