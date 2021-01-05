@@ -99,9 +99,12 @@
       {{ i }}
     </p>
 
-    <pre>{{fileStats | json}}</pre>
-
-    <br/>
+    <div *ngFor="let stat of fileStats | keyvalue">
+      <div class="vertical-align-middle">
+        <mat-icon class="report-info">info</mat-icon>
+        <alert text="{{stat.value}} Dateien vom Typ `{{stat.key}}`"></alert>
+      </div>
+    </div>
 
   </div>
 </div>

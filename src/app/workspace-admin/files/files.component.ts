@@ -34,7 +34,7 @@ export class FilesComponent implements OnInit {
   public checkInfos = [];
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  private fileStats: {[type: string]: number};
+  public fileStats: {[type: string]: number};
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
@@ -54,37 +54,34 @@ export class FilesComponent implements OnInit {
     });
   }
 
-  checkAll(isChecked: boolean) {
-    this.serverfiles.data.forEach((element) => {
+  checkAll(isChecked: boolean): void {
+    this.serverfiles.data.forEach(element => {
+      // eslint-disable-next-line no-param-reassign
       element.isChecked = isChecked;
     });
   }
 
-  deleteFiles() {
+  deleteFiles(): void {
     if (this.wds.wsRole === 'RW') {
       this.checkErrors = [];
       this.checkWarnings = [];
       this.checkInfos = [];
 
       const filesToDelete = [];
-      this.serverfiles.data.forEach((element) => {
+      this.serverfiles.data.forEach(element => {
         if (element.isChecked) {
           filesToDelete.push(`${element.type}/${element.filename}`);
         }
       });
 
       if (filesToDelete.length > 0) {
-        let prompt = 'Sie haben ';
-        if (filesToDelete.length > 1) {
-          prompt = prompt + filesToDelete.length + ' Dateien ausgewählt. Sollen';
-        } else {
-          prompt = prompt + ' eine Datei ausgewählt. Soll';
-        }
+        const p = filesToDelete.length > 1;
         const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
           width: '400px',
           data: <ConfirmDialogData>{
             title: 'Löschen von Dateien',
-            content: `${prompt} diese gelöscht werden?`,
+            content: `Sie haben ${p ? filesToDelete.length : 'eine'} Datei${p ? 'en' : ''}\` 
+              ausgewählt. Soll${p ? 'en' : ''}  diese gelöscht werden?`,
             confirmbuttonlabel: 'Löschen',
             showcancel: true
           }
@@ -96,12 +93,12 @@ export class FilesComponent implements OnInit {
             this.bs.deleteFiles(filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) => {
               const message = [];
               if (fileDeletionReport.deleted.length > 0) {
-                message.push(fileDeletionReport.deleted.length + ' Dateien erfolgreich gelöscht.');
+                message.push(`${fileDeletionReport.deleted.length} Dateien erfolgreich gelöscht.`);
               }
               if (fileDeletionReport.not_allowed.length > 0) {
-                message.push(fileDeletionReport.not_allowed.length + ' Dateien konnten nicht gelöscht werden.');
+                message.push(`${fileDeletionReport.not_allowed.length} Dateien konnten nicht gelöscht werden.`);
               }
-              this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '',  {duration: 1000});
+              this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
               this.updateFileList();
             });
           }
