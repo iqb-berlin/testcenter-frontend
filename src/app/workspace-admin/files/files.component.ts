@@ -16,6 +16,17 @@ import { GetFileResponseData, CheckWorkspaceResponseData } from '../workspace.in
 import { BackendService, FileDeletionReport } from '../backend.service';
 import { MainDataService } from '../../maindata.service';
 
+interface FileStats {
+  types: {
+    [type: string]: {
+      all: number;
+      valid: number;
+    }
+  }
+  all: number;
+  valid: number;
+}
+
 @Component({
   templateUrl: './files.component.html',
   styleUrls: ['./files.component.css']
@@ -34,7 +45,11 @@ export class FilesComponent implements OnInit {
   public checkInfos = [];
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  public fileStats: {[type: string]: number};
+  public fileStats: FileStats = {
+    types: {},
+    all: 0,
+    valid: 0
+  };
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
@@ -136,18 +151,25 @@ export class FilesComponent implements OnInit {
     }
   }
 
-  private static getStats(fileList: GetFileResponseData[]): {[type: string]: number} {
-    const stats: {[type: string]: number} = {};
-    // TODO filter validity
-    return fileList.reduce((carry, file) => {
-      if (typeof carry[file.type] === 'undefined') {
-        // eslint-disable-next-line no-param-reassign
-        carry[file.type] = 0;
+  private static getStats(fileList: GetFileResponseData[]): FileStats {
+    const stats: FileStats = {
+      types: {},
+      all: 0,
+      valid: 0
+    };
+    fileList.forEach(file => {
+      if (typeof stats.types[file.type] === 'undefined') {
+        stats.types[file.type] = {
+          all: 0,
+          valid: 0
+        };
       }
-      // eslint-disable-next-line no-param-reassign
-      carry[file.type] += 1;
-      return carry;
-    }, stats);
+      stats.types[file.type].all += 1;
+      stats.types[file.type].valid += (file.report.error && file.report.error.length) ? 1 : 0;
+      stats.all += 1;
+      stats.valid += (file.report.error && file.report.error.length) ? 1 : 0;
+    });
+    return stats;
   }
 
   download(element: GetFileResponseData): void {
