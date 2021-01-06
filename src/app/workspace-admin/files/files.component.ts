@@ -49,7 +49,7 @@ export class FilesComponent implements OnInit {
     'Testtakers': 'Teilnehmerliste',
     'Booklet': 'Testheft',
     'SysCheck': 'Systemcheck',
-    'Resource': 'Resource',
+    'Resource': 'Ressource',
     'Unit': 'Unit'
   }
 
@@ -95,7 +95,7 @@ export class FilesComponent implements OnInit {
       const filesToDelete = [];
       this.serverfiles.data.forEach(element => {
         if (element.isChecked) {
-          filesToDelete.push(`${element.type}/${element.filename}`);
+          filesToDelete.push(`${element.type}/${element.name}`);
         }
       });
 
@@ -188,12 +188,12 @@ export class FilesComponent implements OnInit {
 
   download(element: GetFileResponseData): void {
     this.mds.setSpinnerOn();
-    this.bs.downloadFile(element.type, element.filename)
+    this.bs.downloadFile(element.type, element.name)
       .subscribe(
         (fileData: Blob|boolean) => {
           this.mds.setSpinnerOff();
           if (fileData !== false) {
-            saveAs(fileData as Blob, element.filename);
+            saveAs(fileData as Blob, element.name);
           }
         }
       );

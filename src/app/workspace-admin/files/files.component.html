@@ -20,7 +20,7 @@
         <mat-header-cell *matHeaderCellDef mat-sort-header class="namecell"> Name </mat-header-cell>
         <mat-cell *matCellDef="let element" class="namecell">
           <div class="file-report">
-            <button mat-button (click)="download(element)">{{element.filename}}</button>
+            <button mat-button (click)="download(element)">{{element.name}}</button>
             <div *ngFor="let level of ['error', 'warning', 'info']" class="vertical-align-middle">
               <ng-container *ngIf="element.report[level] && element.report[level].length">
                 <div>{{element.report[level].length}}</div>
@@ -49,14 +49,14 @@
       <ng-container matColumnDef="filedatetime">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="datecell"> Datum </mat-header-cell>
         <mat-cell *matCellDef="let element" class="datecell">
-          {{(element.filedatetime * 1000) | date: 'd.M.yy hh:mm'}}
+          {{(element.modificationTime * 1000) | date: 'd.M.yy hh:mm'}}
         </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="filesize">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Größe </mat-header-cell>
         <mat-cell *matCellDef="let element">
-          {{element.filesize | bytes}}
+          {{element.size | bytes}}
           <span *ngIf="element.info.totalSize"> (Komplett: {{element.info.totalSize | bytes }})</span>
         </mat-cell>
       </ng-container>

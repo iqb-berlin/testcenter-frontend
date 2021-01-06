@@ -5,9 +5,9 @@ export interface WorkspaceData {
 }
 
 export interface GetFileResponseData {
-  filename: string;
-  filesize: number;
-  filedatetime: string;
+  name: string;
+  size: number;
+  modificationTime: string;
   type: string;
   isChecked: boolean;
   report: {
