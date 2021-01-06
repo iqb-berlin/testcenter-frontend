@@ -45,6 +45,14 @@ export class FilesComponent implements OnInit {
   public checkWarnings = [];
   public checkInfos = [];
 
+  public typeLabels = {
+    'Testtakers': 'Teilnehmerliste',
+    'Booklet': 'Testheft',
+    'SysCheck': 'Systemcheck',
+    'Resource': 'Resource',
+    'Unit': 'Unit'
+  }
+
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   public fileStats: FileStats = {
     types: {},

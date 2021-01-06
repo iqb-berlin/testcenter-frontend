@@ -13,7 +13,7 @@
 
       <ng-container matColumnDef="typelabel">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Typ </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{element.typelabel}}</mat-cell>
+        <mat-cell *matCellDef="let element">{{typeLabels[element.type]}}</mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="filename">
@@ -49,16 +49,16 @@
 
       <ng-container matColumnDef="filedatetime">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="datecell"> Datum </mat-header-cell>
-        <mat-cell *matCellDef="let element" class="datecell"> {{element.filedatetimestr}} </mat-cell>
+        <mat-cell *matCellDef="let element" class="datecell">
+          {{(element.filedatetime * 1000) | date: 'd.M.yy hh:mm'}}
+        </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="filesize">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Größe </mat-header-cell>
         <mat-cell *matCellDef="let element">
-          {{element.filesizestr}}
-          <span *ngIf="element.info.totalSize">
-            / {{element.info.totalSize | bytes }}
-          </span>
+          {{element.filesize | bytes}}
+          <span *ngIf="element.info.totalSize"> (Komplett: {{element.info.totalSize | bytes }})</span>
         </mat-cell>
       </ng-container>
 

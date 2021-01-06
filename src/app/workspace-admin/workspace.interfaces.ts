@@ -7,11 +7,8 @@ export interface WorkspaceData {
 export interface GetFileResponseData {
   filename: string;
   filesize: number;
-  filesizestr: string;
   filedatetime: string;
-  filedatetimestr: string;
   type: string;
-  typelabel: string;
   isChecked: boolean;
   report: {
     error: string[];
