@@ -17,6 +17,9 @@ export interface GetFileResponseData {
     error: string[];
     warning: string[];
     info: string[];
+  },
+  info: {
+    [key: string]: number;
   }
 }
 

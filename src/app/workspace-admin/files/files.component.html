@@ -54,7 +54,12 @@
 
       <ng-container matColumnDef="filesize">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Größe </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.filesizestr}} </mat-cell>
+        <mat-cell *matCellDef="let element">
+          {{element.filesizestr}}
+          <span *ngIf="element.info.totalSize">
+            / {{element.info.totalSize | bytes }}
+          </span>
+        </mat-cell>
       </ng-container>
 
 
@@ -104,16 +109,25 @@
         <mat-icon class="report-info">info</mat-icon>
         <span>
           {{stat.value.valid}} valide Datei{{stat.value.valid == 1 ? '' : 'en'}} vom Typ {{stat.key}}
-          {{(stat.value.all > stat.value.valid) ? '(von insgesamt ' + stat.value.all + ')' : ''}}
+          {{(stat.value.total > stat.value.valid) ? '(von insgesamt ' + stat.value.total + ')' : ''}}
         </span>
       </div>
     </div>
 
-    <div *ngIf="fileStats.valid < fileStats.all">
+    <div>
       <div class="vertical-align-middle">
         <mat-icon class="report-warning">warning</mat-icon>
         <span>
-          {{fileStats.valid}} Datei{{fileStats.valid == 1 ? '' : 'en'}} von {{fileStats.all}}
+          {{fileStats.testtakers}} Testteilnehmer definiert.
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="fileStats.valid < fileStats.total">
+      <div class="vertical-align-middle">
+        <mat-icon class="report-warning">warning</mat-icon>
+        <span>
+          {{fileStats.valid}} Datei{{fileStats.valid == 1 ? '' : 'en'}} von {{fileStats.total}}
           sind nicht valide oder haben fehlende Abhängigkeiten und werden ignoriert!
         </span>
       </div>
