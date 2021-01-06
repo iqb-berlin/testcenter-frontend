@@ -19,14 +19,8 @@
       <ng-container matColumnDef="filename">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="namecell"> Name </mat-header-cell>
         <mat-cell *matCellDef="let element" class="namecell">
-          <button mat-button (click)="download(element)">{{element.filename}}</button>
-        </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="status">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="namecell"></mat-header-cell>
-        <mat-cell *matCellDef="let element" class="namecell">
-          <div class="file-report" >
+          <div class="file-report">
+            <button mat-button (click)="download(element)">{{element.filename}}</button>
             <div *ngFor="let level of ['error', 'warning', 'info']" class="vertical-align-middle">
               <ng-container *ngIf="element.report[level] && element.report[level].length">
                 <div>{{element.report[level].length}}</div>
@@ -34,6 +28,11 @@
               </ng-container>
             </div>
             <div class="full-file-report">
+              <table>
+                <ng-container *ngFor="let info of element.info | keyvalue">
+                  <tr *ngIf="info.value"><td>{{info.key}}</td><td>{{info.value}}</td></tr>
+                </ng-container>
+              </table>
               <ng-container *ngFor="let level of ['error', 'warning', 'info']">
                 <div *ngFor="let message of element.report[level]">
                   <div class="vertical-align-middle">
@@ -135,4 +134,3 @@
 
   </div>
 </div>
-<

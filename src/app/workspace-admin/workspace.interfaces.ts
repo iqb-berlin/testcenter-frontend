@@ -16,7 +16,7 @@ export interface GetFileResponseData {
     info: string[];
   },
   info: {
-    [key: string]: number;
+    [key: string]: string|number;
   }
 }
 

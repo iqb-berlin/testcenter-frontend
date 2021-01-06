@@ -34,7 +34,7 @@ interface FileStats {
 })
 export class FilesComponent implements OnInit {
   public serverfiles: MatTableDataSource<GetFileResponseData>;
-  public displayedColumns = ['checked', 'filename', 'status', 'typelabel', 'filesize', 'filedatetime'];
+  public displayedColumns = ['checked', 'filename', 'typelabel', 'filesize', 'filedatetime'];
 
   // for fileupload
   public uploadUrl = '';
@@ -180,7 +180,7 @@ export class FilesComponent implements OnInit {
       if (file.report.error && file.report.error.length) {
         stats.valid += 1;
         stats.types[file.type].valid += 1;
-        stats.testtakers += (typeof file.info.testtakers !== "undefined") ? file.info.testtakers : 0;
+        stats.testtakers += (typeof file.info.testtakers === "number") ? file.info.testtakers : 0;
       }
     });
     return stats;
