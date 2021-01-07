@@ -74,8 +74,3 @@
   overflow-y: auto
 }
 
-.vertical-align-middle {
-  display: inline-flex;
-  vertical-align: middle;
-  align-items: center;
-}

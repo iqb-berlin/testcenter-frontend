@@ -37,12 +37,6 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
   fileAlias: string;
 
   @Input()
-  tokenName: string;
-
-  @Input()
-  token: string;
-
-  @Input()
   folderName: string;
 
   @Input()

@@ -35,10 +35,7 @@
               </table>
               <ng-container *ngFor="let level of ['error', 'warning', 'info']">
                 <div *ngFor="let message of element.report[level]">
-                  <div class="vertical-align-middle">
-                    <mat-icon class="report-{{level}}">{{level}}</mat-icon>
-                    <alert text="{{message}}"></alert>
-                  </div>
+                  <alert [level]="level" [text]="message"></alert>
                 </div>
               </ng-container>
             </div>
@@ -84,8 +81,6 @@
     <iqb-files-upload-queue #fileUploadQueue
       [httpUrl]="uploadUrl"
       [fileAlias]="fileNameAlias"
-      [tokenName]="'at'"
-      [token]="'kisduUjjw.;kiskw..9200'"
       [folderName]="'ws'"
       [folder]="'workspace'"
       (uploadCompleteEvent)="updateFileList()">
@@ -103,34 +98,16 @@
       {{ i }}
     </p>
 
-    <div *ngFor="let stat of fileStats.types | keyvalue">
-      <div class="vertical-align-middle">
-        <mat-icon class="report-info">info</mat-icon>
-        <span>
-          {{stat.value.valid}} valide Datei{{stat.value.valid == 1 ? '' : 'en'}} vom Typ {{stat.key}}
-          {{(stat.value.total > stat.value.valid) ? '(von insgesamt ' + stat.value.total + ')' : ''}}
-        </span>
-      </div>
-    </div>
+    <ng-container *ngFor="let stat of fileStats.types | keyvalue">
+      <alert level="info" text="{{stat.value.valid}} valide Datei{{stat.value.valid == 1 ? '' : 'en'}} vom Typ
+        {{stat.key}} {{(stat.value.total > stat.value.valid) ? '(von insgesamt ' + stat.value.total + ')' : ''}}">
+      </alert>
+    </ng-container>
 
-    <div>
-      <div class="vertical-align-middle">
-        <mat-icon class="report-warning">warning</mat-icon>
-        <span>
-          {{fileStats.testtakers}} Testteilnehmer definiert.
-        </span>
-      </div>
-    </div>
+    <alert level="info" text="{{fileStats.testtakers}} Testteilnehmer definiert."></alert>
 
-    <div *ngIf="fileStats.valid < fileStats.total">
-      <div class="vertical-align-middle">
-        <mat-icon class="report-warning">warning</mat-icon>
-        <span>
-          {{fileStats.valid}} Datei{{fileStats.valid == 1 ? '' : 'en'}} von {{fileStats.total}}
-          sind nicht valide oder haben fehlende Abhängigkeiten und werden ignoriert!
-        </span>
-      </div>
-    </div>
-
+    <alert level="warning" text="{{fileStats.valid}} Datei{{fileStats.valid == 1 ? '' : 'en'}} von {{fileStats.total}}
+          sind nicht valide oder haben fehlende Abhängigkeiten und werden ignoriert!">
+    </alert>
   </div>
 </div>

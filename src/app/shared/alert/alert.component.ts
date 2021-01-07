@@ -2,15 +2,23 @@ import { Component, Input, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'alert',
-  template: '<span [innerHTML]="transform(text)"></span>',
-  styles: ['.highlight {color: #003333}'],
+  templateUrl: 'alert.component.html',
+  styleUrls: ['alert.css'],
   encapsulation: ViewEncapsulation.None
 })
 export class AlertComponent {
   @Input() text: string;
+  @Input() level: 'error' | 'warning' | 'info' | 'success';
+
+  public icons = {
+    'error': 'error',
+    'warning': 'warning',
+    'info': 'info',
+    'success': 'check_circle'
+  }
 
   transform = (text: string): string => text.replace(
     /\u0060([^\u0060]+)\u0060/g,
-    (match, match2) => `<span style='color:green' class='highlight'>${match2}</span>`
+    (match, match2) => `<span class='highlight'>${match2}</span>`
   );
 }

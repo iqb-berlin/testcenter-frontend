@@ -30,7 +30,6 @@ interface uploadResponse {
     get status(): UploadStatus {
       return this._status;
     }
-
     set status(newstatus: UploadStatus) {
       this._status = newstatus;
       this.statusChangedEvent.emit(this);
@@ -65,12 +64,6 @@ interface uploadResponse {
 
     @Input()
     fileAlias = 'file';
-
-    @Input()
-    tokenName = '';
-
-    @Input()
-    token = '';
 
     @Input()
     folderName = '';
@@ -110,6 +103,7 @@ interface uploadResponse {
 
 
     ngOnInit() {
+      console.log("init new upload shit");
       this._status = UploadStatus.ready;
       this.requestResponse = {};
       this.upload();
@@ -121,11 +115,6 @@ interface uploadResponse {
         this.status = UploadStatus.busy;
         const formData = new FormData();
         formData.set(this.fileAlias, this._file, this._file.name);
-        if ((typeof this.tokenName !== 'undefined') && (typeof this.token !== 'undefined')) {
-          if (this.tokenName.length > 0) {
-            formData.append(this.tokenName, this.token);
-          }
-        }
         if ((typeof this.folderName !== 'undefined') && (typeof this.folder !== 'undefined')) {
           if (this.folderName.length > 0) {
             formData.append(this.folderName, this.folder);
@@ -145,7 +134,6 @@ interface uploadResponse {
             this.status = UploadStatus.busy;
           } else if (event.type === HttpEventType.Response) {
             this.requestResponse = event.body;
-            console.log(event.body);
             this.status = UploadStatus.ok;
           }
         }, (err) => {
@@ -157,7 +145,8 @@ interface uploadResponse {
           if (err instanceof HttpErrorResponse) {
             errorText = (err as HttpErrorResponse).message;
           } else if (err instanceof ApiError) {
-            errorText = err.info;
+            const slashPos = err.info.indexOf(' // ');
+            errorText = (slashPos > 0) ? err.info.substr(slashPos + 4) : err.info;
           }
           this.requestResponse = {'': {error: [errorText]}};
         });

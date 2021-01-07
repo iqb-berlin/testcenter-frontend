@@ -1,8 +1,11 @@
 import { NgModule } from '@angular/core';
 import { AlertComponent } from './alert.component';
+import {MatIconModule} from '@angular/material/icon';
 
 @NgModule({
-  imports: [],
+    imports: [
+        MatIconModule
+    ],
   exports: [
     AlertComponent
   ],

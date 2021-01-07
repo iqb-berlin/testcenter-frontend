@@ -1,18 +1,16 @@
+<div class="mat-headline" *ngIf="files.length > 0">Upload-Report</div>
+
 <iqb-files-upload
   *ngFor="let file of files; let i = index"
   [file]="file"
   [id]="i"
   [httpUrl]="httpUrl"
   [fileAlias]="fileAlias"
-  [tokenName]="tokenName"
-  [token]="token"
   [folderName]="folderName"
   [folder]="folder"
   (removeFileRequestEvent)="removeFile($event)"
   (statusChangedEvent)="analyseStatus()">
 </iqb-files-upload>
-
-<br/>
 
 <button
   mat-raised-button
