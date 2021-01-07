@@ -1,9 +1,15 @@
-import {Component, EventEmitter, Input, OnInit, Output, HostBinding, OnDestroy} from '@angular/core';
-import {
-  HttpClient, HttpEventType, HttpHeaders, HttpParams,
-  HttpEvent, HttpErrorResponse
-} from '@angular/common/http';
+import {Component, EventEmitter, HostBinding, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {HttpClient, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaders, HttpParams} from '@angular/common/http';
 import {ApiError} from '../../../../app.interfaces';
+
+
+interface uploadResponse {
+  [filename: string]: {
+    warning?: string[];
+    error?: string[];
+    info?: string[];
+  }
+}
 
 
 @Component({
@@ -31,24 +37,16 @@ import {ApiError} from '../../../../app.interfaces';
     }
 
 
-    private requestResponseText: string;
-    get statustext(): string {
-      let myreturn;
+    private requestResponse: uploadResponse;
+    get uploadResponse(): uploadResponse {
       switch (this._status) {
-        case UploadStatus.busy: {
-          myreturn = 'Bitte warten';
-          break;
-        }
-        case UploadStatus.ready: {
-          myreturn = 'Bereit';
-          break;
-        }
-        default: {
-          myreturn = this.requestResponseText;
-          break;
-        }
+        case UploadStatus.busy:
+          return {'': {info: ['Bitte warten']}};
+        case UploadStatus.ready:
+          return {'': {info: ['Bereit']}};
+        default:
+          return this.requestResponse;
       }
-      return myreturn;
     }
 
     /* Http request input bindings */
@@ -113,7 +111,7 @@ import {ApiError} from '../../../../app.interfaces';
 
     ngOnInit() {
       this._status = UploadStatus.ready;
-      this.requestResponseText = '';
+      this.requestResponse = {};
       this.upload();
     }
 
@@ -146,33 +144,22 @@ import {ApiError} from '../../../../app.interfaces';
             this.total = event.total;
             this.status = UploadStatus.busy;
           } else if (event.type === HttpEventType.Response) {
-            this.requestResponseText = event.body;
-            if ((this.requestResponseText.length > 5) && (this.requestResponseText.substr(0, 2) === 'e:')) {
-              this.requestResponseText = this.requestResponseText.substr(2);
-              this.status = UploadStatus.error;
-            } else {
-              this.status = UploadStatus.ok;
-              this.remove();
-            }
+            this.requestResponse = event.body;
+            console.log(event.body);
+            this.status = UploadStatus.ok;
           }
         }, (err) => {
           if (this.fileUploadSubscription) {
             this.fileUploadSubscription.unsubscribe();
           }
           this.status = UploadStatus.error;
+          let errorText = 'Hochladen nicht erfolgreich.';
           if (err instanceof HttpErrorResponse) {
-            this.requestResponseText = (err as HttpErrorResponse).message;
+            errorText = (err as HttpErrorResponse).message;
           } else if (err instanceof ApiError) {
-            const apiError: ApiError = err;
-            if (apiError.code === 422) {
-              const slashPos = apiError.info.indexOf(' // ');
-              this.requestResponseText = (slashPos > 0) ? apiError.info.substr(slashPos + 4) : apiError.info;
-            } else {
-              this.requestResponseText = apiError.info;
-            }
-          } else {
-            this.requestResponseText = 'Hochladen nicht erfolgreich.';
+            errorText = err.info;
           }
+          this.requestResponse = {'': {error: [errorText]}};
         });
       }
     }

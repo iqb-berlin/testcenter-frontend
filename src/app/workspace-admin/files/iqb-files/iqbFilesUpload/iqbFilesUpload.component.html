@@ -1,13 +1,23 @@
 <mat-card>
     <span class="file-info">{{file.name}} ({{file.size | bytes}})</span>
-    <section *ngIf="status<=1" class="example-section">
+
+    <a *ngIf="status == 0"><mat-icon class="action" (click)="upload()">file_upload</mat-icon></a>
+
+    <section *ngIf="status == 1" class="example-section">
         <mat-progress-bar class="example-margin" [value]="progressPercentage"></mat-progress-bar>
-        <a *ngIf="status == 0"><mat-icon class="action" (click)="upload()">file_upload</mat-icon></a>
+        <span class="file-info">{{progressPercentage}} %</span><br/>
         <mat-icon class="action" (click)="remove()">cancel</mat-icon>
     </section>
-    <span *ngIf="status == 1" class="file-info">{{progressPercentage}} %</span><br/>
-    <span *ngIf="status != 1">
-      <span *ngIf="status == 3" class="file-info-error">{{statustext}}</span>
-      <span *ngIf="status != 3" class="file-info">{{statustext}}</span>
-    </span>
+
+    <ng-container *ngIf="status > 1">
+      <ng-container *ngFor="let uploadedFile of uploadResponse | keyvalue">
+        <div><b>{{uploadedFile.key}}</b></div>
+        <ng-container *ngFor="let report of uploadedFile.value | keyvalue">
+          <div *ngFor="let reportEntry of report.value" class="vertical-align-middle">
+            <mat-icon class="alert-{{report.key}}">{{report.key}}</mat-icon>
+            <span>{{reportEntry}}</span>
+          </div>
+        </ng-container>
+      </ng-container>
+    </ng-container>
 </mat-card>

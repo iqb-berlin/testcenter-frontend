@@ -146,7 +146,7 @@ export class FilesComponent implements OnInit {
     this.checkWarnings = [];
     this.checkInfos = [];
 
-    if (empty || this.wds.wsRole === 'MO') {
+    if (empty) {
       this.serverfiles = new MatTableDataSource([]);
       this.mds.setSpinnerOff();
     } else {
