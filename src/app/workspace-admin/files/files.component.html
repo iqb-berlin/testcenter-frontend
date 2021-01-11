@@ -26,18 +26,22 @@
                 <mat-icon class="report-{{level}}">{{level}}</mat-icon>
               </ng-container>
             </div>
-            <div class="full-file-report">
-              <table>
-                <ng-container *ngFor="let info of element.info | keyvalue">
-                  <tr *ngIf="info.value"><td>{{info.key}}</td><td>{{info.value}}</td></tr>
+            <mat-card class="full-file-report">
+              <mat-card-header *ngIf="element.info.label || element.info.id">
+                <mat-card-title>
+                  {{element.info.label || '#' + element.info.id}}
+                  <span *ngIf="element.info.label && element.info.id" style="color:silver">#{{element.info.id}}</span>
+                </mat-card-title>
+                <mat-card-subtitle>{{element.info.description}}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <ng-container *ngFor="let level of ['error', 'warning', 'info']">
+                  <div *ngFor="let message of element.report[level]">
+                    <alert [level]="level" [text]="message"></alert>
+                  </div>
                 </ng-container>
-              </table>
-              <ng-container *ngFor="let level of ['error', 'warning', 'info']">
-                <div *ngFor="let message of element.report[level]">
-                  <alert [level]="level" [text]="message"></alert>
-                </div>
-              </ng-container>
-            </div>
+              </mat-card-content>
+            </mat-card>
           </div>
         </mat-cell>
       </ng-container>
