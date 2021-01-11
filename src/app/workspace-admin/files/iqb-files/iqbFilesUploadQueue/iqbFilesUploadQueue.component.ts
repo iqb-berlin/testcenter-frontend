@@ -10,7 +10,8 @@ import { IqbFilesUploadComponent, UploadStatus } from '../iqbFilesUpload/iqbFile
 @Component({
   selector: 'iqb-files-upload-queue',
   templateUrl: 'iqbFilesUploadQueue.component.html',
-  exportAs: 'iqbFilesUploadQueue'
+  exportAs: 'iqbFilesUploadQueue',
+  styleUrls: ['../iqb-files.scss'],
 })
 export class IqbFilesUploadQueueComponent implements OnDestroy {
   @ViewChildren(IqbFilesUploadComponent) fileUploads: QueryList<IqbFilesUploadComponent>;

@@ -24,10 +24,17 @@
   flex: 1 1 5px;
 }
 
-.uploads {
+.sidebar {
   flex:  10 0 200px;
+  padding-left: 2em;
 }
 
+.sidebar .buttons {
+  min-height: 56px;
+  display: inline-flex;
+  vertical-align: middle;
+  align-items: center;
+}
 
 .checkerror, .checkwarning, .checkinfo  {
   margin: 20px;

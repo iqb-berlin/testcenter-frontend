@@ -28,3 +28,17 @@
   cursor: pointer;
   outline: none;
 }
+
+.report-headline {
+  display: flex;
+  align-content: center;
+  align-items: center;
+}
+
+.close-button {
+  color: #821324;
+  cursor: pointer;
+  outline: none;
+  right: 0px;
+}
+

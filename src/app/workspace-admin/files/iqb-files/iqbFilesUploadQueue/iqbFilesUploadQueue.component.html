@@ -1,4 +1,7 @@
-<div class="mat-headline" *ngIf="files.length > 0">Upload-Report</div>
+<div class="report-headline" *ngIf="files.length > 0">
+  <div class="subheading-1">Upload-Report</div>
+  <mat-icon class="close-button" *ngIf="!disableClearButton" (click)="removeAll()">cancel</mat-icon>
+</div>
 
 <iqb-files-upload
   *ngFor="let file of files; let i = index"
@@ -12,10 +15,4 @@
   (statusChangedEvent)="analyseStatus()">
 </iqb-files-upload>
 
-<button
-  mat-raised-button
-  color="primary"
-  *ngIf="files.length > 0"
-  [disabled]="disableClearButton"
-  (click)="removeAll()"
->OK</button>
+<hr *ngIf="files.length > 0">
