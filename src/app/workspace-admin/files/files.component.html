@@ -55,9 +55,11 @@
 
       <ng-container matColumnDef="filesize">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Größe </mat-header-cell>
-        <mat-cell *matCellDef="let element">
+        <mat-cell *matCellDef="let element" style="white-space: nowrap;">
           {{element.size | bytes}}
-          <span *ngIf="element.info.totalSize"> (Komplett: {{element.info.totalSize | bytes }})</span>
+          <span *ngIf="element.info.totalSize && (element.info.totalSize != element.size)">
+            &nbsp;({{element.info.totalSize | bytes }})
+          </span>
         </mat-cell>
       </ng-container>
 
