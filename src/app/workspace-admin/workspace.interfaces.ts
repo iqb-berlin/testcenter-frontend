@@ -20,12 +20,6 @@ export interface GetFileResponseData {
   }
 }
 
-export interface CheckWorkspaceResponseData {
-  errors: string[];
-  infos: string[];
-  warnings: string[];
-}
-
 export interface GroupResponse {
   name: string;
   testsTotal: number;

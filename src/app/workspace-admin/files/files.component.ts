@@ -12,7 +12,7 @@ import {
   MessageDialogData, MessageType
 } from 'iqb-components';
 import { WorkspaceDataService } from '../workspacedata.service';
-import { GetFileResponseData, CheckWorkspaceResponseData } from '../workspace.interfaces';
+import { GetFileResponseData } from '../workspace.interfaces';
 import { BackendService, FileDeletionReport } from '../backend.service';
 import { MainDataService } from '../../maindata.service';
 
@@ -39,11 +39,6 @@ export class FilesComponent implements OnInit {
   // for fileupload
   public uploadUrl = '';
   public fileNameAlias = 'fileforvo';
-
-  // for workspace-check
-  public checkErrors = [];
-  public checkWarnings = [];
-  public checkInfos = [];
 
   public typeLabels = {
     'Testtakers': 'Teilnehmerliste',
@@ -79,18 +74,15 @@ export class FilesComponent implements OnInit {
     });
   }
 
-  checkAll(isChecked: boolean): void {
+  public checkAll(isChecked: boolean): void {
     this.serverfiles.data.forEach(element => {
       // eslint-disable-next-line no-param-reassign
       element.isChecked = isChecked;
     });
   }
 
-  deleteFiles(): void {
+  public deleteFiles(): void {
     if (this.wds.wsRole === 'RW') {
-      this.checkErrors = [];
-      this.checkWarnings = [];
-      this.checkInfos = [];
 
       const filesToDelete = [];
       this.serverfiles.data.forEach(element => {
@@ -141,11 +133,7 @@ export class FilesComponent implements OnInit {
     }
   }
 
-  updateFileList(empty = false): void {
-    this.checkErrors = [];
-    this.checkWarnings = [];
-    this.checkInfos = [];
-
+  public updateFileList(empty = false): void {
     if (empty) {
       this.serverfiles = new MatTableDataSource([]);
       this.mds.setSpinnerOff();
@@ -186,7 +174,7 @@ export class FilesComponent implements OnInit {
     return stats;
   }
 
-  download(element: GetFileResponseData): void {
+  public download(element: GetFileResponseData): void {
     this.mds.setSpinnerOn();
     this.bs.downloadFile(element.type, element.name)
       .subscribe(
@@ -197,21 +185,5 @@ export class FilesComponent implements OnInit {
           }
         }
       );
-  }
-
-  checkWorkspace(): void {
-    this.checkErrors = [];
-    this.checkWarnings = [];
-    this.checkInfos = [];
-
-    this.mds.setSpinnerOn();
-    this.bs.checkWorkspace().subscribe(
-      (checkResponse: CheckWorkspaceResponseData) => {
-        this.mds.setSpinnerOff();
-        this.checkErrors = checkResponse.errors;
-        this.checkWarnings = checkResponse.warnings;
-        this.checkInfos = checkResponse.infos;
-      }
-    );
   }
 }

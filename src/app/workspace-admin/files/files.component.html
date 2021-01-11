@@ -75,9 +75,6 @@
       <button mat-raised-button (click)="hiddenfileinput.click()" matTooltip="Dateien hochladen/aktualisieren" matTooltipPosition="above" [disabled]="wds.wsRole !== 'RW'">
         <mat-icon>cloud_upload</mat-icon>
       </button>
-      <button mat-raised-button (click)="checkWorkspace()" matTooltip="Arbeitsbereich prüfen" matTooltipPosition="above">
-        <mat-icon>check</mat-icon>
-      </button>
     </div>
 
     <input #hiddenfileinput type="file" name="fileforvo" multiple [iqbFilesUploadInputFor]="fileUploadQueue" [hidden]="true"/>
@@ -89,18 +86,6 @@
       [folder]="'workspace'"
       (uploadCompleteEvent)="updateFileList()">
     </iqb-files-upload-queue>
-
-    <p *ngFor="let e of checkErrors" class="checkerror">
-      {{ e }}
-    </p>
-
-    <p *ngFor="let w of checkWarnings" class="checkwarning">
-      {{ w }}
-    </p>
-
-    <p *ngFor="let i of checkInfos" class="checkinfo">
-      {{ i }}
-    </p>
 
     <ng-container *ngFor="let stat of fileStats.types | keyvalue">
       <alert level="info" text="{{stat.value.valid}} valide Datei{{stat.value.valid == 1 ? '' : 'en'}} vom Typ

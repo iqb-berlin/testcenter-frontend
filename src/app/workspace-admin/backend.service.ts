@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import {
-  GetFileResponseData, CheckWorkspaceResponseData, SysCheckStatistics,
+  GetFileResponseData, SysCheckStatistics,
   ReviewData, LogData, UnitResponse, ResultData
 } from './workspace.interfaces';
 import { WorkspaceDataService } from './workspacedata.service';
@@ -52,21 +52,6 @@ export class BackendService {
             deleted: [],
             not_allowed: [`deleteFiles Api-Error: ${err.code} ${err.info} `],
             did_not_exist: []
-          });
-        })
-      );
-  }
-
-  checkWorkspace(): Observable<CheckWorkspaceResponseData> {
-    return this.http
-      .get<CheckWorkspaceResponseData>(this.serverUrl + `workspace/${this.wds.wsId}/validation`, {})
-      .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`checkWorkspace Api-Error: ${err.code} ${err.info} `);
-          return of(<CheckWorkspaceResponseData>{
-            errors: [`checkWorkspace Api-Error: ${err.code} ${err.info} `],
-            infos: [],
-            warnings: []
           });
         })
       );
