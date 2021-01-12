@@ -61,13 +61,13 @@
     "ts-node": "~8.6.2",
     "typescript": "~3.7.5",
     "protractor": "^5.4.3",
-    "@iqb/eslint-config-typescript": "^0.0.3"
+    "@iqb/eslint-config": "^0.0.7"
   },
   "resolutions": {
     "tree-kill": "1.2.2"
   },
   "eslintConfig": {
-    "extends": "@iqb/eslint-config-typescript",
+    "extends": "@iqb/eslint-config",
     "parserOptions": {
       "project": "./tsconfig.json"
     }
