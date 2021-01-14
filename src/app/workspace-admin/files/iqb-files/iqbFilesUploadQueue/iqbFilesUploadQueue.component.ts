@@ -42,25 +42,25 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
 
   @Output() uploadCompleteEvent = new EventEmitter<IqbFilesUploadQueueComponent>();
 
-  add(file: any) {
+  add(file: any): void {
     this.files.push(file);
   }
 
-  public removeAll() {
+  public removeAll(): void {
     this.files.splice(0, this.files.length);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.files) {
       this.removeAll();
     }
   }
 
-  removeFile(fileToRemove: IqbFilesUploadComponent) {
+  removeFile(fileToRemove: IqbFilesUploadComponent): void {
     this.files.splice(fileToRemove.id, 1);
   }
 
-  analyseStatus() {
+  analyseStatus(): void {
     let someoneiscomplete = false;
     let someoneisbusy = false;
     let someoneisready = false;
