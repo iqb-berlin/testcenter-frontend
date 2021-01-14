@@ -41,12 +41,12 @@ export class FilesComponent implements OnInit {
   public fileNameAlias = 'fileforvo';
 
   public typeLabels = {
-    'Testtakers': 'Teilnehmerliste',
-    'Booklet': 'Testheft',
-    'SysCheck': 'Systemcheck',
-    'Resource': 'Ressource',
-    'Unit': 'Unit'
-  }
+    Testtakers: 'Teilnehmerliste',
+    Booklet: 'Testheft',
+    SysCheck: 'Systemcheck',
+    Resource: 'Ressource',
+    Unit: 'Unit'
+  };
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   public fileStats: FileStats = {
@@ -83,7 +83,6 @@ export class FilesComponent implements OnInit {
 
   public deleteFiles(): void {
     if (this.wds.wsRole === 'RW') {
-
       const filesToDelete = [];
       this.serverfiles.data.forEach(element => {
         if (element.isChecked) {
@@ -168,7 +167,7 @@ export class FilesComponent implements OnInit {
       if (file.report.error && file.report.error.length) {
         stats.valid += 1;
         stats.types[file.type].valid += 1;
-        stats.testtakers += (typeof file.info.testtakers === "number") ? file.info.testtakers : 0;
+        stats.testtakers += (typeof file.info.testtakers === 'number') ? file.info.testtakers : 0;
       }
     });
     return stats;

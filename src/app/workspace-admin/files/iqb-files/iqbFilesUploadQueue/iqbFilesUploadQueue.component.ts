@@ -4,14 +4,11 @@ import {
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { IqbFilesUploadComponent, UploadStatus } from '../iqbFilesUpload/iqbFilesUpload.component';
 
-/**
- * A material design file upload queue component.
- */
 @Component({
   selector: 'iqb-files-upload-queue',
   templateUrl: 'iqbFilesUploadQueue.component.html',
   exportAs: 'iqbFilesUploadQueue',
-  styleUrls: ['../iqb-files.scss'],
+  styleUrls: ['../iqb-files.scss']
 })
 export class IqbFilesUploadQueueComponent implements OnDestroy {
   @ViewChildren(IqbFilesUploadComponent) fileUploads: QueryList<IqbFilesUploadComponent>;
@@ -63,27 +60,15 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
     this.files.splice(fileToRemove.id, 1);
   }
 
-/*
-  updateStatus() {
-    this.numberOfErrors = 0;
-    this.numberOfUploads = 0;
-
-    this.fileUploads.forEach((fileUpload) => {
-
-      fileUpload.upload();
-    });
-  } */
-
   analyseStatus() {
     let someoneiscomplete = false;
     let someoneisbusy = false;
     let someoneisready = false;
-    this.fileUploads.forEach((fileUpload) => {
+    this.fileUploads.forEach(fileUpload => {
       if ((fileUpload.status === UploadStatus.ok) || (fileUpload.status === UploadStatus.error)) {
         someoneiscomplete = true;
       } else if (fileUpload.status === UploadStatus.busy) {
         someoneisbusy = true;
-        return; // forEach
       } else if (fileUpload.status === UploadStatus.ready) {
         someoneisready = true;
       }
