@@ -27,10 +27,14 @@
               </ng-container>
             </div>
             <mat-card class="full-file-report">
-              <mat-card-header *ngIf="element.info.label || element.info.id">
+              <mat-card-header *ngIf="element.info.label || element.id">
                 <mat-card-title>
-                  {{element.info.label || '#' + element.info.id}}
-                  <span *ngIf="element.info.label && element.info.id" style="color:silver">#{{element.info.id}}</span>
+                  {{element.info.label}}
+                  <span
+                      *ngIf="element.id !== element.name.toUpperCase()"
+                      style="{{element.info.label ? 'color:silver' : ''}}">
+                    #{{element.id}}
+                  </span>
                 </mat-card-title>
                 <mat-card-subtitle>{{element.info.description}}</mat-card-subtitle>
               </mat-card-header>

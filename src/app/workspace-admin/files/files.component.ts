@@ -11,6 +11,7 @@ import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
   MessageDialogData, MessageType
 } from 'iqb-components';
+import { map } from 'rxjs/operators';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { GetFileResponseData } from '../workspace.interfaces';
 import { BackendService, FileDeletionReport } from '../backend.service';
@@ -58,6 +59,7 @@ export class FilesComponent implements OnInit {
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
+    @Inject('VERONA_API_VERSION_SUPPORTED') private veronaApiVersionSupported: string,
     private bs: BackendService,
     public wds: WorkspaceDataService,
     public confirmDialog: MatDialog,
@@ -137,14 +139,14 @@ export class FilesComponent implements OnInit {
       this.serverfiles = new MatTableDataSource([]);
       this.mds.setSpinnerOff();
     } else {
-      this.bs.getFiles().subscribe(
-        (fileList: GetFileResponseData[]) => {
+      this.bs.getFiles()
+        .pipe(map(fileList => this.addFrontendChecksToFiles(fileList)))
+        .subscribe((fileList: GetFileResponseData[]) => {
           this.serverfiles = new MatTableDataSource(fileList);
           this.serverfiles.sort = this.sort;
           this.fileStats = FilesComponent.getStats(fileList);
           this.mds.setSpinnerOff();
-        }
-      );
+        });
     }
   }
 
@@ -171,6 +173,26 @@ export class FilesComponent implements OnInit {
       }
     });
     return stats;
+  }
+
+  private addFrontendChecksToFiles(fileList: GetFileResponseData[]): GetFileResponseData[] {
+    return fileList.map(files => this.addFrontendChecksToFile(files));
+  }
+
+  private addFrontendChecksToFile(file: GetFileResponseData): GetFileResponseData {
+    if (typeof file.info['verona-version'] !== 'undefined') {
+      const fileMayor = file.info['verona-version'].toString().split('.').shift();
+      const systemMayor = this.veronaApiVersionSupported.split('.').shift();
+      if (fileMayor !== systemMayor) {
+        if (typeof file.report.error === 'undefined') {
+          // eslint-disable-next-line no-param-reassign
+          file.report.error = [];
+        }
+        file.report.error.push(`Verona Version of this Player is not compatible 
+          with this system's version (\`${this.veronaApiVersionSupported}\`)!`);
+      }
+    }
+    return file;
   }
 
   public download(element: GetFileResponseData): void {
