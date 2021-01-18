@@ -8,7 +8,7 @@
   <div id="pageNav" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px" *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM'">
     <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="showPageNav">
         <div id="pageNavPrompt">
-          {{ 'Wähle hier andere Seiten dieser Aufgabe:'  | customtext:'login_selectPagesPrompt':cts.updateCount}}
+          {{ ''  | customtext:'login_pagesNaviPrompt':cts.updateCount}}
         </div>
 
         <div *ngFor="let p of pageList">
