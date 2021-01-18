@@ -19,6 +19,10 @@
     "label": "Nachricht für den Fall, dass Booklet(s) beendet wurden und keine weiteren zur Verfügung stehen",
     "defaultvalue": "Beendet. Es können keine weiteren Testhefte gestartet werden."
   },
+  "login_pagesNaviPrompt": {
+    "label": "Aufforderungstext, weitere Seiten einer Unit auszuwählen, z. B. 'Wähle hier andere Seiten dieser Aufgabe:'",
+    "defaultvalue": ""
+  },
   "login_bookletSelectPromptOne": {
     "label": "Aufforderung, den einen gefundenen Test anzuklicken (auf Schalter klicken)",
     "defaultvalue": "Bitte klicke auf die Schaltfläche auf der linken Seite, um den Test zu starten!"

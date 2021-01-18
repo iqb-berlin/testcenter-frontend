@@ -20,7 +20,7 @@ These custom texts are loaded at (re)start of the application and the replacemen
 as soon as possible. This is a simple JSON file with key value pairs. Example:
 ```
 {
-    "login_testEndButtonText": "Test beenden",
+    "login_testEndButtonLabel": "Test beenden",
     "login_bookletSelectPrompt": "Bitte wählen",
 ...
 }
