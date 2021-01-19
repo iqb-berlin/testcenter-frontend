@@ -10,12 +10,12 @@
           </mat-cell>
       </ng-container>
 
-      <ng-container matColumnDef="typelabel">
+      <ng-container matColumnDef="type">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Typ </mat-header-cell>
         <mat-cell *matCellDef="let element">{{typeLabels[element.type]}}</mat-cell>
       </ng-container>
 
-      <ng-container matColumnDef="filename">
+      <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="namecell"> Name </mat-header-cell>
         <mat-cell *matCellDef="let element" class="namecell">
           <div class="file-report">
@@ -50,14 +50,14 @@
         </mat-cell>
       </ng-container>
 
-      <ng-container matColumnDef="filedatetime">
+      <ng-container matColumnDef="modificationTime">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="datecell"> Datum </mat-header-cell>
         <mat-cell *matCellDef="let element" class="datecell">
           {{(element.modificationTime * 1000) | date: 'd.M.yy hh:mm'}}
         </mat-cell>
       </ng-container>
 
-      <ng-container matColumnDef="filesize">
+      <ng-container matColumnDef="size">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Größe </mat-header-cell>
         <mat-cell *matCellDef="let element" style="white-space: nowrap;">
           {{element.size | bytes}}

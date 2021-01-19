@@ -35,7 +35,7 @@ interface FileStats {
 })
 export class FilesComponent implements OnInit {
   public serverfiles: MatTableDataSource<GetFileResponseData>;
-  public displayedColumns = ['checked', 'filename', 'typelabel', 'filesize', 'filedatetime'];
+  public displayedColumns = ['checked', 'name', 'type', 'size', 'modificationTime'];
 
   // for fileupload
   public uploadUrl = '';
@@ -51,6 +51,7 @@ export class FilesComponent implements OnInit {
   };
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
+
   public fileStats: FileStats = {
     types: {},
     total: 0,
