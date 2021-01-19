@@ -25,7 +25,8 @@
 }
 
 .highlight {
-    color: #003333
+    color: #003333;
+    font-style: italic;
 }
 
 mat-icon {
