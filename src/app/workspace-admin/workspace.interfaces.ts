@@ -1,9 +1,3 @@
-export interface WorkspaceData {
-  id: string;
-  name: string;
-  role: 'RW' | 'RO' | 'n.d.';
-}
-
 export interface GetFileResponseData {
   name: string;
   size: number;
@@ -18,22 +12,6 @@ export interface GetFileResponseData {
   info: {
     [key: string]: string|number;
   }
-}
-
-export interface GroupResponse {
-  name: string;
-  testsTotal: number;
-  testsStarted: number;
-  responsesGiven: number;
-}
-
-export interface BookletsStarted {
-  groupname: string;
-  loginname: string;
-  code: string;
-  bookletname: string;
-  locked: boolean;
-  laststart: Date;
 }
 
 export interface UnitResponse {
