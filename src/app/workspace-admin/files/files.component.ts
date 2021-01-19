@@ -46,7 +46,8 @@ export class FilesComponent implements OnInit {
     Booklet: 'Testheft',
     SysCheck: 'Systemcheck',
     Resource: 'Ressource',
-    Unit: 'Unit'
+    Unit: 'Unit',
+    Player: 'Player'
   };
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
