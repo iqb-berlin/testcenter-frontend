@@ -21,11 +21,11 @@ interface FileStats {
   types: {
     [type: string]: {
       total: number;
-      valid: number;
+      invalid: number;
     }
   }
   total: number;
-  valid: number;
+  invalid: number;
   testtakers: number;
 }
 
@@ -55,7 +55,7 @@ export class FilesComponent implements OnInit {
   public fileStats: FileStats = {
     types: {},
     total: 0,
-    valid: 0,
+    invalid: 0,
     testtakers: 0
   };
 
@@ -156,21 +156,21 @@ export class FilesComponent implements OnInit {
     const stats: FileStats = {
       types: {},
       total: 0,
-      valid: 0,
+      invalid: 0,
       testtakers: 0
     };
     fileList.forEach(file => {
       if (typeof stats.types[file.type] === 'undefined') {
         stats.types[file.type] = {
           total: 0,
-          valid: 0
+          invalid: 0
         };
       }
       stats.types[file.type].total += 1;
       stats.total += 1;
       if (file.report.error && file.report.error.length) {
-        stats.valid += 1;
-        stats.types[file.type].valid += 1;
+        stats.invalid += 1;
+        stats.types[file.type].invalid += 1;
         stats.testtakers += (typeof file.info.testtakers === 'number') ? file.info.testtakers : 0;
       }
     });
