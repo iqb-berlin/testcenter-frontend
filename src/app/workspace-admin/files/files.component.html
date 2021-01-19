@@ -94,14 +94,15 @@
     </iqb-files-upload-queue>
 
     <ng-container *ngFor="let stat of fileStats.types | keyvalue">
-      <alert level="info" text="{{stat.value.invalid}} valide Datei{{stat.value.invalid == 1 ? '' : 'en'}} vom Typ
-        {{stat.key}} {{(stat.value.total > stat.value.invalid) ? '(von insgesamt ' + stat.value.total + ')' : ''}}">
+      <alert level="info" text="{{stat.value.total - stat.value.invalid}} valide
+        `{{stat.key}}`-Datei{{stat.value.invalid == 1 ? '' : 'en'}}
+         {{(stat.value.total > stat.value.invalid) ? '(von ' + stat.value.total + ')' : ''}}">
       </alert>
     </ng-container>
 
     <alert level="info" text="{{fileStats.testtakers}} Testteilnehmer definiert."></alert>
 
-    <alert *ngIf="fileStats.invalid" level="error" text="{{fileStats.invalid}} Datei{{fileStats.invalid == 1 ? '' : 'en'}}
+    <alert *ngIf="fileStats.invalid" level="error" text="`{{fileStats.invalid}}` Datei{{fileStats.invalid == 1 ? '' : 'en'}}
       von {{fileStats.total}} sind nicht valide oder haben fehlende Abhängigkeiten und werden ignoriert!">
     </alert>
   </div>
