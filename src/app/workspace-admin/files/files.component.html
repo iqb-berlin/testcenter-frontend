@@ -22,12 +22,21 @@
           <mat-cell *matCellDef="let element" class="namecell">
             <div class="file-report">
               <button mat-button (click)="download(element)">{{element.name}}</button>
-              <div *ngFor="let level of ['error', 'warning', 'info']" class="vertical-align-middle">
-                <ng-container *ngIf="element.report[level] && element.report[level].length">
-                  <div>{{element.report[level].length}}</div>
-                  <mat-icon class="report-{{level}}">{{level}}</mat-icon>
+              <span class="vertical-align-middle">
+                <ng-container *ngIf="element.report.error && element.report.error.length; else: noError">
+                  <mat-icon class="report-error">error</mat-icon>
                 </ng-container>
-              </div>
+                <ng-template #noError>
+                  <ng-container *ngIf="element.report.warning && element.report.warning.length; else: noWarning">
+                    <mat-icon class="report-warning">warning</mat-icon>
+                  </ng-container>
+                </ng-template>
+                <ng-template #noWarning>
+                  <ng-container *ngIf="element.report.info && element.report.info.length">
+                    <mat-icon class="report-info">info</mat-icon>
+                  </ng-container>
+                </ng-template>
+              </span>
               <mat-card class="full-file-report">
                 <mat-card-header *ngIf="element.info.label || element.id">
                   <mat-card-title>
