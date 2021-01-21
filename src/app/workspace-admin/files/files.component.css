@@ -11,6 +11,11 @@
   flex:  10 0 400px;
 }
 
+mat-table {
+  margin-top: 1em;
+  margin-bottom: 2em;
+}
+
 .checkboxcell {
   overflow: visible;
   flex: 0 0 30px;
@@ -18,6 +23,11 @@
 
 .namecell {
   flex: 3 3 60px;
+}
+
+.namecell .mat-subheading-1 {
+  padding: 0 16px;
+  margin-bottom: 0;
 }
 
 .datecell {

@@ -1,75 +1,75 @@
 <div class="columnhost">
   <div class="filelist">
-    <mat-table #table [dataSource]="serverfiles" matSort>
-      <ng-container matColumnDef="checked">
+    <ng-container *ngFor="let type of fileTypes">
+
+      <mat-table *ngIf="files && files[type]" [dataSource]="files[type]" matSort (matSortChange)="setTableSorting($event)">
+        <ng-container matColumnDef="checked">
           <mat-header-cell *matHeaderCellDef class="checkboxcell">
-            <mat-checkbox (change)="checkAll($event.checked)"></mat-checkbox>
+            <mat-checkbox (change)="checkAll($event.checked, type)"></mat-checkbox>
           </mat-header-cell>
           <mat-cell *matCellDef="let element" class="checkboxcell">
             <mat-checkbox [checked]="element.isChecked" (change)="element.isChecked=$event.checked"></mat-checkbox>
           </mat-cell>
-      </ng-container>
+        </ng-container>
 
-      <ng-container matColumnDef="type">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Typ </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{typeLabels[element.type]}}</mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="namecell"> Name </mat-header-cell>
-        <mat-cell *matCellDef="let element" class="namecell">
-          <div class="file-report">
-            <button mat-button (click)="download(element)">{{element.name}}</button>
-            <div *ngFor="let level of ['error', 'warning', 'info']" class="vertical-align-middle">
-              <ng-container *ngIf="element.report[level] && element.report[level].length">
-                <div>{{element.report[level].length}}</div>
-                <mat-icon class="report-{{level}}">{{level}}</mat-icon>
-              </ng-container>
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef mat-sort-header class="namecell">
+            <div class="mat-subheading-1">{{files[type].data.length}} {{typeLabels[type]}}
+              <span *ngIf="type=='Testtakers'">({{fileStats.testtakers}} Teilnehmer)</span>
             </div>
-            <mat-card class="full-file-report">
-              <mat-card-header *ngIf="element.info.label || element.id">
-                <mat-card-title>
-                  {{element.info.label}}
-                  <span
-                      *ngIf="element.id !== element.name.toUpperCase()"
-                      style="{{element.info.label ? 'color:silver' : ''}}">
+            <alert level="error" *ngIf="fileStats.invalid[type]" text="`{{fileStats.invalid[type]}}` Fehlerhaft"></alert>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element" class="namecell">
+            <div class="file-report">
+              <button mat-button (click)="download(element)">{{element.name}}</button>
+              <div *ngFor="let level of ['error', 'warning', 'info']" class="vertical-align-middle">
+                <ng-container *ngIf="element.report[level] && element.report[level].length">
+                  <div>{{element.report[level].length}}</div>
+                  <mat-icon class="report-{{level}}">{{level}}</mat-icon>
+                </ng-container>
+              </div>
+              <mat-card class="full-file-report">
+                <mat-card-header *ngIf="element.info.label || element.id">
+                  <mat-card-title>
+                    {{element.info.label}}
+                    <span
+                        *ngIf="element.id !== element.name.toUpperCase()"
+                        style="{{element.info.label ? 'color:silver' : ''}}">
                     #{{element.id}}
                   </span>
-                </mat-card-title>
-                <mat-card-subtitle>{{element.info.description}}</mat-card-subtitle>
-              </mat-card-header>
-              <mat-card-content>
-                <ng-container *ngFor="let level of ['error', 'warning', 'info']">
-                  <div *ngFor="let message of element.report[level]">
-                    <alert [level]="level" [text]="message"></alert>
-                  </div>
-                </ng-container>
-              </mat-card-content>
-            </mat-card>
-          </div>
-        </mat-cell>
-      </ng-container>
+                  </mat-card-title>
+                  <mat-card-subtitle>{{element.info.description}}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <ng-container *ngFor="let level of ['error', 'warning', 'info']">
+                    <div *ngFor="let message of element.report[level]">
+                      <alert [level]="level" [text]="message"></alert>
+                    </div>
+                  </ng-container>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </mat-cell>
+        </ng-container>
 
-      <ng-container matColumnDef="modificationTime">
-        <mat-header-cell *matHeaderCellDef mat-sort-header class="datecell"> Datum </mat-header-cell>
-        <mat-cell *matCellDef="let element" class="datecell">
-          {{(element.modificationTime * 1000) | date: 'd.M.yy hh:mm'}}
-        </mat-cell>
-      </ng-container>
+        <ng-container matColumnDef="modificationTime">
+          <mat-header-cell *matHeaderCellDef mat-sort-header class="datecell"> Letzte Änderung </mat-header-cell>
+          <mat-cell *matCellDef="let element" class="datecell">
+            {{(element.modificationTime * 1000) | date: 'dd.MM.yy hh:mm'}}
+          </mat-cell>
+        </ng-container>
 
-      <ng-container matColumnDef="size">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Größe </mat-header-cell>
-        <mat-cell *matCellDef="let element" style="white-space: nowrap;">
-          {{element.size | bytes}}
-          <span *ngIf="element.info.totalSize && (element.info.totalSize != element.size)">
-            &nbsp;({{element.info.totalSize | bytes }})
-          </span>
-        </mat-cell>
-      </ng-container>
+        <ng-container matColumnDef="size">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Volle Größe  </mat-header-cell>
+          <mat-cell *matCellDef="let element" style="white-space: nowrap;">
+            {{(element.info.totalSize || element.size) | bytes}}
+          </mat-cell>
+        </ng-container>
 
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-    </mat-table>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
+    </ng-container>
   </div>
 
   <div class="sidebar">
@@ -93,17 +93,11 @@
       (uploadCompleteEvent)="updateFileList()">
     </iqb-files-upload-queue>
 
-    <ng-container *ngFor="let stat of fileStats.types | keyvalue">
-      <alert level="info" text="{{stat.value.total - stat.value.invalid}} valide
-        `{{stat.key}}`-Datei{{stat.value.invalid == 1 ? '' : 'en'}}
-         {{(stat.value.total > stat.value.invalid) ? '(von ' + stat.value.total + ')' : ''}}">
-      </alert>
-    </ng-container>
-
-    <alert level="info" text="{{fileStats.testtakers}} Testteilnehmer definiert."></alert>
-
-    <alert *ngIf="fileStats.invalid" level="error" text="`{{fileStats.invalid}}` Datei{{fileStats.invalid == 1 ? '' : 'en'}}
-      von {{fileStats.total}} sind nicht valide oder haben fehlende Abhängigkeiten und werden ignoriert!">
+    <alert *ngIf="fileStats.invalid" level="error" text="{{fileStats.total.invalid}}
+      Datei{{fileStats.total.invalid == 1 ? '' : 'en'}} von {{fileStats.total.count}}
+      {{fileStats.total.invalid == 1 ? 'ist' : 'sind'}} nicht valide oder
+      {{fileStats.total.invalid == 1 ? 'hat' : 'haben'}} fehlende Abhängigkeiten
+      und {{fileStats.total.invalid == 1 ? 'wird' : 'werden'}} ignoriert!">
     </alert>
   </div>
 </div>

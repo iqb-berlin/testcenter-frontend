@@ -31,9 +31,9 @@ export class BackendService {
       );
   }
 
-  getFiles(): Observable<GetFileResponseData[]> {
+  getFiles(): Observable<GetFileResponseData> {
     return this.http
-      .get<GetFileResponseData[]>(`${this.serverUrl}workspace/${this.wds.wsId}/files`)
+      .get<GetFileResponseData>(`${this.serverUrl}workspace/${this.wds.wsId}/files`)
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getFiles Api-Error: ${err.code} ${err.info} `);

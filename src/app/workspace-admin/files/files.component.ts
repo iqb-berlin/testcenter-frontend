@@ -1,10 +1,8 @@
-import {
-  Component, OnInit, Inject, ViewChild
-} from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSort } from '@angular/material/sort';
+import { Sort } from '@angular/material/sort';
 
 import { saveAs } from 'file-saver';
 import {
@@ -13,19 +11,20 @@ import {
 } from 'iqb-components';
 import { map } from 'rxjs/operators';
 import { WorkspaceDataService } from '../workspacedata.service';
-import { GetFileResponseData } from '../workspace.interfaces';
+import {
+  IQBFileType, GetFileResponseData, IQBFile, IQBFileTypes
+} from '../workspace.interfaces';
 import { BackendService, FileDeletionReport } from '../backend.service';
 import { MainDataService } from '../../maindata.service';
 
 interface FileStats {
-  types: {
-    [type: string]: {
-      total: number;
-      invalid: number;
-    }
+  invalid: {
+    [type in IQBFileType]?: number;
   }
-  total: number;
-  invalid: number;
+  total: {
+    count: number;
+    invalid: number;
+  };
   testtakers: number;
 }
 
@@ -34,28 +33,32 @@ interface FileStats {
   styleUrls: ['./files.component.css']
 })
 export class FilesComponent implements OnInit {
-  public serverfiles: MatTableDataSource<GetFileResponseData>;
-  public displayedColumns = ['checked', 'name', 'type', 'size', 'modificationTime'];
+  public files: {[type in IQBFileType]?: MatTableDataSource<IQBFile>} = {};
+  public fileTypes = IQBFileTypes;
+  public displayedColumns = ['checked', 'name', 'size', 'modificationTime'];
 
-  // for fileupload
   public uploadUrl = '';
   public fileNameAlias = 'fileforvo';
 
-  public typeLabels = {
-    Testtakers: 'Teilnehmerliste',
-    Booklet: 'Testheft',
-    SysCheck: 'Systemcheck',
-    Resource: 'Ressource',
-    Unit: 'Unit',
-    Player: 'Player'
+  public lastSort:Sort = {
+    active: 'name',
+    direction: 'asc'
   };
 
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  public typeLabels = {
+    Testtakers: 'Teilnehmerlisten',
+    Booklet: 'Testhefte',
+    SysCheck: 'System-Check-Definitionen',
+    Resource: 'Ressourcen',
+    Unit: 'Units'
+  };
 
   public fileStats: FileStats = {
-    types: {},
-    total: 0,
-    invalid: 0,
+    total: {
+      count: 0,
+      invalid: 0
+    },
+    invalid: {},
     testtakers: 0
   };
 
@@ -78,110 +81,124 @@ export class FilesComponent implements OnInit {
     });
   }
 
-  public checkAll(isChecked: boolean): void {
-    this.serverfiles.data.forEach(element => {
+  public checkAll(isChecked: boolean, type: IQBFileType): void {
+    this.files[type].data = this.files[type].data.map(file => {
       // eslint-disable-next-line no-param-reassign
-      element.isChecked = isChecked;
+      file.isChecked = isChecked;
+      return file;
     });
   }
 
   public deleteFiles(): void {
-    if (this.wds.wsRole === 'RW') {
-      const filesToDelete = [];
-      this.serverfiles.data.forEach(element => {
-        if (element.isChecked) {
-          filesToDelete.push(`${element.type}/${element.name}`);
+    if (this.wds.wsRole !== 'RW') {
+      return;
+    }
+
+    const filesToDelete = [];
+    Object(this.files).keys.forEach(type => {
+      this.files[type].forEach(file => {
+        if (file.isChecked) {
+          filesToDelete.push(`${file.type}/${file.name}`);
+        }
+      });
+    });
+
+    if (filesToDelete.length > 0) {
+      const p = filesToDelete.length > 1;
+      const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
+        width: '400px',
+        data: <ConfirmDialogData>{
+          title: 'Löschen von Dateien',
+          content: `Sie haben ${p ? filesToDelete.length : 'eine'} Datei${p ? 'en' : ''}\` 
+            ausgewählt. Soll${p ? 'en' : ''}  diese gelöscht werden?`,
+          confirmbuttonlabel: 'Löschen',
+          showcancel: true
         }
       });
 
-      if (filesToDelete.length > 0) {
-        const p = filesToDelete.length > 1;
-        const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
-          width: '400px',
-          data: <ConfirmDialogData>{
-            title: 'Löschen von Dateien',
-            content: `Sie haben ${p ? filesToDelete.length : 'eine'} Datei${p ? 'en' : ''}\` 
-              ausgewählt. Soll${p ? 'en' : ''}  diese gelöscht werden?`,
-            confirmbuttonlabel: 'Löschen',
-            showcancel: true
-          }
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-          if (result !== false) {
-            this.mds.setSpinnerOn();
-            this.bs.deleteFiles(filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) => {
-              const message = [];
-              if (fileDeletionReport.deleted.length > 0) {
-                message.push(`${fileDeletionReport.deleted.length} Dateien erfolgreich gelöscht.`);
-              }
-              if (fileDeletionReport.not_allowed.length > 0) {
-                message.push(`${fileDeletionReport.not_allowed.length} Dateien konnten nicht gelöscht werden.`);
-              }
-              this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
-              this.updateFileList();
-            });
-          }
-        });
-      } else {
-        this.messageDialog.open(MessageDialogComponent, {
-          width: '400px',
-          data: <MessageDialogData>{
-            title: 'Löschen von Dateien',
-            content: 'Bitte markieren Sie erst Dateien!',
-            type: MessageType.error
-          }
-        });
-      }
+      dialogRef.afterClosed().subscribe(result => {
+        if (result !== false) {
+          this.mds.setSpinnerOn();
+          this.bs.deleteFiles(filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) => {
+            const message = [];
+            if (fileDeletionReport.deleted.length > 0) {
+              message.push(`${fileDeletionReport.deleted.length} Dateien erfolgreich gelöscht.`);
+            }
+            if (fileDeletionReport.not_allowed.length > 0) {
+              message.push(`${fileDeletionReport.not_allowed.length} Dateien konnten nicht gelöscht werden.`);
+            }
+            this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
+            this.updateFileList();
+          });
+        }
+      });
+    } else {
+      this.messageDialog.open(MessageDialogComponent, {
+        width: '400px',
+        data: <MessageDialogData>{
+          title: 'Löschen von Dateien',
+          content: 'Bitte markieren Sie erst Dateien!',
+          type: MessageType.error
+        }
+      });
     }
   }
 
   public updateFileList(empty = false): void {
     if (empty) {
-      this.serverfiles = new MatTableDataSource([]);
+      this.files = {};
       this.mds.setSpinnerOff();
     } else {
       this.bs.getFiles()
         .pipe(map(fileList => this.addFrontendChecksToFiles(fileList)))
-        .subscribe((fileList: GetFileResponseData[]) => {
-          this.serverfiles = new MatTableDataSource(fileList);
-          this.serverfiles.sort = this.sort;
+        .subscribe(fileList => {
+          this.files = {};
+          Object.keys(fileList)
+            .forEach(type => {
+              this.files[type] = new MatTableDataSource(fileList[type]);
+            });
           this.fileStats = FilesComponent.getStats(fileList);
+          this.setTableSorting(this.lastSort);
           this.mds.setSpinnerOff();
         });
     }
   }
 
-  private static getStats(fileList: GetFileResponseData[]): FileStats {
+  private static getStats(fileList: GetFileResponseData): FileStats {
     const stats: FileStats = {
-      types: {},
-      total: 0,
-      invalid: 0,
+      total: {
+        count: 0,
+        invalid: 0
+      },
+      invalid: {},
       testtakers: 0
     };
-    fileList.forEach(file => {
-      if (typeof stats.types[file.type] === 'undefined') {
-        stats.types[file.type] = {
-          total: 0,
-          invalid: 0
-        };
-      }
-      stats.types[file.type].total += 1;
-      stats.total += 1;
-      if (file.report.error && file.report.error.length) {
-        stats.invalid += 1;
-        stats.types[file.type].invalid += 1;
-        stats.testtakers += (typeof file.info.testtakers === 'number') ? file.info.testtakers : 0;
-      }
-    });
+    Object.keys(fileList)
+      .forEach(type => {
+        fileList[type].forEach(file => {
+          if (typeof stats.invalid[type] === 'undefined') {
+            stats.invalid[type] = 0;
+          }
+          stats.total.count += 1;
+          if (file.report.error && file.report.error.length) {
+            stats.invalid[type] += 1;
+            stats.total.invalid += 1;
+            stats.testtakers += (typeof file.info.testtakers === 'number') ? file.info.testtakers : 0;
+          }
+        });
+      });
     return stats;
   }
 
-  private addFrontendChecksToFiles(fileList: GetFileResponseData[]): GetFileResponseData[] {
-    return fileList.map(files => this.addFrontendChecksToFile(files));
+  private addFrontendChecksToFiles(fileList: GetFileResponseData): GetFileResponseData {
+    Object.keys(fileList).forEach(type => {
+      // eslint-disable-next-line no-param-reassign
+      fileList[type] = fileList[type].map(files => this.addFrontendChecksToFile(files));
+    });
+    return fileList;
   }
 
-  private addFrontendChecksToFile(file: GetFileResponseData): GetFileResponseData {
+  private addFrontendChecksToFile(file: IQBFile): IQBFile {
     if (typeof file.info['verona-version'] !== 'undefined') {
       const fileMayor = file.info['verona-version'].toString().split('.').shift();
       const systemMayor = this.veronaApiVersionSupported.split('.').shift();
@@ -197,16 +214,30 @@ export class FilesComponent implements OnInit {
     return file;
   }
 
-  public download(element: GetFileResponseData): void {
+  public download(file: IQBFile): void {
     this.mds.setSpinnerOn();
-    this.bs.downloadFile(element.type, element.name)
+    this.bs.downloadFile(file.type, file.name)
       .subscribe(
         (fileData: Blob|boolean) => {
           this.mds.setSpinnerOff();
           if (fileData !== false) {
-            saveAs(fileData as Blob, element.name);
+            saveAs(fileData as Blob, file.name);
           }
         }
       );
+  }
+
+  setTableSorting(sort: Sort): void {
+    this.lastSort = sort;
+    function compare(a: number | string, b: number | string, isAsc: boolean) {
+      if ((typeof a === 'string') && (typeof b === 'string')) {
+        return a.localeCompare(b) * (isAsc ? 1 : -1);
+      }
+      return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+    }
+    Object.keys(this.files).forEach(type => {
+      this.files[type].data = this.files[type].data
+        .sort((a, b) => compare(a[sort.active], b[sort.active], (sort.direction === 'asc')));
+    });
   }
 }

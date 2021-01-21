@@ -1,8 +1,11 @@
-export interface GetFileResponseData {
+export const IQBFileTypes = ['Testtakers', 'Booklet', 'SysCheck', 'Resource', 'Unit'] as const;
+export type IQBFileType = (typeof IQBFileTypes)[number];
+
+export interface IQBFile {
   name: string;
   size: number;
   modificationTime: string;
-  type: string;
+  type: IQBFileType;
   isChecked: boolean;
   report: {
     error: string[];
@@ -13,6 +16,10 @@ export interface GetFileResponseData {
     [key: string]: string|number;
   }
 }
+
+export type GetFileResponseData = {
+  [type in IQBFileType]: IQBFile[]
+};
 
 export interface UnitResponse {
   groupname: string;
