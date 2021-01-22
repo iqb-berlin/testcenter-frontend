@@ -7,16 +7,12 @@
 
   <ng-container *ngIf="status > 1">
     <ng-container *ngFor="let uploadedFile of uploadResponse | keyvalue">
-      <div class="subheading-2 {{uploadedFile.value.error ? 'error' : 'success'}}">{{uploadedFile.key || file.name}}</div>
-      <alert
-          level="{{uploadedFile.value.error ? 'error' : 'success'}}"
-          text="{{uploadedFile.value.error ? 'Abgelehnt' : 'Erfolgreich hochgeladen'}}"
-      ></alert>
+      <div class="subheading-2 {{uploadedFile.value.error ? 'error' : 'success'}}">
+        {{uploadedFile.key || file.name}} - {{uploadedFile.value.error ? 'Abgelehnt' : 'Erfolgreich hochgeladen'}}
+      </div>
       <ng-container *ngFor="let report of uploadedFile.value | keyvalue">
         <alert *ngFor="let reportEntry of report.value" [level]="report.key" [text]="reportEntry"></alert>
       </ng-container>
     </ng-container>
   </ng-container>
 </div>
-
-

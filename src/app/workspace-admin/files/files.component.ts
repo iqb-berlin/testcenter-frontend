@@ -1,4 +1,6 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import {
+  Component, OnInit, Inject, ViewChild
+} from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -16,6 +18,7 @@ import {
 } from '../workspace.interfaces';
 import { BackendService, FileDeletionReport } from '../backend.service';
 import { MainDataService } from '../../maindata.service';
+import { IqbFilesUploadQueueComponent } from './iqb-files';
 
 interface FileStats {
   invalid: {
@@ -61,6 +64,8 @@ export class FilesComponent implements OnInit {
     invalid: {},
     testtakers: 0
   };
+
+  @ViewChild('fileUploadQueue', { static: true }) public uploadQueue: IqbFilesUploadQueueComponent;
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,

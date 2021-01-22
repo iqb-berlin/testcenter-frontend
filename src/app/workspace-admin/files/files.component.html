@@ -1,5 +1,6 @@
 <div class="columnhost">
   <div class="filelist">
+
     <ng-container *ngFor="let type of fileTypes">
 
       <mat-table *ngIf="files && files[type]" [dataSource]="files[type]" matSort (matSortChange)="setTableSorting($event)">
@@ -14,10 +15,10 @@
 
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef mat-sort-header class="namecell">
-            <div class="mat-subheading-1">{{files[type].data.length}} {{typeLabels[type]}}
-              <span *ngIf="type=='Testtakers'">({{fileStats.testtakers}} Teilnehmer)</span>
-            </div>
-            <alert level="error" *ngIf="fileStats.invalid[type]" text="`{{fileStats.invalid[type]}}` Fehlerhaft"></alert>
+            <div class="mat-subheading-1">{{typeLabels[type]}}</div>
+            <span>{{files[type].data.length}} Datei{{files[type].data.length === 1 ? '' : 'en'}}</span>
+            <span *ngIf="fileStats.invalid[type]">, davon {{fileStats.invalid[type]}} Fehlerhaft</span>
+            <span *ngIf="type=='Testtakers'">, {{fileStats.testtakers}} Teilnehmer</span>
           </mat-header-cell>
           <mat-cell *matCellDef="let element" class="namecell">
             <div class="file-report">
@@ -27,13 +28,8 @@
                   <mat-icon class="report-error">error</mat-icon>
                 </ng-container>
                 <ng-template #noError>
-                  <ng-container *ngIf="element.report.warning && element.report.warning.length; else: noWarning">
+                  <ng-container *ngIf="element.report.warning && element.report.warning.length">
                     <mat-icon class="report-warning">warning</mat-icon>
-                  </ng-container>
-                </ng-template>
-                <ng-template #noWarning>
-                  <ng-container *ngIf="element.report.info && element.report.info.length">
-                    <mat-icon class="report-info">info</mat-icon>
                   </ng-container>
                 </ng-template>
               </span>
@@ -102,11 +98,14 @@
       (uploadCompleteEvent)="updateFileList()">
     </iqb-files-upload-queue>
 
-    <alert *ngIf="fileStats.invalid" level="error" text="{{fileStats.total.invalid}}
-      Datei{{fileStats.total.invalid == 1 ? '' : 'en'}} von {{fileStats.total.count}}
-      {{fileStats.total.invalid == 1 ? 'ist' : 'sind'}} nicht valide oder
-      {{fileStats.total.invalid == 1 ? 'hat' : 'haben'}} fehlende Abhängigkeiten
-      und {{fileStats.total.invalid == 1 ? 'wird' : 'werden'}} ignoriert!">
-    </alert>
+    <div *ngIf="!uploadQueue.files.length" class="workspace-report">
+      <alert *ngIf="fileStats.total.invalid" level="error" text="{{fileStats.total.invalid}}
+        Datei{{fileStats.total.invalid == 1 ? '' : 'en'}} von {{fileStats.total.count}}
+        {{fileStats.total.invalid == 1 ? 'ist' : 'sind'}} nicht valide oder
+        {{fileStats.total.invalid == 1 ? 'hat' : 'haben'}} fehlende Abhängigkeiten
+        und {{fileStats.total.invalid == 1 ? 'wird' : 'werden'}} ignoriert!">
+      </alert>
+    </div>
+
   </div>
 </div>
