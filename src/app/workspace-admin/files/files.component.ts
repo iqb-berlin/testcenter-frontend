@@ -100,8 +100,8 @@ export class FilesComponent implements OnInit {
     }
 
     const filesToDelete = [];
-    Object(this.files).keys.forEach(type => {
-      this.files[type].forEach(file => {
+    Object.keys(this.files).forEach(type => {
+      this.files[type].data.forEach(file => {
         if (file.isChecked) {
           filesToDelete.push(`${file.type}/${file.name}`);
         }
