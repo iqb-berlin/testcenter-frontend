@@ -1,80 +1,86 @@
 <div class="columnhost">
   <div class="filelist">
 
-    <ng-container *ngFor="let type of fileTypes">
-
-      <mat-table *ngIf="files && files[type]" [dataSource]="files[type]" matSort (matSortChange)="setTableSorting($event)">
-        <ng-container matColumnDef="checked">
-          <mat-header-cell *matHeaderCellDef class="checkboxcell">
-            <mat-checkbox (change)="checkAll($event.checked, type)"></mat-checkbox>
-          </mat-header-cell>
-          <mat-cell *matCellDef="let element" class="checkboxcell">
-            <mat-checkbox [checked]="element.isChecked" (change)="element.isChecked=$event.checked"></mat-checkbox>
-          </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="name">
-          <mat-header-cell *matHeaderCellDef mat-sort-header class="namecell">
-            <div class="mat-subheading-1">{{typeLabels[type]}}</div>
+    <mat-accordion class="example-headers-align" multi="true">
+      <mat-expansion-panel [expanded]="true" *ngFor="let type of fileTypes">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{typeLabels[type]}}</mat-panel-title>
+          <mat-panel-description>
             <span>{{files[type].data.length}} Datei{{files[type].data.length === 1 ? '' : 'en'}}</span>
             <span *ngIf="fileStats.invalid[type]">, davon {{fileStats.invalid[type]}} Fehlerhaft</span>
             <span *ngIf="type=='Testtakers'">, {{fileStats.testtakers}} Teilnehmer</span>
-          </mat-header-cell>
-          <mat-cell *matCellDef="let element" class="namecell">
-            <div class="file-report">
-              <button mat-button (click)="download(element)">{{element.name}}</button>
-              <span class="vertical-align-middle">
-                <ng-container *ngIf="element.report.error && element.report.error.length; else: noError">
-                  <mat-icon class="report-error">error</mat-icon>
-                </ng-container>
-                <ng-template #noError>
-                  <ng-container *ngIf="element.report.warning && element.report.warning.length">
-                    <mat-icon class="report-warning">warning</mat-icon>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <mat-table *ngIf="files && files[type]" [dataSource]="files[type]" matSort (matSortChange)="setTableSorting($event)">
+          <ng-container matColumnDef="checked">
+            <mat-header-cell *matHeaderCellDef class="checkboxcell">
+              <mat-checkbox (change)="checkAll($event.checked, type)"></mat-checkbox>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element" class="checkboxcell">
+              <mat-checkbox [checked]="element.isChecked" (change)="element.isChecked=$event.checked"></mat-checkbox>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="namecell">Dateiname</mat-header-cell>
+            <mat-cell *matCellDef="let element" class="namecell">
+              <div class="file-report">
+                <button mat-button (click)="download(element)">{{element.name}}</button>
+                <span class="vertical-align-middle">
+                  <ng-container *ngIf="element.report.error && element.report.error.length; else: noError">
+                    <mat-icon class="report-error">error</mat-icon>
                   </ng-container>
-                </ng-template>
-              </span>
-              <mat-card class="full-file-report">
-                <mat-card-header *ngIf="element.info.label || element.id">
-                  <mat-card-title>
-                    {{element.info.label}}
-                    <span
-                        *ngIf="element.id !== element.name.toUpperCase()"
-                        style="{{element.info.label ? 'color:silver' : ''}}">
-                    #{{element.id}}
-                  </span>
-                  </mat-card-title>
-                  <mat-card-subtitle>{{element.info.description}}</mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                  <ng-container *ngFor="let level of ['error', 'warning', 'info']">
-                    <div *ngFor="let message of element.report[level]">
-                      <alert [level]="level" [text]="message"></alert>
-                    </div>
-                  </ng-container>
-                </mat-card-content>
-              </mat-card>
-            </div>
-          </mat-cell>
-        </ng-container>
+                  <ng-template #noError>
+                    <ng-container *ngIf="element.report.warning && element.report.warning.length">
+                      <mat-icon class="report-warning">warning</mat-icon>
+                    </ng-container>
+                  </ng-template>
+                </span>
+                <mat-card class="full-file-report">
+                  <mat-card-header *ngIf="element.info.label || element.id">
+                    <mat-card-title>
+                      {{element.info.label}}
+                      <span
+                          *ngIf="element.id !== element.name.toUpperCase()"
+                          style="{{element.info.label ? 'color:silver' : ''}}">
+                      #{{element.id}}
+                    </span>
+                    </mat-card-title>
+                    <mat-card-subtitle>{{element.info.description}}</mat-card-subtitle>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <ng-container *ngFor="let level of ['error', 'warning', 'info']">
+                      <div *ngFor="let message of element.report[level]">
+                        <alert [level]="level" [text]="message"></alert>
+                      </div>
+                    </ng-container>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </mat-cell>
+          </ng-container>
 
-        <ng-container matColumnDef="modificationTime">
-          <mat-header-cell *matHeaderCellDef mat-sort-header class="datecell"> Letzte Änderung </mat-header-cell>
-          <mat-cell *matCellDef="let element" class="datecell">
-            {{(element.modificationTime * 1000) | date: 'dd.MM.yy hh:mm'}}
-          </mat-cell>
-        </ng-container>
+          <ng-container matColumnDef="modificationTime">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="datecell"> Letzte Änderung </mat-header-cell>
+            <mat-cell *matCellDef="let element" class="datecell">
+              {{(element.modificationTime * 1000) | date: 'dd.MM.yy hh:mm'}}
+            </mat-cell>
+          </ng-container>
 
-        <ng-container matColumnDef="size">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> Volle Größe  </mat-header-cell>
-          <mat-cell *matCellDef="let element" style="white-space: nowrap;">
-            {{(element.info.totalSize || element.size) | bytes}}
-          </mat-cell>
-        </ng-container>
+          <ng-container matColumnDef="size">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Volle Größe  </mat-header-cell>
+            <mat-cell *matCellDef="let element" style="white-space: nowrap;">
+              {{(element.info.totalSize || element.size) | bytes}}
+            </mat-cell>
+          </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-      </mat-table>
-    </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+
+      </mat-expansion-panel>
+    </mat-accordion>
   </div>
 
   <div class="sidebar">

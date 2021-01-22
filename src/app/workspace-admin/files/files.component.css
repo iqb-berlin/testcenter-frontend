@@ -9,10 +9,15 @@
 
 .filelist {
   flex:  10 0 400px;
+  margin-top: 0.7em;
 }
 
-mat-table {
-  margin-bottom: 3em;
+mat-expansion-panel {
+  overflow: visible;
+}
+
+mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-type {
+  padding-left: 0
 }
 
 .checkboxcell {
@@ -24,10 +29,8 @@ mat-table {
   flex: 3 3 60px;
 }
 
-.namecell .mat-subheading-1 {
-  padding: 0 16px;
-  margin-bottom: 0;
-  color: black;
+.namecell.mat-header-cell {
+  padding-left: 16px;
 }
 
 .datecell {
@@ -40,7 +43,8 @@ mat-table {
 }
 
 .sidebar .buttons {
-  min-height: 56px;
+  margin-top: 0.7em;
+  margin-bottom: 0.7em;
   display: inline-flex;
   vertical-align: middle;
   align-items: center;
@@ -51,18 +55,15 @@ mat-table {
   font-size: 0.8em;
 }
 
-.report-error,
-.checkerror {
+.report-error {
   color: #821324;
 }
 
-.report-warning,
-.checkwarning {
-  color: goldenrod;
+.report-warning {
+  color: silver;
 }
 
-.report-info,
-.checkinfo {
+.report-info {
   color: blue;
 }
 
@@ -81,11 +82,12 @@ mat-table {
 
 .file-report:hover .full-file-report {
   display: block;
-  position: absolute;
+  position: absolute ;
   background: white;
   box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
   z-index: 1000;
   cursor: default;
+  margin: 2px;
 }
 
 .full-file-report .mat-card-title,
