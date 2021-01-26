@@ -113,9 +113,10 @@
         {{fileStats.total.invalid == 1 ? 'hat' : 'haben'}} fehlende Abhängigkeiten
         und {{fileStats.total.invalid == 1 ? 'wird' : 'werden'}} ignoriert!">
       </alert>
-      <ng-container #workspaceValid>
-        <alert level="success" text="Workspace ist Valide"></alert>
-      </ng-container>
+      <ng-template #workspaceValid>
+        <alert level="success" *ngIf="fileStats.total.count" text="Alle
+          {{fileStats.total.count > 1 ? fileStats.total.count : ''}} Dateien im Workspace sind Valide."></alert>
+      </ng-template>
     </div>
 
   </div>
