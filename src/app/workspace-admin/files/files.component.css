@@ -39,7 +39,7 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
 
 .sidebar {
   flex:  10 0 200px;
-  padding-left: 2em;
+  padding-left: 1em;
 }
 
 .sidebar .buttons {
