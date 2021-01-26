@@ -5,7 +5,7 @@
       <mat-expansion-panel [expanded]="true" *ngFor="let type of fileTypes">
         <mat-expansion-panel-header>
           <mat-panel-title>{{typeLabels[type]}}</mat-panel-title>
-          <mat-panel-description>
+          <mat-panel-description *ngIf="files[type]">
             <span>{{files[type].data.length}} Datei{{files[type].data.length === 1 ? '' : 'en'}}</span>
             <span *ngIf="fileStats.invalid[type]">, davon {{fileStats.invalid[type]}} Fehlerhaft</span>
             <span *ngIf="type=='Testtakers'">, {{fileStats.testtakers}} Teilnehmer</span>
@@ -28,11 +28,11 @@
               <div class="file-report">
                 <button mat-button (click)="download(element)">{{element.name}}</button>
                 <span class="vertical-align-middle">
-                  <ng-container *ngIf="element.report.error && element.report.error.length; else: noError">
+                  <ng-container *ngIf="element.report.error && element.report.error?.length; else: noError">
                     <mat-icon class="report-error">error</mat-icon>
                   </ng-container>
                   <ng-template #noError>
-                    <ng-container *ngIf="element.report.warning && element.report.warning.length">
+                    <ng-container *ngIf="element.report.warning && element.report.warning?.length">
                       <mat-icon class="report-warning">warning</mat-icon>
                     </ng-container>
                   </ng-template>
@@ -104,7 +104,7 @@
       (uploadCompleteEvent)="updateFileList()">
     </iqb-files-upload-queue>
 
-    <div *ngIf="!uploadQueue.files.length" class="workspace-report">
+    <div *ngIf="!uploadQueue.files?.length" class="workspace-report">
       <alert *ngIf="fileStats.total.invalid" level="error" text="{{fileStats.total.invalid}}
         Datei{{fileStats.total.invalid == 1 ? '' : 'en'}} von {{fileStats.total.count}}
         {{fileStats.total.invalid == 1 ? 'ist' : 'sind'}} nicht valide oder
