@@ -18,9 +18,9 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.routingSubscription = this.route.params.subscribe((params) => {
-      this.wds.wsId = params['ws'];
-      this.bs.getWorkspaceData(this.wds.wsId).subscribe((wsData) => {
+    this.routingSubscription = this.route.params.subscribe(params => {
+      this.wds.wsId = params.ws;
+      this.bs.getWorkspaceData(this.wds.wsId).subscribe(wsData => {
         if (typeof wsData !== 'number') {
           this.wds.wsName = wsData.name;
           this.wds.wsRole = wsData.role;

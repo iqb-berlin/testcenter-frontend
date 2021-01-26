@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import {
-  GetFileResponseData, CheckWorkspaceResponseData, SysCheckStatistics,
+  GetFileResponseData, SysCheckStatistics,
   ReviewData, LogData, UnitResponse, ResultData
 } from './workspace.interfaces';
 import { WorkspaceDataService } from './workspacedata.service';
@@ -22,7 +22,7 @@ export class BackendService {
 
   getWorkspaceData(workspaceId: string): Observable<WorkspaceData | number> {
     return this.http
-      .get<WorkspaceData>(this.serverUrl + 'workspace/' + workspaceId)
+      .get<WorkspaceData>(`${this.serverUrl}workspace/${workspaceId}`)
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getWorkspaceData Api-Error: ${err.code} ${err.info} `);
@@ -31,9 +31,9 @@ export class BackendService {
       );
   }
 
-  getFiles(): Observable<GetFileResponseData[]> {
+  getFiles(): Observable<GetFileResponseData> {
     return this.http
-      .get<GetFileResponseData[]>(this.serverUrl + `workspace/${this.wds.wsId}/files`)
+      .get<GetFileResponseData>(`${this.serverUrl}workspace/${this.wds.wsId}/files`)
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getFiles Api-Error: ${err.code} ${err.info} `);
@@ -44,7 +44,7 @@ export class BackendService {
 
   deleteFiles(filesToDelete: Array<string>): Observable<FileDeletionReport> {
     return this.http
-      .request<FileDeletionReport>('delete', this.serverUrl + `workspace/${this.wds.wsId}/files`, {body: {f: filesToDelete}})
+      .request<FileDeletionReport>('delete', `${this.serverUrl}workspace/${this.wds.wsId}/files`, { body: { f: filesToDelete } })
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`deleteFiles Api-Error: ${err.code} ${err.info} `);
@@ -57,24 +57,9 @@ export class BackendService {
       );
   }
 
-  checkWorkspace(): Observable<CheckWorkspaceResponseData> {
-    return this.http
-      .get<CheckWorkspaceResponseData>(this.serverUrl + `workspace/${this.wds.wsId}/validation`, {})
-      .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`checkWorkspace Api-Error: ${err.code} ${err.info} `);
-          return of(<CheckWorkspaceResponseData>{
-            errors: [`checkWorkspace Api-Error: ${err.code} ${err.info} `],
-            infos: [],
-            warnings: []
-          });
-        })
-      );
-  }
-
   getResultData(): Observable<ResultData[]> {
     return this.http
-      .get<ResultData[]>(this.serverUrl + `workspace/${this.wds.wsId}/results`, {})
+      .get<ResultData[]>(`${this.serverUrl}workspace/${this.wds.wsId}/results`, {})
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getResultData Api-Error: ${err.code} ${err.info} `);
@@ -85,7 +70,7 @@ export class BackendService {
 
   getResponses(groups: string[]): Observable<UnitResponse[]> {
     return this.http
-      .get<UnitResponse[]>(this.serverUrl + `workspace/${this.wds.wsId}/responses`, {params: {groups: groups.join(',')}})
+      .get<UnitResponse[]>(`${this.serverUrl}workspace/${this.wds.wsId}/responses`, { params: { groups: groups.join(',') } })
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getResponses Api-Error: ${err.code} ${err.info} `);
@@ -96,7 +81,7 @@ export class BackendService {
 
   getLogs(groups: string[]): Observable<LogData[]> {
     return this.http
-      .get<LogData[]>(this.serverUrl + `workspace/${this.wds.wsId}/logs`, {params: {groups: groups.join(',')}})
+      .get<LogData[]>(`${this.serverUrl}workspace/${this.wds.wsId}/logs`, { params: { groups: groups.join(',') } })
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getLogs Api-Error: ${err.code} ${err.info} `);
@@ -107,7 +92,7 @@ export class BackendService {
 
   getReviews(groups: string[]): Observable<ReviewData[]> {
     return this.http
-      .get<ReviewData[]>(this.serverUrl + `workspace/${this.wds.wsId}/reviews`, {params: {groups: groups.join(',')}})
+      .get<ReviewData[]>(`${this.serverUrl}workspace/${this.wds.wsId}/reviews`, { params: { groups: groups.join(',') } })
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getReviews Api-Error: ${err.code} ${err.info} `);
@@ -118,7 +103,7 @@ export class BackendService {
 
   deleteData(groups: string[]): Observable<boolean> {
     return this.http
-      .request('delete', this.serverUrl + `workspace/${this.wds.wsId}/responses`, {body: {groups: groups}})
+      .request('delete', `${this.serverUrl}workspace/${this.wds.wsId}/responses`, { body: { groups } })
       .pipe(
         map(() => true),
         catchError((err: ApiError) => {
@@ -130,7 +115,7 @@ export class BackendService {
 
   getSysCheckReportList(): Observable<SysCheckStatistics[]> {
     return this.http
-      .get<ReviewData[]>(this.serverUrl + `workspace/${this.wds.wsId}/sys-check/reports/overview`)
+      .get<ReviewData[]>(`${this.serverUrl}workspace/${this.wds.wsId}/sys-check/reports/overview`)
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getSysCheckReportList Api-Error: ${err.code} ${err.info} `);
@@ -139,19 +124,19 @@ export class BackendService {
       );
   }
 
-  getSysCheckReport(reports: string[], enclosure: string, columnDelimiter: string, lineEnding: string)
+  getSysCheckReport(reports: string[], enclosure: string, delimiter: string, lineEnding: string)
     : Observable<Blob | boolean> {
     return this.http
-      .get(this.serverUrl + `workspace/${this.wds.wsId}/sys-check/reports`,
+      .get(`${this.serverUrl}workspace/${this.wds.wsId}/sys-check/reports`,
         {
           params: {
             checkIds: reports.join(','),
-            delimiter: columnDelimiter,
-            enclosure: enclosure,
-            lineEnding: lineEnding
+            delimiter,
+            enclosure,
+            lineEnding
           },
           headers: {
-            'Accept': 'text/csv'
+            Accept: 'text/csv'
           },
           responseType: 'blob'
         })
@@ -165,7 +150,7 @@ export class BackendService {
 
   deleteSysCheckReports(checkIds: string[]): Observable <FileDeletionReport> {
     return this.http
-      .request<FileDeletionReport>('delete', this.serverUrl + `workspace/${this.wds.wsId}/sys-check/reports`, {body: {checkIds: checkIds}})
+      .request<FileDeletionReport>('delete', `${this.serverUrl}workspace/${this.wds.wsId}/sys-check/reports`, { body: { checkIds } })
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`deleteSysCheckReports Api-Error: ${err.code} ${err.info} `);
@@ -180,7 +165,7 @@ export class BackendService {
 
   downloadFile(fileType: string, fileName: string): Observable<Blob | boolean> {
     return this.http
-      .get(this.serverUrl + `workspace/${this.wds.wsId}/file/${fileType}/${fileName}`, {responseType: 'blob'})
+      .get(`${this.serverUrl}workspace/${this.wds.wsId}/file/${fileType}/${fileName}`, { responseType: 'blob' })
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`downloadFile Api-Error: ${err.code} ${err.info} `);
