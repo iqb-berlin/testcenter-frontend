@@ -4,13 +4,11 @@ import {
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { IqbFilesUploadComponent, UploadStatus } from '../iqbFilesUpload/iqbFilesUpload.component';
 
-/**
- * A material design file upload queue component.
- */
 @Component({
   selector: 'iqb-files-upload-queue',
   templateUrl: 'iqbFilesUploadQueue.component.html',
-  exportAs: 'iqbFilesUploadQueue'
+  exportAs: 'iqbFilesUploadQueue',
+  styleUrls: ['../iqb-files.scss']
 })
 export class IqbFilesUploadQueueComponent implements OnDestroy {
   @ViewChildren(IqbFilesUploadComponent) fileUploads: QueryList<IqbFilesUploadComponent>;
@@ -37,12 +35,6 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
   fileAlias: string;
 
   @Input()
-  tokenName: string;
-
-  @Input()
-  token: string;
-
-  @Input()
   folderName: string;
 
   @Input()
@@ -50,45 +42,33 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
 
   @Output() uploadCompleteEvent = new EventEmitter<IqbFilesUploadQueueComponent>();
 
-  add(file: any) {
+  add(file: any): void {
     this.files.push(file);
   }
 
-  public removeAll() {
+  public removeAll(): void {
     this.files.splice(0, this.files.length);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.files) {
       this.removeAll();
     }
   }
 
-  removeFile(fileToRemove: IqbFilesUploadComponent) {
+  removeFile(fileToRemove: IqbFilesUploadComponent): void {
     this.files.splice(fileToRemove.id, 1);
   }
 
-/*
-  updateStatus() {
-    this.numberOfErrors = 0;
-    this.numberOfUploads = 0;
-
-    this.fileUploads.forEach((fileUpload) => {
-
-      fileUpload.upload();
-    });
-  } */
-
-  analyseStatus() {
+  analyseStatus(): void {
     let someoneiscomplete = false;
     let someoneisbusy = false;
     let someoneisready = false;
-    this.fileUploads.forEach((fileUpload) => {
+    this.fileUploads.forEach(fileUpload => {
       if ((fileUpload.status === UploadStatus.ok) || (fileUpload.status === UploadStatus.error)) {
         someoneiscomplete = true;
       } else if (fileUpload.status === UploadStatus.busy) {
         someoneisbusy = true;
-        return; // forEach
       } else if (fileUpload.status === UploadStatus.ready) {
         someoneisready = true;
       }

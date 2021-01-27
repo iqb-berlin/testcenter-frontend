@@ -4,39 +4,72 @@ import {
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSort } from '@angular/material/sort';
+import { Sort } from '@angular/material/sort';
 
 import { saveAs } from 'file-saver';
 import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
   MessageDialogData, MessageType
 } from 'iqb-components';
+import { map } from 'rxjs/operators';
 import { WorkspaceDataService } from '../workspacedata.service';
-import { GetFileResponseData, CheckWorkspaceResponseData } from '../workspace.interfaces';
+import {
+  IQBFileType, GetFileResponseData, IQBFile, IQBFileTypes
+} from '../workspace.interfaces';
 import { BackendService, FileDeletionReport } from '../backend.service';
 import { MainDataService } from '../../maindata.service';
+import { IqbFilesUploadQueueComponent } from './iqb-files';
+
+interface FileStats {
+  invalid: {
+    [type in IQBFileType]?: number;
+  }
+  total: {
+    count: number;
+    invalid: number;
+  };
+  testtakers: number;
+}
 
 @Component({
   templateUrl: './files.component.html',
   styleUrls: ['./files.component.css']
 })
 export class FilesComponent implements OnInit {
-  public serverfiles: MatTableDataSource<GetFileResponseData>;
-  public displayedColumns = ['checked', 'filename', 'typelabel', 'filesize', 'filedatetime'];
+  public files: {[type in IQBFileType]?: MatTableDataSource<IQBFile>} = {};
+  public fileTypes = IQBFileTypes;
+  public displayedColumns = ['checked', 'name', 'size', 'modificationTime'];
 
-  // for fileupload
   public uploadUrl = '';
   public fileNameAlias = 'fileforvo';
 
-  // for workspace-check
-  public checkErrors = [];
-  public checkWarnings = [];
-  public checkInfos = [];
+  public lastSort:Sort = {
+    active: 'name',
+    direction: 'asc'
+  };
 
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  public typeLabels = {
+    Testtakers: 'Teilnehmerlisten',
+    Booklet: 'Testhefte',
+    SysCheck: 'System-Check-Definitionen',
+    Resource: 'Ressourcen',
+    Unit: 'Units'
+  };
+
+  public fileStats: FileStats = {
+    total: {
+      count: 0,
+      invalid: 0
+    },
+    invalid: {},
+    testtakers: 0
+  };
+
+  @ViewChild('fileUploadQueue', { static: true }) public uploadQueue: IqbFilesUploadQueueComponent;
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
+    @Inject('VERONA_API_VERSION_SUPPORTED') private veronaApiVersionSupported: string,
     private bs: BackendService,
     public wds: WorkspaceDataService,
     public confirmDialog: MatDialog,
@@ -53,116 +86,163 @@ export class FilesComponent implements OnInit {
     });
   }
 
-  checkAll(isChecked: boolean) {
-    this.serverfiles.data.forEach((element) => {
-      element.isChecked = isChecked;
+  public checkAll(isChecked: boolean, type: IQBFileType): void {
+    this.files[type].data = this.files[type].data.map(file => {
+      // eslint-disable-next-line no-param-reassign
+      file.isChecked = isChecked;
+      return file;
     });
   }
 
-  deleteFiles() {
-    if (this.wds.wsRole === 'RW') {
-      this.checkErrors = [];
-      this.checkWarnings = [];
-      this.checkInfos = [];
+  public deleteFiles(): void {
+    if (this.wds.wsRole !== 'RW') {
+      return;
+    }
 
-      const filesToDelete = [];
-      this.serverfiles.data.forEach((element) => {
-        if (element.isChecked) {
-          filesToDelete.push(`${element.type}/${element.filename}`);
+    const filesToDelete = [];
+    Object.keys(this.files).forEach(type => {
+      this.files[type].data.forEach(file => {
+        if (file.isChecked) {
+          filesToDelete.push(`${file.type}/${file.name}`);
+        }
+      });
+    });
+
+    if (filesToDelete.length > 0) {
+      const p = filesToDelete.length > 1;
+      const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
+        width: '400px',
+        data: <ConfirmDialogData>{
+          title: 'Löschen von Dateien',
+          content: `Sie haben ${p ? filesToDelete.length : 'eine'} Datei${p ? 'en' : ''}\` 
+            ausgewählt. Soll${p ? 'en' : ''}  diese gelöscht werden?`,
+          confirmbuttonlabel: 'Löschen',
+          showcancel: true
         }
       });
 
-      if (filesToDelete.length > 0) {
-        let prompt = 'Sie haben ';
-        if (filesToDelete.length > 1) {
-          prompt = prompt + filesToDelete.length + ' Dateien ausgewählt. Sollen';
-        } else {
-          prompt = prompt + ' eine Datei ausgewählt. Soll';
+      dialogRef.afterClosed().subscribe(result => {
+        if (result !== false) {
+          this.mds.setSpinnerOn();
+          this.bs.deleteFiles(filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) => {
+            const message = [];
+            if (fileDeletionReport.deleted.length > 0) {
+              message.push(`${fileDeletionReport.deleted.length} Dateien erfolgreich gelöscht.`);
+            }
+            if (fileDeletionReport.not_allowed.length > 0) {
+              message.push(`${fileDeletionReport.not_allowed.length} Dateien konnten nicht gelöscht werden.`);
+            }
+            this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
+            this.updateFileList();
+          });
         }
-        const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
-          width: '400px',
-          data: <ConfirmDialogData>{
-            title: 'Löschen von Dateien',
-            content: `${prompt} diese gelöscht werden?`,
-            confirmbuttonlabel: 'Löschen',
-            showcancel: true
-          }
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-          if (result !== false) {
-            this.mds.setSpinnerOn();
-            this.bs.deleteFiles(filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) => {
-              const message = [];
-              if (fileDeletionReport.deleted.length > 0) {
-                message.push(fileDeletionReport.deleted.length + ' Dateien erfolgreich gelöscht.');
-              }
-              if (fileDeletionReport.not_allowed.length > 0) {
-                message.push(fileDeletionReport.not_allowed.length + ' Dateien konnten nicht gelöscht werden.');
-              }
-              this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '',  {duration: 1000});
-              this.updateFileList();
-            });
-          }
-        });
-      } else {
-        this.messageDialog.open(MessageDialogComponent, {
-          width: '400px',
-          data: <MessageDialogData>{
-            title: 'Löschen von Dateien',
-            content: 'Bitte markieren Sie erst Dateien!',
-            type: MessageType.error
-          }
-        });
-      }
+      });
+    } else {
+      this.messageDialog.open(MessageDialogComponent, {
+        width: '400px',
+        data: <MessageDialogData>{
+          title: 'Löschen von Dateien',
+          content: 'Bitte markieren Sie erst Dateien!',
+          type: MessageType.error
+        }
+      });
     }
   }
 
-  updateFileList(empty = false): void {
-    this.checkErrors = [];
-    this.checkWarnings = [];
-    this.checkInfos = [];
-
-    if (empty || this.wds.wsRole === 'MO') {
-      this.serverfiles = new MatTableDataSource([]);
+  public updateFileList(empty = false): void {
+    if (empty) {
+      this.files = {};
       this.mds.setSpinnerOff();
     } else {
-      this.bs.getFiles().subscribe(
-        (fileList: GetFileResponseData[]) => {
-          this.serverfiles = new MatTableDataSource(fileList);
-          this.serverfiles.sort = this.sort;
+      this.bs.getFiles()
+        .pipe(map(fileList => this.addFrontendChecksToFiles(fileList)))
+        .subscribe(fileList => {
+          this.files = {};
+          Object.keys(fileList)
+            .forEach(type => {
+              this.files[type] = new MatTableDataSource(fileList[type]);
+            });
+          this.fileStats = FilesComponent.getStats(fileList);
+          this.setTableSorting(this.lastSort);
           this.mds.setSpinnerOff();
-        }
-      );
+        });
     }
   }
 
-  download(element: GetFileResponseData): void {
+  private static getStats(fileList: GetFileResponseData): FileStats {
+    const stats: FileStats = {
+      total: {
+        count: 0,
+        invalid: 0
+      },
+      invalid: {},
+      testtakers: 0
+    };
+    Object.keys(fileList)
+      .forEach(type => {
+        fileList[type].forEach(file => {
+          if (typeof stats.invalid[type] === 'undefined') {
+            stats.invalid[type] = 0;
+          }
+          stats.total.count += 1;
+          if (file.report.error && file.report.error.length) {
+            stats.invalid[type] += 1;
+            stats.total.invalid += 1;
+            stats.testtakers += (typeof file.info.testtakers === 'number') ? file.info.testtakers : 0;
+          }
+        });
+      });
+    return stats;
+  }
+
+  private addFrontendChecksToFiles(fileList: GetFileResponseData): GetFileResponseData {
+    Object.keys(fileList).forEach(type => {
+      // eslint-disable-next-line no-param-reassign
+      fileList[type] = fileList[type].map(files => this.addFrontendChecksToFile(files));
+    });
+    return fileList;
+  }
+
+  private addFrontendChecksToFile(file: IQBFile): IQBFile {
+    if (typeof file.info['verona-version'] !== 'undefined') {
+      const fileMayor = file.info['verona-version'].toString().split('.').shift();
+      const systemMayor = this.veronaApiVersionSupported.split('.').shift();
+      if (fileMayor !== systemMayor) {
+        if (typeof file.report.error === 'undefined') {
+          // eslint-disable-next-line no-param-reassign
+          file.report.error = [];
+        }
+        file.report.error.push(`Verona Version of this Player is not compatible 
+          with this system's version (\`${this.veronaApiVersionSupported}\`)!`);
+      }
+    }
+    return file;
+  }
+
+  public download(file: IQBFile): void {
     this.mds.setSpinnerOn();
-    this.bs.downloadFile(element.type, element.filename)
+    this.bs.downloadFile(file.type, file.name)
       .subscribe(
         (fileData: Blob|boolean) => {
           this.mds.setSpinnerOff();
           if (fileData !== false) {
-            saveAs(fileData as Blob, element.filename);
+            saveAs(fileData as Blob, file.name);
           }
         }
       );
   }
 
-  checkWorkspace(): void {
-    this.checkErrors = [];
-    this.checkWarnings = [];
-    this.checkInfos = [];
-
-    this.mds.setSpinnerOn();
-    this.bs.checkWorkspace().subscribe(
-      (checkResponse: CheckWorkspaceResponseData) => {
-        this.mds.setSpinnerOff();
-        this.checkErrors = checkResponse.errors;
-        this.checkWarnings = checkResponse.warnings;
-        this.checkInfos = checkResponse.infos;
+  setTableSorting(sort: Sort): void {
+    this.lastSort = sort;
+    function compare(a: number | string, b: number | string, isAsc: boolean) {
+      if ((typeof a === 'string') && (typeof b === 'string')) {
+        return a.localeCompare(b) * (isAsc ? 1 : -1);
       }
-    );
+      return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+    }
+    Object.keys(this.files).forEach(type => {
+      this.files[type].data = this.files[type].data
+        .sort((a, b) => compare(a[sort.active], b[sort.active], (sort.direction === 'asc')));
+    });
   }
 }

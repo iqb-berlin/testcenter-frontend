@@ -29,6 +29,7 @@ import { FilesComponent } from './files/files.component';
 import { ResultsComponent } from './results/results.component';
 import { SyscheckComponent } from './syscheck/syscheck.component';
 import { IqbFilesModule } from './files/iqb-files';
+import { AlertModule } from '../shared/alert/alert.module';
 
 @NgModule({
   imports: [
@@ -55,7 +56,8 @@ import { IqbFilesModule } from './files/iqb-files';
     IqbComponentsModule,
     MatCardModule,
     FlexLayoutModule,
-    IqbFilesModule
+    IqbFilesModule,
+    AlertModule
   ],
   exports: [
     WorkspaceComponent

@@ -1,13 +1,18 @@
-<mat-card>
-    <span class="file-info">{{file.name}} ({{file.size | bytes}})</span>
-    <section *ngIf="status<=1" class="example-section">
-        <mat-progress-bar class="example-margin" [value]="progressPercentage"></mat-progress-bar>
-        <a *ngIf="status == 0"><mat-icon class="action" (click)="upload()">file_upload</mat-icon></a>
-        <mat-icon class="action" (click)="remove()">cancel</mat-icon>
-    </section>
-    <span *ngIf="status == 1" class="file-info">{{progressPercentage}} %</span><br/>
-    <span *ngIf="status != 1">
-      <span *ngIf="status == 3" class="file-info-error">{{statustext}}</span>
-      <span *ngIf="status != 3" class="file-info">{{statustext}}</span>
-    </span>
-</mat-card>
+<div class="mat-body">
+  <div *ngIf="status == 1" class="upload-progress">
+    <mat-progress-bar class="example-margin" [value]="progressPercentage"></mat-progress-bar><br/>
+    <span class="file-info">{{progressPercentage}}%</span><br/>
+    <mat-icon class="action" (click)="remove()">cancel</mat-icon>
+  </div>
+
+  <ng-container *ngIf="status > 1">
+    <ng-container *ngFor="let uploadedFile of uploadResponse | keyvalue">
+      <div class="subheading-2 {{uploadedFile.value.error ? 'error' : 'success'}}">
+        {{uploadedFile.key || file.name}} - {{uploadedFile.value.error ? 'Abgelehnt' : 'Erfolgreich hochgeladen'}}
+      </div>
+      <ng-container *ngFor="let report of uploadedFile.value | keyvalue">
+        <alert *ngFor="let reportEntry of report.value" [level]="report.key" [text]="reportEntry"></alert>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+</div>

@@ -1,41 +1,25 @@
-export interface WorkspaceData {
-  id: string;
-  name: string;
-  role: 'RW' | 'RO' | 'n.d.';
-}
+export const IQBFileTypes = ['Testtakers', 'Booklet', 'SysCheck', 'Resource', 'Unit'] as const;
+export type IQBFileType = (typeof IQBFileTypes)[number];
 
-export interface GetFileResponseData {
-  filename: string;
-  filesize: number;
-  filesizestr: string;
-  filedatetime: string;
-  filedatetimestr: string;
-  type: string;
-  typelabel: string;
+export interface IQBFile {
+  name: string;
+  size: number;
+  modificationTime: string;
+  type: IQBFileType;
   isChecked: boolean;
+  report: {
+    error: string[];
+    warning: string[];
+    info: string[];
+  },
+  info: {
+    [key: string]: string|number;
+  }
 }
 
-export interface CheckWorkspaceResponseData {
-  errors: string[];
-  infos: string[];
-  warnings: string[];
-}
-
-export interface GroupResponse {
-  name: string;
-  testsTotal: number;
-  testsStarted: number;
-  responsesGiven: number;
-}
-
-export interface BookletsStarted {
-  groupname: string;
-  loginname: string;
-  code: string;
-  bookletname: string;
-  locked: boolean;
-  laststart: Date;
-}
+export type GetFileResponseData = {
+  [type in IQBFileType]: IQBFile[]
+};
 
 export interface UnitResponse {
   groupname: string;
