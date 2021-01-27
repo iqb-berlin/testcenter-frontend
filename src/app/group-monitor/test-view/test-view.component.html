@@ -16,9 +16,35 @@
     </div>
 </td>
 
+<td class="group" *ngIf="displayOptions.groupColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+    <div class="vertical-align-middle">{{testSession.data.groupLabel}}</div>
+</td>
+
 <td class="user" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
     <div class="vertical-align-middle">
         <h1>{{testSession.data.personLabel}}</h1>
+    </div>
+</td>
+
+<td class="booklet" *ngIf="displayOptions.bookletColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
+    <ng-container *ngIf="!testSession.booklet.error; else: noBooklet">
+        <div class="vertical-align-middle">{{testSession.booklet.metadata.label}}</div>
+    </ng-container>
+    <ng-template #noBooklet>
+        <div class="vertical-align-middle">{{testSession.data.bookletName}}</div>
+    </ng-template>
+</td>
+
+<td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.blockColumn === 'show'">
+    <div *ngIf="testSession.current as current;" class="vertical-align-middle">
+        {{current.parent.label || (current.parentIndexGlobal ? blockName(current.parentIndexGlobal) : '')}}
+        <mat-icon class="unit-badge"
+                  *ngIf="testSession.timeLeft && (testSession.timeLeft[current.parent.id] !== undefined)"
+                  matBadge="{{testSession.timeLeft[current.parent.id].toString()}}"
+                  matBadgeColor="accent"
+                  matTooltip="Verbleibende Zeit"
+        >schedule
+        </mat-icon>
     </div>
 </td>
 
@@ -187,33 +213,6 @@
         </span>
     </ng-template>
 </ng-template>
-
-
-<td class="group" *ngIf="displayOptions.groupColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-    <div class="vertical-align-middle">{{testSession.data.groupLabel}}</div>
-</td>
-
-<td class="booklet" *ngIf="displayOptions.bookletColumn === 'show'" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-    <ng-container *ngIf="!testSession.booklet.error; else: noBooklet">
-        <div class="vertical-align-middle">{{testSession.booklet.metadata.label}}</div>
-    </ng-container>
-    <ng-template #noBooklet>
-        <div class="vertical-align-middle">{{testSession.data.bookletName}}</div>
-    </ng-template>
-</td>
-
-<td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.blockColumn === 'show'">
-    <div *ngIf="testSession.current as current;" class="vertical-align-middle">
-        {{current.parent.label || (current.parentIndexGlobal ? blockName(current.parentIndexGlobal) : '')}}
-        <mat-icon class="unit-badge"
-                  *ngIf="testSession.timeLeft && (testSession.timeLeft[current.parent.id] !== undefined)"
-                  matBadge="{{testSession.timeLeft[current.parent.id].toString()}}"
-                  matBadgeColor="accent"
-                  matTooltip="Verbleibende Zeit"
-        >schedule
-        </mat-icon>
-    </div>
-</td>
 
 <td class="current-unit" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.unitColumn === 'show'">
     <div *ngIf="testSession.current as current;" class="vertical-align-middle">

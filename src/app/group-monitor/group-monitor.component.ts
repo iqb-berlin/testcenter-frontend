@@ -48,8 +48,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   displayOptions: TestViewDisplayOptions = {
     view: 'medium',
     groupColumn: 'hide',
-    bookletColumn: 'hide',
-    blockColumn: 'hide',
+    bookletColumn: 'show',
+    blockColumn: 'show',
     unitColumn: 'hide',
     selectionMode: 'block',
     selectionSpreading: 'booklet'

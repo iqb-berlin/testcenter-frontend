@@ -189,11 +189,11 @@
                                 <td mat-sort-header="_superState">
                                     <mat-icon>person</mat-icon>
                                 </td>
-                                <td mat-sort-header="personLabel">Benutzer</td>
-                                <td mat-sort-header="timestamp">Aktivität</td>
                                 <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">Gruppe</td>
+                                <td mat-sort-header="personLabel">Benutzer</td>
                                 <td mat-sort-header="bookletName" *ngIf="displayOptions.bookletColumn === 'show'">Testheft</td>
                                 <td mat-sort-header="_currentBlock" *ngIf="displayOptions.blockColumn === 'show'">Block</td>
+                                <td mat-sort-header="timestamp">Aktivität</td>
                                 <td mat-sort-header="_currentUnit" *ngIf="displayOptions.unitColumn === 'show'">Aufgabe</td>
                             </tr>
                         </thead>
