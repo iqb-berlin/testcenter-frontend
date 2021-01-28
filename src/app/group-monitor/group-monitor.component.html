@@ -23,9 +23,15 @@
 </div>
 
 <mat-menu #rootMenu="matMenu">
-    <button mat-menu-item [matMenuTriggerFor]="filters">Sitzungen ausblenden</button>
-    <button mat-menu-item [matMenuTriggerFor]="group">Spalten</button>
-    <button mat-menu-item [matMenuTriggerFor]="activity">Aktivität</button>
+    <button mat-menu-item [matMenuTriggerFor]="filters">
+        {{'Sitzungen ausblenden' | customtext:'gm_menu_filter':cts.updateCount}}
+    </button>
+    <button mat-menu-item [matMenuTriggerFor]="group">
+        {{'Spalten' | customtext:'gm_menu_cols':cts.updateCount}}
+    </button>
+    <button mat-menu-item [matMenuTriggerFor]="activity">
+        {{'Aktivität' | customtext:'gm_menu_view':cts.updateCount}}
+    </button>
 </mat-menu>
 
 <mat-menu #filters="matMenu">

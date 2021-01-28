@@ -11,7 +11,7 @@ import {
 import { map, switchMap, tap } from 'rxjs/operators';
 
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
+import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from 'iqb-components';
 import { BackendService } from './backend.service';
 import {
   GroupData,
@@ -33,7 +33,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private bs: BackendService,
     private bookletService: BookletService,
-    private router: Router
+    private router: Router,
+    public cts: CustomtextService
   ) {}
 
   ownGroup$: Observable<GroupData>;

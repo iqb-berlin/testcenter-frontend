@@ -15,6 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { CdkTableModule } from '@angular/cdk/table';
 
+import { IqbComponentsModule } from 'iqb-components';
 import { GroupMonitorRoutingModule } from './group-monitor-routing.module';
 import { GroupMonitorComponent } from './group-monitor.component';
 import { BackendService } from './backend.service';
@@ -43,7 +44,8 @@ import { TestSessionService } from './test-session.service';
     MatRadioModule,
     FormsModule,
     MatSidenavModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    IqbComponentsModule
   ],
   providers: [
     BackendService,
