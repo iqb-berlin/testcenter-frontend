@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html lang="de">
+  <meta charset="utf-8">
+  <title>States of Running Tests</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+    i {
+      font-family: "Material Icons";
+      font-style: normal;
+      font-size: xx-large;
+    }
+    i.warning {
+      color: #821123;
+    }
+    i.danger {
+      color: #821123;
+    }
+    i.success {
+      color: #b2ff59 !important
+    }
+  </style>
+</html>
+<body>
+  <h1>States of Running Tests</h1>
+  <p>(explanatory text)</p>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class=" material-icons">supervisor_account</i></td>
+    <td><strong>monitor_group</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Testleiter</code></td>
+  </tr>
+   <tr>
+    <td>undefined</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class=" material-icons">preview</i></td>
+    <td><strong>demo</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Vorschau-Modus</code></td>
+  </tr>
+   <tr>
+    <td>undefined</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class=" material-icons">person_outline</i></td>
+    <td><strong>pending</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Test noch nicht gestartet</code></td>
+  </tr>
+   <tr>
+    <td>undefined</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class=" material-icons">lock</i></td>
+    <td><strong>locked</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Test gesperrt</code></td>
+  </tr>
+   <tr>
+    <td>Zustand kommt zu stande, wenn vom Teilnehmer der "Test beenden"-Button gedrückt wurde.</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class="danger material-icons">error</i></td>
+    <td><strong>error</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Es ist ein Fehler aufgetreten!</code></td>
+  </tr>
+   <tr>
+    <td>Bei Teilnehmer-Rechner ist ein Fehler aufgetreten. Wahrscheinlich ein Netzwerkfehler oder ähnliches, kann aber auch auf Bugs hindeuten und sollte nach Möglichkeit untersucht werden. Der Teilnehmer sollte seinen Browser neu laden und probieren ob das Problem dann immer noch besteht.</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class="danger material-icons">sync_problem</i></td>
+    <td><strong>controller_terminated</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Testausführung wurde beendet und kann wieder aufgenommen werden. Der Browser des Teilnehmers ist nicht verbunden und muss neu geladen werden!</code></td>
+  </tr>
+   <tr>
+    <td>Zustand kommt zustande, wenn der "Entsperren"-Knopf im gruppen-Monitor verwendet wurde.</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class="danger material-icons">error</i></td>
+    <td><strong>connection_lost</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Seite wurde verlassen oder Browserfenster geschlossen!</code></td>
+  </tr>
+   <tr>
+    <td>Die Verbindung zum Teilnehmer-Browser ist abgerissen. Er könnte das Fenster geschlossen haben oder die Netzwerkverbindung ist abgerissen</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class=" material-icons">pause</i></td>
+    <td><strong>paused</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Test pausiert</code></td>
+  </tr>
+   <tr>
+    <td>undefined</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class="danger material-icons">warning</i></td>
+    <td><strong>focus_lost</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Fenster/Tab wurde verlassen!</code></td>
+  </tr>
+   <tr>
+    <td>Ein anderes Fenster oder ein anderer Tab wurde angewählt, dei Seite ist jedoch immer noch offen und verbunden.</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class="danger material-icons">hourglass_full</i></td>
+    <td><strong>idle</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Test ist 5 Minuten oder länger inaktiv!</code></td>
+  </tr>
+   <tr>
+    <td>undefined</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class="success material-icons">play_circle_filled</i></td>
+    <td><strong>connection_websocket</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Test läuft, Verbindung ist live</code></td>
+  </tr>
+   <tr>
+    <td>Test läuft und Teilnehmer ist im Live-Modus (= Websocket) verbunden.</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class="success material-icons">play_circle_outline</i></td>
+    <td><strong>connection_polling</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Test läuft</code></td>
+  </tr>
+   <tr>
+    <td>Test läuft und Teilnehmer ist im Polling-Modus Verbindung verbunden.</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class=" material-icons">play_circle_filled</i></td>
+    <td><strong>ok</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Test läuft</code></td>
+  </tr>
+   <tr>
+    <td>Test läuft, Verbindungstyp is unbekannt.</td>
+  </tr>
+</table>
+<br>
+  
+</body>

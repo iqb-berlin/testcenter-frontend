@@ -12,7 +12,8 @@ import { superStates } from './super-states';
 interface IconData {
   icon: string,
   tooltip: string,
-  class?: string
+  class?: string,
+  description?: string
 }
 
 @Component({

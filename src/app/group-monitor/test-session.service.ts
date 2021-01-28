@@ -50,10 +50,10 @@ export class TestSessionService {
   };
 
   private static getSuperState(session: TestSessionData): TestSessionSuperState {
-    if (session.mode === 'monitor-group') {
+    if (session.mode === 'monitor-group') { // TODO deprecated?
       return 'monitor_group';
     }
-    if (TestSessionService.getMode(session.mode).modeId !== 'HOT') {
+    if (TestSessionService.getMode(session.mode).modeId !== 'HOT') { // TODO deprecated?
       return 'demo';
     }
 
