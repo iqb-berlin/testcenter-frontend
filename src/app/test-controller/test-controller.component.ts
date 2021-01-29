@@ -1,11 +1,17 @@
-import {ReviewDialogComponent} from './review-dialog/review-dialog.component';
-import {ActivatedRoute, Router} from '@angular/router';
-import {MainDataService} from '../maindata.service';
-import {BackendService} from './backend.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import {TestControllerService} from './test-controller.service';
-import {Component, HostListener, Inject, OnDestroy, OnInit} from '@angular/core';
-import {EnvironmentData, MaxTimerData, Testlet, UnitDef} from './test-controller.classes';
+import {
+  Component, HostListener, Inject, OnDestroy, OnInit
+} from '@angular/core';
+import {
+  from, Observable, of, Subscription, throwError
+} from 'rxjs';
+import {
+  concatMap, debounceTime, distinctUntilChanged, map, switchMap
+} from 'rxjs/operators';
+import { CustomtextService } from 'iqb-components';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   AppFocusState,
   Command,
@@ -21,15 +27,17 @@ import {
   UnitNavigationTarget, UnitStateKey,
   WindowFocusState
 } from './test-controller.interfaces';
-import {from, Observable, of, Subscription, throwError} from 'rxjs';
-import {concatMap, debounceTime, distinctUntilChanged, map, switchMap} from 'rxjs/operators';
-import {CustomtextService} from 'iqb-components';
-import {MatDialog} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {BookletConfig} from '../config/booklet-config';
-import {TestMode} from '../config/test-mode';
-import {CommandService} from './command.service';
-
+import {
+  EnvironmentData, MaxTimerData, Testlet, UnitDef
+} from './test-controller.classes';
+import { BackendService } from './backend.service';
+import { MainDataService } from '../maindata.service';
+import { TestControllerService } from './test-controller.service';
+import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
+// eslint-disable-next-line import/extensions
+import { BookletConfig } from '../config/booklet-config';
+import { TestMode } from '../config/test-mode';
+import { CommandService } from './command.service';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -57,8 +65,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   unitNavigationTarget = UnitNavigationTarget;
   debugPane = false;
 
-
-  constructor (
+  constructor(
     @Inject('APP_VERSION') public appVersion: string,
     @Inject('IS_PRODUCTION_MODE') public isProductionMode,
     private mds: MainDataService,
@@ -75,7 +82,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   private static getChildElements(element) {
     return Array.prototype.slice.call(element.childNodes)
-    .filter(function (e) { return e.nodeType === 1; });
+      .filter(e => e.nodeType === 1);
   }
 
   // private: recursive reading testlets/units from xml
@@ -106,7 +113,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             const restrictionParameter = restrictionElements[childIndex].getAttribute('minutes');
             if ((typeof restrictionParameter !== 'undefined') && (restrictionParameter !== null)) {
               maxTime = Number(restrictionParameter);
-              if (isNaN(maxTime)) {
+              if (Number.isNaN(maxTime)) {
                 maxTime = -1;
               }
             }
@@ -135,20 +142,19 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           let myUnitAliasClear = myUnitAlias;
           let unitIdSuffix = 1;
           while (this.allUnitIds.indexOf(myUnitAliasClear) > -1) {
-            myUnitAliasClear = myUnitAlias + '-' + unitIdSuffix.toString();
+            myUnitAliasClear = `${myUnitAlias}-${unitIdSuffix.toString()}`;
             unitIdSuffix += 1;
           }
           this.allUnitIds.push(myUnitAliasClear);
 
           targetTestlet.addUnit(this.lastUnitSequenceId, myUnitId,
-                childElements[childIndex].getAttribute('label'), myUnitAliasClear,
-                childElements[childIndex].getAttribute('labelshort'));
+            childElements[childIndex].getAttribute('label'), myUnitAliasClear,
+            childElements[childIndex].getAttribute('labelshort'));
           this.lastUnitSequenceId += 1;
-
         } else if (childElements[childIndex].nodeName === 'Testlet') {
           let testletId: string = childElements[childIndex].getAttribute('id');
           if (!testletId) {
-            testletId = 'Testlet' + this.lastTestletIndex.toString();
+            testletId = `Testlet${this.lastTestletIndex.toString()}`;
             this.lastTestletIndex += 1;
           }
           let testletLabel: string = childElements[childIndex].getAttribute('label');
@@ -219,85 +225,81 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   // private: read unitdata
-  private loadUnitOk (myUnit: UnitDef, sequenceId: number): Observable<number> {
+  private loadUnitOk(myUnit: UnitDef, sequenceId: number): Observable<number> {
     myUnit.setCanEnter('n', 'Fehler beim Laden');
-    return this.bs.getUnitData(this.tcs.testId, myUnit.id)
+    return this.bs.getUnitData(this.tcs.testId, myUnit.id, myUnit.alias)
       .pipe(
         switchMap(myData => {
           if (myData === false) {
             return throwError(`error requesting unit ${this.tcs.testId}/${myUnit.id}`);
-          } else {
-            const myUnitData = myData as UnitData;
-            if (myUnitData.restorepoint) {
-              this.tcs.addUnitStateData(sequenceId, JSON.parse(myUnitData.restorepoint));
-            }
-            let playerId = null;
-            let definitionRef = '';
-            if (myUnitData.laststate && myUnitData.laststate[UnitStateKey.PRESENTATION_PROGRESS]) {
-              this.tcs.setOldUnitPresentationComplete(sequenceId, myUnitData.laststate[UnitStateKey.PRESENTATION_PROGRESS]);
-            }
+          }
+          const myUnitData = myData as UnitData;
+          if (myUnitData.restorepoint) {
+            this.tcs.addUnitStateData(sequenceId, JSON.parse(myUnitData.restorepoint));
+          }
+          let playerId = null;
+          let definitionRef = '';
+          if (myUnitData.laststate && myUnitData.laststate[UnitStateKey.PRESENTATION_PROGRESS]) {
+            this.tcs.setOldUnitPresentationComplete(sequenceId, myUnitData.laststate[UnitStateKey.PRESENTATION_PROGRESS]);
+          }
 
-            try {
-              const oParser = new DOMParser();
-              const oDOM = oParser.parseFromString(myUnitData.xml, 'text/xml');
+          try {
+            const oParser = new DOMParser();
+            const oDOM = oParser.parseFromString(myUnitData.xml, 'text/xml');
 
-              if (oDOM.documentElement.nodeName === 'Unit') {
-                const defElements = oDOM.documentElement.getElementsByTagName('Definition');
+            if (oDOM.documentElement.nodeName === 'Unit') {
+              const defElements = oDOM.documentElement.getElementsByTagName('Definition');
 
-                if (defElements.length > 0) {
-                  const defElement = defElements[0];
-                  this.tcs.addUnitDefinition(sequenceId, defElement.textContent);
-                  playerId = defElement.getAttribute('player');
-                } else {
-                  const defRefElements = oDOM.documentElement.getElementsByTagName('DefinitionRef');
+              if (defElements.length > 0) {
+                const defElement = defElements[0];
+                this.tcs.addUnitDefinition(sequenceId, defElement.textContent);
+                playerId = defElement.getAttribute('player');
+              } else {
+                const defRefElements = oDOM.documentElement.getElementsByTagName('DefinitionRef');
 
-                  if (defRefElements.length > 0) {
-                    const defRefElement = defRefElements[0];
-                    definitionRef = defRefElement.textContent;
-                    // this.tcs.addUnitDefinition(sequenceId, '');
-                    playerId = defRefElement.getAttribute('player');
-                  }
+                if (defRefElements.length > 0) {
+                  const defRefElement = defRefElements[0];
+                  definitionRef = defRefElement.textContent;
+                  // this.tcs.addUnitDefinition(sequenceId, '');
+                  playerId = defRefElement.getAttribute('player');
                 }
               }
-            } catch (error) {
-              return throwError(`error parsing unit def ${this.tcs.testId}/${myUnit.id} (${error.toString()})`);
             }
-
-            if (playerId) {
-              myUnit.playerId = playerId;
-              if (definitionRef.length > 0) {
-                this.unitLoadQueue.push(<TaggedString>{
-                  tag: sequenceId.toString(),
-                  value: definitionRef
-                });
-              }
-              myUnit.setCanEnter('y', '');
-
-              if (this.tcs.hasPlayer(playerId)) {
-                return of(sequenceId);
-              } else {
-                // to avoid multiple calls before returning:
-                this.tcs.addPlayer(playerId, '');
-                return this.bs.getResource(this.tcs.testId, '', this.tcs.normaliseId(playerId, 'html'), true)
-                  .pipe(
-                    switchMap((data: number|TaggedString) => {
-                      if (typeof data === 'number') {
-                        return throwError(`error getting player "${playerId}"`);
-                      } else {
-                        const player = data as TaggedString;
-                        if (player.value.length > 0) {
-                          this.tcs.addPlayer(playerId, player.value);
-                          return of(sequenceId);
-                        } else {
-                          return throwError(`error getting player "${playerId}" (size = 0)`);
-                        }
-                      }
-                    }));
-              }
-            } else {
-              return throwError(`player def missing for unit ${this.tcs.testId}/${myUnit.id}`);
-            }
+          } catch (error) {
+            return throwError(`error parsing unit def ${this.tcs.testId}/${myUnit.id} (${error.toString()})`);
           }
+
+          if (playerId) {
+            myUnit.playerId = playerId;
+            if (definitionRef.length > 0) {
+              this.unitLoadQueue.push(<TaggedString>{
+                tag: sequenceId.toString(),
+                value: definitionRef
+              });
+            }
+            myUnit.setCanEnter('y', '');
+
+            if (this.tcs.hasPlayer(playerId)) {
+              return of(sequenceId);
+            }
+            // to avoid multiple calls before returning:
+            this.tcs.addPlayer(playerId, '');
+            return this.bs.getResource(this.tcs.testId, '', this.tcs.normaliseId(playerId, 'html'), true)
+              .pipe(
+                switchMap((data: number|TaggedString) => {
+                  if (typeof data === 'number') {
+                    return throwError(`error getting player "${playerId}"`);
+                  }
+                  const player = data as TaggedString;
+                  if (player.value.length > 0) {
+                    this.tcs.addPlayer(playerId, player.value);
+                    return of(sequenceId);
+                  }
+                  return throwError(`error getting player "${playerId}" (size = 0)`);
+                })
+              );
+          }
+          return throwError(`player def missing for unit ${this.tcs.testId}/${myUnit.id}`);
         })
       );
   }
@@ -318,7 +320,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       }
       this.errorReportingSubscription = this.mds.appError$.subscribe(e => {
         if (this.isProductionMode && this.tcs.testMode.saveResponses) {
-          console.error(e.label + ' / ' + e.description);
+          console.error(`${e.label} / ${e.description}`);
         }
         this.tcs.testStatus$.next(TestControllerState.ERROR);
       });
@@ -344,28 +346,28 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.windowFocusState$.next(hasFocus ? WindowFocusState.HOST : WindowFocusState.UNKNOWN);
       });
       this.commandSubscription = this.cmd.command$.pipe(
-          distinctUntilChanged((command1: Command, command2: Command): boolean => (command1.id === command2.id))
-        )
+        distinctUntilChanged((command1: Command, command2: Command): boolean => (command1.id === command2.id))
+      )
         .subscribe((command: Command) => {
           this.handleCommand(command.keyword, command.arguments);
-      });
+        });
 
       this.routingSubscription = this.route.params.subscribe(params => {
         if (this.tcs.testStatus$.getValue() !== TestControllerState.ERROR) {
-          this.tcs.testId = params['t'];
-          localStorage.setItem(TestControllerComponent.localStorageTestKey, params['t']);
+          this.tcs.testId = params.t;
+          localStorage.setItem(TestControllerComponent.localStorageTestKey, params.t);
 
           this.unsubscribeTestSubscriptions();
 
           this.maxTimerSubscription = this.tcs.maxTimeTimer$.subscribe(maxTimerData => {
             switch (maxTimerData.type) {
               case MaxTimerDataType.STARTED:
-                this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted')
-                    + maxTimerData.timeLeftMinString, '', {duration: 3000});
+                this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') +
+                    maxTimerData.timeLeftMinString, '', { duration: 3000 });
                 this.timerValue = maxTimerData;
                 break;
               case MaxTimerDataType.ENDED:
-                this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', {duration: 3000});
+                this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', { duration: 3000 });
                 this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
                 this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
                 if (this.tcs.testMode.saveResponses) {
@@ -380,7 +382,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 }
                 break;
               case MaxTimerDataType.CANCELLED:
-                this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', {duration: 3000});
+                this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', { duration: 3000 });
                 this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
                 this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
                 if (this.tcs.testMode.saveResponses) {
@@ -405,9 +407,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                   }
                 }
                 if ((maxTimerData.timeLeftSeconds / 60) === 5) {
-                  this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver5Minutes'), '', {duration: 3000});
+                  this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver5Minutes'), '', { duration: 3000 });
                 } else if ((maxTimerData.timeLeftSeconds / 60) === 1) {
-                  this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver1Minute'), '', {duration: 3000});
+                  this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver1Minute'), '', { duration: 3000 });
                 }
                 break;
             }
@@ -454,11 +456,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
 
               document.documentElement.style.setProperty('--tc-unit-title-height',
-                  this.tcs.bookletConfig.unit_title === 'ON' ? this.mds.defaultTcUnitTitleHeight : '0');
+                this.tcs.bookletConfig.unit_title === 'ON' ? this.mds.defaultTcUnitTitleHeight : '0');
               document.documentElement.style.setProperty('--tc-header-height',
-                  this.tcs.bookletConfig.unit_screenheader === 'OFF' ? '0' : this.mds.defaultTcHeaderHeight);
+                this.tcs.bookletConfig.unit_screenheader === 'OFF' ? '0' : this.mds.defaultTcHeaderHeight);
               document.documentElement.style.setProperty('--tc-unit-page-nav-height',
-                  this.tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' ? this.mds.defaultTcUnitPageNavHeight : '0');
+                this.tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' ? this.mds.defaultTcUnitPageNavHeight : '0');
 
               if (this.tcs.rootTestlet === null) {
                 this.mds.appError$.next({
@@ -485,91 +487,88 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     return this.loadUnitOk(ud.unitDef, uSequ);
                   })
                 ).subscribe(() => {
-                    this.incrementProgressValueBy1();
-                  },
-                  errorMessage => {
-                    this.mds.appError$.next({
-                      label: 'Problem beim Laden der Testinformation',
-                      description: errorMessage,
-                      category: 'PROBLEM'
-                    });
-                  },
-                  () => {
-                    this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
-                    let navTarget = 1;
-                    if (navTargetUnitId) {
-                      const tmpNavTarget = this.tcs.rootTestlet.getSequenceIdByUnitAlias(navTargetUnitId);
-                      if (tmpNavTarget > 0) {
-                        navTarget = tmpNavTarget;
-                      }
+                  this.incrementProgressValueBy1();
+                },
+                errorMessage => {
+                  this.mds.appError$.next({
+                    label: 'Problem beim Laden der Testinformation',
+                    description: errorMessage,
+                    category: 'PROBLEM'
+                  });
+                },
+                () => {
+                  this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
+                  let navTarget = 1;
+                  if (navTargetUnitId) {
+                    const tmpNavTarget = this.tcs.rootTestlet.getSequenceIdByUnitAlias(navTargetUnitId);
+                    if (tmpNavTarget > 0) {
+                      navTarget = tmpNavTarget;
                     }
-                    this.tcs.updateMinMaxUnitSequenceId(navTarget);
-                    this.loadedUnitCount = 0;
+                  }
+                  this.tcs.updateMinMaxUnitSequenceId(navTarget);
+                  this.loadedUnitCount = 0;
 
-                    this.unitLoadBlobSubscription = from(this.unitLoadQueue).pipe(
-                      concatMap(queueEntry => {
-                        const unitSequ = Number(queueEntry.tag);
-                        if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
-                          this.incrementProgressValueBy1();
-                        }
-                        // avoid to load unit def if not necessary
-                        if (unitSequ < this.tcs.minUnitSequenceId) {
-                          return of(<TaggedString>{tag: unitSequ.toString(), value: ''});
-                        } else {
-                          return this.bs.getResource(this.tcs.testId, queueEntry.tag, queueEntry.value).pipe(
-                            map(response => {
-                              if (typeof response === 'number') {
-                                return throwError(`error loading voud ${this.tcs.testId} / ${queueEntry.tag} / ${queueEntry.value}: status ${response}`);
-                              } else {
-                                return response;
-                              }
-                            })
-                          );
-                        }
-                      })
-                    ).subscribe(
-                      (def: TaggedString) => {
-                        this.tcs.addUnitDefinition(Number(def.tag), def.value);
-                      },
-                      errorMessage => {
-                        this.mds.appError$.next({
-                          label: 'Problem beim Laden der Testinformation',
-                          description: errorMessage,
-                          category: 'PROBLEM'
-                        });
-                        this.tcs.testStatus$.next(TestControllerState.ERROR);
-                      },
-                      () => { // complete
-                        if (this.tcs.testMode.saveResponses) {
-                          envData.loadTime = Date.now() - loadStartTimeStamp;
-                          this.bs.addTestLog(this.tcs.testId, [<StateReportEntry>{
-                            key: TestLogEntryKey.LOADCOMPLETE, timeStamp: Date.now(), content: JSON.stringify(envData)
-                          }]);
-                        }
-                        this.tcs.loadProgressValue = 100;
-
-                        this.tcs.loadComplete = true;
-                        if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
-                          this.resumeTargetUnitId = navTarget;
-                          this.tcs.setUnitNavigationRequest(navTarget.toString());
-                          this.tcs.testStatus$.next(newTestStatus);
-                          if (this.tcs.testMode.saveResponses) {
-                            this.addAppFocusSubscription();
+                  this.unitLoadBlobSubscription = from(this.unitLoadQueue).pipe(
+                    concatMap(queueEntry => {
+                      const unitSequ = Number(queueEntry.tag);
+                      if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
+                        this.incrementProgressValueBy1();
+                      }
+                      // avoid to load unit def if not necessary
+                      if (unitSequ < this.tcs.minUnitSequenceId) {
+                        return of(<TaggedString>{ tag: unitSequ.toString(), value: '' });
+                      }
+                      return this.bs.getResource(this.tcs.testId, queueEntry.tag, queueEntry.value).pipe(
+                        map(response => {
+                          if (typeof response === 'number') {
+                            return throwError(`error loading voud ${this.tcs.testId} / ${queueEntry.tag} / ${queueEntry.value}: status ${response}`);
                           }
+                          return response;
+                        })
+                      );
+                    })
+                  ).subscribe(
+                    (def: TaggedString) => {
+                      this.tcs.addUnitDefinition(Number(def.tag), def.value);
+                    },
+                    errorMessage => {
+                      this.mds.appError$.next({
+                        label: 'Problem beim Laden der Testinformation',
+                        description: errorMessage,
+                        category: 'PROBLEM'
+                      });
+                      this.tcs.testStatus$.next(TestControllerState.ERROR);
+                    },
+                    () => { // complete
+                      if (this.tcs.testMode.saveResponses) {
+                        envData.loadTime = Date.now() - loadStartTimeStamp;
+                        this.bs.addTestLog(this.tcs.testId, [<StateReportEntry>{
+                          key: TestLogEntryKey.LOADCOMPLETE, timeStamp: Date.now(), content: JSON.stringify(envData)
+                        }]);
+                      }
+                      this.tcs.loadProgressValue = 100;
+
+                      this.tcs.loadComplete = true;
+                      if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
+                        this.resumeTargetUnitId = navTarget;
+                        this.tcs.setUnitNavigationRequest(navTarget.toString());
+                        this.tcs.testStatus$.next(newTestStatus);
+                        if (this.tcs.testMode.saveResponses) {
+                          this.addAppFocusSubscription();
                         }
                       }
-                    );
-
-                    if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
-                      this.resumeTargetUnitId = navTarget;
-                      this.tcs.setUnitNavigationRequest(navTarget.toString());
-                      this.tcs.testStatus$.next(newTestStatus);
-                      if (this.tcs.testMode.saveResponses) {
-                        this.addAppFocusSubscription();
-                      }
                     }
+                  );
 
-                  } // complete
+                  if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
+                    this.resumeTargetUnitId = navTarget;
+                    this.tcs.setUnitNavigationRequest(navTarget.toString());
+                    this.tcs.testStatus$.next(newTestStatus);
+                    if (this.tcs.testMode.saveResponses) {
+                      this.addAppFocusSubscription();
+                    }
+                  }
+                } // complete
                 );
               }
             }
@@ -587,9 +586,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       debounceTime(500)
     ).subscribe((newState: WindowFocusState) => {
       if (newState === WindowFocusState.UNKNOWN) {
-          this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
-            key: TestStateKey.FOCUS, timeStamp: Date.now(), content: AppFocusState.HAS_NOT
-          }]);
+        this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
+          key: TestStateKey.FOCUS, timeStamp: Date.now(), content: AppFocusState.HAS_NOT
+        }]);
       } else {
         this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
           key: TestStateKey.FOCUS, timeStamp: Date.now(), content: AppFocusState.HAS
@@ -600,7 +599,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   showReviewDialog() {
     if (this.tcs.rootTestlet === null) {
-      this.snackBar.open('Kein Testheft verfügbar.', '', {duration: 3000});
+      this.snackBar.open('Kein Testheft verfügbar.', '', { duration: 3000 });
     } else {
       const authData = MainDataService.getAuthData();
       const dialogRef = this.reviewDialog.open(ReviewDialogComponent, {
@@ -616,32 +615,32 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe(result => {
         if (typeof result !== 'undefined') {
           if (result !== false) {
-            const targetSelection = result['target'];
+            const targetSelection = result.target;
             if (targetSelection === 'u') {
               this.bs.saveUnitReview(
                 this.tcs.testId,
                 this.tcs.currentUnitDbKey,
-                result['priority'],
+                result.priority,
                 dialogRef.componentInstance.getCategories(),
-                result['sender'] ? result['sender'] + ': ' + result['entry'] : result['entry']
-                ).subscribe(ok => {
-                  if (!ok) {
-                    this.snackBar.open('Konnte Kommentar nicht speichern', '', {duration: 3000});
-                  } else {
-                    this.snackBar.open('Kommentar gespeichert', '', {duration: 1000});
-                  }
-                });
+                result.sender ? `${result.sender}: ${result.entry}` : result.entry
+              ).subscribe(ok => {
+                if (!ok) {
+                  this.snackBar.open('Konnte Kommentar nicht speichern', '', { duration: 3000 });
+                } else {
+                  this.snackBar.open('Kommentar gespeichert', '', { duration: 1000 });
+                }
+              });
             } else {
               this.bs.saveTestReview(
                 this.tcs.testId,
-                result['priority'],
+                result.priority,
                 dialogRef.componentInstance.getCategories(),
-                result['sender'] ? result['sender'] + ': ' + result['entry'] : result['entry']
+                result.sender ? `${result.sender}: ${result.entry}` : result.entry
               ).subscribe(ok => {
                 if (!ok) {
-                  this.snackBar.open('Konnte Kommentar nicht speichern', '', {duration: 3000});
+                  this.snackBar.open('Konnte Kommentar nicht speichern', '', { duration: 3000 });
                 } else {
-                  this.snackBar.open('Kommentar gespeichert', '', {duration: 1000});
+                  this.snackBar.open('Kommentar gespeichert', '', { duration: 1000 });
                 }
               });
             }
