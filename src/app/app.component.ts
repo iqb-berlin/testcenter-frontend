@@ -6,6 +6,7 @@ import { CustomtextService } from 'iqb-components';
 import { MainDataService } from './maindata.service';
 import { BackendService } from './backend.service';
 import { AppError } from './app.interfaces';
+import {BroadCastingServiceInfo, SysConfig} from './config/app.config';
 
 @Component({
   selector: 'tc-root',
@@ -83,25 +84,30 @@ export class AppComponent implements OnInit, OnDestroy {
 
       this.setupFocusListeners();
 
-      this.bs.getSysConfig().subscribe((sc) => {
-        if (sc) {
-          this.cts.addCustomTexts(sc.customTexts);
+      this.bs.getSysConfig().subscribe(sysConfig => {
+        if (sysConfig) {
+          this.cts.addCustomTexts(sysConfig.customTexts);
           const authData = MainDataService.getAuthData();
           if (authData) {
             this.cts.addCustomTexts(authData.customTexts);
           }
-          this.mds.isApiValid = AppComponent.isValidVersion(this.expectedApiVersion, sc.version);
+          console.log('info', sysConfig);
+          if (sysConfig.broadcastingService && sysConfig.broadcastingService.status) {
+            this.mds.broadcastingServiceInfo = sysConfig.broadcastingService;
+          }
+          this.mds.isApiValid = AppComponent.isValidVersion(this.expectedApiVersion, sysConfig.version);
+          this.mds.apiVersion = sysConfig.version;
           if (!this.mds.isApiValid) {
             this.mds.appError$.next({
               label: 'Server-Problem: API-Version ungültig',
-              description: `erwartet: ${this.expectedApiVersion}, gefunden: ${sc.version}`,
+              description: `erwartet: ${this.expectedApiVersion}, gefunden: ${sysConfig.version}`,
               category: 'FATAL'
             });
           }
-          if (sc.mainLogo) {
+          if (sysConfig.mainLogo) {
             console.warn('SysConfig.mainLogo not implemented yet');
           }
-          this.mds.setTestConfig(sc.testConfig);
+          this.mds.setTestConfig(sysConfig.testConfig);
         } else {
           this.mds.isApiValid = false;
         }

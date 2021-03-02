@@ -9,6 +9,7 @@ import {AuthAccessKeyType, AuthFlagType} from '../../app.interfaces';
 export class StatusCardComponent implements OnInit {
   loginName = '';
   loginAuthority: string[] = [];
+  apiVersion: string;
 
   constructor(
     @Inject('APP_NAME') public appName: string,
@@ -16,7 +17,8 @@ export class StatusCardComponent implements OnInit {
     @Inject('APP_VERSION') public appVersion: string,
     @Inject('API_VERSION_EXPECTED') public apiVersionExpected: string,
     @Inject('VERONA_API_VERSION_SUPPORTED') public veronaApiVersionSupported: string,
-    @Inject('IS_PRODUCTION_MODE') public isProductionMode
+    @Inject('IS_PRODUCTION_MODE') public isProductionMode,
+    public mds: MainDataService
   ) { }
 
   ngOnInit(): void {

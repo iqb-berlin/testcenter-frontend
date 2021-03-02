@@ -7,6 +7,13 @@ export interface SysConfig {
   version: string;
   mainLogo: string;
   testConfig: KeyValuePairs;
+  broadcastingService: BroadCastingServiceInfo;
+}
+
+export interface BroadCastingServiceInfo {
+  status: string;
+  version?: string;
+  versionExpected?: string;
 }
 
 export class AppConfig {
