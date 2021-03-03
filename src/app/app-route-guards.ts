@@ -20,8 +20,7 @@ export class RouteDispatcherActivateGuard implements CanActivate {
     const authData = MainDataService.getAuthData();
     if (authData) {
       if (authData.token) {
-        if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN]
-          || authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
+        if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN] || authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
           this.router.navigate(['/r/admin-starter']);
         } else if (authData.flags.indexOf(AuthFlagType.CODE_REQUIRED) >= 0) {
           this.router.navigate(['/r/code-input']);
@@ -134,8 +133,7 @@ export class AdminOrSuperAdminComponentActivateGuard implements CanActivate {
     const authData = MainDataService.getAuthData();
     if (authData) {
       if (authData.access) {
-        if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN]
-          || authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
+        if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN] || authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
           return true;
         }
         this.router.navigate(['/r']);
@@ -209,7 +207,7 @@ export class GroupMonitorActivateGuard implements CanActivate {
     const authData = MainDataService.getAuthData();
 
     if (authData && authData.access && authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
-          return true;
+      return true;
     }
     this.router.navigate(['/r']);
     return false;

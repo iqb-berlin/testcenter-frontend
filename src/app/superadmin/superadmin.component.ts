@@ -11,7 +11,7 @@ export class SuperadminComponent {
   ) { }
 
   public navLinks = [
-    {path: 'users', label: 'Users'},
-    {path: 'workspaces', label: 'Arbeitsbereiche'}
+    { path: 'users', label: 'Users' },
+    { path: 'workspaces', label: 'Arbeitsbereiche' }
   ];
 }

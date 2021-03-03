@@ -1,11 +1,11 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {MainDataService} from '../../maindata.service';
-import {CustomtextService} from 'iqb-components';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Subscription} from 'rxjs';
-import {AuthData} from '../../app.interfaces';
-import {BackendService} from '../../backend.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { CustomtextService } from 'iqb-components';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { MainDataService } from '../../maindata.service';
+import { AuthData } from '../../app.interfaces';
+import { BackendService } from '../../backend.service';
 
 @Component({
   templateUrl: './login.component.html',
@@ -15,7 +15,7 @@ import {BackendService} from '../../backend.service';
   ]
 })
 
-export class LoginComponent  implements OnInit, OnDestroy {
+export class LoginComponent implements OnInit, OnDestroy {
   static oldLoginName = '';
   private routingSubscription: Subscription = null;
   returnTo = '';
@@ -37,15 +37,15 @@ export class LoginComponent  implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.mds.setSpinnerOff();
     this.routingSubscription = this.route.params.subscribe(params => {
-      this.returnTo = params['returnTo'];
+      this.returnTo = params.returnTo;
     });
   }
 
-  login() {
+  login(): void {
     const loginData = this.loginForm.value;
-    LoginComponent.oldLoginName = loginData['name'];
+    LoginComponent.oldLoginName = loginData.name;
     this.mds.setSpinnerOn();
-    this.bs.login(loginData['name'], loginData['pw']).subscribe(
+    this.bs.login(loginData.name, loginData.pw).subscribe(
       authData => {
         this.mds.setSpinnerOff();
         this.problemText = '';
@@ -55,7 +55,6 @@ export class LoginComponent  implements OnInit, OnDestroy {
             this.problemText = 'Anmeldedaten sind nicht gültig. Bitte nocheinmal versuchen!';
           } else if (errCode === 202 || errCode === 204) {
             this.problemText = 'Anmeldedaten sind gültig, aber es sind keine Arbeitsbereiche oder Tests freigegeben.';
-
           } else {
             this.problemText = 'Problem bei der Anmeldung.';
             // app.interceptor will show error message
@@ -78,7 +77,7 @@ export class LoginComponent  implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
     }

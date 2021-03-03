@@ -1,7 +1,8 @@
-import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
-import {BehaviorSubject, Observable, Subscription} from 'rxjs';
-import {map, share} from 'rxjs/operators';
-import {WebSocketMessage} from 'rxjs/internal/observable/dom/WebSocketSubject';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { map, share } from 'rxjs/operators';
+import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
 
 interface WsMessage {
   event: string;
@@ -14,14 +15,10 @@ export class WebsocketService {
   public wsConnected$ = new BehaviorSubject<boolean>(null);
   private wsSubscription: Subscription;
 
-  constructor(
-  ) {
-  }
-
-  public connect() {
+  public connect(): void {
     if (!this.wsSubject$) {
 
-      console.log('connecting...' + this.wsUrl);
+      console.log(`connecting... ${this.wsUrl}`);
 
       this.wsSubject$ = webSocket({
 
@@ -45,17 +42,17 @@ export class WebsocketService {
 
       this.wsSubscription = this.wsSubject$.subscribe(
 
-          () => {},
+        () => {},
 
-          () => {
-            console.error('connection error');
-            this.closeConnection();
-          },
+        () => {
+          console.error('connection error');
+          this.closeConnection();
+        },
 
-          () => {
-            console.log('connection closed');
-            this.closeConnection();
-          }
+        () => {
+          console.log('connection closed');
+          this.closeConnection();
+        }
       );
     }
   }
@@ -71,26 +68,26 @@ export class WebsocketService {
     }
   }
 
-  public send(event: string, data: any) {
+  public send(event: string, data: any): void {
     if (!this.wsSubject$) {
       this.connect();
     }
 
-    this.wsSubject$.next({event, data});
+    this.wsSubject$.next({ event, data });
   }
 
   public getChannel<T>(channelName: string): Observable<T> {
     if (!this.wsSubject$) {
-        this.connect();
+      this.connect();
     }
 
     return this.wsSubject$
-        .multiplex(
-            () => ({event: `subscribe:${channelName}`}),
-            () => ({event: `unsubscribe:${channelName}`}),
-            message => (message.event === channelName)
-        )
-        .pipe(map((event: WsMessage): T => event.data))
-        .pipe(share());
+      .multiplex(
+        () => ({ event: `subscribe:${channelName}` }),
+        () => ({ event: `unsubscribe:${channelName}` }),
+        message => (message.event === channelName)
+      )
+      .pipe(map((event: WsMessage): T => event.data))
+      .pipe(share());
   }
 }

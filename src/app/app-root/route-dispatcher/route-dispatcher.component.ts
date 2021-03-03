@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import {CustomtextService} from 'iqb-components';
-import {Router, RouterState, RouterStateSnapshot} from '@angular/router';
+import { CustomtextService } from 'iqb-components';
+import { Router, RouterState } from '@angular/router';
 
 @Component({
   templateUrl: './route-dispatcher.component.html',
@@ -15,10 +15,10 @@ export class RouteDispatcherComponent {
 
   constructor(
     public cts: CustomtextService,
-    private router: Router) {
-
+    private router: Router
+  ) {
     const state: RouterState = router.routerState;
-    const snapshot: RouterStateSnapshot = state.snapshot;
+    const { snapshot } = state;
     this.url = snapshot.url;
   }
 }

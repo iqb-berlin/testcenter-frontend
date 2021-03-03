@@ -48,7 +48,7 @@ export class MainDataService {
     return myReturn;
   }
 
-  static resetAuthData() {
+  static resetAuthData(): void {
     const storageEntry = localStorage.getItem(localStorageAuthDataKey);
     if (storageEntry) {
       localStorage.removeItem(localStorageAuthDataKey);
@@ -86,7 +86,7 @@ export class MainDataService {
     this.isSpinnerOn$.next(false);
   }
 
-  setAuthData(authData: AuthData = null) {
+  setAuthData(authData: AuthData = null): void {
     if (authData) {
       if (authData.customTexts) {
         this.cts.addCustomTexts(authData.customTexts);
@@ -97,7 +97,7 @@ export class MainDataService {
     }
   }
 
-  setTestConfig(testConfig: KeyValuePairs = null) {
+  setTestConfig(testConfig: KeyValuePairs = null): void {
     if (testConfig) {
       localStorage.setItem(localStorageTestConfigKey, JSON.stringify(testConfig));
     } else {

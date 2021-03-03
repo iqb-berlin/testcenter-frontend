@@ -1,3 +1,5 @@
+/* eslint-disable max-classes-per-file */
+
 import { MaxTimerDataType } from './test-controller.interfaces';
 
 export class TestletContentElement {
@@ -10,7 +12,6 @@ export class TestletContentElement {
   tryLeaveMessage: string;
   children: TestletContentElement[];
 
-
   constructor(sequenceId: number, id: string, title: string) {
     this.sequenceId = sequenceId;
     this.id = id;
@@ -22,7 +23,7 @@ export class TestletContentElement {
     this.children = [];
   }
 
-  setCanEnter (can: string, message: string, allChildren = false) {
+  setCanEnter(can: string, message: string, allChildren = false): void {
     let newCan: 'y' | 'n' | 'w' = 'y';
     if (can.length > 0) {
       const checkChar = can.substr(0, 1).toLowerCase();
@@ -41,7 +42,7 @@ export class TestletContentElement {
     }
   }
 
-  setCanLeave (can: string, message: string, allChildren = false) {
+  setCanLeave(can: string, message: string, allChildren = false): void {
     let newCan: 'y' | 'n' | 'w' = 'y';
     if (can.length > 0) {
       const checkChar = can.substr(0, 1).toLowerCase();
@@ -62,9 +63,11 @@ export class TestletContentElement {
 
   getMaxSequenceId(tmpId = 0): number {
     if (this.sequenceId >= tmpId) {
+      // eslint-disable-next-line no-param-reassign
       tmpId = this.sequenceId + 1;
     }
     this.children.forEach(tce => {
+      // eslint-disable-next-line no-param-reassign
       tmpId = tce.getMaxSequenceId(tmpId);
     });
     return tmpId;
@@ -86,16 +89,15 @@ export class UnitDef extends TestletContentElement {
     title: string,
     alias: string,
     naviButtonLabel: string
-    ) {
-      super(sequenceId, id, title);
-      this.alias = alias;
-      this.naviButtonLabel = naviButtonLabel;
-      this.statusResponses = 'no';
-      this.statusPresentation = 'no';
+  ) {
+    super(sequenceId, id, title);
+    this.alias = alias;
+    this.naviButtonLabel = naviButtonLabel;
+    this.statusResponses = 'no';
+    this.statusPresentation = 'no';
   }
 
-
-  setStatusResponses (status: string) {
+  setStatusResponses(status: string): void {
     let newStatus: 'no' | 'some' | 'all' = 'no';
     if (status.length > 0) {
       const checkChar = status.substr(0, 1).toLowerCase();
@@ -108,7 +110,7 @@ export class UnitDef extends TestletContentElement {
     this.statusResponses = newStatus;
   }
 
-  setStatusPresentation (status: string) {
+  setStatusPresentation(status: string): void {
     let newStatus: 'no' | 'partly' | 'full' = 'no';
     if (status.length > 0) {
       const checkChar = status.substr(0, 1).toLowerCase();
@@ -137,13 +139,11 @@ export class Testlet extends TestletContentElement {
   codePrompt = '';
   maxTimeLeft = -1;
 
-
   addTestlet(id: string, title: string): Testlet {
     const newChild = new Testlet(0, id, title);
     this.children.push(newChild);
     return newChild;
   }
-
 
   addUnit(
     sequenceId: number,
@@ -185,7 +185,6 @@ export class Testlet extends TestletContentElement {
         if (label) {
           myreturn.testletLabel = label;
         }
-
       }
     }
     return myreturn;
@@ -228,13 +227,13 @@ export class Testlet extends TestletContentElement {
     return myreturn;
   }
 
-  clearTestletCodes(testletIdList: string[]) {
+  clearTestletCodes(testletIdList: string[]): void {
     testletIdList.forEach(testletId => {
       const myTestlet = this.getTestlet(testletId);
       if (myTestlet) {
         myTestlet.codeToEnter = '';
       }
-    })
+    });
   }
 
   getAllUnitSequenceIds(testletId = ''): number[] {
@@ -260,7 +259,7 @@ export class Testlet extends TestletContentElement {
     return myreturn;
   }
 
-  setTimeLeft(testletId: string , maxTimeLeft: number ) {
+  setTimeLeft(testletId: string, maxTimeLeft: number): void {
     if (testletId) {
       // find testlet
       const myTestlet = this.getTestlet(testletId);
@@ -281,7 +280,7 @@ export class Testlet extends TestletContentElement {
     }
   }
 
-  lockUnits_allChildren(testletId = '') {
+  lockUnits_allChildren(testletId = ''): void {
     if (testletId) {
       // find testlet
       const myTestlet = this.getTestlet(testletId);
@@ -317,22 +316,24 @@ export class Testlet extends TestletContentElement {
     return myreturn;
   }
 
-  lockUnits_before(testletId = '') {
+  lockUnits_before(testletId = ''): void {
     let myTestlet: Testlet = this;
     if (testletId) {
       myTestlet = this.getTestlet(testletId);
     }
     const minSeq = myTestlet.minTestletUnitSequenceId();
-    for (let i = minSeq - 1; i > 0; i--)  {
+    for (let i = minSeq - 1; i > 0; i--) {
       const u = this.getUnitAt(i);
       u.unitDef.locked = true;
     }
   }
 
   getNextUnlockedUnitSequenceId(currentUnitSequenceId: number): number {
+    // eslint-disable-next-line no-param-reassign
     currentUnitSequenceId += 1;
     let myUnit: UnitControllerData = this.getUnitAt(currentUnitSequenceId);
     while (myUnit !== null && myUnit.unitDef.locked) {
+      // eslint-disable-next-line no-param-reassign
       currentUnitSequenceId += 1;
       myUnit = this.getUnitAt(currentUnitSequenceId);
     }
@@ -359,7 +360,6 @@ export class Testlet extends TestletContentElement {
     return myUnit ? myreturn : 0;
   }
 
-
   getLastUnlockedUnitSequenceId(startWith: number): number {
     const maxSequenceId = this.getMaxSequenceId();
     let myreturn = startWith;
@@ -380,7 +380,8 @@ export class Testlet extends TestletContentElement {
     return myUnit ? myreturn : 0;
   }
 
-  lockUnitsIfTimeLeftNull(lock = false) {
+  lockUnitsIfTimeLeftNull(lock = false): void {
+    // eslint-disable-next-line no-param-reassign
     lock = lock || this.maxTimeLeft === 0;
     for (const tce of this.children) {
       if (tce instanceof Testlet) {
@@ -401,6 +402,7 @@ export class EnvironmentData {
   public get browserTxt(): string {
     return `${this.browserName} Version ${this.browserVersion}`;
   }
+
   public osName = '';
   public screenSizeWidth = 0;
   public screenSizeHeight = 0;
@@ -414,7 +416,8 @@ export class EnvironmentData {
     const deviceInfo = window.navigator.userAgent;
 
     // browser
-    // @ts-ignore
+
+    // eslint-disable-next-line max-len
     const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/;
     // credit due to: https://gist.github.com/ticky/3909462#gistcomment-2245669
     const deviceInfoSplits = regex.exec(deviceInfo);
@@ -461,16 +464,15 @@ export class MaxTimerData {
   testletId: string;
   type: MaxTimerDataType;
 
-  get timeLeftString() {
+  get timeLeftString(): string {
     const afterDecimal = Math.round(this.timeLeftSeconds % 60);
-    return (Math.round(this.timeLeftSeconds - afterDecimal) / 60).toString()
-              + ':' + (afterDecimal < 10 ? '0' : '') + afterDecimal.toString();
+    return (Math.round(this.timeLeftSeconds - afterDecimal) / 60).toString() + ':' + (afterDecimal < 10 ? '0' : '') + afterDecimal.toString();
   }
-  get timeLeftMinString() {
+  get timeLeftMinString(): string {
     return Math.round(this.timeLeftSeconds / 60).toString() + ' min';
   }
 
-  constructor (timeMinutes: number, tId: string, type: MaxTimerDataType) {
+  constructor(timeMinutes: number, tId: string, type: MaxTimerDataType) {
     this.timeLeftSeconds = timeMinutes * 60;
     this.testletId = tId;
     this.type = type;

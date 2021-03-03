@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {TestControllerService} from '../test-controller.service';
-import {CustomtextService} from 'iqb-components';
-import {MainDataService} from '../../maindata.service';
+import { Component, OnInit } from '@angular/core';
+import { CustomtextService } from 'iqb-components';
+import { TestControllerService } from '../test-controller.service';
+import { MainDataService } from '../../maindata.service';
 
 @Component({
   templateUrl: './test-status.component.html',
@@ -25,7 +25,7 @@ export class TestStatusComponent implements OnInit {
     });
   }
 
-  terminateTest() {
+  terminateTest(): void {
     this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE');
   }
 }

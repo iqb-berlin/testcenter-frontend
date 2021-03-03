@@ -1,12 +1,12 @@
+import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
 import { UnitActivateGuard, UnitDeactivateGuard } from './unithost/unit-route-guards';
 import { UnithostComponent } from './unithost/unithost.component';
 import { TestControllerComponent } from './test-controller.component';
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import {TestStatusComponent} from './test-status/test-status.component';
-import {TestControllerDeactivateGuard, TestControllerErrorPausedActivateGuard} from './test-controller-route-guards';
-import {UnlockInputComponent} from "./unlock-input/unlock-input.component";
-import {UnitMenuComponent} from "./unit-menu/unit-menu.component";
+import { TestStatusComponent } from './test-status/test-status.component';
+import { TestControllerDeactivateGuard, TestControllerErrorPausedActivateGuard } from './test-controller-route-guards';
+import { UnlockInputComponent } from './unlock-input/unlock-input.component';
+import { UnitMenuComponent } from './unit-menu/unit-menu.component';
 
 const routes: Routes = [
   {

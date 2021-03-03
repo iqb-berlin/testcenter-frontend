@@ -26,7 +26,6 @@ export interface TcSpeedChartSettings {
   template: '<canvas></canvas>'
 })
 export class TcSpeedChartComponent {
-
   private canvas: HTMLCanvasElement;
   private context;
   private el;
@@ -48,24 +47,23 @@ export class TcSpeedChartComponent {
     yAxisMinValue: -10,
     xAxisStepSize: 20,
     yAxisStepSize: 10,
-    xAxisLabels: (x) => '' + Math.round(x),
-    yAxisLabels: (y) => '' + Math.round(y),
-    xProject: (x) => x,
-    yProject: (y) => y
+    xAxisLabels: x => Math.round(x).toString(10),
+    yAxisLabels: y => Math.round(y).toString(10),
+    xProject: x => x,
+    yProject: y => y
   };
 
   constructor(elem: ElementRef) {
     this.el = elem.nativeElement;
   }
 
-  public reset(config: TcSpeedChartSettings) {
-
+  public reset(config: TcSpeedChartSettings): void {
     this.canvas = this.el.querySelector('canvas');
     this.context = this.canvas.getContext('2d');
 
-    this.config = {...this.config, ...config};
+    this.config = { ...this.config, ...config };
     this.canvas.setAttribute('style', this.config.css);
-    this.canvas.setAttribute('height', this.config.height.toString() + 'px');
+    this.canvas.setAttribute('height', `${this.config.height.toString()}px`);
     // this.canvas.setAttribute('width', this.config.width);
 
     this.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -86,12 +84,14 @@ export class TcSpeedChartComponent {
     this.context.lineWidth = this.config.lineWidth;
   }
 
-  public plotData(dataPoints: Array<[number, number]>, color: string = null, style: 'line' | 'dots' = 'line') {
+  public plotData(dataPoints: Array<[number, number]>, color: string = null, style: 'line' | 'dots' = 'line'): void {
     if (!dataPoints.length) {
       return;
     }
+    // eslint-disable-next-line no-param-reassign
     color = color || this.randomColor();
     const coordinates = this.dataPointsToCoordinates(dataPoints);
+    // eslint-disable-next-line no-param-reassign
     color = color || this.randomColor();
     const oldStrokeColor = this.context.strokeStyle;
     const oldFillColor = this.context.fillStyle;
@@ -124,7 +124,6 @@ export class TcSpeedChartComponent {
   }
 
   private paintLine(plotCoordinates: Array<[number, number]>) {
-
     this.context.beginPath();
     this.context.moveTo(plotCoordinates[0][0], plotCoordinates[0][1]);
     plotCoordinates.forEach(xy => {
@@ -134,27 +133,26 @@ export class TcSpeedChartComponent {
   }
 
   private paintDots(plotCoordinates: Array<[number, number]>) {
-
     plotCoordinates.forEach(xy => {
       this.context.beginPath();
       this.context.arc(xy[0], xy[1], this.config.lineWidth, 0, 2 * Math.PI);
       this.context.fill();
     });
-
   }
 
   private drawGridColumns() {
-
     const firstCol = Math.floor(this.config.xAxisMinValue / this.config.xAxisStepSize) * this.config.xAxisStepSize;
     for (
-        let x = firstCol, count = 1;
-        x < this.config.xAxisMaxValue;
-        x = firstCol + count++ * this.config.xAxisStepSize
+      let x = firstCol, count = 1;
+      x < this.config.xAxisMaxValue;
+      // eslint-disable-next-line no-plusplus
+      x = firstCol + count++ * this.config.xAxisStepSize
     ) {
       const transformedX = this.config.xProject(x);
       const scaledX = this.xScale * (transformedX - this.config.xProject(this.config.xAxisMinValue));
       const label = this.config.xAxisLabels(x, count);
       if (label === '') {
+        // eslint-disable-next-line no-continue
         continue;
       }
       this.context.fillText(label, scaledX, this.canvas.height - this.config.labelPadding);
@@ -166,18 +164,20 @@ export class TcSpeedChartComponent {
     }
   }
 
-  private drawGridRows() {
-
+  private drawGridRows(): void {
     const firstRow = Math.floor(this.config.yAxisMinValue / this.config.yAxisStepSize) * this.config.yAxisStepSize;
     for (
-        let y = firstRow, count = 1;
-        y < this.config.yAxisMaxValue;
-        y = firstRow + count++ * this.config.yAxisStepSize
+      let y = firstRow, count = 1;
+      y < this.config.yAxisMaxValue;
+      // eslint-disable-next-line no-plusplus
+      y = firstRow + count++ * this.config.yAxisStepSize
     ) {
       const transformedY = this.config.yProject(y);
-      const scaledY = this.canvas.height - this.yScale * (transformedY - this.config.yProject(this.config.yAxisMinValue));
+      const scaledY =
+        this.canvas.height - this.yScale * (transformedY - this.config.yProject(this.config.yAxisMinValue));
       const label = this.config.yAxisLabels(y, count);
       if (label === '') {
+        // eslint-disable-next-line no-continue
         continue;
       }
       this.context.fillText(label, this.config.labelPadding, scaledY);
@@ -189,9 +189,6 @@ export class TcSpeedChartComponent {
     }
   }
 
-  private randomColor() {
-
-    return 'rgb(' + new Array(3).fill(0).map(() => Math.round(256 * Math.random())).join(', ') + ')';
-  }
-
+  // eslint-disable-next-line max-len
+  private randomColor = (): string => `rgb(${(new Array(3).fill(0).map(() => Math.round(256 * Math.random())).join(', '))})`;
 }

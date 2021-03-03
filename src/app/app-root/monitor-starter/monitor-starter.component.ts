@@ -31,7 +31,7 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.mds.setSpinnerOn();
-      this.bs.getSessionData().subscribe((authDataUntyped) => {
+      this.bs.getSessionData().subscribe(authDataUntyped => {
         if (typeof authDataUntyped !== 'number') {
           const authData = authDataUntyped as AuthData;
           if (authData) {
@@ -45,7 +45,7 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
                 this.getWorkspaceDataSubscription.unsubscribe();
               }
               this.getWorkspaceDataSubscription = from(scopeIdList).pipe(
-                concatMap((monitorScopeId) => {
+                concatMap(monitorScopeId => {
                   let functionReturn = null;
                   if (authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
                     functionReturn = this.bs.getGroupData(monitorScopeId);

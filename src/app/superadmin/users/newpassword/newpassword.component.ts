@@ -1,6 +1,6 @@
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, Inject } from '@angular/core';
-import {FormGroup, Validators, FormControl} from '@angular/forms';
+import { FormGroup, Validators, FormControl } from '@angular/forms';
 
 @Component({
   templateUrl: './newpassword.component.html',
@@ -13,5 +13,6 @@ export class NewpasswordComponent {
   });
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: string) { }
+    @Inject(MAT_DIALOG_DATA) public data: string
+  ) { }
 }

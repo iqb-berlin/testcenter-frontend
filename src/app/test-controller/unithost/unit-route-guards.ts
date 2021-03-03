@@ -1,16 +1,22 @@
-import {ConfirmDialogComponent, ConfirmDialogData, CustomtextService} from 'iqb-components';
-import {TestControllerService} from '../test-controller.service';
-import {filter, map, switchMap, take} from 'rxjs/operators';
-import {UnithostComponent} from './unithost.component';
-import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, CanActivate, CanDeactivate, Router, RouterStateSnapshot} from '@angular/router';
-import {interval, Observable, of} from 'rxjs';
-import {UnitControllerData} from '../test-controller.classes';
-import {CodeInputData} from '../test-controller.interfaces';
-import {MainDataService} from 'src/app/maindata.service';
-import {MatDialog} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {TestControllerComponent} from '../test-controller.component';
+/* eslint-disable max-classes-per-file */
+
+import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from 'iqb-components';
+import {
+  filter, map, switchMap, take
+} from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import {
+  ActivatedRouteSnapshot, CanActivate, CanDeactivate, Router, RouterStateSnapshot
+} from '@angular/router';
+import { interval, Observable, of } from 'rxjs';
+import { MainDataService } from 'src/app/maindata.service';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { CodeInputData } from '../test-controller.interfaces';
+import { UnitControllerData } from '../test-controller.classes';
+import { UnithostComponent } from './unithost.component';
+import { TestControllerService } from '../test-controller.service';
+import { TestControllerComponent } from '../test-controller.component';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
@@ -127,7 +133,6 @@ export class UnitActivateGuard implements CanActivate {
     }
   }
 
-
   checkAndSolve_maxTime(newUnit: UnitControllerData): Observable<boolean> {
     if (newUnit.maxTimerRequiringTestlet === null) {
       return of(true);
@@ -191,19 +196,21 @@ export class UnitActivateGuard implements CanActivate {
                   if (!cAsDL) {
                     return of(false);
                   } else {
-                      return this.checkAndSolve_maxTime(newUnit).pipe(
-                        switchMap(cAsMT => {
-                          if (!cAsMT) {
-                            return of(false);
-                          } else {
-                            this.tcs.currentUnitSequenceId = targetUnitSequenceId;
-                            this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
-                            return of(true);
-                          }
-                        }));
+                    return this.checkAndSolve_maxTime(newUnit).pipe(
+                      switchMap(cAsMT => {
+                        if (!cAsMT) {
+                          return of(false);
+                        } else {
+                          this.tcs.currentUnitSequenceId = targetUnitSequenceId;
+                          this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
+                          return of(true);
+                        }
+                      })
+                    );
                   }
-                }));
-          }
+                })
+              );
+            }
         }));
       }
     }
@@ -225,7 +232,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   private checkAndSolve_maxTime(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
     if (this.tcs.currentMaxTimerTestletId) {
       if (newUnit && newUnit.maxTimerRequiringTestlet && (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)) {
-          return of(true);
+        return of(true);
       } else {
         if (force) {
           this.tcs.interruptMaxTimer();
@@ -241,16 +248,17 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
               showcancel: true
             }
           });
-          return dialogCDRef.afterClosed().pipe(
-            switchMap(cdresult => {
+          return dialogCDRef.afterClosed()
+            .pipe(
+              switchMap(cdresult => {
                 if ((typeof cdresult === 'undefined') || (cdresult === false)) {
                   return of(false);
                 } else {
                   this.tcs.cancelMaxTimer();
                   return of(true);
                 }
-              }
-            ));
+              })
+            );
         }
       }
     } else {
@@ -357,14 +365,16 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     if (routerStateObject.extras.state && routerStateObject.extras.state['force']) {
       forceNavigation = routerStateObject.extras.state['force'];
     }
-    return this.checkAndSolve_maxTime(newUnit, forceNavigation).pipe(
-      switchMap(cAsC => {
-        if (!cAsC) {
-          return of(false);
-        } else {
-          return this.checkAndSolve_PresentationCompleteCode(newUnit, forceNavigation);
-        }
-      }))
+    return this.checkAndSolve_maxTime(newUnit, forceNavigation)
+      .pipe(
+        switchMap(cAsC => {
+          if (!cAsC) {
+            return of(false);
+          } else {
+            return this.checkAndSolve_PresentationCompleteCode(newUnit, forceNavigation);
+          }
+        })
+      );
   }
 }
 

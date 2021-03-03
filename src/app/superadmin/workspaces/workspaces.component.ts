@@ -1,9 +1,5 @@
-import { EditworkspaceComponent } from './editworkspace/editworkspace.component';
-import { NewworkspaceComponent } from './newworkspace/newworkspace.component';
-import { BackendService } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { ViewChild } from '@angular/core';
-import { Component, OnInit } from '@angular/core';
+import { ViewChild, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
@@ -14,7 +10,10 @@ import {
   MessageDialogComponent, MessageDialogData, MessageType
 } from 'iqb-components';
 import { MainDataService } from 'src/app/maindata.service';
-import {IdAndName, IdRoleData} from '../superadmin.interfaces';
+import { BackendService } from '../backend.service';
+import { NewworkspaceComponent } from './newworkspace/newworkspace.component';
+import { EditworkspaceComponent } from './editworkspace/editworkspace.component';
+import { IdAndName, IdRoleData } from '../superadmin.interfaces';
 
 @Component({
   templateUrl: './workspaces.component.html',
@@ -50,19 +49,20 @@ export class WorkspacesComponent implements OnInit {
         } else {
           this.selectedWorkspaceId = 0;
           this.selectedWorkspaceName = '';
-          }
+        }
         this.updateUserList();
-      });
+      }
+    );
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     setTimeout(() => {
       this.mds.setSpinnerOn();
       this.updateObjectList();
     });
   }
 
-  addObject() {
+  addObject(): void {
     const dialogRef = this.newworkspaceDialog.open(NewworkspaceComponent, {
       width: '600px',
       data: {
@@ -77,19 +77,20 @@ export class WorkspacesComponent implements OnInit {
           this.bs.addWorkspace((<FormGroup>result).get('name').value).subscribe(
             respOk => {
               if (respOk !== false) {
-                this.snackBar.open('Arbeitsbereich hinzugefügt', '', {duration: 1000});
+                this.snackBar.open('Arbeitsbereich hinzugefügt', '', { duration: 1000 });
                 this.updateObjectList();
               } else {
                 this.mds.setSpinnerOff();
-                this.snackBar.open('Konnte Arbeitsbereich nicht hinzufügen', 'Fehler', {duration: 1000});
+                this.snackBar.open('Konnte Arbeitsbereich nicht hinzufügen', 'Fehler', { duration: 1000 });
               }
-            });
+            }
+          );
         }
       }
     });
   }
 
-  changeObject() {
+  changeObject(): void {
     let selectedRows = this.tableselectionRow.selected;
     if (selectedRows.length === 0) {
       selectedRows = this.tableselectionCheckbox.selected;
@@ -113,24 +114,28 @@ export class WorkspacesComponent implements OnInit {
         if (typeof result !== 'undefined') {
           if (result !== false) {
             this.mds.setSpinnerOn();
-            this.bs.renameWorkspace(selectedRows[0].id,
-                (<FormGroup>result).get('name').value).subscribe(
-                  respOk => {
-                    if (respOk !== false) {
-                      this.snackBar.open('Arbeitsbereich geändert', '', {duration: 1000});
-                      this.updateObjectList();
-                    } else {
-                      this.mds.setSpinnerOff();
-                      this.snackBar.open('Konnte Arbeitsbereich nicht ändern', 'Fehler', {duration: 2000});
-                    }
-                  });
+            this.bs.renameWorkspace(
+              selectedRows[0].id,
+              (<FormGroup>result).get('name').value
+            )
+              .subscribe(
+                respOk => {
+                  if (respOk !== false) {
+                    this.snackBar.open('Arbeitsbereich geändert', '', { duration: 1000 });
+                    this.updateObjectList();
+                  } else {
+                    this.mds.setSpinnerOff();
+                    this.snackBar.open('Konnte Arbeitsbereich nicht ändern', 'Fehler', { duration: 2000 });
+                  }
+                }
+              );
           }
         }
       });
     }
   }
 
-  deleteObject() {
+  deleteObject(): void {
     let selectedRows = this.tableselectionCheckbox.selected;
     if (selectedRows.length === 0) {
       selectedRows = this.tableselectionRow.selected;
@@ -145,17 +150,17 @@ export class WorkspacesComponent implements OnInit {
         }
       });
     } else {
-      let prompt = 'Soll';
+      let prompt;
       if (selectedRows.length > 1) {
-        prompt = prompt + 'en ' + selectedRows.length + ' Arbeitsbereiche ';
+        prompt = `Sollen ${selectedRows.length} Arbeitsbereiche gelöscht werden?`;
       } else {
-        prompt = prompt + ' Arbeitsbereich "' + selectedRows[0].name + '" ';
+        prompt = `Arbeitsbereich "${selectedRows[0].name}" gelöscht werden?`;
       }
       const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
         width: '400px',
         data: <ConfirmDialogData>{
           title: 'Löschen von Arbeitsbereichen',
-          content: prompt + 'gelöscht werden?',
+          content: prompt,
           confirmbuttonlabel: 'Arbeitsbereich/e löschen',
           showcancel: true
         }
@@ -169,19 +174,20 @@ export class WorkspacesComponent implements OnInit {
           this.bs.deleteWorkspaces(workspacesToDelete).subscribe(
             respOk => {
               if (respOk !== false) {
-                this.snackBar.open('Arbeitsbereich/e gelöscht', '', {duration: 1000});
+                this.snackBar.open('Arbeitsbereich/e gelöscht', '', { duration: 1000 });
                 this.updateObjectList();
               } else {
                 this.mds.setSpinnerOff();
-                this.snackBar.open('Konnte Arbeitsbereich/e nicht löschen', 'Fehler', {duration: 1000});
+                this.snackBar.open('Konnte Arbeitsbereich/e nicht löschen', 'Fehler', { duration: 1000 });
               }
-          });
+            }
+          );
         }
       });
     }
   }
 
-  updateUserList() {
+  updateUserList(): void {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
       this.mds.setSpinnerOn();
@@ -194,16 +200,18 @@ export class WorkspacesComponent implements OnInit {
     }
   }
 
-  selectUser(ws: IdRoleData, role: string) {
+  selectUser(ws: IdRoleData, role: string): void {
     if (ws.role === role) {
+      // eslint-disable-next-line no-param-reassign
       ws.role = '';
     } else {
+      // eslint-disable-next-line no-param-reassign
       ws.role = role;
     }
     this.pendingUserChanges = true;
   }
 
-  saveUsers() {
+  saveUsers():void {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
       this.mds.setSpinnerOn();
@@ -211,17 +219,18 @@ export class WorkspacesComponent implements OnInit {
         respOk => {
           this.mds.setSpinnerOff();
           if (respOk !== false) {
-            this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
+            this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
           } else {
-            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 2000});
+            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', { duration: 2000 });
           }
-        });
+        }
+      );
     } else {
       this.UserlistDatasource = null;
     }
   }
 
-  updateObjectList() {
+  updateObjectList(): void {
     this.bs.getWorkspaces().subscribe(dataresponse => {
       this.objectsDatasource = new MatTableDataSource(dataresponse);
       this.objectsDatasource.sort = this.sort;
@@ -231,19 +240,21 @@ export class WorkspacesComponent implements OnInit {
     });
   }
 
-  isAllSelected() {
+  isAllSelected(): boolean {
     const numSelected = this.tableselectionCheckbox.selected.length;
     const numRows = this.objectsDatasource.data.length;
     return numSelected === numRows;
   }
 
-  masterToggle() {
-    this.isAllSelected() ?
-        this.tableselectionCheckbox.clear() :
-        this.objectsDatasource.data.forEach(row => this.tableselectionCheckbox.select(row));
+  masterToggle(): void {
+    if (this.isAllSelected()) {
+      this.tableselectionCheckbox.clear();
+    } else {
+      this.objectsDatasource.data.forEach(row => this.tableselectionCheckbox.select(row));
+    }
   }
 
-  selectRow(row) {
+  selectRow(row): void {
     this.tableselectionRow.select(row);
   }
 }

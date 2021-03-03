@@ -1,10 +1,5 @@
-import { NewpasswordComponent } from './newpassword/newpassword.component';
-import { NewuserComponent } from './newuser/newuser.component';
-import { BackendService } from '../backend.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { ViewChild } from '@angular/core';
-
-import { Component, OnInit } from '@angular/core';
+import { ViewChild , Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
@@ -15,12 +10,16 @@ import {
   MessageDialogData, MessageType
 } from 'iqb-components';
 import { MainDataService } from 'src/app/maindata.service';
-import {IdRoleData, UserData} from '../superadmin.interfaces';
-import {SuperadminPasswordRequestComponent} from '../superadmin-password-request/superadmin-password-request.component';
-import {catchError} from 'rxjs/operators';
-import {ApiError} from '../../app.interfaces';
-import {of} from 'rxjs';
-
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { IdRoleData, UserData } from '../superadmin.interfaces';
+import {
+  SuperadminPasswordRequestComponent
+} from '../superadmin-password-request/superadmin-password-request.component';
+import { ApiError } from '../../app.interfaces';
+import { BackendService } from '../backend.service';
+import { NewuserComponent } from './newuser/newuser.component';
+import { NewpasswordComponent } from './newpassword/newpassword.component';
 
 @Component({
   templateUrl: './users.component.html',
@@ -60,17 +59,18 @@ export class UsersComponent implements OnInit {
           this.selectedUserName = '';
         }
         this.updateWorkspaceList();
-      });
+      }
+    );
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     setTimeout(() => {
       this.mds.setSpinnerOn();
       this.updateObjectList();
     });
   }
 
-  addObject() {
+  addObject(): void {
     const dialogRef = this.newuserDialog.open(NewuserComponent, {
       width: '600px'
     });
@@ -79,26 +79,33 @@ export class UsersComponent implements OnInit {
       if (typeof result !== 'undefined') {
         if (result !== false) {
           this.mds.setSpinnerOn();
-          this.bs.addUser((<FormGroup>result).get('name').value,
-              (<FormGroup>result).get('pw').value)
+          this.bs.addUser(
+            (<FormGroup>result).get('name').value,
+            (<FormGroup>result).get('pw').value
+          )
             .pipe(catchError((err: ApiError) => {
-              this.snackBar.open(`Konnte Nutzer nicht hinzufügen: ${err.code} ${err.info} `, 'Fehler', {duration: 5000});
+              this.snackBar.open(
+                `Konnte Nutzer nicht hinzufügen: ${err.code} ${err.info} `,
+                'Fehler',
+                { duration: 5000 }
+              );
               return of(false);
             })).subscribe(
-                respOk => {
-                  if (respOk !== false) {
-                    this.snackBar.open('Nutzer hinzugefügt', '', {duration: 1000});
-                    this.updateObjectList();
-                  } else {
-                    this.mds.setSpinnerOff();
-                  }
-                });
+              respOk => {
+                if (respOk !== false) {
+                  this.snackBar.open('Nutzer hinzugefügt', '', {duration: 1000});
+                  this.updateObjectList();
+                } else {
+                  this.mds.setSpinnerOff();
+                }
+              }
+            );
         }
       }
     });
   }
 
-  changeSuperadminStatus() {
+  changeSuperadminStatus(): void {
     let selectedRows = this.tableselectionRow.selected;
     if (selectedRows.length === 0) {
       selectedRows = this.tableselectionCheckbox.selected;
@@ -118,7 +125,8 @@ export class UsersComponent implements OnInit {
         width: '400px',
         data: <ConfirmDialogData>{
           title: 'Ändern des Superadmin-Status',
-          content: 'Für "' + userObject.name + '" den Status auf "' + (userObject.isSuperadmin ? 'NICHT ' : '') + 'Superadmin" setzen?',
+          content:
+            `Für "${userObject.name}" den Status auf "${userObject.isSuperadmin ? 'NICHT ' : ''}Superadmin" setzen?`,
           confirmbuttonlabel: 'Status ändern',
           showcancel: true
         }
@@ -128,7 +136,7 @@ export class UsersComponent implements OnInit {
         if ((typeof result !== 'undefined') && (result !== false)) {
           const passwdDialogRef = this.superadminPasswordDialog.open(SuperadminPasswordRequestComponent, {
             width: '600px',
-            data: 'Superadmin-Status ' + (userObject.isSuperadmin ? 'entziehen' : 'setzen')
+            data: `Superadmin-Status ${userObject.isSuperadmin ? 'entziehen' : 'setzen'}`
           });
 
           passwdDialogRef.afterClosed().subscribe(afterClosedResult => {
@@ -136,21 +144,32 @@ export class UsersComponent implements OnInit {
               if (afterClosedResult !== false) {
                 this.mds.setSpinnerOn();
                 this.bs.setSuperUserStatus(
-                  selectedRows[0]['id'],
+                  selectedRows[0].id,
                   !userObject.isSuperadmin,
-                  (<FormGroup>afterClosedResult).get('pw').value).subscribe(
-                  respCode => {
-                    if (respCode === 0) {
-                      this.snackBar.open('Status geändert', '', {duration: 1000});
-                      this.updateObjectList();
-                    } else if (respCode === 403) {
-                      this.mds.setSpinnerOff();
-                      this.snackBar.open('Konnte Status nicht ändern (falsches Kennwort?)', 'Fehler', {duration: 5000});
-                    } else {
-                      this.mds.setSpinnerOff();
-                      this.snackBar.open(`Konnte Status nicht ändern (Fehlercode ${respCode})`, 'Fehler', {duration: 5000});
+                  (<FormGroup>afterClosedResult).get('pw').value
+                )
+                  .subscribe(
+                    respCode => {
+                      if (respCode === 0) {
+                        this.snackBar.open('Status geändert', '', {duration: 1000});
+                        this.updateObjectList();
+                      } else if (respCode === 403) {
+                        this.mds.setSpinnerOff();
+                        this.snackBar.open(
+                          'Konnte Status nicht ändern (falsches Kennwort?)',
+                          'Fehler',
+                          { duration: 5000 }
+                        );
+                      } else {
+                        this.mds.setSpinnerOff();
+                        this.snackBar.open(
+                          `Konnte Status nicht ändern (Fehlercode ${respCode})`,
+                          'Fehler',
+                          { duration: 5000 }
+                        );
+                      }
                     }
-                  });
+                  );
               }
             }
           });
@@ -159,7 +178,7 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  changePassword() {
+  changePassword(): void {
     let selectedRows = this.tableselectionRow.selected;
     if (selectedRows.length === 0) {
       selectedRows = this.tableselectionCheckbox.selected;
@@ -176,32 +195,39 @@ export class UsersComponent implements OnInit {
     } else {
       const dialogRef = this.newpasswordDialog.open(NewpasswordComponent, {
         width: '600px',
-        data: selectedRows[0]['name']
+        data: selectedRows[0].name
       });
 
       dialogRef.afterClosed().subscribe(result => {
         if (typeof result !== 'undefined') {
           if (result !== false) {
             this.mds.setSpinnerOn();
-            this.bs.changePassword(selectedRows[0]['id'],
-                (<FormGroup>result).get('pw').value)
+            this.bs.changePassword(
+              selectedRows[0].id,
+              (<FormGroup>result).get('pw').value
+            )
               .pipe(catchError((err: ApiError) => {
-                this.snackBar.open(`Konnte Kennwort nicht ändern: ${err.code} ${err.info} `, 'Fehler', {duration: 5000});
+                this.snackBar.open(
+                  `Konnte Kennwort nicht ändern: ${err.code} ${err.info} `,
+                  'Fehler',
+                  { duration: 5000 }
+                );
                 return of(false);
               })).subscribe(
-                  respOk => {
-                    this.mds.setSpinnerOff();
-                    if (respOk !== false) {
-                      this.snackBar.open('Kennwort geändert', '', {duration: 1000});
-                    }
-                  });
+                respOk => {
+                  this.mds.setSpinnerOff();
+                  if (respOk !== false) {
+                    this.snackBar.open('Kennwort geändert', '', { duration: 1000 });
+                  }
+                }
+              );
           }
         }
       });
     }
   }
 
-  deleteObject() {
+  deleteObject(): void {
     let selectedRows = this.tableselectionCheckbox.selected;
     if (selectedRows.length === 0) {
       selectedRows = this.tableselectionRow.selected;
@@ -218,15 +244,15 @@ export class UsersComponent implements OnInit {
     } else {
       let prompt = 'Soll';
       if (selectedRows.length > 1) {
-        prompt = prompt + 'en ' + selectedRows.length + ' Nutzer ';
+        prompt = `Sollen ${selectedRows.length} Nutzer gelöscht werden?`;
       } else {
-        prompt = prompt + ' Nutzer "' + selectedRows[0].name + '" ';
+        prompt = `Soll Nutzer "${selectedRows[0].name}" gelöscht werden?`;
       }
       const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
         width: '400px',
         data: <ConfirmDialogData>{
           title: 'Löschen von Nutzern',
-          content: prompt + 'gelöscht werden?',
+          content: prompt,
           confirmbuttonlabel: 'Nutzer löschen',
           showcancel: true
         }
@@ -252,7 +278,7 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  updateWorkspaceList() {
+  updateWorkspaceList(): void {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser > -1) {
       this.mds.setSpinnerOn();
@@ -265,16 +291,18 @@ export class UsersComponent implements OnInit {
     }
   }
 
-  selectWorkspace(ws: IdRoleData, role: string) {
+  selectWorkspace(ws: IdRoleData, role: string): void {
     if (ws.role === role) {
+      // eslint-disable-next-line no-param-reassign
       ws.role = '';
     } else {
+      // eslint-disable-next-line no-param-reassign
       ws.role = role;
     }
     this.pendingWorkspaceChanges = true;
   }
 
-  saveWorkspaces() {
+  saveWorkspaces(): void {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser > -1) {
       this.mds.setSpinnerOn();
@@ -282,17 +310,18 @@ export class UsersComponent implements OnInit {
         respOk => {
           this.mds.setSpinnerOff();
           if (respOk !== false) {
-            this.snackBar.open('Zugriffsrechte geändert', '', {duration: 1000});
+            this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
           } else {
-            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', {duration: 2000});
+            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', { duration: 2000 });
           }
-        });
+        }
+      );
     } else {
       this.WorkspacelistDatasource = null;
     }
   }
 
-  updateObjectList() {
+  updateObjectList(): void {
     this.tableselectionCheckbox.clear();
     this.tableselectionRow.clear();
     this.bs.getUsers().subscribe(dataresponse => {
@@ -302,19 +331,20 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  isAllSelected() {
+  isAllSelected(): boolean {
     const numSelected = this.tableselectionCheckbox.selected.length;
     const numRows = this.objectsDatasource.data.length;
     return numSelected === numRows;
   }
 
-  masterToggle() {
+  masterToggle(): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     this.isAllSelected() ?
-        this.tableselectionCheckbox.clear() :
-        this.objectsDatasource.data.forEach(row => this.tableselectionCheckbox.select(row));
+      this.tableselectionCheckbox.clear() :
+      this.objectsDatasource.data.forEach(row => this.tableselectionCheckbox.select(row));
   }
 
-  selectRow(row) {
+  selectRow(row): void {
     this.tableselectionRow.select(row);
   }
 }

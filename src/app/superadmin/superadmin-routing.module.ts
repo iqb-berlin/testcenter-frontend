@@ -9,10 +9,10 @@ const routes: Routes = [
     path: '',
     component: SuperadminComponent,
     children: [
-      {path: '', redirectTo: 'users', pathMatch: 'full'},
-      {path: 'users', component: UsersComponent},
-      {path: 'workspaces', component: WorkspacesComponent},
-      {path: '**', component: UsersComponent}
+      { path: '', redirectTo: 'users', pathMatch: 'full' },
+      { path: 'users', component: UsersComponent },
+      { path: 'workspaces', component: WorkspacesComponent },
+      { path: '**', component: UsersComponent }
     ]
   }
 ];

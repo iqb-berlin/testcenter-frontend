@@ -1,11 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { UsersComponent } from './users.component';
-import {HttpClientModule} from "@angular/common/http";
+import { HttpClientModule } from '@angular/common/http';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BackendService } from '../backend.service';
-import {MatDialogModule} from "@angular/material/dialog";
-import {MatSnackBarModule} from "@angular/material/snack-bar";
-import {MainDataService} from "../../maindata.service";
+import { UsersComponent } from './users.component';
+import { MainDataService } from '../../maindata.service';
 
 describe('UsersComponent', () => {
   let component: UsersComponent;
@@ -13,7 +12,7 @@ describe('UsersComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UsersComponent ],
+      declarations: [UsersComponent],
       imports: [
         HttpClientModule,
         MatDialogModule,
@@ -24,7 +23,7 @@ describe('UsersComponent', () => {
         MainDataService
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

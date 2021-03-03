@@ -1,6 +1,6 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {MainDataService} from '../../maindata.service';
-import {AuthAccessKeyType, AuthFlagType} from '../../app.interfaces';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MainDataService } from '../../maindata.service';
+import { AuthAccessKeyType, AuthFlagType } from '../../app.interfaces';
 
 @Component({
   selector: 'status-card',
@@ -16,7 +16,7 @@ export class StatusCardComponent implements OnInit {
     @Inject('APP_VERSION') public appVersion: string,
     @Inject('API_VERSION_EXPECTED') public apiVersionExpected: string,
     @Inject('VERONA_API_VERSION_SUPPORTED') public veronaApiVersionSupported: string,
-    @Inject('IS_PRODUCTION_MODE') public isProductionMode
+    @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean
   ) { }
 
   ngOnInit(): void {
@@ -53,5 +53,4 @@ export class StatusCardComponent implements OnInit {
       }
     });
   }
-
 }

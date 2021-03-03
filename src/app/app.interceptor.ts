@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router, RouterState, RouterStateSnapshot } from '@angular/router';
+import { Router, RouterState } from '@angular/router';
 import {
   HttpInterceptor, HttpRequest,
   HttpHandler, HttpEvent, HttpErrorResponse
@@ -18,7 +18,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   // TODO separation of concerns: split into two interceptors,
   // one for error handling, one for auth token addition
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     if (this.mds.isApiValid) {
       let tokenStr = '';
       const authData = MainDataService.getAuthData();
@@ -35,12 +35,12 @@ export class AuthInterceptor implements HttpInterceptor {
       });
 
       return next.handle(requestA).pipe(
-        catchError((e) => {
+        catchError(error => {
           const apiError = new ApiError(999);
-          if (e instanceof HttpErrorResponse) { // TODO is the opposite case even possible?
-            const httpError = e as HttpErrorResponse;
+          if (error instanceof HttpErrorResponse) { // TODO is the opposite case even possible?
+            const httpError = error as HttpErrorResponse;
             apiError.code = httpError.status;
-            apiError.info = httpError.message + ' // ' + httpError.error;
+            apiError.info = `${httpError.message} // ${httpError.error}`;
             if (httpError.error instanceof ErrorEvent) {
               this.mds.appError$.next({
                 label: 'Fehler in der Netzwerkverbindung',
@@ -50,7 +50,7 @@ export class AuthInterceptor implements HttpInterceptor {
             } else {
               let ignoreError = false;
               let goToLoginPage = false;
-              let label = 'Unbekanntes Verbindungsproblem';
+              let label;
               switch (httpError.status) {
                 case 202:
                 case 204:
@@ -88,17 +88,19 @@ export class AuthInterceptor implements HttpInterceptor {
                   label = 'Allgemeines Server-Problem.';
                   break;
 
+                default:
+                  label = 'Unbekanntes Verbindungsproblem';
               }
               if (!ignoreError) {
                 if (goToLoginPage) {
-                  console.warn('AuthError' + httpError.status + ' (' + label + ')');
+                  console.warn(`AuthError${httpError.status} (${label})`);
                   MainDataService.resetAuthData();
                   const state: RouterState = this.router.routerState;
-                  const snapshot: RouterStateSnapshot = state.snapshot;
+                  const { snapshot } = state;
                   this.router.navigate(['/r/login', snapshot.url]);
                 } else {
                   this.mds.appError$.next({
-                    label: label,
+                    label,
                     description: httpError.message,
                     category: 'PROBLEM'
                   });
@@ -110,13 +112,12 @@ export class AuthInterceptor implements HttpInterceptor {
           return throwError(apiError);
         })
       );
-    } else {
-      this.mds.appError$.next({
-        label: 'Server-Problem: API-Version ungültig',
-        description: 'Keine weiteren Server-Aufrufe erlaubt',
-        category: 'FATAL'
-      });
-      return throwError(new ApiError(500, 'API-Version ungültig'));
     }
+    this.mds.appError$.next({
+      label: 'Server-Problem: API-Version ungültig',
+      description: 'Keine weiteren Server-Aufrufe erlaubt',
+      category: 'FATAL'
+    });
+    return throwError(new ApiError(500, 'API-Version ungültig'));
   }
 }
