@@ -1,6 +1,6 @@
 {
   "name": "itc-ng",
-  "version": "6.4.0",
+  "version": "6.5.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -10,7 +10,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "test": "ng test",
+    "test": "ng test  --watch=false",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },

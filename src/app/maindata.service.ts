@@ -6,7 +6,7 @@ import {
   AuthData, KeyValuePairs
 } from './app.interfaces';
 import { BackendService } from './backend.service';
-import { AppConfig } from './config/app.config';
+import {AppConfig, BroadCastingServiceInfo, SysConfig} from './config/app.config';
 
 const localStorageAuthDataKey = 'iqb-tc-a';
 const localStorageTestConfigKey = 'iqb-tc-c';
@@ -21,6 +21,8 @@ export class MainDataService {
   public isSpinnerOn$ = new BehaviorSubject<boolean>(false);
   public progressVisualEnabled = true;
   public isApiValid = true;
+  public apiVersion: string;
+  public broadcastingServiceInfo: BroadCastingServiceInfo = { status: 'none' };
   public appConfig: AppConfig = null;
   public sysCheckAvailable = false;
 

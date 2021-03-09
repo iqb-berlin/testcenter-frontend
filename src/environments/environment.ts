@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  testcenterUrl: '/api/',
+  testcenterUrl: 'http://localhost/2020/testcenter-iqb-php/',
   appPublisher: 'IQB - Institut zur Qualitätsentwicklung im Bildungswesen',
-  apiVersionExpected: '9.0.0-nextmajor',
+  apiVersionExpected: '9.1.0',
   veronaApiVersionSupported: '2.1.0'
 };

@@ -7,7 +7,13 @@ export interface SysConfig {
   version: string;
   mainLogo: string;
   testConfig: KeyValuePairs;
-  serverTimestamp: number;
+  broadcastingService: BroadCastingServiceInfo;
+}
+
+export interface BroadCastingServiceInfo {
+  status: string;
+  version?: string;
+  versionExpected?: string;
 }
 
 export class AppConfig {
@@ -16,11 +22,11 @@ export class AppConfig {
   ) {
   }
 
-  setDefaultCustomTexts(): void {
+  setDefaultCustomTexts() {
     const ctDefaults = {};
-    Object.keys(customTextsDefault).forEach(key => {
-      ctDefaults[key] = customTextsDefault[key].defaultvalue;
-    });
+    for (const k of Object.keys(customTextsDefault)) {
+      ctDefaults[k] = customTextsDefault[k].defaultvalue
+    }
     this.cts.addCustomTexts(ctDefaults);
   }
 }
