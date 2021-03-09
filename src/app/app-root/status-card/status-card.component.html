@@ -13,11 +13,13 @@
   <p style="margin-bottom: 0;"><b>Angaben zu dieser Web-Anwendung:</b></p>
   <ul style="margin: 0;">
     <li *ngIf="!isProductionMode">Build-Modus: Dev</li>
-    <li>Testcenter: Version: {{appVersion}}</li>
+    <li>Version {{appVersion}}</li>
     <li>API: Version {{mds.apiVersion}}, {{apiVersionExpected}} erforderlich</li>
     <li>Broadcasting-Service: {{mds.broadcastingServiceInfo.status}}
-      <span *ngIf="mds.broadcastingServiceInfo.version">; Version {{mds.broadcastingServiceInfo.version}},
-        {{mds.broadcastingServiceInfo.versionExpected}} erforderlich</span>
+      <span *ngIf="mds.broadcastingServiceInfo.version">
+        - Version {{mds.broadcastingServiceInfo.version}},
+        {{mds.broadcastingServiceInfo.versionExpected}} erforderlich
+      </span>
     </li>
     <li>Verona Player Interface: Version {{veronaApiVersionSupported}}</li>
     <li>Copyright: {{appPublisher}}</li>
