@@ -14,7 +14,6 @@ export class RouteDispatcherComponent {
   url = '';
 
   constructor(
-    public cts: CustomtextService,
     private router: Router) {
 
     const state: RouterState = router.routerState;

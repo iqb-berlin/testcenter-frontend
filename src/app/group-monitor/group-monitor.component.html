@@ -1,5 +1,8 @@
 <div class="page-header">
-  <p>IQB-Testcenter Gruppenüberwachung: <span *ngIf="ownGroup$ | async as ownGroup">{{ownGroup.label}}</span></p>
+  <p>
+      {{'IQB-Testcenter Gruppenüberwachung' | customtext:'gm_headline' | async}}
+      <span *ngIf="ownGroup$ | async as ownGroup">{{ownGroup.label}}</span>
+  </p>
   <span class="fill-remaining-space"></span>
   <p>
     <mat-chip-list *ngIf="connectionStatus$ | async as connectionStatus">
@@ -24,13 +27,13 @@
 
 <mat-menu #rootMenu="matMenu">
     <button mat-menu-item [matMenuTriggerFor]="filters">
-        {{'Sitzungen ausblenden' | customtext:'gm_menu_filter':cts.updateCount}}
+        {{'Sitzungen ausblenden' | customtext:'gm_menu_filter' | async}}
     </button>
     <button mat-menu-item [matMenuTriggerFor]="group">
-        {{'Spalten' | customtext:'gm_menu_cols':cts.updateCount}}
+        {{'Spalten' | customtext:'gm_menu_cols' | async}}
     </button>
     <button mat-menu-item [matMenuTriggerFor]="activity">
-        {{'Aktivität' | customtext:'gm_menu_view':cts.updateCount}}
+        {{'Aktivität' | customtext:'gm_menu_activity' | async}}
     </button>
 </mat-menu>
 

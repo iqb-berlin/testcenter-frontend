@@ -74,7 +74,8 @@ export enum TestControllerState {
  */
 export enum AppFocusState {
   HAS = 'HAS',
-  HAS_NOT = 'HAS_NOT'
+  HAS_NOT = 'HAS_NOT',
+  DEAD = 'DEAD'
 }
 
 /**

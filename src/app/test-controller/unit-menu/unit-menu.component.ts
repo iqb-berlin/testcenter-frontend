@@ -13,7 +13,6 @@ export class UnitMenuComponent implements OnInit {
   loginName = '??';
 
   constructor(
-    public cts: CustomtextService,
     public tcs: TestControllerService
   ) { }
 

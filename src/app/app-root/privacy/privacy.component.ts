@@ -8,7 +8,4 @@ import {CustomtextService} from 'iqb-components';
   ]
 })
 export class PrivacyComponent {
-  constructor(
-    public cts: CustomtextService
-  ) { }
 }

@@ -2,9 +2,9 @@
   <div fxLayout="row wrap" fxLayoutAlign="center stretch">
     <mat-card>
       <form [formGroup]="startkeyform" fxLayout="column" (ngSubmit)="continue()">
-        <mat-card-header>{{ 'Freigabewort' | customtext:'booklet_codeToEnterTitle':cts.updateCount }}</mat-card-header>
+        <mat-card-header>{{ 'Freigabewort' | customtext:'booklet_codeToEnterTitle' | async }}</mat-card-header>
         <mat-card-content>
-          <div class="prompt">{{ 'Bitte Freigabewort eingeben!' | customtext:'booklet_codeToEnterPrompt':cts.updateCount }}</div>
+          <div class="prompt">{{ 'Bitte Freigabewort eingeben!' | customtext:'booklet_codeToEnterPrompt' | async }}</div>
           <mat-form-field *ngFor="let c of codes" fxLayout="column">
             <label>{{ c.prompt }}
               <input matInput [formControlName]="c.testletId">

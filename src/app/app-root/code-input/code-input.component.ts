@@ -45,9 +45,7 @@ export class CodeInputComponent implements OnInit {
       this.messageDialog.open(MessageDialogComponent, {
         width: '400px',
         data: <MessageDialogData>{
-          // @ts-ignore
           title: this.cts.getCustomText('login_codeInputTitle') + ': Leer',
-          // @ts-ignore
           content: this.cts.getCustomText('login_codeInputPrompt'),
           type: MessageType.error
         }

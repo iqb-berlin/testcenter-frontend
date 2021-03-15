@@ -24,7 +24,6 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private bs: BackendService,
-    public cts: CustomtextService,
     private mds: MainDataService
   ) { }
 

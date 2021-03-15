@@ -12,8 +12,7 @@ export class TestStatusComponent implements OnInit {
   loginName = '??';
 
   constructor(
-    public tcs: TestControllerService,
-    public cts: CustomtextService
+    public tcs: TestControllerService
   ) { }
 
   ngOnInit(): void {

@@ -30,7 +30,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   constructor(
     public mds: MainDataService,
-    public cts: CustomtextService,
     private bs: BackendService,
     private router: Router,
     private route: ActivatedRoute

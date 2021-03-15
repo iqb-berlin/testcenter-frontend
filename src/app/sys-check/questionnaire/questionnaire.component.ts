@@ -13,8 +13,7 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
   private valueChangesSubscription: Subscription = null;
 
   constructor(
-    public ds: SysCheckDataService,
-    public cts: CustomtextService
+    public ds: SysCheckDataService
   ) {
   }
 

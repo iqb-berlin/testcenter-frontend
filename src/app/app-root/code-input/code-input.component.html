@@ -1,8 +1,8 @@
 <div fxLayout="row wrap" fxLayoutAlign="center stretch">
   <mat-card fxFlex="0 0 400px">
     <form [formGroup]="codeinputform" (ngSubmit)="codeinput()">
-      <mat-card-title>{{ 'login_codeInputTitle' | customtext:'login_codeInputTitle':cts.updateCount }}</mat-card-title>
-      <mat-card-subtitle>{{ 'login_codeInputPrompt' | customtext:'login_codeInputPrompt':cts.updateCount }}</mat-card-subtitle>
+      <mat-card-title>{{ 'login_codeInputTitle' | customtext:'login_codeInputTitle' | async }}</mat-card-title>
+      <mat-card-subtitle>{{ 'login_codeInputPrompt' | customtext:'login_codeInputPrompt' | async }}</mat-card-subtitle>
       <mat-card-content>
         <mat-form-field>
           <input matInput formControlName="code"> <!-- no placeholder! -->
@@ -17,7 +17,7 @@
   </mat-card>
 
   <mat-card fxFlex="0 0 400px" class="mat-card-gray">
-    <mat-card-title>{{ 'app_title' | customtext:'app_title':cts.updateCount }}</mat-card-title>
+    <mat-card-title>{{ 'app_title' | customtext:'app_title' | async }}</mat-card-title>
 
     <mat-card-content>
 

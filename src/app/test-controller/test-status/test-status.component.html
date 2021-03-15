@@ -8,10 +8,10 @@
         <p><b>Angemeldet als "{{loginName}}"</b></p>
         <p><b>{{tcs.testMode.modeLabel}}</b></p>
         <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.ERROR" style="color: chocolate">
-          <b>{{ 'Es ist ein Fehler aufgetreten.' | customtext:'booklet_errormessage':cts.updateCount }} </b>
+          <b>{{ 'Es ist ein Fehler aufgetreten.' | customtext:'booklet_errormessage' | async }} </b>
         </p>
         <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.PAUSED" style="color: chocolate">
-          <b>{{ 'Testpause' | customtext:'booklet_pausedmessage':cts.updateCount }} </b>
+          <b>{{ 'Testpause' | customtext:'booklet_pausedmessage' | async }} </b>
         </p>
         <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING" style="color: chocolate">
           <b>Der Test ist aktiv.</b>
@@ -19,7 +19,7 @@
       </mat-card-content>
       <mat-card-actions *ngIf="(tcs.testStatus$ | async) !== tcs.testStatusEnum.PAUSED">
         <button mat-raised-button color="primary" (click)="terminateTest()">
-          {{ 'Test beenden'  | customtext:'login_testEndButtonLabel':cts.updateCount}}
+          {{ 'Test beenden'  | customtext:'login_testEndButtonLabel' | async}}
         </button>
       </mat-card-actions>
     </mat-card>

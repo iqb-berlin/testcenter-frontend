@@ -26,7 +26,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   constructor(
     private ds: SysCheckDataService,
     private bs: BackendService,
-    public cts: CustomtextService,
     private mds: MainDataService
   ) {
   }

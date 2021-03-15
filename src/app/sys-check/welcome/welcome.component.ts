@@ -27,7 +27,6 @@ export class WelcomeComponent implements OnInit {
   };
 
   constructor(
-    public cts: CustomtextService,
     public ds: SysCheckDataService
   ) { }
 

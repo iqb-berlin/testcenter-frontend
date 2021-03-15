@@ -33,8 +33,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private bs: BackendService,
     private bookletService: BookletService,
-    private router: Router,
-    public cts: CustomtextService
+    private router: Router
   ) {}
 
   ownGroup$: Observable<GroupData>;

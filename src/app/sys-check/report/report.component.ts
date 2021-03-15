@@ -19,7 +19,6 @@ export class ReportComponent implements OnInit {
   constructor(
     private bs: BackendService,
     public ds: SysCheckDataService,
-    public cts: CustomtextService,
     private saveDialog: MatDialog,
     private snackBar: MatSnackBar
   ) {

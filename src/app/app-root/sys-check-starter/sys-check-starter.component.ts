@@ -16,7 +16,6 @@ export class SysCheckStarterComponent implements OnInit {
   constructor(
     public mds: MainDataService,
     private bs: BackendService,
-    public cts: CustomtextService,
     private router: Router
   ) { }
 
