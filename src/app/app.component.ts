@@ -92,7 +92,13 @@ export class AppComponent implements OnInit, OnDestroy {
           if (authData) {
             this.cts.addCustomTexts(authData.customTexts);
           }
+
+          if (sysConfig.broadcastingService && sysConfig.broadcastingService.status) {
+            this.mds.broadcastingServiceInfo = sysConfig.broadcastingService;
+          }
           this.mds.isApiValid = AppComponent.isValidVersion(this.expectedApiVersion, sysConfig.version);
+          this.mds.apiVersion = sysConfig.version;
+
           if (!this.mds.isApiValid) {
             this.mds.appError$.next({
               label: 'Server-Problem: API-Version ungültig',
@@ -100,7 +106,9 @@ export class AppComponent implements OnInit, OnDestroy {
               category: 'FATAL'
             });
           }
+
           // TODO implement SysConfig.mainLogo
+
           this.mds.setTestConfig(sysConfig.testConfig);
         } else {
           this.mds.isApiValid = false;
