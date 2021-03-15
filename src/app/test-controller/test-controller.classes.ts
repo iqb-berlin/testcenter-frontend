@@ -63,11 +63,9 @@ export class TestletContentElement {
 
   getMaxSequenceId(tmpId = 0): number {
     if (this.sequenceId >= tmpId) {
-      // eslint-disable-next-line no-param-reassign
       tmpId = this.sequenceId + 1;
     }
     this.children.forEach(tce => {
-      // eslint-disable-next-line no-param-reassign
       tmpId = tce.getMaxSequenceId(tmpId);
     });
     return tmpId;
@@ -329,18 +327,16 @@ export class Testlet extends TestletContentElement {
   }
 
   getNextUnlockedUnitSequenceId(currentUnitSequenceId: number): number {
-    // eslint-disable-next-line no-param-reassign
-    currentUnitSequenceId += 1;
+    let nextUnitSequenceId = currentUnitSequenceId + 1;
     let myUnit: UnitControllerData = this.getUnitAt(currentUnitSequenceId);
     while (myUnit !== null && myUnit.unitDef.locked) {
-      // eslint-disable-next-line no-param-reassign
-      currentUnitSequenceId += 1;
-      myUnit = this.getUnitAt(currentUnitSequenceId);
+      nextUnitSequenceId += 1;
+      myUnit = this.getUnitAt(nextUnitSequenceId);
     }
     if (myUnit) {
       myUnit.unitDef.ignoreCompleted = true;
     }
-    return myUnit ? currentUnitSequenceId : 0;
+    return myUnit ? nextUnitSequenceId : 0;
   }
 
   getFirstUnlockedUnitSequenceId(startWith: number): number {

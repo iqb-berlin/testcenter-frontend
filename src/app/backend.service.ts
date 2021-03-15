@@ -114,7 +114,6 @@ export class BackendService {
       .get<BookletData>(`${this.serverUrl}booklet/${bookletId}/data`)
       .pipe(
         map(bData => {
-          // eslint-disable-next-line no-param-reassign
           bData.id = bookletId;
           return bData;
         }),

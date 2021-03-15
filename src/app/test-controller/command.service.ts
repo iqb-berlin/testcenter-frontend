@@ -131,11 +131,11 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
       return;
     }
     // eslint-disable-next-line no-param-reassign
-    args = (typeof args === 'undefined') ? [] : args;
+    const newArgs = (typeof args === 'undefined') ? [] : args;
     const id = Math.round(Math.random() * -10000000);
     const command = {
       keyword,
-      arguments: args,
+      arguments: newArgs,
       id,
       timestamp: Date.now()
     };

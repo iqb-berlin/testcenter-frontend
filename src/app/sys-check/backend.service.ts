@@ -42,13 +42,12 @@ export class BackendService {
       );
   }
 
-  public getUnitAndPlayer(workspaceId: number, sysCheckName: string): Observable<UnitAndPlayerContainer|boolean> {
+  public getUnitAndPlayer(workspaceId: number, sysCheckId: string): Observable<UnitAndPlayerContainer|boolean> {
     const startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
     return this.http
-      .get<UnitAndPlayerContainer>(`${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckName}/unit-and-player`)
+      .get<UnitAndPlayerContainer>(`${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckId}/unit-and-player`)
       .pipe(
         map(data => {
-          // eslint-disable-next-line no-param-reassign
           data.duration = BackendService.getMostPreciseTimestampBrowserCanProvide() - startingTime;
           return data;
         }),
@@ -82,7 +81,8 @@ export class BackendService {
           testResult.error = `Error ${xhr.statusText} (${xhr.status}) `;
         }
         if (xhr.response.toString().length !== requestedDownloadSize) {
-          testResult.error = `Error: Data package has wrong size! ${requestedDownloadSize} ${xhr.response.toString().length}`;
+          testResult.error = 'Error: Data package has wrong size!' +
+            `(${requestedDownloadSize} !== ${xhr.response.toString().length})`;
         }
         const currentTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
         testResult.duration = currentTime;

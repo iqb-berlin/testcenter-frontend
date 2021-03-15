@@ -88,15 +88,12 @@ export class TcSpeedChartComponent {
     if (!dataPoints.length) {
       return;
     }
-    // eslint-disable-next-line no-param-reassign
-    color = color || this.randomColor();
     const coordinates = this.dataPointsToCoordinates(dataPoints);
-    // eslint-disable-next-line no-param-reassign
-    color = color || this.randomColor();
+    const newColor = color || this.randomColor();
     const oldStrokeColor = this.context.strokeStyle;
     const oldFillColor = this.context.fillStyle;
-    this.context.strokeStyle = color;
-    this.context.fillStyle = color;
+    this.context.strokeStyle = newColor;
+    this.context.fillStyle = newColor;
     if (style === 'line') {
       this.paintLine(coordinates);
     }

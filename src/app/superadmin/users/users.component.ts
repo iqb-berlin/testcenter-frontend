@@ -293,10 +293,8 @@ export class UsersComponent implements OnInit {
 
   selectWorkspace(ws: IdRoleData, role: string): void {
     if (ws.role === role) {
-      // eslint-disable-next-line no-param-reassign
       ws.role = '';
     } else {
-      // eslint-disable-next-line no-param-reassign
       ws.role = role;
     }
     this.pendingWorkspaceChanges = true;
