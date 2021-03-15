@@ -11,7 +11,7 @@ import {
 import { map, switchMap, tap } from 'rxjs/operators';
 
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from 'iqb-components';
+import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { BackendService } from './backend.service';
 import {
   GroupData,
@@ -55,7 +55,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     selectionSpreading: 'booklet'
   };
 
-  filterOptions: {label: string, filter: TestSessionFilter, selected: boolean}[] = [
+  filterOptions: { label: string, filter: TestSessionFilter, selected: boolean }[] = [
     {
       label: 'gesperrte',
       selected: false,
@@ -83,14 +83,14 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   };
 
   markedElement: Testlet|Unit|null = null;
-  checkedSessions: {[sessionTestSessionId: number]: TestSession} = {};
+  checkedSessions: { [sessionTestSessionId: number]: TestSession } = {};
   allSessionsChecked = false;
   sessionCheckedGroupCount: number;
 
   isScrollable = false;
   isClosing = false;
 
-  warnings: {[key: string]: {text: string, timeout: number}} = {};
+  warnings: { [key: string]: { text: string, timeout: number } } = {};
 
   @ViewChild('adminbackground') mainElem:ElementRef;
   @ViewChild('sidenav', { static: true }) sidenav: MatSidenav;
@@ -172,7 +172,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   private updateChecked(sessions: TestSession[]): void {
-    const newCheckedSessions: {[sessionFullId: number]: TestSession} = {};
+    const newCheckedSessions: { [sessionFullId: number]: TestSession } = {};
     sessions
       .forEach(session => {
         const sessionFullId = session.id;
