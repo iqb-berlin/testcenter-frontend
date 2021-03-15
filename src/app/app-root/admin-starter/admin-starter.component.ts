@@ -1,12 +1,11 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MainDataService} from '../../maindata.service';
-import {Router} from '@angular/router';
-import {AuthAccessKeyType, AuthData, WorkspaceData} from '../../app.interfaces';
-import {from, Subscription} from 'rxjs';
-import {concatMap} from 'rxjs/operators';
-import {BackendService} from '../../backend.service';
-import {CustomtextService} from 'iqb-components';
-
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { from, Subscription } from 'rxjs';
+import { concatMap } from 'rxjs/operators';
+import { CustomtextService } from 'iqb-components';
+import { BackendService } from '../../backend.service';
+import { AuthAccessKeyType, AuthData, WorkspaceData } from '../../app.interfaces';
+import { MainDataService } from '../../maindata.service';
 
 @Component({
   templateUrl: './admin-starter.component.html',
@@ -27,7 +26,7 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
     private mds: MainDataService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     setTimeout(() => {
       this.mds.setSpinnerOn();
       this.bs.getSessionData().subscribe(authDataUntyped => {
@@ -44,13 +43,13 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
               }
               if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN]) {
                 this.workspaces = [];
-                this.getWorkspaceDataSubscription = from(authData.access[AuthAccessKeyType.WORKSPACE_ADMIN]).pipe(
-                  concatMap(workspaceId => {
-                    return this.bs.getWorkspaceData(workspaceId);
-                  })).subscribe(
+                this.getWorkspaceDataSubscription = from(authData.access[AuthAccessKeyType.WORKSPACE_ADMIN])
+                  .pipe(
+                    concatMap(workspaceId => this.bs.getWorkspaceData(workspaceId))
+                  ).subscribe(
                     wsData => this.workspaces.push(wsData),
-                  () => this.mds.setSpinnerOff(),
-                  () => this.mds.setSpinnerOff()
+                    () => this.mds.setSpinnerOff(),
+                    () => this.mds.setSpinnerOff()
                   );
               } else {
                 this.mds.setSpinnerOff();
@@ -71,16 +70,16 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
     });
   }
 
-  buttonGotoWorkspaceAdmin(ws: WorkspaceData) {
-    this.router.navigateByUrl('/admin/' + ws.id.toString() + '/files');
+  buttonGotoWorkspaceAdmin(ws: WorkspaceData): void {
+    this.router.navigateByUrl(`/admin/${ws.id.toString()}/files`);
   }
 
-  resetLogin() {
+  resetLogin(): void {
     this.mds.setAuthData();
     this.router.navigate(['/']);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.getWorkspaceDataSubscription !== null) {
       this.getWorkspaceDataSubscription.unsubscribe();
     }

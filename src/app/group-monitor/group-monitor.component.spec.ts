@@ -11,6 +11,8 @@ import { Observable, of } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { CustomtextPipe } from 'iqb-components';
+import { Pipe } from '@angular/core';
 import { GroupMonitorComponent } from './group-monitor.component';
 import {
   Booklet,
@@ -42,7 +44,7 @@ class MockBookletService {
 }
 
 class MockMatDialog {
-  public open(): { afterClosed: () => Observable<{action: boolean}> } {
+  public open(): { afterClosed: () => Observable<{ action: boolean }> } {
     return {
       afterClosed: () => of({ action: true })
     };
@@ -62,6 +64,15 @@ class MockBackendService {
   }
 
   cutConnection(): void {}
+}
+
+@Pipe({ name: 'customtext' })
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+class MockCustomtextPipe {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  transform(defaultValue: string, key: string, ...replacements: string[]): Observable<string> {
+    return of<string>(defaultValue);
+  }
 }
 
 export const exampleSessions: TestSession[] = [
@@ -122,7 +133,8 @@ describe('GroupMonitorComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GroupMonitorComponent,
-        TestViewComponent
+        TestViewComponent,
+        CustomtextPipe
       ],
       imports: [
         MatIconModule,

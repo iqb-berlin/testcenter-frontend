@@ -109,7 +109,7 @@ export class BackendService {
       .subscribe({ error: (err: ApiError) => console.error(`addUnitLog Api-Error: ${err.code} ${err.info}`) });
   }
 
-  notifyDyingTest(testId: string) {
+  notifyDyingTest(testId: string): void {
     // TODO add auth or change end point
     if (navigator.sendBeacon) {
       navigator.sendBeacon(`${this.serverUrl}test/${testId}/state`, JSON.stringify(<StateReportEntry>{
@@ -118,8 +118,8 @@ export class BackendService {
     }
   }
 
-  updateUnitStateData(testId: string, timeStamp: number, unitName: string, dataPartsAllString: string, unitStateDataType: string)
-    : Observable<boolean> {
+  updateUnitStateData(testId: string, timeStamp: number, unitName: string,
+                      dataPartsAllString: string, unitStateDataType: string) : Observable<boolean> {
     // TODO remove after api changed
     const response = dataPartsAllString;
     const restorePoint = dataPartsAllString;

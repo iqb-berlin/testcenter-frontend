@@ -1,12 +1,12 @@
+import {
+  Component, OnInit, HostListener, OnDestroy
+} from '@angular/core';
+import { Subscription } from 'rxjs';
 import { MainDataService } from '../../maindata.service';
 import { BackendService } from '../backend.service';
 import { SysCheckDataService } from '../sys-check-data.service';
-import {Component, OnInit, HostListener} from '@angular/core';
-import { OnDestroy } from '@angular/core';
-import { Subscription} from 'rxjs';
-import {CustomtextService} from "iqb-components";
 
-declare var srcDoc: any;
+declare let srcDoc: any;
 
 @Component({
   selector: 'iqb-unit-check',
@@ -39,18 +39,17 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     setTimeout(() => {
       this.ds.setNewCurrentStep('u');
       if (this.ds.unitAndPlayerContainer) {
         this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
         this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
           const msgData = m.data;
-          const msgType = msgData['type'];
+          const msgType = msgData.type;
 
           if ((msgType !== undefined) && (msgType !== null)) {
             switch (msgType) {
-
               case 'vopReadyNotification':
                 this.iFrameItemplayer.setAttribute('height', String(Math.trunc(this.iFrameHostElement.clientHeight)));
                 this.postMessageTarget = m.source as Window;
@@ -69,14 +68,14 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
                 break;
 
               case 'vopStateChangedNotification':
-                if (msgData['playerState']) {
-                  const playerState = msgData['playerState'];
+                if (msgData.playerState) {
+                  const { playerState } = msgData;
                   this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
                 }
                 break;
 
               default:
-                console.log('processMessagePost ignored message: ' + msgType);
+                console.log(`processMessagePost ignored message: ${msgType}`);
                 break;
             }
           }
@@ -93,7 +92,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
         this.iFrameHostElement.appendChild(this.iFrameItemplayer);
         srcDoc.set(this.iFrameItemplayer, this.ds.unitAndPlayerContainer.player);
       }
-    })
+    });
   }
 
   setPageList(validPages: string[], currentPage: string) {
@@ -128,7 +127,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
         }
       }
       this.pageList = newPageList;
-
     } else if ((this.pageList.length > 1) && (currentPage !== undefined)) {
       let currentPageIndex = 0;
       for (let i = 0; i < this.pageList.length; i++) {
@@ -151,7 +149,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     }
   }
 
-  gotoPage(action: string, index = 0) {
+  gotoPage(action: string, index = 0): void {
     let nextPageId = '';
     // currentpage is detected by disabled-attribute of page
     if (action === '#next') {
@@ -196,7 +194,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.taskSubscription !== null) {
       this.taskSubscription.unsubscribe();
     }

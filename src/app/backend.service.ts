@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
@@ -28,7 +29,7 @@ export class BackendService {
             console.warn(`login Api-Error: ${err.code} ${err.info} `);
             return of(err.code);
           }),
-          switchMap((authData) => {
+          switchMap(authData => {
             if (typeof authData === 'number') {
               const errCode = authData as number;
               if (errCode === 400) {
@@ -110,21 +111,22 @@ export class BackendService {
 
   getBookletData(bookletId: string): Observable<BookletData> {
     return this.http
-      .get<BookletData>(this.serverUrl + 'booklet/' + bookletId + '/data')
+      .get<BookletData>(`${this.serverUrl}booklet/${bookletId}/data`)
       .pipe(
         map(bData => {
           bData.id = bookletId;
           return bData;
         }),
         catchError(() => {
-        console.warn('get booklet data failed for ' + bookletId);
-        return of(<BookletData>{
-          id: bookletId,
-          label: bookletId,
-          locked: true,
-          running: false
-        });
-      }));
+          console.warn(`get booklet data failed for ${bookletId}`);
+          return of(<BookletData>{
+            id: bookletId,
+            label: bookletId,
+            locked: true,
+            running: false
+          });
+        })
+      );
   }
 
   startTest(bookletName: string): Observable<string | number> {
@@ -146,9 +148,7 @@ export class BackendService {
     return this.http
       .get<SysCheckInfo[]>(`${this.serverUrl}sys-checks`)
       .pipe(
-        catchError(() => {
-          return of([]);
-        })
+        catchError(() => of([]))
       );
   }
 }

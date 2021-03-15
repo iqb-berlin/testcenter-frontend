@@ -25,7 +25,7 @@ export class AppConfig {
   setDefaultCustomTexts() {
     const ctDefaults = {};
     for (const k of Object.keys(customTextsDefault)) {
-      ctDefaults[k] = customTextsDefault[k].defaultvalue
+      ctDefaults[k] = customTextsDefault[k].defaultvalue;
     }
     this.cts.addCustomTexts(ctDefaults);
   }

@@ -1,10 +1,10 @@
-import { SysCheckDataService } from './sys-check-data.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CustomtextService } from 'iqb-components';
 import { BackendService } from './backend.service';
-import {CustomtextService} from 'iqb-components';
-import {MainDataService} from '../maindata.service';
-import {UnitAndPlayerContainer} from "./sys-check.interfaces";
+import { SysCheckDataService } from './sys-check-data.service';
+import { MainDataService } from '../maindata.service';
+import { UnitAndPlayerContainer } from './sys-check.interfaces';
 
 @Component({
   templateUrl: './sys-check.component.html',
@@ -22,7 +22,7 @@ export class SysCheckComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.route.paramMap.subscribe((params: ParamMap) => {
       const sysCheckId = params.get('sys-check-name');
       const workspaceId = parseInt(params.get('workspace-id'), 10);
@@ -40,21 +40,23 @@ export class SysCheckComponent implements OnInit {
               this.cts.addCustomTexts(myCustomTexts);
             }
             if (checkConfig.hasUnit) {
-              this.bs.getUnitAndPlayer(this.ds.checkConfig.workspaceId, this.ds.checkConfig.name).subscribe((unitAndPlayer: UnitAndPlayerContainer | boolean) => {
-                if (unitAndPlayer !== false && (unitAndPlayer as UnitAndPlayerContainer).player.length > 0) {
-                  this.ds.unitAndPlayerContainer = unitAndPlayer as UnitAndPlayerContainer
-                } else {
-                  console.error('Konnte Unit-Player nicht laden');
-                  this.ds.checkConfig.hasUnit = false;
-                  // this.ds.unitReport.push({id: 'UNIT-PLAYER-ERROR', type: 'unit/player', label: 'loading error', value: 'Error', warning: true});
-                }
-                this.completeConfig();
-              })
+              this.bs.getUnitAndPlayer(this.ds.checkConfig.workspaceId, this.ds.checkConfig.name)
+                .subscribe((unitAndPlayer: UnitAndPlayerContainer | boolean) => {
+                  if (unitAndPlayer !== false && (unitAndPlayer as UnitAndPlayerContainer).player.length > 0) {
+                    this.ds.unitAndPlayerContainer = unitAndPlayer as UnitAndPlayerContainer
+                  } else {
+                    console.error('Konnte Unit-Player nicht laden');
+                    this.ds.checkConfig.hasUnit = false;
+                    // this.ds.unitReport.push({id: 'UNIT-PLAYER-ERROR', type: 'unit/player',
+                    // label: 'loading error', value: 'Error', warning: true});
+                  }
+                  this.completeConfig();
+                });
             } else {
               this.completeConfig();
             }
           } else {
-            this.checkLabel = 'Fehler beim Laden der Konfiguration ' + workspaceId + '/' + sysCheckId;
+            this.checkLabel = `Fehler beim Laden der Konfiguration ${workspaceId}/${sysCheckId}`;
             this.completeConfig();
           }
         });

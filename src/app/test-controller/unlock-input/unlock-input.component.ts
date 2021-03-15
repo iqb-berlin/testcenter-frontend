@@ -1,11 +1,11 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
-import {CustomtextService} from "iqb-components";
-import {CodeInputData} from "../test-controller.interfaces";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {UnitControllerData} from "../test-controller.classes";
-import {MatSnackBar} from "@angular/material/snack-bar";
-import {TestControllerService} from "../test-controller.service";
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CustomtextService } from 'iqb-components';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { CodeInputData } from '../test-controller.interfaces';
+import { UnitControllerData } from '../test-controller.classes';
+import { TestControllerService } from '../test-controller.service';
 
 @Component({
   templateUrl: './unlock-input.component.html',
@@ -27,9 +27,9 @@ export class UnlockInputComponent implements OnInit {
   ) {
     const routerStateObject = this.router.getCurrentNavigation();
     if (routerStateObject.extras.state) {
-      this.returnTo = routerStateObject.extras.state['returnTo'];
-      this.newUnit = routerStateObject.extras.state['newUnit'];
-      this.codes = routerStateObject.extras.state['codes'];
+      this.returnTo = routerStateObject.extras.state.returnTo;
+      this.newUnit = routerStateObject.extras.state.newUnit;
+      this.codes = routerStateObject.extras.state.codes;
     }
   }
 
@@ -41,13 +41,13 @@ export class UnlockInputComponent implements OnInit {
     this.startkeyform = new FormGroup(this.formControls);
   }
 
-  return() {
+  return(): void {
     if (this.returnTo) {
       this.router.navigate([this.returnTo]);
     }
   }
 
-  continue() {
+  continue(): void {
     if (this.newUnit) {
       let codesOk = true;
       const codeInputs = this.startkeyform.value;

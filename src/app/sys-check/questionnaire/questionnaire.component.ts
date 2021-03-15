@@ -1,8 +1,8 @@
 import { FormControl, FormGroup } from '@angular/forms';
-import { SysCheckDataService } from '../sys-check-data.service';
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CustomtextService } from 'iqb-components';
-import {Subscription} from "rxjs";
+import { Subscription } from 'rxjs';
+import { SysCheckDataService } from '../sys-check-data.service';
 
 @Component({
   templateUrl: './questionnaire.component.html',
@@ -17,10 +17,10 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     setTimeout(() => {
       this.ds.setNewCurrentStep('q');
-      const group: any = {};
+      const group = {};
       if (this.ds.checkConfig) {
         this.ds.checkConfig.questions.forEach(question => {
           group[question.id] = new FormControl('');
@@ -32,7 +32,7 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
             formControl.setValue(reportEntry.value);
           }
         });
-        this.valueChangesSubscription = this.form.valueChanges.subscribe(() => {this.updateReport(); });
+        this.valueChangesSubscription = this.form.valueChanges.subscribe(() => { this.updateReport(); });
       }
     });
   }
@@ -51,10 +51,11 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
           const formControl = this.form.controls[element.id];
           if (formControl) {
             this.ds.questionnaireReport.push({
-              'id': element.id,
-              'type': element.type,
-              'label': element.prompt,
-              'value': formControl.value,
+              id: element.id,
+              type: element.type,
+              label: element.prompt,
+              value: formControl.value,
+              // eslint-disable-next-line max-len
               warning: (['string', 'select', 'radio', 'text'].indexOf(element.type) > -1) && (formControl.value === '') && (element.required)
             });
           }

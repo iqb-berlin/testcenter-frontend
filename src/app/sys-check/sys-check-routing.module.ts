@@ -1,5 +1,5 @@
-import { SysCheckComponent } from './sys-check.component';
-import {Injectable, NgModule} from '@angular/core';
+// eslint-disable-next-line max-classes-per-file
+import { Injectable, NgModule } from '@angular/core';
 import {
   Routes,
   RouterModule,
@@ -8,13 +8,14 @@ import {
   ActivatedRouteSnapshot,
   RouterStateSnapshot
 } from '@angular/router';
-import {WelcomeComponent} from "./welcome/welcome.component";
-import {NetworkCheckComponent} from "./network-check/network-check.component";
-import {Observable} from "rxjs";
-import {SysCheckDataService} from "./sys-check-data.service";
-import {QuestionnaireComponent} from "./questionnaire/questionnaire.component";
-import {ReportComponent} from "./report/report.component";
-import {UnitCheckComponent} from "./unit-check/unit-check.component";
+import { Observable } from 'rxjs';
+import { SysCheckComponent } from './sys-check.component';
+import { WelcomeComponent } from './welcome/welcome.component';
+import { NetworkCheckComponent } from './network-check/network-check.component';
+import { SysCheckDataService } from './sys-check-data.service';
+import { QuestionnaireComponent } from './questionnaire/questionnaire.component';
+import { ReportComponent } from './report/report.component';
+import { UnitCheckComponent } from './unit-check/unit-check.component';
 
 @Injectable()
 export class SysCheckChildCanActivateGuard implements CanActivate {
@@ -26,16 +27,15 @@ export class SysCheckChildCanActivateGuard implements CanActivate {
 
   canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+    state: RouterStateSnapshot
+  ): Observable<boolean> | Promise<boolean> | boolean {
     if (this.ds.checkConfig && this.ds.loadConfigComplete) {
-      return true
-    } else {
-      this.router.navigate(['/r/check-starter']);
-      return false
+      return true;
     }
+    this.router.navigate(['/r/check-starter']);
+    return false;
   }
 }
-
 
 const routes: Routes = [
   {
@@ -78,4 +78,3 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class SysCheckRoutingModule { }
-

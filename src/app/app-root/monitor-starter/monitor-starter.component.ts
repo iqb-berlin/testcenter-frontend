@@ -14,7 +14,7 @@ import {
   styleUrls: ['./monitor-starter.component.css']
 })
 export class MonitorStarterComponent implements OnInit, OnDestroy {
-  accessObjects: {[accessType: string]: (AccessObject|BookletData)[]} = {};
+  accessObjects: { [accessType: string]: (AccessObject|BookletData)[] } = {};
   private getMonitorDataSubscription: Subscription = null;
   public AuthAccessKeyType = AuthAccessKeyType;
   public problemText: string;
@@ -22,6 +22,7 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private bs: BackendService,
+    public cts: CustomtextService,
     private mds: MainDataService
   ) { }
 
@@ -41,7 +42,7 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
         }
         this.accessObjects = {};
 
-        const scopeIdList: {[id: string]: {id: string, type: AuthAccessKeyType}} = {};
+        const scopeIdList: { [id: string]: { id: string, type: AuthAccessKeyType } } = {};
         [AuthAccessKeyType.TEST_GROUP_MONITOR, AuthAccessKeyType.TEST]
           .forEach(accessType => {
             this.accessObjects[accessType] = [];

@@ -1,14 +1,14 @@
-import {FormGroup, Validators, FormControl} from '@angular/forms';
+import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, Inject } from '@angular/core';
-import {ReviewDialogData} from '../test-controller.interfaces';
+import { ReviewDialogData } from '../test-controller.interfaces';
 
 @Component({
   templateUrl: './review-dialog.component.html'
 })
 export class ReviewDialogComponent {
   reviewform = new FormGroup({
-    target: new FormControl ('u', Validators.required),
+    target: new FormControl('u', Validators.required),
     priority: new FormControl('', Validators.required),
     tech: new FormControl(''),
     content: new FormControl(''),
@@ -16,10 +16,12 @@ export class ReviewDialogComponent {
     entry: new FormControl('', Validators.required),
     sender: new FormControl(ReviewDialogComponent.oldName)
   });
+
   static oldName = '';
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: ReviewDialogData) { }
+    @Inject(MAT_DIALOG_DATA) public data: ReviewDialogData
+  ) { }
 
   getCategories(): string {
     let myreturn = '';

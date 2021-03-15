@@ -1,9 +1,6 @@
 import { Inject, Injectable, OnDestroy } from '@angular/core';
 import {
-  of,
-  Subject,
-  Subscription,
-  timer
+  of, Subject, Subscription, timer
 } from 'rxjs';
 import {
   concatMap,
@@ -13,15 +10,11 @@ import {
   map,
   mergeMap,
   startWith,
-  switchMap,
-  tap
+  switchMap, tap
 } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import {
-  Command,
-  commandKeywords,
-  isKnownCommand,
-  TestControllerState
+  Command, commandKeywords, isKnownCommand, TestControllerState
 } from './test-controller.interfaces';
 import { TestControllerService } from './test-controller.service';
 import { WebsocketBackendService } from '../shared/websocket-backend.service';
@@ -76,7 +69,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   }
 
   // services are normally meant to live forever, so unsubscription *should* be unnecessary
-  // this un-subscriptions are only for the case, the project's architecture will be changed dramatically once
+  // this unsubscriptions are only for the case, the project's architecture will be changed dramatically once
   // while not having a OnInit-hook services *do have* an OnDestroy-hook (see: https://v9.angular.io/api/core/OnDestroy)
   ngOnDestroy(): void {
     this.commandSubscription.unsubscribe();
@@ -87,10 +80,9 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     this.commandReceived$
       .pipe(
         filter((command: Command) => (this.executedCommandIds.indexOf(command.id) < 0)),
-        // min delay between commands
+        // min delay between items
         concatMap((command: Command) => timer(1000).pipe(ignoreElements(), startWith(command))),
         mergeMap((command: Command) => {
-          // eslint-disable-next-line no-console
           console.log(`try to execute ${CommandService.commandToString(command)}`);
           return this.http.patch(`${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed`, {})
             .pipe(
@@ -111,10 +103,9 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
         distinctUntilChanged(),
         map(CommandService.testStartedOrStopped),
         filter(testStartedOrStopped => testStartedOrStopped !== ''),
-        map(testEvent => ((testEvent === 'started') ? `test/${this.tcs.testId}/commands` : '')),
+        map(testStartedOrStopped => ((testStartedOrStopped === 'started') ? `test/${this.tcs.testId}/commands` : '')),
         filter(newPollingEndpoint => newPollingEndpoint !== this.pollingEndpoint),
         switchMap((pollingEndpoint: string) => {
-          this.executedCommandIds = [];
           this.pollingEndpoint = pollingEndpoint;
           if (this.pollingEndpoint) {
             return this.observeEndpointAndChannel();
@@ -139,16 +130,15 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     if (this.isProductionMode) {
       return;
     }
-    const saveArgs = (typeof args === 'undefined') ? [] : args;
+    const newArgs = (typeof args === 'undefined') ? [] : args;
     const id = Math.round(Math.random() * -10000000);
     const command = {
       keyword,
-      arguments: saveArgs,
+      arguments: newArgs,
       id,
       timestamp: Date.now()
     };
     if (!isKnownCommand(keyword)) {
-      // eslint-disable-next-line no-console
       console.warn(`Unknown command: ${CommandService.commandToString(command)}`);
       return;
     }

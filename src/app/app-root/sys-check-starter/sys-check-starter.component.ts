@@ -1,9 +1,8 @@
-import {Component, OnInit} from '@angular/core';
-import {BackendService} from '../../backend.service';
-import {Router} from '@angular/router';
-import {MainDataService} from '../../maindata.service';
-import {SysCheckInfo} from '../../app.interfaces';
-import {CustomtextService} from 'iqb-components';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { BackendService } from '../../backend.service';
+import { MainDataService } from '../../maindata.service';
+import { SysCheckInfo } from '../../app.interfaces';
 
 @Component({
   templateUrl: './sys-check-starter.component.html',
@@ -19,7 +18,7 @@ export class SysCheckStarterComponent implements OnInit {
     private router: Router
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     setTimeout(() => {
       this.loading = true;
       this.mds.setSpinnerOn();
@@ -35,7 +34,7 @@ export class SysCheckStarterComponent implements OnInit {
     });
   }
 
-  buttonStartCheck(checkInfo: SysCheckInfo) {
+  buttonStartCheck(checkInfo: SysCheckInfo): void {
     this.router.navigate([`/check/${checkInfo.workspaceId}/${checkInfo.name}`]);
   }
 }

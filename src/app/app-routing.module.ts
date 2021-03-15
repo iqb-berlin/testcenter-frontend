@@ -77,26 +77,26 @@ const routes: Routes = [
   },
   {
     path: 'check',
-    loadChildren: () => import('./sys-check/sys-check.module').then((m) => m.SysCheckModule)
+    loadChildren: () => import('./sys-check/sys-check.module').then(module => module.SysCheckModule)
   },
   {
     path: 'admin',
-    loadChildren: () => import('./workspace-admin/workspace.module').then((m) => m.WorkspaceModule),
+    loadChildren: () => import('./workspace-admin/workspace.module').then(module => module.WorkspaceModule),
     canActivate: [AdminComponentActivateGuard]
   },
   {
     path: 'superadmin',
-    loadChildren: () => import('./superadmin/superadmin.module').then((m) => m.SuperadminModule),
+    loadChildren: () => import('./superadmin/superadmin.module').then(module => module.SuperadminModule),
     canActivate: [SuperAdminComponentActivateGuard]
   },
   {
     path: 'gm',
-    loadChildren: () => import('./group-monitor/group-monitor.module').then((m) => m.GroupMonitorModule)
+    loadChildren: () => import('./group-monitor/group-monitor.module').then(module => module.GroupMonitorModule)
     // canActivate: [GroupMonitorActivateGuard]
   },
   {
     path: 't',
-    loadChildren: () => import('./test-controller/test-controller.module').then((m) => m.TestControllerModule),
+    loadChildren: () => import('./test-controller/test-controller.module').then(module => module.TestControllerModule),
     canActivate: [TestComponentActivateGuard]
   },
   {

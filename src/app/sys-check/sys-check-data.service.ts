@@ -19,25 +19,26 @@ export class SysCheckDataService {
   private stepDefs: StepDef[] = [
     {
       route: 'w',
-      label: 'Ermitteln von Systemdaten (Betriebssystem, Browser)',
+      label: 'Ermitteln von Systemdaten (Betriebssystem, Browser)'
     },
     {
       route: 'n',
-      label: 'Schätzung der Qualität der Internetverbindung',
+      label: 'Schätzung der Qualität der Internetverbindung'
     },
     {
       route: 'u',
-      label: 'Prüfen von typischen Eingabe-Elementen',
+      label: 'Prüfen von typischen Eingabe-Elementen'
     },
     {
       route: 'q',
-      label: 'Beantworten einiger Fragen',
+      label: 'Beantworten einiger Fragen'
     },
     {
       route: 'r',
-      label: 'Senden eines Berichtes (Kennwort erforderlich)',
+      label: 'Senden eines Berichtes (Kennwort erforderlich)'
     }
   ];
+
   public checkConfig: CheckConfig = null;
   public loadConfigComplete = false;
   public unitAndPlayerContainer: UnitAndPlayerContainer = null;
@@ -51,7 +52,7 @@ export class SysCheckDataService {
     avgDownloadSpeedBytesPerSecond: -1
   };
 
-  public setSteps() {
+  public setSteps(): void {
     this.steps = [];
     this.stepLabels = [];
     this.stepDefs.forEach(step => {
@@ -68,12 +69,12 @@ export class SysCheckDataService {
     });
   }
 
-  public setNewCurrentStep(newStep: string) {
+  public setNewCurrentStep(newStep: string): void {
     for (let stepIndex = 0; stepIndex < this.steps.length; stepIndex++) {
       if (this.steps[stepIndex] === newStep) {
         this.currentStep = stepIndex;
         this.nextStep = stepIndex < this.steps.length - 1 ? this.steps[this.currentStep + 1] : '';
-        this.prevStep = stepIndex > 0  ? this.steps[this.currentStep - 1] : '';
+        this.prevStep = stepIndex > 0 ? this.steps[this.currentStep - 1] : '';
         break;
       }
     }

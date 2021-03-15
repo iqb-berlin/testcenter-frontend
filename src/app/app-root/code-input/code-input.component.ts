@@ -1,11 +1,13 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {Router} from '@angular/router';
-import {MainDataService} from '../../maindata.service';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {CustomtextService, MessageDialogComponent, MessageDialogData, MessageType} from 'iqb-components';
-import {MatDialog} from '@angular/material/dialog';
-import {AuthData} from '../../app.interfaces';
-import {BackendService} from '../../backend.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  CustomtextService, MessageDialogComponent, MessageDialogData, MessageType
+} from 'iqb-components';
+import { MatDialog } from '@angular/material/dialog';
+import { MainDataService } from '../../maindata.service';
+import { AuthData } from '../../app.interfaces';
+import { BackendService } from '../../backend.service';
 
 @Component({
   templateUrl: './code-input.component.html',
@@ -19,7 +21,7 @@ export class CodeInputComponent implements OnInit {
   problemText = '';
 
   codeinputform = new FormGroup({
-    code: new FormControl('', [Validators.required, Validators.minLength(2)]),
+    code: new FormControl('', [Validators.required, Validators.minLength(2)])
   });
 
   constructor(
@@ -30,29 +32,30 @@ export class CodeInputComponent implements OnInit {
     public mds: MainDataService
   ) { }
 
+  // eslint-disable-next-line class-methods-use-this
   ngOnInit(): void {
     setTimeout(() => {
-      const element = <any>document.querySelector('.mat-input-element[formControlName="code"]');
+      const element = <HTMLElement>document.querySelector('.mat-input-element[formControlName="code"]');
       if (element) {
         element.focus();
       }
     });
   }
 
-  codeinput() {
+  codeinput(): void {
     const codeData = this.codeinputform.value;
-    if (codeData['code'].length === 0) {
+    if (codeData.code.length === 0) {
       this.messageDialog.open(MessageDialogComponent, {
         width: '400px',
         data: <MessageDialogData>{
-          title: this.cts.getCustomText('login_codeInputTitle') + ': Leer',
+          title: `${this.cts.getCustomText('login_codeInputTitle')}: Leer`,
           content: this.cts.getCustomText('login_codeInputPrompt'),
           type: MessageType.error
         }
       });
     } else {
       this.mds.setSpinnerOn();
-      this.bs.codeLogin(codeData['code']).subscribe(
+      this.bs.codeLogin(codeData.code).subscribe(
         authData => {
           this.mds.setSpinnerOff();
           this.problemText = '';
@@ -69,11 +72,12 @@ export class CodeInputComponent implements OnInit {
             this.mds.setAuthData(authDataTyped);
             this.router.navigate(['/r']);
           }
-        });
+        }
+      );
     }
   }
 
-  resetLogin() {
+  resetLogin(): void {
     this.mds.setAuthData();
     this.router.navigate(['/']);
   }

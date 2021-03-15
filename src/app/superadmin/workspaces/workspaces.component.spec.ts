@@ -2,9 +2,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { BackendService } from '../backend.service';
 import { WorkspacesComponent } from './workspaces.component';
 import { MainDataService } from '../../maindata.service';
@@ -19,10 +16,7 @@ describe('WorkspacesComponent', () => {
       imports: [
         HttpClientModule,
         MatDialogModule,
-        MatSnackBarModule,
-        MatIconModule,
-        MatTableModule,
-        MatCheckboxModule
+        MatSnackBarModule
       ],
       providers: [
         BackendService,

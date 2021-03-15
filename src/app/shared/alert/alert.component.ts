@@ -11,11 +11,11 @@ export class AlertComponent {
   @Input() level: 'error' | 'warning' | 'info' | 'success';
 
   public icons = {
-    'error': 'error',
-    'warning': 'warning',
-    'info': 'info',
-    'success': 'check_circle'
-  }
+    error: 'error',
+    warning: 'warning',
+    info: 'info',
+    success: 'check_circle'
+  };
 
   transform = (text: string): string => text.replace(
     /\u0060([^\u0060]+)\u0060/g,
