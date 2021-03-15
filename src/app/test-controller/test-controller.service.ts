@@ -1,7 +1,10 @@
-import {debounceTime, map, takeUntil} from 'rxjs/operators';
-import {BehaviorSubject, interval, Subject, Subscription, timer} from 'rxjs';
-import {Injectable} from '@angular/core';
-import {MaxTimerData, Testlet} from './test-controller.classes';
+import { debounceTime, map, takeUntil } from 'rxjs/operators';
+import {
+  BehaviorSubject, interval, Subject, Subscription, timer
+} from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { MaxTimerData, Testlet } from './test-controller.classes';
 import {
   KeyValuePairNumber,
   MaxTimerDataType, StateReportEntry,
@@ -10,10 +13,9 @@ import {
   UnitNavigationTarget,
   UnitStateData, UnitStateKey, WindowFocusState
 } from './test-controller.interfaces';
-import {BackendService} from './backend.service';
-import {Router} from '@angular/router';
-import {TestMode} from '../config/test-mode';
-import {BookletConfig} from '../config/booklet-config';
+import { BackendService } from './backend.service';
+import { TestMode } from '../config/test-mode';
+import { BookletConfig } from '../config/booklet-config';
 
 @Injectable({
   providedIn: 'root'
@@ -88,19 +90,19 @@ export class TestControllerService {
     private router: Router,
     private bs: BackendService
   ) {
-    this.unitStateDataToSave$.pipe(
-      debounceTime(200)).subscribe(unitStateData => {
+    this.unitStateDataToSave$
+      .pipe(debounceTime(200))
+      .subscribe(unitStateData => {
         this.bs.updateUnitStateData(this.testId, Date.now(), unitStateData.unitDbKey,
-              JSON.stringify(unitStateData.dataPartsAllString), unitStateData.unitStateDataType).subscribe(ok => {
+          JSON.stringify(unitStateData.dataPartsAllString), unitStateData.unitStateDataType).subscribe(ok => {
           if (!ok) {
             console.warn('newUnitRestorePoint failed');
           }
         });
-      }
-    );
+      });
   }
 
-  public resetDataStore() {
+  public resetDataStore(): void {
     this.players = {};
     this.unitDefinitions = {};
     this.unitStateDataParts = {};
@@ -124,7 +126,6 @@ export class TestControllerService {
     // this.bookletLoadComplete = false;
   }
 
-
   // uppercase and add extension if not part
   public normaliseId(s: string, standardext = ''): string {
     s = s.trim().toUpperCase();
@@ -141,11 +142,11 @@ export class TestControllerService {
     return s;
   }
 
-  public addPlayer (id: string, player: string) {
+  public addPlayer(id: string, player: string): void {
     this.players[this.normaliseId(id, 'html')] = player;
   }
 
-  public hasPlayer (id: string): boolean {
+  public hasPlayer(id: string): boolean {
     return this.players.hasOwnProperty(this.normaliseId(id, 'html'));
   }
 
@@ -153,11 +154,11 @@ export class TestControllerService {
     return this.players[this.normaliseId(id, 'html')];
   }
 
-  public addUnitDefinition (sequenceId: number, uDef: string) {
+  public addUnitDefinition(sequenceId: number, uDef: string): void {
     this.unitDefinitions[sequenceId] = uDef;
   }
 
-  public hasUnitDefinition (sequenceId: number): boolean {
+  public hasUnitDefinition(sequenceId: number): boolean {
     return this.unitDefinitions.hasOwnProperty(sequenceId);
   }
 
@@ -166,18 +167,19 @@ export class TestControllerService {
   }
 
   // adding RestorePoint via newUnitRestorePoint below
-  public hasUnitStateData (sequenceId: number): boolean {
+  public hasUnitStateData(sequenceId: number): boolean {
     return this.unitStateDataParts.hasOwnProperty(sequenceId);
   }
+
   public getUnitStateData(sequenceId: number): string {
     return this.unitStateDataParts[sequenceId];
   }
 
-  public setOldUnitPresentationComplete (sequenceId: number, state: string) {
+  public setOldUnitPresentationComplete(sequenceId: number, state: string) {
     this.unitPresentationCompleteStates[sequenceId] = state;
   }
 
-  public hasUnitPresentationComplete (sequenceId: number): boolean {
+  public hasUnitPresentationComplete(sequenceId: number): boolean {
     return this.unitPresentationCompleteStates.hasOwnProperty(sequenceId);
   }
 
@@ -189,25 +191,30 @@ export class TestControllerService {
     this.unitStateDataParts[unitSequenceId] = dataPartsAllString;
   }
 
-  public newUnitStateData(unitDbKey: string, unitSequenceId: number, dataPartsAllString: string, unitStateDataType: string) {
+  public newUnitStateData(unitDbKey: string, unitSequenceId: number, dataPartsAllString: string, unitStateDataType: string): void {
     this.unitStateDataParts[unitSequenceId] = dataPartsAllString;
     if (this.testMode.saveResponses) {
-      this.unitStateDataToSave$.next({unitDbKey, dataPartsAllString: dataPartsAllString, unitStateDataType});
+      this.unitStateDataToSave$.next({ unitDbKey, dataPartsAllString, unitStateDataType });
     }
   }
 
-  public addClearedCodeTestlet(testletId: string) {
+  public addClearedCodeTestlet(testletId: string): void {
     if (this.clearCodeTestlets.indexOf(testletId) < 0) {
       this.clearCodeTestlets.push(testletId);
       if (this.testMode.saveResponses) {
-        this.bs.updateTestState(this.testId, [<StateReportEntry>{
-          key: TestStateKey.TESTLETS_CLEARED_CODE, timeStamp: Date.now(), content: JSON.stringify(this.clearCodeTestlets)
-        }])
+        this.bs.updateTestState(
+          this.testId,
+          [<StateReportEntry>{
+            key: TestStateKey.TESTLETS_CLEARED_CODE,
+            timeStamp: Date.now(),
+            content: JSON.stringify(this.clearCodeTestlets)
+          }]
+        );
       }
     }
   }
 
-  public updateUnitStatePresentationProgress(unitDbKey: string, unitSequenceId: number, presentationProgress: string) {
+  public updateUnitStatePresentationProgress(unitDbKey: string, unitSequenceId: number, presentationProgress: string): void {
     let stateChanged = false;
     if (!this.unitPresentationCompleteStates[unitSequenceId] || this.unitPresentationCompleteStates[unitSequenceId] === 'none') {
       this.unitPresentationCompleteStates[unitSequenceId] = presentationProgress;
@@ -223,7 +230,7 @@ export class TestControllerService {
     }
   }
 
-  public newUnitStateResponseProgress(unitDbKey: string, unitSequenceId: number, responseProgress: string) {
+  public newUnitStateResponseProgress(unitDbKey: string, unitSequenceId: number, responseProgress: string): void {
     if (this.testMode.saveResponses) {
       if (!this.unitResponseCompleteStates[unitSequenceId] || this.unitResponseCompleteStates[unitSequenceId] !== responseProgress) {
         this.unitResponseCompleteStates[unitSequenceId] = responseProgress;
@@ -234,17 +241,17 @@ export class TestControllerService {
     }
   }
 
-  public newUnitStatePage(unitDbKey: string, pageNr: number, pageId: string, pageCount: number) {
+  public newUnitStatePage(unitDbKey: string, pageNr: number, pageId: string, pageCount: number): void {
     if (this.testMode.saveResponses) {
       this.bs.updateUnitState(this.testId, unitDbKey, [
-          <StateReportEntry>{key: UnitStateKey.CURRENT_PAGE_NR, timeStamp: Date.now(), content: pageNr.toString()},
-          <StateReportEntry>{key: UnitStateKey.CURRENT_PAGE_ID, timeStamp: Date.now(), content: pageId},
-          <StateReportEntry>{key: UnitStateKey.PAGE_COUNT, timeStamp: Date.now(), content: pageCount.toString()}
+          <StateReportEntry>{ key: UnitStateKey.CURRENT_PAGE_NR, timeStamp: Date.now(), content: pageNr.toString() },
+          <StateReportEntry>{ key: UnitStateKey.CURRENT_PAGE_ID, timeStamp: Date.now(), content: pageId },
+          <StateReportEntry>{ key: UnitStateKey.PAGE_COUNT, timeStamp: Date.now(), content: pageCount.toString() }
       ]);
     }
   }
 
-  public startMaxTimer(testletId: string, timeLeftMinutes: number) {
+  public startMaxTimer(testletId: string, timeLeftMinutes: number): void {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
     }
@@ -268,7 +275,7 @@ export class TestControllerService {
       );
   }
 
-  public cancelMaxTimer() {
+  public cancelMaxTimer(): void {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
       this.maxTimeIntervalSubscription = null;
@@ -277,7 +284,7 @@ export class TestControllerService {
     this.currentMaxTimerTestletId = '';
   }
 
-  public interruptMaxTimer() {
+  public interruptMaxTimer(): void {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
       this.maxTimeIntervalSubscription = null;
@@ -286,41 +293,41 @@ export class TestControllerService {
     this.currentMaxTimerTestletId = '';
   }
 
-  public updateMinMaxUnitSequenceId(startWith: number) {
+  public updateMinMaxUnitSequenceId(startWith: number): void {
     if (this.rootTestlet) {
       this.minUnitSequenceId = this.rootTestlet.getFirstUnlockedUnitSequenceId(startWith);
       this.maxUnitSequenceId = this.rootTestlet.getLastUnlockedUnitSequenceId(startWith);
     }
   }
 
-  public terminateTest(logEntryKey: string) {
+  public terminateTest(logEntryKey: string): void {
     if (this.testMode.saveResponses) {
       if (this.testStatus$.getValue() !== TestControllerState.TERMINATED) {
         this.testStatus$.next(TestControllerState.TERMINATED); // sometimes terminateTest get called two times from player
         this.bs.lockTest(this.testId, Date.now(), logEntryKey).subscribe(bsOk => {
           this.testStatus$.next(bsOk ? TestControllerState.FINISHED : TestControllerState.ERROR);
-          this.router.navigate(['/'], {state: {force: true}});
+          this.router.navigate(['/'], { state: { force: true } });
         });
       }
     } else {
       this.testStatus$.next(TestControllerState.FINISHED);
-      this.router.navigate(['/'], {state: {force: true}});
+      this.router.navigate(['/'], { state: { force: true } });
     }
   }
 
-  public setUnitNavigationRequest(navString: string, force = false) {
+  public setUnitNavigationRequest(navString: string, force = false): void {
     if (!this.rootTestlet) {
-      this.router.navigate([`/t/${this.testId}/status`], {skipLocationChange: true});
+      this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true });
     } else {
       switch (navString) {
         case UnitNavigationTarget.ERROR:
         case UnitNavigationTarget.PAUSE:
-          this.router.navigate([`/t/${this.testId}/status`], {skipLocationChange: true, state: {force: force}});
+          this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
           break;
         case UnitNavigationTarget.MENU:
-          this.router.navigate([`/t/${this.testId}/menu`], {state: {force: force}}).then(navOk => {
+          this.router.navigate([`/t/${this.testId}/menu`], { state: { force } }).then(navOk => {
             if (!navOk) {
-              this.router.navigate([`/t/${this.testId}/status`], {skipLocationChange: true, state: {force: force}});
+              this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
             }
           });
           break;
@@ -331,47 +338,35 @@ export class TestControllerService {
           }
           const nextUnitSequenceId = this.rootTestlet.getNextUnlockedUnitSequenceId(startWith);
           if (nextUnitSequenceId > 0) {
-            this.router.navigate([`/t/${this.testId}/u/${nextUnitSequenceId}`],
-              {state: {force: force}});
+            this.router.navigate([`/t/${this.testId}/u/${nextUnitSequenceId}`], { state: { force } });
           }
           break;
         case UnitNavigationTarget.PREVIOUS:
           this.router.navigate([`/t/${this.testId}/u/${this.currentUnitSequenceId - 1}`],
-            {state: {force: force}});
+            { state: { force } });
           break;
         case UnitNavigationTarget.FIRST:
           this.router.navigate([`/t/${this.testId}/u/${this.minUnitSequenceId}`],
-            {state: {force: force}});
+            { state: { force } });
           break;
         case UnitNavigationTarget.LAST:
           this.router.navigate([`/t/${this.testId}/u/${this.maxUnitSequenceId}`],
-            {state: {force: force}});
+            { state: { force } });
           break;
         case UnitNavigationTarget.END:
           this.terminateTest(force ? 'BOOKLETLOCKEDforced' : 'BOOKLETLOCKEDbyTESTEE');
           break;
 
         default:
-          this.router.navigate([`/t/${this.testId}/u/${navString}`],
-            {state: {force: force}}).then(navOk => {
+          this.router.navigate(
+            [`/t/${this.testId}/u/${navString}`],
+            { state: { force } }
+          )
+            .then(navOk => {
               if (!navOk) {
-                console.log('navigation failed ("' + navString + '"');
-                /*
-                const navTarget = Number(navString);
-                if (!isNaN(navTarget)) {
-                  let unitSequenceId = this.currentUnitSequenceId;
-                  if (unitSequenceId < this.minUnitSequenceId) {
-                    unitSequenceId = this.minUnitSequenceId - 1;
-                  }
-                  const unitSequenceIdNext = this.rootTestlet.getNextUnlockedUnitSequenceId(unitSequenceId);
-                  if (unitSequenceIdNext > 0 && unitSequenceIdNext !== navTarget) {
-                    this.router.navigate([`/t/${this.testId}/u/${unitSequenceIdNext}`],
-                      {state: {force: force}});
-                  }
-                }
-                 */
+                console.log(`navigation failed ("${navString}"`);
               }
-          });
+            });
           break;
       }
     }

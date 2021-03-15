@@ -1,5 +1,4 @@
 import { ActivatedRoute, Router } from '@angular/router';
-
 import {
   Component, HostListener, Inject, OnDestroy, OnInit
 } from '@angular/core';
@@ -67,7 +66,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   constructor(
     @Inject('APP_VERSION') public appVersion: string,
-    @Inject('IS_PRODUCTION_MODE') public isProductionMode,
+    @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
     private mds: MainDataService,
     public tcs: TestControllerService,
     private bs: BackendService,
@@ -311,7 +310,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     setTimeout(() => {
       this.mds.progressVisualEnabled = false;
       // TODO rethink if different behaviour in production and normal mode is dangerous maybe

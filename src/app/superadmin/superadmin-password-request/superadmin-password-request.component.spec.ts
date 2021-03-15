@@ -1,11 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { SuperadminPasswordRequestComponent } from './superadmin-password-request.component';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogModule} from '@angular/material/dialog';
-import {ReactiveFormsModule} from '@angular/forms';
-import {MatInputModule} from '@angular/material/input';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('SuperadminPasswordRequestComponent', () => {
   let component: SuperadminPasswordRequestComponent;
@@ -13,7 +12,7 @@ describe('SuperadminPasswordRequestComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SuperadminPasswordRequestComponent ],
+      declarations: [SuperadminPasswordRequestComponent],
       imports: [
         MatDialogModule,
         ReactiveFormsModule,
@@ -26,7 +25,7 @@ describe('SuperadminPasswordRequestComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: 'fonk' }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

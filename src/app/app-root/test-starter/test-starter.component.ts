@@ -1,11 +1,11 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AuthAccessKeyType, AuthData, BookletData} from '../../app.interfaces';
-import {from, Subscription} from 'rxjs';
-import {concatMap} from 'rxjs/operators';
-import {Router} from '@angular/router';
-import {BackendService} from '../../backend.service';
-import {MainDataService} from '../../maindata.service';
-import {CustomtextService} from 'iqb-components';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { from, Subscription } from 'rxjs';
+import { concatMap } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { CustomtextService } from 'iqb-components';
+import { BackendService } from '../../backend.service';
+import { MainDataService } from '../../maindata.service';
+import { AuthAccessKeyType, AuthData, BookletData } from '../../app.interfaces';
 
 @Component({
   templateUrl: './test-starter.component.html',
@@ -38,14 +38,14 @@ export class TestStarterComponent implements OnInit, OnDestroy {
                 if (this.getBookletDataSubscription !== null) {
                   this.getBookletDataSubscription.unsubscribe();
                 }
-                this.getBookletDataSubscription = from(authData.access[AuthAccessKeyType.TEST]).pipe(
-                  concatMap(bookletId => {
-                    return this.bs.getBookletData(bookletId);
-                  })).subscribe(
+                this.getBookletDataSubscription = from(authData.access[AuthAccessKeyType.TEST])
+                  .pipe(
+                    concatMap(bookletId => this.bs.getBookletData(bookletId))
+                  ).subscribe(
                     bData => {
                       this.booklets.push(bData);
                       if (!(bData as BookletData).locked) {
-                        this.openTestletsCount += 1
+                        this.openTestletsCount += 1;
                       }
                     },
                     e => {
@@ -53,7 +53,7 @@ export class TestStarterComponent implements OnInit, OnDestroy {
                       this.mds.setSpinnerOff();
                     },
                     () => {
-                      this.problemText = this.booklets.length > 0 ? '' : 'Für diese Anmeldung wurde kein Test gefunden.';
+                      this.problemText = this.booklets.length ? '' : 'Für diese Anmeldung wurde kein Test gefunden.';
                       this.mds.setSpinnerOff();
                     }
                   );
@@ -74,7 +74,7 @@ export class TestStarterComponent implements OnInit, OnDestroy {
     });
   }
 
-  startTest(b: BookletData) {
+  startTest(b: BookletData): void {
     this.bs.startTest(b.id).subscribe(testId => {
       if (typeof testId === 'number') {
         const errCode = testId as number;
@@ -89,12 +89,12 @@ export class TestStarterComponent implements OnInit, OnDestroy {
     });
   }
 
-  resetLogin() {
+  resetLogin(): void {
     this.mds.setAuthData();
     this.router.navigate(['/']);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.getBookletDataSubscription !== null) {
       this.getBookletDataSubscription.unsubscribe();
     }

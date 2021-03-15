@@ -1,9 +1,13 @@
-import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, CanActivate, CanDeactivate, RouterStateSnapshot} from '@angular/router';
-import {Observable} from 'rxjs';
-import {TestControllerComponent} from './test-controller.component';
-import {TestControllerState, UnitNavigationTarget} from './test-controller.interfaces';
-import {TestControllerService} from './test-controller.service';
+/* eslint-disable max-classes-per-file */
+
+import { Injectable } from '@angular/core';
+import {
+  ActivatedRouteSnapshot, CanActivate, CanDeactivate, RouterStateSnapshot
+} from '@angular/router';
+import { Observable } from 'rxjs';
+import { TestControllerComponent } from './test-controller.component';
+import { TestControllerState, UnitNavigationTarget } from './test-controller.interfaces';
+import { TestControllerService } from './test-controller.service';
 
 @Injectable()
 export class TestControllerDeactivateGuard implements CanDeactivate<TestControllerComponent> {
@@ -15,8 +19,8 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
   canDeactivate(
     component: TestControllerComponent,
     currentRoute: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-
+    state: RouterStateSnapshot
+  ): Observable<boolean> | Promise<boolean> | boolean {
     if (this.tcs.testMode.saveResponses) {
       const testStatus: TestControllerState = this.tcs.testStatus$.getValue();
       if ((testStatus !== TestControllerState.ERROR) && (testStatus !== TestControllerState.FINISHED)) {
@@ -47,8 +51,8 @@ export class TestControllerErrorPausedActivateGuard implements CanActivate {
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
     const testStatus: TestControllerState = this.tcs.testStatus$.getValue();
     return (testStatus !== TestControllerState.ERROR)
-        && (testStatus !== TestControllerState.FINISHED)
-        && (testStatus !== TestControllerState.PAUSED);
+      && (testStatus !== TestControllerState.FINISHED)
+      && (testStatus !== TestControllerState.PAUSED);
   }
 }
 

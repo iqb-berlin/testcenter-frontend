@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
-import {TestControllerService} from "../test-controller.service";
-import {UnitMenuButtonData} from "../test-controller.interfaces";
-import {CustomtextService} from "iqb-components";
-import {MainDataService} from "../../maindata.service";
+import { Component, OnInit } from '@angular/core';
+import { CustomtextService } from 'iqb-components';
+import { TestControllerService } from '../test-controller.service';
+import { UnitMenuButtonData } from '../test-controller.interfaces';
+import { MainDataService } from '../../maindata.service';
 
 @Component({
   templateUrl: './unit-menu.component.html',
@@ -45,8 +45,8 @@ export class UnitMenuComponent implements OnInit {
               label: this.tcs.unitListForNaviButtons[unitIndex].longLabel,
               isCurrent: this.tcs.unitListForNaviButtons[unitIndex].isCurrent,
               isDisabled: this.tcs.unitListForNaviButtons[unitIndex].disabled,
-              testletLabel: testletLabel,
-              testletMarker: testletMarker
+              testletLabel,
+              testletMarker
             });
           }
         }
@@ -54,7 +54,7 @@ export class UnitMenuComponent implements OnInit {
     });
   }
 
-  terminateTest() {
+  terminateTest(): void {
     this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE');
   }
 }

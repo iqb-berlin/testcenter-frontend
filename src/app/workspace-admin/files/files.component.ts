@@ -88,7 +88,6 @@ export class FilesComponent implements OnInit {
 
   public checkAll(isChecked: boolean, type: IQBFileType): void {
     this.files[type].data = this.files[type].data.map(file => {
-      // eslint-disable-next-line no-param-reassign
       file.isChecked = isChecked;
       return file;
     });
@@ -197,7 +196,6 @@ export class FilesComponent implements OnInit {
 
   private addFrontendChecksToFiles(fileList: GetFileResponseData): GetFileResponseData {
     Object.keys(fileList).forEach(type => {
-      // eslint-disable-next-line no-param-reassign
       fileList[type] = fileList[type].map(files => this.addFrontendChecksToFile(files));
     });
     return fileList;
@@ -209,7 +207,6 @@ export class FilesComponent implements OnInit {
       const systemMayor = this.veronaApiVersionSupported.split('.').shift();
       if (fileMayor !== systemMayor) {
         if (typeof file.report.error === 'undefined') {
-          // eslint-disable-next-line no-param-reassign
           file.report.error = [];
         }
         file.report.error.push(`Verona Version of this Player is not compatible 
