@@ -311,12 +311,11 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       if (!selected.spreading) {
         toCheck = [selected.session];
       } else {
-        const hasTestID = session => session.data.testId && session.data.testId > -1;
-        const isOfSameSpecies = (session: TestSession) => isBooklet(session.booklet) &&
-                                                       isBooklet(selected.session.booklet) &&
-                                                       (session.booklet.species === selected.session.booklet.species);
         toCheck = this.sessions$.getValue()
-          .filter(session => hasTestID(session) && isOfSameSpecies(session))
+          .filter(session => (session.data.testId && session.data.testId > -1) &&
+                             isBooklet(session.booklet) &&
+                             isBooklet(selected.session.booklet) &&
+                             (session.booklet.species === selected.session.booklet.species))
           .filter(session => (selected.inversion ? !this.isChecked(session) : true));
       }
     }

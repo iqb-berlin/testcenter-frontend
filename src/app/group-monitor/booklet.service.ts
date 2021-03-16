@@ -4,7 +4,7 @@ import { map, shareReplay } from 'rxjs/operators';
 import { MainDataService } from '../maindata.service';
 import { BackendService } from './backend.service';
 import {
-  Booklet, BookletError, BookletMetadata, isBlock, isUnit, Restrictions, Testlet, Unit, UnitContext
+  Booklet, BookletError, BookletMetadata, isUnit, Restrictions, Testlet, Unit, UnitContext
 } from './group-monitor.interfaces';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../config/booklet-config';
@@ -46,7 +46,7 @@ export class BookletService {
     booklet.species = BookletService.getBookletSpecies(booklet);
     booklet.units.children
       .forEach((testletOrUnit, index) => {
-        if (isBlock(testletOrUnit)) {
+        if (!isUnit(testletOrUnit)) {
           testletOrUnit.blockId = `block-${index}`;
         }
       });

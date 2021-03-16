@@ -66,10 +66,7 @@ export interface Testlet {
   restrictions?: Restrictions;
   children: (Unit|Testlet)[];
   descendantCount: number;
-}
-
-export interface Block extends Testlet {
-  blockId: string;
+  blockId?: string;
 }
 
 export interface Unit {
@@ -116,10 +113,6 @@ export function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
 
 export function isTestlet(testletOrUnit: Testlet|Unit): testletOrUnit is Testlet {
   return ('children' in testletOrUnit);
-}
-
-export function isBlock(testletOrUnit: Testlet|Unit): testletOrUnit is Block {
-  return ('children' in testletOrUnit) && ('blockId' in testletOrUnit);
 }
 
 export interface UnitContext {
