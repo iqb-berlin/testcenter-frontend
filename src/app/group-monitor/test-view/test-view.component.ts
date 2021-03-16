@@ -4,7 +4,7 @@ import {
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import {
   Testlet, Unit, TestViewDisplayOptions,
-  isUnit, Selected, TestSession, TestSessionSuperState
+  isUnit, Selection, TestSession, TestSessionSuperState, isBooklet, isBlock
 } from '../group-monitor.interfaces';
 import { TestSessionService } from '../test-session.service';
 import { superStates } from './super-states';
@@ -26,13 +26,13 @@ export class TestViewComponent {
   @Input() displayOptions: TestViewDisplayOptions;
   @Input() markedElement: Testlet|Unit|null = null;
   @Input() checked: boolean;
-  @Input() selected: Selected = {
+  @Input() selected: Selection = {
     element: undefined,
     spreading: false
   };
 
   @Output() markedElement$ = new EventEmitter<Testlet>();
-  @Output() selectedElement$ = new EventEmitter<Selected>();
+  @Output() selectedElement$ = new EventEmitter<Selection>();
   @Output() checked$ = new EventEmitter<boolean>();
 
   superStateIcons: {[key in TestSessionSuperState]: IconData} = superStates;
@@ -57,7 +57,7 @@ export class TestViewComponent {
     }
   }
 
-  select($event: Event, testletOrUnit: Testlet|Unit|null): void {
+  select($event: Event, testletOrUnit: Testlet|null): void {
     $event.stopPropagation();
     this.applySelection(testletOrUnit);
   }
@@ -81,7 +81,7 @@ export class TestViewComponent {
     return false;
   }
 
-  private applySelection(testletOrUnit: Testlet|Unit|null = null, inversion = false) {
+  private applySelection(testletOrUnit: Testlet|null = null, inversion = false) {
     this.selected = {
       element: testletOrUnit,
       session: this.testSession,

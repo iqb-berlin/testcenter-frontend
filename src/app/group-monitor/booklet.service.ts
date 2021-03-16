@@ -4,7 +4,7 @@ import { map, shareReplay } from 'rxjs/operators';
 import { MainDataService } from '../maindata.service';
 import { BackendService } from './backend.service';
 import {
-  Booklet, BookletError, BookletMetadata, isUnit, Restrictions, Testlet, Unit, UnitContext
+  Booklet, BookletError, BookletMetadata, isBlock, isUnit, Restrictions, Testlet, Unit, UnitContext
 } from './group-monitor.interfaces';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../config/booklet-config';
@@ -42,6 +42,20 @@ export class BookletService {
     return null;
   }
 
+  static addBookletStructureInformation(booklet: Booklet): void {
+    booklet.species = BookletService.getBookletSpecies(booklet);
+    booklet.units.children
+      .forEach((testletOrUnit, index) => {
+        if (isBlock(testletOrUnit)) {
+          testletOrUnit.blockId = `block-${index}`;
+        }
+      });
+  }
+
+  static getBookletSpecies(booklet: Booklet): string {
+    return `species: ${booklet.units.children.filter(testletOrUnit => !isUnit(testletOrUnit)).length}`;
+  }
+
   public getBooklet(bookletName = ''): Observable<Booklet|BookletError> {
     if (typeof this.booklets[bookletName] !== 'undefined') {
       return this.booklets[bookletName];
@@ -69,11 +83,14 @@ export class BookletService {
         return { error: 'xml' };
       }
 
-      return {
+      const parsedBooklet: Booklet = {
         units: BookletService.parseTestlet(BookletService.xmlGetChildIfExists(bookletElement, 'Units')),
         metadata: BookletService.parseMetadata(bookletElement),
-        config: BookletService.parseBookletConfig(bookletElement)
+        config: BookletService.parseBookletConfig(bookletElement),
+        species: ''
       };
+      BookletService.addBookletStructureInformation(parsedBooklet);
+      return parsedBooklet;
     } catch (error) {
       // console.warn('Error reading booklet XML:', error);
       return { error: 'xml' };

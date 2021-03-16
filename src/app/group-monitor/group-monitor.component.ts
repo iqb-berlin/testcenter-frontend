@@ -16,7 +16,7 @@ import { BackendService } from './backend.service';
 import {
   GroupData,
   TestViewDisplayOptions,
-  TestViewDisplayOptionKey, Testlet, Unit, Selected, TestSessionFilter, TestSession, TestSessionsSuperStates, isBooklet
+  TestViewDisplayOptionKey, Testlet, Unit, Selection, TestSessionFilter, TestSession, TestSessionsSuperStates, isBooklet
 } from './group-monitor.interfaces';
 import { ConnectionStatus } from '../shared/websocket-backend.service';
 import { TestSessionService } from './test-session.service';
@@ -50,8 +50,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     groupColumn: 'hide',
     bookletColumn: 'show',
     blockColumn: 'show',
-    unitColumn: 'hide',
-    selectionSpreading: 'booklet'
+    unitColumn: 'hide'
   };
 
   filterOptions: { label: string, filter: TestSessionFilter, selected: boolean }[] = [
@@ -75,7 +74,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     }
   ];
 
-  selectedElement: Selected = {
+  selectedElement: Selection = {
     session: null,
     element: undefined,
     spreading: false
@@ -305,18 +304,19 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     };
   }
 
-  selectElement(selected: Selected): void {
+  selectElement(selected: Selection): void {
     this.selectedElement = selected;
     let toCheck: TestSession[] = [];
     if (selected.element) {
       if (!selected.spreading) {
         toCheck = [selected.session];
       } else {
-        // TODO the 2nd filter should depend on this.displayOptions.selectionSpreading is 'all' or 'booklet' ...
-        // ... can be implemented if it's clear how to broadcast commands to different targets
+        const hasTestID = session => session.data.testId && session.data.testId > -1;
+        const isOfSameSpecies = (session: TestSession) => isBooklet(session.booklet) &&
+                                                       isBooklet(selected.session.booklet) &&
+                                                       (session.booklet.species === selected.session.booklet.species);
         toCheck = this.sessions$.getValue()
-          .filter(session => session.data.testId && session.data.testId > -1)
-          .filter(session => session.data.bookletName === selected.session.data.bookletName)
+          .filter(session => hasTestID(session) && isOfSameSpecies(session))
           .filter(session => (selected.inversion ? !this.isChecked(session) : true));
       }
     }

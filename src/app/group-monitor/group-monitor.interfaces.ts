@@ -39,6 +39,7 @@ export interface Booklet {
   config: BookletConfig;
   restrictions?: Restrictions;
   units: Testlet;
+  species: string;
 }
 
 export interface BookletError {
@@ -65,6 +66,10 @@ export interface Testlet {
   restrictions?: Restrictions;
   children: (Unit|Testlet)[];
   descendantCount: number;
+}
+
+export interface Block extends Testlet {
+  blockId: string;
 }
 
 export interface Unit {
@@ -103,7 +108,6 @@ export interface TestViewDisplayOptions {
   view: 'full' | 'medium' | 'small';
   groupColumn: 'show' | 'hide';
   bookletColumn: 'show' | 'hide';
-  selectionSpreading: 'booklet' | 'all';
 }
 
 export function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
@@ -112,6 +116,10 @@ export function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
 
 export function isTestlet(testletOrUnit: Testlet|Unit): testletOrUnit is Testlet {
   return ('children' in testletOrUnit);
+}
+
+export function isBlock(testletOrUnit: Testlet|Unit): testletOrUnit is Block {
+  return ('children' in testletOrUnit) && ('blockId' in testletOrUnit);
 }
 
 export interface UnitContext {
@@ -128,8 +136,8 @@ export interface UnitContext {
   parentIndexGlobal: number;
 }
 
-export interface Selected {
-  element: Unit|Testlet|null;
+export interface Selection {
+  element: Testlet|null;
   session?: TestSession;
   spreading: boolean;
   inversion?: boolean;
