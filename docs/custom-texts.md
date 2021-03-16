@@ -81,6 +81,31 @@ replacements:
 |`booklet_tasklisttitle`|Titel für die Auflistung der Aufgaben (Schalter)|Aufgaben|
 |`booklet_warningLeaveTimerBlockTextPrompt`|Schalterbeschriftung für 'Zurück zum Test'|Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?|
 |`booklet_warningLeaveTimerBlockTitle`|Titel für Warnung (Dialogbox) vor dem vorzeitigen Verlassen eines Abschnittes mit Timer|Aufgabenabschnitt verlassen?|
+|`gm_col_activity`|Spalte: Aktivität|Aktivität|
+|`gm_col_booklet`|Spalte: Testheft|Testheft|
+|`gm_col_group`|Spalte: Gruppe|Gruppe|
+|`gm_col_person`|Spalte: Teilnehmer|Teilnehmer|
+|`gm_col_testlet`|Spalte: Block|Block|
+|`gm_col_unit`|Spalte: Aufgabe|Aufgabe|
+|`gm_control_all_next`|Control: Alle in den nächsten block|Alle in den nächsten block|
+|`gm_control_finish_everything`|Control: Testung beenden|Testung beenden|
+|`gm_control_goto`|Control: Springe zu Block|Springe zu|
+|`gm_control_pause`|Control: pause|pause|
+|`gm_control_resume`|Control: weiter|weiter|
+|`gm_control_unlock`|Control: Entsperren|Entsperren|
+|`gm_controls`|Überschrift: Test-Steuerung|Test-Steuerung|
+|`gm_headline`|Überschrift: Gruppenmonitor|IQB-Testcenter Gruppenüberwachung|
+|`gm_hide_controls_tooltip`|Tooltip: Test-Steuerung verbergen|Test-Steuerung verbergen|
+|`gm_menu_activity`|Meinueintrag: Aktivität|Aktivität|
+|`gm_menu_cols`|Meinueintrag: Spalten|Spalten|
+|`gm_menu_filter`|Meinueintrag: Sitzungen ausblenden|Sitzungen ausblenden|
+|`gm_scroll_down`|Control: Ganz nach unten|Ganz nach unten|
+|`gm_selection_info`|Information gewählte Tests. Text-Substitutionen: (Alle/''), Anzahl, (''/s), Anzahl, (''/e)|%s %s Test%s mit %s Testheft%s ausgewählt.|
+|`gm_selection_info_none`|Information gewählte Tests: Keiner|Kein Test gewählt.|
+|`gm_settings_tooltip`|Control: Ansicht|Ansicht|
+|`gm_view_full`|Ansicht: Vollständig|Vollständig|
+|`gm_view_medium`|Ansicht: Nur Blöcke|Nur Blöcke|
+|`gm_view_small`|Ansicht: Kurz|Kurz|
 |`login_bookletSelectPromptMany`|Aufforderung, aus der Liste der gefundenen Tests einen auszusuchen (auf Schalter klicken)|Bitte klicke auf eine der Schaltflächen auf der linken Seite, um einen Test zu starten!|
 |`login_bookletSelectPromptNull`|Nachricht für den Fall, dass Booklet(s) beendet wurden und keine weiteren zur Verfügung stehen|Beendet. Es können keine weiteren Testhefte gestartet werden.|
 |`login_bookletSelectPromptOne`|Aufforderung, den einen gefundenen Test anzuklicken (auf Schalter klicken)|Bitte klicke auf die Schaltfläche auf der linken Seite, um den Test zu starten!|
