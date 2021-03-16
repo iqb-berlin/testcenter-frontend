@@ -4,7 +4,7 @@ import {
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import {
   Testlet, Unit, TestViewDisplayOptions,
-  isUnit, Selection, TestSession, TestSessionSuperState, isBooklet, isBlock
+  isUnit, Selection, TestSession, TestSessionSuperState
 } from '../group-monitor.interfaces';
 import { TestSessionService } from '../test-session.service';
 import { superStates } from './super-states';
@@ -47,19 +47,20 @@ export class TestViewComponent {
 
   blockName = (blockNumber: number): string => `Block ${String.fromCodePoint(64 + blockNumber)}`;
 
-  mark(testletOrUnit: Testlet|Unit|null = null): void {
-    if (testletOrUnit == null) {
+  mark(testletOrNull: Testlet|null = null): void {
+    if (testletOrNull == null) {
       this.markedElement = null;
       this.markedElement$.emit(null);
-    } else if (!isUnit(testletOrUnit)) {
-      this.markedElement$.emit(testletOrUnit);
-      this.markedElement = testletOrUnit;
+    } else {
+      this.markedElement$.emit(testletOrNull);
+      this.markedElement = testletOrNull;
     }
   }
 
-  select($event: Event, testletOrUnit: Testlet|null): void {
+  select($event: Event, testlet: Testlet|null): void {
     $event.stopPropagation();
-    this.applySelection(testletOrUnit);
+    console.log("select called");
+    this.applySelection(testlet);
   }
 
   deselect($event: MouseEvent|null): void {
@@ -81,11 +82,12 @@ export class TestViewComponent {
     return false;
   }
 
-  private applySelection(testletOrUnit: Testlet|null = null, inversion = false) {
+  private applySelection(testletOrNull: Testlet|null = null, inversion = false) {
     this.selected = {
-      element: testletOrUnit,
+      element: testletOrNull,
       session: this.testSession,
-      spreading: (this.selected?.element?.id === testletOrUnit?.id) && !inversion ? !this.selected?.spreading : true,
+      spreading: (this.selected?.element?.blockId === testletOrNull?.blockId) &&
+        !inversion ? !this.selected?.spreading : true,
       inversion
     };
     this.selectedElement$.emit(this.selected);

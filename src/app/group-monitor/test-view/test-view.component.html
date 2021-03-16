@@ -101,12 +101,8 @@
         <span *ngSwitchCase="'unit'"
               [class]="{
                 unit: true,
-                current: testSession.data.unitName === testletOrUnit.id,
-                selected: (selected?.element?.id === testletOrUnit.id) && checked,
-                marked: markedElement?.id === testletOrUnit.id
+                current: testSession.data.unitName === testletOrUnit.id
               }"
-              (mouseenter)="mark(testletOrUnit)"
-              (click)="select($event, testletOrUnit)"
               matTooltip="{{testletOrUnit.label}}"
               matTooltipPosition="above"
             >{{testletOrUnit.labelShort || "&nbsp;"}}
@@ -115,8 +111,8 @@
         <span *ngSwitchCase="'testlet'"
               [class]="{
                 testlet: true,
-                selected: (selected?.element?.id === testletOrUnit.id) && checked,
-                marked: markedElement?.id === testletOrUnit.id
+                selected: (selected?.element?.blockId === testletOrUnit.blockId) && checked,
+                marked: markedElement?.blockId === testletOrUnit.blockId
               }"
               (mouseenter)="mark(testletOrUnit)"
               (click)="select($event, testletOrUnit)"
@@ -164,8 +160,8 @@
                             unit: true,
                             aggregated: true,
                             current: true,
-                            selected: (selected?.element?.id === testletOrUnit.id) && checked,
-                            marked: markedElement?.id === testletOrUnit.id
+                            selected: (selected?.element?.blockId === testletOrUnit.blockId) && checked,
+                            marked: markedElement?.blockId === testletOrUnit.blockId
                         }"
                         matTooltip="{{testSession.current.unit.label}}"
                         matTooltipPosition="above"
@@ -180,11 +176,12 @@
                         [class]="{
                             unit: true,
                             aggregated: true,
-                            selected: (selected?.element?.id === testletOrUnit.id) && checked,
-                            marked: markedElement?.id === testletOrUnit.id
+                            selected: (selected?.element?.blockId === testletOrUnit.blockId) && checked,
+                            marked: markedElement?.blockId === testletOrUnit.blockId
                         }"
                         (mouseenter)="mark(testletOrUnit)"
                         (click)="select($event, testletOrUnit)"
+                        matTooltip="{{selected?.element?.blockId}} === {{testletOrUnit.blockId}}"
                 >{{testletOrUnit.descendantCount}}</span>
             </ng-template>
         </span>
@@ -235,4 +232,8 @@
             >description
         </mat-icon>
     </div>
+</td>
+
+<td>sel:
+    <pre>{{selected?.element?.blockId}}</pre>
 </td>

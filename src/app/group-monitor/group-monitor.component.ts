@@ -305,12 +305,14 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   selectElement(selected: Selection): void {
+    console.log('selectElement called', selected);
     this.selectedElement = selected;
     let toCheck: TestSession[] = [];
     if (selected.element) {
       if (!selected.spreading) {
         toCheck = [selected.session];
       } else {
+        console.log('is spreading');
         toCheck = this.sessions$.getValue()
           .filter(session => (session.data.testId && session.data.testId > -1) &&
                              isBooklet(session.booklet) &&
