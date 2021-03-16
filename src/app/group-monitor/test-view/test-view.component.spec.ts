@@ -28,7 +28,6 @@ describe('TestViewComponent', () => {
       blockColumn: undefined,
       unitColumn: undefined,
       view: undefined,
-      selectionMode: undefined,
       selectionSpreading: 'all'
     };
     fixture.detectChanges();

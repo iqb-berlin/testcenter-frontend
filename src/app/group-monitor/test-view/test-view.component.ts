@@ -51,19 +51,13 @@ export class TestViewComponent {
     if (testletOrUnit == null) {
       this.markedElement = null;
       this.markedElement$.emit(null);
-    } else if (isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'unit') {
-      this.markedElement = testletOrUnit;
-    } else if (!isUnit(testletOrUnit) && this.displayOptions.selectionMode === 'block') {
+    } else if (!isUnit(testletOrUnit)) {
       this.markedElement$.emit(testletOrUnit);
       this.markedElement = testletOrUnit;
     }
   }
 
   select($event: Event, testletOrUnit: Testlet|Unit|null): void {
-    if ((isUnit(testletOrUnit) ? 'unit' : 'block') !== this.displayOptions.selectionMode) {
-      return;
-    }
-
     $event.stopPropagation();
     this.applySelection(testletOrUnit);
   }

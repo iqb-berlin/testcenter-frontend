@@ -138,23 +138,12 @@
                 </button>
             </div>
 
-            <hr>
-
-            <div class="toolbar-section">
-                Auswahl-Modus:
-                <mat-radio-group class="example-radio-group">
-                    <mat-radio-button value="block">Block</mat-radio-button>
-                    <mat-radio-button value="unit" disabled>Aufgabe</mat-radio-button>
-                </mat-radio-group>
-            </div>
 
             <div class="toolbar-section">
                 <div *ngFor="let warning of warnings | keyvalue" class="alert-warning">
                     <mat-icon>warning</mat-icon>{{warning.value.text}}
                 </div>
             </div>
-
-            <hr>
 
             <div class="toolbar-section toolbar-section-bottom">
                 <button mat-raised-button class="control" color="primary" (click)="finishEverythingCommand()">
