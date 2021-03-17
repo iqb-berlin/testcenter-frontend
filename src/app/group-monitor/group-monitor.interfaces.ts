@@ -44,6 +44,7 @@ export interface Booklet {
 
 export interface BookletError {
   error: 'xml' | 'missing-id' | 'missing-file' | 'general';
+  species: null;
 }
 
 export function isBooklet(bookletOrError: Booklet|BookletError): bookletOrError is Booklet {

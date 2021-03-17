@@ -24,7 +24,7 @@ interface IconData {
 export class TestViewComponent {
   @Input() testSession: TestSession;
   @Input() displayOptions: TestViewDisplayOptions;
-  @Input() markedElement: Testlet|Unit|null = null;
+  @Input() markedElement: Testlet|null = null;
   @Input() checked: boolean;
   @Input() selected: Selection = {
     element: undefined,
@@ -82,14 +82,18 @@ export class TestViewComponent {
     return false;
   }
 
+  public isSelected(testletOrNull: Testlet|null = null): boolean {
+    return this.selected?.element?.blockId === testletOrNull?.blockId;
+  }
+
   private applySelection(testletOrNull: Testlet|null = null, inversion = false) {
     this.selected = {
       element: testletOrNull,
       session: this.testSession,
-      spreading: (this.selected?.element?.blockId === testletOrNull?.blockId) &&
-        !inversion ? !this.selected?.spreading : true,
+      spreading: !this.isSelected(testletOrNull) && (!inversion ? !this.selected?.spreading : true),
       inversion
     };
+    // console.log(`${this.selected.}`)
     this.selectedElement$.emit(this.selected);
   }
 

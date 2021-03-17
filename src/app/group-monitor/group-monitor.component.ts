@@ -82,8 +82,17 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   markedElement: Testlet|Unit|null = null;
   checkedSessions: { [sessionTestSessionId: number]: TestSession } = {};
-  allSessionsChecked = false;
-  sessionCheckedGroupCount: number;
+  checkedSessionsInfo: {
+    all: boolean;
+    number: number;
+    numberOfDifferentBooklets: number;
+    numberOfDifferentBookletSpecies: number;
+  } = {
+    all: false,
+    number: 0,
+    numberOfDifferentBooklets: 0,
+    numberOfDifferentBookletSpecies: 0
+  };
 
   isScrollable = false;
   isClosing = false;
@@ -251,7 +260,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   testCommandGoto(): void {
-    if ((this.sessionCheckedGroupCount === 1) && (Object.keys(this.checkedSessions).length > 0)) {
+    if ((this.checkedSessionsInfo.numberOfDifferentBookletSpecies === 1) && (Object.keys(this.checkedSessions).length > 0)) {
       const testIds = Object.values(this.checkedSessions)
         .filter(session => session.data.testId && session.data.testId > -1)
         .map(session => session.data.testId);
@@ -306,21 +315,22 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   selectElement(selected: Selection): void {
     console.log('selectElement called', selected);
-    this.selectedElement = selected;
     let toCheck: TestSession[] = [];
     if (selected.element) {
       if (!selected.spreading) {
         toCheck = [selected.session];
       } else {
-        console.log('is spreading');
+        console.log(`is spreading<1>:${selected.element.blockId}`);
         toCheck = this.sessions$.getValue()
           .filter(session => (session.data.testId && session.data.testId > -1) &&
                              isBooklet(session.booklet) &&
                              isBooklet(selected.session.booklet) &&
                              (session.booklet.species === selected.session.booklet.species))
           .filter(session => (selected.inversion ? !this.isChecked(session) : true));
+        console.log(`is spreading<2>:${selected.element.blockId}`);
       }
     }
+    this.selectedElement = selected;
     this.replaceCheckedSessions(toCheck);
   }
 
@@ -357,10 +367,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  countCheckedSessions(): number {
-    return Object.values(this.checkedSessions).length;
-  }
-
   isChecked(session: TestSession): boolean {
     return (typeof this.checkedSessions[session.id] !== 'undefined');
   }
@@ -384,13 +390,26 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   private onCheckedChanged() {
-    this.sessionCheckedGroupCount = Object.values(this.checkedSessions)
+    this.updateCheckdSessionsInfo();
+    this.removeSelectionIfMoreThanOneBookletSpecies();
+  }
+
+  private updateCheckdSessionsInfo(): void {
+    this.checkedSessionsInfo.number = Object.values(this.checkedSessions).length;
+    this.checkedSessionsInfo.numberOfDifferentBooklets = Object.values(this.checkedSessions)
       .map(session => session.data.bookletName)
       .filter((value, index, self) => self.indexOf(value) === index)
       .length;
+    this.checkedSessionsInfo.numberOfDifferentBookletSpecies = Object.values(this.checkedSessions)
+      .map(session => session.booklet.species)
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .length;
     const checkable = this.sessions$.getValue().filter(session => session.data.testId && session.data.testId > -1);
-    this.allSessionsChecked = (checkable.length === this.countCheckedSessions());
-    if (this.sessionCheckedGroupCount > 1) {
+    this.checkedSessionsInfo.all = (checkable.length === this.checkedSessionsInfo.number);
+  }
+
+  private removeSelectionIfMoreThanOneBookletSpecies(): void {
+    if (this.checkedSessionsInfo.numberOfDifferentBookletSpecies > 1) {
       this.selectedElement = null;
     }
   }

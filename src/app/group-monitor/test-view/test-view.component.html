@@ -111,7 +111,7 @@
         <span *ngSwitchCase="'testlet'"
               [class]="{
                 testlet: true,
-                selected: (selected?.element?.blockId === testletOrUnit.blockId) && checked,
+                selected: isSelected(testletOrUnit) && checked,
                 marked: markedElement?.blockId === testletOrUnit.blockId
               }"
               (mouseenter)="mark(testletOrUnit)"
@@ -160,7 +160,7 @@
                             unit: true,
                             aggregated: true,
                             current: true,
-                            selected: (selected?.element?.blockId === testletOrUnit.blockId) && checked,
+                            selected: isSelected(testletOrUnit) && checked,
                             marked: markedElement?.blockId === testletOrUnit.blockId
                         }"
                         matTooltip="{{testSession.current.unit.label}}"
@@ -176,13 +176,12 @@
                         [class]="{
                             unit: true,
                             aggregated: true,
-                            selected: (selected?.element?.blockId === testletOrUnit.blockId) && checked,
+                            selected: isSelected(testletOrUnit) && checked,
                             marked: markedElement?.blockId === testletOrUnit.blockId
                         }"
                         (mouseenter)="mark(testletOrUnit)"
                         (click)="select($event, testletOrUnit)"
-                        matTooltip="{{selected?.element?.blockId}} === {{testletOrUnit.blockId}}"
-                >{{testletOrUnit.descendantCount}}</span>
+                >{{testletOrUnit.descendantCount}} [{{testletOrUnit.blockId.split('-')[1]}}]</span>
             </ng-template>
         </span>
     </ng-container>
@@ -234,6 +233,9 @@
     </div>
 </td>
 
-<td>sel:
-    <pre>{{selected?.element?.blockId}}</pre>
+<td>
+    <pre>sel: {{selected?.element?.blockId}}</pre>
+    <pre>spread: {{selected?.spreading }}</pre>
+    <pre>inver: {{selected?.inversion }}</pre>
+    <pre>mark: {{markedElement?.blockId }}</pre>
 </td>

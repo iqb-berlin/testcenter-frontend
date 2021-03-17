@@ -86,15 +86,15 @@
             <h2>{{'Test-Steuerung' | customtext:'gm_controls' | async}}</h2>
 
             <div class="selection-info">
-                <ng-container *ngIf="countCheckedSessions() as checkedSessionsCount; else noCheckedSession">
+                <ng-container *ngIf="checkedSessionsInfo.number; else noCheckedSession">
                     {{
                     '%s %s Test%s mit %s Testheft%s ausgewählt.'
                         | customtext:'gm_selection_info'
-                        : (allSessionsChecked ? ' Alle' : '')
-                        : checkedSessionsCount.toString(10)
-                        : (checkedSessionsCount !== 1 ? 's' : '')
-                        : sessionCheckedGroupCount.toString(10)
-                        : (sessionCheckedGroupCount !== 1 ? 'en' : '')
+                        : (checkedSessionsInfo.all ? ' Alle' : '')
+                        : checkedSessionsInfo.number.toString(10)
+                        : (checkedSessionsInfo.number !== 1 ? 's' : '')
+                        : checkedSessionsInfo.numberOfDifferentBooklets.toString(10)
+                        : (checkedSessionsInfo.numberOfDifferentBooklets !== 1 ? 'en' : '')
                         | async
                     }}
                 </ng-container>
@@ -124,7 +124,7 @@
 
             <div class="toolbar-section">
                 <button mat-raised-button class="control" color="primary" (click)="testCommandGoto()"
-                        [disabled]="!selectedElement?.element || sessionCheckedGroupCount !== 1">
+                        [disabled]="!selectedElement?.element || checkedSessionsInfo.numberOfDifferentBookletSpecies !== 1">
                     <mat-icon>arrow_forward</mat-icon>
                     {{'Springe zu' | customtext:'gm_control_goto' | async}}
                     <span class="emph">{{selectedElement?.element?.label || selectedElement?.element?.id}}</span>
@@ -187,7 +187,7 @@
                                     <mat-checkbox
                                         (click)="$event.stopPropagation()"
                                         (change)="toggleCheckAll($event)"
-                                        [checked]="allSessionsChecked"
+                                        [checked]="checkedSessionsInfo.all"
                                         (contextmenu)="invertChecked($event)"
                                     ></mat-checkbox>
                                 </td>
