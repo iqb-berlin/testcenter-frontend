@@ -45,6 +45,7 @@ export class BookletService {
   static addBookletStructureInformation(booklet: Booklet): void {
     booklet.species = BookletService.getBookletSpecies(booklet);
     booklet.units.children
+      .filter(testletOrUnit => !isUnit(testletOrUnit))
       .forEach((testletOrUnit, index) => {
         if (!isUnit(testletOrUnit)) {
           testletOrUnit.blockId = `block-${index}`;
