@@ -181,7 +181,7 @@
                         }"
                         (mouseenter)="mark(testletOrUnit)"
                         (click)="select($event, testletOrUnit)"
-                >{{testletOrUnit.descendantCount}} [{{testletOrUnit.blockId.split('-')[1]}}]</span>
+                >{{testletOrUnit.descendantCount}}</span>
             </ng-template>
         </span>
     </ng-container>
@@ -231,11 +231,4 @@
             >description
         </mat-icon>
     </div>
-</td>
-
-<td>
-    <pre>sel: {{selected?.element?.blockId}}</pre>
-    <pre>spread: {{selected?.spreading }}</pre>
-    <pre>inver: {{selected?.inversion }}</pre>
-    <pre>mark: {{markedElement?.blockId }}</pre>
 </td>
