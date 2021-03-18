@@ -132,7 +132,7 @@ export interface UnitContext {
 
 export interface Selection {
   element: Testlet|null;
-  session?: TestSession;
+  originSession: TestSession;
   spreading: boolean;
-  inversion?: boolean;
+  inversion: boolean;
 }

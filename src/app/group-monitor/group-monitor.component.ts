@@ -16,7 +16,7 @@ import { BackendService } from './backend.service';
 import {
   GroupData,
   TestViewDisplayOptions,
-  TestViewDisplayOptionKey, Testlet, Unit, Selection, TestSessionFilter, TestSession, TestSessionsSuperStates, isBooklet
+  TestViewDisplayOptionKey, Selection, TestSessionFilter, TestSession, TestSessionsSuperStates, isBooklet
 } from './group-monitor.interfaces';
 import { ConnectionStatus } from '../shared/websocket-backend.service';
 import { TestSessionService } from './test-session.service';
@@ -74,13 +74,9 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     }
   ];
 
-  selectedElement: Selection = {
-    session: null,
-    element: undefined,
-    spreading: false
-  };
+  selectedElement: Selection;
+  markedElement: Selection;
 
-  markedElement: Testlet|Unit|null = null;
   checkedSessions: { [sessionTestSessionId: number]: TestSession } = {};
   checkedSessionsInfo: {
     all: boolean;
@@ -260,7 +256,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   testCommandGoto(): void {
-    if ((this.checkedSessionsInfo.numberOfDifferentBookletSpecies === 1) && (Object.keys(this.checkedSessions).length > 0)) {
+    if ((this.checkedSessionsInfo.numberOfDifferentBookletSpecies === 1) &&
+      (Object.keys(this.checkedSessions).length > 0)) {
       const testIds = Object.values(this.checkedSessions)
         .filter(session => session.data.testId && session.data.testId > -1)
         .map(session => session.data.testId);
@@ -317,13 +314,11 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     let toCheck: TestSession[] = [];
     if (selected.element) {
       if (!selected.spreading) {
-        toCheck = [selected.session];
+        toCheck = [selected.originSession];
       } else {
         toCheck = this.sessions$.getValue()
           .filter(session => (session.data.testId && session.data.testId > -1) &&
-                             isBooklet(session.booklet) &&
-                             isBooklet(selected.session.booklet) &&
-                             (session.booklet.species === selected.session.booklet.species))
+                             (session.booklet.species === selected.originSession.booklet.species))
           .filter(session => (selected.inversion ? !this.isChecked(session) : true));
       }
     }
@@ -331,8 +326,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.replaceCheckedSessions(toCheck);
   }
 
-  markElement(testletOrUnit: Testlet|Unit|null): void {
-    this.markedElement = testletOrUnit;
+  markElement(marking: Selection): void {
+    this.markedElement = marking;
   }
 
   toggleChecked(checked: boolean, session: TestSession): void {

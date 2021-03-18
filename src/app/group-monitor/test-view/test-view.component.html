@@ -2,7 +2,7 @@
     <mat-checkbox
             *ngIf="testSession.data.testId >= 0"
             (change)="check($event)"
-            (contextmenu)="invertSelectionTestheftWide()"
+            (contextmenu)="invertSelection()"
             [checked]="checked"
     >
     </mat-checkbox>
@@ -112,7 +112,7 @@
               [class]="{
                 testlet: true,
                 selected: isSelected(testletOrUnit) && checked,
-                marked: markedElement?.blockId === testletOrUnit.blockId
+                marked: isMarked(testletOrUnit)
               }"
               (mouseenter)="mark(testletOrUnit)"
               (click)="select($event, testletOrUnit)"
@@ -161,7 +161,7 @@
                             aggregated: true,
                             current: true,
                             selected: isSelected(testletOrUnit) && checked,
-                            marked: markedElement?.blockId === testletOrUnit.blockId
+                            marked: isMarked(testletOrUnit)
                         }"
                         matTooltip="{{testSession.current.unit.label}}"
                         matTooltipPosition="above"
@@ -177,7 +177,7 @@
                             unit: true,
                             aggregated: true,
                             selected: isSelected(testletOrUnit) && checked,
-                            marked: markedElement?.blockId === testletOrUnit.blockId
+                            marked: isMarked(testletOrUnit)
                         }"
                         (mouseenter)="mark(testletOrUnit)"
                         (click)="select($event, testletOrUnit)"

@@ -24,14 +24,11 @@ interface IconData {
 export class TestViewComponent {
   @Input() testSession: TestSession;
   @Input() displayOptions: TestViewDisplayOptions;
-  @Input() markedElement: Testlet|null = null;
+  @Input() marked: Selection;
+  @Input() selected: Selection;
   @Input() checked: boolean;
-  @Input() selected: Selection = {
-    element: undefined,
-    spreading: false
-  };
 
-  @Output() markedElement$ = new EventEmitter<Testlet>();
+  @Output() markedElement$ = new EventEmitter<Selection>();
   @Output() selectedElement$ = new EventEmitter<Selection>();
   @Output() checked$ = new EventEmitter<boolean>();
 
@@ -48,13 +45,20 @@ export class TestViewComponent {
   blockName = (blockNumber: number): string => `Block ${String.fromCodePoint(64 + blockNumber)}`;
 
   mark(testletOrNull: Testlet|null = null): void {
-    if (testletOrNull == null) {
-      this.markedElement = null;
-      this.markedElement$.emit(null);
-    } else {
-      this.markedElement$.emit(testletOrNull);
-      this.markedElement = testletOrNull;
-    }
+    this.marked = this.asSelectionObject(testletOrNull);
+    this.markedElement$.emit(this.marked);
+  }
+
+  isSelected(testletOrNull: Testlet|null = null): boolean {
+    return testletOrNull &&
+      (this.selected?.element?.blockId === testletOrNull.blockId) &&
+      (this.marked?.originSession.booklet.species === this.testSession.booklet.species);
+  }
+
+  isMarked(testletOrNull: Testlet|null = null): boolean {
+    return testletOrNull &&
+      (this.marked?.element?.blockId === testletOrNull.blockId) &&
+      (this.marked?.originSession.booklet.species === this.testSession.booklet.species);
   }
 
   select($event: Event, testlet: Testlet|null): void {
@@ -76,26 +80,26 @@ export class TestViewComponent {
     return false;
   }
 
-  invertSelectionTestheftWide(): boolean {
+  invertSelection(): boolean {
     this.applySelection(this.selected.element, true);
     return false;
   }
 
-  public isSelected(testletOrNull: Testlet|null = null): boolean {
-    return testletOrNull && (this.selected?.element?.blockId === testletOrNull.blockId);
+  check($event: MatCheckboxChange): void {
+    this.checked$.emit($event.checked);
   }
 
   private applySelection(testletOrNull: Testlet|null = null, inversion = false): void {
-    this.selected = {
-      element: testletOrNull,
-      session: this.testSession,
-      spreading: this.isSelected(testletOrNull) ? !(this.selected?.spreading) : !!testletOrNull,
-      inversion
-    };
+    this.selected = this.asSelectionObject(testletOrNull, inversion);
     this.selectedElement$.emit(this.selected);
   }
 
-  check($event: MatCheckboxChange): void {
-    this.checked$.emit($event.checked);
+  private asSelectionObject(testletOrNull: Testlet|null = null, inversion = false): Selection {
+    return {
+      element: testletOrNull,
+      originSession: this.testSession,
+      spreading: this.isSelected(testletOrNull) ? !(this.selected?.spreading) : !!testletOrNull,
+      inversion
+    };
   }
 }
