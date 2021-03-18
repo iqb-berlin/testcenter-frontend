@@ -62,7 +62,7 @@ export class BookletService {
       return this.booklets[bookletName];
     }
     if (bookletName === '') {
-      this.booklets[bookletName] = of<Booklet|BookletError>({ error: 'missing-id' });
+      this.booklets[bookletName] = of<Booklet|BookletError>({ error: 'missing-id', species: null });
     } else {
       this.booklets[bookletName] = this.bs.getBooklet(bookletName)
         .pipe(
@@ -81,7 +81,7 @@ export class BookletService {
 
       if (bookletElement.nodeName !== 'Booklet') {
         // console.warn('XML-root is not `Booklet`');
-        return { error: 'xml' };
+        return { error: 'xml', species: null };
       }
 
       const parsedBooklet: Booklet = {
@@ -94,7 +94,7 @@ export class BookletService {
       return parsedBooklet;
     } catch (error) {
       // console.warn('Error reading booklet XML:', error);
-      return { error: 'xml' };
+      return { error: 'xml', species: null };
     }
   }
 
