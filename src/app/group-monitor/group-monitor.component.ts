@@ -50,7 +50,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     groupColumn: 'hide',
     bookletColumn: 'show',
     blockColumn: 'show',
-    unitColumn: 'hide'
+    unitColumn: 'hide',
+    highlightSpecies: 'no' // TODO set and use this!
   };
 
   filterOptions: { label: string, filter: TestSessionFilter, selected: boolean }[] = [
@@ -113,7 +114,9 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       .pipe(
         switchMap(sessions => zip(...sessions
           .map(session => this.bookletService.getBooklet(session.bookletName)
-            .pipe(map(booklet => TestSessionService.analyzeTestSession(session, booklet))))))
+            .pipe(
+              map(booklet => TestSessionService.analyzeTestSession(session, booklet))
+            ))))
       );
 
     this.sessions$ = new BehaviorSubject<TestSession[]>([]);
