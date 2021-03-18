@@ -59,7 +59,6 @@ export class TestViewComponent {
 
   select($event: Event, testlet: Testlet|null): void {
     $event.stopPropagation();
-    console.log("select called");
     this.applySelection(testlet);
   }
 
@@ -83,17 +82,16 @@ export class TestViewComponent {
   }
 
   public isSelected(testletOrNull: Testlet|null = null): boolean {
-    return this.selected?.element?.blockId === testletOrNull?.blockId;
+    return testletOrNull && (this.selected?.element?.blockId === testletOrNull.blockId);
   }
 
-  private applySelection(testletOrNull: Testlet|null = null, inversion = false) {
+  private applySelection(testletOrNull: Testlet|null = null, inversion = false): void {
     this.selected = {
       element: testletOrNull,
       session: this.testSession,
-      spreading: !this.isSelected(testletOrNull) && (!inversion ? !this.selected?.spreading : true),
+      spreading: this.isSelected(testletOrNull) ? !(this.selected?.spreading) : !!testletOrNull,
       inversion
     };
-    // console.log(`${this.selected.}`)
     this.selectedElement$.emit(this.selected);
   }
 
