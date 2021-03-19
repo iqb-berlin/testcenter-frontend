@@ -470,7 +470,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   isGotoAllowed(): boolean {
-    return !this.selectedElement?.element || this.checkedSessionsInfo.numberOfDifferentBookletSpecies === 1;
+    return !!(this.selectedElement?.element) && (this.checkedSessionsInfo.numberOfDifferentBookletSpecies === 1);
   }
 
   ngAfterViewChecked(): void {

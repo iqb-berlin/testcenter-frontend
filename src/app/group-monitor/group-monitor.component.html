@@ -127,6 +127,9 @@
           <mat-icon>arrow_forward</mat-icon>
           {{'Springe zu' | customtext:'gm_control_goto' | async}}
           <span class="emph">{{selectedElement?.element?.blockId}}</span>
+          <span class="emph" *ngIf="!isGotoAllowed()">
+            {{'Block auswählen!' | customtext:'gm_test_command_no_selected_block' | async}}
+          </span>
         </button>
       </div>
 

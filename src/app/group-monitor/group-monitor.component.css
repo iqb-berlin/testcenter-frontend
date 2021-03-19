@@ -220,6 +220,10 @@ mat-sidenav {
     text-transform: uppercase;
 }
 
+[disabled] .emph {
+    color: #821123
+}
+
 .alert-warning {
     border-radius: 4px;
     box-sizing: border-box;
