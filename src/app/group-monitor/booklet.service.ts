@@ -58,7 +58,7 @@ export class BookletService {
       .filter(testletOrUnit => !isUnit(testletOrUnit))
       .forEach((testletOrUnit, index) => {
         if (!isUnit(testletOrUnit)) {
-          testletOrUnit.blockId = `block-${index}`;
+          testletOrUnit.blockId = `block ${index + 1}`;
         }
       });
   }

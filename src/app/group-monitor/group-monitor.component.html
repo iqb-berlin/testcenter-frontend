@@ -104,8 +104,6 @@
         <hr>
       </div>
 
-      <pre>{{checkedSessionsInfo|json}}}</pre>
-
       <div class="toolbar-section">
         <button mat-raised-button class="control" color="primary" (click)="testCommandAllNext()">
           <mat-icon>play_arrow</mat-icon>
@@ -128,7 +126,7 @@
         <button mat-raised-button class="control" color="primary" (click)="testCommandGoto()" [disabled]="!isGotoAllowed()">
           <mat-icon>arrow_forward</mat-icon>
           {{'Springe zu' | customtext:'gm_control_goto' | async}}
-          <span class="emph">{{selectedElement?.element?.label || selectedElement?.element?.id}}</span>
+          <span class="emph">{{selectedElement?.element?.blockId}}</span>
         </button>
       </div>
 
