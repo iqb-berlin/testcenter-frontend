@@ -28,6 +28,16 @@ export class BookletService {
     return testletOrUnit;
   }
 
+  static getFirstUnitOfBlock(blockId: string, booklet: Booklet): Unit|null {
+    for (let i = 0; i < booklet.units.children.length; i++) {
+      const child = booklet.units.children[i];
+      if (!isUnit(child) && (child.blockId === blockId)) {
+        return BookletService.getFirstUnit(child);
+      }
+    }
+    return null;
+  }
+
   static getNextBlock(current: UnitContext, booklet: Booklet): Testlet|null {
     if (!current.ancestor) {
       return null;

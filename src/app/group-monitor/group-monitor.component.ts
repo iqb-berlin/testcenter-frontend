@@ -276,13 +276,33 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   testCommandGoto(): void {
-    if ((this.checkedSessionsInfo.numberOfDifferentBookletSpecies === 1) &&
-      (Object.keys(this.checkedSessions).length > 0)) {
-      const testIds = Object.values(this.checkedSessions)
-        .filter(session => session.data.testId && session.data.testId > -1)
-        .map(session => session.data.testId);
-      this.bs.command('goto', ['id', BookletService.getFirstUnit(this.selectedElement.element).id], testIds);
+    interface BookletToGotoMap {
+      [bookletName: string]: {
+        sessionIds: number[],
+        firstUnitId: string
+      }
     }
+
+    const groupedByBooklet: BookletToGotoMap = Object.values(this.checkedSessions)
+      .filter(session => session.data.testId && session.data.testId > -1)
+      .reduce((agg: BookletToGotoMap, session): BookletToGotoMap => {
+        if (!agg[session.data.bookletName] && isBooklet(session.booklet)) {
+          const firstUnit = BookletService.getFirstUnitOfBlock(this.selectedElement.element.blockId, session.booklet);
+          if (firstUnit) {
+            agg[session.data.bookletName] = {
+              sessionIds: [],
+              firstUnitId: firstUnit.id
+            };
+          }
+        }
+        agg[session.data.bookletName].sessionIds.push(session.data.testId);
+        return agg;
+      }, {});
+
+    Object.keys(groupedByBooklet)
+      .forEach(booklet => {
+        this.bs.command('goto', ['id', groupedByBooklet[booklet].firstUnitId], groupedByBooklet[booklet].sessionIds);
+      });
   }
 
   testCommandUnlock(): void {
@@ -447,6 +467,10 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     const lockedSessions = Object.values(this.checkedSessions)
       .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'locked'));
     return lockedSessions.length && (lockedSessions.length === Object.values(this.checkedSessions).length);
+  }
+
+  isGotoAllowed(): boolean {
+    return !this.selectedElement?.element || this.checkedSessionsInfo.numberOfDifferentBookletSpecies === 1;
   }
 
   ngAfterViewChecked(): void {

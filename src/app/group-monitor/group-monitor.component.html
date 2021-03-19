@@ -1,261 +1,260 @@
 <div class="page-header">
   <p>
-      {{'IQB-Testcenter Gruppenüberwachung' | customtext:'gm_headline' | async}} -
-      <span *ngIf="ownGroup$ | async as ownGroup">{{ownGroup.label}}</span>
+    {{'IQB-Testcenter Gruppenüberwachung' | customtext:'gm_headline' | async}} -
+    <span *ngIf="ownGroup$ | async as ownGroup">{{ownGroup.label}}</span>
   </p>
   <span class="fill-remaining-space"></span>
   <p>
     <mat-chip-list *ngIf="connectionStatus$ | async as connectionStatus">
 
-        <mat-chip [class]="connectionStatus + ' connection-status'">
-            <mat-icon>
-                {{connectionStatus === 'error' ? 'error' : ''}}
-                {{connectionStatus === 'polling-fetch' ? 'loop' : ''}}
-                {{connectionStatus === 'polling-sleep' ? 'loop' : ''}}
-                {{connectionStatus === 'ws-offline' ? 'loop' : ''}}
-                {{connectionStatus === 'ws-online' ? 'wifi_tethering' : ''}}
-            </mat-icon>
-            {{connectionStatus === 'error' ? 'Offline' : ''}}
-            {{connectionStatus === 'polling-fetch' ? 'Online' : ''}}
-            {{connectionStatus === 'polling-sleep' ? 'Online' : ''}}
-            {{connectionStatus === 'ws-offline' ? 'Reconn.' : ''}}
-            {{connectionStatus === 'ws-online' ? 'Live' : ''}}
-        </mat-chip>
+      <mat-chip [class]="connectionStatus + ' connection-status'">
+        <mat-icon>
+          {{connectionStatus === 'error' ? 'error' : ''}}
+          {{connectionStatus === 'polling-fetch' ? 'loop' : ''}}
+          {{connectionStatus === 'polling-sleep' ? 'loop' : ''}}
+          {{connectionStatus === 'ws-offline' ? 'loop' : ''}}
+          {{connectionStatus === 'ws-online' ? 'wifi_tethering' : ''}}
+        </mat-icon>
+        {{connectionStatus === 'error' ? 'Offline' : ''}}
+        {{connectionStatus === 'polling-fetch' ? 'Online' : ''}}
+        {{connectionStatus === 'polling-sleep' ? 'Online' : ''}}
+        {{connectionStatus === 'ws-offline' ? 'Reconn.' : ''}}
+        {{connectionStatus === 'ws-online' ? 'Live' : ''}}
+      </mat-chip>
     </mat-chip-list>
   </p>
 </div>
 
 <mat-menu #rootMenu="matMenu">
-    <button mat-menu-item [matMenuTriggerFor]="filters">
-        {{'Sitzungen ausblenden' | customtext:'gm_menu_filter' | async}}
-    </button>
-    <button mat-menu-item [matMenuTriggerFor]="group">
-        {{'Spalten' | customtext:'gm_menu_cols' | async}}
-    </button>
-    <button mat-menu-item [matMenuTriggerFor]="activity">
-        {{'Aktivität' | customtext:'gm_menu_activity' | async}}
-    </button>
+  <button mat-menu-item [matMenuTriggerFor]="filters">
+    {{'Sitzungen ausblenden' | customtext:'gm_menu_filter' | async}}
+  </button>
+  <button mat-menu-item [matMenuTriggerFor]="group">
+    {{'Spalten' | customtext:'gm_menu_cols' | async}}
+  </button>
+  <button mat-menu-item [matMenuTriggerFor]="activity">
+    {{'Aktivität' | customtext:'gm_menu_activity' | async}}
+  </button>
 </mat-menu>
 
 <mat-menu #filters="matMenu">
-    <button mat-menu-item *ngFor="let filterOption of filterOptions; let i = index" (click)="switchFilter(i)">
-        <mat-icon *ngIf="filterOption.selected">check</mat-icon>
-        <span>{{filterOption.label}}</span>
-    </button>
+  <button mat-menu-item *ngFor="let filterOption of filterOptions; let i = index" (click)="switchFilter(i)">
+    <mat-icon *ngIf="filterOption.selected">check</mat-icon>
+    <span>{{filterOption.label}}</span>
+  </button>
 </mat-menu>
 
 <mat-menu #group="matMenu">
-    <button mat-menu-item (click)="setDisplayOption('groupColumn', (displayOptions.groupColumn === 'hide') ? 'show' : 'hide')">
-        <mat-icon *ngIf="displayOptions.groupColumn === 'show'">check</mat-icon>
-        <span>{{'Gruppe' | customtext:'gm_col_group' | async}}</span>
-    </button>
-    <button mat-menu-item (click)="setDisplayOption('bookletColumn', (displayOptions.bookletColumn === 'hide') ? 'show' : 'hide')">
-        <mat-icon *ngIf="displayOptions.bookletColumn === 'show'">check</mat-icon>
-        <span>{{'Testheft' | customtext:'gm_col_booklet' | async}}</span>
-    </button>
-    <button mat-menu-item (click)="setDisplayOption('blockColumn', (displayOptions.blockColumn === 'hide') ? 'show' : 'hide')">
-        <mat-icon *ngIf="displayOptions.blockColumn === 'show'">check</mat-icon>
-        <span>{{'Block' | customtext:'gm_col_testlet' | async}}</span>
-    </button>
-    <button mat-menu-item (click)="setDisplayOption('unitColumn', (displayOptions.unitColumn === 'hide') ? 'show' : 'hide')">
-        <mat-icon *ngIf="displayOptions.unitColumn === 'show'">check</mat-icon>
-        <span>{{'Aufgabe' | customtext:'gm_col_unit' | async}}</span>
-    </button>
+  <button mat-menu-item (click)="setDisplayOption('groupColumn', (displayOptions.groupColumn === 'hide') ? 'show' : 'hide')">
+    <mat-icon *ngIf="displayOptions.groupColumn === 'show'">check</mat-icon>
+    <span>{{'Gruppe' | customtext:'gm_col_group' | async}}</span>
+  </button>
+  <button mat-menu-item (click)="setDisplayOption('bookletColumn', (displayOptions.bookletColumn === 'hide') ? 'show' : 'hide')">
+    <mat-icon *ngIf="displayOptions.bookletColumn === 'show'">check</mat-icon>
+    <span>{{'Testheft' | customtext:'gm_col_booklet' | async}}</span>
+  </button>
+  <button mat-menu-item (click)="setDisplayOption('blockColumn', (displayOptions.blockColumn === 'hide') ? 'show' : 'hide')">
+    <mat-icon *ngIf="displayOptions.blockColumn === 'show'">check</mat-icon>
+    <span>{{'Block' | customtext:'gm_col_testlet' | async}}</span>
+  </button>
+  <button mat-menu-item (click)="setDisplayOption('unitColumn', (displayOptions.unitColumn === 'hide') ? 'show' : 'hide')">
+    <mat-icon *ngIf="displayOptions.unitColumn === 'show'">check</mat-icon>
+    <span>{{'Aufgabe' | customtext:'gm_col_unit' | async}}</span>
+  </button>
 </mat-menu>
 
 <mat-menu #activity="matMenu">
-    <button mat-menu-item (click)="setDisplayOption('view', 'full')">
-        <mat-icon *ngIf="displayOptions.view === 'full'">check</mat-icon>
-        <span>{{'Vollständig' | customtext:'gm_view_full' | async}}</span>
-    </button>
-    <button mat-menu-item (click)="setDisplayOption('view', 'medium')">
-        <mat-icon *ngIf="displayOptions.view === 'medium'">check</mat-icon>
-        <span>{{'Nur Blöcke' | customtext:'gm_view_medium' | async}}</span>
-    </button>
-    <button mat-menu-item (click)="setDisplayOption('view', 'small')">
-        <mat-icon *ngIf="displayOptions.view === 'small'">check</mat-icon>
-        <span>{{'Kurz' | customtext:'gm_view_small' | async}}</span>
-    </button>
+  <button mat-menu-item (click)="setDisplayOption('view', 'full')">
+    <mat-icon *ngIf="displayOptions.view === 'full'">check</mat-icon>
+    <span>{{'Vollständig' | customtext:'gm_view_full' | async}}</span>
+  </button>
+  <button mat-menu-item (click)="setDisplayOption('view', 'medium')">
+    <mat-icon *ngIf="displayOptions.view === 'medium'">check</mat-icon>
+    <span>{{'Nur Blöcke' | customtext:'gm_view_medium' | async}}</span>
+  </button>
+  <button mat-menu-item (click)="setDisplayOption('view', 'small')">
+    <mat-icon *ngIf="displayOptions.view === 'small'">check</mat-icon>
+    <span>{{'Kurz' | customtext:'gm_view_small' | async}}</span>
+  </button>
 </mat-menu>
 
 <div class="page-body">
 
-    <mat-sidenav-container>
-        <mat-sidenav #sidenav opened="true" mode="side" class="toolbar" fixedInViewport="true" fixedTopGap="55">
+  <mat-sidenav-container>
+    <mat-sidenav #sidenav opened="true" mode="side" class="toolbar" fixedInViewport="true" fixedTopGap="55">
 
-            <h2>{{'Test-Steuerung' | customtext:'gm_controls' | async}}</h2>
+      <h2>{{'Test-Steuerung' | customtext:'gm_controls' | async}}</h2>
 
-            <div class="selection-info">
-                <ng-container *ngIf="checkedSessionsInfo.number; else noCheckedSession">
-                    {{
-                    '%s %s Test%s mit %s Testheft%s ausgewählt.'
-                        | customtext:'gm_selection_info'
-                        : (checkedSessionsInfo.all ? ' Alle' : '')
-                        : checkedSessionsInfo.number.toString(10)
-                        : (checkedSessionsInfo.number !== 1 ? 's' : '')
-                        : checkedSessionsInfo.numberOfDifferentBooklets.toString(10)
-                        : (checkedSessionsInfo.numberOfDifferentBooklets !== 1 ? 'en' : '')
-                        | async
-                    }}
-                </ng-container>
-                <ng-template #noCheckedSession>
-                    {{'Kein Test gewählt.' | customtext:'gm_selection_info_none' | async}}
-                </ng-template>
-                <hr>
-            </div>
+      <div class="selection-info">
+        <ng-container *ngIf="checkedSessionsInfo.number; else noCheckedSession">
+          {{
+          '%s %s Test%s mit %s Testheft%s ausgewählt.'
+            | customtext:'gm_selection_info'
+            : (checkedSessionsInfo.all ? ' Alle' : '')
+            : checkedSessionsInfo.number.toString(10)
+            : (checkedSessionsInfo.number !== 1 ? 's' : '')
+            : checkedSessionsInfo.numberOfDifferentBooklets.toString(10)
+            : (checkedSessionsInfo.numberOfDifferentBooklets !== 1 ? 'en' : '')
+            | async
+          }}
+        </ng-container>
+        <ng-template #noCheckedSession>
+          {{'Kein Test gewählt.' | customtext:'gm_selection_info_none' | async}}
+        </ng-template>
+        <hr>
+      </div>
 
-            <div class="toolbar-section">
-                <button mat-raised-button class="control" color="primary" (click)="testCommandAllNext()">
-                    <mat-icon>play_arrow</mat-icon>
-                    {{'Alle in den nächsten block' | customtext:'gm_control_all_next' | async}}
-                </button>
-            </div>
+      <pre>{{checkedSessionsInfo|json}}}</pre>
 
-            <div class="toolbar-section">
-                <button mat-raised-button class="control" color="primary" (click)="testCommandResume()" [disabled]="!isResumeAllowed()">
-                    <mat-icon>play_arrow</mat-icon>
-                    {{'weiter' | customtext:'gm_control_resume' | async}}
-                </button>
+      <div class="toolbar-section">
+        <button mat-raised-button class="control" color="primary" (click)="testCommandAllNext()">
+          <mat-icon>play_arrow</mat-icon>
+          {{'Alle in den nächsten block' | customtext:'gm_control_all_next' | async}}
+        </button>
+      </div>
 
-                <button mat-raised-button class="control" color="primary" (click)="testCommandPause()" [disabled]="!isPauseAllowed()">
-                    <mat-icon>pause</mat-icon>{{'pause' | customtext:'gm_control_pause' | async}}
-                </button>
-            </div>
+      <div class="toolbar-section">
+        <button mat-raised-button class="control" color="primary" (click)="testCommandResume()" [disabled]="!isResumeAllowed()">
+          <mat-icon>play_arrow</mat-icon>
+          {{'weiter' | customtext:'gm_control_resume' | async}}
+        </button>
 
-            <div class="toolbar-section">
-                <button mat-raised-button class="control" color="primary" (click)="testCommandGoto()"
-                        [disabled]="!selectedElement?.element || checkedSessionsInfo.numberOfDifferentBookletSpecies !== 1">
-                    <mat-icon>arrow_forward</mat-icon>
-                    {{'Springe zu' | customtext:'gm_control_goto' | async}}
-                    <span class="emph">{{selectedElement?.element?.label || selectedElement?.element?.id}}</span>
-                </button>
-            </div>
+        <button mat-raised-button class="control" color="primary" (click)="testCommandPause()" [disabled]="!isPauseAllowed()">
+          <mat-icon>pause</mat-icon>{{'pause' | customtext:'gm_control_pause' | async}}
+        </button>
+      </div>
 
-            <div class="toolbar-section">
-                <button mat-raised-button class="control" color="primary" (click)="testCommandUnlock()" [disabled]="!isUnlockAllowed()">
-                    <mat-icon>lock-open</mat-icon>
-                    {{'Entsperren' | customtext:'gm_control_unlock' | async}}
-                </button>
-            </div>
+      <div class="toolbar-section">
+        <button mat-raised-button class="control" color="primary" (click)="testCommandGoto()" [disabled]="!isGotoAllowed()">
+          <mat-icon>arrow_forward</mat-icon>
+          {{'Springe zu' | customtext:'gm_control_goto' | async}}
+          <span class="emph">{{selectedElement?.element?.label || selectedElement?.element?.id}}</span>
+        </button>
+      </div>
+
+      <div class="toolbar-section">
+        <button mat-raised-button class="control" color="primary" (click)="testCommandUnlock()" [disabled]="!isUnlockAllowed()">
+          <mat-icon>lock-open</mat-icon>
+          {{'Entsperren' | customtext:'gm_control_unlock' | async}}
+        </button>
+      </div>
 
 
-            <div class="toolbar-section">
-                <div *ngFor="let warning of warnings | keyvalue" class="alert-warning">
-                    <mat-icon>warning</mat-icon>{{warning.value.text}}
-                </div>
-            </div>
+      <div class="toolbar-section">
+        <div *ngFor="let warning of warnings | keyvalue" class="alert-warning">
+          <mat-icon>warning</mat-icon>{{warning.value.text}}
+        </div>
+      </div>
 
-            <pre>{{sessionClusterList|json}}</pre>
+      <div class="toolbar-section toolbar-section-bottom">
+        <button mat-raised-button class="control" color="primary" (click)="finishEverythingCommand()">
+          <mat-icon>stop</mat-icon>{{'Testung beenden' | customtext:'gm_control_finish_everything' | async}}
+        </button>
+      </div>
 
-            <div class="toolbar-section toolbar-section-bottom">
-                <button mat-raised-button class="control" color="primary" (click)="finishEverythingCommand()">
-                    <mat-icon>stop</mat-icon>{{'Testung beenden' | customtext:'gm_control_finish_everything' | async}}
-                </button>
-            </div>
+    </mat-sidenav>
 
-        </mat-sidenav>
+    <mat-sidenav-content>
 
-        <mat-sidenav-content>
+      <div #adminbackground class="adminbackground" (scroll)="updateScrollHint()">
 
-            <div #adminbackground class="adminbackground" (scroll)="updateScrollHint()">
+        <div class="corner-menu">
+          <button class="settings-button"
+                  mat-icon-button
+                  [matMenuTriggerFor]="rootMenu"
+                  matTooltip="{{'Ansicht' | customtext:'gm_settings_tooltip' | async}}"
+                  matTooltipPosition="above"
+          >
+            <mat-icon>settings</mat-icon>
+          </button>
+        </div>
 
-                <div class="corner-menu">
-                    <button class="settings-button"
-                            mat-icon-button
-                            [matMenuTriggerFor]="rootMenu"
-                            matTooltip="{{'Ansicht' | customtext:'gm_settings_tooltip' | async}}"
-                            matTooltipPosition="above"
-                        >
-                        <mat-icon>settings</mat-icon>
-                    </button>
-                </div>
+        <div class="scroll-hint" *ngIf="isScrollable">
+          <button mat-icon-button
+                  (click)="scrollDown()"
+                  matTooltip="{{'Ganz nach unten' | customtext:'gm_scroll_down' | async}}"
+                  matTooltipPosition="above"
+          >
+            <mat-icon>keyboard_arrow_down</mat-icon>
+          </button>
+        </div>
 
-                <div class="scroll-hint" *ngIf="isScrollable">
-                    <button mat-icon-button
-                            (click)="scrollDown()"
-                            matTooltip="{{'Ganz nach unten' | customtext:'gm_scroll_down' | async}}"
-                            matTooltipPosition="above"
-                    >
-                        <mat-icon>keyboard_arrow_down</mat-icon>
-                    </button>
-                </div>
+        <div class="test-view-table-wrapper">
+          <table class="test-view-table" matSort (matSortChange)="setTableSorting($event)">
 
-                <div class="test-view-table-wrapper">
-                    <table class="test-view-table" matSort (matSortChange)="setTableSorting($event)">
+            <thead>
+            <tr class="mat-sort-container">
+              <td mat-sort-header="_checked">
+                <mat-checkbox
+                    (click)="$event.stopPropagation()"
+                    (change)="toggleCheckAll($event)"
+                    [checked]="checkedSessionsInfo.all"
+                    (contextmenu)="invertChecked($event)"
+                ></mat-checkbox>
+              </td>
+              <td mat-sort-header="_superState">
+                <mat-icon>person</mat-icon>
+              </td>
+              <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">
+                {{'Gruppe' | customtext:'gm_col_group' | async}}
+              </td>
+              <td mat-sort-header="personLabel">
+                {{'Teilnehmer' | customtext:'gm_col_person' | async}}
+              </td>
+              <td mat-sort-header="bookletName" *ngIf="displayOptions.bookletColumn === 'show'">
+                {{'Testheft' | customtext:'gm_col_booklet' | async}}
+              </td>
+              <td mat-sort-header="_currentBlock" *ngIf="displayOptions.blockColumn === 'show'">
+                {{'Block' | customtext:'gm_col_testlet' | async}}
+              </td>
+              <td mat-sort-header="timestamp">
+                {{'Aktivität' | customtext:'gm_col_activity' | async}}
+              </td>
+              <td mat-sort-header="_currentUnit" *ngIf="displayOptions.unitColumn === 'show'">
+                {{'Aufgabe' | customtext:'gm_col_unit' | async}}
+              </td>
+            </tr>
+            </thead>
 
-                        <thead>
-                            <tr class="mat-sort-container">
-                                <td mat-sort-header="_checked">
-                                    <mat-checkbox
-                                        (click)="$event.stopPropagation()"
-                                        (change)="toggleCheckAll($event)"
-                                        [checked]="checkedSessionsInfo.all"
-                                        (contextmenu)="invertChecked($event)"
-                                    ></mat-checkbox>
-                                </td>
-                                <td mat-sort-header="_superState">
-                                    <mat-icon>person</mat-icon>
-                                </td>
-                                <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">
-                                    {{'Gruppe' | customtext:'gm_col_group' | async}}
-                                </td>
-                                <td mat-sort-header="personLabel">
-                                    {{'Teilnehmer' | customtext:'gm_col_person' | async}}
-                                </td>
-                                <td mat-sort-header="bookletName" *ngIf="displayOptions.bookletColumn === 'show'">
-                                    {{'Testheft' | customtext:'gm_col_booklet' | async}}
-                                </td>
-                                <td mat-sort-header="_currentBlock" *ngIf="displayOptions.blockColumn === 'show'">
-                                    {{'Block' | customtext:'gm_col_testlet' | async}}
-                                </td>
-                                <td mat-sort-header="timestamp">
-                                    {{'Aktivität' | customtext:'gm_col_activity' | async}}
-                                </td>
-                                <td mat-sort-header="_currentUnit" *ngIf="displayOptions.unitColumn === 'show'">
-                                    {{'Aufgabe' | customtext:'gm_col_unit' | async}}
-                                </td>
-                            </tr>
-                        </thead>
+            <ng-container *ngFor="let session of sessions$ | async; trackBy: trackSession">
+              <tc-test-view
+                  [testSession]="session"
+                  [displayOptions]="displayOptions"
+                  [marked]="markedElement"
+                  (markedElement$)="markElement($event)"
+                  [selected]="selectedElement"
+                  (selectedElement$)="selectElement($event)"
+                  [checked]="isChecked(session)"
+                  (checked$)="toggleChecked($event, session)"
+                  [style]="{backgroundColor: getClusterColor(session)}"
+              >
+              </tc-test-view>
+            </ng-container>
+          </table>
+        </div>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 
-                        <ng-container *ngFor="let session of sessions$ | async; trackBy: trackSession">
-                            <tc-test-view
-                                [testSession]="session"
-                                [displayOptions]="displayOptions"
-                                [marked]="markedElement"
-                                (markedElement$)="markElement($event)"
-                                [selected]="selectedElement"
-                                (selectedElement$)="selectElement($event)"
-                                [checked]="isChecked(session)"
-                                (checked$)="toggleChecked($event, session)"
-                                [style]="{backgroundColor: getClusterColor(session)}"
-                            >
-                            </tc-test-view>
-                        </ng-container>
-                    </table>
-                </div>
-            </div>
-        </mat-sidenav-content>
-    </mat-sidenav-container>
+  <button
+      class="drawer-button-close"
+      mat-icon-button
+      (click)="sidenav.toggle()"
+      matTooltip=""
+      matTooltipPosition="right"
+  >
+    <mat-icon>chevron_right</mat-icon>
+  </button>
 
-    <button
-            class="drawer-button-close"
-            mat-icon-button
-            (click)="sidenav.toggle()"
-            matTooltip=""
-            matTooltipPosition="right"
-    >
-        <mat-icon>chevron_right</mat-icon>
-    </button>
-
-    <button *ngIf="sidenav.opened"
-            class="drawer-button-open"
-            mat-icon-button
-            (click)="sidenav.toggle()"
-            matTooltip="{{'Test-Steuerung verbergen' | customtext:'gm_hide_controls_tooltip' | async}}"
-            matTooltipPosition="above"
-    >
-        <mat-icon>chevron_left</mat-icon>
-    </button>
+  <button *ngIf="sidenav.opened"
+          class="drawer-button-open"
+          mat-icon-button
+          (click)="sidenav.toggle()"
+          matTooltip="{{'Test-Steuerung verbergen' | customtext:'gm_hide_controls_tooltip' | async}}"
+          matTooltipPosition="above"
+  >
+    <mat-icon>chevron_left</mat-icon>
+  </button>
 
 </div>
 
