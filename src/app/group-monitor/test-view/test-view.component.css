@@ -9,6 +9,13 @@ h2 {
     font-weight: normal;
 }
 
+.cluster {
+    border-left: 5px solid white;
+    border-bottom: none;
+    width: 0;
+    padding-right: 0;
+}
+
 .units-container {
     width: 100%
 }

@@ -102,17 +102,4 @@ export class TestViewComponent {
       inversion
     };
   }
-
-  getSpeciesClass(): string {
-    const species = this.testSession.booklet.species;
-    const q2 = species.length / 2;
-    const q1 = species.length / 4;
-    const q3 = 3 * (species.length / 4);
-    const end = species.length - 1;
-    const cnn = species.length * (species.charCodeAt(0) + species.charCodeAt(q1) +
-      species.charCodeAt(q2) + species.charCodeAt(q3) + species.charCodeAt(end));
-    const rgb = [0, 0, 0];
-    rgb[species.charCodeAt(end) % 3] = 56 + (cnn % 200);
-    return `rgba(${rgb[0]},${rgb[1]},${rgb[2]}, 1)`;
-  }
 }

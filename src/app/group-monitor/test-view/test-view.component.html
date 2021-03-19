@@ -30,7 +30,6 @@
     *ngIf="displayOptions.bookletColumn === 'show'"
     (click)="deselect($event)"
     (contextmenu)="deselectForce($event)"
-    [style]="{color:getSpeciesClass()}"
 >
     <ng-container *ngIf="!testSession.booklet.error; else: noBooklet">
         <div class="vertical-align-middle">{{testSession.booklet.metadata.label}}</div>

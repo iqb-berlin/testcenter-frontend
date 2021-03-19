@@ -20,8 +20,8 @@ export class BackendService extends WebsocketBackendService<TestSessionData[]> {
 
   public getBooklet(bookletName: string): Observable<string|BookletError> {
     const headers = new HttpHeaders({ 'Content-Type': 'text/xml' }).set('Accept', 'text/xml');
-    const missingFileError: BookletError = { error: 'missing-file' };
-    const generalError: BookletError = { error: 'general' };
+    const missingFileError: BookletError = { error: 'missing-file', species: null };
+    const generalError: BookletError = { error: 'general', species: null };
 
     return this.http
       .get(`${this.serverUrl}booklet/${bookletName}`, { headers, responseType: 'text' })

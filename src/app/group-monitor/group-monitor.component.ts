@@ -51,7 +51,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     bookletColumn: 'show',
     blockColumn: 'show',
     unitColumn: 'hide',
-    highlightSpecies: 'no' // TODO set and use this!
+    highlightSpecies: false
   };
 
   filterOptions: { label: string, filter: TestSessionFilter, selected: boolean }[] = [
@@ -91,6 +91,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     numberOfDifferentBookletSpecies: 0
   };
 
+  sessionClusterList: { [speciesId: string]: number };
+
   isScrollable = false;
   isClosing = false;
 
@@ -124,6 +126,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       .pipe(
         // eslint-disable-next-line max-len
         map(([sortBy, filters, sessions]) => this.sortSessions(sortBy, GroupMonitorComponent.filterSessions(sessions, filters))),
+        tap(sessions => this.adjustDisplaySettings(sessions)),
         tap(sessions => this.updateChecked(sessions))
       )
       .subscribe(this.sessions$);
@@ -187,6 +190,20 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         }
       });
     this.checkedSessions = newCheckedSessions;
+  }
+
+  private adjustDisplaySettings(sessions: TestSession[]): void {
+    this.displayOptions.highlightSpecies = GroupMonitorComponent.hasMultipleBookletSpecies(sessions);
+  }
+
+  private static hasMultipleBookletSpecies(sessions: TestSession[]): boolean {
+    const bookletSpeciesList: { [species: string]: boolean } = {};
+    sessions.forEach(session => {
+      if (session.booklet.species && (typeof bookletSpeciesList[session.booklet.species] === 'undefined')) {
+        bookletSpeciesList[session.booklet.species] = true;
+      }
+    });
+    return (Object.keys(bookletSpeciesList).length > 1);
   }
 
   trackSession = (index: number, session: TestSession): number => session.id;
@@ -486,5 +503,21 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       .add(() => {
         setTimeout(() => { this.router.navigateByUrl('/r/login'); }, 5000); // go away
       });
+  }
+
+  getClusterColor(session: TestSession): string {
+    if (!this.displayOptions.highlightSpecies) {
+      return 'white';
+    }
+    const species = session.booklet.species;
+    const q1 = species.length / 4;
+    const q2 = species.length / 2;
+    const q3 = 3 * (species.length / 4);
+    const end = species.length - 1;
+    const cnn = species.length * (species.charCodeAt(0) + species.charCodeAt(q1) +
+      species.charCodeAt(q2) + species.charCodeAt(q3) + species.charCodeAt(end));
+    const rgb = [255, 255, 255];
+    rgb[species.charCodeAt(end) % 3] = (cnn % 150);
+    return `rgba(${rgb[0]},${rgb[1]},${rgb[2]}, 0.07)`;
   }
 }

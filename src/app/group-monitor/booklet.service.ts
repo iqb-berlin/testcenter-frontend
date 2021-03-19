@@ -57,7 +57,7 @@ export class BookletService {
     return `species: ${booklet.units.children.filter(testletOrUnit => !isUnit(testletOrUnit)).length}`;
   }
 
-  public getBooklet(bookletName = ''): Observable<Booklet|BookletError> {
+  getBooklet(bookletName = ''): Observable<Booklet|BookletError> {
     if (typeof this.booklets[bookletName] !== 'undefined') {
       return this.booklets[bookletName];
     }

@@ -145,6 +145,8 @@
                 </div>
             </div>
 
+            <pre>{{sessionClusterList|json}}</pre>
+
             <div class="toolbar-section toolbar-section-bottom">
                 <button mat-raised-button class="control" color="primary" (click)="finishEverythingCommand()">
                     <mat-icon>stop</mat-icon>{{'Testung beenden' | customtext:'gm_control_finish_everything' | async}}
@@ -225,6 +227,7 @@
                                 (selectedElement$)="selectElement($event)"
                                 [checked]="isChecked(session)"
                                 (checked$)="toggleChecked($event, session)"
+                                [style]="{backgroundColor: getClusterColor(session)}"
                             >
                             </tc-test-view>
                         </ng-container>

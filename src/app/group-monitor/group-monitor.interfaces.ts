@@ -106,7 +106,7 @@ export interface TestViewDisplayOptions {
   view: 'full' | 'medium' | 'small';
   groupColumn: 'show' | 'hide';
   bookletColumn: 'show' | 'hide';
-  highlightSpecies: 'yes' | 'no'
+  highlightSpecies: boolean;
 }
 
 export function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
