@@ -51,8 +51,7 @@ exports.superStates = {
   },
   idle: {
     tooltip: 'Test ist 5 Minuten oder länger inaktiv!',
-    icon: 'hourglass_full',
-    class: 'danger'
+    icon: 'hourglass_full'
   },
   connection_websocket: {
     tooltip: 'Test läuft, Verbindung ist live',
