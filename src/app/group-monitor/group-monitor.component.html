@@ -38,7 +38,7 @@
 </mat-menu>
 
 <mat-menu #filters="matMenu">
-  <button mat-menu-item *ngFor="let filterOption of filterOptions; let i = index" (click)="switchFilter(i)">
+  <button mat-menu-item *ngFor="let filterOption of gms.filterOptions; let i = index" (click)="gms.switchFilter(i)">
     <mat-icon *ngIf="filterOption.selected">check</mat-icon>
     <span>{{filterOption.label}}</span>
   </button>
@@ -86,15 +86,15 @@
       <h2>{{'Test-Steuerung' | customtext:'gm_controls' | async}}</h2>
 
       <div class="selection-info">
-        <ng-container *ngIf="checkedSessionsInfo.number; else noCheckedSession">
+        <ng-container *ngIf="gms.checkedSessionsInfo.number; else noCheckedSession">
           {{
           '%s %s Test%s mit %s Testheft%s ausgewählt.'
             | customtext:'gm_selection_info'
-            : (checkedSessionsInfo.all ? ' Alle' : '')
-            : checkedSessionsInfo.number.toString(10)
-            : (checkedSessionsInfo.number !== 1 ? 's' : '')
-            : checkedSessionsInfo.numberOfDifferentBooklets.toString(10)
-            : (checkedSessionsInfo.numberOfDifferentBooklets !== 1 ? 'en' : '')
+            : (gms.checkedSessionsInfo.all ? ' Alle' : '')
+            : gms.checkedSessionsInfo.number.toString(10)
+            : (gms.checkedSessionsInfo.number !== 1 ? 's' : '')
+            : gms.checkedSessionsInfo.numberOfDifferentBooklets.toString(10)
+            : (gms.checkedSessionsInfo.numberOfDifferentBooklets !== 1 ? 'en' : '')
             | async
           }}
         </ng-container>
@@ -105,19 +105,12 @@
       </div>
 
       <div class="toolbar-section">
-        <button mat-raised-button class="control" color="primary" (click)="testCommandAllNext()">
-          <mat-icon>play_arrow</mat-icon>
-          {{'Alle in den nächsten block' | customtext:'gm_control_all_next' | async}}
-        </button>
-      </div>
-
-      <div class="toolbar-section">
-        <button mat-raised-button class="control" color="primary" (click)="testCommandResume()" [disabled]="!isResumeAllowed()">
+        <button mat-raised-button class="control" color="primary" (click)="gms.testCommandResume()" [disabled]="!isResumeAllowed()">
           <mat-icon>play_arrow</mat-icon>
           {{'weiter' | customtext:'gm_control_resume' | async}}
         </button>
 
-        <button mat-raised-button class="control" color="primary" (click)="testCommandPause()" [disabled]="!isPauseAllowed()">
+        <button mat-raised-button class="control" color="primary" (click)="gms.testCommandPause()" [disabled]="!isPauseAllowed()">
           <mat-icon>pause</mat-icon>{{'pause' | customtext:'gm_control_pause' | async}}
         </button>
       </div>
@@ -135,7 +128,7 @@
 
       <div class="toolbar-section">
         <button mat-raised-button class="control" color="primary"
-                (click)="testCommandUnlock()" [disabled]="!isUnlockAllowed()"
+                (click)="unlockCommand()" [disabled]="!isUnlockAllowed()"
                 matTooltip="{{'Freigeben' | customtext:'gm_control_unlock_tooltip' | async}}"
         >
           <mat-icon>lock_open</mat-icon>
@@ -191,9 +184,9 @@
               <td mat-sort-header="_checked">
                 <mat-checkbox
                     (click)="$event.stopPropagation()"
-                    (change)="toggleCheckAll($event)"
-                    [checked]="checkedSessionsInfo.all"
-                    (contextmenu)="invertChecked($event)"
+                    (change)="gms.toggleCheckAll($event)"
+                    [checked]="gms.checkedSessionsInfo.all"
+                    (contextmenu)="gms.invertChecked($event)"
                 ></mat-checkbox>
               </td>
               <td mat-sort-header="_superState">
@@ -220,7 +213,7 @@
             </tr>
             </thead>
 
-            <ng-container *ngFor="let session of sessions$ | async; trackBy: trackSession">
+            <ng-container *ngFor="let session of gms.sessions$ | async; trackBy: trackSession">
               <tc-test-view
                   [testSession]="session"
                   [displayOptions]="displayOptions"
@@ -228,7 +221,7 @@
                   (markedElement$)="markElement($event)"
                   [selected]="selectedElement"
                   (selectedElement$)="selectElement($event)"
-                  [checked]="isChecked(session)"
+                  [checked]="gms.isChecked(session)"
                   (checked$)="toggleChecked($event, session)"
                   [style]="{backgroundColor: getClusterColor(session)}"
               >

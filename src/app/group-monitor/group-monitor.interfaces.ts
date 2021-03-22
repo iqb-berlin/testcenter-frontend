@@ -137,3 +137,10 @@ export interface Selection {
   spreading: boolean;
   inversion: boolean;
 }
+
+export interface TestSessionSetStats {
+  all: boolean;
+  number: number;
+  numberOfDifferentBooklets: number;
+  numberOfDifferentBookletSpecies: number;
+}
