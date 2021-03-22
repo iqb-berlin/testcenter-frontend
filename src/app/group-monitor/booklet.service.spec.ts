@@ -8,6 +8,7 @@ import { Booklet } from './group-monitor.interfaces';
 import { TestSessionService } from './test-session.service';
 
 export const exampleBooklet: Booklet = { // labels are: {global index}-{ancestor index}-{local index}
+  species: 'example',
   config: undefined,
   metadata: undefined,
   units: {
@@ -77,6 +78,7 @@ export const exampleBooklet: Booklet = { // labels are: {global index}-{ancestor
 };
 
 export const exampleBooklet2: Booklet = {
+  species: 'example',
   config: undefined,
   metadata: undefined,
   units: {
@@ -118,7 +120,7 @@ export const exampleBooklet2: Booklet = {
 };
 
 class MockBackendService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars,class-methods-use-this
+  // eslint-disable-next-line class-methods-use-this,@typescript-eslint/no-unused-vars
   public getBooklet(bookletName: string): Observable<string> {
     return of('<booklet>TODO insert nice booklet</booklet>');
   }

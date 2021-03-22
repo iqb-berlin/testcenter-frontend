@@ -32,14 +32,14 @@ class MockBookletService {
 
   public getBooklet = (bookletName: string): Observable<Booklet | BookletError> => {
     if (!bookletName) {
-      return of({ error: 'general' });
+      return of({ error: 'general', species: null });
     }
 
     if (bookletName === 'test') {
       return of(exampleBooklet);
     }
 
-    return of({ error: 'missing-file' });
+    return of({ error: 'missing-file', species: null });
   };
 }
 
