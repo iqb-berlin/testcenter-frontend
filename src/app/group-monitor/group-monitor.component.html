@@ -134,8 +134,11 @@
       </div>
 
       <div class="toolbar-section">
-        <button mat-raised-button class="control" color="primary" (click)="testCommandUnlock()" [disabled]="!isUnlockAllowed()">
-          <mat-icon>lock-open</mat-icon>
+        <button mat-raised-button class="control" color="primary"
+                (click)="testCommandUnlock()" [disabled]="!isUnlockAllowed()"
+                matTooltip="{{'Freigeben' | customtext:'gm_control_unlock_tooltip' | async}}"
+        >
+          <mat-icon>lock_open</mat-icon>
           {{'Entsperren' | customtext:'gm_control_unlock' | async}}
         </button>
       </div>
