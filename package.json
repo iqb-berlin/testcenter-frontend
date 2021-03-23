@@ -39,7 +39,7 @@
     "fibers": "^4.0.3",
     "file-saver": "^2.0.5",
     "html-webpack-plugin": "^3.2.0",
-    "iqb-components": "^1.8.0",
+    "iqb-components": "1.8.0",
     "material-design-icons": "~3.0.1",
     "node-sass": "^4.14.1",
     "rxjs": "^6.5.5",
