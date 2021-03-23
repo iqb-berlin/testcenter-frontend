@@ -19,4 +19,4 @@ services:
     ports:
       - '8000:4010'
     command:
-        mock -h 0.0.0.0 'https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/master/docs/specs.yml'
+        mock -h 0.0.0.0 'https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/master/docs/api/specs.yml'

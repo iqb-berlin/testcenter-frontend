@@ -1,6 +1,6 @@
 {
   "name": "itc-ng",
-  "version": "6.5.1",
+  "version": "6.5.2",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -65,9 +65,9 @@
     "karma-coverage-istanbul-reporter": "^2.1.1",
     "karma-jasmine": "~3.1.0",
     "karma-jasmine-html-reporter": "^1.5.4",
+    "protractor": "^5.4.4",
     "ts-node": "~8.6.2",
-    "typescript": "~3.7.5",
-    "protractor": "^5.4.4"
+    "typescript": "~3.7.5"
   },
   "resolutions": {
     "tree-kill": "1.2.2"
