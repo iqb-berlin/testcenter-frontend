@@ -4,128 +4,8 @@ import { TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { BookletService } from './booklet.service';
 import { BackendService } from './backend.service';
-import { Booklet } from './group-monitor.interfaces';
 import { TestSessionService } from './test-session.service';
-
-export const exampleBooklet: Booklet = { // labels are: {global index}-{ancestor index}-{local index}
-  species: 'example',
-  config: undefined,
-  metadata: {
-    id: 'Booklet-1',
-    label: 'Label 1',
-    description: 'Description 1'
-  },
-  units: {
-    id: 'root',
-    label: 'Root',
-    descendantCount: 10,
-    children: [
-      { id: 'unit-1', label: '0-0-0', labelShort: 'unit' },
-      {
-        id: 'zara',
-        label: 'Testlet-0',
-        children: [],
-        descendantCount: 6
-      },
-      { id: 'unit-2', label: '1-1-1', labelShort: 'unit' },
-      {
-        id: 'alf',
-        label: 'Testlet-1',
-        descendantCount: 4,
-        children: [
-          { id: 'unit-3', label: '2-0-0', labelShort: 'unit' },
-          {
-            id: 'ben',
-            label: 'Testlet-2',
-            descendantCount: 3,
-            children: [
-              { id: 'unit-4', label: '3-1-0', labelShort: 'unit' },
-              {
-                id: 'cara',
-                label: 'Testlet-3',
-                descendantCount: 2,
-                children: []
-              },
-              { id: 'unit-5', label: '4-2-1', labelShort: 'unit' },
-              {
-                id: 'dolf',
-                label: 'Testlet-4',
-                descendantCount: 1,
-                children: [
-                  { id: 'unit-6', label: '5-3-0', labelShort: 'unit' }
-                ]
-              }
-            ]
-          },
-          { id: 'unit-7', label: '6-4-1', labelShort: 'unit' }
-        ]
-      },
-      { id: 'unit-8', label: '7-2-2', labelShort: 'unit' },
-      {
-        id: 'ellie',
-        label: 'Testlet-5',
-        descendantCount: 2,
-        children: [
-          { id: 'unit-9', label: '8-0-0', labelShort: 'unit' },
-          {
-            id: 'fred',
-            label: 'Testlet-6',
-            descendantCount: 1,
-            children: [
-              { id: 'unit-10', label: '9-1-0', labelShort: 'unit' }
-            ]
-          }
-        ]
-      }
-    ]
-  }
-};
-
-export const exampleBooklet2: Booklet = {
-  species: 'example',
-  config: undefined,
-  metadata: {
-    id: 'Booklet-2',
-    label: 'Label 2',
-    description: 'Description 2'
-  },
-  units: {
-    id: 'root',
-    label: 'Root',
-    descendantCount: 4,
-    children: [
-      {
-        id: 'zara',
-        label: 'Testlet-0',
-        descendantCount: 3,
-        children: [
-          {
-            id: 'alf',
-            label: 'Testlet-1',
-            descendantCount: 2,
-            children: [
-              {
-                id: 'alf',
-                label: 'Testlet-1',
-                descendantCount: 1,
-                children: [
-                  { id: 'unit-1', label: '0-0-0', labelShort: 'unit' }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      { id: 'unit-2', label: '1-1-1', labelShort: 'unit' },
-      {
-        id: 'ben',
-        label: 'Testlet-2',
-        descendantCount: 0,
-        children: []
-      }
-    ]
-  }
-};
+import { unitTestExampleBooklets } from './test-data.spec';
 
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this,@typescript-eslint/no-unused-vars
@@ -156,9 +36,9 @@ describe('BookletService', () => {
   });
 
   it('getFirstUnit() should get first unit if a testlet, regardless of nested sub-testlets', () => {
-    expect(BookletService.getFirstUnit(exampleBooklet.units).id).toEqual('unit-1');
-    expect(BookletService.getFirstUnit(exampleBooklet2.units).id).toEqual('unit-1');
-    expect(BookletService.getFirstUnit(exampleBooklet2.units.children[2])).toBeNull();
+    expect(BookletService.getFirstUnit(unitTestExampleBooklets.example_booklet_1.units).id).toEqual('unit-1');
+    expect(BookletService.getFirstUnit(unitTestExampleBooklets.example_booklet_2.units).id).toEqual('unit-1');
+    expect(BookletService.getFirstUnit(unitTestExampleBooklets.example_booklet_2.units.children[2])).toBeNull();
   });
 
   describe('getNextBlock()', () => {
@@ -166,17 +46,26 @@ describe('BookletService', () => {
     const getCurrent = TestSessionService['getCurrent'];
 
     it('should get next block at root-level, when blockless unit is selected', () => {
-      const result = BookletService.getNextBlock(getCurrent(exampleBooklet.units, 'unit-1'), exampleBooklet);
+      const result = BookletService.getNextBlock(
+        getCurrent(unitTestExampleBooklets.example_booklet_1.units, 'unit-1'),
+        unitTestExampleBooklets.example_booklet_1
+      );
       expect(result.id).toEqual('zara');
     });
 
     it('should get next block at root-level, when unit in nested testlet is selected', () => {
-      const result = BookletService.getNextBlock(getCurrent(exampleBooklet.units, 'unit-3'), exampleBooklet);
+      const result = BookletService.getNextBlock(
+        getCurrent(unitTestExampleBooklets.example_booklet_1.units, 'unit-3'),
+        unitTestExampleBooklets.example_booklet_1
+      );
       expect(result.id).toEqual('ellie');
     });
 
     it('should return null, if there is no next block on root-level', () => {
-      const result = BookletService.getNextBlock(getCurrent(exampleBooklet.units, 'unit-9'), exampleBooklet);
+      const result = BookletService.getNextBlock(
+        getCurrent(unitTestExampleBooklets.example_booklet_1.units, 'unit-9'),
+        unitTestExampleBooklets.example_booklet_1
+      );
       expect(result).toBeNull();
     });
   });

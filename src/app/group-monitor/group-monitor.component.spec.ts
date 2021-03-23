@@ -19,7 +19,6 @@ import {
   TestSessionData, TestSessionSetStats
 } from './group-monitor.interfaces';
 import { BackendService } from './backend.service';
-import { exampleSession } from './test-session.service.spec';
 import { TestViewComponent } from './test-view/test-view.component';
 import { GroupMonitorService } from './group-monitor.service';
 import { unitTestAllSessionsInfo, unitTestCheckedSessionsInfo, unitTestExampleSessions } from './test-data.spec';
@@ -34,7 +33,7 @@ class MockMatDialog {
 
 class MockBackendService {
   observeSessionsMonitor(): Observable<TestSessionData[]> {
-    return of([exampleSession.data]);
+    return of([unitTestExampleSessions[0].data]);
   }
 
   getGroupData(groupName: string): Observable<GroupData> {
@@ -60,6 +59,7 @@ class MockGroupMonitorService {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   connect = (_: string) => {};
+  disconnect = () => {};
 
   isChecked = () => false;
 }

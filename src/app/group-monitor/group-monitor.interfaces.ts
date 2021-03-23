@@ -48,7 +48,7 @@ export interface BookletError {
 }
 
 export function isBooklet(bookletOrError: Booklet|BookletError): bookletOrError is Booklet {
-  return !('error' in bookletOrError);
+  return bookletOrError && !('error' in bookletOrError);
 }
 
 export interface BookletMetadata {

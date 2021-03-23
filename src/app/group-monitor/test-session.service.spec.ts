@@ -1,32 +1,8 @@
 /* eslint-disable object-curly-newline */
 import { TestBed } from '@angular/core/testing';
 import { TestSessionService } from './test-session.service';
-import { exampleBooklet } from './booklet.service.spec';
+import { unitTestExampleBooklets, unitTestExampleSessions } from './test-data.spec';
 import { TestSession } from './group-monitor.interfaces';
-
-export const exampleSession: TestSession = {
-  booklet: exampleBooklet,
-  clearedCodes: undefined,
-  current: undefined,
-  data: {
-    personId: 1,
-    personLabel: 'Sample Person',
-    groupName: 'sample_group',
-    groupLabel: 'a sample group',
-    mode: 'run-hot-return',
-    testId: 1,
-    bookletName: 'sample_booklet',
-    testState: {
-      CONTROLLER: 'PAUSED'
-    },
-    unitName: 'unit-4',
-    unitState: {},
-    timestamp: 1234567980
-  },
-  id: 0,
-  state: undefined,
-  timeLeft: undefined
-};
 
 describe('TestSessionService', () => {
   let service: TestSessionService;
@@ -63,7 +39,7 @@ describe('TestSessionService', () => {
 
       for (let i = 0; i < 11; i++) {
         // eslint-disable-next-line @typescript-eslint/dot-notation
-        const result = TestSessionService['getCurrent'](exampleBooklet.units, `unit-${i}`);
+        const result = TestSessionService['getCurrent'](unitTestExampleBooklets.example_booklet_1.units, `unit-${i}`);
         const expectation = expectations[`unit-${i}`];
 
         expect(result.indexGlobal)

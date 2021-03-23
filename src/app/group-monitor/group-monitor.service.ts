@@ -323,7 +323,7 @@ export class GroupMonitorService {
     this.checkedSessionsInfo$.next(this.getSessionSetStats(this.checked));
   }
 
-  private getSessionSetStats(sessionSet: TestSession[]): TestSessionSetStats {
+  getSessionSetStats(sessionSet: TestSession[]): TestSessionSetStats {
     return {
       number: sessionSet.length,
       numberOfDifferentBooklets: sessionSet

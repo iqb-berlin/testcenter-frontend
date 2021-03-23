@@ -9,23 +9,21 @@ import {
   GroupData,
   TestSessionData
 } from './group-monitor.interfaces';
-import { exampleBooklet } from './booklet.service.spec';
 import { BookletService } from './booklet.service';
 import { BackendService } from './backend.service';
-import { exampleSession } from './test-session.service.spec';
 import { GroupMonitorService } from './group-monitor.service';
-import { unitTestExampleSessions } from './test-data.spec';
+import { unitTestExampleSessions, unitTestExampleBooklets } from './test-data.spec';
 
 class MockBookletService {
-  public booklets: Observable<Booklet>[] = [of(exampleBooklet)];
+  public booklets: Observable<Booklet>[] = [of(unitTestExampleBooklets.example_booklet_1)];
 
   public getBooklet = (bookletName: string): Observable<Booklet | BookletError> => {
     if (!bookletName) {
       return of({ error: 'general', species: null });
     }
 
-    if (bookletName === 'test') {
-      return of(exampleBooklet);
+    if (unitTestExampleBooklets[bookletName]) {
+      return of(unitTestExampleBooklets[bookletName]);
     }
 
     return of({ error: 'missing-file', species: null });
@@ -34,7 +32,7 @@ class MockBookletService {
 
 class MockBackendService {
   observeSessionsMonitor(): Observable<TestSessionData[]> {
-    return of([exampleSession.data]);
+    return of([unitTestExampleSessions[0].data]);
   }
 
   getGroupData(groupName: string): Observable<GroupData> {
@@ -71,6 +69,7 @@ describe('GroupMonitorService', () => {
     })
       .compileComponents();
     service = TestBed.inject(GroupMonitorService);
+    service.connect('unit-test-group-name');
   }));
 
   it('should create', () => {
@@ -81,13 +80,13 @@ describe('GroupMonitorService', () => {
     it('should sort by bookletName alphabetically', () => {
       const sorted = service.sortSessions({ active: 'bookletName', direction: 'asc' }, unitTestExampleSessions);
       expect(sorted.map(s => s.data.bookletName))
-        .toEqual(['example-booklet', 'example-booklet-2', 'example-booklet-3']);
+        .toEqual(['example_booklet_1', 'example_booklet_2', 'this_does_not_exist']);
     });
 
     it('should sort by bookletName alphabetically in reverse', () => {
       const sorted = service.sortSessions({ active: 'bookletName', direction: 'desc' }, unitTestExampleSessions);
       expect(sorted.map(s => s.data.bookletName))
-        .toEqual(['example-booklet-3', 'example-booklet-2', 'example-booklet']);
+        .toEqual(['this_does_not_exist', 'example_booklet_2', 'example_booklet_1']);
     });
 
     it('should sort by personLabel alphabetically', () => {
@@ -137,22 +136,32 @@ describe('GroupMonitorService', () => {
 
     it('should sort by currentBlock', () => {
       const sorted = service.sortSessions({ active: '_currentBlock', direction: 'asc' }, unitTestExampleSessions);
-      expect(sorted.map(s => (s.current ? s.current.parent.id : '--'))).toEqual(['ben', 'alf', '--']);
+      expect(sorted.map(s => (s.current ? s.current.parent.id : '--'))).toEqual([ 'alf', 'ben', '--']);
     });
 
     it('should sort by currentBlock reverse', () => {
       const sorted = service.sortSessions({ active: '_currentBlock', direction: 'desc' }, unitTestExampleSessions);
-      expect(sorted.map(s => (s.current ? s.current.parent.id : '--'))).toEqual(['--', 'alf', 'ben']);
+      expect(sorted.map(s => (s.current ? s.current.parent.id : '--'))).toEqual(['--', 'ben', 'alf']);
     });
 
     it('should sort by currentUnit label alphabetically', () => {
       const sorted = service.sortSessions({ active: '_currentUnit', direction: 'asc' }, unitTestExampleSessions);
-      expect(sorted.map(s => (s.current ? s.current.unit.id : '--'))).toEqual(['unit-5', 'unit-7', '--']);
+      expect(sorted.map(s => (s.current ? s.current.unit.id : '--'))).toEqual(['unit-1', 'unit-5', '--']);
     });
 
     it('should sort by currentUnit label alphabetically reverse', () => {
       const sorted = service.sortSessions({ active: '_currentUnit', direction: 'desc' }, unitTestExampleSessions);
-      expect(sorted.map(s => (s.current ? s.current.unit.id : '--'))).toEqual(['--', 'unit-7', 'unit-5']);
+      expect(sorted.map(s => (s.current ? s.current.unit.id : '--'))).toEqual(['--', 'unit-5', 'unit-1']);
+    });
+  });
+
+  describe('getSessionSetStats', () => {
+    it('should fetch correct stats from sessions', () => {
+      const result = service.getSessionSetStats(unitTestExampleSessions);
+      const expectation = {
+        number: 3, numberOfDifferentBooklets: 3, numberOfDifferentBookletSpecies: 3, all: false
+      };
+      expect(expectation).toEqual(result);
     });
   });
 });

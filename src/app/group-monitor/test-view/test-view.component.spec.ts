@@ -4,7 +4,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TestViewComponent } from './test-view.component';
 import { TestViewDisplayOptions } from '../group-monitor.interfaces';
-import { exampleSession } from '../test-session.service.spec';
+import { unitTestExampleSessions } from '../test-data.spec';
 
 describe('TestViewComponent', () => {
   let component: TestViewComponent;
@@ -21,7 +21,7 @@ describe('TestViewComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TestViewComponent);
     component = fixture.componentInstance;
-    component.testSession = exampleSession;
+    component.testSession = unitTestExampleSessions[0];
     component.displayOptions = <TestViewDisplayOptions>{
       bookletColumn: undefined,
       groupColumn: undefined,
