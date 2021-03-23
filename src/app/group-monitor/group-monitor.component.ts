@@ -27,7 +27,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private route: ActivatedRoute,
-    private bs: BackendService,
+    private bs: BackendService, // TODO move completely to service
     public gms: GroupMonitorService,
     private router: Router
   ) {}

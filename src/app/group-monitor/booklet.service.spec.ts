@@ -10,7 +10,11 @@ import { TestSessionService } from './test-session.service';
 export const exampleBooklet: Booklet = { // labels are: {global index}-{ancestor index}-{local index}
   species: 'example',
   config: undefined,
-  metadata: undefined,
+  metadata: {
+    id: 'Booklet-1',
+    label: 'Label 1',
+    description: 'Description 1'
+  },
   units: {
     id: 'root',
     label: 'Root',
@@ -80,7 +84,11 @@ export const exampleBooklet: Booklet = { // labels are: {global index}-{ancestor
 export const exampleBooklet2: Booklet = {
   species: 'example',
   config: undefined,
-  metadata: undefined,
+  metadata: {
+    id: 'Booklet-2',
+    label: 'Label 2',
+    description: 'Description 2'
+  },
   units: {
     id: 'root',
     label: 'Root',
@@ -121,7 +129,7 @@ export const exampleBooklet2: Booklet = {
 
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this,@typescript-eslint/no-unused-vars
-  public getBooklet(bookletName: string): Observable<string> {
+  public getBooklet(_: string): Observable<string> {
     return of('<booklet>TODO insert nice booklet</booklet>');
   }
 }
