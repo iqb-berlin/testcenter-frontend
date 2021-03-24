@@ -324,16 +324,19 @@ export class GroupMonitorService {
   }
 
   getSessionSetStats(sessionSet: TestSession[]): TestSessionSetStats {
+    const booklets = new Set();
+    const bookletSpecies = new Set();
+
+    sessionSet
+      .forEach(session => {
+        booklets.add(session.data.bookletName);
+        bookletSpecies.add(session.booklet.species);
+      });
+
     return {
       number: sessionSet.length,
-      numberOfDifferentBooklets: sessionSet
-        .map(session => session.data.bookletName)
-        .filter((value, index, self) => self.indexOf(value) === index)
-        .length,
-      numberOfDifferentBookletSpecies: sessionSet
-        .map(session => session.booklet.species)
-        .filter((value, index, self) => self.indexOf(value) === index)
-        .length,
+      numberOfDifferentBooklets: booklets.size,
+      numberOfDifferentBookletSpecies: bookletSpecies.size,
       all: (this.sessions.length === sessionSet.length)
     };
   }
