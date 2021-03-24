@@ -32,7 +32,7 @@ export class TestViewComponent {
   @Output() selectedElement$ = new EventEmitter<Selection>();
   @Output() checked$ = new EventEmitter<boolean>();
 
-  superStateIcons: {[key in TestSessionSuperState]: IconData} = superStates;
+  superStateIcons: { [key in TestSessionSuperState]: IconData } = superStates;
 
   stateString = TestSessionService.stateString;
 
