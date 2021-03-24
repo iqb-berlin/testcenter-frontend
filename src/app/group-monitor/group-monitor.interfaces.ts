@@ -141,6 +141,8 @@ export interface Selection {
 export interface TestSessionSetStats {
   all: boolean;
   number: number;
-  numberOfDifferentBooklets: number;
-  numberOfDifferentBookletSpecies: number;
+  differentBooklets: number;
+  differentBookletSpecies: number;
+  paused: number;
+  locked: number;
 }

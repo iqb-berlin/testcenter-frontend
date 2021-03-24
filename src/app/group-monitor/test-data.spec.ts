@@ -181,13 +181,17 @@ export const unitTestExampleSessions: TestSession[] = [
 export const unitTestAllSessionsInfo: TestSessionSetStats = {
   all: false,
   number: 0,
-  numberOfDifferentBookletSpecies: 0,
-  numberOfDifferentBooklets: 0
+  differentBookletSpecies: 0,
+  differentBooklets: 0,
+  paused: 0,
+  locked: 0
 };
 
 export const unitTestCheckedSessionsInfo: TestSessionSetStats = {
   all: false,
   number: 0,
-  numberOfDifferentBookletSpecies: 0,
-  numberOfDifferentBooklets: 0
+  differentBookletSpecies: 0,
+  differentBooklets: 0,
+  paused: 0,
+  locked: 0
 };

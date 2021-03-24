@@ -15,7 +15,6 @@ import {
   TestViewDisplayOptionKey, Selection, TestSession, TestSessionSetStats
 } from './group-monitor.interfaces';
 import { ConnectionStatus } from '../shared/websocket-backend.service';
-import { TestSessionService } from './test-session.service';
 import { GroupMonitorService } from './group-monitor.service';
 
 @Component({
@@ -49,6 +48,13 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     highlightSpecies: false
   };
 
+  permissions: {
+    goto: boolean;
+    pause: boolean,
+    resume: boolean,
+    unlock: boolean
+  };
+
   isScrollable = false;
   isClosing = false;
 
@@ -68,7 +74,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.gms.allSessionsInfo$.subscribe(stats => {
       this.onSessionsUpdate(stats);
     });
-    this.gms.allSessionsInfo$.subscribe(stats => {
+    this.gms.checkedSessionsInfo$.subscribe(stats => {
       this.onCheckedChange(stats);
     });
     this.connectionStatus$ = this.bs.connectionStatus$;
@@ -82,13 +88,23 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   private onSessionsUpdate(stats: TestSessionSetStats): void {
-    this.displayOptions.highlightSpecies = (stats.numberOfDifferentBookletSpecies > 1);
+    this.displayOptions.highlightSpecies = (stats.differentBookletSpecies > 1);
   }
 
   private onCheckedChange(stats: TestSessionSetStats): void {
-    if (stats.numberOfDifferentBookletSpecies > 1) {
+    if (stats.differentBookletSpecies > 1) {
       this.selectedElement = null;
     }
+    this.updateControlPermissions(stats);
+  }
+
+  private updateControlPermissions(checked) {
+    this.permissions = {
+      pause: checked.number && (checked.paused === 0),
+      resume: checked.number && (checked.paused === checked.number),
+      unlock: checked.number && (checked.locked === checked.number),
+      goto: checked.number && (checked.differentBookletSpecies === 1)
+    };
   }
 
   trackSession = (index: number, session: TestSession): number => session.id;
@@ -143,33 +159,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.selectedElement = selected;
   }
 
-  isPauseAllowed(): boolean {
-    const activeSessions = this.gms.sessions.length && this.gms.sessions
-      .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'running'));
-    return activeSessions.length && activeSessions
-      .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'running'))
-      .filter(session => TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'PAUSED'))
-      .length === 0;
-  }
-
-  isResumeAllowed(): boolean {
-    const activeSessions = this.gms.sessions
-      .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'running'));
-    return activeSessions.length && activeSessions
-      .filter(session => !TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'PAUSED'))
-      .length === 0;
-  }
-
-  isUnlockAllowed(): boolean {
-    const lockedSessions = this.gms.sessions
-      .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'locked'));
-    return lockedSessions.length && (lockedSessions.length === Object.values(this.gms.checkedSessions).length);
-  }
-
-  isGotoAllowed(): boolean {
-    return !!(this.selectedElement?.element) && (this.gms.checkedSessionsInfo.numberOfDifferentBookletSpecies === 1);
-  }
-
   finishEverythingCommand(): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: 'auto',
@@ -199,6 +188,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   unlockCommand(): void {
     this.gms.testCommandUnlock().add(() => {
       const plural = this.gms.sessions.length > 1;
+      // TODO zahl stimmt nicht
       this.addWarning('reload-some-clients',
         `${plural ? this.gms.sessions.length : 'Ein'} Test${plural ? 's' : ''} 
         wurde${plural ? 'n' : ''} entsperrt. ${plural ? 'Die' : 'Der'} Teilnehmer 

@@ -7,7 +7,7 @@ import {
   Booklet,
   BookletError,
   GroupData,
-  TestSessionData
+  TestSessionData, TestSessionSetStats
 } from './group-monitor.interfaces';
 import { BookletService } from './booklet.service';
 import { BackendService } from './backend.service';
@@ -136,7 +136,7 @@ describe('GroupMonitorService', () => {
 
     it('should sort by currentBlock', () => {
       const sorted = service.sortSessions({ active: '_currentBlock', direction: 'asc' }, unitTestExampleSessions);
-      expect(sorted.map(s => (s.current ? s.current.parent.id : '--'))).toEqual([ 'alf', 'ben', '--']);
+      expect(sorted.map(s => (s.current ? s.current.parent.id : '--'))).toEqual(['alf', 'ben', '--']);
     });
 
     it('should sort by currentBlock reverse', () => {
@@ -155,11 +155,16 @@ describe('GroupMonitorService', () => {
     });
   });
 
-  describe('getSessionSetStats', () => {
+  fdescribe('getSessionSetStats', () => {
     it('should fetch correct stats from sessions', () => {
       const result = service.getSessionSetStats(unitTestExampleSessions);
-      const expectation = {
-        number: 3, numberOfDifferentBooklets: 3, numberOfDifferentBookletSpecies: 3, all: false
+      const expectation: TestSessionSetStats = {
+        number: 3,
+        differentBooklets: 3,
+        differentBookletSpecies: 3,
+        all: false,
+        paused: 1,
+        locked: 0
       };
       expect(expectation).toEqual(result);
     });

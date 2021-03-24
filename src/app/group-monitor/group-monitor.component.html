@@ -93,8 +93,8 @@
             : (gms.checkedSessionsInfo.all ? ' Alle' : '')
             : gms.checkedSessionsInfo.number.toString(10)
             : (gms.checkedSessionsInfo.number !== 1 ? 's' : '')
-            : gms.checkedSessionsInfo.numberOfDifferentBooklets.toString(10)
-            : (gms.checkedSessionsInfo.numberOfDifferentBooklets !== 1 ? 'en' : '')
+            : gms.checkedSessionsInfo.differentBooklets.toString(10)
+            : (gms.checkedSessionsInfo.differentBooklets !== 1 ? 'en' : '')
             | async
           }}
         </ng-container>
@@ -105,31 +105,42 @@
       </div>
 
       <div class="toolbar-section">
-        <button mat-raised-button class="control" color="primary" (click)="gms.testCommandResume()" [disabled]="!isResumeAllowed()">
+        <button mat-raised-button class="control" color="primary" (click)="gms.testCommandResume()" [disabled]="!permissions.resume">
           <mat-icon>play_arrow</mat-icon>
           {{'weiter' | customtext:'gm_control_resume' | async}}
         </button>
 
-        <button mat-raised-button class="control" color="primary" (click)="gms.testCommandPause()" [disabled]="!isPauseAllowed()">
-          <mat-icon>pause</mat-icon>{{'pause' | customtext:'gm_control_pause' | async}}
+        <button mat-raised-button class="control" color="primary" (click)="gms.testCommandPause()" [disabled]="!permissions.pause">
+          <mat-icon>pause</mat-icon>
+          {{'pause' | customtext:'gm_control_pause' | async}}
         </button>
       </div>
 
       <div class="toolbar-section">
-        <button mat-raised-button class="control" color="primary" (click)="testCommandGoto()" [disabled]="!isGotoAllowed()">
+        <button
+          mat-raised-button
+          class="control"
+          color="primary"
+          (click)="testCommandGoto()"
+          [disabled]="!selectedElement?.element?.blockId || !permissions.goto"
+        >
           <mat-icon>arrow_forward</mat-icon>
           {{'Springe zu' | customtext:'gm_control_goto' | async}}
           <span class="emph">{{selectedElement?.element?.blockId}}</span>
-          <span class="emph" *ngIf="!isGotoAllowed()">
+          <span class="emph" *ngIf="!selectedElement?.element?.blockId || !permissions.goto">
             {{'Block auswählen!' | customtext:'gm_test_command_no_selected_block' | async}}
           </span>
         </button>
       </div>
 
       <div class="toolbar-section">
-        <button mat-raised-button class="control" color="primary"
-                (click)="unlockCommand()" [disabled]="!isUnlockAllowed()"
-                matTooltip="{{'Freigeben' | customtext:'gm_control_unlock_tooltip' | async}}"
+        <button
+          mat-raised-button
+          class="control"
+          color="primary"
+          (click)="unlockCommand()"
+          [disabled]="!permissions.unlock"
+          matTooltip="{{'Freigeben' | customtext:'gm_control_unlock_tooltip' | async}}"
         >
           <mat-icon>lock_open</mat-icon>
           {{'Entsperren' | customtext:'gm_control_unlock' | async}}
@@ -141,6 +152,9 @@
         <div *ngFor="let warning of warnings | keyvalue" class="alert-warning">
           <mat-icon>warning</mat-icon>{{warning.value.text}}
         </div>
+        <pre>{{gms.checkedSessionsInfo | json}}</pre>
+        <pre>{{permissions | json}}</pre>
+        <pre>{{selectedElement | json}}</pre>
       </div>
 
       <div class="toolbar-section toolbar-section-bottom">
@@ -156,21 +170,23 @@
       <div #adminbackground class="adminbackground" (scroll)="updateScrollHint()">
 
         <div class="corner-menu">
-          <button class="settings-button"
-                  mat-icon-button
-                  [matMenuTriggerFor]="rootMenu"
-                  matTooltip="{{'Ansicht' | customtext:'gm_settings_tooltip' | async}}"
-                  matTooltipPosition="above"
+          <button
+            class="settings-button"
+            mat-icon-button
+            [matMenuTriggerFor]="rootMenu"
+            matTooltip="{{'Ansicht' | customtext:'gm_settings_tooltip' | async}}"
+            matTooltipPosition="above"
           >
             <mat-icon>settings</mat-icon>
           </button>
         </div>
 
         <div class="scroll-hint" *ngIf="isScrollable">
-          <button mat-icon-button
-                  (click)="scrollDown()"
-                  matTooltip="{{'Ganz nach unten' | customtext:'gm_scroll_down' | async}}"
-                  matTooltipPosition="above"
+          <button
+            mat-icon-button
+            (click)="scrollDown()"
+            matTooltip="{{'Ganz nach unten' | customtext:'gm_scroll_down' | async}}"
+            matTooltipPosition="above"
           >
             <mat-icon>keyboard_arrow_down</mat-icon>
           </button>

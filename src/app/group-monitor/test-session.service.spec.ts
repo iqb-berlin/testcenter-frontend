@@ -1,8 +1,7 @@
 /* eslint-disable object-curly-newline */
 import { TestBed } from '@angular/core/testing';
 import { TestSessionService } from './test-session.service';
-import { unitTestExampleBooklets, unitTestExampleSessions } from './test-data.spec';
-import { TestSession } from './group-monitor.interfaces';
+import { unitTestExampleBooklets } from './test-data.spec';
 
 describe('TestSessionService', () => {
   let service: TestSessionService;

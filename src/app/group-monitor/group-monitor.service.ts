@@ -54,15 +54,19 @@ export class GroupMonitorService {
   readonly checkedSessionsInfo$: BehaviorSubject<TestSessionSetStats> = new BehaviorSubject<TestSessionSetStats>({
     all: false,
     number: 0,
-    numberOfDifferentBookletSpecies: 0,
-    numberOfDifferentBooklets: 0
+    differentBookletSpecies: 0,
+    differentBooklets: 0,
+    paused: 0,
+    locked: 0
   });
 
   readonly allSessionsInfo$: BehaviorSubject<TestSessionSetStats> = new BehaviorSubject<TestSessionSetStats>({
     all: false,
     number: 0,
-    numberOfDifferentBookletSpecies: 0,
-    numberOfDifferentBooklets: 0
+    differentBookletSpecies: 0,
+    differentBooklets: 0,
+    paused: 0,
+    locked: 0
   });
 
   filterOptions: { label: string, filter: TestSessionFilter, selected: boolean }[] = [
@@ -326,18 +330,24 @@ export class GroupMonitorService {
   getSessionSetStats(sessionSet: TestSession[]): TestSessionSetStats {
     const booklets = new Set();
     const bookletSpecies = new Set();
+    let paused = 0;
+    let locked = 0;
 
     sessionSet
       .forEach(session => {
         booklets.add(session.data.bookletName);
         bookletSpecies.add(session.booklet.species);
+        if (TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'PAUSED')) paused += 1;
+        if (TestSessionService.hasState(session.data.testState, 'status', 'locked')) locked += 1;
       });
 
     return {
       number: sessionSet.length,
-      numberOfDifferentBooklets: booklets.size,
-      numberOfDifferentBookletSpecies: bookletSpecies.size,
-      all: (this.sessions.length === sessionSet.length)
+      differentBooklets: booklets.size,
+      differentBookletSpecies: bookletSpecies.size,
+      all: (this.sessions.length === sessionSet.length),
+      paused,
+      locked
     };
   }
 
