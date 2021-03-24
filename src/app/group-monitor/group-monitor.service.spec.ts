@@ -15,9 +15,9 @@ import { GroupMonitorService } from './group-monitor.service';
 import { unitTestExampleSessions, unitTestExampleBooklets } from './test-data.spec';
 
 class MockBookletService {
-  public booklets: Observable<Booklet>[] = [of(unitTestExampleBooklets.example_booklet_1)];
+  booklets: Observable<Booklet>[] = [of(unitTestExampleBooklets.example_booklet_1)];
 
-  public getBooklet = (bookletName: string): Observable<Booklet | BookletError> => {
+  getBooklet = (bookletName: string): Observable<Booklet | BookletError> => {
     if (!bookletName) {
       return of({ error: 'general', species: null });
     }
@@ -155,7 +155,7 @@ describe('GroupMonitorService', () => {
     });
   });
 
-  fdescribe('getSessionSetStats', () => {
+  describe('getSessionSetStats', () => {
     it('should fetch correct stats from sessions', () => {
       const result = service.getSessionSetStats(unitTestExampleSessions);
       const expectation: TestSessionSetStats = {

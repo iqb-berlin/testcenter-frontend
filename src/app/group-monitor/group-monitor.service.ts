@@ -20,7 +20,7 @@ import {
  * fragen:
  * - was geben die commands zurück?
  * - wie wird alles reseted?
- * - is*alloweed sollte on checkedChanges ermittelt werden
+ * # is*alloweed sollte on checkedChanges ermittelt werden
  * - sollte checkedSessions ein observable sein? (hint: ja)
  */
 
@@ -44,6 +44,10 @@ export class GroupMonitorService {
 
   get checkedSessionsInfo(): TestSessionSetStats {
     return this.checkedSessionsInfo$.getValue();
+  }
+
+  get sessionsInfo(): TestSessionSetStats {
+    return this.allSessionsInfo$.getValue();
   }
 
   private allSessions$: BehaviorSubject<TestSession[]>;

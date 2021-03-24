@@ -86,6 +86,14 @@
       <h2>{{'Test-Steuerung' | customtext:'gm_controls' | async}}</h2>
 
       <div class="selection-info">
+        <div *ngIf="gms.sessionsInfo.differentBookletSpecies > 1">
+          {{
+          'Die verwendeten Booklets sind zu unterschiedlich um gemeinsam benutzt zu werden.'
+            | customtext:'gm_multiple_booklet_species_warning'
+            | async
+          }}
+        </div>
+
         <ng-container *ngIf="gms.checkedSessionsInfo.number; else noCheckedSession">
           {{
           '%s %s Test%s mit %s Testheft%s ausgewählt.'
@@ -97,6 +105,9 @@
             : (gms.checkedSessionsInfo.differentBooklets !== 1 ? 'en' : '')
             | async
           }}
+
+
+
         </ng-container>
         <ng-template #noCheckedSession>
           {{'Kein Test gewählt.' | customtext:'gm_selection_info_none' | async}}
