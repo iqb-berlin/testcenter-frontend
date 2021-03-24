@@ -217,16 +217,14 @@ export class GroupMonitorService {
 
   testCommandResume(): void {
     const testIds = this.checked
-      .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'running'))
-      .filter(session => TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'PAUSED'))
+      .filter(TestSessionService.isPaused)
       .map(session => session.data.testId);
     this.bs.command('resume', [], testIds);
   }
 
   testCommandPause(): void {
     const testIds = this.checked
-      .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'running'))
-      .filter(session => !TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'PAUSED'))
+      .filter(session => !TestSessionService.isPaused(session))
       .map(session => session.data.testId);
     this.bs.command('pause', [], testIds);
   }
@@ -261,9 +259,10 @@ export class GroupMonitorService {
   }
 
   testCommandUnlock(): Subscription {
-    const sessions = this.checked
-      .filter(session => TestSessionService.hasState(session.data.testState, 'status', 'locked'));
-    return this.bs.unlock(this.groupName, sessions.map(session => session.data.testId));
+    const sessionIds = this.checked
+      .filter(TestSessionService.isLocked)
+      .map(session => session.data.testId);
+    return this.bs.unlock(this.groupName, sessionIds);
   }
 
   checkSessionsBySelection(selected: Selection): void {
@@ -337,8 +336,8 @@ export class GroupMonitorService {
       .forEach(session => {
         booklets.add(session.data.bookletName);
         bookletSpecies.add(session.booklet.species);
-        if (TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'PAUSED')) paused += 1;
-        if (TestSessionService.hasState(session.data.testState, 'status', 'locked')) locked += 1;
+        if (TestSessionService.isPaused(session)) paused += 1;
+        if (TestSessionService.isLocked(session)) locked += 1;
       });
 
     return {
@@ -351,7 +350,7 @@ export class GroupMonitorService {
     };
   }
 
-  public finishEverything(): Subscription {
+  finishEverything(): Subscription {
     // TODO was ist hier mit gefilterten sessions?!
     const getUnlockedConnectedTestIds = () => Object.values(this.allSessions$.getValue())
       .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked') &&

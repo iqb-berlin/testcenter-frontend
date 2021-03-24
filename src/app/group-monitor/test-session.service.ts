@@ -17,6 +17,14 @@ export class TestSessionService {
     return ((typeof state[key] !== 'undefined') && ((value !== null) ? (state[key] === value) : true));
   }
 
+  static isPaused(session: TestSession): boolean {
+    return TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'PAUSED');
+  }
+
+  static isLocked(session: TestSession): boolean {
+    return TestSessionService.hasState(session.data.testState, 'status', 'locked');
+  }
+
   static analyzeTestSession(session: TestSessionData, booklet: Booklet | BookletError): TestSession {
     const current = isBooklet(booklet) ? TestSessionService.getCurrent(booklet.units, session.unitName) : null;
     return {
