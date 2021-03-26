@@ -49,7 +49,7 @@ class MockBackendService {
 
 class MockGroupMonitorService {
   checkingOptions: CheckingOptions = {
-    manualCheckingOnly: false,
+    disableAutoCheckAll: false,
     autoCheckAll: true
   };
 

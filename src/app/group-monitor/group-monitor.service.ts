@@ -17,7 +17,8 @@ import {
 
 /**
  * func:
- * - checkAll
+ * # checkAll
+ * - stop / resume usw. ohne erlaubnis-check! sonst macht alwaysAll keinen Sinn
  * - automatisch den nächsten wählen (?)
  * - problem beim markieren
  * tidy:
@@ -94,7 +95,7 @@ export class GroupMonitorService {
     this.sortBy$ = new BehaviorSubject<Sort>({ direction: 'asc', active: 'personLabel' });
     this.filters$ = new BehaviorSubject<TestSessionFilter[]>([]);
     this.checkingOptions = {
-      manualCheckingOnly: true,
+      disableAutoCheckAll: true,
       autoCheckAll: true
     };
 
@@ -182,9 +183,9 @@ export class GroupMonitorService {
   private synchronizeChecked(sessions: TestSession[]): void {
     const sessionsStats = this.getSessionSetStats(sessions);
 
-    this.checkingOptions.manualCheckingOnly = (sessionsStats.differentBookletSpecies < 2);
+    this.checkingOptions.disableAutoCheckAll = (sessionsStats.differentBookletSpecies < 2);
 
-    if (!this.checkingOptions.manualCheckingOnly) {
+    if (!this.checkingOptions.disableAutoCheckAll) {
       this.checkingOptions.autoCheckAll = false;
     }
 

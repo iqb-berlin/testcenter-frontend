@@ -93,7 +93,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   private onSessionsUpdate(stats: TestSessionSetStats): void {
     this.displayOptions.highlightSpecies = (stats.differentBookletSpecies > 1);
 
-    if (!this.gms.checkingOptions.manualCheckingOnly) {
+    if (!this.gms.checkingOptions.disableAutoCheckAll) {
       this.displayOptions.manualChecking = true;
     }
   }
@@ -229,7 +229,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   toggleAlwaysCheckAll(event: MatSlideToggleChange): void {
-    if (this.gms.checkingOptions.manualCheckingOnly && !event.checked) {
+    if (this.gms.checkingOptions.disableAutoCheckAll && !event.checked) {
       this.gms.checkAll();
       this.displayOptions.manualChecking = false;
       this.gms.checkingOptions.autoCheckAll = true;

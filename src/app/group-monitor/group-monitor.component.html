@@ -94,9 +94,15 @@
           }}
         </div>
         <ng-template #singleBookletSpecies>
-          <mat-slide-toggle color="accent" (change)="toggleAlwaysCheckAll($event)" [disabled]="!gms.checkingOptions.manualCheckingOnly">
+          <mat-slide-toggle
+            color="accent"
+            (change)="toggleAlwaysCheckAll($event)"
+            [disabled]="!gms.checkingOptions.disableAutoCheckAll"
+            [checked]="!gms.checkingOptions.autoCheckAll"
+          >
             Einzelauswahl der Sitzungen
           </mat-slide-toggle>
+          <pre>{{gms.checkingOptions|json}}</pre>
         </ng-template>
       </div>
 
@@ -213,11 +219,11 @@
               <tr class="mat-sort-container">
                 <td mat-sort-header="_checked" *ngIf="displayOptions.manualChecking">
                   <mat-checkbox
-                      *ngIf="gms.checkedStats$ | async as checkedStats"
-                      (click)="$event.stopPropagation()"
-                      (change)="toggleCheckAll($event)"
-                      [checked]="checkedStats.all"
-                      (contextmenu)="invertChecked($event)"
+                    *ngIf="gms.checkedStats$ | async as checkedStats"
+                    (click)="$event.stopPropagation()"
+                    (change)="toggleCheckAll($event)"
+                    [checked]="checkedStats.all"
+                    (contextmenu)="invertChecked($event)"
                   ></mat-checkbox> <!-- TODO cheked!! -->
                 </td>
                 <td mat-sort-header="_superState">
