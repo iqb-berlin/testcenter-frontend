@@ -71,10 +71,10 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.ownGroupName = params['group-name'];
       this.gms.connect(params['group-name']);
     });
-    this.gms.allSessionsInfo$.subscribe(stats => {
+    this.gms.sessionsStats$.subscribe(stats => {
       this.onSessionsUpdate(stats);
     });
-    this.gms.checkedSessionsInfo$.subscribe(stats => {
+    this.gms.checkedStats$.subscribe(stats => {
       this.onCheckedChange(stats);
     });
     this.connectionStatus$ = this.bs.connectionStatus$;

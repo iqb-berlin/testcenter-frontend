@@ -111,15 +111,15 @@ describe('GroupMonitorService', () => {
 
     it('should sort by checked', () => {
       const exampleSession1 = unitTestExampleSessions[1];
-      // sortSession does not only return sorted array, but sorts original array in-playe as js function sort does
-      service.checkedSessions[exampleSession1.id] = exampleSession1;
+      // sortSession does not only return sorted array, but sorts original array in-play as js function sort does
+      service.checkSession(exampleSession1);
       const sorted = service.sortSessions({ active: '_checked', direction: 'asc' }, unitTestExampleSessions);
       expect(sorted[0].id).toEqual(exampleSession1.id);
     });
 
     it('should sort by checked reverse', () => {
       const exampleSession1 = unitTestExampleSessions[1];
-      service.checkedSessions[exampleSession1.id] = exampleSession1;
+      service.checkSession(exampleSession1);
       const sorted = service.sortSessions({ active: '_checked', direction: 'desc' }, unitTestExampleSessions);
       expect(sorted[2].id).toEqual(exampleSession1.id);
     });

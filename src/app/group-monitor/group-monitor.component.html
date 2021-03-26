@@ -85,34 +85,34 @@
 
       <h2>{{'Test-Steuerung' | customtext:'gm_controls' | async}}</h2>
 
-      <div class="selection-info">
-        <div *ngIf="gms.sessionsInfo.differentBookletSpecies > 1">
+      <div class="selection-info" *ngIf="gms.sessionsStats$ | async as sessionsStats">
+        <div *ngIf="sessionsStats.differentBookletSpecies > 1">
           {{
           'Die verwendeten Booklets sind zu unterschiedlich um gemeinsam benutzt zu werden.'
             | customtext:'gm_multiple_booklet_species_warning'
             | async
           }}
         </div>
+      </div>
 
-        <ng-container *ngIf="gms.checkedSessionsInfo.number; else noCheckedSession">
+      <div class="selection-info" *ngIf="gms.checkedStats$ | async as checkedStats">
+        <ng-container *ngIf="checkedStats.number; else noCheckedSession">
           {{
           '%s %s Test%s mit %s Testheft%s ausgewählt.'
             | customtext:'gm_selection_info'
-            : (gms.checkedSessionsInfo.all ? ' Alle' : '')
-            : gms.checkedSessionsInfo.number.toString(10)
-            : (gms.checkedSessionsInfo.number !== 1 ? 's' : '')
-            : gms.checkedSessionsInfo.differentBooklets.toString(10)
-            : (gms.checkedSessionsInfo.differentBooklets !== 1 ? 'en' : '')
+            : (checkedStats.all ? ' Alle' : '')
+            : checkedStats.number.toString(10)
+            : (checkedStats.number !== 1 ? 's' : '')
+            : checkedStats.differentBooklets.toString(10)
+            : (checkedStats.differentBooklets !== 1 ? 'en' : '')
             | async
           }}
-
-
-
         </ng-container>
         <ng-template #noCheckedSession>
           {{'Kein Test gewählt.' | customtext:'gm_selection_info_none' | async}}
         </ng-template>
         <hr>
+        <pre>{{checkedStats | json}}</pre>
       </div>
 
       <div class="toolbar-section">
@@ -158,12 +158,10 @@
         </button>
       </div>
 
-
       <div class="toolbar-section">
         <div *ngFor="let warning of warnings | keyvalue" class="alert-warning">
           <mat-icon>warning</mat-icon>{{warning.value.text}}
         </div>
-        <pre>{{gms.checkedSessionsInfo | json}}</pre>
         <pre>{{permissions | json}}</pre>
         <pre>{{selectedElement | json}}</pre>
       </div>
@@ -212,9 +210,9 @@
                 <mat-checkbox
                     (click)="$event.stopPropagation()"
                     (change)="gms.toggleCheckAll($event)"
-                    [checked]="gms.checkedSessionsInfo.all"
+                    [checked]="false"
                     (contextmenu)="gms.invertChecked($event)"
-                ></mat-checkbox>
+                ></mat-checkbox> <!-- TODO cheked!! -->
               </td>
               <td mat-sort-header="_superState">
                 <mat-icon>person</mat-icon>

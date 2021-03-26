@@ -21,10 +21,10 @@ import {
 import { BackendService } from './backend.service';
 import { TestViewComponent } from './test-view/test-view.component';
 import { GroupMonitorService } from './group-monitor.service';
-import { unitTestAllSessionsInfo, unitTestCheckedSessionsInfo, unitTestExampleSessions } from './test-data.spec';
+import { unitTestSessionsStats, unitTestCheckedStats, unitTestExampleSessions } from './test-data.spec';
 
 class MockMatDialog {
-  public open(): { afterClosed: () => Observable<{ action: boolean }> } {
+  open(): { afterClosed: () => Observable<{ action: boolean }> } {
     return {
       afterClosed: () => of({ action: true })
     };
@@ -47,11 +47,11 @@ class MockBackendService {
 }
 
 class MockGroupMonitorService {
-  allSessionsInfo$ = new BehaviorSubject<TestSessionSetStats>(unitTestAllSessionsInfo);
+  sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(unitTestSessionsStats);
 
-  checkedSessionsInfo$ = new BehaviorSubject<TestSessionSetStats>(unitTestCheckedSessionsInfo);
+  checkedStats$ = new BehaviorSubject<TestSessionSetStats>(unitTestCheckedStats);
 
-  checkedSessionsInfo = unitTestCheckedSessionsInfo;
+  // checkedStats = unitTestCheckedStats;
 
   sessions$ = new BehaviorSubject<TestSession[]>(unitTestExampleSessions);
 

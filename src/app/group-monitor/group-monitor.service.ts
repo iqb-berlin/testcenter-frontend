@@ -21,7 +21,9 @@ import {
  * - was geben die commands zurück?
  * - wie wird alles reseted?
  * # is*alloweed sollte on checkedChanges ermittelt werden
- * - sollte checkedSessions ein observable sein? (hint: ja)
+ * # sollte _checked ein observable sein? (hint: ja)
+ * - naming
+ * - checkAll
  */
 
 @Injectable()
@@ -31,47 +33,30 @@ export class GroupMonitorService {
   private groupName: string;
 
   get sessions$(): Observable<TestSession[]> {
-    return this.allSessions$.asObservable();
+    return this._sessions$.asObservable();
   }
 
   get sessions(): TestSession[] {
-    return this.allSessions$.getValue();
+    return this._sessions$.getValue();
   }
 
-  get checked(): TestSession[] {
-    return Object.values(this.checkedSessions);
+  get checked(): TestSession[] { // this is intentionally not an observable
+    return Object.values(this._checked);
   }
 
-  get checkedSessionsInfo(): TestSessionSetStats {
-    return this.checkedSessionsInfo$.getValue();
+  get sessionsStats$(): Observable<TestSessionSetStats> {
+    return this._sessionsStats$.asObservable();
   }
 
-  get sessionsInfo(): TestSessionSetStats {
-    return this.allSessionsInfo$.getValue();
+  get checkedStats$(): Observable<TestSessionSetStats> {
+    return this._checkedStats$.asObservable();
   }
 
-  private allSessions$: BehaviorSubject<TestSession[]>;
   private monitor$: Observable<TestSession[]>;
-
-  checkedSessions: { [sessionTestSessionId: number]: TestSession } = {};
-
-  readonly checkedSessionsInfo$: BehaviorSubject<TestSessionSetStats> = new BehaviorSubject<TestSessionSetStats>({
-    all: false,
-    number: 0,
-    differentBookletSpecies: 0,
-    differentBooklets: 0,
-    paused: 0,
-    locked: 0
-  });
-
-  readonly allSessionsInfo$: BehaviorSubject<TestSessionSetStats> = new BehaviorSubject<TestSessionSetStats>({
-    all: false,
-    number: 0,
-    differentBookletSpecies: 0,
-    differentBooklets: 0,
-    paused: 0,
-    locked: 0
-  });
+  private _sessions$: BehaviorSubject<TestSession[]>;
+  private _checked: { [sessionTestSessionId: number]: TestSession } = {};
+  private _checkedStats$: BehaviorSubject<TestSessionSetStats>;
+  private _sessionsStats$: BehaviorSubject<TestSessionSetStats>;
 
   filterOptions: { label: string, filter: TestSessionFilter, selected: boolean }[] = [
     {
@@ -104,6 +89,9 @@ export class GroupMonitorService {
     this.sortBy$ = new BehaviorSubject<Sort>({ direction: 'asc', active: 'personLabel' });
     this.filters$ = new BehaviorSubject<TestSessionFilter[]>([]);
 
+    this._checkedStats$ = new BehaviorSubject<TestSessionSetStats>(GroupMonitorService.getEmptyStats());
+    this._sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(GroupMonitorService.getEmptyStats());
+
     this.monitor$ = this.bs.observeSessionsMonitor()
       .pipe(
         switchMap(sessions => zip(...sessions
@@ -113,14 +101,14 @@ export class GroupMonitorService {
             ))))
       );
 
-    this.allSessions$ = new BehaviorSubject<TestSession[]>([]);
+    this._sessions$ = new BehaviorSubject<TestSession[]>([]);
     combineLatest<[Sort, TestSessionFilter[], TestSession[]]>([this.sortBy$, this.filters$, this.monitor$])
       .pipe(
         // eslint-disable-next-line max-len
         map(([sortBy, filters, sessions]) => this.sortSessions(sortBy, GroupMonitorService.filterSessions(sessions, filters))),
         tap(sessions => this.updateEverything(sessions))
       )
-      .subscribe(this.allSessions$);
+      .subscribe(this._sessions$);
   }
 
   disconnect(): void {
@@ -169,16 +157,29 @@ export class GroupMonitorService {
     }, true);
   }
 
+  private static getEmptyStats(): TestSessionSetStats {
+    return {
+      ...{
+        all: false,
+        number: 0,
+        differentBookletSpecies: 0,
+        differentBooklets: 0,
+        paused: 0,
+        locked: 0
+      }
+    };
+  }
+
   private updateEverything(sessions: TestSession[]): void { // TODo naming
     const newCheckedSessions: { [sessionFullId: number]: TestSession } = {};
     sessions
       .forEach(session => {
-        if (typeof this.checkedSessions[session.id] !== 'undefined') {
+        if (typeof this._checked[session.id] !== 'undefined') {
           newCheckedSessions[session.id] = session;
         }
       });
-    this.checkedSessions = newCheckedSessions;
-    this.allSessionsInfo$.next(this.getSessionSetStats(this.sessions));
+    this._checked = newCheckedSessions;
+    this._sessionsStats$.next(this.getSessionSetStats(this.sessions));
   }
 
   sortSessions(sort: Sort, sessions: TestSession[]): TestSession[] {
@@ -275,7 +276,7 @@ export class GroupMonitorService {
       if (!selected.spreading) {
         toCheck = [selected.originSession];
       } else {
-        toCheck = this.allSessions$.getValue()
+        toCheck = this._sessions$.getValue()
           .filter(session => (session.booklet.species === selected.originSession.booklet.species))
           .filter(session => (selected.inversion ? !this.isChecked(session) : true));
       }
@@ -287,7 +288,7 @@ export class GroupMonitorService {
   toggleCheckAll(event: MatCheckboxChange): void {
     if (event.checked) {
       this.replaceCheckedSessions(
-        this.allSessions$.getValue()
+        this._sessions$.getValue()
           .filter(session => session.data.testId && session.data.testId > -1)
       );
     } else {
@@ -297,7 +298,7 @@ export class GroupMonitorService {
 
   invertChecked(event: Event): boolean { // TODO move back to component
     event.preventDefault();
-    const unChecked = this.allSessions$.getValue()
+    const unChecked = this._sessions$.getValue()
       .filter(session => session.data.testId && session.data.testId > -1)
       .filter(session => !this.isChecked(session));
     this.replaceCheckedSessions(unChecked);
@@ -305,16 +306,16 @@ export class GroupMonitorService {
   }
 
   isChecked(session: TestSession): boolean {
-    return (typeof this.checkedSessions[session.id] !== 'undefined');
+    return (typeof this._checked[session.id] !== 'undefined');
   }
 
   checkSession(session: TestSession): void {
-    this.checkedSessions[session.id] = session;
+    this._checked[session.id] = session;
   }
 
   uncheckSession(session: TestSession): void {
     if (this.isChecked(session)) {
-      delete this.checkedSessions[session.id];
+      delete this._checked[session.id];
     }
   }
 
@@ -322,12 +323,12 @@ export class GroupMonitorService {
     const newCheckedSessions = {};
     sessionsToCheck
       .forEach(session => { newCheckedSessions[session.id] = session; });
-    this.checkedSessions = newCheckedSessions;
+    this._checked = newCheckedSessions;
     this.onCheckedChanged();
   }
 
   onCheckedChanged(): void {
-    this.checkedSessionsInfo$.next(this.getSessionSetStats(this.checked));
+    this._checkedStats$.next(this.getSessionSetStats(this.checked));
   }
 
   getSessionSetStats(sessionSet: TestSession[]): TestSessionSetStats {
@@ -356,13 +357,13 @@ export class GroupMonitorService {
 
   finishEverything(): Subscription {
     // TODO was ist hier mit gefilterten sessions?!
-    const getUnlockedConnectedTestIds = () => Object.values(this.allSessions$.getValue())
+    const getUnlockedConnectedTestIds = () => Object.values(this._sessions$.getValue())
       .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked') &&
                          !TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'TERMINATED') &&
                          (TestSessionService.hasState(session.data.testState, 'CONNECTION', 'POLLING') ||
                          TestSessionService.hasState(session.data.testState, 'CONNECTION', 'WEBSOCKET')))
       .map(session => session.data.testId);
-    const getUnlockedTestIds = () => Object.values(this.allSessions$.getValue())
+    const getUnlockedTestIds = () => Object.values(this._sessions$.getValue())
       .filter(session => session.data.testId > 0)
       .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked'))
       .map(session => session.data.testId);

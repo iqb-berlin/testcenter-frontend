@@ -178,7 +178,7 @@ export const unitTestExampleSessions: TestSession[] = [
     session, unitTestExampleBooklets[session.bookletName] || { error: 'missing-file', species: null }
   ));
 
-export const unitTestAllSessionsInfo: TestSessionSetStats = {
+export const unitTestSessionsStats: TestSessionSetStats = {
   all: false,
   number: 0,
   differentBookletSpecies: 0,
@@ -187,7 +187,7 @@ export const unitTestAllSessionsInfo: TestSessionSetStats = {
   locked: 0
 };
 
-export const unitTestCheckedSessionsInfo: TestSessionSetStats = {
+export const unitTestCheckedStats: TestSessionSetStats = {
   all: false,
   number: 0,
   differentBookletSpecies: 0,
