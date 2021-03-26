@@ -4,32 +4,37 @@ import {
 } from 'rxjs';
 import { Sort } from '@angular/material/sort';
 import { map, switchMap, tap } from 'rxjs/operators';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { BackendService } from './backend.service';
 import { BookletService } from './booklet.service';
 import { TestSessionService } from './test-session.service';
 import {
   isBooklet,
-  Selection,
+  Selection, CheckingOptions,
   TestSession,
   TestSessionFilter, TestSessionSetStats,
   TestSessionsSuperStates
 } from './group-monitor.interfaces';
 
 /**
- * fragen:
+ * func:
+ * - checkAll
+ * - automatisch den nächsten wählen (?)
+ * - problem beim markieren
+ * tidy:
  * - was geben die commands zurück?
  * - wie wird alles reseted?
- * # is*alloweed sollte on checkedChanges ermittelt werden
- * # sollte _checked ein observable sein? (hint: ja)
+ * test
+ * polish:
  * - naming
- * - checkAll
+ * - tests
  */
 
 @Injectable()
 export class GroupMonitorService {
   sortBy$: Subject<Sort>;
   filters$: Subject<TestSessionFilter[]>;
+  checkingOptions: CheckingOptions;
+
   private groupName: string;
 
   get sessions$(): Observable<TestSession[]> {
@@ -88,6 +93,10 @@ export class GroupMonitorService {
     this.groupName = groupName;
     this.sortBy$ = new BehaviorSubject<Sort>({ direction: 'asc', active: 'personLabel' });
     this.filters$ = new BehaviorSubject<TestSessionFilter[]>([]);
+    this.checkingOptions = {
+      manualCheckingOnly: true,
+      autoCheckAll: true
+    };
 
     this._checkedStats$ = new BehaviorSubject<TestSessionSetStats>(GroupMonitorService.getEmptyStats());
     this._sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(GroupMonitorService.getEmptyStats());
@@ -106,7 +115,7 @@ export class GroupMonitorService {
       .pipe(
         // eslint-disable-next-line max-len
         map(([sortBy, filters, sessions]) => this.sortSessions(sortBy, GroupMonitorService.filterSessions(sessions, filters))),
-        tap(sessions => this.updateEverything(sessions))
+        tap(sessions => this.synchronizeChecked(sessions))
       )
       .subscribe(this._sessions$);
   }
@@ -170,16 +179,26 @@ export class GroupMonitorService {
     };
   }
 
-  private updateEverything(sessions: TestSession[]): void { // TODo naming
+  private synchronizeChecked(sessions: TestSession[]): void {
+    const sessionsStats = this.getSessionSetStats(sessions);
+
+    this.checkingOptions.manualCheckingOnly = (sessionsStats.differentBookletSpecies < 2);
+
+    if (!this.checkingOptions.manualCheckingOnly) {
+      this.checkingOptions.autoCheckAll = false;
+    }
+
     const newCheckedSessions: { [sessionFullId: number]: TestSession } = {};
     sessions
       .forEach(session => {
-        if (typeof this._checked[session.id] !== 'undefined') {
+        if (this.checkingOptions.autoCheckAll || (typeof this._checked[session.id] !== 'undefined')) {
           newCheckedSessions[session.id] = session;
         }
       });
     this._checked = newCheckedSessions;
-    this._sessionsStats$.next(this.getSessionSetStats(this.sessions));
+
+    this._checkedStats$.next(this.getSessionSetStats(Object.values(this._checked)));
+    this._sessionsStats$.next(sessionsStats);
   }
 
   sortSessions(sort: Sort, sessions: TestSession[]): TestSession[] {
@@ -270,7 +289,14 @@ export class GroupMonitorService {
     return this.bs.unlock(this.groupName, sessionIds);
   }
 
+  isChecked(session: TestSession): boolean {
+    return (typeof this._checked[session.id] !== 'undefined');
+  }
+
   checkSessionsBySelection(selected: Selection): void {
+    if (this.checkingOptions.autoCheckAll) {
+      return;
+    }
     let toCheck: TestSession[] = [];
     if (selected.element) {
       if (!selected.spreading) {
@@ -285,38 +311,46 @@ export class GroupMonitorService {
     this.replaceCheckedSessions(toCheck);
   }
 
-  toggleCheckAll(event: MatCheckboxChange): void {
-    if (event.checked) {
-      this.replaceCheckedSessions(
-        this._sessions$.getValue()
-          .filter(session => session.data.testId && session.data.testId > -1)
-      );
-    } else {
-      this.replaceCheckedSessions([]);
+  invertChecked(): void {
+    if (this.checkingOptions.autoCheckAll) {
+      return;
     }
-  }
-
-  invertChecked(event: Event): boolean { // TODO move back to component
-    event.preventDefault();
     const unChecked = this._sessions$.getValue()
       .filter(session => session.data.testId && session.data.testId > -1)
       .filter(session => !this.isChecked(session));
     this.replaceCheckedSessions(unChecked);
-    return false;
-  }
-
-  isChecked(session: TestSession): boolean {
-    return (typeof this._checked[session.id] !== 'undefined');
   }
 
   checkSession(session: TestSession): void {
+    if (this.checkingOptions.autoCheckAll) {
+      return;
+    }
     this._checked[session.id] = session;
+    this.onCheckedChanged();
   }
 
   uncheckSession(session: TestSession): void {
+    if (this.checkingOptions.autoCheckAll) {
+      return;
+    }
     if (this.isChecked(session)) {
       delete this._checked[session.id];
     }
+    this.onCheckedChanged();
+  }
+
+  checkAll(): void {
+    if (this.checkingOptions.autoCheckAll) {
+      return;
+    }
+    this.replaceCheckedSessions(this._sessions$.getValue());
+  }
+
+  checkNone(): void {
+    if (this.checkingOptions.autoCheckAll) {
+      return;
+    }
+    this.replaceCheckedSessions([]);
   }
 
   private replaceCheckedSessions(sessionsToCheck: TestSession[]): void {
@@ -327,11 +361,11 @@ export class GroupMonitorService {
     this.onCheckedChanged();
   }
 
-  onCheckedChanged(): void {
+  private onCheckedChanged(): void {
     this._checkedStats$.next(this.getSessionSetStats(this.checked));
   }
 
-  getSessionSetStats(sessionSet: TestSession[]): TestSessionSetStats {
+  getSessionSetStats(sessionSet: TestSession[]): TestSessionSetStats { // TODO only private for test
     const booklets = new Set();
     const bookletSpecies = new Set();
     let paused = 0;

@@ -16,6 +16,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { CdkTableModule } from '@angular/cdk/table';
 
 import { IqbComponentsModule } from 'iqb-components';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { GroupMonitorRoutingModule } from './group-monitor-routing.module';
 import { GroupMonitorComponent } from './group-monitor.component';
 import { BackendService } from './backend.service';
@@ -46,6 +47,7 @@ import { GroupMonitorService } from './group-monitor.service';
     FormsModule,
     MatSidenavModule,
     MatCheckboxModule,
+    MatSlideToggleModule,
     IqbComponentsModule
   ],
   providers: [

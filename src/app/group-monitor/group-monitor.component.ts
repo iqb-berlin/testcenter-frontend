@@ -8,6 +8,8 @@ import { Observable, Subscription } from 'rxjs';
 
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { BackendService } from './backend.service';
 import {
   GroupData,
@@ -45,7 +47,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     bookletColumn: 'show',
     blockColumn: 'show',
     unitColumn: 'hide',
-    highlightSpecies: false
+    highlightSpecies: false,
+    manualChecking: false
   };
 
   permissions: {
@@ -89,6 +92,10 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   private onSessionsUpdate(stats: TestSessionSetStats): void {
     this.displayOptions.highlightSpecies = (stats.differentBookletSpecies > 1);
+
+    if (!this.gms.checkingOptions.manualCheckingOnly) {
+      this.displayOptions.manualChecking = true;
+    }
   }
 
   private onCheckedChange(stats: TestSessionSetStats): void {
@@ -203,7 +210,12 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     } else {
       this.gms.uncheckSession(session);
     }
-    this.gms.onCheckedChanged();
+  }
+
+  invertChecked(event: Event): boolean {
+    event.preventDefault();
+    this.gms.invertChecked();
+    return false;
   }
 
   private addWarning(key, text): void {
@@ -214,5 +226,25 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       text,
       timeout: window.setTimeout(() => delete this.warnings[key], 30000)
     };
+  }
+
+  toggleAlwaysCheckAll(event: MatSlideToggleChange): void {
+    if (this.gms.checkingOptions.manualCheckingOnly && !event.checked) {
+      this.gms.checkAll();
+      this.displayOptions.manualChecking = false;
+      this.gms.checkingOptions.autoCheckAll = true;
+    } else {
+      this.gms.checkNone();
+      this.displayOptions.manualChecking = true;
+      this.gms.checkingOptions.autoCheckAll = false;
+    }
+  }
+
+  toggleCheckAll(event: MatCheckboxChange): void {
+    if (event.checked) {
+      this.gms.checkAll();
+    } else {
+      this.gms.checkNone();
+    }
   }
 }

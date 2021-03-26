@@ -86,13 +86,18 @@
       <h2>{{'Test-Steuerung' | customtext:'gm_controls' | async}}</h2>
 
       <div class="selection-info" *ngIf="gms.sessionsStats$ | async as sessionsStats">
-        <div *ngIf="sessionsStats.differentBookletSpecies > 1">
+        <div *ngIf="sessionsStats.differentBookletSpecies > 1; else: singleBookletSpecies">
           {{
-          'Die verwendeten Booklets sind zu unterschiedlich um gemeinsam benutzt zu werden.'
+          'Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam benutzt zu werden.'
             | customtext:'gm_multiple_booklet_species_warning'
             | async
           }}
         </div>
+        <ng-template #singleBookletSpecies>
+          <mat-slide-toggle color="accent" (change)="toggleAlwaysCheckAll($event)" [disabled]="!gms.checkingOptions.manualCheckingOnly">
+            Einzelauswahl der Sitzungen
+          </mat-slide-toggle>
+        </ng-template>
       </div>
 
       <div class="selection-info" *ngIf="gms.checkedStats$ | async as checkedStats">
@@ -162,6 +167,7 @@
         <div *ngFor="let warning of warnings | keyvalue" class="alert-warning">
           <mat-icon>warning</mat-icon>{{warning.value.text}}
         </div>
+        <pre>{{displayOptions | json}}</pre>
         <pre>{{permissions | json}}</pre>
         <pre>{{selectedElement | json}}</pre>
       </div>
@@ -203,39 +209,39 @@
 
         <div class="test-view-table-wrapper">
           <table class="test-view-table" matSort (matSortChange)="setTableSorting($event)">
-
             <thead>
-            <tr class="mat-sort-container">
-              <td mat-sort-header="_checked">
-                <mat-checkbox
-                    (click)="$event.stopPropagation()"
-                    (change)="gms.toggleCheckAll($event)"
-                    [checked]="false"
-                    (contextmenu)="gms.invertChecked($event)"
-                ></mat-checkbox> <!-- TODO cheked!! -->
-              </td>
-              <td mat-sort-header="_superState">
-                <mat-icon>person</mat-icon>
-              </td>
-              <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">
-                {{'Gruppe' | customtext:'gm_col_group' | async}}
-              </td>
-              <td mat-sort-header="personLabel">
-                {{'Teilnehmer' | customtext:'gm_col_person' | async}}
-              </td>
-              <td mat-sort-header="bookletName" *ngIf="displayOptions.bookletColumn === 'show'">
-                {{'Testheft' | customtext:'gm_col_booklet' | async}}
-              </td>
-              <td mat-sort-header="_currentBlock" *ngIf="displayOptions.blockColumn === 'show'">
-                {{'Block' | customtext:'gm_col_testlet' | async}}
-              </td>
-              <td mat-sort-header="timestamp">
-                {{'Aktivität' | customtext:'gm_col_activity' | async}}
-              </td>
-              <td mat-sort-header="_currentUnit" *ngIf="displayOptions.unitColumn === 'show'">
-                {{'Aufgabe' | customtext:'gm_col_unit' | async}}
-              </td>
-            </tr>
+              <tr class="mat-sort-container">
+                <td mat-sort-header="_checked" *ngIf="displayOptions.manualChecking">
+                  <mat-checkbox
+                      *ngIf="gms.checkedStats$ | async as checkedStats"
+                      (click)="$event.stopPropagation()"
+                      (change)="toggleCheckAll($event)"
+                      [checked]="checkedStats.all"
+                      (contextmenu)="invertChecked($event)"
+                  ></mat-checkbox> <!-- TODO cheked!! -->
+                </td>
+                <td mat-sort-header="_superState">
+                  <mat-icon>person</mat-icon>
+                </td>
+                <td mat-sort-header="groupLabel" *ngIf="displayOptions.groupColumn === 'show'">
+                  {{'Gruppe' | customtext:'gm_col_group' | async}}
+                </td>
+                <td mat-sort-header="personLabel">
+                  {{'Teilnehmer' | customtext:'gm_col_person' | async}}
+                </td>
+                <td mat-sort-header="bookletName" *ngIf="displayOptions.bookletColumn === 'show'">
+                  {{'Testheft' | customtext:'gm_col_booklet' | async}}
+                </td>
+                <td mat-sort-header="_currentBlock" *ngIf="displayOptions.blockColumn === 'show'">
+                  {{'Block' | customtext:'gm_col_testlet' | async}}
+                </td>
+                <td mat-sort-header="timestamp">
+                  {{'Aktivität' | customtext:'gm_col_activity' | async}}
+                </td>
+                <td mat-sort-header="_currentUnit" *ngIf="displayOptions.unitColumn === 'show'">
+                  {{'Aufgabe' | customtext:'gm_col_unit' | async}}
+                </td>
+              </tr>
             </thead>
 
             <ng-container *ngFor="let session of gms.sessions$ | async; trackBy: trackSession">

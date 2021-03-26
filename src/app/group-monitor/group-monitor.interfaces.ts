@@ -107,6 +107,12 @@ export interface TestViewDisplayOptions {
   groupColumn: 'show' | 'hide';
   bookletColumn: 'show' | 'hide';
   highlightSpecies: boolean;
+  manualChecking: boolean;
+}
+
+export interface CheckingOptions {
+  manualCheckingOnly: boolean;
+  autoCheckAll: boolean;
 }
 
 export function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {

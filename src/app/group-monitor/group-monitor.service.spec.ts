@@ -112,6 +112,8 @@ describe('GroupMonitorService', () => {
     it('should sort by checked', () => {
       const exampleSession1 = unitTestExampleSessions[1];
       // sortSession does not only return sorted array, but sorts original array in-play as js function sort does
+      service.checkingOptions.autoCheckAll = false; // TODO if replaceCheckedSessions was not private, this
+      service.checkNone(); // could be written more straigtforward
       service.checkSession(exampleSession1);
       const sorted = service.sortSessions({ active: '_checked', direction: 'asc' }, unitTestExampleSessions);
       expect(sorted[0].id).toEqual(exampleSession1.id);
@@ -119,6 +121,8 @@ describe('GroupMonitorService', () => {
 
     it('should sort by checked reverse', () => {
       const exampleSession1 = unitTestExampleSessions[1];
+      service.checkingOptions.autoCheckAll = false;
+      service.checkNone();
       service.checkSession(exampleSession1);
       const sorted = service.sortSessions({ active: '_checked', direction: 'desc' }, unitTestExampleSessions);
       expect(sorted[2].id).toEqual(exampleSession1.id);

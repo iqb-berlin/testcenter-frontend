@@ -15,6 +15,7 @@ import { CustomtextPipe } from 'iqb-components';
 import { Pipe } from '@angular/core';
 import { GroupMonitorComponent } from './group-monitor.component';
 import {
+  CheckingOptions,
   GroupData, TestSession,
   TestSessionData, TestSessionSetStats
 } from './group-monitor.interfaces';
@@ -47,20 +48,18 @@ class MockBackendService {
 }
 
 class MockGroupMonitorService {
+  checkingOptions: CheckingOptions = {
+    manualCheckingOnly: false,
+    autoCheckAll: true
+  };
+
   sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(unitTestSessionsStats);
-
   checkedStats$ = new BehaviorSubject<TestSessionSetStats>(unitTestCheckedStats);
-
-  // checkedStats = unitTestCheckedStats;
-
   sessions$ = new BehaviorSubject<TestSession[]>(unitTestExampleSessions);
-
   sessions = unitTestExampleSessions;
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   connect = (_: string) => {};
   disconnect = () => {};
-
   isChecked = () => false;
 }
 
