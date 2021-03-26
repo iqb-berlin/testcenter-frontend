@@ -81,7 +81,7 @@ export class TestViewComponent {
   }
 
   invertSelection(): boolean {
-    this.applySelection(this.selected.element, true);
+    this.applySelection(this.selected?.element, true);
     return false;
   }
 
