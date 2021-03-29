@@ -51,13 +51,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     manualChecking: false
   };
 
-  permissions: {
-    goto: boolean;
-    pause: boolean,
-    resume: boolean,
-    unlock: boolean
-  };
-
   isScrollable = false;
   isClosing = false;
 
@@ -102,16 +95,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     if (stats.differentBookletSpecies > 1) {
       this.selectedElement = null;
     }
-    this.updateControlPermissions(stats);
-  }
-
-  private updateControlPermissions(checked) {
-    this.permissions = {
-      pause: checked.number && (checked.paused === 0),
-      resume: checked.number && (checked.paused === checked.number),
-      unlock: checked.number && (checked.locked === checked.number),
-      goto: checked.number && (checked.differentBookletSpecies === 1)
-    };
   }
 
   trackSession = (index: number, session: TestSession): number => session.id;

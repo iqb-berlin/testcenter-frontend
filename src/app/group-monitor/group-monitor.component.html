@@ -126,12 +126,12 @@
       </div>
 
       <div class="toolbar-section">
-        <button mat-raised-button class="control" color="primary" (click)="gms.testCommandResume()" [disabled]="!permissions.resume">
+        <button mat-raised-button class="control" color="primary" (click)="gms.testCommandResume()">
           <mat-icon>play_arrow</mat-icon>
           {{'weiter' | customtext:'gm_control_resume' | async}}
         </button>
 
-        <button mat-raised-button class="control" color="primary" (click)="gms.testCommandPause()" [disabled]="!permissions.pause">
+        <button mat-raised-button class="control" color="primary" (click)="gms.testCommandPause()">
           <mat-icon>pause</mat-icon>
           {{'pause' | customtext:'gm_control_pause' | async}}
         </button>
@@ -148,7 +148,7 @@
           <mat-icon>arrow_forward</mat-icon>
           {{'Springe zu' | customtext:'gm_control_goto' | async}}
           <span class="emph">{{selectedElement?.element?.blockId}}</span>
-          <span class="emph" *ngIf="!selectedElement?.element?.blockId || !permissions.goto">
+          <span class="emph" *ngIf="!selectedElement?.element?.blockId">
             {{'Block auswählen!' | customtext:'gm_test_command_no_selected_block' | async}}
           </span>
         </button>
@@ -160,7 +160,6 @@
           class="control"
           color="primary"
           (click)="unlockCommand()"
-          [disabled]="!permissions.unlock"
           matTooltip="{{'Freigeben' | customtext:'gm_control_unlock_tooltip' | async}}"
         >
           <mat-icon>lock_open</mat-icon>
@@ -172,9 +171,6 @@
         <div *ngFor="let warning of warnings | keyvalue" class="alert-warning">
           <mat-icon>warning</mat-icon>{{warning.value.text}}
         </div>
-        <pre>{{displayOptions | json}}</pre>
-        <pre>{{permissions | json}}</pre>
-        <pre>{{selectedElement | json}}</pre>
       </div>
 
       <div class="toolbar-section toolbar-section-bottom">
