@@ -102,28 +102,27 @@
           >
             Einzelauswahl der Sitzungen
           </mat-slide-toggle>
-          <pre>{{gms.checkingOptions|json}}</pre>
         </ng-template>
       </div>
 
-      <div class="selection-info" *ngIf="gms.checkedStats$ | async as checkedStats">
-        <ng-container *ngIf="checkedStats.number; else noCheckedSession">
-          {{
-          '%s %s Test%s mit %s Testheft%s ausgewählt.'
-            | customtext:'gm_selection_info'
-            : (checkedStats.all ? ' Alle' : '')
-            : checkedStats.number.toString(10)
-            : (checkedStats.number !== 1 ? 's' : '')
-            : checkedStats.differentBooklets.toString(10)
-            : (checkedStats.differentBooklets !== 1 ? 'en' : '')
-            | async
-          }}
+      <div class="selection-info" *ngIf="displayOptions.manualChecking">
+        <ng-container *ngIf="gms.checkedStats$ | async as checkedStats">
+          <ng-container *ngIf="checkedStats.number; else noCheckedSession">
+            {{
+            '%s %s Test%s mit %s Testheft%s ausgewählt.'
+              | customtext:'gm_selection_info'
+              : (checkedStats.all ? ' Alle' : '')
+              : checkedStats.number.toString(10)
+              : (checkedStats.number !== 1 ? 's' : '')
+              : checkedStats.differentBooklets.toString(10)
+              : (checkedStats.differentBooklets !== 1 ? 'en' : '')
+              | async
+            }}
+          </ng-container>
+          <ng-template #noCheckedSession>
+            {{'Kein Test gewählt.' | customtext:'gm_selection_info_none' | async}}
+          </ng-template>
         </ng-container>
-        <ng-template #noCheckedSession>
-          {{'Kein Test gewählt.' | customtext:'gm_selection_info_none' | async}}
-        </ng-template>
-        <hr>
-        <pre>{{checkedStats | json}}</pre>
       </div>
 
       <div class="toolbar-section">
@@ -144,7 +143,7 @@
           class="control"
           color="primary"
           (click)="testCommandGoto()"
-          [disabled]="!selectedElement?.element?.blockId || !permissions.goto"
+          [disabled]="!selectedElement?.element?.blockId"
         >
           <mat-icon>arrow_forward</mat-icon>
           {{'Springe zu' | customtext:'gm_control_goto' | async}}
