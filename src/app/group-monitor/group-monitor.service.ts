@@ -12,13 +12,14 @@ import {
   Selection, CheckingOptions,
   TestSession,
   TestSessionFilter, TestSessionSetStats,
-  TestSessionsSuperStates
+  TestSessionsSuperStates, CommandResponse
 } from './group-monitor.interfaces';
 
 /**
  * func:
  * # checkAll
  * - stop / resume usw. ohne erlaubnis-check! sonst macht alwaysAll keinen Sinn
+ * --> customText und alert kombinieren!
  * - automatisch den nächsten wählen (?)
  * - problem beim markieren
  * tidy:
@@ -58,11 +59,16 @@ export class GroupMonitorService {
     return this._checkedStats$.asObservable();
   }
 
+  get commandResponses$(): Observable<CommandResponse> {
+    return this._commandResponses$.asObservable();
+  }
+
   private monitor$: Observable<TestSession[]>;
   private _sessions$: BehaviorSubject<TestSession[]>;
   private _checked: { [sessionTestSessionId: number]: TestSession } = {};
   private _checkedStats$: BehaviorSubject<TestSessionSetStats>;
   private _sessionsStats$: BehaviorSubject<TestSessionSetStats>;
+  private _commandResponses$: Subject<CommandResponse>;
 
   filterOptions: { label: string, filter: TestSessionFilter, selected: boolean }[] = [
     {
@@ -101,6 +107,7 @@ export class GroupMonitorService {
 
     this._checkedStats$ = new BehaviorSubject<TestSessionSetStats>(GroupMonitorService.getEmptyStats());
     this._sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(GroupMonitorService.getEmptyStats());
+    this._commandResponses$ = new Subject<CommandResponse>();
 
     this.monitor$ = this.bs.observeSessionsMonitor()
       .pipe(
@@ -244,50 +251,74 @@ export class GroupMonitorService {
     const testIds = this.checked
       .filter(TestSessionService.isPaused)
       .map(session => session.data.testId);
-    this.bs.command('resume', [], testIds);
+    if (!testIds.length) {
+      this._commandResponses$.next({ commandType: 'resume', testIds });
+      return;
+    }
+    this.bs.command('resume', [], testIds).subscribe(
+      response => this._commandResponses$.next(response)
+    );
   }
 
   testCommandPause(): void {
     const testIds = this.checked
       .filter(session => !TestSessionService.isPaused(session))
       .map(session => session.data.testId);
-    this.bs.command('pause', [], testIds);
+    if (!testIds.length) {
+      this._commandResponses$.next({ commandType: 'pause', testIds });
+      return;
+    }
+    this.bs.command('pause', [], testIds).subscribe(
+      response => this._commandResponses$.next(response)
+    );
   }
 
   testCommandGoto(selection: Selection): void {
-    interface BookletToGotoMap {
+    const allTestIds: number[] = [];
+    const groupedByBooklet: {
       [bookletName: string]: {
-        sessionIds: number[],
+        testIds: number[],
         firstUnitId: string
       }
-    }
+    } = {};
 
-    const groupedByBooklet: BookletToGotoMap = this.checked
-      .reduce((agg: BookletToGotoMap, session): BookletToGotoMap => {
-        if (!agg[session.data.bookletName] && isBooklet(session.booklet)) {
-          const firstUnit = BookletService.getFirstUnitOfBlock(selection.element.blockId, session.booklet);
-          if (firstUnit) {
-            agg[session.data.bookletName] = {
-              sessionIds: [],
-              firstUnitId: firstUnit.id
-            };
-          }
+    this.checked.forEach(session => {
+      allTestIds.push(session.data.testId);
+      if (!groupedByBooklet[session.data.bookletName] && isBooklet(session.booklet)) {
+        const firstUnit = BookletService.getFirstUnitOfBlock(selection.element.blockId, session.booklet);
+        if (firstUnit) {
+          groupedByBooklet[session.data.bookletName] = {
+            testIds: [],
+            firstUnitId: firstUnit.id
+          };
         }
-        agg[session.data.bookletName].sessionIds.push(session.data.testId);
-        return agg;
-      }, {});
+      }
+      groupedByBooklet[session.data.bookletName].testIds.push(session.data.testId);
+      return groupedByBooklet;
+    });
 
-    Object.keys(groupedByBooklet)
-      .forEach(booklet => {
-        this.bs.command('goto', ['id', groupedByBooklet[booklet].firstUnitId], groupedByBooklet[booklet].sessionIds);
+    zip(
+      ...Object.keys(groupedByBooklet)
+        .map(key => this.bs.command('goto', ['id', groupedByBooklet[key].firstUnitId], groupedByBooklet[key].testIds))
+    ).subscribe(() => {
+      this._commandResponses$.next({
+        commandType: 'goto',
+        testIds: allTestIds
       });
+    });
   }
 
-  testCommandUnlock(): Subscription {
-    const sessionIds = this.checked
+  testCommandUnlock(): void {
+    const testIds = this.checked
       .filter(TestSessionService.isLocked)
       .map(session => session.data.testId);
-    return this.bs.unlock(this.groupName, sessionIds);
+    if (!testIds.length) {
+      this._commandResponses$.next({ commandType: 'unlock', testIds });
+      return;
+    }
+    this.bs.unlock(this.groupName, testIds).subscribe(
+      response => this._commandResponses$.next(response)
+    );
   }
 
   isChecked(session: TestSession): boolean {
@@ -404,7 +435,7 @@ export class GroupMonitorService {
       .map(session => session.data.testId);
 
     return this.bs.command('terminate', [], getUnlockedConnectedTestIds()) // kill running tests
-      .add(() => {
+      .subscribe(() => {
         setTimeout(() => this.bs.lock(this.groupName, getUnlockedTestIds()), 2000); // lock everything
       });
   }

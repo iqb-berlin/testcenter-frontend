@@ -24,6 +24,7 @@ import { BookletService } from './booklet.service';
 import { TestViewComponent } from './test-view/test-view.component';
 import { TestSessionService } from './test-session.service';
 import { GroupMonitorService } from './group-monitor.service';
+import { AlertModule } from '../shared/alert/alert.module';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { GroupMonitorService } from './group-monitor.service';
     MatSidenavModule,
     MatCheckboxModule,
     MatSlideToggleModule,
-    IqbComponentsModule
+    IqbComponentsModule,
+    AlertModule
   ],
   providers: [
     BackendService,

@@ -4,17 +4,17 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { Sort } from '@angular/material/sort';
 import { MatSidenav } from '@angular/material/sidenav';
-import { Observable, Subscription } from 'rxjs';
-
+import { interval, Observable, Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
+import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from 'iqb-components';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { switchMap } from 'rxjs/operators';
 import { BackendService } from './backend.service';
 import {
   GroupData,
   TestViewDisplayOptions,
-  TestViewDisplayOptionKey, Selection, TestSession, TestSessionSetStats
+  TestViewDisplayOptionKey, Selection, TestSession, TestSessionSetStats, CommandResponse, UIMessage
 } from './group-monitor.interfaces';
 import { ConnectionStatus } from '../shared/websocket-backend.service';
 import { GroupMonitorService } from './group-monitor.service';
@@ -30,7 +30,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private bs: BackendService, // TODO move completely to service
     public gms: GroupMonitorService,
-    private router: Router
+    private router: Router,
+    private cts: CustomtextService
   ) {}
 
   ownGroup$: Observable<GroupData>;
@@ -54,7 +55,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   isScrollable = false;
   isClosing = false;
 
-  warnings: { [key: string]: { text: string, timeout: number } } = {};
+  messages: UIMessage[] = [];
 
   private routingSubscription: Subscription = null;
 
@@ -74,6 +75,25 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.onCheckedChange(stats);
     });
     this.connectionStatus$ = this.bs.connectionStatus$;
+    this.gms.commandResponses$.subscribe(commandResponse => {
+      this.messages.push(this.commandResponseToMessage(commandResponse));
+    });
+    this.gms.commandResponses$
+      .pipe(switchMap(() => interval(2000)))
+      .subscribe(() => this.messages.shift());
+  }
+
+  private commandResponseToMessage(commandResponse: CommandResponse): UIMessage {
+    if (!commandResponse.testIds.length) {
+      return {
+        level: 'warning',
+        text: `No Sessions affected by \`${commandResponse.commandType}\``
+      };
+    }
+    return {
+      level: 'info',
+      text: `Sent \`${commandResponse.commandType}\` to \`${commandResponse.testIds.length}\` sessions`
+    };
   }
 
   ngOnDestroy(): void {
@@ -81,6 +101,10 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.routingSubscription.unsubscribe();
     }
     this.gms.disconnect();
+  }
+
+  ngAfterViewChecked(): void {
+    this.isScrollable = this.mainElem.nativeElement.clientHeight < this.mainElem.nativeElement.scrollHeight;
   }
 
   private onSessionsUpdate(stats: TestSessionSetStats): void {
@@ -108,10 +132,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   setDisplayOption(option: string, value: TestViewDisplayOptions[TestViewDisplayOptionKey]): void {
     this.displayOptions[option] = value;
-  }
-
-  ngAfterViewChecked(): void {
-    this.isScrollable = this.mainElem.nativeElement.clientHeight < this.mainElem.nativeElement.scrollHeight;
   }
 
   scrollDown(): void {
@@ -176,15 +196,18 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   unlockCommand(): void {
-    this.gms.testCommandUnlock().add(() => {
-      const plural = this.gms.sessions.length > 1;
-      // TODO zahl stimmt nicht
-      this.addWarning('reload-some-clients',
-        `${plural ? this.gms.sessions.length : 'Ein'} Test${plural ? 's' : ''} 
-        wurde${plural ? 'n' : ''} entsperrt. ${plural ? 'Die' : 'Der'} Teilnehmer 
-        ${plural ? 'müssen' : 'muss'} die Webseite aufrufen bzw. neuladen, 
-        damit ${plural ? 'die' : 'der'} Test${plural ? 's' : ''} wieder aufgenommen werden kann!`);
-    });
+    this.gms.testCommandUnlock();
+    //   .subscribe(commandResponse => {
+    //     if (commandResponse.error) {
+    //       const plural = this.gms.sessions.length > 1;
+    //       this.addWarning('reload-some-clients',
+    //         `${plural ? this.gms.sessions.length : 'Ein'} Test${plural ? 's' : ''}
+    //       wurde${plural ? 'n' : ''} entsperrt. ${plural ? 'Die' : 'Der'} Teilnehmer
+    //       ${plural ? 'müssen' : 'muss'} die Webseite aufrufen bzw. neuladen,
+    //       damit ${plural ? 'die' : 'der'} Test${plural ? 's' : ''} wieder aufgenommen werden
+    //       ${plural ? 'können' : 'kann'}!`);
+    //     }
+    //   });
   }
 
   toggleChecked(checked: boolean, session: TestSession): void {
@@ -199,16 +222,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.gms.invertChecked();
     return false;
-  }
-
-  private addWarning(key, text): void {
-    if (typeof this.warnings[key] !== 'undefined') {
-      window.clearTimeout(this.warnings[key].timeout);
-    }
-    this.warnings[key] = {
-      text,
-      timeout: window.setTimeout(() => delete this.warnings[key], 30000)
-    };
   }
 
   toggleAlwaysCheckAll(event: MatSlideToggleChange): void {

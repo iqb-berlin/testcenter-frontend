@@ -1,24 +1,25 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
-import { Observable, of, Subscription } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-
-import { BookletError, GroupData, TestSessionData } from './group-monitor.interfaces';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import {
+  BookletError, CommandResponse, GroupData, TestSessionData
+} from './group-monitor.interfaces';
 import { WebsocketBackendService } from '../shared/websocket-backend.service';
 import { ApiError } from '../app.interfaces';
 
 @Injectable()
 export class BackendService extends WebsocketBackendService<TestSessionData[]> {
-  public pollingEndpoint = '/monitor/test-sessions';
-  public pollingInterval = 5000;
-  public wsChannelName = 'test-sessions';
-  public initialData: TestSessionData[] = [];
+  pollingEndpoint = '/monitor/test-sessions';
+  pollingInterval = 5000;
+  wsChannelName = 'test-sessions';
+  initialData: TestSessionData[] = [];
 
-  public observeSessionsMonitor(): Observable<TestSessionData[]> {
+  observeSessionsMonitor(): Observable<TestSessionData[]> {
     return this.observeEndpointAndChannel();
   }
 
-  public getBooklet(bookletName: string): Observable<string|BookletError> {
+  getBooklet(bookletName: string): Observable<string|BookletError> {
     const headers = new HttpHeaders({ 'Content-Type': 'text/xml' }).set('Accept', 'text/xml');
     const missingFileError: BookletError = { error: 'missing-file', species: null };
     const generalError: BookletError = { error: 'general', species: null };
@@ -39,7 +40,7 @@ export class BackendService extends WebsocketBackendService<TestSessionData[]> {
       );
   }
 
-  public getGroupData(groupName: string): Observable<GroupData> {
+  getGroupData(groupName: string): Observable<GroupData> {
     // TODO error-handling: interceptor should have interfered and moved to error-page ...
     // https://github.com/iqb-berlin/testcenter-frontend/issues/53
     return this.http
@@ -50,9 +51,7 @@ export class BackendService extends WebsocketBackendService<TestSessionData[]> {
       })));
   }
 
-  public command(keyword: string, args: string[], testIds: number[]): Subscription {
-    // TODO error-handling: interceptor should have interfered and moved to error-page ...
-    // https://github.com/iqb-berlin/testcenter-frontend/issues/53
+  command(keyword: string, args: string[], testIds: number[]): Observable<CommandResponse> {
     return this.http
       .put(
         `${this.serverUrl}monitor/command`,
@@ -63,25 +62,24 @@ export class BackendService extends WebsocketBackendService<TestSessionData[]> {
           testIds
         }
       )
-      .pipe(catchError(() => of(false)))
-      .subscribe();
+      .pipe(
+        map(() => ({ commandType: keyword, testIds }))
+      );
   }
 
-  unlock(group_name: string, testIds: number[]): Subscription {
-    // TODO interceptor should have interfered and moved to error-page ...
-    // https://github.com/iqb-berlin/testcenter-frontend/issues/53
+  unlock(groupName: string, testIds: number[]): Observable<CommandResponse> {
     return this.http
-      .post(`${this.serverUrl}monitor/group/${group_name}/tests/unlock`, { testIds })
-      .pipe(catchError(() => of(false)))
-      .subscribe();
+      .post(`${this.serverUrl}monitor/group/${groupName}/tests/unlock`, { testIds })
+      .pipe(
+        map(() => ({ commandType: 'unlock', testIds }))
+      );
   }
 
-  lock(group_name: string, testIds: number[]): Subscription {
-    // TODO interceptor should have interfered and moved to error-page ...
-    // https://github.com/iqb-berlin/testcenter-frontend/issues/53
+  lock(groupName: string, testIds: number[]): Observable<CommandResponse> {
     return this.http
-      .post(`${this.serverUrl}monitor/group/${group_name}/tests/lock`, { testIds })
-      .pipe(catchError(() => of(false)))
-      .subscribe();
+      .post(`${this.serverUrl}monitor/group/${groupName}/tests/lock`, { testIds })
+      .pipe(
+        map(() => ({ commandType: 'unlock', testIds }))
+      );
   }
 }

@@ -152,3 +152,13 @@ export interface TestSessionSetStats {
   paused: number;
   locked: number;
 }
+
+export interface UIMessage {
+  level: 'error' | 'warning' | 'info' | 'success';
+  text: string;
+}
+
+export interface CommandResponse {
+  commandType: string;
+  testIds: number[];
+}

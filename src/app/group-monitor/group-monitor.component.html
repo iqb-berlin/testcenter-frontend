@@ -168,9 +168,7 @@
       </div>
 
       <div class="toolbar-section">
-        <div *ngFor="let warning of warnings | keyvalue" class="alert-warning">
-          <mat-icon>warning</mat-icon>{{warning.value.text}}
-        </div>
+        <alert *ngFor="let m of messages" [text]="m.text" [level]="m.level"></alert>
       </div>
 
       <div class="toolbar-section toolbar-section-bottom">
