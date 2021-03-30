@@ -156,6 +156,8 @@ export interface TestSessionSetStats {
 export interface UIMessage {
   level: 'error' | 'warning' | 'info' | 'success';
   text: string;
+  customtext: string;
+  replacements: string[]
 }
 
 export interface CommandResponse {

@@ -6,7 +6,7 @@ import { Sort } from '@angular/material/sort';
 import { MatSidenav } from '@angular/material/sidenav';
 import { interval, Observable, Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from 'iqb-components';
+import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { switchMap } from 'rxjs/operators';
@@ -30,8 +30,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private bs: BackendService, // TODO move completely to service
     public gms: GroupMonitorService,
-    private router: Router,
-    private cts: CustomtextService
+    private router: Router
   ) {}
 
   ownGroup$: Observable<GroupData>;
@@ -87,12 +86,16 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     if (!commandResponse.testIds.length) {
       return {
         level: 'warning',
-        text: `No Sessions affected by \`${commandResponse.commandType}\``
+        text: 'Keine Tests Betroffen von: `%s`',
+        customtext: 'gm_message_no_session_affected_by_command',
+        replacements: [commandResponse.commandType, commandResponse.testIds.length.toString(10)]
       };
     }
     return {
-      level: 'info',
-      text: `Sent \`${commandResponse.commandType}\` to \`${commandResponse.testIds.length}\` sessions`
+      level: 'warning',
+      text: '`%s` and `%s` tests gesendet!',
+      customtext: 'gm_message_command_sent_n_sessions',
+      replacements: [commandResponse.commandType, commandResponse.testIds.length.toString(10)]
     };
   }
 

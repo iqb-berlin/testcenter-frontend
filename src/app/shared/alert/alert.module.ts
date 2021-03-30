@@ -1,11 +1,15 @@
 import { NgModule } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { IqbComponentsModule } from 'iqb-components';
+import { CommonModule } from '@angular/common';
 import { AlertComponent } from './alert.component';
-import {MatIconModule} from '@angular/material/icon';
 
 @NgModule({
-    imports: [
-        MatIconModule
-    ],
+  imports: [
+    MatIconModule,
+    IqbComponentsModule,
+    CommonModule
+  ],
   exports: [
     AlertComponent
   ],
