@@ -15,14 +15,19 @@ import { CustomtextPipe } from 'iqb-components';
 import { Pipe } from '@angular/core';
 import { GroupMonitorComponent } from './group-monitor.component';
 import {
-  CheckingOptions,
+  CheckingOptions, CommandResponse,
   GroupData, TestSession,
   TestSessionData, TestSessionSetStats
 } from './group-monitor.interfaces';
 import { BackendService } from './backend.service';
 import { TestViewComponent } from './test-view/test-view.component';
 import { GroupMonitorService } from './group-monitor.service';
-import { unitTestSessionsStats, unitTestCheckedStats, unitTestExampleSessions } from './test-data.spec';
+import {
+  unitTestSessionsStats,
+  unitTestCheckedStats,
+  unitTestExampleSessions,
+  unitTestCommandResponse
+} from './test-data.spec';
 
 class MockMatDialog {
   open(): { afterClosed: () => Observable<{ action: boolean }> } {
@@ -56,6 +61,7 @@ class MockGroupMonitorService {
   sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(unitTestSessionsStats);
   checkedStats$ = new BehaviorSubject<TestSessionSetStats>(unitTestCheckedStats);
   sessions$ = new BehaviorSubject<TestSession[]>(unitTestExampleSessions);
+  commandResponses$ = new BehaviorSubject<CommandResponse>(unitTestCommandResponse);
   sessions = unitTestExampleSessions;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   connect = (_: string) => {};

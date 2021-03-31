@@ -3,7 +3,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { SimpleChange } from '@angular/core';
 import { AlertComponent } from './alert.component';
 
-fdescribe('AlertComponent', () => {
+describe('AlertComponent', () => {
   let component: AlertComponent;
   let fixture: ComponentFixture<AlertComponent>;
   let returnedTexts: string[] = [];

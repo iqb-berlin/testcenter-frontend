@@ -1,5 +1,5 @@
 import {
-  Booklet, TestSession, TestSessionData, TestSessionSetStats
+  Booklet, CommandResponse, TestSession, TestSessionData, TestSessionSetStats
 } from './group-monitor.interfaces';
 import { TestSessionService } from './test-session.service';
 
@@ -194,4 +194,9 @@ export const unitTestCheckedStats: TestSessionSetStats = {
   differentBooklets: 0,
   paused: 0,
   locked: 0
+};
+
+export const unitTestCommandResponse: CommandResponse = {
+  commandType: 'any',
+  testIds: [0]
 };
