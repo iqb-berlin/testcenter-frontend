@@ -5,7 +5,7 @@
   </p>
   <span class="fill-remaining-space"></span>
   <p>
-    <mat-chip-list *ngIf="connectionStatus$ | async as connectionStatus">
+    <mat-chip-list *ngIf="gms.connectionStatus$ | async as connectionStatus">
 
       <mat-chip [class]="connectionStatus + ' connection-status'">
         <mat-icon>

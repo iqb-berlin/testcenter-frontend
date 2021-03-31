@@ -16,7 +16,6 @@ import {
   TestViewDisplayOptions,
   TestViewDisplayOptionKey, Selection, TestSession, TestSessionSetStats, CommandResponse, UIMessage
 } from './group-monitor.interfaces';
-import { ConnectionStatus } from '../shared/websocket-backend.service';
 import { GroupMonitorService } from './group-monitor.service';
 
 @Component({
@@ -37,8 +36,6 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   ownGroup$: Observable<GroupData>;
   private ownGroupName = '';
 
-  connectionStatus$: Observable<ConnectionStatus>;
-
   selectedElement: Selection;
   markedElement: Selection;
 
@@ -57,30 +54,31 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   messages: UIMessage[] = [];
 
-  private routingSubscription: Subscription = null;
+  private subscriptions: Subscription[] = [];
 
   @ViewChild('adminbackground') mainElem:ElementRef;
   @ViewChild('sidenav', { static: true }) sidenav: MatSidenav;
 
   ngOnInit(): void {
-    this.routingSubscription = this.route.params.subscribe(params => {
-      this.ownGroup$ = this.bs.getGroupData(params['group-name']);
-      this.ownGroupName = params['group-name'];
-      this.gms.connect(params['group-name']);
-    });
-    this.gms.sessionsStats$.subscribe(stats => {
-      this.onSessionsUpdate(stats);
-    });
-    this.gms.checkedStats$.subscribe(stats => {
-      this.onCheckedChange(stats);
-    });
-    this.connectionStatus$ = this.bs.connectionStatus$;
-    this.gms.commandResponses$.subscribe(commandResponse => {
-      this.messages.push(this.commandResponseToMessage(commandResponse));
-    });
-    this.gms.commandResponses$
-      .pipe(switchMap(() => interval(7000)))
-      .subscribe(() => this.messages.shift());
+    this.subscriptions = [
+      this.route.params.subscribe(params => {
+        this.ownGroup$ = this.bs.getGroupData(params['group-name']);
+        this.ownGroupName = params['group-name'];
+        this.gms.connect(params['group-name']);
+      }),
+      this.gms.sessionsStats$.subscribe(stats => {
+        this.onSessionsUpdate(stats);
+      }),
+      this.gms.checkedStats$.subscribe(stats => {
+        this.onCheckedChange(stats);
+      }),
+      this.gms.commandResponses$.subscribe(commandResponse => {
+        this.messages.push(this.commandResponseToMessage(commandResponse));
+      }),
+      this.gms.commandResponses$
+        .pipe(switchMap(() => interval(7000)))
+        .subscribe(() => this.messages.shift())
+    ];
   }
 
   private commandResponseToMessage(commandResponse: CommandResponse): UIMessage {
@@ -103,10 +101,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.routingSubscription !== null) {
-      this.routingSubscription.unsubscribe();
-    }
     this.gms.disconnect();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   ngAfterViewChecked(): void {

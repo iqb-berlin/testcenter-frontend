@@ -16,6 +16,7 @@ import {
   TestSessionFilter, TestSessionSetStats,
   TestSessionsSuperStates, CommandResponse
 } from './group-monitor.interfaces';
+import { ConnectionStatus } from '../shared/websocket-backend.service';
 
 /**
  * func:
@@ -42,6 +43,8 @@ export class GroupMonitorService {
   sortBy$: Subject<Sort>;
   filters$: Subject<TestSessionFilter[]>;
   checkingOptions: CheckingOptions;
+
+  connectionStatus$: Observable<ConnectionStatus>;
 
   private groupName: string;
 
@@ -132,6 +135,8 @@ export class GroupMonitorService {
         tap(sessions => this.synchronizeChecked(sessions))
       )
       .subscribe(this._sessions$);
+
+    this.connectionStatus$ = this.bs.connectionStatus$;
   }
 
   disconnect(): void {
