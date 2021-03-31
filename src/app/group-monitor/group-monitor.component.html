@@ -86,41 +86,40 @@
       <h2>{{'Test-Steuerung' | customtext:'gm_controls' | async}}</h2>
 
       <div class="selection-info" *ngIf="gms.sessionsStats$ | async as sessionsStats">
-        <div *ngIf="sessionsStats.differentBookletSpecies > 1; else: singleBookletSpecies">
-          {{
-          'Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam benutzt zu werden.'
-            | customtext:'gm_multiple_booklet_species_warning'
-            | async
-          }}
-        </div>
-        <ng-template #singleBookletSpecies>
-          <mat-slide-toggle
+        <mat-slide-toggle
             color="accent"
             (change)="toggleAlwaysCheckAll($event)"
             [disabled]="!gms.checkingOptions.disableAutoCheckAll"
-            [checked]="!gms.checkingOptions.autoCheckAll"
-          >
-            Einzelauswahl der Sitzungen
-          </mat-slide-toggle>
-        </ng-template>
+            [checked]="gms.checkingOptions.autoCheckAll"
+        >
+          Alle Tests gleichzeitig steuern
+        </mat-slide-toggle>
+        <alert
+            *ngIf="sessionsStats.differentBookletSpecies > 1"
+            level="warning"
+            text="Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden."
+            customtext="gm_multiple_booklet_species_warning"
+        >
+        </alert>
       </div>
 
       <div class="selection-info" *ngIf="displayOptions.manualChecking">
         <ng-container *ngIf="gms.checkedStats$ | async as checkedStats">
-          <ng-container *ngIf="checkedStats.number; else noCheckedSession">
-            {{
-            '%s %s Test%s mit %s Testheft%s ausgewählt.'
-              | customtext:'gm_selection_info'
-              : (checkedStats.all ? ' Alle' : '')
-              : checkedStats.number.toString(10)
-              : (checkedStats.number !== 1 ? 's' : '')
-              : checkedStats.differentBooklets.toString(10)
-              : (checkedStats.differentBooklets !== 1 ? 'en' : '')
-              | async
-            }}
-          </ng-container>
+          <alert
+              *ngIf="checkedStats.number; else noCheckedSession"
+              level="info"
+              customtext="gm_selection_info"
+              text="%s %s Test%s mit %s Testheft%s ausgewählt."
+              [replacements]="[
+                (checkedStats.all ? ' Alle' : ''),
+                checkedStats.number.toString(10),
+                (checkedStats.number !== 1 ? 's' : ''),
+                checkedStats.differentBooklets.toString(10),
+                (checkedStats.differentBooklets !== 1 ? 'en' : '')
+              ]"
+          ></alert>
           <ng-template #noCheckedSession>
-            {{'Kein Test gewählt.' | customtext:'gm_selection_info_none' | async}}
+            <alert level="info" customtext="gm_selection_info_none" text="Kein Test ausgewählt."></alert>
           </ng-template>
         </ng-container>
       </div>
@@ -138,19 +137,10 @@
       </div>
 
       <div class="toolbar-section">
-        <button
-          mat-raised-button
-          class="control"
-          color="primary"
-          (click)="testCommandGoto()"
-          [disabled]="!selectedElement?.element?.blockId"
-        >
+        <button mat-raised-button class="control" color="primary" (click)="testCommandGoto()">
           <mat-icon>arrow_forward</mat-icon>
           {{'Springe zu' | customtext:'gm_control_goto' | async}}
           <span class="emph">{{selectedElement?.element?.blockId}}</span>
-          <span class="emph" *ngIf="!selectedElement?.element?.blockId">
-            {{'Block auswählen!' | customtext:'gm_test_command_no_selected_block' | async}}
-          </span>
         </button>
       </div>
 
@@ -167,10 +157,8 @@
         </button>
       </div>
 
-      <alert customtext="gm_control_unlock_tooltip" text="schnrugl" level="info"></alert>
-
-      <div class="toolbar-section">
-        <alert *ngFor="let m of messages" [text]="m.text" [level]="m.level"></alert>
+      <div id="message-panel" class="toolbar-section">
+        <alert *ngFor="let m of messages" [text]="m.text" [level]="m.level" customtext="m.customtext" [replacements]="m.replacements"></alert>
       </div>
 
       <div class="toolbar-section toolbar-section-bottom">

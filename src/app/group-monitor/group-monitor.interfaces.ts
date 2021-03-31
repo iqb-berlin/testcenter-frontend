@@ -157,7 +157,7 @@ export interface UIMessage {
   level: 'error' | 'warning' | 'info' | 'success';
   text: string;
   customtext: string;
-  replacements: string[]
+  replacements?: string[]
 }
 
 export interface CommandResponse {

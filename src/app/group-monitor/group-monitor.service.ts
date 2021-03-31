@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import {
-  BehaviorSubject, combineLatest, Observable, Subject, Subscription, zip
+  BehaviorSubject, combineLatest, Observable, Subject, zip
 } from 'rxjs';
 import { Sort } from '@angular/material/sort';
-import { map, switchMap, tap } from 'rxjs/operators';
+import {
+  delay, flatMap, map, switchMap, tap
+} from 'rxjs/operators';
 import { BackendService } from './backend.service';
 import { BookletService } from './booklet.service';
 import { TestSessionService } from './test-session.service';
@@ -18,12 +20,12 @@ import {
 /**
  * func:
  * # checkAll
- * - stop / resume usw. ohne erlaubnis-check! sonst macht alwaysAll keinen Sinn
+ * # stop / resume usw. ohne erlaubnis-check! sonst macht alwaysAll keinen Sinn
  * --> customText und alert kombinieren!
  * - automatisch den nächsten wählen (?)
  * - problem beim markieren
  * tidy:
- * - was geben die commands zurück?
+ * # was geben die commands zurück?
  * - wie wird alles reseted?
  * test
  * polish:
@@ -421,7 +423,7 @@ export class GroupMonitorService {
     };
   }
 
-  finishEverything(): Subscription {
+  finishEverything(): Observable<CommandResponse> {
     // TODO was ist hier mit gefilterten sessions?!
     const getUnlockedConnectedTestIds = () => Object.values(this._sessions$.getValue())
       .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked') &&
@@ -434,9 +436,10 @@ export class GroupMonitorService {
       .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked'))
       .map(session => session.data.testId);
 
-    return this.bs.command('terminate', [], getUnlockedConnectedTestIds()) // kill running tests
-      .subscribe(() => {
-        setTimeout(() => this.bs.lock(this.groupName, getUnlockedTestIds()), 2000); // lock everything
-      });
+    return this.bs.command('terminate', [], getUnlockedConnectedTestIds())
+      .pipe(
+        delay(2000),
+        flatMap(() => this.bs.lock(this.groupName, getUnlockedTestIds()))
+      );
   }
 }

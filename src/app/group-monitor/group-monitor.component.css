@@ -224,28 +224,15 @@ mat-sidenav {
     color: #821123
 }
 
-.alert-warning {
-    border-radius: 4px;
-    box-sizing: border-box;
-    margin: 0 0 0.5em 0;
-    width: 100%;
-    padding: 14px 16px;
-    min-height: 48px;
-    color: hsla(0,0%,100%,.7);
-    background: #821123;
-    display: inline-flex;
-    vertical-align: middle;
-    align-items: center;
-    animation: fade 30s reverse forwards;
+#message-panel alert:first-of-type {
+    background: #b2ff59;
+    animation: fade 7s reverse forwards;
 }
 
-.alert-warning mat-icon {
-    margin-right: 4px;
-}
 
 @keyframes fade {
     0% {
-        opacity: 0;
+        opacity: 0.1;
     }
 
     100% {

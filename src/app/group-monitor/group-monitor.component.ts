@@ -6,7 +6,7 @@ import { Sort } from '@angular/material/sort';
 import { MatSidenav } from '@angular/material/sidenav';
 import { interval, Observable, Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
+import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from 'iqb-components';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { switchMap } from 'rxjs/operators';
@@ -30,7 +30,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private bs: BackendService, // TODO move completely to service
     public gms: GroupMonitorService,
-    private router: Router
+    private router: Router,
+    private cts: CustomtextService
   ) {}
 
   ownGroup$: Observable<GroupData>;
@@ -78,24 +79,26 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.messages.push(this.commandResponseToMessage(commandResponse));
     });
     this.gms.commandResponses$
-      .pipe(switchMap(() => interval(2000)))
+      .pipe(switchMap(() => interval(7000)))
       .subscribe(() => this.messages.shift());
   }
 
   private commandResponseToMessage(commandResponse: CommandResponse): UIMessage {
+    const command = this.cts.getCustomText(`gm_control_${commandResponse.commandType}`) || commandResponse.commandType;
+    const successWarning = this.cts.getCustomText(`gm_control_${commandResponse.commandType}_success_warning`) || '';
     if (!commandResponse.testIds.length) {
       return {
         level: 'warning',
         text: 'Keine Tests Betroffen von: `%s`',
         customtext: 'gm_message_no_session_affected_by_command',
-        replacements: [commandResponse.commandType, commandResponse.testIds.length.toString(10)]
+        replacements: [command, commandResponse.testIds.length.toString(10)]
       };
     }
     return {
-      level: 'warning',
-      text: '`%s` and `%s` tests gesendet!',
+      level: successWarning ? 'warning' : 'info',
+      text: '`%s` an `%s` tests gesendet! %s',
       customtext: 'gm_message_command_sent_n_sessions',
-      replacements: [commandResponse.commandType, commandResponse.testIds.length.toString(10)]
+      replacements: [command, commandResponse.testIds.length.toString(10), successWarning]
     };
   }
 
@@ -187,7 +190,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       if (confirmed) {
         this.isClosing = true;
         this.gms.finishEverything()
-          .add(() => {
+          .subscribe(() => {
             setTimeout(() => { this.router.navigateByUrl('/r/login'); }, 5000); // go away
           });
       }
@@ -195,22 +198,19 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   testCommandGoto(): void {
-    this.gms.testCommandGoto(this.selectedElement);
+    if (!this.selectedElement?.element?.blockId) {
+      this.messages.push({
+        level: 'warning',
+        customtext: 'gm_test_command_no_selected_block',
+        text: 'Kein Zielblock ausgewählt'
+      });
+    } else {
+      this.gms.testCommandGoto(this.selectedElement);
+    }
   }
 
   unlockCommand(): void {
     this.gms.testCommandUnlock();
-    //   .subscribe(commandResponse => {
-    //     if (commandResponse.error) {
-    //       const plural = this.gms.sessions.length > 1;
-    //       this.addWarning('reload-some-clients',
-    //         `${plural ? this.gms.sessions.length : 'Ein'} Test${plural ? 's' : ''}
-    //       wurde${plural ? 'n' : ''} entsperrt. ${plural ? 'Die' : 'Der'} Teilnehmer
-    //       ${plural ? 'müssen' : 'muss'} die Webseite aufrufen bzw. neuladen,
-    //       damit ${plural ? 'die' : 'der'} Test${plural ? 's' : ''} wieder aufgenommen werden
-    //       ${plural ? 'können' : 'kann'}!`);
-    //     }
-    //   });
   }
 
   toggleChecked(checked: boolean, session: TestSession): void {
