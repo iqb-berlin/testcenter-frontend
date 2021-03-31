@@ -85,25 +85,7 @@
 
       <h2>{{'Test-Steuerung' | customtext:'gm_controls' | async}}</h2>
 
-      <div class="selection-info" *ngIf="gms.sessionsStats$ | async as sessionsStats">
-        <mat-slide-toggle
-            color="accent"
-            (change)="toggleAlwaysCheckAll($event)"
-            [disabled]="!gms.checkingOptions.disableAutoCheckAll"
-            [checked]="gms.checkingOptions.autoCheckAll"
-        >
-          Alle Tests gleichzeitig steuern
-        </mat-slide-toggle>
-        <alert
-            *ngIf="sessionsStats.differentBookletSpecies > 1"
-            level="warning"
-            text="Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden."
-            customtext="gm_multiple_booklet_species_warning"
-        >
-        </alert>
-      </div>
-
-      <div class="selection-info" *ngIf="displayOptions.manualChecking">
+      <div class="toolbar-section" *ngIf="displayOptions.manualChecking">
         <ng-container *ngIf="gms.checkedStats$ | async as checkedStats">
           <alert
               *ngIf="checkedStats.number; else noCheckedSession"
@@ -122,6 +104,24 @@
             <alert level="info" customtext="gm_selection_info_none" text="Kein Test ausgewählt."></alert>
           </ng-template>
         </ng-container>
+      </div>
+
+      <div class="toolbar-section" *ngIf="gms.sessionsStats$ | async as sessionsStats">
+        <mat-slide-toggle
+            color="accent"
+            (change)="toggleAlwaysCheckAll($event)"
+            [disabled]="!gms.checkingOptions.disableAutoCheckAll"
+            [checked]="gms.checkingOptions.autoCheckAll"
+        >
+          Alle Tests gleichzeitig steuern
+        </mat-slide-toggle>
+        <alert
+            *ngIf="sessionsStats.differentBookletSpecies > 1"
+            level="warning"
+            text="Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden."
+            customtext="gm_multiple_booklet_species_warning"
+        >
+        </alert>
       </div>
 
       <div class="toolbar-section">

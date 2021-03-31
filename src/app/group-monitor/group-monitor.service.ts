@@ -21,14 +21,18 @@ import {
  * func:
  * # checkAll
  * # stop / resume usw. ohne erlaubnis-check! sonst macht alwaysAll keinen Sinn
- * --> customText und alert kombinieren!
+ * # customText und alert kombinieren!
  * - automatisch den nächsten wählen (?)
  * - problem beim markieren
+ * - remove filter by finish all
+ * - goto alias'd unit geht nicht!
+ * - kombinierte hintergrundfarben
  * tidy:
  * # was geben die commands zurück?
  * - wie wird alles reseted?
  * test
  * polish:
+ * - design
  * - naming
  * - tests
  */
