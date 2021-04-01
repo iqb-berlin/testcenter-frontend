@@ -30,7 +30,7 @@ import { ConnectionStatus } from '../shared/websocket-backend.service';
  * - kombinierte hintergrundfarben
  * tidy:
  * # was geben die commands zurück?
- * - wie wird alles reseted?
+ * # wie wird alles reseted?
  * test
  * polish:
  * - design

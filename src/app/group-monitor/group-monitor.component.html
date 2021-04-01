@@ -243,7 +243,7 @@
                   (selectedElement$)="selectElement($event)"
                   [checked]="gms.isChecked(session)"
                   (checked$)="toggleChecked($event, session)"
-                  [style]="{backgroundColor: getClusterColor(session)}"
+                  [ngStyle]="{background: getSessionColor(session)}"
               >
               </tc-test-view>
             </ng-container>

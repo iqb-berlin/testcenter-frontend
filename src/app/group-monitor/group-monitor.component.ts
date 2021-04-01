@@ -146,20 +146,31 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     elem.classList[reachedBottom ? 'add' : 'remove']('hide-scroll-hint');
   }
 
-  getClusterColor(session: TestSession): string {
-    if (!this.displayOptions.highlightSpecies) {
-      return 'white';
+  getSessionColor(session: TestSession): string {
+    const stripes = (c1, c2) => `repeating-linear-gradient(45deg, ${c1}, ${c1} 10px, ${c2} 10px, ${c2} 20px)`;
+    const hsl = (h, s, l) => `hsl(${h}, ${s}%, ${l}%)`;
+    const colorful = this.displayOptions.highlightSpecies;
+    const h = colorful ? (
+      session.booklet.species.length *
+      session.booklet.species.charCodeAt(0) *
+      session.booklet.species.charCodeAt(session.booklet.species.length / 4) *
+      session.booklet.species.charCodeAt(session.booklet.species.length / 2) *
+      session.booklet.species.charCodeAt(3 * (session.booklet.species.length / 4)) *
+      session.booklet.species.charCodeAt(session.booklet.species.length - 1)
+    ) % 360 : 0;
+
+    switch (session.state) {
+      case 'paused':
+        return hsl(h, colorful ? 45 : 0, 90);
+      case 'pending':
+        return stripes(hsl(h, colorful ? 75 : 0, 95), hsl(h, 0, 98));
+      case 'locked':
+        return stripes(hsl(h, colorful ? 75 : 0, 95), hsl(0, 0, 92));
+      case 'error':
+        return stripes(hsl(h, colorful ? 75 : 0, 95), hsl(0, 30, 95));
+      default:
+        return hsl(h, colorful ? 75 : 0, colorful ? 95 : 100);
     }
-    const species = session.booklet.species;
-    const q1 = species.length / 4;
-    const q2 = species.length / 2;
-    const q3 = 3 * (species.length / 4);
-    const end = species.length - 1;
-    const cnn = species.length * (species.charCodeAt(0) + species.charCodeAt(q1) +
-      species.charCodeAt(q2) + species.charCodeAt(q3) + species.charCodeAt(end));
-    const rgb = [255, 255, 255];
-    rgb[species.charCodeAt(end) % 3] = (cnn % 150);
-    return `rgba(${rgb[0]},${rgb[1]},${rgb[2]}, 0.07)`;
   }
 
   markElement(marking: Selection): void {
