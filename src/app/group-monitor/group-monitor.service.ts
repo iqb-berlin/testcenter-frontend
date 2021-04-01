@@ -25,8 +25,9 @@ import { ConnectionStatus } from '../shared/websocket-backend.service';
  * # customText und alert kombinieren!
  * + automatisch den nächsten wählen (?)
  * # problem beim markieren
- * - remove filter by finish all
+ * # remove filter by finish all
  * - goto alias'd unit geht nicht!
+ * - select all checkbox ist zunächst angewählt
  * # kombinierte hintergrundfarben
  * tidy:
  * # was geben die commands zurück?
@@ -433,7 +434,6 @@ export class GroupMonitorService {
   }
 
   finishEverything(): Observable<CommandResponse> {
-    // TODO was ist hier mit gefilterten sessions?!
     const getUnlockedConnectedTestIds = () => Object.values(this._sessions$.getValue())
       .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked') &&
                          !TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'TERMINATED') &&
@@ -445,9 +445,11 @@ export class GroupMonitorService {
       .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked'))
       .map(session => session.data.testId);
 
+    this.filters$.next([]);
+
     return this.bs.command('terminate', [], getUnlockedConnectedTestIds())
       .pipe(
-        delay(2000),
+        delay(1900),
         flatMap(() => this.bs.lock(this.groupName, getUnlockedTestIds()))
       );
   }
