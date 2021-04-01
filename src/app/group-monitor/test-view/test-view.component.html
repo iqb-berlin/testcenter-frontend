@@ -41,7 +41,7 @@
 
 <td class="block" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.blockColumn === 'show'">
   <div *ngIf="testSession.current as current;" class="vertical-align-middle">
-    {{current.parent.label || (current.parentIndexGlobal ? blockName(current.parentIndexGlobal) : '')}}
+    {{current.parent.label || current.parent.blockId || current.parent.id}}
     <mat-icon
       class="unit-badge"
       *ngIf="testSession.timeLeft && (testSession.timeLeft[current.parent.id] !== undefined)"
@@ -222,7 +222,7 @@
 
 <td class="current-unit" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.unitColumn === 'show'">
   <div *ngIf="testSession.current as current;" class="vertical-align-middle">
-    <h2 matTooltip="{{current.unit.label}}">{{current.unit.labelShort || current.unit.id}}</h2>
+    <h2 matTooltip="{{current.unit.label}}">{{current.unit.id}}</h2>
     <mat-icon
       class="unit-badge"
       *ngIf="hasState(testSession.data.unitState, 'PRESENTATION_PROGRESS', 'complete')"

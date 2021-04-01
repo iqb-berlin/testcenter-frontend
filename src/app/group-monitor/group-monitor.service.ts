@@ -26,8 +26,10 @@ import { ConnectionStatus } from '../shared/websocket-backend.service';
  * + automatisch den nächsten wählen (?)
  * # problem beim markieren
  * # remove filter by finish all
- * - goto alias'd unit geht nicht!
+ * - goto alias'd unit geht nicht! -> stimmt nicht
  * - select all checkbox ist zunächst angewählt
+ * - anazhal der aufgaben iom block stimmt nicht
+ * - unter-testlet lässt sich auswählen!
  * # kombinierte hintergrundfarben
  * tidy:
  * # was geben die commands zurück?

@@ -42,8 +42,6 @@ export class TestViewComponent {
 
   trackUnits = (index: number, testlet: Testlet|Unit): string => testlet.id || index.toString();
 
-  blockName = (blockNumber: number): string => `Block ${String.fromCodePoint(64 + blockNumber)}`;
-
   mark(testletOrNull: Testlet|null = null): void {
     this.marked = this.asSelectionObject(testletOrNull);
     this.markedElement$.emit(this.marked);
