@@ -52,7 +52,7 @@ export class TestViewComponent {
   isSelected(testletOrNull: Testlet|null = null): boolean {
     return testletOrNull &&
       (this.selected?.element?.blockId === testletOrNull.blockId) &&
-      (this.marked?.originSession.booklet.species === this.testSession.booklet.species);
+      (this.selected?.originSession.booklet.species === this.testSession.booklet.species);
   }
 
   isMarked(testletOrNull: Testlet|null = null): boolean {
