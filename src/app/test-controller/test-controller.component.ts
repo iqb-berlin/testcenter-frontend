@@ -55,12 +55,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private commandSubscription: Subscription = null;
   private lastUnitSequenceId = 0;
   private lastTestletIndex = 0;
-  public timerValue: MaxTimerData = null;
   private timerRunning = false;
   private allUnitIds: string[] = [];
   private loadedUnitCount = 0;
   private unitLoadQueue: TaggedString[] = [];
   private resumeTargetUnitId = 0;
+  timerValue: MaxTimerData = null;
   unitNavigationTarget = UnitNavigationTarget;
   debugPane = false;
 
@@ -709,7 +709,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           gotoTarget = params[0];
         }
         if (gotoTarget && gotoTarget !== '0') {
-          console.log('YES', gotoTarget);
           this.resumeTargetUnitId = 0;
           this.tcs.interruptMaxTimer();
           this.tcs.setUnitNavigationRequest(gotoTarget, true);
