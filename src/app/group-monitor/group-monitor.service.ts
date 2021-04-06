@@ -26,9 +26,10 @@ import { ConnectionStatus } from '../shared/websocket-backend.service';
  * + automatisch den nächsten wählen (?)
  * # problem beim markieren
  * # remove filter by finish all
- * - goto alias'd unit geht nicht! -> stimmt nicht
+ * + goto alias'd unit geht nicht! -> stimmt nicht
  * - select all checkbox ist zunächst angewählt
  * - anazhal der aufgaben iom block stimmt nicht
+ * ---> STAND. getCurrent zählt freie units zum letzten Block ?! (unit test schreiben!)
  * - unter-testlet lässt sich auswählen!
  * # kombinierte hintergrundfarben
  * tidy:
@@ -246,9 +247,9 @@ export class GroupMonitorService {
             TestSessionsSuperStates.indexOf(session2.state)) * sortDirectionFactor;
         }
         if (sort.active === '_currentBlock') {
-          const s1curBlock = session1.current && session1.current.parent ? session1.current.parentIndexGlobal : 100000;
-          const s2curBlock = session2.current && session2.current.parent ? session2.current.parentIndexGlobal : 100000;
-          return (s1curBlock - s2curBlock) * sortDirectionFactor;
+          const s1curBlock = session1.current?.ancestor?.blockId || 'zzzzzzzzzz';
+          const s2curBlock = session2.current?.ancestor?.blockId || 'zzzzzzzzzz';
+          return s1curBlock.localeCompare(s2curBlock) * sortDirectionFactor;
         }
         if (sort.active === '_currentUnit') {
           const s1currentUnit = session1.current ? session1.current.unit.label : 'zzzzzzzzzz';

@@ -22,14 +22,16 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
         {
           id: 'zara',
           label: 'Testlet-0',
-          children: [],
-          descendantCount: 6
+          descendantCount: 6,
+          blockId: 'block-1',
+          children: []
         },
         { id: 'unit-2', label: '1-1-1', labelShort: 'unit' },
         {
           id: 'alf',
           label: 'Testlet-1',
           descendantCount: 4,
+          blockId: 'block-2',
           children: [
             { id: 'unit-3', label: '2-0-0', labelShort: 'unit' },
             {
@@ -63,6 +65,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
           id: 'ellie',
           label: 'Testlet-5',
           descendantCount: 2,
+          blockId: 'block-3',
           children: [
             { id: 'unit-9', label: '8-0-0', labelShort: 'unit' },
             {
@@ -92,18 +95,19 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
       descendantCount: 4,
       children: [
         {
-          id: 'zara',
+          id: 'zoe',
           label: 'Testlet-0',
           descendantCount: 3,
+          blockId: 'block-1',
           children: [
             {
-              id: 'alf',
+              id: 'anton',
               label: 'Testlet-1',
               descendantCount: 2,
               children: [
                 {
-                  id: 'alf',
-                  label: 'Testlet-1',
+                  id: 'berta',
+                  label: 'Testlet-2',
                   descendantCount: 1,
                   children: [
                     { id: 'unit-1', label: '0-0-0', labelShort: 'unit' }
@@ -115,9 +119,10 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
         },
         { id: 'unit-2', label: '1-1-1', labelShort: 'unit' },
         {
-          id: 'ben',
-          label: 'Testlet-2',
+          id: 'dirk',
+          label: 'Testlet-3',
           descendantCount: 0,
+          blockId: 'block-2',
           children: []
         }
       ]
@@ -138,7 +143,7 @@ export const unitTestExampleSessions: TestSession[] = [
       CONTROLLER: 'RUNNING',
       status: 'running'
     },
-    unitName: 'unit-5',
+    unitName: 'unit-10',
     unitState: {},
     timestamp: 10000500
   },
