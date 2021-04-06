@@ -178,7 +178,7 @@
           (mouseenter)="mark(testletOrUnit)"
           (click)="select($event, testletOrUnit)"
         >
-          {{testSession.current.indexAncestor + 1}} / {{testSession.current.unitCountAncestor}}
+          {{testSession.current.indexAncestor + 1}} / {{testSession.current.ancestor.descendantCount}}
         </span>
       </ng-container>
 
@@ -209,7 +209,7 @@
       matTooltip="{{testSession.current.unit.label}}"
       matTooltipPosition="above"
     >
-      {{testSession.current.indexGlobal + 1}} / {{testSession.current.unitCountGlobal}}
+      {{testSession.current.indexGlobal + 1}} / {{testSession.booklet.units.descendantCount}}
     </span>
   </span>
 

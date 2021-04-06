@@ -2,6 +2,7 @@
 import { TestBed } from '@angular/core/testing';
 import { TestSessionService } from './test-session.service';
 import { unitTestExampleBooklets } from './test-data.spec';
+import { Testlet, UnitContext } from './group-monitor.interfaces';
 
 describe('TestSessionService', () => {
   let service: TestSessionService;
@@ -20,56 +21,116 @@ describe('TestSessionService', () => {
       .toBeTruthy();
   });
 
-  describe('getUnitContext()', () => {
-    it('should find correct indices, unit and parent', () => {
-      const expectations = {
-        'unit-0': { global: -1, ancestor: -1, local: -1 },
-        'unit-1': { global: 0, ancestor: 0, local: 0, parentName: 'root', ancestorName: 'root' },
-        'unit-2': { global: 1, ancestor: 1, local: 1, parentName: 'root', ancestorName: 'root' },
-        'unit-3': { global: 2, ancestor: 0, local: 0, parentName: 'alf', ancestorName: 'alf' },
-        'unit-4': { global: 3, ancestor: 1, local: 0, parentName: 'ben', ancestorName: 'alf' },
-        'unit-5': { global: 4, ancestor: 2, local: 1, parentName: 'ben', ancestorName: 'alf' },
-        'unit-6': { global: 5, ancestor: 3, local: 0, parentName: 'dolf', ancestorName: 'alf' },
-        'unit-7': { global: 6, ancestor: 4, local: 1, parentName: 'alf', ancestorName: 'alf' },
-        'unit-8': { global: 7, ancestor: 2, local: 2, parentName: 'root', ancestorName: 'root' },
-        'unit-9': { global: 8, ancestor: 0, local: 0, parentName: 'ellie', ancestorName: 'ellie' },
-        'unit-10': { global: 9, ancestor: 1, local: 0, parentName: 'fred', ancestorName: 'ellie' }
+  fdescribe('getCurrent()', () => {
+    it('should find correct indices for unit, parent and ancestor ( = top-level-testlet or root)', () => {
+      const fakeTestlet = (id: string): Testlet => ({
+        id,
+        label: id,
+        children: [],
+        descendantCount: NaN
+      });
+      const expectations: { [unitId: string]: UnitContext } = {
+        'unit-1': {
+          indexGlobal: 0,
+          indexAncestor: 0,
+          indexLocal: 0,
+          parent: fakeTestlet('root'),
+          ancestor: fakeTestlet('root')
+        },
+        'unit-2': {
+          indexGlobal: 1,
+          indexAncestor: 1,
+          indexLocal: 1,
+          parent: fakeTestlet('root'),
+          ancestor: fakeTestlet('root')
+        },
+        'unit-3': {
+          indexGlobal: 2,
+          indexAncestor: 0,
+          indexLocal: 0,
+          parent: fakeTestlet('alf'),
+          ancestor: fakeTestlet('alf')
+        },
+        'unit-4': {
+          indexGlobal: 3,
+          indexAncestor: 1,
+          indexLocal: 0,
+          parent: fakeTestlet('ben'),
+          ancestor: fakeTestlet('alf')
+        },
+        'unit-5': {
+          indexGlobal: 4,
+          indexAncestor: 2,
+          indexLocal: 1,
+          parent: fakeTestlet('ben'),
+          ancestor: fakeTestlet('alf')
+        },
+        'unit-6': {
+          indexGlobal: 5,
+          indexAncestor: 3,
+          indexLocal: 0,
+          parent: fakeTestlet('dolf'),
+          ancestor: fakeTestlet('alf')
+        },
+        'unit-7': {
+          indexGlobal: 6,
+          indexAncestor: 4,
+          indexLocal: 1,
+          parent: fakeTestlet('alf'),
+          ancestor: fakeTestlet('alf')
+        },
+        'unit-8': {
+          indexGlobal: 7,
+          indexAncestor: 2,
+          indexLocal: 2,
+          parent: fakeTestlet('root'),
+          ancestor: fakeTestlet('root')
+        },
+        'unit-9': {
+          indexGlobal: 8,
+          indexAncestor: 0,
+          indexLocal: 0,
+          parent: fakeTestlet('ellie'),
+          ancestor: fakeTestlet('ellie')
+        },
+        'unit-10': {
+          indexGlobal: 9,
+          indexAncestor: 1,
+          indexLocal: 0,
+          parent: fakeTestlet('fred'),
+          ancestor: fakeTestlet('ellie')
+        }
       };
 
-      for (let i = 0; i < 11; i++) {
+      for (let i = 1; i < 11; i++) {
         // eslint-disable-next-line @typescript-eslint/dot-notation
         const result = TestSessionService['getCurrent'](unitTestExampleBooklets.example_booklet_1.units, `unit-${i}`);
         const expectation = expectations[`unit-${i}`];
-
         expect(result.indexGlobal)
           .withContext(`global index of unit-${i}`)
-          .toEqual(expectation.global);
+          .toEqual(expectation.indexGlobal);
         expect(result.indexAncestor)
           .withContext(`ancestor-index of unit-${i}`)
-          .toEqual(expectation.ancestor);
+          .toEqual(expectation.indexAncestor);
         expect(result.indexLocal)
           .withContext(`local index of unit-${i}`)
-          .toEqual(expectation.local);
-
-        if ('parentName' in expectation) {
-          expect(result.unit.id)
-            .withContext(`featured unit of unit-${i}`)
-            .toEqual(`unit-${i}`);
-          expect(result.parent.id)
-            .withContext(`parent of unit-${i}`)
-            .toEqual(expectation.parentName);
-          expect(result.ancestor.id)
-            .withContext(`ancestor of unit-${i}`)
-            .toEqual(expectation.ancestorName);
-        } else {
-          expect(result.unit)
-            .withContext(`not found unit-${i}`)
-            .toBeNull();
-          expect(result.parent)
-            .withContext(`no parent of unit-${i}`)
-            .toBeNull();
-        }
+          .toEqual(expectation.indexLocal);
+        expect(result.unit.id)
+          .withContext(`current unit of unit-${i}`)
+          .toEqual(`unit-${i}`);
+        expect(result.parent.id)
+          .withContext(`parent of unit-${i}`)
+          .toEqual(expectation.parent.id);
+        expect(result.ancestor.id)
+          .withContext(`ancestor of unit-${i}`)
+          .toEqual(expectation.ancestor.id);
       }
+    });
+
+    it('should find return a unitContext without unit for not existing id', () => {
+      // eslint-disable-next-line @typescript-eslint/dot-notation
+      const result = TestSessionService['getCurrent'](unitTestExampleBooklets.example_booklet_1.units, 'not-existing');
+      expect(result.unit).toBeNull();
     });
   });
 

@@ -27,11 +27,12 @@ import { ConnectionStatus } from '../shared/websocket-backend.service';
  * # problem beim markieren
  * # remove filter by finish all
  * + goto alias'd unit geht nicht! -> stimmt nicht
+ * # anazhal der aufgaben iom block stimmt nicht
+ * #--> STAND. getCurrent zählt freie units zum letzten Block ?! (unit test schreiben!)
  * - select all checkbox ist zunächst angewählt
- * - anazhal der aufgaben iom block stimmt nicht
- * ---> STAND. getCurrent zählt freie units zum letzten Block ?! (unit test schreiben!)
  * - unter-testlet lässt sich auswählen!
  * # kombinierte hintergrundfarben
+ * descendantCount -> unit count (not direct!)
  * tidy:
  * # was geben die commands zurück?
  * # wie wird alles reseted?

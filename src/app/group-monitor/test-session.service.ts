@@ -119,59 +119,45 @@ export class TestSessionService {
     }
   }
 
-  private static getCurrent(testlet: Testlet, unitName: string, level = 0, countGlobal = 0,
-                            countAncestor = 0, ancestor: Testlet = null, testletCount = 0): UnitContext {
-    let result: UnitContext = {
+  private static getCurrent(testlet: Testlet, searchUnitId: string,
+                            level = 0, context: UnitContext = null): UnitContext {
+    const result: UnitContext = context || {
       unit: null,
-      parent: null,
-      ancestor: (level <= 1) ? testlet : ancestor,
-      unitCount: 0,
-      unitCountGlobal: countGlobal,
-      unitCountAncestor: countAncestor,
+      parent: testlet,
+      ancestor: testlet,
       indexGlobal: -1,
       indexLocal: -1,
-      indexAncestor: -1,
-      testletCountGlobal: testletCount,
-      parentIndexGlobal: -1
+      indexAncestor: -1
     };
 
-    let i = -1;
-    // eslint-disable-next-line no-plusplus
-    while (i++ < testlet.children.length - 1) {
-      const testletOrUnit = testlet.children[i];
+    for (let i = 0; i < testlet.children.length; i++) {
+      const child = testlet.children[i];
+      if (isUnit(child)) {
+        result.indexLocal += 1;
+        result.indexAncestor += 1;
+        result.indexGlobal += 1;
 
-      if (isUnit(testletOrUnit)) {
-        if (testletOrUnit.id === unitName) {
-          result.indexGlobal = result.unitCountGlobal;
-          result.indexLocal = result.unitCount;
-          result.indexAncestor = result.unitCountAncestor;
-          result.unit = testletOrUnit;
-          result.parent = testlet;
-          result.parentIndexGlobal = result.testletCountGlobal;
+        if (child.id === searchUnitId) {
+          result.unit = child;
+          return result;
         }
-
-        result.unitCount += 1;
-        result.unitCountGlobal += 1;
-        result.unitCountAncestor += 1;
       } else {
-        const subResult = TestSessionService.getCurrent(
-          testletOrUnit,
-          unitName,
-          level + 1,
-          result.unitCountGlobal,
-          (level < 1) ? 0 : result.unitCountAncestor,
-          result.ancestor,
-          result.testletCountGlobal + 1
-        );
-        result.unitCountGlobal = subResult.unitCountGlobal;
-        result.unitCountAncestor = (level < 1) ? result.unitCountAncestor : subResult.unitCountAncestor;
-        result.testletCountGlobal = subResult.testletCountGlobal;
-
-        if (subResult.indexLocal >= 0) {
-          result = subResult;
+        const subResult = TestSessionService.getCurrent(child, searchUnitId, level + 1, {
+          unit: null,
+          parent: child,
+          ancestor: level < 1 ? child : result.ancestor,
+          indexGlobal: result.indexGlobal,
+          indexLocal: -1,
+          indexAncestor: level < 1 ? -1 : result.indexAncestor
+        });
+        if (subResult.unit) {
+          return subResult;
         }
+        result.indexGlobal = subResult.indexGlobal;
+        result.indexAncestor = level < 1 ? result.indexAncestor : subResult.indexAncestor;
       }
     }
+
     return result;
   }
 }

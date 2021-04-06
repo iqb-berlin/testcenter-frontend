@@ -127,14 +127,9 @@ export interface UnitContext {
   unit?: Unit;
   parent?: Testlet;
   ancestor?: Testlet;
-  unitCount: number;
-  unitCountGlobal: number;
   indexGlobal: number;
   indexLocal: number;
   indexAncestor: number;
-  unitCountAncestor: number;
-  testletCountGlobal: number;
-  parentIndexGlobal: number;
 }
 
 export interface Selection {
