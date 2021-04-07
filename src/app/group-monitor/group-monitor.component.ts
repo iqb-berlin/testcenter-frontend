@@ -149,7 +149,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   getSessionColor(session: TestSession): string {
     const stripes = (c1, c2) => `repeating-linear-gradient(45deg, ${c1}, ${c1} 10px, ${c2} 10px, ${c2} 20px)`;
     const hsl = (h, s, l) => `hsl(${h}, ${s}%, ${l}%)`;
-    const colorful = this.displayOptions.highlightSpecies;
+    const colorful = this.displayOptions.highlightSpecies && session.booklet.species;
     const h = colorful ? (
       session.booklet.species.length *
       session.booklet.species.charCodeAt(0) *
