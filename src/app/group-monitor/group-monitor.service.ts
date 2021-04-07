@@ -18,35 +18,6 @@ import {
 } from './group-monitor.interfaces';
 import { ConnectionStatus } from '../shared/websocket-backend.service';
 
-/**
- * func:
- * # checkAll
- * # stop / resume usw. ohne erlaubnis-check! sonst macht alwaysAll keinen Sinn
- * # customText und alert kombinieren!
- * + automatisch den nächsten wählen (?)
- * # problem beim markieren
- * # remove filter by finish all
- * + goto alias'd unit geht nicht! -> stimmt nicht
- * # anazhal der aufgaben iom block stimmt nicht
- * #--> STAND. getCurrent zählt freie units zum letzten Block ?! (unit test schreiben!)
- * # select all checkbox ist zunächst angewählt
- * - unter-testlet lässt sich auswählen!
- * - filter namen customisieren
- * - alle gleichzeitig Schalter muss neu rendern zur Folge haben
- * - testview customisieren
- * - booklet fehler testen
- * # kombinierte hintergrundfarben
- * descendantCount -> unit count (not direct!)
- * tidy:
- * # was geben die commands zurück?
- * # wie wird alles reseted?
- * test
- * polish:
- * - design
- * - naming
- * - tests
- */
-
 @Injectable()
 export class GroupMonitorService {
   sortBy$: Subject<Sort>;
