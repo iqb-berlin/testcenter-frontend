@@ -413,7 +413,7 @@ export class GroupMonitorService {
   }
 
   private onCheckedChanged(): void {
-    this._checkedStats$.next(GroupMonitorService.getSessionSetStats(this.checked));
+    this._checkedStats$.next(GroupMonitorService.getSessionSetStats(this.checked, this.sessions.length));
   }
 
   // TODO only public for test
