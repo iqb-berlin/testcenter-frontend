@@ -172,10 +172,6 @@
     "label": "Information gewählte Tests: Keiner",
     "defaultvalue": "Kein Test gewählt."
   },
-  "gm_control_all_next": {
-    "label": "Control: Alle in den nächsten block",
-    "defaultvalue": "Alle in den nächsten block"
-  },
   "gm_control_resume": {
     "label": "Control: weiter",
     "defaultvalue": "weiter"
@@ -255,5 +251,17 @@
   {
     "label": "Fehleranzeige im Gruppen monitor: unbekannter Fehler",
     "defaultvalue": "Fehler beim Zugriff aus Testheft-Datei!"
+  },
+  "gm_control_goto_tooltip": {
+    "label": "Tooltip über dem 'Springe zu'-Knopf, der erscheint, wenn kein Block gewählt ist",
+    "defaultvalue": "Bitte Block auswählen"
+  },
+  "gm_multiple_booklet_species_warning": {
+    "label": "Tooltip über dem 'Immer alle Auswählen'-Schalter, der erscheint, wenn dieser deaktiviert ist",
+    "defaultvalue": " - Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden."
+  },
+  "gm_auto_checkall": {
+    "label": "Der 'Immer alle Auswählen'-Schalter",
+    "defaultvalue": "Alle Tests gleichzeitig steuern"
   }
 }

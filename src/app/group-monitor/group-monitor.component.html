@@ -137,7 +137,13 @@
       </div>
 
       <div class="toolbar-section">
-        <button mat-raised-button class="control" color="primary" (click)="testCommandGoto()">
+        <button
+          mat-raised-button
+          class="control"
+          color="primary"
+          (click)="testCommandGoto()"
+          [matTooltip]="selectedElement?.element?.blockId ? null : ('Bitte Block auswählen' | customtext:'gm_control_goto_tooltip' | async)"
+        >
           <mat-icon>arrow_forward</mat-icon>
           {{'Springe zu' | customtext:'gm_control_goto' | async}}
           <span class="emph">{{selectedElement?.element?.blockId}}</span>
@@ -150,7 +156,7 @@
           class="control"
           color="primary"
           (click)="unlockCommand()"
-          matTooltip="{{'Freigeben' | customtext:'gm_control_unlock_tooltip' | async}}"
+          [matTooltip]="'Freigeben' | customtext:'gm_control_unlock_tooltip' | async"
         >
           <mat-icon>lock_open</mat-icon>
           {{'Entsperren' | customtext:'gm_control_unlock' | async}}
@@ -158,7 +164,13 @@
       </div>
 
       <div id="message-panel" class="toolbar-section">
-        <alert *ngFor="let m of messages" [text]="m.text" [level]="m.level" customtext="m.customtext" [replacements]="m.replacements"></alert>
+        <alert
+          *ngFor="let m of messages"
+          [text]="m.text"
+          [level]="m.level"
+          customtext="m.customtext"
+          [replacements]="m.replacements"
+        ></alert>
       </div>
 
       <div class="toolbar-section toolbar-section-bottom">
@@ -178,7 +190,7 @@
             class="settings-button"
             mat-icon-button
             [matMenuTriggerFor]="rootMenu"
-            matTooltip="{{'Ansicht' | customtext:'gm_settings_tooltip' | async}}"
+            [matTooltip]="'Ansicht' | customtext:'gm_settings_tooltip' | async"
             matTooltipPosition="above"
           >
             <mat-icon>settings</mat-icon>
@@ -189,7 +201,7 @@
           <button
             mat-icon-button
             (click)="scrollDown()"
-            matTooltip="{{'Ganz nach unten' | customtext:'gm_scroll_down' | async}}"
+            [matTooltip]="'Ganz nach unten' | customtext:'gm_scroll_down' | async"
             matTooltipPosition="above"
           >
             <mat-icon>keyboard_arrow_down</mat-icon>

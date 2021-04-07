@@ -81,6 +81,7 @@ replacements:
 |`booklet_tasklisttitle`|Titel für die Auflistung der Aufgaben (Schalter)|Aufgaben|
 |`booklet_warningLeaveTimerBlockTextPrompt`|Schalterbeschriftung für 'Zurück zum Test'|Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?|
 |`booklet_warningLeaveTimerBlockTitle`|Titel für Warnung (Dialogbox) vor dem vorzeitigen Verlassen eines Abschnittes mit Timer|Aufgabenabschnitt verlassen?|
+|`gm_auto_checkall`|Der 'Immer alle Auswählen'-Schalter|Alle Tests gleichzeitig steuern|
 |`gm_booklet_error_general`|Fehleranzeige im Gruppen monitor: unbekannter Fehler|Fehler beim Zugriff aus Testheft-Datei!|
 |`gm_booklet_error_missing_file`|Fehleranzeige im Gruppen monitor: Kein Zugriff auf Testheft-Datei!|Kein Zugriff auf Testheft-Datei!|
 |`gm_booklet_error_missing_id`|Fehleranzeige im Gruppen monitor: Kein Testheft zugeordnet|Kein Testheft zugeordnet!|
@@ -91,9 +92,9 @@ replacements:
 |`gm_col_person`|Spalte: Teilnehmer|Teilnehmer|
 |`gm_col_testlet`|Spalte: Block|Block|
 |`gm_col_unit`|Spalte: Aufgabe|Aufgabe|
-|`gm_control_all_next`|Control: Alle in den nächsten block|Alle in den nächsten block|
 |`gm_control_finish_everything`|Control: Testung beenden|Testung beenden|
 |`gm_control_goto`|Control: Springe zu Block|Springe zu|
+|`gm_control_goto_tooltip`|Tooltip über dem 'Springe zu'-Knopf, der erscheint, wenn kein Block gewählt ist|Bitte Block auswählen|
 |`gm_control_pause`|Control: pause|pause|
 |`gm_control_resume`|Control: weiter|weiter|
 |`gm_control_unlock`|Control: Entsperren|Entsperren|
@@ -107,6 +108,7 @@ replacements:
 |`gm_menu_activity`|Meinueintrag: Aktivität|Aktivität|
 |`gm_menu_cols`|Meinueintrag: Spalten|Spalten|
 |`gm_menu_filter`|Meinueintrag: Sitzungen ausblenden|Sitzungen ausblenden|
+|`gm_multiple_booklet_species_warning`|Tooltip über dem 'Immer alle Auswählen'-Schalter, der erscheint, wenn dieser deaktiviert ist| - Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden.|
 |`gm_scroll_down`|Control: Ganz nach unten|Ganz nach unten|
 |`gm_selection_info`|Information gewählte Tests. Text-Substitutionen: (Alle/''), Anzahl, (''/s), Anzahl, (''/e)|%s %s Test%s mit %s Testheft%s ausgewählt.|
 |`gm_selection_info_none`|Information gewählte Tests: Keiner|Kein Test gewählt.|
