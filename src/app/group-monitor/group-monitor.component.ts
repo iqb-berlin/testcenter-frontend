@@ -235,7 +235,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   toggleAlwaysCheckAll(event: MatSlideToggleChange): void {
-    if (this.gms.checkingOptions.enableAutoCheckAll && !event.checked) {
+    if (this.gms.checkingOptions.enableAutoCheckAll && event.checked) {
       this.gms.checkAll();
       this.displayOptions.manualChecking = false;
       this.gms.checkingOptions.autoCheckAll = true;

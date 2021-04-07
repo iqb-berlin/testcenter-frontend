@@ -85,43 +85,43 @@
 
       <h2>{{'Test-Steuerung' | customtext:'gm_controls' | async}}</h2>
 
-      <div class="toolbar-section" *ngIf="displayOptions.manualChecking">
-        <ng-container *ngIf="gms.checkedStats$ | async as checkedStats">
-          <alert
-            *ngIf="checkedStats.number; else noCheckedSession"
-            level="info"
-            customtext="gm_selection_info"
-            text="%s %s Test%s mit %s Testheft%s ausgewählt."
-            [replacements]="[
-              (checkedStats.all ? ' Alle' : ''),
-              checkedStats.number.toString(10),
-              (checkedStats.number !== 1 ? 's' : ''),
-              checkedStats.differentBooklets.toString(10),
-              (checkedStats.differentBooklets !== 1 ? 'en' : '')
-            ]"
-          ></alert>
-          <ng-template #noCheckedSession>
-            <alert level="info" customtext="gm_selection_info_none" text="Kein Test ausgewählt."></alert>
-          </ng-template>
-        </ng-container>
-      </div>
-
       <div class="toolbar-section" *ngIf="gms.sessionsStats$ | async as sessionsStats">
         <mat-slide-toggle
-          color="accent"
-          (change)="toggleAlwaysCheckAll($event)"
-          [disabled]="!gms.checkingOptions.enableAutoCheckAll"
-          [checked]="gms.checkingOptions.autoCheckAll"
+            color="accent"
+            (change)="toggleAlwaysCheckAll($event)"
+            [disabled]="!gms.checkingOptions.enableAutoCheckAll"
+            [checked]="gms.checkingOptions.autoCheckAll"
+            [matTooltip]="(sessionsStats.differentBookletSpecies > 1) ? (
+            'Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden.'
+              | customtext:'gm_multiple_booklet_species_warning'
+              | async
+           ) : null"
         >
-          Alle Tests gleichzeitig steuern
+          {{'Alle Tests gleichzeitig steuern' | customtext:'gm_auto_checkall' | async }}
         </mat-slide-toggle>
-        <alert
-          *ngIf="sessionsStats.differentBookletSpecies > 1"
-          level="warning"
-          text="Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden."
-          customtext="gm_multiple_booklet_species_warning"
-        >
-        </alert>
+      </div>
+
+      <div class="toolbar-section min-height-section">
+        <ng-container *ngIf="displayOptions.manualChecking">
+          <ng-container *ngIf="gms.checkedStats$ | async as checkedStats">
+            <alert
+              *ngIf="checkedStats.number; else noCheckedSession"
+              level="info"
+              customtext="gm_selection_info"
+              text="%s %s Test%s mit %s Testheft%s ausgewählt."
+              [replacements]="[
+                (checkedStats.all ? ' Alle' : ''),
+                checkedStats.number.toString(10),
+                (checkedStats.number !== 1 ? 's' : ''),
+                checkedStats.differentBooklets.toString(10),
+                (checkedStats.differentBooklets !== 1 ? 'en' : '')
+              ]"
+            ></alert>
+            <ng-template #noCheckedSession>
+              <alert level="info" customtext="gm_selection_info_none" text="Kein Test ausgewählt."></alert>
+            </ng-template>
+          </ng-container>
+        </ng-container>
       </div>
 
       <div class="toolbar-section">

@@ -132,6 +132,10 @@
     margin-left: 15px;
 }
 
+.min-height-section {
+    min-height: 3em;
+}
+
 .toolbar-section-bottom {
     position: absolute;
     bottom: 0;
