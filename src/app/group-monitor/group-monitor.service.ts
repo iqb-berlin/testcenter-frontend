@@ -416,8 +416,7 @@ export class GroupMonitorService {
     this._checkedStats$.next(GroupMonitorService.getSessionSetStats(this.checked, this.sessions.length));
   }
 
-  // TODO only public for test
-  static getSessionSetStats(sessionSet: TestSession[], allCount: number = sessionSet.length): TestSessionSetStats {
+  private static getSessionSetStats(sessionSet: TestSession[], all: number = sessionSet.length): TestSessionSetStats {
     const booklets = new Set();
     const bookletSpecies = new Set();
     let paused = 0;
@@ -435,7 +434,7 @@ export class GroupMonitorService {
       number: sessionSet.length,
       differentBooklets: booklets.size,
       differentBookletSpecies: bookletSpecies.size,
-      all: (allCount === sessionSet.length),
+      all: (all === sessionSet.length),
       paused,
       locked
     };
