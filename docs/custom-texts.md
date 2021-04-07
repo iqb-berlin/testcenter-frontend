@@ -81,6 +81,10 @@ replacements:
 |`booklet_tasklisttitle`|Titel für die Auflistung der Aufgaben (Schalter)|Aufgaben|
 |`booklet_warningLeaveTimerBlockTextPrompt`|Schalterbeschriftung für 'Zurück zum Test'|Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?|
 |`booklet_warningLeaveTimerBlockTitle`|Titel für Warnung (Dialogbox) vor dem vorzeitigen Verlassen eines Abschnittes mit Timer|Aufgabenabschnitt verlassen?|
+|`gm_booklet_error_general`|Fehleranzeige im Gruppen monitor: unbekannter Fehler|Fehler beim Zugriff aus Testheft-Datei!|
+|`gm_booklet_error_missing_file`|Fehleranzeige im Gruppen monitor: Kein Zugriff auf Testheft-Datei!|Kein Zugriff auf Testheft-Datei!|
+|`gm_booklet_error_missing_id`|Fehleranzeige im Gruppen monitor: Kein Testheft zugeordnet|Kein Testheft zugeordnet!|
+|`gm_booklet_error_xml`|Fehleranzeige im Gruppen monitor: Invalides XML|Konnte Testheft-Datei nicht lesen!|
 |`gm_col_activity`|Spalte: Aktivität|Aktivität|
 |`gm_col_booklet`|Spalte: Testheft|Testheft|
 |`gm_col_group`|Spalte: Gruppe|Gruppe|
@@ -93,7 +97,11 @@ replacements:
 |`gm_control_pause`|Control: pause|pause|
 |`gm_control_resume`|Control: weiter|weiter|
 |`gm_control_unlock`|Control: Entsperren|Entsperren|
+|`gm_control_unlock_success_warning`|Wird angezeigt, wenn tests entsperrt wurden|ACHTUNG! Die betreffenden Browser müssen ggf. neu gestartet werden.|
+|`gm_control_unlock_tooltip`|Tooltip: Freigeben|Freigeben|
 |`gm_controls`|Überschrift: Test-Steuerung|Test-Steuerung|
+|`gm_filter_locked`|Filter: gesperrte ausblenden|gesperrte|
+|`gm_filter_pending`|Filter: nicht gestartete ausblenden|nicht gestartete|
 |`gm_headline`|Überschrift: Gruppenmonitor|IQB-Testcenter Gruppenüberwachung|
 |`gm_hide_controls_tooltip`|Tooltip: Test-Steuerung verbergen|Test-Steuerung verbergen|
 |`gm_menu_activity`|Meinueintrag: Aktivität|Aktivität|
@@ -103,6 +111,7 @@ replacements:
 |`gm_selection_info`|Information gewählte Tests. Text-Substitutionen: (Alle/''), Anzahl, (''/s), Anzahl, (''/e)|%s %s Test%s mit %s Testheft%s ausgewählt.|
 |`gm_selection_info_none`|Information gewählte Tests: Keiner|Kein Test gewählt.|
 |`gm_settings_tooltip`|Control: Ansicht|Ansicht|
+|`gm_timeleft_tooltip`|Tooltip: verbleibende Zeit|Verbleibende Zeit|
 |`gm_view_full`|Ansicht: Vollständig|Vollständig|
 |`gm_view_medium`|Ansicht: Nur Blöcke|Nur Blöcke|
 |`gm_view_small`|Ansicht: Kurz|Kurz|

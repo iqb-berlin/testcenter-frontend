@@ -47,7 +47,7 @@
       *ngIf="testSession.timeLeft && (testSession.timeLeft[current.parent.id] !== undefined)"
       matBadge="{{testSession.timeLeft[current.parent.id].toString()}}"
       matBadgeColor="accent"
-      matTooltip="Verbleibende Zeit"
+      [matTooltip]="'Verbleibende Zeit' | customtext:'gm_timeleft_tooltip' | async"
     >schedule
     </mat-icon>
   </div>
@@ -84,10 +84,18 @@
   </ng-container>
 
   <ng-template #noBookletReason>
-    <span *ngIf="testSession.booklet.error == 'missing-id'">Kein Testheft zugeordnet</span>
-    <span *ngIf="testSession.booklet.error == 'missing-file'" class="warning">Kein Zugriff auf Testheft-Datei!</span>
-    <span *ngIf="testSession.booklet.error == 'xml'" class="warning">Konnte Testheft-Datei nicht lesen!</span>
-    <span *ngIf="testSession.booklet.error == 'general'" class="warning">Fehler beim Zugriff aus Testheft-Datei!</span>
+    <span *ngIf="testSession.booklet.error == 'missing-id'">
+      {{'Kein Testheft zugeordnet!' | customtext:'gm_booklet_error_missing_id' | async}}
+    </span>
+    <span *ngIf="testSession.booklet.error == 'missing-file'" class="warning">
+      {{'Kein Zugriff auf Testheft-Datei!' | customtext:'gm_booklet_error_missing_file' | async}}
+    </span>
+    <span *ngIf="testSession.booklet.error == 'xml'" class="warning">
+      {{'Konnte Testheft-Datei nicht lesen!' | customtext:'gm_booklet_error_xml' | async}}
+    </span>
+    <span *ngIf="testSession.booklet.error == 'general'" class="warning">
+      {{'Fehler beim Zugriff aus Testheft-Datei!' | customtext:'gm_booklet_error_general' | async}}
+    </span>
   </ng-template>
 </td>
 
@@ -97,7 +105,7 @@
   <span
     *ngIf="testlet.restrictions && testlet.restrictions.codeToEnter as codeToEnter"
     class="unit restriction"
-    matTooltip="Freigabewort: {{codeToEnter.code.toUpperCase()}}"
+    matTooltip="{{'Freigabewort' | customtext:'booklet_codeToEnterTitle' | async}}: {{codeToEnter.code.toUpperCase()}}"
     matTooltipPosition="above"
   >
     <mat-icon>{{testSession.clearedCodes && (testSession.clearedCodes.indexOf(testlet.id) > -1) ? 'lock_open' : 'lock'}}</mat-icon>
@@ -155,7 +163,7 @@
       <span
         *ngIf="testletOrUnit.restrictions && testletOrUnit.restrictions.codeToEnter as codeToEnter"
         class="unit restriction"
-        matTooltip="Freigabewort: {{codeToEnter.code.toUpperCase()}}"
+        matTooltip="{{'Freigabewort' | customtext:'booklet_codeToEnterTitle' | async}}: {{codeToEnter.code.toUpperCase()}}"
         matTooltipPosition="above"
       >
         <mat-icon>

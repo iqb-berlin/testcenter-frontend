@@ -219,5 +219,41 @@
   "gm_hide_controls_tooltip": {
     "label": "Tooltip: Test-Steuerung verbergen",
     "defaultvalue": "Test-Steuerung verbergen"
+  },
+  "gm_control_unlock_tooltip": {
+    "label": "Tooltip: Freigeben",
+    "defaultvalue": "Freigeben"
+  },
+  "gm_filter_locked": {
+    "label": "Filter: gesperrte ausblenden",
+    "defaultvalue": "gesperrte"
+  },
+  "gm_filter_pending": {
+    "label": "Filter: nicht gestartete ausblenden",
+    "defaultvalue": "nicht gestartete"
+  },
+  "gm_timeleft_tooltip": {
+    "label": "Tooltip: verbleibende Zeit",
+    "defaultvalue": "Verbleibende Zeit"
+  },
+  "gm_booklet_error_missing_id":
+  {
+    "label": "Fehleranzeige im Gruppen monitor: Kein Testheft zugeordnet",
+    "defaultvalue": "Kein Testheft zugeordnet!"
+  },
+  "gm_booklet_error_missing_file":
+  {
+    "label": "Fehleranzeige im Gruppen monitor: Kein Zugriff auf Testheft-Datei!",
+    "defaultvalue": "Kein Zugriff auf Testheft-Datei!"
+  },
+  "gm_booklet_error_xml":
+  {
+    "label": "Fehleranzeige im Gruppen monitor: Invalides XML",
+    "defaultvalue": "Konnte Testheft-Datei nicht lesen!"
+  },
+  "gm_booklet_error_general":
+  {
+    "label": "Fehleranzeige im Gruppen monitor: unbekannter Fehler",
+    "defaultvalue": "Fehler beim Zugriff aus Testheft-Datei!"
   }
 }

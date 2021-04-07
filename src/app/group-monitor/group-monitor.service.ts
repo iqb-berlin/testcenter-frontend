@@ -61,7 +61,7 @@ export class GroupMonitorService {
 
   filterOptions: { label: string, filter: TestSessionFilter, selected: boolean }[] = [
     {
-      label: 'gesperrte',
+      label: 'gm_filter_locked',
       selected: false,
       filter: {
         type: 'testState',
@@ -70,7 +70,7 @@ export class GroupMonitorService {
       }
     },
     {
-      label: 'nicht gestartete',
+      label: 'gm_filter_pending',
       selected: false,
       filter: {
         type: 'testState',

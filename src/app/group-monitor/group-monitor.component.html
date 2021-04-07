@@ -40,7 +40,7 @@
 <mat-menu #filters="matMenu">
   <button mat-menu-item *ngFor="let filterOption of gms.filterOptions; let i = index" (click)="gms.switchFilter(i)">
     <mat-icon *ngIf="filterOption.selected">check</mat-icon>
-    <span>{{filterOption.label}}</span>
+    <span>{{filterOption.label | customtext:filterOption.label | async}}</span>
   </button>
 </mat-menu>
 
@@ -88,17 +88,17 @@
       <div class="toolbar-section" *ngIf="displayOptions.manualChecking">
         <ng-container *ngIf="gms.checkedStats$ | async as checkedStats">
           <alert
-              *ngIf="checkedStats.number; else noCheckedSession"
-              level="info"
-              customtext="gm_selection_info"
-              text="%s %s Test%s mit %s Testheft%s ausgewählt."
-              [replacements]="[
-                (checkedStats.all ? ' Alle' : ''),
-                checkedStats.number.toString(10),
-                (checkedStats.number !== 1 ? 's' : ''),
-                checkedStats.differentBooklets.toString(10),
-                (checkedStats.differentBooklets !== 1 ? 'en' : '')
-              ]"
+            *ngIf="checkedStats.number; else noCheckedSession"
+            level="info"
+            customtext="gm_selection_info"
+            text="%s %s Test%s mit %s Testheft%s ausgewählt."
+            [replacements]="[
+              (checkedStats.all ? ' Alle' : ''),
+              checkedStats.number.toString(10),
+              (checkedStats.number !== 1 ? 's' : ''),
+              checkedStats.differentBooklets.toString(10),
+              (checkedStats.differentBooklets !== 1 ? 'en' : '')
+            ]"
           ></alert>
           <ng-template #noCheckedSession>
             <alert level="info" customtext="gm_selection_info_none" text="Kein Test ausgewählt."></alert>
@@ -108,18 +108,18 @@
 
       <div class="toolbar-section" *ngIf="gms.sessionsStats$ | async as sessionsStats">
         <mat-slide-toggle
-            color="accent"
-            (change)="toggleAlwaysCheckAll($event)"
-            [disabled]="!gms.checkingOptions.enableAutoCheckAll"
-            [checked]="gms.checkingOptions.autoCheckAll"
+          color="accent"
+          (change)="toggleAlwaysCheckAll($event)"
+          [disabled]="!gms.checkingOptions.enableAutoCheckAll"
+          [checked]="gms.checkingOptions.autoCheckAll"
         >
           Alle Tests gleichzeitig steuern
         </mat-slide-toggle>
         <alert
-            *ngIf="sessionsStats.differentBookletSpecies > 1"
-            level="warning"
-            text="Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden."
-            customtext="gm_multiple_booklet_species_warning"
+          *ngIf="sessionsStats.differentBookletSpecies > 1"
+          level="warning"
+          text="Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden."
+          customtext="gm_multiple_booklet_species_warning"
         >
         </alert>
       </div>
