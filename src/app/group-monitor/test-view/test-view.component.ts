@@ -43,6 +43,9 @@ export class TestViewComponent {
   trackUnits = (index: number, testlet: Testlet|Unit): string => testlet.id || index.toString();
 
   mark(testletOrNull: Testlet|null = null): void {
+    if ((testletOrNull != null) && !testletOrNull.blockId) {
+      return;
+    }
     this.marked = this.asSelectionObject(testletOrNull);
     this.markedElement$.emit(this.marked);
   }
@@ -59,9 +62,12 @@ export class TestViewComponent {
       (this.marked?.originSession.booklet.species === this.testSession.booklet.species);
   }
 
-  select($event: Event, testlet: Testlet|null): void {
+  select($event: Event, testletOrNull: Testlet|null): void {
+    if ((testletOrNull != null) && !testletOrNull.blockId) {
+      return;
+    }
     $event.stopPropagation();
-    this.applySelection(testlet);
+    this.applySelection(testletOrNull);
   }
 
   deselect($event: MouseEvent|null): void {

@@ -29,10 +29,12 @@ import { ConnectionStatus } from '../shared/websocket-backend.service';
  * + goto alias'd unit geht nicht! -> stimmt nicht
  * # anazhal der aufgaben iom block stimmt nicht
  * #--> STAND. getCurrent zählt freie units zum letzten Block ?! (unit test schreiben!)
- * - select all checkbox ist zunächst angewählt
+ * # select all checkbox ist zunächst angewählt
  * - unter-testlet lässt sich auswählen!
  * - filter namen customisieren
- * - alle gleichzeitig schlater muss neu rendern zur Folge ahben
+ * - alle gleichzeitig Schalter muss neu rendern zur Folge haben
+ * - testview customisieren
+ * - booklet fehler testen
  * # kombinierte hintergrundfarben
  * descendantCount -> unit count (not direct!)
  * tidy:

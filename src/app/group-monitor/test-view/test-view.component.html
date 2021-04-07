@@ -120,8 +120,8 @@
     <span *ngSwitchCase="'testlet'"
       [class]="{
         testlet: true,
-        selected: isSelected(testletOrUnit) && checked,
-        marked: isMarked(testletOrUnit)
+        selected: isSelected(testletOrUnit) && checked && testletOrUnit.blockId,
+        marked: isMarked(testletOrUnit) && testletOrUnit.blockId
       }"
       (mouseenter)="mark(testletOrUnit)"
       (click)="select($event, testletOrUnit)"
@@ -170,8 +170,8 @@
             unit: true,
             aggregated: true,
             current: true,
-            selected: isSelected(testletOrUnit) && checked,
-            marked: isMarked(testletOrUnit)
+            selected: isSelected(testletOrUnit) && checked && testletOrUnit.blockId,
+            marked: isMarked(testletOrUnit) && testletOrUnit.blockId
           }"
           matTooltip="{{testSession.current.unit.label}}"
           matTooltipPosition="above"
