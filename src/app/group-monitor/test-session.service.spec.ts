@@ -21,7 +21,7 @@ describe('TestSessionService', () => {
       .toBeTruthy();
   });
 
-  fdescribe('getCurrent()', () => {
+  describe('getCurrent()', () => {
     it('should find correct indices for unit, parent and ancestor ( = top-level-testlet or root)', () => {
       const fakeTestlet = (id: string): Testlet => ({
         id,

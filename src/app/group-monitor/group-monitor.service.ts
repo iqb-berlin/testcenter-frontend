@@ -31,6 +31,8 @@ import { ConnectionStatus } from '../shared/websocket-backend.service';
  * #--> STAND. getCurrent zählt freie units zum letzten Block ?! (unit test schreiben!)
  * - select all checkbox ist zunächst angewählt
  * - unter-testlet lässt sich auswählen!
+ * - filter namen customisieren
+ * - alle gleichzeitig schlater muss neu rendern zur Folge ahben
  * # kombinierte hintergrundfarben
  * descendantCount -> unit count (not direct!)
  * tidy:
@@ -115,7 +117,7 @@ export class GroupMonitorService {
     this.sortBy$ = new BehaviorSubject<Sort>({ direction: 'asc', active: 'personLabel' });
     this.filters$ = new BehaviorSubject<TestSessionFilter[]>([]);
     this.checkingOptions = {
-      disableAutoCheckAll: true,
+      enableAutoCheckAll: true,
       autoCheckAll: true
     };
 
@@ -159,6 +161,7 @@ export class GroupMonitorService {
     );
   }
 
+  // todo unit test
   private static filterSessions(sessions: TestSession[], filters: TestSessionFilter[]): TestSession[] {
     return sessions
       .filter(session => session.data.testId && session.data.testId > -1) // testsession without testId is deprecated
@@ -204,11 +207,11 @@ export class GroupMonitorService {
   }
 
   private synchronizeChecked(sessions: TestSession[]): void {
-    const sessionsStats = this.getSessionSetStats(sessions);
+    const sessionsStats = GroupMonitorService.getSessionSetStats(sessions);
 
-    this.checkingOptions.disableAutoCheckAll = (sessionsStats.differentBookletSpecies < 2);
+    this.checkingOptions.enableAutoCheckAll = (sessionsStats.differentBookletSpecies < 2);
 
-    if (!this.checkingOptions.disableAutoCheckAll) {
+    if (!this.checkingOptions.enableAutoCheckAll) {
       this.checkingOptions.autoCheckAll = false;
     }
 
@@ -221,7 +224,7 @@ export class GroupMonitorService {
       });
     this._checked = newCheckedSessions;
 
-    this._checkedStats$.next(this.getSessionSetStats(Object.values(this._checked)));
+    this._checkedStats$.next(GroupMonitorService.getSessionSetStats(Object.values(this._checked), sessions.length));
     this._sessionsStats$.next(sessionsStats);
   }
 
@@ -263,6 +266,7 @@ export class GroupMonitorService {
       });
   }
 
+  // todo unit test
   testCommandResume(): void {
     const testIds = this.checked
       .filter(TestSessionService.isPaused)
@@ -276,6 +280,7 @@ export class GroupMonitorService {
     );
   }
 
+  // todo unit test
   testCommandPause(): void {
     const testIds = this.checked
       .filter(session => !TestSessionService.isPaused(session))
@@ -289,6 +294,7 @@ export class GroupMonitorService {
     );
   }
 
+  // todo unit test
   testCommandGoto(selection: Selection): void {
     const allTestIds: number[] = [];
     const groupedByBooklet: {
@@ -324,6 +330,7 @@ export class GroupMonitorService {
     });
   }
 
+  // todo unit test
   testCommandUnlock(): void {
     const testIds = this.checked
       .filter(TestSessionService.isLocked)
@@ -337,10 +344,33 @@ export class GroupMonitorService {
     );
   }
 
+  // todo unit test
+  commandFinishEverything(): Observable<CommandResponse> {
+    const getUnlockedConnectedTestIds = () => Object.values(this._sessions$.getValue())
+      .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked') &&
+        !TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'TERMINATED') &&
+        (TestSessionService.hasState(session.data.testState, 'CONNECTION', 'POLLING') ||
+          TestSessionService.hasState(session.data.testState, 'CONNECTION', 'WEBSOCKET')))
+      .map(session => session.data.testId);
+    const getUnlockedTestIds = () => Object.values(this._sessions$.getValue())
+      .filter(session => session.data.testId > 0)
+      .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked'))
+      .map(session => session.data.testId);
+
+    this.filters$.next([]);
+
+    return this.bs.command('terminate', [], getUnlockedConnectedTestIds())
+      .pipe(
+        delay(1900),
+        flatMap(() => this.bs.lock(this.groupName, getUnlockedTestIds()))
+      );
+  }
+
   isChecked(session: TestSession): boolean {
     return (typeof this._checked[session.id] !== 'undefined');
   }
 
+  // todo unit test
   checkSessionsBySelection(selected: Selection): void {
     if (this.checkingOptions.autoCheckAll) {
       return;
@@ -410,10 +440,11 @@ export class GroupMonitorService {
   }
 
   private onCheckedChanged(): void {
-    this._checkedStats$.next(this.getSessionSetStats(this.checked));
+    this._checkedStats$.next(GroupMonitorService.getSessionSetStats(this.checked));
   }
 
-  getSessionSetStats(sessionSet: TestSession[]): TestSessionSetStats { // TODO only private for test
+  // TODO only public for test
+  static getSessionSetStats(sessionSet: TestSession[], allCount: number = sessionSet.length): TestSessionSetStats {
     const booklets = new Set();
     const bookletSpecies = new Set();
     let paused = 0;
@@ -431,30 +462,9 @@ export class GroupMonitorService {
       number: sessionSet.length,
       differentBooklets: booklets.size,
       differentBookletSpecies: bookletSpecies.size,
-      all: (this.sessions.length === sessionSet.length),
+      all: (allCount === sessionSet.length),
       paused,
       locked
     };
-  }
-
-  finishEverything(): Observable<CommandResponse> {
-    const getUnlockedConnectedTestIds = () => Object.values(this._sessions$.getValue())
-      .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked') &&
-                         !TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'TERMINATED') &&
-                         (TestSessionService.hasState(session.data.testState, 'CONNECTION', 'POLLING') ||
-                         TestSessionService.hasState(session.data.testState, 'CONNECTION', 'WEBSOCKET')))
-      .map(session => session.data.testId);
-    const getUnlockedTestIds = () => Object.values(this._sessions$.getValue())
-      .filter(session => session.data.testId > 0)
-      .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked'))
-      .map(session => session.data.testId);
-
-    this.filters$.next([]);
-
-    return this.bs.command('terminate', [], getUnlockedConnectedTestIds())
-      .pipe(
-        delay(1900),
-        flatMap(() => this.bs.lock(this.groupName, getUnlockedTestIds()))
-      );
   }
 }

@@ -112,7 +112,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   private onSessionsUpdate(stats: TestSessionSetStats): void {
     this.displayOptions.highlightSpecies = (stats.differentBookletSpecies > 1);
 
-    if (!this.gms.checkingOptions.disableAutoCheckAll) {
+    if (!this.gms.checkingOptions.enableAutoCheckAll) {
       this.displayOptions.manualChecking = true;
     }
   }
@@ -196,7 +196,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
         this.isClosing = true;
-        this.gms.finishEverything()
+        this.gms.commandFinishEverything()
           .subscribe(() => {
             setTimeout(() => { this.router.navigateByUrl('/r/login'); }, 5000); // go away
           });
@@ -235,7 +235,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   toggleAlwaysCheckAll(event: MatSlideToggleChange): void {
-    if (this.gms.checkingOptions.disableAutoCheckAll && !event.checked) {
+    if (this.gms.checkingOptions.enableAutoCheckAll && !event.checked) {
       this.gms.checkAll();
       this.displayOptions.manualChecking = false;
       this.gms.checkingOptions.autoCheckAll = true;

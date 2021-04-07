@@ -110,7 +110,7 @@
         <mat-slide-toggle
             color="accent"
             (change)="toggleAlwaysCheckAll($event)"
-            [disabled]="!gms.checkingOptions.disableAutoCheckAll"
+            [disabled]="!gms.checkingOptions.enableAutoCheckAll"
             [checked]="gms.checkingOptions.autoCheckAll"
         >
           Alle Tests gleichzeitig steuern
@@ -207,7 +207,7 @@
                     (change)="toggleCheckAll($event)"
                     [checked]="checkedStats.all"
                     (contextmenu)="invertChecked($event)"
-                  ></mat-checkbox> <!-- TODO cheked!! -->
+                  ></mat-checkbox>
                 </td>
                 <td mat-sort-header="_superState">
                   <mat-icon>person</mat-icon>
@@ -235,15 +235,15 @@
 
             <ng-container *ngFor="let session of gms.sessions$ | async; trackBy: trackSession">
               <tc-test-view
-                  [testSession]="session"
-                  [displayOptions]="displayOptions"
-                  [marked]="markedElement"
-                  (markedElement$)="markElement($event)"
-                  [selected]="selectedElement"
-                  (selectedElement$)="selectElement($event)"
-                  [checked]="gms.isChecked(session)"
-                  (checked$)="toggleChecked($event, session)"
-                  [ngStyle]="{background: getSessionColor(session)}"
+                [testSession]="session"
+                [displayOptions]="displayOptions"
+                [marked]="markedElement"
+                (markedElement$)="markElement($event)"
+                [selected]="selectedElement"
+                (selectedElement$)="selectElement($event)"
+                [checked]="gms.isChecked(session)"
+                (checked$)="toggleChecked($event, session)"
+                [ngStyle]="{background: getSessionColor(session)}"
               >
               </tc-test-view>
             </ng-container>
@@ -254,21 +254,22 @@
   </mat-sidenav-container>
 
   <button
-      class="drawer-button-close"
-      mat-icon-button
-      (click)="sidenav.toggle()"
-      matTooltip=""
-      matTooltipPosition="right"
+    class="drawer-button-close"
+    mat-icon-button
+    (click)="sidenav.toggle()"
+    matTooltip=""
+    matTooltipPosition="right"
   >
     <mat-icon>chevron_right</mat-icon>
   </button>
 
-  <button *ngIf="sidenav.opened"
-          class="drawer-button-open"
-          mat-icon-button
-          (click)="sidenav.toggle()"
-          matTooltip="{{'Test-Steuerung verbergen' | customtext:'gm_hide_controls_tooltip' | async}}"
-          matTooltipPosition="above"
+  <button
+    *ngIf="sidenav.opened"
+    class="drawer-button-open"
+    mat-icon-button
+    (click)="sidenav.toggle()"
+    matTooltip="{{'Test-Steuerung verbergen' | customtext:'gm_hide_controls_tooltip' | async}}"
+    matTooltipPosition="above"
   >
     <mat-icon>chevron_left</mat-icon>
   </button>

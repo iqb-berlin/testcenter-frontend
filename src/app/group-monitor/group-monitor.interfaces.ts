@@ -111,7 +111,7 @@ export interface TestViewDisplayOptions {
 }
 
 export interface CheckingOptions {
-  disableAutoCheckAll: boolean;
+  enableAutoCheckAll: boolean;
   autoCheckAll: boolean;
 }
 

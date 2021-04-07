@@ -161,7 +161,7 @@ describe('GroupMonitorService', () => {
 
   describe('getSessionSetStats', () => {
     it('should fetch correct stats from sessions', () => {
-      const result = service.getSessionSetStats(unitTestExampleSessions);
+      const result = GroupMonitorService.getSessionSetStats(unitTestExampleSessions, 2);
       const expectation: TestSessionSetStats = {
         number: 3,
         differentBooklets: 3,
