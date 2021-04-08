@@ -1,6 +1,5 @@
 import { FormControl, FormGroup } from '@angular/forms';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CustomtextService } from 'iqb-components';
 import { Subscription } from 'rxjs';
 import { SysCheckDataService } from '../sys-check-data.service';
 

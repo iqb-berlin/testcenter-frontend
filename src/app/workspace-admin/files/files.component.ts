@@ -36,19 +36,19 @@ interface FileStats {
   styleUrls: ['./files.component.css']
 })
 export class FilesComponent implements OnInit {
-  public files: {[type in IQBFileType]?: MatTableDataSource<IQBFile>} = {};
-  public fileTypes = IQBFileTypes;
-  public displayedColumns = ['checked', 'name', 'size', 'modificationTime'];
+  files: { [type in IQBFileType]?: MatTableDataSource<IQBFile> } = {};
+  fileTypes = IQBFileTypes;
+  displayedColumns = ['checked', 'name', 'size', 'modificationTime'];
 
-  public uploadUrl = '';
-  public fileNameAlias = 'fileforvo';
+  uploadUrl = '';
+  fileNameAlias = 'fileforvo';
 
-  public lastSort:Sort = {
+  lastSort:Sort = {
     active: 'name',
     direction: 'asc'
   };
 
-  public typeLabels = {
+  typeLabels = {
     Testtakers: 'Teilnehmerlisten',
     Booklet: 'Testhefte',
     SysCheck: 'System-Check-Definitionen',
@@ -56,7 +56,7 @@ export class FilesComponent implements OnInit {
     Unit: 'Units'
   };
 
-  public fileStats: FileStats = {
+  fileStats: FileStats = {
     total: {
       count: 0,
       invalid: 0
@@ -65,7 +65,7 @@ export class FilesComponent implements OnInit {
     testtakers: 0
   };
 
-  @ViewChild('fileUploadQueue', { static: true }) public uploadQueue: IqbFilesUploadQueueComponent;
+  @ViewChild('fileUploadQueue', { static: true }) uploadQueue: IqbFilesUploadQueueComponent;
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
@@ -86,14 +86,14 @@ export class FilesComponent implements OnInit {
     });
   }
 
-  public checkAll(isChecked: boolean, type: IQBFileType): void {
+  checkAll(isChecked: boolean, type: IQBFileType): void {
     this.files[type].data = this.files[type].data.map(file => {
       file.isChecked = isChecked;
       return file;
     });
   }
 
-  public deleteFiles(): void {
+  deleteFiles(): void {
     if (this.wds.wsRole !== 'RW') {
       return;
     }
@@ -148,7 +148,7 @@ export class FilesComponent implements OnInit {
     }
   }
 
-  public updateFileList(empty = false): void {
+  updateFileList(empty = false): void {
     if (empty) {
       this.files = {};
       this.mds.setSpinnerOff();
@@ -218,7 +218,7 @@ export class FilesComponent implements OnInit {
     return file;
   }
 
-  public download(file: IQBFile): void {
+  download(file: IQBFile): void {
     this.mds.setSpinnerOn();
     this.bs.downloadFile(file.type, file.name)
       .subscribe(

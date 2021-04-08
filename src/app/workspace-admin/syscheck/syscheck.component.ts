@@ -31,14 +31,14 @@ export class SyscheckComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     setTimeout(() => {
       this.mds.setSpinnerOn();
       this.updateTable();
     });
   }
 
-  updateTable() {
+  updateTable(): void {
     this.tableselectionCheckbox.clear();
     this.bs.getSysCheckReportList().subscribe(
       (resultData: SysCheckStatistics[]) => {
@@ -57,12 +57,11 @@ export class SyscheckComponent implements OnInit {
 
   masterToggle(): void {
     this.isAllSelected() ?
-        this.tableselectionCheckbox.clear() :
-        this.resultDataSource.data.forEach(row => this.tableselectionCheckbox.select(row));
+      this.tableselectionCheckbox.clear() :
+      this.resultDataSource.data.forEach(row => this.tableselectionCheckbox.select(row));
   }
 
-
-  downloadReportsCSV() {
+  downloadReportsCSV(): void {
     if (this.tableselectionCheckbox.selected.length > 0) {
       const selectedReports: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {

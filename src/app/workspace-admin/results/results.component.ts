@@ -1,15 +1,16 @@
-import { LogData } from '../workspace.interfaces';
-import { WorkspaceDataService } from '../workspacedata.service';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { BackendService } from '../backend.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { saveAs } from 'file-saver';
-import { ResultData, UnitResponse, ReviewData } from '../workspace.interfaces';
+import { BackendService } from '../backend.service';
+import { WorkspaceDataService } from '../workspacedata.service';
+import {
+  LogData, ResultData, UnitResponse, ReviewData
+} from '../workspace.interfaces';
 import { MainDataService } from '../../maindata.service';
 
 @Component({
@@ -17,10 +18,13 @@ import { MainDataService } from '../../maindata.service';
   styleUrls: ['./results.component.css']
 })
 export class ResultsComponent implements OnInit {
-  displayedColumns: string[] = ['selectCheckbox', 'groupname', 'bookletsStarted', 'num_units_min', 'num_units_max', 'num_units_mean', 'lastchange'];
-  public resultDataSource = new MatTableDataSource<ResultData>([]);
+  displayedColumns: string[] = [
+    'selectCheckbox', 'groupname', 'bookletsStarted', 'num_units_min', 'num_units_max', 'num_units_mean', 'lastchange'
+  ];
+
+  resultDataSource = new MatTableDataSource<ResultData>([]);
   // prepared for selection if needed sometime
-  public tableselectionCheckbox = new SelectionModel<ResultData>(true, []);
+  tableselectionCheckbox = new SelectionModel<ResultData>(true, []);
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
@@ -32,14 +36,14 @@ export class ResultsComponent implements OnInit {
     public snackBar: MatSnackBar
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     setTimeout(() => {
       this.mds.setSpinnerOn();
       this.updateTable();
     });
   }
 
-  updateTable() {
+  updateTable(): void {
     this.tableselectionCheckbox.clear();
     if (this.wds.wsRole === 'MO') {
       this.resultDataSource = new MatTableDataSource<ResultData>([]);
@@ -55,19 +59,19 @@ export class ResultsComponent implements OnInit {
     }
   }
 
-  isAllSelected() {
+  isAllSelected(): boolean {
     const numSelected = this.tableselectionCheckbox.selected.length;
     const numRows = this.resultDataSource.data.length;
     return numSelected === numRows;
   }
 
-  masterToggle() {
+  masterToggle(): void {
     this.isAllSelected() ?
-        this.tableselectionCheckbox.clear() :
-        this.resultDataSource.data.forEach(row => this.tableselectionCheckbox.select(row));
+      this.tableselectionCheckbox.clear() :
+      this.resultDataSource.data.forEach(row => this.tableselectionCheckbox.select(row));
   }
 
-  downloadResponsesCSV() {
+  downloadResponsesCSV(): void {
     if (this.tableselectionCheckbox.selected.length > 0) {
       const selectedGroups: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
@@ -129,7 +133,7 @@ export class ResultsComponent implements OnInit {
     }
   }
 
-  downloadReviewsCSV() {
+  downloadReviewsCSV(): void {
     if (this.tableselectionCheckbox.selected.length > 0) {
       const selectedGroups: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
@@ -190,7 +194,7 @@ export class ResultsComponent implements OnInit {
     }
   }
 
-  downloadLogsCSV() {
+  downloadLogsCSV(): void {
     if (this.tableselectionCheckbox.selected.length > 0) {
       const selectedGroups: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
@@ -223,7 +227,7 @@ export class ResultsComponent implements OnInit {
     }
   }
 
-  deleteData() {
+  deleteData(): void {
     if (this.tableselectionCheckbox.selected.length > 0) {
       const selectedGroups: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {

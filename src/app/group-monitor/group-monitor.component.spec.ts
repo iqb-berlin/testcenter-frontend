@@ -7,12 +7,14 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTableModule } from '@angular/material/table';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { CustomtextPipe } from 'iqb-components';
 import { Pipe } from '@angular/core';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { GroupMonitorComponent } from './group-monitor.component';
 import {
   CheckingOptions, CommandResponse,
@@ -28,6 +30,7 @@ import {
   unitTestExampleSessions,
   unitTestCommandResponse
 } from './test-data.spec';
+import { AlertModule } from '../shared/alert/alert.module';
 
 class MockMatDialog {
   open(): { afterClosed: () => Observable<{ action: boolean }> } {
@@ -98,7 +101,10 @@ describe('GroupMonitorComponent', () => {
         MatSidenavModule,
         NoopAnimationsModule,
         MatRadioModule,
-        MatCheckboxModule
+        MatCheckboxModule,
+        MatTableModule,
+        MatSlideToggleModule,
+        AlertModule
       ],
       providers: [
         { provide: GroupMonitorService, useValue: new MockGroupMonitorService() },
