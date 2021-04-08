@@ -59,6 +59,8 @@ export class GroupMonitorService {
   private _sessionsStats$: BehaviorSubject<TestSessionSetStats>;
   private _commandResponses$: Subject<CommandResponse>;
 
+  // attention: this works the other way round than Array.filter:
+  // it defines which sessions are to filter out, not which ones are to keep
   filterOptions: { label: string, filter: TestSessionFilter, selected: boolean }[] = [
     {
       label: 'gm_filter_locked',
@@ -134,7 +136,6 @@ export class GroupMonitorService {
     );
   }
 
-  // todo unit test
   private static filterSessions(sessions: TestSession[], filters: TestSessionFilter[]): TestSession[] {
     return sessions
       .filter(session => session.data.testId && session.data.testId > -1) // testsession without testId is deprecated
@@ -156,6 +157,12 @@ export class GroupMonitorService {
           const valueMatches = keyExists && (session.data.testState[nextFilter.value] === nextFilter.subValue);
           const keepIn = (typeof nextFilter.subValue !== 'undefined') ? !valueMatches : !keyExists;
           return keep && applyNot(keepIn, nextFilter.not);
+        }
+        case 'state': {
+          return keep && applyNot(session.state !== nextFilter.value, nextFilter.not);
+        }
+        case 'bookletSpecies': {
+          return keep && applyNot(session.booklet.species !== nextFilter.value, nextFilter.not);
         }
         case 'mode': {
           return keep && applyNot(session.data.mode !== nextFilter.value, nextFilter.not);

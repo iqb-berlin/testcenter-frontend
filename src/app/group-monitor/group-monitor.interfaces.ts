@@ -94,7 +94,7 @@ export interface GroupData {
 export type TestViewDisplayOptionKey = 'view' | 'groupColumn';
 
 export interface TestSessionFilter {
-  type: 'groupName' | 'bookletName' | 'testState' | 'mode';
+  type: 'groupName' | 'bookletName' | 'testState' | 'mode' | 'state' | 'bookletSpecies';
   value: string;
   subValue?: string;
   not?: true;

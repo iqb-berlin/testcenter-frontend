@@ -168,7 +168,7 @@ export const unitTestExampleSessions: TestSession[] = [
     personLabel: 'Person 2',
     groupName: 'group-1',
     groupLabel: 'Group 1',
-    mode: 'run-hot-return',
+    mode: 'run-hot-restart',
     testId: 3,
     bookletName: 'this_does_not_exist',
     testState: {

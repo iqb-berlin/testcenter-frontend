@@ -7,7 +7,7 @@ import {
   Booklet,
   BookletError,
   GroupData,
-  TestSessionData, TestSessionSetStats
+  TestSessionData, TestSessionFilter, TestSessionSetStats
 } from './group-monitor.interfaces';
 import { BookletService } from './booklet.service';
 import { BackendService } from './backend.service';
@@ -167,6 +167,67 @@ describe('GroupMonitorService', () => {
         locked: 0
       };
       expect(expectation).toEqual(result);
+    });
+  });
+
+  describe('filterSessions', () => {
+    // eslint-disable-next-line @typescript-eslint/dot-notation
+    const filterSessions = GroupMonitorService['filterSessions'];
+
+    it('should filter the sessions array by various filters', () => {
+      const sessionsSet = [...unitTestExampleSessions];
+      const removeEverythingButBooklet1: TestSessionFilter = {
+        not: true,
+        type: 'bookletName',
+        value: 'example_booklet_1'
+      };
+      let result = filterSessions(sessionsSet, [removeEverythingButBooklet1]).map(s => s.id);
+      expect(result).toEqual([10001]);
+
+      const removeHotRunReturn: TestSessionFilter = {
+        type: 'mode',
+        value: 'run-hot-return'
+      };
+      result = filterSessions(sessionsSet, [removeHotRunReturn]).map(s => s.id);
+      expect(result).toEqual([20003]);
+
+      const removeStatusControllerRunning: TestSessionFilter = {
+        type: 'testState',
+        value: 'CONTROLLER',
+        subValue: 'RUNNING'
+      };
+      result = filterSessions(sessionsSet, [removeStatusControllerRunning]).map(s => s.id);
+      expect(result).toEqual([10002, 20003]);
+
+      const removeStatusControllerNotRunning: TestSessionFilter = {
+        not: true,
+        type: 'testState',
+        value: 'CONTROLLER',
+        subValue: 'RUNNING'
+      };
+      result = filterSessions(sessionsSet, [removeStatusControllerNotRunning]).map(s => s.id);
+      expect(result).toEqual([10001]);
+
+      const removePending: TestSessionFilter = {
+        type: 'state',
+        value: 'pending'
+      };
+      result = filterSessions(sessionsSet, [removePending]).map(s => s.id);
+      expect(result).toEqual([10001, 10002]);
+
+      const removeBookletSpecies1: TestSessionFilter = {
+        type: 'bookletSpecies',
+        value: 'example-species-1'
+      };
+      result = filterSessions(sessionsSet, [removeBookletSpecies1]).map(s => s.id);
+      expect(result).toEqual([10002, 20003]);
+
+      result = filterSessions(sessionsSet, [removeBookletSpecies1, removePending]).map(s => s.id);
+      expect(result).toEqual([10002]);
+
+      result = filterSessions(sessionsSet, [removeBookletSpecies1, removeStatusControllerRunning, removeHotRunReturn])
+        .map(s => s.id);
+      expect(result).toEqual([20003]);
     });
   });
 });
