@@ -4,7 +4,7 @@ import {
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import {
   Testlet, Unit, TestViewDisplayOptions,
-  isUnit, Selection, TestSession, TestSessionSuperState
+  isUnit, Selected, TestSession, TestSessionSuperState
 } from '../group-monitor.interfaces';
 import { TestSessionService } from '../test-session.service';
 import { superStates } from './super-states';
@@ -24,12 +24,12 @@ interface IconData {
 export class TestViewComponent {
   @Input() testSession: TestSession;
   @Input() displayOptions: TestViewDisplayOptions;
-  @Input() marked: Selection;
-  @Input() selected: Selection;
+  @Input() marked: Selected;
+  @Input() selected: Selected;
   @Input() checked: boolean;
 
-  @Output() markedElement$ = new EventEmitter<Selection>();
-  @Output() selectedElement$ = new EventEmitter<Selection>();
+  @Output() markedElement$ = new EventEmitter<Selected>();
+  @Output() selectedElement$ = new EventEmitter<Selected>();
   @Output() checked$ = new EventEmitter<boolean>();
 
   superStateIcons: { [key in TestSessionSuperState]: IconData } = superStates;
@@ -98,7 +98,7 @@ export class TestViewComponent {
     this.selectedElement$.emit(this.selected);
   }
 
-  private asSelectionObject(testletOrNull: Testlet|null = null, inversion = false): Selection {
+  private asSelectionObject(testletOrNull: Testlet|null = null, inversion = false): Selected {
     return {
       element: testletOrNull,
       originSession: this.testSession,

@@ -11,10 +11,10 @@ import { BookletService } from './booklet.service';
 import { TestSessionService } from './test-session.service';
 import {
   isBooklet,
-  Selection, CheckingOptions,
+  Selected, CheckingOptions,
   TestSession,
   TestSessionFilter, TestSessionSetStats,
-  TestSessionsSuperStates, CommandResponse
+  TestSessionsSuperStates, CommandResponse, GotoCommandData
 } from './group-monitor.interfaces';
 import { ConnectionStatus } from '../shared/websocket-backend.service';
 
@@ -246,7 +246,6 @@ export class GroupMonitorService {
       });
   }
 
-  // todo unit test
   testCommandResume(): void {
     const testIds = this.checked
       .filter(TestSessionService.isPaused)
@@ -260,7 +259,6 @@ export class GroupMonitorService {
     );
   }
 
-  // todo unit test
   testCommandPause(): void {
     const testIds = this.checked
       .filter(session => !TestSessionService.isPaused(session))
@@ -274,18 +272,22 @@ export class GroupMonitorService {
     );
   }
 
-  // todo unit test
-  testCommandGoto(selection: Selection): void {
-    const allTestIds: number[] = [];
-    const groupedByBooklet: {
-      [bookletName: string]: {
-        testIds: number[],
-        firstUnitId: string
-      }
-    } = {};
+  testCommandGoto(selection: Selected): void {
+    const gfd = GroupMonitorService.groupForGoto(this.checked, selection);
+    const allTestIds = this.checked.map(s => s.data.testId);
+    zip(
+      ...Object.keys(gfd).map(key => this.bs.command('goto', ['id', gfd[key].firstUnitId], gfd[key].testIds))
+    ).subscribe(() => {
+      this._commandResponses$.next({
+        commandType: 'goto',
+        testIds: allTestIds
+      });
+    });
+  }
 
-    this.checked.forEach(session => {
-      allTestIds.push(session.data.testId);
+  private static groupForGoto(sessionsSet: TestSession[], selection: Selected): GotoCommandData {
+    const groupedByBooklet: GotoCommandData = {};
+    sessionsSet.forEach(session => {
       if (!groupedByBooklet[session.data.bookletName] && isBooklet(session.booklet)) {
         const firstUnit = BookletService.getFirstUnitOfBlock(selection.element.blockId, session.booklet);
         if (firstUnit) {
@@ -295,22 +297,13 @@ export class GroupMonitorService {
           };
         }
       }
-      groupedByBooklet[session.data.bookletName].testIds.push(session.data.testId);
-      return groupedByBooklet;
+      if (groupedByBooklet[session.data.bookletName]) {
+        groupedByBooklet[session.data.bookletName].testIds.push(session.data.testId);
+      }
     });
-
-    zip(
-      ...Object.keys(groupedByBooklet)
-        .map(key => this.bs.command('goto', ['id', groupedByBooklet[key].firstUnitId], groupedByBooklet[key].testIds))
-    ).subscribe(() => {
-      this._commandResponses$.next({
-        commandType: 'goto',
-        testIds: allTestIds
-      });
-    });
+    return groupedByBooklet;
   }
 
-  // todo unit test
   testCommandUnlock(): void {
     const testIds = this.checked
       .filter(TestSessionService.isLocked)
@@ -351,7 +344,7 @@ export class GroupMonitorService {
   }
 
   // todo unit test
-  checkSessionsBySelection(selected: Selection): void {
+  checkSessionsBySelection(selected: Selected): void {
     if (this.checkingOptions.autoCheckAll) {
       return;
     }

@@ -14,7 +14,7 @@ import { BackendService } from './backend.service';
 import {
   GroupData,
   TestViewDisplayOptions,
-  TestViewDisplayOptionKey, Selection, TestSession, TestSessionSetStats, CommandResponse, UIMessage
+  TestViewDisplayOptionKey, Selected, TestSession, TestSessionSetStats, CommandResponse, UIMessage
 } from './group-monitor.interfaces';
 import { GroupMonitorService } from './group-monitor.service';
 
@@ -36,8 +36,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   ownGroup$: Observable<GroupData>;
   private ownGroupName = '';
 
-  selectedElement: Selection;
-  markedElement: Selection;
+  selectedElement: Selected;
+  markedElement: Selected;
 
   displayOptions: TestViewDisplayOptions = {
     view: 'medium',
@@ -173,11 +173,11 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     }
   }
 
-  markElement(marking: Selection): void {
+  markElement(marking: Selected): void {
     this.markedElement = marking;
   }
 
-  selectElement(selected: Selection): void {
+  selectElement(selected: Selected): void {
     this.gms.checkSessionsBySelection(selected);
     this.selectedElement = selected;
   }

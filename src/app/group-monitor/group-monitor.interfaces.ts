@@ -132,7 +132,7 @@ export interface UnitContext {
   indexAncestor: number;
 }
 
-export interface Selection {
+export interface Selected {
   element: Testlet|null;
   originSession: TestSession;
   spreading: boolean;
@@ -158,4 +158,11 @@ export interface UIMessage {
 export interface CommandResponse {
   commandType: string;
   testIds: number[];
+}
+
+export interface GotoCommandData {
+  [bookletName: string]: {
+    testIds: number[],
+    firstUnitId: string
+  }
 }

@@ -5,14 +5,14 @@ import { Observable, of } from 'rxjs';
 import { Pipe } from '@angular/core';
 import {
   Booklet,
-  BookletError,
-  GroupData,
+  BookletError, CommandResponse,
+  GroupData, Selected, Testlet,
   TestSessionData, TestSessionFilter, TestSessionSetStats
 } from './group-monitor.interfaces';
 import { BookletService } from './booklet.service';
 import { BackendService } from './backend.service';
 import { GroupMonitorService } from './group-monitor.service';
-import { unitTestExampleSessions, unitTestExampleBooklets } from './test-data.spec';
+import { unitTestExampleSessions, unitTestExampleBooklets, additionalUnitTestExampleSessions } from './test-data.spec';
 
 class MockBookletService {
   booklets: Observable<Booklet>[] = [of(unitTestExampleBooklets.example_booklet_1)];
@@ -32,7 +32,7 @@ class MockBookletService {
 
 class MockBackendService {
   observeSessionsMonitor(): Observable<TestSessionData[]> {
-    return of([unitTestExampleSessions[0].data]);
+    return of(unitTestExampleSessions.map(s => s.data));
   }
 
   getGroupData(groupName: string): Observable<GroupData> {
@@ -40,6 +40,10 @@ class MockBackendService {
       name: groupName,
       label: `Label of: ${groupName}`
     });
+  }
+
+  command(keyword: string, args: string[], testIds: number[]): Observable<CommandResponse> {
+    return of({ commandType: keyword, testIds });
   }
 
   cutConnection(): void {}
@@ -228,6 +232,27 @@ describe('GroupMonitorService', () => {
       result = filterSessions(sessionsSet, [removeBookletSpecies1, removeStatusControllerRunning, removeHotRunReturn])
         .map(s => s.id);
       expect(result).toEqual([20003]);
+    });
+  });
+
+  describe('groupForGoto', () => {
+    it('return a group for each booklet in set an the the first unit in the selected block', () => {
+      const selection: Selected = {
+        element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alt = block-2
+        inversion: false,
+        originSession: unitTestExampleSessions[0],
+        spreading: false
+      };
+      const sessions = [...unitTestExampleSessions, ...additionalUnitTestExampleSessions];
+      // eslint-disable-next-line @typescript-eslint/dot-notation
+      const result = GroupMonitorService['groupForGoto'](sessions, selection);
+      expect(result).toEqual({
+        example_booklet_1: { testIds: [1, 33], firstUnitId: 'unit-3' },
+        example_booklet_3: { testIds: [34], firstUnitId: 'unit-1' }
+      });
+      // explanation: 'block-2' is given in session 1,2 and 33. But in session 2 it's from example_booklet_2,
+      // where it is emtpy , so there is no place to go. Session 34 with example_booklet_3 has the block,
+      // but another frist unit
     });
   });
 });

@@ -127,6 +127,38 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
         }
       ]
     }
+  },
+  example_booklet_3: {
+    species: 'example-species-1',
+    config: undefined,
+    metadata: {
+      id: '3',
+      label: 'Label 3',
+      description: 'Another Booklet of species 1!'
+    },
+    units: {
+      id: 'root',
+      label: 'Root',
+      descendantCount: 1,
+      children: [
+        {
+          id: 'zara',
+          label: 'Testlet-0',
+          descendantCount: 0,
+          blockId: 'block-1',
+          children: []
+        },
+        {
+          id: 'alf',
+          label: 'Testlet-1',
+          descendantCount: 1,
+          blockId: 'block-2',
+          children: [
+            { id: 'unit-1', label: '0-0-0', labelShort: 'unit' }
+          ]
+        }
+      ]
+    }
   }
 };
 
@@ -177,6 +209,44 @@ export const unitTestExampleSessions: TestSession[] = [
     unitName: null,
     unitState: {},
     timestamp: 10000000
+  }
+]
+  .map(session => TestSessionService.analyzeTestSession(
+    session, unitTestExampleBooklets[session.bookletName] || { error: 'missing-file', species: null }
+  ));
+
+export const additionalUnitTestExampleSessions: TestSession[] = [
+  <TestSessionData>{
+    personId: 33,
+    personLabel: 'Person 33',
+    groupName: 'group-2',
+    groupLabel: 'Group 2',
+    mode: 'run-hot-return',
+    testId: 33,
+    bookletName: 'example_booklet_1',
+    testState: {
+      CONTROLLER: 'RUNNING',
+      status: 'running'
+    },
+    unitName: 'unit-7',
+    unitState: {},
+    timestamp: 10000330
+  },
+  <TestSessionData>{
+    personId: 34,
+    personLabel: 'Person 33',
+    groupName: 'group-2',
+    groupLabel: 'Group 2',
+    mode: 'run-hot-return',
+    testId: 34,
+    bookletName: 'example_booklet_3',
+    testState: {
+      CONTROLLER: 'RUNNING',
+      status: 'running'
+    },
+    unitName: 'unit-7',
+    unitState: {},
+    timestamp: 10000340
   }
 ]
   .map(session => TestSessionService.analyzeTestSession(
