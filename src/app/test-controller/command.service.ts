@@ -108,7 +108,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
         distinctUntilChanged(),
         map(CommandService.testStartedOrStopped),
         filter(testStartedOrStopped => testStartedOrStopped !== ''),
-        map(testStartedOrStopped => (((testStartedOrStopped === 'started') && (this.tcs.testMode.isMonitorable)) ? `test/${this.tcs.testId}/commands` : '')),
+        map(testStartedOrStopped => (((testStartedOrStopped === 'started') && (this.tcs.testMode.receiveRemoteCommands)) ? `test/${this.tcs.testId}/commands` : '')),
         filter(newPollingEndpoint => newPollingEndpoint !== this.pollingEndpoint),
         switchMap((pollingEndpoint: string) => {
           this.pollingEndpoint = pollingEndpoint;

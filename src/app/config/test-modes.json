@@ -9,7 +9,7 @@
       "presetCode": true,
       "showTimeLeft": true,
       "showUnitMenu": false,
-      "isMonitorable": false
+      "receiveRemoteCommands": false
     }
   },
   "MONITOR-GROUP": {
@@ -22,7 +22,7 @@
       "presetCode": true,
       "showTimeLeft": true,
       "showUnitMenu": false,
-      "isMonitorable": false
+      "receiveRemoteCommands": false
     }
   },
   "HOT": {
@@ -35,7 +35,7 @@
       "presetCode": false,
       "showTimeLeft": false,
       "showUnitMenu": false,
-      "isMonitorable": true
+      "receiveRemoteCommands": true
     }
   },
   "REVIEW": {
@@ -48,7 +48,7 @@
       "presetCode": true,
       "showTimeLeft": true,
       "showUnitMenu": true,
-      "isMonitorable": false
+      "receiveRemoteCommands": false
     }
   },
   "TRIAL": {
@@ -61,7 +61,7 @@
       "presetCode": true,
       "showTimeLeft": false,
       "showUnitMenu": false,
-      "isMonitorable": false
+      "receiveRemoteCommands": false
     }
   }
 }
