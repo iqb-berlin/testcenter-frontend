@@ -10,7 +10,8 @@ import {
   map,
   mergeMap,
   startWith,
-  switchMap, tap
+  switchMap,
+  tap
 } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import {
@@ -72,12 +73,16 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   // this unsubscriptions are only for the case, the project's architecture will be changed dramatically once
   // while not having a OnInit-hook services *do have* an OnDestroy-hook (see: https://v9.angular.io/api/core/OnDestroy)
   ngOnDestroy(): void {
-    this.commandSubscription.unsubscribe();
-    this.testStartedSubscription.unsubscribe();
+    if (this.commandSubscription) {
+      this.commandSubscription.unsubscribe();
+    }
+    if (this.testStartedSubscription) {
+      this.testStartedSubscription.unsubscribe();
+    }
   }
 
   private subscribeReceivedCommands() {
-    this.commandReceived$
+    this.commandSubscription = this.commandReceived$
       .pipe(
         filter((command: Command) => (this.executedCommandIds.indexOf(command.id) < 0)),
         // min delay between items
@@ -103,7 +108,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
         distinctUntilChanged(),
         map(CommandService.testStartedOrStopped),
         filter(testStartedOrStopped => testStartedOrStopped !== ''),
-        map(testStartedOrStopped => ((testStartedOrStopped === 'started') ? `test/${this.tcs.testId}/commands` : '')),
+        map(testStartedOrStopped => (((testStartedOrStopped === 'started') && (this.tcs.testMode.isMonitorable)) ? `test/${this.tcs.testId}/commands` : '')),
         filter(newPollingEndpoint => newPollingEndpoint !== this.pollingEndpoint),
         switchMap((pollingEndpoint: string) => {
           this.pollingEndpoint = pollingEndpoint;

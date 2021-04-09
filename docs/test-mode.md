@@ -29,3 +29,4 @@ test like a testtaker.
 |Sollte ein Testabschnitt mit einem Freigabewort geschützt sein, wird dieses bei der Eingabebox schon eingetragen.|X |X |  |X |X |
 |Sollte eine Maximalzeit für einen Testabschnitt festgelegt sein, wird die verbleibende Zeit angezeigt, auch wenn die Booklet-Konfiguration dies unterbindet.|X |X |  |X |  |
 |Die Seite mit der Aufgaben-Übersicht wird erlaubt, auch wenn das Booklet dies unterbindet.|  |  |  |X |  |
+|Kann aus dem Gruppen-Monitor aus gesteuert werden|  |  |X |  |  |

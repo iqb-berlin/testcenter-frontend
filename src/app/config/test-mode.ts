@@ -12,6 +12,7 @@ export class TestMode {
 	presetCode: true;
 	showTimeLeft: true;
 	showUnitMenu: false;
+	isMonitorable: false;
 	modeLabel: "Nur Ansicht (Demo)";
 	modeId: string = "DEMO";
 
@@ -28,6 +29,7 @@ export class TestMode {
 				this.presetCode = modeConfig.config.presetCode;
 				this.showTimeLeft = modeConfig.config.showTimeLeft;
 				this.showUnitMenu = modeConfig.config.showUnitMenu;
+				this.isMonitorable = modeConfig.config.isMonitorable;
 				this.modeLabel = modeConfig.label;
 				this.modeId = mode;
 			} else {
