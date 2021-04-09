@@ -5,9 +5,10 @@
 .test-view-table {
   border-collapse: collapse;
   display: table;
+  width: 100%;
 }
 
-.test-view-table thead {
+.test-view-table thead tr td {
   position: sticky;
   top: 0;
   z-index: 2;
