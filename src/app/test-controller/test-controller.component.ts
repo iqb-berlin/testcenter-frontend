@@ -354,6 +354,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       this.routingSubscription = this.route.params.subscribe(params => {
         if (this.tcs.testStatus$.getValue() !== TestControllerState.ERROR) {
           this.tcs.testId = params.t;
+
+          // Reset TestMode to be Demo, before the correct one comes with getTestData
+          // TODO maybe it would be better to retrieve the testmode from the login
+          this.tcs.testMode = new TestMode();
+
           localStorage.setItem(TestControllerComponent.localStorageTestKey, params.t);
 
           this.unsubscribeTestSubscriptions();
