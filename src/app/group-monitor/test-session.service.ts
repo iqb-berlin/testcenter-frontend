@@ -9,7 +9,6 @@ import {
   TestSessionSuperState,
   UnitContext
 } from './group-monitor.interfaces';
-import { TestMode } from '../config/test-mode';
 
 @Injectable()
 export class TestSessionService {
@@ -49,22 +48,7 @@ export class TestSessionService {
     return session.personId * 10000 + session.testId;
   }
 
-  private static getMode = (modeString: string): { modeId: string, modeLabel: string } => {
-    const testMode = new TestMode(modeString);
-    return {
-      modeId: testMode.modeId,
-      modeLabel: testMode.modeLabel
-    };
-  };
-
   private static getSuperState(session: TestSessionData): TestSessionSuperState {
-    if (session.mode === 'monitor-group') { // TODO deprecated?
-      return 'monitor_group';
-    }
-    if (TestSessionService.getMode(session.mode).modeId !== 'HOT') { // TODO deprecated?
-      return 'demo';
-    }
-
     const state = session.testState;
 
     if (this.hasState(state, 'status', 'pending')) {
