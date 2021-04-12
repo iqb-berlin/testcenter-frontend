@@ -102,7 +102,7 @@ export class TestViewComponent {
     return {
       element: testletOrNull,
       originSession: this.testSession,
-      spreading: this.isSelected(testletOrNull) ? !(this.selected?.spreading) : !!testletOrNull,
+      spreading: this.isSelected(testletOrNull) ? !(this.selected?.spreading) : !testletOrNull,
       inversion
     };
   }
