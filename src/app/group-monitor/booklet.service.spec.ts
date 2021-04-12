@@ -9,7 +9,7 @@ import { unitTestExampleBooklets } from './test-data.spec';
 
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this,@typescript-eslint/no-unused-vars
-  public getBooklet(_: string): Observable<string> {
+  getBooklet(_: string): Observable<string> {
     return of('<booklet>TODO insert nice booklet</booklet>');
   }
 }

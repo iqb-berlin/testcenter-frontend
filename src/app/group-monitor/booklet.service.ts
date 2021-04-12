@@ -1,3 +1,5 @@
+// noinspection CssInvalidHtmlTagReference
+
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
@@ -11,7 +13,7 @@ import { BookletConfig } from '../config/booklet-config';
 
 @Injectable()
 export class BookletService {
-  public booklets: Observable<Booklet|BookletError>[] = [];
+  booklets: Observable<Booklet|BookletError>[] = [];
 
   constructor(
     private bs: BackendService
