@@ -55,7 +55,18 @@ const docFile = `
 </html>
 <body>
   <h1>States of Running Tests</h1>
-  <p>(explanatory text)</p>
+  <p>
+    These are the different states of running tests which can be shown by the group-monitor.
+  </p>
+  <p>
+    Background: There are plenty of different combinations of state-values of a running test: Some states are reported 
+    by the frontend, like <quote>CONTROLLER</quote>, some come from the backend like if the test is locked. 
+    State means a set of values represenatating, wether the test is started, which unit was shown last, the remaining 
+    time, an error if there is any, wether it is locked and so on. Various combinations are possible: a test can be 
+    locked and paused at the same time for example. Those things are boiled down to the following states 
+    (internally called super-states) to be displayed to be more convinient for the user. The order means the importance:
+    if there is a error, the super-state will be <quote>error</quote>, regardless of if the test is paused or not.
+  </p>
   ${content}
 </body>
 `;

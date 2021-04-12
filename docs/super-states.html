@@ -26,35 +26,18 @@
 </html>
 <body>
   <h1>States of Running Tests</h1>
-  <p>(explanatory text)</p>
-  
-<table>
-  <tr>
-    <td rowspan="3"><i class=" material-icons">supervisor_account</i></td>
-    <td><strong>monitor_group</strong></td>
-  </tr>
-  <tr>
-    <td>Tooltip: <code>Testleiter</code></td>
-  </tr>
-   <tr>
-    <td>undefined</td>
-  </tr>
-</table>
-<br>
-  
-<table>
-  <tr>
-    <td rowspan="3"><i class=" material-icons">preview</i></td>
-    <td><strong>demo</strong></td>
-  </tr>
-  <tr>
-    <td>Tooltip: <code>Vorschau-Modus</code></td>
-  </tr>
-   <tr>
-    <td>undefined</td>
-  </tr>
-</table>
-<br>
+  <p>
+    These are the different states of running tests which can be shown by the group-monitor.
+  </p>
+  <p>
+    Background: There are plenty of different combinations of state-values of a running test: Some states are reported 
+    by the frontend, like <quote>CONTROLLER</quote>, some come from the backend like if the test is locked. 
+    State means a set of values represenatating, wether the test is started, which unit was shown last, the remaining 
+    time, an error if there is any, wether it is locked and so on. Various combinations are possible: a test can be 
+    locked and paused at the same time for example. Those things are boiled down to the following states 
+    (internally called super-states) to be displayed to be more convinient for the user. The order means the importance:
+    if there is a error, the super-state will be <quote>error</quote>, regardless of if the test is paused or not.
+  </p>
   
 <table>
   <tr>
@@ -65,7 +48,7 @@
     <td>Tooltip: <code>Test noch nicht gestartet</code></td>
   </tr>
    <tr>
-    <td>undefined</td>
+    <td>The test has not been started yet.</td>
   </tr>
 </table>
 <br>
@@ -79,7 +62,7 @@
     <td>Tooltip: <code>Test gesperrt</code></td>
   </tr>
    <tr>
-    <td>State is reached if Testtaker pressed "Quit"-Button or Supervisor hit the "Quit all"-Button</td>
+    <td>This state is reached if the participant pressed the "Quit"-button or a supervisor hit the "Quit all"-button</td>
   </tr>
 </table>
 <br>
@@ -93,7 +76,7 @@
     <td>Tooltip: <code>Es ist ein Fehler aufgetreten!</code></td>
   </tr>
    <tr>
-    <td>Bei Teilnehmer-Rechner ist ein Fehler aufgetreten. Wahrscheinlich ein Netzwerkfehler oder ähnliches, kann aber auch auf Bugs hindeuten und sollte nach Möglichkeit untersucht werden. Der Teilnehmer sollte seinen Browser neu laden und probieren ob das Problem dann immer noch besteht.</td>
+    <td>An error has occurred a the participants computer. Probably a network error or the like, but can also indicate bugs and should be investigated if possible. The participant should reload his browser and try if the problem still exists.</td>
   </tr>
 </table>
 <br>
@@ -107,7 +90,7 @@
     <td>Tooltip: <code>Testausführung wurde beendet und kann wieder aufgenommen werden. Der Browser des Teilnehmers ist nicht verbunden und muss neu geladen werden!</code></td>
   </tr>
    <tr>
-    <td>Zustand kommt zustande, wenn der "Entsperren"-Knopf im gruppen-Monitor verwendet wurde.</td>
+    <td>Test execution has been completed and can be resumed. The browser of the participant is not connected and must be reloaded! Condition occurs when the "Unlock"-Button was used in the group monitor.</td>
   </tr>
 </table>
 <br>
@@ -121,7 +104,7 @@
     <td>Tooltip: <code>Seite wurde verlassen oder Browserfenster geschlossen!</code></td>
   </tr>
    <tr>
-    <td>Die Verbindung zum Teilnehmer-Browser ist abgerissen. Er könnte das Fenster geschlossen haben oder die Netzwerkverbindung ist abgerissen</td>
+    <td>The connection to the participant's browser is demolished. He could have closed the window or the network connection is demolished.</td>
   </tr>
 </table>
 <br>
@@ -149,7 +132,7 @@
     <td>Tooltip: <code>Fenster/Tab wurde verlassen!</code></td>
   </tr>
    <tr>
-    <td>Ein anderes Fenster oder ein anderer Tab wurde angewählt, dei Seite ist jedoch immer noch offen und verbunden.</td>
+    <td>Another window or another tab was selected, but the site is still open and connected.</td>
   </tr>
 </table>
 <br>
@@ -163,7 +146,7 @@
     <td>Tooltip: <code>Test ist 5 Minuten oder länger inaktiv!</code></td>
   </tr>
    <tr>
-    <td>undefined</td>
+    <td>The participant was idle for five minutes or longer.</td>
   </tr>
 </table>
 <br>
@@ -177,7 +160,7 @@
     <td>Tooltip: <code>Test läuft, Verbindung ist live</code></td>
   </tr>
    <tr>
-    <td>Test läuft und Teilnehmer ist im Live-Modus (= Websocket) verbunden.</td>
+    <td>Test runs and participant is connected in live mode (= WebSocket).</td>
   </tr>
 </table>
 <br>
@@ -191,7 +174,7 @@
     <td>Tooltip: <code>Test läuft</code></td>
   </tr>
    <tr>
-    <td>Test läuft und Teilnehmer ist im Polling-Modus Verbindung verbunden.</td>
+    <td>Test runs and participant is connected in the polling mode connection. This si a fallback for the case that the live-mode is not possible due to the supervisor's browser or a technical error. It works the same but the monitors performance is less smooth because new data is polled every 5 seconds and not pushedwhen there is anything.</td>
   </tr>
 </table>
 <br>
@@ -205,7 +188,7 @@
     <td>Tooltip: <code>Test läuft</code></td>
   </tr>
    <tr>
-    <td>Test läuft, Verbindungstyp is unbekannt.</td>
+    <td>Test seems to run but the connection type is unknown. This is is more or less a fallback state which indicates, that we know nothing about the test except for it's existence. This could be the case in various error-scenarios or misconfigurations, and should normally not be the case. It should be investigated,but most likely the test can be continued anyway since the error is more likely on the monitor's side.</td>
   </tr>
 </table>
 <br>
