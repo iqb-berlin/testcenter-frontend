@@ -56,6 +56,10 @@ export class TestViewComponent {
       (this.selected?.originSession.booklet.species === this.testSession.booklet.species);
   }
 
+  isSelectedHere(testletOrNull: Testlet|null = null): boolean {
+    return this.isSelected(testletOrNull) && (this.selected.originSession.data.testId === this.testSession.data.testId);
+  }
+
   isMarked(testletOrNull: Testlet|null = null): boolean {
     return testletOrNull &&
       (this.marked?.element?.blockId === testletOrNull.blockId) &&
@@ -102,7 +106,7 @@ export class TestViewComponent {
     return {
       element: testletOrNull,
       originSession: this.testSession,
-      spreading: this.isSelected(testletOrNull) ? !(this.selected?.spreading) : !testletOrNull,
+      spreading: this.isSelectedHere(testletOrNull) ? !(this.selected?.spreading) : !testletOrNull,
       inversion
     };
   }
