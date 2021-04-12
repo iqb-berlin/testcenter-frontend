@@ -198,8 +198,8 @@ export class GroupMonitorService {
     const newCheckedSessions: { [sessionFullId: number]: TestSession } = {};
     sessions
       .forEach(session => {
-        if (this.checkingOptions.autoCheckAll || (typeof this._checked[session.id] !== 'undefined')) {
-          newCheckedSessions[session.id] = session;
+        if (this.checkingOptions.autoCheckAll || (typeof this._checked[session.data.testId] !== 'undefined')) {
+          newCheckedSessions[session.data.testId] = session;
         }
       });
     this._checked = newCheckedSessions;
@@ -340,7 +340,7 @@ export class GroupMonitorService {
   }
 
   isChecked(session: TestSession): boolean {
-    return (typeof this._checked[session.id] !== 'undefined');
+    return (typeof this._checked[session.data.testId] !== 'undefined');
   }
 
   // todo unit test
@@ -376,7 +376,7 @@ export class GroupMonitorService {
     if (this.checkingOptions.autoCheckAll) {
       return;
     }
-    this._checked[session.id] = session;
+    this._checked[session.data.testId] = session;
     this.onCheckedChanged();
   }
 
@@ -385,7 +385,7 @@ export class GroupMonitorService {
       return;
     }
     if (this.isChecked(session)) {
-      delete this._checked[session.id];
+      delete this._checked[session.data.testId];
     }
     this.onCheckedChanged();
   }
@@ -407,7 +407,7 @@ export class GroupMonitorService {
   private replaceCheckedSessions(sessionsToCheck: TestSession[]): void {
     const newCheckedSessions = {};
     sessionsToCheck
-      .forEach(session => { newCheckedSessions[session.id] = session; });
+      .forEach(session => { newCheckedSessions[session.data.testId] = session; });
     this._checked = newCheckedSessions;
     this.onCheckedChanged();
   }

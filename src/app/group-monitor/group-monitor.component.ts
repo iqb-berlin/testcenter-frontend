@@ -123,7 +123,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     }
   }
 
-  trackSession = (index: number, session: TestSession): number => session.id;
+  trackSession = (index: number, session: TestSession): number => session.data.testId;
 
   setTableSorting(sort: Sort): void {
     if (!sort.active || sort.direction === '') {

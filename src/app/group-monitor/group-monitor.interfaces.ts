@@ -5,7 +5,6 @@ export interface TestSession {
   readonly data: TestSessionData;
   readonly state: TestSessionSuperState;
   readonly current: UnitContext|null;
-  readonly id: number;
   readonly booklet: Booklet|BookletError;
   readonly clearedCodes: Record<string, unknown>|null;
   readonly timeLeft: Record<string, unknown>|null;

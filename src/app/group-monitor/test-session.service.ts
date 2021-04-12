@@ -28,7 +28,6 @@ export class TestSessionService {
     const current = isBooklet(booklet) ? TestSessionService.getCurrent(booklet.units, session.unitName) : null;
     return {
       data: session,
-      id: TestSessionService.getId(session),
       state: TestSessionService.getSuperState(session),
       current: current && current.unit ? current : null,
       booklet,
@@ -42,10 +41,6 @@ export class TestSessionService {
       .map((key: string) => (TestSessionService.hasState(state, key) ? state[key] : null))
       .filter((value: string) => value !== null)
       .join(glue);
-  }
-
-  private static getId(session: TestSessionData): number {
-    return session.personId * 10000 + session.testId;
   }
 
   private static getSuperState(session: TestSessionData): TestSessionSuperState {
