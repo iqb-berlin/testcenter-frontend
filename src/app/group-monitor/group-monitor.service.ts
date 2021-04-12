@@ -272,17 +272,20 @@ export class GroupMonitorService {
     );
   }
 
-  testCommandGoto(selection: Selected): void {
+  testCommandGoto(selection: Selected): Observable<true> {
     const gfd = GroupMonitorService.groupForGoto(this.checked, selection);
     const allTestIds = this.checked.map(s => s.data.testId);
-    zip(
+    return zip(
       ...Object.keys(gfd).map(key => this.bs.command('goto', ['id', gfd[key].firstUnitId], gfd[key].testIds))
-    ).subscribe(() => {
-      this._commandResponses$.next({
-        commandType: 'goto',
-        testIds: allTestIds
-      });
-    });
+    ).pipe(
+      tap(() => {
+        this._commandResponses$.next({
+          commandType: 'goto',
+          testIds: allTestIds
+        });
+      }),
+      map(() => true)
+    );
   }
 
   private static groupForGoto(sessionsSet: TestSession[], selection: Selected): GotoCommandData {

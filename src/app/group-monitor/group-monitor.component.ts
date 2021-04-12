@@ -14,9 +14,10 @@ import { BackendService } from './backend.service';
 import {
   GroupData,
   TestViewDisplayOptions,
-  TestViewDisplayOptionKey, Selected, TestSession, TestSessionSetStats, CommandResponse, UIMessage
+  TestViewDisplayOptionKey, Selected, TestSession, TestSessionSetStats, CommandResponse, UIMessage, isBooklet
 } from './group-monitor.interfaces';
 import { GroupMonitorService } from './group-monitor.service';
+import { BookletService } from './booklet.service';
 
 @Component({
   selector: 'app-group-monitor',
@@ -212,8 +213,28 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         text: 'Kein Zielblock ausgewählt'
       });
     } else {
-      this.gms.testCommandGoto(this.selectedElement);
+      this.gms.testCommandGoto(this.selectedElement)
+        .subscribe(() => this.selectNextBlock());
     }
+  }
+
+  private selectNextBlock(): void {
+    if (!isBooklet(this.selectedElement.originSession.booklet)) {
+      return;
+    }
+    // if (!this.selectedElement.element.nextBlockId) {
+    //   return;
+    // }
+    this.selectElement({
+      element: this.selectedElement.element.nextBlockId ?
+        BookletService.getBlockById(
+          this.selectedElement.element.nextBlockId,
+          this.selectedElement.originSession.booklet
+        ) : null,
+      inversion: this.selectedElement.inversion,
+      originSession: this.selectedElement.originSession,
+      spreading: this.selectedElement.spreading
+    });
   }
 
   unlockCommand(): void {

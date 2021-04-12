@@ -4,7 +4,6 @@ import { TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { BookletService } from './booklet.service';
 import { BackendService } from './backend.service';
-import { TestSessionService } from './test-session.service';
 import { unitTestExampleBooklets } from './test-data.spec';
 
 class MockBackendService {
@@ -41,31 +40,14 @@ describe('BookletService', () => {
     expect(BookletService.getFirstUnit(unitTestExampleBooklets.example_booklet_2.units.children[2])).toBeNull();
   });
 
-  describe('getNextBlock()', () => {
-    // eslint-disable-next-line @typescript-eslint/dot-notation,prefer-destructuring
-    const getCurrent = TestSessionService['getCurrent'];
-
-    it('should get next block at root-level, when blockless unit is selected', () => {
-      const result = BookletService.getNextBlock(
-        getCurrent(unitTestExampleBooklets.example_booklet_1.units, 'unit-1'),
-        unitTestExampleBooklets.example_booklet_1
-      );
-      expect(result.id).toEqual('zara');
+  describe('getBlockById()', () => {
+    it('should return the block by id', () => {
+      const result = BookletService.getBlockById('block-2', unitTestExampleBooklets.example_booklet_1);
+      expect(result.id).toEqual('alf');
     });
 
-    it('should get next block at root-level, when unit in nested testlet is selected', () => {
-      const result = BookletService.getNextBlock(
-        getCurrent(unitTestExampleBooklets.example_booklet_1.units, 'unit-3'),
-        unitTestExampleBooklets.example_booklet_1
-      );
-      expect(result.id).toEqual('ellie');
-    });
-
-    it('should return null, if there is no next block on root-level', () => {
-      const result = BookletService.getNextBlock(
-        getCurrent(unitTestExampleBooklets.example_booklet_1.units, 'unit-9'),
-        unitTestExampleBooklets.example_booklet_1
-      );
+    it('should return null when blockId is not found in booklet', () => {
+      const result = BookletService.getBlockById('not-existing', unitTestExampleBooklets.example_booklet_1);
       expect(result).toBeNull();
     });
   });

@@ -6,7 +6,7 @@ import { map, shareReplay } from 'rxjs/operators';
 import { MainDataService } from '../maindata.service';
 import { BackendService } from './backend.service';
 import {
-  Booklet, BookletError, BookletMetadata, isUnit, Restrictions, Testlet, Unit, UnitContext
+  Booklet, BookletError, BookletMetadata, isUnit, Restrictions, Testlet, Unit
 } from './group-monitor.interfaces';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../config/booklet-config';
@@ -40,27 +40,20 @@ export class BookletService {
     return null;
   }
 
-  static getNextBlock(current: UnitContext, booklet: Booklet): Testlet|null {
-    if (!current.ancestor) {
-      return null;
-    }
-    const startIndex = !current.ancestor.id ?
-      booklet.units.children.indexOf(current.unit) : booklet.units.children.indexOf(current.ancestor);
-    for (let i = startIndex + 1; i < booklet.units.children.length; i++) {
-      if (!isUnit(booklet.units.children[i])) {
-        return <Testlet>booklet.units.children[i];
-      }
-    }
-    return null;
+  static getBlockById(blockId: string, booklet: Booklet): Testlet {
+    return <Testlet>booklet.units.children
+      .filter(testletOrUnit => !isUnit(testletOrUnit))
+      .reduce((found: Testlet, block: Testlet) => ((block.blockId === blockId) ? block : found), null);
   }
 
   static addBookletStructureInformation(booklet: Booklet): void {
     booklet.species = BookletService.getBookletSpecies(booklet);
     booklet.units.children
       .filter(testletOrUnit => !isUnit(testletOrUnit))
-      .forEach((testletOrUnit, index) => {
-        if (!isUnit(testletOrUnit)) {
-          testletOrUnit.blockId = `block ${index + 1}`;
+      .forEach((block: Testlet, index, blocks) => {
+        block.blockId = `block ${index + 1}`;
+        if (index < blocks.length - 1) {
+          block.nextBlockId = `block ${index + 2}`;
         }
       });
   }

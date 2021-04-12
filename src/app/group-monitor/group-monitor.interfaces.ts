@@ -67,6 +67,7 @@ export interface Testlet {
   children: (Unit|Testlet)[];
   descendantCount: number;
   blockId?: string;
+  nextBlockId?: string;
 }
 
 export interface Unit {
