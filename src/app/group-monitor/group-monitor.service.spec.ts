@@ -32,7 +32,7 @@ class MockBookletService {
 
 class MockBackendService {
   observeSessionsMonitor(): Observable<TestSessionData[]> {
-    return of(unitTestExampleSessions.map(s => s.data));
+    return of([...unitTestExampleSessions, ...additionalUnitTestExampleSessions].map(s => s.data));
   }
 
   getGroupData(groupName: string): Observable<GroupData> {
@@ -238,7 +238,7 @@ describe('GroupMonitorService', () => {
   describe('groupForGoto', () => {
     it('return a group for each booklet in set an the the first unit in the selected block', () => {
       const selection: Selected = {
-        element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alt = block-2
+        element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
         inversion: false,
         originSession: unitTestExampleSessions[0],
         spreading: false
@@ -253,6 +253,87 @@ describe('GroupMonitorService', () => {
       // explanation: 'block-2' is given in session 1,2 and 33. But in session 2 it's from example_booklet_2,
       // where it is emtpy , so there is no place to go. Session 34 with example_booklet_3 has the block,
       // but another frist unit
+    });
+  });
+
+  describe('checkSessionsBySelection', () => {
+    it('should select all possible test-sessions after selecting a block when spreading is true', () => {
+      service.checkSessionsBySelection({
+        element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
+        inversion: false,
+        originSession: unitTestExampleSessions[0],
+        spreading: true
+      });
+      expect(service.checked.map(s => s.data.testId)).toEqual([1, 33, 34]);
+
+      service.checkSessionsBySelection({
+        element: <Testlet>unitTestExampleBooklets.example_booklet_2.units.children[0], // zoe = block-1
+        inversion: false,
+        originSession: unitTestExampleSessions[1],
+        spreading: true
+      });
+      expect(service.checked.map(s => s.data.testId)).toEqual([2]);
+    });
+
+    it('should check the current test-session after selecting a block when spreading is false', () => {
+      service.checkSessionsBySelection({
+        element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
+        inversion: false,
+        originSession: unitTestExampleSessions[0],
+        spreading: false
+      });
+      expect(service.checked.map(s => s.data.testId)).toEqual([1]);
+      service.checkSessionsBySelection({
+        element: <Testlet>unitTestExampleBooklets.example_booklet_2.units.children[0], // zoe = block-1
+        inversion: false,
+        originSession: additionalUnitTestExampleSessions[0],
+        spreading: false
+      });
+      expect(service.checked.map(s => s.data.testId)).toEqual([1, 33]);
+    });
+
+    it('should check possible test-sessions which where not checked before when inversion is true', () => {
+      service.checkSessionsBySelection({
+        element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
+        inversion: true,
+        originSession: unitTestExampleSessions[0],
+        spreading: true
+      });
+      // nothing is checked, inversion checks all possible
+      expect(service.checked.map(s => s.data.testId)).toEqual([1, 33, 34]);
+
+      service.checkSessionsBySelection({
+        element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
+        inversion: true,
+        originSession: unitTestExampleSessions[0],
+        spreading: true
+      });
+      // all possible where checked, so nothing remains
+      expect(service.checked.map(s => s.data.testId)).toEqual([]);
+
+      // eslint-disable-next-line @typescript-eslint/dot-notation
+      service['replaceCheckedSessions']([unitTestExampleSessions[0], additionalUnitTestExampleSessions[0]]);
+
+      service.checkSessionsBySelection({
+        element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
+        inversion: true,
+        originSession: unitTestExampleSessions[0],
+        spreading: true
+      });
+      // test 1 and test 33 where checked, so 4 will be the inversion
+      expect(service.checked.map(s => s.data.testId)).toEqual([34]);
+    });
+
+    it('should ignore inversion, when spreading is set to false', () => {
+      // eslint-disable-next-line @typescript-eslint/dot-notation
+      service['replaceCheckedSessions']([unitTestExampleSessions[0], additionalUnitTestExampleSessions[0]]);
+      service.checkSessionsBySelection({
+        element: <Testlet>unitTestExampleBooklets.example_booklet_1.units.children[3], // alf = block-2
+        inversion: true,
+        originSession: unitTestExampleSessions[0],
+        spreading: false
+      });
+      expect(service.checked.map(s => s.data.testId)).toEqual([1, 33]);
     });
   });
 });

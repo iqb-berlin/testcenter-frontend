@@ -346,7 +346,6 @@ export class GroupMonitorService {
     return (typeof this._checked[session.data.testId] !== 'undefined');
   }
 
-  // todo unit test
   checkSessionsBySelection(selected: Selected): void {
     if (this.checkingOptions.autoCheckAll) {
       return;
@@ -354,7 +353,7 @@ export class GroupMonitorService {
     let toCheck: TestSession[] = [];
     if (selected.element) {
       if (!selected.spreading) {
-        toCheck = [selected.originSession];
+        toCheck = [...this.checked, selected.originSession];
       } else {
         toCheck = this._sessions$.getValue()
           .filter(session => (session.booklet.species === selected.originSession.booklet.species))

@@ -155,6 +155,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       session.booklet.species.length *
       session.booklet.species.charCodeAt(0) *
       session.booklet.species.charCodeAt(session.booklet.species.length / 4) *
+      session.booklet.species.charCodeAt(session.booklet.species.length / 4) *
       session.booklet.species.charCodeAt(session.booklet.species.length / 2) *
       session.booklet.species.charCodeAt(3 * (session.booklet.species.length / 4)) *
       session.booklet.species.charCodeAt(session.booklet.species.length - 1)
@@ -222,19 +223,16 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     if (!isBooklet(this.selectedElement.originSession.booklet)) {
       return;
     }
-    // if (!this.selectedElement.element.nextBlockId) {
-    //   return;
-    // }
-    this.selectElement({
+    this.selectedElement = {
       element: this.selectedElement.element.nextBlockId ?
         BookletService.getBlockById(
           this.selectedElement.element.nextBlockId,
           this.selectedElement.originSession.booklet
         ) : null,
-      inversion: this.selectedElement.inversion,
+      inversion: false,
       originSession: this.selectedElement.originSession,
       spreading: this.selectedElement.spreading
-    });
+    };
   }
 
   unlockCommand(): void {
