@@ -21,37 +21,35 @@ import { BookletConfig } from '../config/booklet-config';
   providedIn: 'root'
 })
 export class TestControllerService {
-  public testId = '';
-  public testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
-  public testStatusEnum = TestControllerState;
-  public loadComplete = false;
-  public loadProgressValue = 0;
-  public clearCodeTestlets: string[] = [];
+  testId = '';
+  testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
+  testStatusEnum = TestControllerState;
+  loadComplete = false;
+  loadProgressValue = 0;
+  clearCodeTestlets: string[] = [];
 
-  public testMode = new TestMode();
-  public bookletConfig = new BookletConfig();
-  public rootTestlet: Testlet = null;
-  public maxUnitSequenceId = 0;
-  public minUnitSequenceId = 0;
+  testMode = new TestMode();
+  bookletConfig = new BookletConfig();
+  rootTestlet: Testlet = null;
+  maxUnitSequenceId = 0;
+  minUnitSequenceId = 0;
 
-  public maxTimeTimer$ = new Subject<MaxTimerData>();
-  public currentMaxTimerTestletId = '';
+  maxTimeTimer$ = new Subject<MaxTimerData>();
+  currentMaxTimerTestletId = '';
   private maxTimeIntervalSubscription: Subscription = null;
 
   private _currentUnitSequenceId: number;
-  public currentUnitDbKey = '';
-  public currentUnitTitle = '';
-  public unitPrevEnabled = false;
-  public unitNextEnabled = false;
-  public unitListForNaviButtons: UnitNaviButtonData[] = [];
+  currentUnitDbKey = '';
+  currentUnitTitle = '';
+  unitPrevEnabled = false;
+  unitNextEnabled = false;
+  unitListForNaviButtons: UnitNaviButtonData[] = [];
 
-  public get currentUnitSequenceId(): number {
+  get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
   }
 
-  public set currentUnitSequenceId(v: number) {
-    console.log('currentUnitSequenceId', v);
-
+  set currentUnitSequenceId(v: number) {
     this.unitPrevEnabled = v > this.minUnitSequenceId;
     this.unitNextEnabled = v < this.maxUnitSequenceId;
     if (this.rootTestlet && (this.bookletConfig.unit_navibuttons !== 'OFF') ) {
@@ -65,7 +63,7 @@ export class TestControllerService {
             shortLabel: myUnitData.unitDef.naviButtonLabel,
             longLabel: myUnitData.unitDef.title,
             testletLabel: myUnitData.testletLabel,
-            disabled: disabled,
+            disabled,
             isCurrent: sequ === v
           });
         }
@@ -75,18 +73,18 @@ export class TestControllerService {
     this._currentUnitSequenceId = v;
   }
 
-  public LastMaxTimerState: KeyValuePairNumber = {};
+  LastMaxTimerState: KeyValuePairNumber = {};
 
-  private players: {[filename: string]: string} = {};
-  private unitDefinitions: {[sequenceId: number]: string} = {};
-  private unitStateDataParts: {[sequenceId: number]: string} = {};
-  private unitPresentationCompleteStates: {[sequenceId: number]: string} = {};
-  private unitResponseCompleteStates: {[sequenceId: number]: string} = {};
+  private players: { [filename: string]: string } = {};
+  private unitDefinitions: { [sequenceId: number]: string } = {};
+  private unitStateDataParts: { [sequenceId: number]: string } = {};
+  private unitPresentationCompleteStates: { [sequenceId: number]: string } = {};
+  private unitResponseCompleteStates: { [sequenceId: number]: string } = {};
 
   private unitStateDataToSave$ = new Subject<UnitStateData>();
-  public windowFocusState$ = new Subject<WindowFocusState>();
+  windowFocusState$ = new Subject<WindowFocusState>();
 
-  constructor (
+  constructor(
     private router: Router,
     private bs: BackendService
   ) {
@@ -102,7 +100,7 @@ export class TestControllerService {
       });
   }
 
-  public resetDataStore(): void {
+  resetDataStore(): void {
     this.players = {};
     this.unitDefinitions = {};
     this.unitStateDataParts = {};
@@ -127,78 +125,78 @@ export class TestControllerService {
   }
 
   // uppercase and add extension if not part
-  public normaliseId(s: string, standardext = ''): string {
-    s = s.trim().toUpperCase();
-    s.replace(/\s/g, '_');
+  normaliseId(id: string, standardext = ''): string {
+    id = id.trim().toUpperCase();
+    id.replace(/\s/g, '_');
     if (standardext.length > 0) {
       standardext = standardext.trim().toUpperCase();
       standardext.replace(/\s/g, '_');
       standardext = '.' + standardext.replace('.', '');
 
-      if (s.slice(-(standardext.length)) !== standardext) {
-        s = s + standardext;
+      if (id.slice(-(standardext.length)) !== standardext) {
+        id = id + standardext;
       }
     }
-    return s;
+    return id;
   }
 
-  public addPlayer(id: string, player: string): void {
+  addPlayer(id: string, player: string): void {
     this.players[this.normaliseId(id, 'html')] = player;
   }
 
-  public hasPlayer(id: string): boolean {
+  hasPlayer(id: string): boolean {
     return this.players.hasOwnProperty(this.normaliseId(id, 'html'));
   }
 
-  public getPlayer(id: string): string {
+  getPlayer(id: string): string {
     return this.players[this.normaliseId(id, 'html')];
   }
 
-  public addUnitDefinition(sequenceId: number, uDef: string): void {
+  addUnitDefinition(sequenceId: number, uDef: string): void {
     this.unitDefinitions[sequenceId] = uDef;
   }
 
-  public hasUnitDefinition(sequenceId: number): boolean {
+  hasUnitDefinition(sequenceId: number): boolean {
     return this.unitDefinitions.hasOwnProperty(sequenceId);
   }
 
-  public getUnitDefinition(sequenceId: number): string {
+  getUnitDefinition(sequenceId: number): string {
     return this.unitDefinitions[sequenceId];
   }
 
   // adding RestorePoint via newUnitRestorePoint below
-  public hasUnitStateData(sequenceId: number): boolean {
+  hasUnitStateData(sequenceId: number): boolean {
     return this.unitStateDataParts.hasOwnProperty(sequenceId);
   }
 
-  public getUnitStateData(sequenceId: number): string {
+  getUnitStateData(sequenceId: number): string {
     return this.unitStateDataParts[sequenceId];
   }
 
-  public setOldUnitPresentationComplete(sequenceId: number, state: string) {
+  setOldUnitPresentationComplete(sequenceId: number, state: string) {
     this.unitPresentationCompleteStates[sequenceId] = state;
   }
 
-  public hasUnitPresentationComplete(sequenceId: number): boolean {
+  hasUnitPresentationComplete(sequenceId: number): boolean {
     return this.unitPresentationCompleteStates.hasOwnProperty(sequenceId);
   }
 
-  public getUnitPresentationComplete(sequenceId: number): string {
+  getUnitPresentationComplete(sequenceId: number): string {
     return this.unitPresentationCompleteStates[sequenceId];
   }
 
-  public addUnitStateData(unitSequenceId: number, dataPartsAllString: string) {
+  addUnitStateData(unitSequenceId: number, dataPartsAllString: string) {
     this.unitStateDataParts[unitSequenceId] = dataPartsAllString;
   }
 
-  public newUnitStateData(unitDbKey: string, unitSequenceId: number, dataPartsAllString: string, unitStateDataType: string): void {
+  newUnitStateData(unitDbKey: string, unitSequenceId: number, dataPartsAllString: string, unitStateDataType: string): void {
     this.unitStateDataParts[unitSequenceId] = dataPartsAllString;
     if (this.testMode.saveResponses) {
       this.unitStateDataToSave$.next({ unitDbKey, dataPartsAllString, unitStateDataType });
     }
   }
 
-  public addClearedCodeTestlet(testletId: string): void {
+  addClearedCodeTestlet(testletId: string): void {
     if (this.clearCodeTestlets.indexOf(testletId) < 0) {
       this.clearCodeTestlets.push(testletId);
       if (this.testMode.saveResponses) {
@@ -214,7 +212,7 @@ export class TestControllerService {
     }
   }
 
-  public updateUnitStatePresentationProgress(unitDbKey: string, unitSequenceId: number, presentationProgress: string): void {
+  updateUnitStatePresentationProgress(unitDbKey: string, unitSequenceId: number, presentationProgress: string): void {
     let stateChanged = false;
     if (!this.unitPresentationCompleteStates[unitSequenceId] || this.unitPresentationCompleteStates[unitSequenceId] === 'none') {
       this.unitPresentationCompleteStates[unitSequenceId] = presentationProgress;
@@ -230,7 +228,7 @@ export class TestControllerService {
     }
   }
 
-  public newUnitStateResponseProgress(unitDbKey: string, unitSequenceId: number, responseProgress: string): void {
+  newUnitStateResponseProgress(unitDbKey: string, unitSequenceId: number, responseProgress: string): void {
     if (this.testMode.saveResponses) {
       if (!this.unitResponseCompleteStates[unitSequenceId] || this.unitResponseCompleteStates[unitSequenceId] !== responseProgress) {
         this.unitResponseCompleteStates[unitSequenceId] = responseProgress;
@@ -241,7 +239,7 @@ export class TestControllerService {
     }
   }
 
-  public newUnitStatePage(unitDbKey: string, pageNr: number, pageId: string, pageCount: number): void {
+  newUnitStatePage(unitDbKey: string, pageNr: number, pageId: string, pageCount: number): void {
     if (this.testMode.saveResponses) {
       this.bs.updateUnitState(this.testId, unitDbKey, [
           <StateReportEntry>{ key: UnitStateKey.CURRENT_PAGE_NR, timeStamp: Date.now(), content: pageNr.toString() },
@@ -251,7 +249,7 @@ export class TestControllerService {
     }
   }
 
-  public startMaxTimer(testletId: string, timeLeftMinutes: number): void {
+  startMaxTimer(testletId: string, timeLeftMinutes: number): void {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
     }
@@ -275,7 +273,7 @@ export class TestControllerService {
       );
   }
 
-  public cancelMaxTimer(): void {
+  cancelMaxTimer(): void {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
       this.maxTimeIntervalSubscription = null;
@@ -284,7 +282,7 @@ export class TestControllerService {
     this.currentMaxTimerTestletId = '';
   }
 
-  public interruptMaxTimer(): void {
+  interruptMaxTimer(): void {
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
       this.maxTimeIntervalSubscription = null;
@@ -293,29 +291,36 @@ export class TestControllerService {
     this.currentMaxTimerTestletId = '';
   }
 
-  public updateMinMaxUnitSequenceId(startWith: number): void {
+  updateMinMaxUnitSequenceId(startWith: number): void {
     if (this.rootTestlet) {
       this.minUnitSequenceId = this.rootTestlet.getFirstUnlockedUnitSequenceId(startWith);
       this.maxUnitSequenceId = this.rootTestlet.getLastUnlockedUnitSequenceId(startWith);
     }
   }
 
-  public terminateTest(logEntryKey: string): void {
-    if (this.testMode.saveResponses) {
-      if (this.testStatus$.getValue() !== TestControllerState.TERMINATED) {
-        this.testStatus$.next(TestControllerState.TERMINATED); // sometimes terminateTest get called two times from player
-        this.bs.lockTest(this.testId, Date.now(), logEntryKey).subscribe(bsOk => {
-          this.testStatus$.next(bsOk ? TestControllerState.FINISHED : TestControllerState.ERROR);
-          this.router.navigate(['/'], { state: { force: true } });
-        });
-      }
-    } else {
+  terminateTest(logEntryKey: string, lockTest: boolean = false): void {
+    if (
+      (this.testStatus$.getValue() === TestControllerState.TERMINATED) ||
+      (this.testStatus$.getValue() === TestControllerState.FINISHED)
+    ) {
+      // sometimes terminateTest get called two times from player
+      return;
+    }
+
+    if (!this.testMode.saveResponses || !lockTest) {
       this.testStatus$.next(TestControllerState.FINISHED);
       this.router.navigate(['/'], { state: { force: true } });
+      return;
     }
+
+    this.testStatus$.next(TestControllerState.TERMINATED);
+    this.bs.lockTest(this.testId, Date.now(), logEntryKey).subscribe(bsOk => {
+      this.testStatus$.next(bsOk ? TestControllerState.FINISHED : TestControllerState.ERROR);
+      this.router.navigate(['/'], { state: { force: true } });
+    });
   }
 
-  public setUnitNavigationRequest(navString: string, force = false): void {
+  setUnitNavigationRequest(navString: string, force = false): void {
     if (!this.rootTestlet) {
       this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true });
     } else {
@@ -364,7 +369,7 @@ export class TestControllerService {
           )
             .then(navOk => {
               if (!navOk) {
-                console.log(`navigation failed ("${navString}"`);
+                console.log(`navigation failed ("${navString}")`);
               }
             });
           break;
