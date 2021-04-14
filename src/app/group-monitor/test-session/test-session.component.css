@@ -1,3 +1,38 @@
+:host(tc-test-session) {
+  display: table-row;
+  vertical-align: middle;
+}
+
+td {
+  padding-bottom: 0.2em;
+  padding-top: 0.2em;
+  border-bottom: 1px solid silver;
+  padding-right: 2em;
+}
+
+:host(tc-test-session):last-of-type td {
+  border-bottom: none;
+}
+
+td.super-state,
+td.selected,
+td:last-child {
+  padding-right: 0;
+}
+
+td.selected {
+  padding-left: 5px;
+}
+
+td:last-child {
+  min-width: 100%;
+}
+
+:host(test-session:last-child) td {
+  border-bottom: none;
+
+}
+
 h1,
 h2 {
   font-size: 100%;

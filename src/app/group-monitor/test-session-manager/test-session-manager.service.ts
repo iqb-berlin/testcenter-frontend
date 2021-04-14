@@ -6,25 +6,23 @@ import { Sort } from '@angular/material/sort';
 import {
   delay, flatMap, map, switchMap, tap
 } from 'rxjs/operators';
-import { BackendService } from './backend.service';
-import { BookletService } from './booklet.service';
-import { TestSessionService } from './test-session.service';
+import { BackendService } from '../backend.service';
+import { BookletService } from '../booklet/booklet.service';
+import { TestSessionUtil } from '../test-session/test-session.util';
 import {
   isBooklet,
   Selected, CheckingOptions,
   TestSession,
   TestSessionFilter, TestSessionSetStats,
   TestSessionsSuperStates, CommandResponse, GotoCommandData
-} from './group-monitor.interfaces';
-import { ConnectionStatus } from '../shared/websocket-backend.service';
+} from '../group-monitor.interfaces';
+import { BookletUtil } from '../booklet/booklet.util';
 
 @Injectable()
-export class GroupMonitorService {
+export class TestSessionManager {
   sortBy$: Subject<Sort>;
   filters$: Subject<TestSessionFilter[]>;
   checkingOptions: CheckingOptions;
-
-  connectionStatus$: Observable<ConnectionStatus>;
 
   private groupName: string;
 
@@ -96,8 +94,8 @@ export class GroupMonitorService {
       autoCheckAll: true
     };
 
-    this._checkedStats$ = new BehaviorSubject<TestSessionSetStats>(GroupMonitorService.getEmptyStats());
-    this._sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(GroupMonitorService.getEmptyStats());
+    this._checkedStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
+    this._sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
     this._commandResponses$ = new Subject<CommandResponse>();
 
     this.monitor$ = this.bs.observeSessionsMonitor()
@@ -105,7 +103,7 @@ export class GroupMonitorService {
         switchMap(sessions => zip(...sessions
           .map(session => this.bookletService.getBooklet(session.bookletName)
             .pipe(
-              map(booklet => TestSessionService.analyzeTestSession(session, booklet))
+              map(booklet => TestSessionUtil.analyzeTestSession(session, booklet))
             ))))
       );
 
@@ -113,12 +111,10 @@ export class GroupMonitorService {
     combineLatest<[Sort, TestSessionFilter[], TestSession[]]>([this.sortBy$, this.filters$, this.monitor$])
       .pipe(
         // eslint-disable-next-line max-len
-        map(([sortBy, filters, sessions]) => this.sortSessions(sortBy, GroupMonitorService.filterSessions(sessions, filters))),
+        map(([sortBy, filters, sessions]) => this.sortSessions(sortBy, TestSessionManager.filterSessions(sessions, filters))),
         tap(sessions => this.synchronizeChecked(sessions))
       )
       .subscribe(this._sessions$);
-
-    this.connectionStatus$ = this.bs.connectionStatus$;
   }
 
   disconnect(): void {
@@ -139,7 +135,7 @@ export class GroupMonitorService {
   private static filterSessions(sessions: TestSession[], filters: TestSessionFilter[]): TestSession[] {
     return sessions
       .filter(session => session.data.testId && session.data.testId > -1) // testsession without testId is deprecated
-      .filter(session => GroupMonitorService.applyFilters(session, filters));
+      .filter(session => TestSessionManager.applyFilters(session, filters));
   }
 
   private static applyFilters(session: TestSession, filters: TestSessionFilter[]): boolean {
@@ -187,7 +183,7 @@ export class GroupMonitorService {
   }
 
   private synchronizeChecked(sessions: TestSession[]): void {
-    const sessionsStats = GroupMonitorService.getSessionSetStats(sessions);
+    const sessionsStats = TestSessionManager.getSessionSetStats(sessions);
 
     this.checkingOptions.enableAutoCheckAll = (sessionsStats.differentBookletSpecies < 2);
 
@@ -204,7 +200,7 @@ export class GroupMonitorService {
       });
     this._checked = newCheckedSessions;
 
-    this._checkedStats$.next(GroupMonitorService.getSessionSetStats(Object.values(this._checked), sessions.length));
+    this._checkedStats$.next(TestSessionManager.getSessionSetStats(Object.values(this._checked), sessions.length));
     this._sessionsStats$.next(sessionsStats);
   }
 
@@ -248,7 +244,7 @@ export class GroupMonitorService {
 
   testCommandPause(): void {
     const testIds = this.checked
-      .filter(session => !TestSessionService.isPaused(session))
+      .filter(session => !TestSessionUtil.isPaused(session))
       .map(session => session.data.testId);
     if (!testIds.length) {
       this._commandResponses$.next({ commandType: 'pause', testIds });
@@ -272,7 +268,7 @@ export class GroupMonitorService {
   }
 
   testCommandGoto(selection: Selected): Observable<true> {
-    const gfd = GroupMonitorService.groupForGoto(this.checked, selection);
+    const gfd = TestSessionManager.groupForGoto(this.checked, selection);
     const allTestIds = this.checked.map(s => s.data.testId);
     return zip(
       ...Object.keys(gfd).map(key => this.bs.command('goto', ['id', gfd[key].firstUnitId], gfd[key].testIds))
@@ -291,7 +287,7 @@ export class GroupMonitorService {
     const groupedByBooklet: GotoCommandData = {};
     sessionsSet.forEach(session => {
       if (!groupedByBooklet[session.data.bookletName] && isBooklet(session.booklet)) {
-        const firstUnit = BookletService.getFirstUnitOfBlock(selection.element.blockId, session.booklet);
+        const firstUnit = BookletUtil.getFirstUnitOfBlock(selection.element.blockId, session.booklet);
         if (firstUnit) {
           groupedByBooklet[session.data.bookletName] = {
             testIds: [],
@@ -308,7 +304,7 @@ export class GroupMonitorService {
 
   testCommandUnlock(): void {
     const testIds = this.checked
-      .filter(TestSessionService.isLocked)
+      .filter(TestSessionUtil.isLocked)
       .map(session => session.data.testId);
     if (!testIds.length) {
       this._commandResponses$.next({ commandType: 'unlock', testIds });
@@ -322,14 +318,14 @@ export class GroupMonitorService {
   // todo unit test
   commandFinishEverything(): Observable<CommandResponse> {
     const getUnlockedConnectedTestIds = () => Object.values(this._sessions$.getValue())
-      .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked') &&
-        !TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'TERMINATED') &&
-        (TestSessionService.hasState(session.data.testState, 'CONNECTION', 'POLLING') ||
-          TestSessionService.hasState(session.data.testState, 'CONNECTION', 'WEBSOCKET')))
+      .filter(session => !TestSessionUtil.hasState(session.data.testState, 'status', 'locked') &&
+        !TestSessionUtil.hasState(session.data.testState, 'CONTROLLER', 'TERMINATED') &&
+        (TestSessionUtil.hasState(session.data.testState, 'CONNECTION', 'POLLING') ||
+          TestSessionUtil.hasState(session.data.testState, 'CONNECTION', 'WEBSOCKET')))
       .map(session => session.data.testId);
     const getUnlockedTestIds = () => Object.values(this._sessions$.getValue())
       .filter(session => session.data.testId > 0)
-      .filter(session => !TestSessionService.hasState(session.data.testState, 'status', 'locked'))
+      .filter(session => !TestSessionUtil.hasState(session.data.testState, 'status', 'locked'))
       .map(session => session.data.testId);
 
     this.filters$.next([]);
@@ -414,7 +410,7 @@ export class GroupMonitorService {
   }
 
   private onCheckedChanged(): void {
-    this._checkedStats$.next(GroupMonitorService.getSessionSetStats(this.checked, this.sessions.length));
+    this._checkedStats$.next(TestSessionManager.getSessionSetStats(this.checked, this.sessions.length));
   }
 
   private static getSessionSetStats(sessionSet: TestSession[], all: number = sessionSet.length): TestSessionSetStats {
@@ -427,8 +423,8 @@ export class GroupMonitorService {
       .forEach(session => {
         booklets.add(session.data.bookletName);
         bookletSpecies.add(session.booklet.species);
-        if (TestSessionService.isPaused(session)) paused += 1;
-        if (TestSessionService.isLocked(session)) locked += 1;
+        if (TestSessionUtil.isPaused(session)) paused += 1;
+        if (TestSessionUtil.isLocked(session)) locked += 1;
       });
 
     return {

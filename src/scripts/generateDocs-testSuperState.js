@@ -1,6 +1,6 @@
 /* eslint-disable no-console,@typescript-eslint/no-var-requires */
 const fs = require('fs');
-const { superStates } = require('../app/group-monitor/test-view/super-states');
+const { superStates } = require('../app/group-monitor/test-session/super-states');
 
 const mdTargetFilename = '../../docs/super-states.html';
 

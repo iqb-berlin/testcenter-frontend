@@ -8,11 +8,13 @@ import {
   BookletError, CommandResponse,
   GroupData, Selected, Testlet,
   TestSessionData, TestSessionFilter, TestSessionSetStats
-} from './group-monitor.interfaces';
-import { BookletService } from './booklet.service';
-import { BackendService } from './backend.service';
-import { GroupMonitorService } from './group-monitor.service';
-import { unitTestExampleSessions, unitTestExampleBooklets, additionalUnitTestExampleSessions } from './test-data.spec';
+} from '../group-monitor.interfaces';
+import { BookletService } from '../booklet/booklet.service';
+import { BackendService } from '../backend.service';
+import { TestSessionManager } from './test-session-manager.service';
+import {
+  unitTestExampleSessions, unitTestExampleBooklets, additionalUnitTestExampleSessions
+} from '../unit-test-example-data.spec';
 
 class MockBookletService {
   booklets: Observable<Booklet>[] = [of(unitTestExampleBooklets.example_booklet_1)];
@@ -58,21 +60,21 @@ class MockCustomtextPipe {
   }
 }
 
-describe('GroupMonitorService', () => {
-  let service: GroupMonitorService;
+describe('TestSessionManager', () => {
+  let service: TestSessionManager;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [],
       imports: [],
       providers: [
-        GroupMonitorService,
+        TestSessionManager,
         { provide: BookletService, useValue: new MockBookletService() },
         { provide: BackendService, useValue: new MockBackendService() }
       ]
     })
       .compileComponents();
-    service = TestBed.inject(GroupMonitorService);
+    service = TestBed.inject(TestSessionManager);
     service.connect('unit-test-group-name');
   }));
 
@@ -161,7 +163,7 @@ describe('GroupMonitorService', () => {
   describe('getSessionSetStats', () => {
     it('should fetch correct stats from sessions', () => {
       // eslint-disable-next-line @typescript-eslint/dot-notation
-      const result = GroupMonitorService['getSessionSetStats'](unitTestExampleSessions, 2);
+      const result = TestSessionManager['getSessionSetStats'](unitTestExampleSessions, 2);
       const expectation: TestSessionSetStats = {
         number: 3,
         differentBooklets: 3,
@@ -176,7 +178,7 @@ describe('GroupMonitorService', () => {
 
   describe('filterSessions', () => {
     // eslint-disable-next-line @typescript-eslint/dot-notation
-    const filterSessions = GroupMonitorService['filterSessions'];
+    const filterSessions = TestSessionManager['filterSessions'];
 
     it('should filter the sessions array by various filters', () => {
       const sessionsSet = [...unitTestExampleSessions];
@@ -245,7 +247,7 @@ describe('GroupMonitorService', () => {
       };
       const sessions = [...unitTestExampleSessions, ...additionalUnitTestExampleSessions];
       // eslint-disable-next-line @typescript-eslint/dot-notation
-      const result = GroupMonitorService['groupForGoto'](sessions, selection);
+      const result = TestSessionManager['groupForGoto'](sessions, selection);
       expect(result).toEqual({
         example_booklet_1: { testIds: [1, 33], firstUnitId: 'unit-3' },
         example_booklet_3: { testIds: [34], firstUnitId: 'unit-1' }

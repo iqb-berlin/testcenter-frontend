@@ -2,25 +2,25 @@
   overflow-x: hidden;
 }
 
-.test-view-table {
+.test-session-table {
   border-collapse: collapse;
   display: table;
   width: 100%;
 }
 
-.test-view-table thead tr td {
+.test-session-table thead tr td {
   position: sticky;
   top: 0;
   z-index: 2;
   background: rgba(255, 255, 255, 0.8);
 }
 
-.test-view-table td {
+.test-session-table td {
   padding-top: 15px;
   margin-right: 1em;
 }
 
-.test-view-table td[mat-sort-header="_checked"] {
+.test-session-table td[mat-sort-header="_checked"] {
   padding-left: 5px;
 }
 

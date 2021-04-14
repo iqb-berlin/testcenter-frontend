@@ -22,14 +22,14 @@ import {
   TestSessionData, TestSessionSetStats
 } from './group-monitor.interfaces';
 import { BackendService } from './backend.service';
-import { TestViewComponent } from './test-view/test-view.component';
-import { GroupMonitorService } from './group-monitor.service';
+import { TestSessionComponent } from './test-session/test-session.component';
+import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import {
   unitTestSessionsStats,
   unitTestCheckedStats,
   unitTestExampleSessions,
   unitTestCommandResponse
-} from './test-data.spec';
+} from './unit-test-example-data.spec';
 import { AlertModule } from '../shared/alert/alert.module';
 
 class MockMatDialog {
@@ -55,7 +55,7 @@ class MockBackendService {
   cutConnection(): void {}
 }
 
-class MockGroupMonitorService {
+class MockTestSessionManagerService {
   checkingOptions: CheckingOptions = {
     enableAutoCheckAll: false,
     autoCheckAll: true
@@ -89,7 +89,7 @@ describe('GroupMonitorComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GroupMonitorComponent,
-        TestViewComponent,
+        TestSessionComponent,
         CustomtextPipe
       ],
       imports: [
@@ -107,7 +107,7 @@ describe('GroupMonitorComponent', () => {
         AlertModule
       ],
       providers: [
-        { provide: GroupMonitorService, useValue: new MockGroupMonitorService() },
+        { provide: TestSessionManager, useValue: new MockTestSessionManagerService() },
         { provide: MatDialog, useValue: new MockMatDialog() },
         { provide: BackendService, useValue: new MockBackendService() }
       ]

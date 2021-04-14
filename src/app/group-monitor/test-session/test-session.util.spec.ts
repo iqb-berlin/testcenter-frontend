@@ -1,26 +1,9 @@
 /* eslint-disable object-curly-newline */
-import { TestBed } from '@angular/core/testing';
-import { TestSessionService } from './test-session.service';
-import { unitTestExampleBooklets } from './test-data.spec';
-import { Testlet, UnitContext } from './group-monitor.interfaces';
+import { TestSessionUtil } from './test-session.util';
+import { unitTestExampleBooklets } from '../unit-test-example-data.spec';
+import { Testlet, UnitContext } from '../group-monitor.interfaces';
 
-describe('TestSessionService', () => {
-  let service: TestSessionService;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [
-        TestSessionService
-      ]
-    });
-    service = TestBed.inject(TestSessionService);
-  });
-
-  it('should be created', () => {
-    expect(service)
-      .toBeTruthy();
-  });
-
+describe('TestSessionUtil', () => {
   describe('getCurrent()', () => {
     it('should find correct indices for unit, parent and ancestor ( = top-level-testlet or root)', () => {
       const fakeTestlet = (id: string): Testlet => ({
@@ -104,7 +87,7 @@ describe('TestSessionService', () => {
 
       for (let i = 1; i < 11; i++) {
         // eslint-disable-next-line @typescript-eslint/dot-notation
-        const result = TestSessionService['getCurrent'](unitTestExampleBooklets.example_booklet_1.units, `unit-${i}`);
+        const result = TestSessionUtil['getCurrent'](unitTestExampleBooklets.example_booklet_1.units, `unit-${i}`);
         const expectation = expectations[`unit-${i}`];
         expect(result.indexGlobal)
           .withContext(`global index of unit-${i}`)
@@ -129,7 +112,7 @@ describe('TestSessionService', () => {
 
     it('should find return a unitContext without unit for not existing id', () => {
       // eslint-disable-next-line @typescript-eslint/dot-notation
-      const result = TestSessionService['getCurrent'](unitTestExampleBooklets.example_booklet_1.units, 'not-existing');
+      const result = TestSessionUtil['getCurrent'](unitTestExampleBooklets.example_booklet_1.units, 'not-existing');
       expect(result.unit).toBeNull();
     });
   });
@@ -141,15 +124,15 @@ describe('TestSessionService', () => {
         second_key: 'second_value'
       };
 
-      let result = TestSessionService.stateString(stateObject, ['first_key'], '|');
+      let result = TestSessionUtil.stateString(stateObject, ['first_key'], '|');
       let expectation = 'first_value';
       expect(result).withContext('one existing value').toEqual(expectation);
 
-      result = TestSessionService.stateString(stateObject, ['first_key', 'second_key'], '|');
+      result = TestSessionUtil.stateString(stateObject, ['first_key', 'second_key'], '|');
       expectation = 'first_value|second_value';
       expect(result).withContext('two existing values').toEqual(expectation);
 
-      result = TestSessionService.stateString(stateObject, ['first_key', 'second_key', 'not_existing'], '|');
+      result = TestSessionUtil.stateString(stateObject, ['first_key', 'second_key', 'not_existing'], '|');
       expectation = 'first_value|second_value';
       expect(result).withContext('two existing values and one not existing').toEqual(expectation);
     });
@@ -162,29 +145,17 @@ describe('TestSessionService', () => {
         second_key: null
       };
 
-      let result = TestSessionService.hasState(stateObject, 'first_key', 'first_value');
+      let result = TestSessionUtil.hasState(stateObject, 'first_key', 'first_value');
       expect(result).withContext('key exists and has value').toBeTrue();
 
-      result = TestSessionService.hasState(stateObject, 'first_key', 'something_else');
+      result = TestSessionUtil.hasState(stateObject, 'first_key', 'something_else');
       expect(result).withContext('key exists and not has value').toBeFalse();
 
-      result = TestSessionService.hasState(stateObject, 'first_key');
+      result = TestSessionUtil.hasState(stateObject, 'first_key');
       expect(result).withContext('key exists').toBeTrue();
 
-      result = TestSessionService.hasState(stateObject, 'non_existing_key');
+      result = TestSessionUtil.hasState(stateObject, 'non_existing_key');
       expect(result).withContext('key exists not').toBeFalse();
-    });
-  });
-
-  describe('parseJsonState()', () => {
-    xit('should parse an string containing a state-object', () => {
-      // TOOD implement unit-test
-    });
-  });
-
-  describe('getMode()', () => {
-    xit('should transform mode-string into label', () => {
-      // TOOD implement unit-test
     });
   });
 });

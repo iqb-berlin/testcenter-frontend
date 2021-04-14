@@ -6,7 +6,7 @@ import {
   Testlet, Unit, TestViewDisplayOptions,
   isUnit, Selected, TestSession, TestSessionSuperState
 } from '../group-monitor.interfaces';
-import { TestSessionService } from '../test-session.service';
+import { TestSessionUtil } from './test-session.util';
 import { superStates } from './super-states';
 
 interface IconData {
@@ -17,11 +17,11 @@ interface IconData {
 }
 
 @Component({
-  selector: 'tc-test-view',
-  templateUrl: './test-view.component.html',
-  styleUrls: ['./test-view.component.css', './test-view-table.css']
+  selector: 'tc-test-session',
+  templateUrl: './test-session.component.html',
+  styleUrls: ['./test-session.component.css']
 })
-export class TestViewComponent {
+export class TestSessionComponent {
   @Input() testSession: TestSession;
   @Input() displayOptions: TestViewDisplayOptions;
   @Input() marked: Selected;
@@ -34,9 +34,9 @@ export class TestViewComponent {
 
   superStateIcons: { [key in TestSessionSuperState]: IconData } = superStates;
 
-  stateString = TestSessionService.stateString;
+  stateString = TestSessionUtil.stateString;
 
-  hasState = TestSessionService.hasState;
+  hasState = TestSessionUtil.hasState;
 
   getTestletType = (testletOrUnit: Unit|Testlet): 'testlet'|'unit' => (isUnit(testletOrUnit) ? 'unit' : 'testlet');
 

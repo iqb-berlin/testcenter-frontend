@@ -3,13 +3,13 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { MainDataService } from '../maindata.service';
-import { BackendService } from './backend.service';
+import { MainDataService } from '../../maindata.service';
+import { BackendService } from '../backend.service';
 import {
   Booklet, BookletError, BookletMetadata, isUnit, Restrictions, Testlet, Unit
-} from './group-monitor.interfaces';
+} from '../group-monitor.interfaces';
 // eslint-disable-next-line import/extensions
-import { BookletConfig } from '../config/booklet-config';
+import { BookletConfig } from '../../config/booklet-config';
 
 @Injectable()
 export class BookletService {
@@ -18,49 +18,6 @@ export class BookletService {
   constructor(
     private bs: BackendService
   ) { }
-
-  static getFirstUnit(testletOrUnit: Testlet|Unit): Unit|null {
-    while (!isUnit(testletOrUnit)) {
-      if (!testletOrUnit.children.length) {
-        return null;
-      }
-      // eslint-disable-next-line no-param-reassign,prefer-destructuring
-      testletOrUnit = testletOrUnit.children[0];
-    }
-    return testletOrUnit;
-  }
-
-  static getFirstUnitOfBlock(blockId: string, booklet: Booklet): Unit|null {
-    for (let i = 0; i < booklet.units.children.length; i++) {
-      const child = booklet.units.children[i];
-      if (!isUnit(child) && (child.blockId === blockId)) {
-        return BookletService.getFirstUnit(child);
-      }
-    }
-    return null;
-  }
-
-  static getBlockById(blockId: string, booklet: Booklet): Testlet {
-    return <Testlet>booklet.units.children
-      .filter(testletOrUnit => !isUnit(testletOrUnit))
-      .reduce((found: Testlet, block: Testlet) => ((block.blockId === blockId) ? block : found), null);
-  }
-
-  static addBookletStructureInformation(booklet: Booklet): void {
-    booklet.species = BookletService.getBookletSpecies(booklet);
-    booklet.units.children
-      .filter(testletOrUnit => !isUnit(testletOrUnit))
-      .forEach((block: Testlet, index, blocks) => {
-        block.blockId = `block ${index + 1}`;
-        if (index < blocks.length - 1) {
-          block.nextBlockId = `block ${index + 2}`;
-        }
-      });
-  }
-
-  static getBookletSpecies(booklet: Booklet): string {
-    return `species: ${booklet.units.children.filter(testletOrUnit => !isUnit(testletOrUnit)).length}`;
-  }
 
   getBooklet(bookletName = ''): Observable<Booklet|BookletError> {
     if (typeof this.booklets[bookletName] !== 'undefined') {
@@ -101,6 +58,22 @@ export class BookletService {
       // console.warn('Error reading booklet XML:', error);
       return { error: 'xml', species: null };
     }
+  }
+
+  private static addBookletStructureInformation(booklet: Booklet): void {
+    booklet.species = BookletService.getBookletSpecies(booklet);
+    booklet.units.children
+      .filter(testletOrUnit => !isUnit(testletOrUnit))
+      .forEach((block: Testlet, index, blocks) => {
+        block.blockId = `block ${index + 1}`;
+        if (index < blocks.length - 1) {
+          block.nextBlockId = `block ${index + 2}`;
+        }
+      });
+  }
+
+  private static getBookletSpecies(booklet: Booklet): string {
+    return `species: ${booklet.units.children.filter(testletOrUnit => !isUnit(testletOrUnit)).length}`;
   }
 
   private static parseBookletConfig(bookletElement: Element): BookletConfig {

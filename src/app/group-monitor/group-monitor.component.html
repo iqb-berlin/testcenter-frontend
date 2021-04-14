@@ -5,7 +5,7 @@
   </p>
   <span class="fill-remaining-space"></span>
   <p>
-    <mat-chip-list *ngIf="gms.connectionStatus$ | async as connectionStatus">
+    <mat-chip-list *ngIf="connectionStatus$ | async as connectionStatus">
 
       <mat-chip [class]="connectionStatus + ' connection-status'">
         <mat-icon>
@@ -38,7 +38,7 @@
 </mat-menu>
 
 <mat-menu #filters="matMenu">
-  <button mat-menu-item *ngFor="let filterOption of gms.filterOptions; let i = index" (click)="gms.switchFilter(i)">
+  <button mat-menu-item *ngFor="let filterOption of tsm.filterOptions; let i = index" (click)="tsm.switchFilter(i)">
     <mat-icon *ngIf="filterOption.selected">check</mat-icon>
     <span>{{filterOption.label | customtext:filterOption.label | async}}</span>
   </button>
@@ -85,12 +85,12 @@
 
       <h2>{{'Test-Steuerung' | customtext:'gm_controls' | async}}</h2>
 
-      <div class="toolbar-section" *ngIf="gms.sessionsStats$ | async as sessionsStats">
+      <div class="toolbar-section" *ngIf="tsm.sessionsStats$ | async as sessionsStats">
         <mat-slide-toggle
             color="accent"
             (change)="toggleAlwaysCheckAll($event)"
-            [disabled]="!gms.checkingOptions.enableAutoCheckAll"
-            [checked]="gms.checkingOptions.autoCheckAll"
+            [disabled]="!tsm.checkingOptions.enableAutoCheckAll"
+            [checked]="tsm.checkingOptions.autoCheckAll"
             [matTooltip]="(sessionsStats.differentBookletSpecies > 1) ? (
             'Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden.'
               | customtext:'gm_multiple_booklet_species_warning'
@@ -103,7 +103,7 @@
 
       <div class="toolbar-section min-height-section">
         <ng-container *ngIf="displayOptions.manualChecking">
-          <ng-container *ngIf="gms.checkedStats$ | async as checkedStats">
+          <ng-container *ngIf="tsm.checkedStats$ | async as checkedStats">
             <alert
               *ngIf="checkedStats.number; else noCheckedSession"
               level="info"
@@ -125,12 +125,12 @@
       </div>
 
       <div class="toolbar-section">
-        <button mat-raised-button class="control" color="primary" (click)="gms.testCommandResume()">
+        <button mat-raised-button class="control" color="primary" (click)="tsm.testCommandResume()">
           <mat-icon>play_arrow</mat-icon>
           {{'weiter' | customtext:'gm_control_resume' | async}}
         </button>
 
-        <button mat-raised-button class="control" color="primary" (click)="gms.testCommandPause()">
+        <button mat-raised-button class="control" color="primary" (click)="tsm.testCommandPause()">
           <mat-icon>pause</mat-icon>
           {{'pause' | customtext:'gm_control_pause' | async}}
         </button>
@@ -208,13 +208,13 @@
           </button>
         </div>
 
-        <div class="test-view-table-wrapper">
-          <table class="test-view-table" matSort (matSortChange)="setTableSorting($event)">
+        <div class="test-session-table-wrapper">
+          <table class="test-session-table" matSort (matSortChange)="setTableSorting($event)">
             <thead>
               <tr class="mat-sort-container">
                 <td mat-sort-header="_checked" *ngIf="displayOptions.manualChecking">
                   <mat-checkbox
-                    *ngIf="gms.checkedStats$ | async as checkedStats"
+                    *ngIf="tsm.checkedStats$ | async as checkedStats"
                     (click)="$event.stopPropagation()"
                     (change)="toggleCheckAll($event)"
                     [checked]="checkedStats.all"
@@ -245,19 +245,19 @@
               </tr>
             </thead>
 
-            <ng-container *ngFor="let session of gms.sessions$ | async; trackBy: trackSession">
-              <tc-test-view
+            <ng-container *ngFor="let session of tsm.sessions$ | async; trackBy: trackSession">
+              <tc-test-session
                 [testSession]="session"
                 [displayOptions]="displayOptions"
                 [marked]="markedElement"
                 (markedElement$)="markElement($event)"
                 [selected]="selectedElement"
                 (selectedElement$)="selectElement($event)"
-                [checked]="gms.isChecked(session)"
+                [checked]="tsm.isChecked(session)"
                 (checked$)="toggleChecked($event, session)"
                 [ngStyle]="{background: getSessionColor(session)}"
               >
-              </tc-test-view>
+              </tc-test-session>
             </ng-container>
           </table>
         </div>

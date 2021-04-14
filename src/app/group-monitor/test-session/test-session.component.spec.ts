@@ -2,24 +2,24 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { TestViewComponent } from './test-view.component';
+import { TestSessionComponent } from './test-session.component';
 import { TestViewDisplayOptions } from '../group-monitor.interfaces';
-import { unitTestExampleSessions } from '../test-data.spec';
+import { unitTestExampleSessions } from '../unit-test-example-data.spec';
 
 describe('TestViewComponent', () => {
-  let component: TestViewComponent;
-  let fixture: ComponentFixture<TestViewComponent>;
+  let component: TestSessionComponent;
+  let fixture: ComponentFixture<TestSessionComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [TestViewComponent],
+      declarations: [TestSessionComponent],
       imports: [MatIconModule, MatTooltipModule, MatCheckboxModule]
     })
       .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TestViewComponent);
+    fixture = TestBed.createComponent(TestSessionComponent);
     component = fixture.componentInstance;
     component.testSession = unitTestExampleSessions[0];
     component.displayOptions = <TestViewDisplayOptions>{

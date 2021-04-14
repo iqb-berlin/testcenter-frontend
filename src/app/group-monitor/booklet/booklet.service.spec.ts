@@ -3,8 +3,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { BookletService } from './booklet.service';
-import { BackendService } from './backend.service';
-import { unitTestExampleBooklets } from './test-data.spec';
+import { BackendService } from '../backend.service';
 
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this,@typescript-eslint/no-unused-vars
@@ -32,24 +31,6 @@ describe('BookletService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
-  });
-
-  it('getFirstUnit() should get first unit if a testlet, regardless of nested sub-testlets', () => {
-    expect(BookletService.getFirstUnit(unitTestExampleBooklets.example_booklet_1.units).id).toEqual('unit-1');
-    expect(BookletService.getFirstUnit(unitTestExampleBooklets.example_booklet_2.units).id).toEqual('unit-1');
-    expect(BookletService.getFirstUnit(unitTestExampleBooklets.example_booklet_2.units.children[2])).toBeNull();
-  });
-
-  describe('getBlockById()', () => {
-    it('should return the block by id', () => {
-      const result = BookletService.getBlockById('block-2', unitTestExampleBooklets.example_booklet_1);
-      expect(result.id).toEqual('alf');
-    });
-
-    it('should return null when blockId is not found in booklet', () => {
-      const result = BookletService.getBlockById('not-existing', unitTestExampleBooklets.example_booklet_1);
-      expect(result).toBeNull();
-    });
   });
 
   xit('parseBookletXml() should parse a Booklet-Xml to a Booklet-Object', () => {

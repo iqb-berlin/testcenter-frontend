@@ -16,8 +16,9 @@ import {
   TestViewDisplayOptions,
   TestViewDisplayOptionKey, Selected, TestSession, TestSessionSetStats, CommandResponse, UIMessage, isBooklet
 } from './group-monitor.interfaces';
-import { GroupMonitorService } from './group-monitor.service';
-import { BookletService } from './booklet.service';
+import { TestSessionManager } from './test-session-manager/test-session-manager.service';
+import { ConnectionStatus } from '../shared/websocket-backend.service';
+import { BookletUtil } from './booklet/booklet.util';
 
 @Component({
   selector: 'app-group-monitor',
@@ -28,11 +29,13 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private route: ActivatedRoute,
-    private bs: BackendService, // TODO move completely to service
-    public gms: GroupMonitorService,
+    private bs: BackendService,
+    public tsm: TestSessionManager,
     private router: Router,
     private cts: CustomtextService
   ) {}
+
+  connectionStatus$: Observable<ConnectionStatus>;
 
   ownGroup$: Observable<GroupData>;
   private ownGroupName = '';
@@ -65,21 +68,23 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       this.route.params.subscribe(params => {
         this.ownGroup$ = this.bs.getGroupData(params['group-name']);
         this.ownGroupName = params['group-name'];
-        this.gms.connect(params['group-name']);
+        this.tsm.connect(params['group-name']);
       }),
-      this.gms.sessionsStats$.subscribe(stats => {
+      this.tsm.sessionsStats$.subscribe(stats => {
         this.onSessionsUpdate(stats);
       }),
-      this.gms.checkedStats$.subscribe(stats => {
+      this.tsm.checkedStats$.subscribe(stats => {
         this.onCheckedChange(stats);
       }),
-      this.gms.commandResponses$.subscribe(commandResponse => {
+      this.tsm.commandResponses$.subscribe(commandResponse => {
         this.messages.push(this.commandResponseToMessage(commandResponse));
       }),
-      this.gms.commandResponses$
+      this.tsm.commandResponses$
         .pipe(switchMap(() => interval(7000)))
         .subscribe(() => this.messages.shift())
     ];
+
+    this.connectionStatus$ = this.bs.connectionStatus$;
   }
 
   private commandResponseToMessage(commandResponse: CommandResponse): UIMessage {
@@ -102,7 +107,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.gms.disconnect();
+    this.tsm.disconnect();
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
@@ -113,7 +118,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   private onSessionsUpdate(stats: TestSessionSetStats): void {
     this.displayOptions.highlightSpecies = (stats.differentBookletSpecies > 1);
 
-    if (!this.gms.checkingOptions.enableAutoCheckAll) {
+    if (!this.tsm.checkingOptions.enableAutoCheckAll) {
       this.displayOptions.manualChecking = true;
     }
   }
@@ -130,7 +135,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     if (!sort.active || sort.direction === '') {
       return;
     }
-    this.gms.sortBy$.next(sort);
+    this.tsm.sortBy$.next(sort);
   }
 
   setDisplayOption(option: string, value: TestViewDisplayOptions[TestViewDisplayOptionKey]): void {
@@ -180,7 +185,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   selectElement(selected: Selected): void {
-    this.gms.checkSessionsBySelection(selected);
+    this.tsm.checkSessionsBySelection(selected);
     this.selectedElement = selected;
   }
 
@@ -198,7 +203,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
         this.isClosing = true;
-        this.gms.commandFinishEverything()
+        this.tsm.commandFinishEverything()
           .subscribe(() => {
             setTimeout(() => { this.router.navigateByUrl('/r/login'); }, 5000); // go away
           });
@@ -214,7 +219,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
         text: 'Kein Zielblock ausgewählt'
       });
     } else {
-      this.gms.testCommandGoto(this.selectedElement)
+      this.tsm.testCommandGoto(this.selectedElement)
         .subscribe(() => this.selectNextBlock());
     }
   }
@@ -225,7 +230,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     }
     this.selectedElement = {
       element: this.selectedElement.element.nextBlockId ?
-        BookletService.getBlockById(
+        BookletUtil.getBlockById(
           this.selectedElement.element.nextBlockId,
           this.selectedElement.originSession.booklet
         ) : null,
@@ -236,40 +241,40 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   unlockCommand(): void {
-    this.gms.testCommandUnlock();
+    this.tsm.testCommandUnlock();
   }
 
   toggleChecked(checked: boolean, session: TestSession): void {
-    if (!this.gms.isChecked(session)) {
-      this.gms.checkSession(session);
+    if (!this.tsm.isChecked(session)) {
+      this.tsm.checkSession(session);
     } else {
-      this.gms.uncheckSession(session);
+      this.tsm.uncheckSession(session);
     }
   }
 
   invertChecked(event: Event): boolean {
     event.preventDefault();
-    this.gms.invertChecked();
+    this.tsm.invertChecked();
     return false;
   }
 
   toggleAlwaysCheckAll(event: MatSlideToggleChange): void {
-    if (this.gms.checkingOptions.enableAutoCheckAll && event.checked) {
-      this.gms.checkAll();
+    if (this.tsm.checkingOptions.enableAutoCheckAll && event.checked) {
+      this.tsm.checkAll();
       this.displayOptions.manualChecking = false;
-      this.gms.checkingOptions.autoCheckAll = true;
+      this.tsm.checkingOptions.autoCheckAll = true;
     } else {
-      this.gms.checkNone();
+      this.tsm.checkNone();
       this.displayOptions.manualChecking = true;
-      this.gms.checkingOptions.autoCheckAll = false;
+      this.tsm.checkingOptions.autoCheckAll = false;
     }
   }
 
   toggleCheckAll(event: MatCheckboxChange): void {
     if (event.checked) {
-      this.gms.checkAll();
+      this.tsm.checkAll();
     } else {
-      this.gms.checkNone();
+      this.tsm.checkNone();
     }
   }
 }

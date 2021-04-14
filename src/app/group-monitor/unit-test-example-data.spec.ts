@@ -1,7 +1,7 @@
 import {
   Booklet, CommandResponse, TestSession, TestSessionData, TestSessionSetStats
 } from './group-monitor.interfaces';
-import { TestSessionService } from './test-session.service';
+import { TestSessionUtil } from './test-session/test-session.util';
 
 // labels are: {global index}-{ancestor index}-{local index}
 export const unitTestExampleBooklets: { [name: string]: Booklet } = {
@@ -211,7 +211,7 @@ export const unitTestExampleSessions: TestSession[] = [
     timestamp: 10000000
   }
 ]
-  .map(session => TestSessionService.analyzeTestSession(
+  .map(session => TestSessionUtil.analyzeTestSession(
     session, unitTestExampleBooklets[session.bookletName] || { error: 'missing-file', species: null }
   ));
 
@@ -249,7 +249,7 @@ export const additionalUnitTestExampleSessions: TestSession[] = [
     timestamp: 10000340
   }
 ]
-  .map(session => TestSessionService.analyzeTestSession(
+  .map(session => TestSessionUtil.analyzeTestSession(
     session, unitTestExampleBooklets[session.bookletName] || { error: 'missing-file', species: null }
   ));
 

@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import {
   Booklet,
   BookletError, isBooklet,
@@ -8,37 +7,36 @@ import {
   TestSessionData,
   TestSessionSuperState,
   UnitContext
-} from './group-monitor.interfaces';
+} from '../group-monitor.interfaces';
 
-@Injectable()
-export class TestSessionService {
+export class TestSessionUtil {
   static hasState(state: Record<string, unknown>, key: string, value = null): boolean {
     return ((typeof state[key] !== 'undefined') && ((value !== null) ? (state[key] === value) : true));
   }
 
   static isPaused(session: TestSession): boolean {
-    return TestSessionService.hasState(session.data.testState, 'CONTROLLER', 'PAUSED');
+    return TestSessionUtil.hasState(session.data.testState, 'CONTROLLER', 'PAUSED');
   }
 
   static isLocked(session: TestSession): boolean {
-    return TestSessionService.hasState(session.data.testState, 'status', 'locked');
+    return TestSessionUtil.hasState(session.data.testState, 'status', 'locked');
   }
 
   static analyzeTestSession(session: TestSessionData, booklet: Booklet | BookletError): TestSession {
-    const current = isBooklet(booklet) ? TestSessionService.getCurrent(booklet.units, session.unitName) : null;
+    const current = isBooklet(booklet) ? TestSessionUtil.getCurrent(booklet.units, session.unitName) : null;
     return {
       data: session,
-      state: TestSessionService.getSuperState(session),
+      state: TestSessionUtil.getSuperState(session),
       current: current && current.unit ? current : null,
       booklet,
-      timeLeft: TestSessionService.parseJsonState(session.testState, 'TESTLETS_TIMELEFT'),
-      clearedCodes: TestSessionService.parseJsonState(session.testState, 'TESTLETS_CLEARED_CODE')
+      timeLeft: TestSessionUtil.parseJsonState(session.testState, 'TESTLETS_TIMELEFT'),
+      clearedCodes: TestSessionUtil.parseJsonState(session.testState, 'TESTLETS_CLEARED_CODE')
     };
   }
 
   static stateString(state: Record<string, string>, keys: string[], glue = ''): string {
     return keys
-      .map((key: string) => (TestSessionService.hasState(state, key) ? state[key] : null))
+      .map((key: string) => (TestSessionUtil.hasState(state, key) ? state[key] : null))
       .filter((value: string) => value !== null)
       .join(glue);
   }
@@ -67,7 +65,7 @@ export class TestSessionService {
     if (this.hasState(state, 'FOCUS', 'HAS_NOT')) {
       return 'focus_lost';
     }
-    if (TestSessionService.idleSinceMinutes(session) > 5) {
+    if (TestSessionUtil.idleSinceMinutes(session) > 5) {
       return 'idle';
     }
     if (this.hasState(state, 'CONNECTION', 'WEBSOCKET')) {
@@ -121,7 +119,7 @@ export class TestSessionService {
           return result;
         }
       } else {
-        const subResult = TestSessionService.getCurrent(child, searchUnitId, level + 1, {
+        const subResult = TestSessionUtil.getCurrent(child, searchUnitId, level + 1, {
           unit: null,
           parent: child,
           ancestor: level < 1 ? child : result.ancestor,
