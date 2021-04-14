@@ -246,19 +246,6 @@ export class GroupMonitorService {
       });
   }
 
-  testCommandResume(): void {
-    const testIds = this.checked
-      .filter(TestSessionService.isPaused)
-      .map(session => session.data.testId);
-    if (!testIds.length) {
-      this._commandResponses$.next({ commandType: 'resume', testIds });
-      return;
-    }
-    this.bs.command('resume', [], testIds).subscribe(
-      response => this._commandResponses$.next(response)
-    );
-  }
-
   testCommandPause(): void {
     const testIds = this.checked
       .filter(session => !TestSessionService.isPaused(session))
@@ -268,6 +255,18 @@ export class GroupMonitorService {
       return;
     }
     this.bs.command('pause', [], testIds).subscribe(
+      response => this._commandResponses$.next(response)
+    );
+  }
+
+  testCommandResume(): void {
+    const testIds = this.checked
+      .map(session => session.data.testId);
+    if (!testIds.length) {
+      this._commandResponses$.next({ commandType: 'resume', testIds });
+      return;
+    }
+    this.bs.command('resume', [], testIds).subscribe(
       response => this._commandResponses$.next(response)
     );
   }
