@@ -129,7 +129,7 @@ export class AppComponent implements OnInit, OnDestroy {
             label: 'Server- und Client-Uhr stimmen nicht überein.',
             description: `Server-Zeit: ${AppComponent.localTime(serverTime)}, 
             Client-Zeit: ${AppComponent.localTime(clientTime)}`,
-            category: 'FATAL'
+            category: 'WARNING'
           });
         }
         this.mds.setTestConfig(sysConfig.testConfig);
