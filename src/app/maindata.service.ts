@@ -16,23 +16,23 @@ const localStorageTestConfigKey = 'iqb-tc-c';
 })
 
 export class MainDataService {
-  public appError$ = new Subject<AppError>();
-  public errorReportingSilent = false;
-  public isSpinnerOn$ = new BehaviorSubject<boolean>(false);
-  public progressVisualEnabled = true;
-  public isApiValid = true;
-  public apiVersion: string;
-  public broadcastingServiceInfo: BroadCastingServiceInfo = { status: 'none' };
-  public appConfig: AppConfig = null;
-  public sysCheckAvailable = false;
+  appError$ = new Subject<AppError>();
+  errorReportingSilent = false;
+  isSpinnerOn$ = new BehaviorSubject<boolean>(false);
+  progressVisualEnabled = true;
+  isApiValid = true;
+  apiVersion: string;
+  broadcastingServiceInfo: BroadCastingServiceInfo = { status: 'none' };
+  appConfig: AppConfig = null;
+  sysCheckAvailable = false;
 
-  public defaultTcHeaderHeight = document.documentElement.style.getPropertyValue('--tc-header-height');
-  public defaultTcUnitTitleHeight = document.documentElement.style.getPropertyValue('--tc-unit-title-height');
-  public defaultTcUnitPageNavHeight = document.documentElement.style.getPropertyValue('--tc-unit-page-nav-height');
+  defaultTcHeaderHeight = document.documentElement.style.getPropertyValue('--tc-header-height');
+  defaultTcUnitTitleHeight = document.documentElement.style.getPropertyValue('--tc-unit-title-height');
+  defaultTcUnitPageNavHeight = document.documentElement.style.getPropertyValue('--tc-unit-page-nav-height');
 
   // set by app.component.ts
-  public postMessage$ = new Subject<MessageEvent>();
-  public appWindowHasFocus$ = new Subject<boolean>();
+  postMessage$ = new Subject<MessageEvent>();
+  appWindowHasFocus$ = new Subject<boolean>();
 
   static getAuthData(): AuthData {
     let myReturn: AuthData = null;
