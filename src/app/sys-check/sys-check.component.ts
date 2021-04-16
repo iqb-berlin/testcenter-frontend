@@ -33,7 +33,7 @@ export class SysCheckComponent implements OnInit {
           if (checkConfig) {
             this.checkLabel = checkConfig.label;
             if (checkConfig.customTexts.length > 0) {
-              const myCustomTexts: {[key: string]: string} = {};
+              const myCustomTexts: { [key: string]: string } = {};
               checkConfig.customTexts.forEach(ct => {
                 myCustomTexts[ct.key] = ct.value;
               });
@@ -43,7 +43,7 @@ export class SysCheckComponent implements OnInit {
               this.bs.getUnitAndPlayer(this.ds.checkConfig.workspaceId, this.ds.checkConfig.name)
                 .subscribe((unitAndPlayer: UnitAndPlayerContainer | boolean) => {
                   if (unitAndPlayer !== false && (unitAndPlayer as UnitAndPlayerContainer).player.length > 0) {
-                    this.ds.unitAndPlayerContainer = unitAndPlayer as UnitAndPlayerContainer
+                    this.ds.unitAndPlayerContainer = unitAndPlayer as UnitAndPlayerContainer;
                   } else {
                     console.error('Konnte Unit-Player nicht laden');
                     this.ds.checkConfig.hasUnit = false;
