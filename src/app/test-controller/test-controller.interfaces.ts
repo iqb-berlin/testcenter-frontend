@@ -46,12 +46,12 @@ export interface TestData {
 }
 
 export enum TestStateKey {
-    CURRENT_UNIT_ID = 'CURRENT_UNIT_ID',
-    TESTLETS_TIMELEFT = 'TESTLETS_TIMELEFT',
-    TESTLETS_CLEARED_CODE = 'TESTLETS_CLEARED_CODE',
-    FOCUS = 'FOCUS',
-    CONTROLLER = 'CONTROLLER',
-    CONNECTION = 'CONNECTION'
+  CURRENT_UNIT_ID = 'CURRENT_UNIT_ID',
+  TESTLETS_TIMELEFT = 'TESTLETS_TIMELEFT',
+  TESTLETS_CLEARED_CODE = 'TESTLETS_CLEARED_CODE',
+  FOCUS = 'FOCUS',
+  CONTROLLER = 'CONTROLLER',
+  CONNECTION = 'CONNECTION'
 }
 
 /**
@@ -59,13 +59,13 @@ export enum TestStateKey {
  * In what state is the whole controller?
  */
 export enum TestControllerState {
-    INIT = 'INIT',
-    LOADING = 'LOADING',
-    RUNNING = 'RUNNING',
-    TERMINATED = 'TERMINATED',
-    FINISHED = 'FINISHED',
-    PAUSED = 'PAUSED',
-    ERROR = 'ERROR'
+  INIT = 'INIT',
+  LOADING = 'LOADING',
+  RUNNING = 'RUNNING',
+  TERMINATED = 'TERMINATED',
+  FINISHED = 'FINISHED',
+  PAUSED = 'PAUSED',
+  ERROR = 'ERROR'
 }
 
 /**
@@ -81,11 +81,11 @@ export enum AppFocusState {
 /**
  * TestState.CONNECTION
  * What kind of connection to the server do we have to receive possible commands from a group-monitor?
- * This can get a third special-value called DEAD, which is set *by the backend* on connection loss.
+ * This can get a third special-value called LOST, which is set *by the backend* on connection loss.
  */
 export enum TestStateConnectionValue {
-    WEBSOCKET = 'WEBSOCKET',
-    POLLING = 'POLLING'
+  WEBSOCKET = 'WEBSOCKET',
+  POLLING = 'POLLING'
 }
 
 export enum TestLogEntryKey {
