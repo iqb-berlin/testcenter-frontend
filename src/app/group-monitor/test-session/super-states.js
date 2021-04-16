@@ -16,7 +16,7 @@ exports.superStates = {
     class: 'danger',
     description: 'An error has occurred a the participants computer. Probably a network error or the like, ' +
       'but can also indicate bugs and should be investigated if possible. The participant should reload ' +
-      'his browser and try if the problem still exists.'
+      'his browser and get support if the problem still exists.'
   },
   controller_terminated: {
     tooltip: 'Testausführung wurde beendet und kann wieder aufgenommen werden. ' +
@@ -46,7 +46,9 @@ exports.superStates = {
   idle: {
     tooltip: 'Test ist 5 Minuten oder länger inaktiv!',
     icon: 'hourglass_full',
-    description: 'The participant was idle for five minutes or longer.'
+    description: 'The participant was idle for five minutes or longer. This state can only be displayed on polling ' +
+      'mode and is intended to be a fallback for the case that the participant\'s browser or computer was shut down ' +
+      'and not able to report the lost connection. It\' s not appropriate to measure testees behaviour.'
   },
   connection_websocket: {
     tooltip: 'Test läuft, Verbindung ist live',
@@ -67,8 +69,8 @@ exports.superStates = {
     tooltip: 'Test läuft',
     icon: 'play_circle_filled',
     description: 'Test seems to run but the connection type is unknown. This is is more or less a fallback state ' +
-      'which indicates, that we know nothing about the test except for it\'s existence. This could be the case in ' +
-      'various error-scenarios or misconfigurations, and should normally not be the case. It should be investigated,' +
-      'but most likely the test can be continued anyway since the error is more likely on the monitor\'s side.'
+      'which indicates, that nothing is known about the test except for it\'s existence. This could be the case in ' +
+      'various error-scenarios or misconfigurations but should not happen in general. It should be investigated, ' +
+      'but most likely the test can be continued safely since the error is more likely on the monitor\'s side.'
   }
 };
