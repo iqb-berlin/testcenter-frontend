@@ -12,10 +12,10 @@ import {
 })
 export class SysCheckDataService {
   private steps: string[] = [];
-  public stepLabels: string[] = [];
+  stepLabels: string[] = [];
   private currentStep = 0;
-  public nextStep = '';
-  public prevStep = '';
+  nextStep = '';
+  prevStep = '';
   private stepDefs: StepDef[] = [
     {
       route: 'w',
@@ -39,20 +39,22 @@ export class SysCheckDataService {
     }
   ];
 
-  public checkConfig: CheckConfig = null;
-  public loadConfigComplete = false;
-  public unitAndPlayerContainer: UnitAndPlayerContainer = null;
-  public environmentReport: ReportEntry[] = [];
-  public networkReport: ReportEntry[] = [];
-  public questionnaireReport: ReportEntry[] = [];
-  public networkCheckStatus: NetworkCheckStatus = {
+  checkConfig: CheckConfig = null;
+  loadConfigComplete = false;
+  unitAndPlayerContainer: UnitAndPlayerContainer = null;
+  environmentReport: ReportEntry[] = [];
+  networkReport: ReportEntry[] = [];
+  questionnaireReport: ReportEntry[] = [];
+  networkCheckStatus: NetworkCheckStatus = {
     done: true,
     message: 'Messung noch nicht gestartet',
     avgUploadSpeedBytesPerSecond: -1,
     avgDownloadSpeedBytesPerSecond: -1
   };
 
-  public setSteps(): void {
+  timeCheckDone = false;
+
+  setSteps(): void {
     this.steps = [];
     this.stepLabels = [];
     this.stepDefs.forEach(step => {
@@ -69,7 +71,7 @@ export class SysCheckDataService {
     });
   }
 
-  public setNewCurrentStep(newStep: string): void {
+  setNewCurrentStep(newStep: string): void {
     for (let stepIndex = 0; stepIndex < this.steps.length; stepIndex++) {
       if (this.steps[stepIndex] === newStep) {
         this.currentStep = stepIndex;

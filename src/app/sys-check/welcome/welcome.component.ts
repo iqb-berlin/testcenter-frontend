@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { SysCheckDataService } from '../sys-check-data.service';
 import { ReportEntry } from '../sys-check.interfaces';
+import { BackendService } from '../backend.service';
 
 @Component({
   styleUrls: ['../sys-check.component.css'],
@@ -25,27 +28,31 @@ export class WelcomeComponent implements OnInit {
   };
 
   constructor(
-    public ds: SysCheckDataService
+    public ds: SysCheckDataService,
+    private bs: BackendService
   ) { }
 
   ngOnInit(): void {
     setTimeout(() => {
       this.ds.setNewCurrentStep('w');
-      this.getBrowser(); // fallback if UAParser does not work
-      this.setOS(); // fallback if UAParser does not work
-      this.setScreenData();
+      this.getBrowserFromUserAgent(); // fallback if UAParser does not work
+      this.getOSFromUserAgent(); // fallback if UAParser does not work
+      this.getScreenData();
       this.getFromUAParser();
-      this.setNavigatorInfo();
-      this.setBrowserPluginInfo();
-      this.rateBrowser();
-
-      const report = Array.from(this.report.values())
-        .sort((item1: ReportEntry, item2: ReportEntry) => (item1.label > item2.label ? 1 : -1));
-      this.ds.environmentReport = Object.values(report);
+      this.getNavigatorInfo();
+      this.getBrowserPluginInfo();
+      this.getBrowserRating();
+      this.getTime()
+        .subscribe(() => {
+          const report = Array.from(this.report.values())
+            .sort((item1: ReportEntry, item2: ReportEntry) => (item1.label > item2.label ? 1 : -1));
+          this.ds.environmentReport = Object.values(report);
+          this.ds.timeCheckDone = true;
+        });
     });
   }
 
-  private getBrowser() {
+  private getBrowserFromUserAgent() {
     const userAgent = window.navigator.userAgent;
     // eslint-disable-next-line max-len
     const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/;
@@ -99,7 +106,7 @@ export class WelcomeComponent implements OnInit {
     });
   }
 
-  private rateBrowser() {
+  private getBrowserRating() {
     const browser = this.report.get('Browser').value;
     const browserVersion = this.report.get('Browser-Version').value;
     if ((typeof this.rating.browser[browser] !== 'undefined') && (browserVersion < this.rating.browser[browser])) {
@@ -110,7 +117,7 @@ export class WelcomeComponent implements OnInit {
     }
   }
 
-  private setNavigatorInfo() {
+  private getNavigatorInfo() {
     [
       ['hardwareConcurrency', 'CPU-Kerne'],
       ['cookieEnabled', 'Browser-Cookies aktiviert'],
@@ -128,7 +135,7 @@ export class WelcomeComponent implements OnInit {
     });
   }
 
-  private setBrowserPluginInfo() {
+  private getBrowserPluginInfo() {
     if ((typeof navigator.plugins === 'undefined') || (!navigator.plugins.length)) {
       return;
     }
@@ -145,7 +152,7 @@ export class WelcomeComponent implements OnInit {
     });
   }
 
-  private setOS() {
+  private getOSFromUserAgent() {
     const userAgent = window.navigator.userAgent;
     let osName;
     if (userAgent.indexOf('Windows') !== -1) {
@@ -180,7 +187,7 @@ export class WelcomeComponent implements OnInit {
     });
   }
 
-  private setScreenData() {
+  private getScreenData() {
     const isLargeEnough = (window.screen.width >= this.rating.screen.width) &&
       (window.screen.height >= this.rating.screen.height);
     this.report.set('Bildschirm-Auflösung', {
@@ -199,5 +206,31 @@ export class WelcomeComponent implements OnInit {
       value: `${windowWidth} x ${windowHeight}`,
       warning: false
     });
+  }
+
+  private getTime(): Observable<true> {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const clientTime = new Date().getTime();
+    return this.bs.getServerTime()
+      .pipe(
+        map(serverTime => {
+          const timeDifferenceSeconds = Math.round((clientTime - serverTime.timestamp) / 1000);
+          this.report.set('Zeitabweichung', {
+            id: 'time-difference',
+            type: 'environment',
+            label: 'Zeitabweichung',
+            value: timeDifferenceSeconds.toString(10),
+            warning: timeDifferenceSeconds >= 60
+          });
+          this.report.set('Zeitzone', {
+            id: 'time-zone',
+            type: 'environment',
+            label: 'Zeitzone',
+            value: timeZone,
+            warning: timeZone !== serverTime.timezone
+          });
+          return true;
+        })
+      );
   }
 }

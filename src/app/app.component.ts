@@ -58,16 +58,6 @@ export class AppComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  private static localTime(date: Date): string {
-    const year = date.getFullYear();
-    const month = (`0${date.getMonth() + 1}`).slice(-2);
-    const day = (`0${date.getDate()}`).slice(-2);
-    const hours = (`0${date.getHours()}`).slice(-2);
-    const minutes = (`0${date.getMinutes()}`).slice(-2);
-    const seconds = (`0${date.getSeconds()}`).slice(-2);
-    return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
-  }
-
   closeErrorBox(): void {
     this.showError = false;
   }
@@ -122,16 +112,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
         // TODO implement SysConfig.mainLogo
 
-        const clientTime = new Date();
-        const serverTime = new Date(sysConfig.serverTimestamp);
-        if (Math.abs(sysConfig.serverTimestamp - clientTime.getTime()) > 90000) {
-          this.mds.appError$.next({
-            label: 'Server- und Client-Uhr stimmen nicht überein.',
-            description: `Server-Zeit: ${AppComponent.localTime(serverTime)}, 
-            Client-Zeit: ${AppComponent.localTime(clientTime)}`,
-            category: 'WARNING'
-          });
-        }
         this.mds.setTestConfig(sysConfig.testConfig);
       });
 

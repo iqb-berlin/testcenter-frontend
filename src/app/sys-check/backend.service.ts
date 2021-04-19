@@ -6,7 +6,7 @@ import {
   CheckConfig,
   NetworkRequestTestResult,
   UnitAndPlayerContainer,
-  SysCheckReport
+  SysCheckReport, ServerTime
 } from './sys-check.interfaces';
 import { ApiError } from '../app.interfaces';
 
@@ -54,6 +54,17 @@ export class BackendService {
         catchError((err: ApiError) => {
           console.warn(`getUnitAndPlayer Api-Error: ${err.code} ${err.info} `);
           return of(false);
+        })
+      );
+  }
+
+  getServerTime(): Observable<ServerTime> {
+    return this.http
+      .get<ServerTime>(`${this.serverUrl}system/time`)
+      .pipe(
+        catchError((err: ApiError) => {
+          console.warn(`Could not get Time from Server: ${err.code} ${err.info} `);
+          return of(null);
         })
       );
   }
