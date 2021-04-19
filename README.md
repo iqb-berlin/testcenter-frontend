@@ -22,6 +22,11 @@ The repository for a complete setup of the application can be found [here](https
 All the necessary commands for running the application and starting the tests
 can be found in the Makefile on the root directory.
 
+###### Prepare config
+```
+make init-dev-mock-config
+```
+
 ###### Start and Stop the server
 ```
 make run
