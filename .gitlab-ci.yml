@@ -25,6 +25,7 @@ build:
   stage: build
   script:
     - apk add make docker-compose
+    - make init-dev-mock-config
     - make build
     - docker save docker_testcenter-frontend-dev > frontend_image.tar
   artifacts:
