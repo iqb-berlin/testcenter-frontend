@@ -1,6 +1,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitLab CI Status](https://scm.cms.hu-berlin.de/iqb/verona-player-simple/badges/main/pipeline.svg)](https://scm.cms.hu-berlin.de/iqb/verona-player-simple)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/iqb-berlin/verona-player-simple)
+[![GitLab CI Status](https://scm.cms.hu-berlin.de/iqb/testcenter-frontend/badges/main/pipeline.svg)](https://scm.cms.hu-berlin.de/iqb/testcenter-frontend)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/iqb-berlin/testcenter-frontend)
 
 # Testcenter Frontend
 
@@ -21,6 +21,11 @@ The repository for a complete setup of the application can be found [here](https
 
 All the necessary commands for running the application and starting the tests
 can be found in the Makefile on the root directory.
+
+###### Prepare config
+```
+make init-dev-mock-config
+```
 
 ###### Start and Stop the server
 ```

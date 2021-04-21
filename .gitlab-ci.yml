@@ -25,6 +25,7 @@ build:
   stage: build
   script:
     - apk add make docker-compose
+    - make init-dev-mock-config
     - make build
     - docker save docker_testcenter-frontend-dev > frontend_image.tar
   artifacts:
@@ -35,6 +36,7 @@ test-unit:
   stage: test
   script:
     - apk add make docker-compose
+    - make init-dev-mock-config
     - docker load -i frontend_image.tar
     - make run-detached
     - make test-unit
@@ -43,6 +45,7 @@ test-e2e:
   stage: test
   script:
     - apk add make docker-compose
+    - make init-dev-mock-config
     - docker load -i frontend_image.tar
     - make run-detached
     - make test-e2e
