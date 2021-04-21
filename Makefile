@@ -17,7 +17,7 @@ test-unit:
 	docker-compose -f docker/docker-compose.yml exec -T testcenter-frontend-dev ng test --watch=false
 
 test-e2e:
-	docker-compose -f docker/docker-compose.yml exec -T testcenter-frontend-dev ng e2e --webdriver-update=false --port 4202
+	docker-compose -f docker/docker-compose.yml exec -T testcenter-frontend-dev ng e2e --webdriver-update=false --port 4202 -c e2e
 
 init-dev-mock-config:
 	cp src/environments/environment.dev.mock.ts src/environments/environment.ts
