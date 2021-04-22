@@ -64,6 +64,7 @@ license_scanning:
 deploy-docker-image:
   stage: deploy
   script:
+    - apk add make
     - make init-dev-config
     - docker build --target prod -t iqbberlin/testcenter-frontend:latest -f docker/Dockerfile .
     - docker save iqbberlin/testcenter-frontend:latest > frontend_latest.tar
