@@ -24,7 +24,7 @@ can be found in the Makefile on the root directory.
 
 ###### Prepare config
 ```
-make init-dev-mock-config
+make init-dev-config
 ```
 
 ###### Start and Stop the server
