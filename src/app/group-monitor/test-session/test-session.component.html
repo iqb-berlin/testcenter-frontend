@@ -26,13 +26,16 @@
   </div>
 </td>
 
-<td class="booklet"
-    *ngIf="displayOptions.bookletColumn === 'show'"
-    (click)="deselect($event)"
-    (contextmenu)="deselectForce($event)"
+<td
+  class="booklet"
+  *ngIf="displayOptions.bookletColumn === 'show'"
+  (click)="deselect($event)"
+  (contextmenu)="deselectForce($event)"
 >
   <ng-container *ngIf="!testSession.booklet.error; else: noBooklet">
-    <div class="vertical-align-middle">{{testSession.booklet.metadata.label}}</div>
+    <div class="vertical-align-middle" [matTooltip]="testSession.booklet.metadata.label">
+      {{testSession.booklet.metadata.label}}
+    </div>
   </ng-container>
   <ng-template #noBooklet>
     <div class="vertical-align-middle">{{testSession.data.bookletName}}</div>
