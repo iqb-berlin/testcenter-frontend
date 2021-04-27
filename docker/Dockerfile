@@ -19,7 +19,7 @@ RUN npx webdriver-manager update --versions.chrome=`google-chrome --product-vers
 
 COPY . /app
 
-RUN ng build --prod
+RUN ng build --prod=true --output-path=dist
 
 EXPOSE 4200
 
