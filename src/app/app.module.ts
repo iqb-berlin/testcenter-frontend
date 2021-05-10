@@ -37,6 +37,7 @@ import { StatusCardComponent } from './app-root/status-card/status-card.componen
 import { TestStarterComponent } from './app-root/test-starter/test-starter.component';
 import { MonitorStarterComponent } from './app-root/monitor-starter/monitor-starter.component';
 import { PrivacyComponent } from './app-root/privacy/privacy.component';
+import { AlertModule } from './shared/alert/alert.module';
 
 @NgModule({
   declarations: [
@@ -76,7 +77,8 @@ import { PrivacyComponent } from './app-root/privacy/privacy.component';
     HttpClientModule,
     RouterModule,
     AppRoutingModule,
-    IqbComponentsModule.forRoot()
+    IqbComponentsModule.forRoot(),
+    AlertModule
   ],
   providers: [
     BackendService,

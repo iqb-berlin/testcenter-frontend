@@ -16,6 +16,7 @@
     </form>
     <p style="color: chocolate"><b>{{ problemText }}</b></p>
     <p style="color: chocolate" *ngIf="!mds.isApiValid"><b>Die Verbindung mit dem Server ist nicht möglich.</b></p>
+    <alert *ngIf="systemAnnouncement !== '-'" level="warning" [text]="systemAnnouncement"></alert>
   </mat-card>
 
   <mat-card fxFlex="0 0 400px" class="mat-card-gray">
