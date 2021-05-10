@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     pw: new FormControl('')
   });
 
-  systemAnnouncement: string;
+  systemAnnouncement: string = '-';
 
   constructor(
     public mds: MainDataService,

@@ -115,7 +115,7 @@ new_version = _increment_version(old_version)
 _update_version_in_file(new_version)
 _run_software()
 try:
-    _run_tests()
+    _run_tests()  # TODO continues even if it fails!
 except subprocess.SubprocessError:
     _stop_software()
     _undo_version_update_in_files()
