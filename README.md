@@ -1,5 +1,5 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitLab CI Status](https://scm.cms.hu-berlin.de/iqb/testcenter-frontend/badges/main/pipeline.svg)](https://scm.cms.hu-berlin.de/iqb/testcenter-frontend)
+[![GitLab CI Status](https://scm.cms.hu-berlin.de/iqb/testcenter-frontend/badges/master/pipeline.svg)](https://scm.cms.hu-berlin.de/iqb/testcenter-frontend)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/iqb-berlin/testcenter-frontend)
 
 # Testcenter Frontend
