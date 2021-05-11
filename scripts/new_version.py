@@ -29,7 +29,7 @@ import subprocess
 
 VERSION_FILE = 'package.json'
 VERSION_REGEX = '(?<=version": ")(.*)(?=")'
-ADDITIONAL_FILES_TO_COMMIT = []
+ADDITIONAL_FILES_TO_COMMIT = ['package-lock.json']
 
 
 def _check_prerequisites():
@@ -105,6 +105,10 @@ def _undo_version_update_in_files():
     for file in ADDITIONAL_FILES_TO_COMMIT:
         subprocess.run(f"git checkout {file}", shell=True, check=True)
 
+def _update_package_lock():
+    print(f"Updating package-lock file")
+    subprocess.run(f"npm i --package-lock-only", shell=True, check=True)
+
 
 _check_prerequisites()
 pattern = re.compile(VERSION_REGEX)
@@ -115,9 +119,10 @@ new_version = _increment_version(old_version)
 _update_version_in_file(new_version)
 _run_software()
 try:
-    _run_tests()
+    _run_tests()  # TODO continues even if it fails!
 except subprocess.SubprocessError:
     _stop_software()
     _undo_version_update_in_files()
 _stop_software()
+_update_package_lock()
 _git_tag()

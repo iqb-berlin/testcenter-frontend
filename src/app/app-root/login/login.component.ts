@@ -28,11 +28,14 @@ export class LoginComponent implements OnInit, OnDestroy {
     pw: new FormControl('')
   });
 
+  systemAnnouncement: string = '-';
+
   constructor(
     public mds: MainDataService,
     private bs: BackendService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cts: CustomtextService
   ) { }
 
   ngOnInit(): void {
@@ -40,6 +43,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.routingSubscription = this.route.params.subscribe(params => {
       this.returnTo = params.returnTo;
     });
+    setTimeout(() => { // the timeout is  avery temporary fix.- after upgrading to iqb-components 3, it can be removed
+      this.systemAnnouncement = this.cts.getCustomText('system_announcement', '-');
+    }, 500);
   }
 
   login(): void {
