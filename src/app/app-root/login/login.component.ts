@@ -19,6 +19,7 @@ import { BackendService } from '../../backend.service';
 export class LoginComponent implements OnInit, OnDestroy {
   static oldLoginName = '';
   private routingSubscription: Subscription = null;
+  private systemAnnouncementSubscription: Subscription = null;
   returnTo = '';
   problemText = '';
   showPassword = false;
@@ -40,12 +41,10 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.mds.setSpinnerOff();
-    this.routingSubscription = this.route.params.subscribe(params => {
-      this.returnTo = params.returnTo;
-    });
-    setTimeout(() => { // the timeout is  avery temporary fix.- after upgrading to iqb-components 3, it can be removed
-      this.systemAnnouncement = this.cts.getCustomText('system_announcement', '-');
-    }, 500);
+    this.routingSubscription = this.route.params
+      .subscribe(params => { this.returnTo = params.returnTo; });
+    this.systemAnnouncementSubscription = <Subscription> this.cts.getCustomText$('system_announcement')
+      .subscribe(text => { this.systemAnnouncement = text || '-'; });
   }
 
   login(): void {
