@@ -1,5 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
+import { HttpClientModule } from '@angular/common/http';
 import { WelcomeComponent } from './welcome.component';
 
 describe('WelcomeComponent', () => {
@@ -8,8 +9,13 @@ describe('WelcomeComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [WelcomeComponent],
-      imports: [MatCardModule]
+      declarations: [
+        WelcomeComponent
+      ],
+      imports: [
+        MatCardModule,
+        HttpClientModule
+      ]
     })
       .compileComponents();
   }));
