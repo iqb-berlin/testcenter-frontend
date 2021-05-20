@@ -12,45 +12,32 @@ interface WsMessage {
 export class WebsocketService {
   protected wsUrl = '';
   private wsSubject$: WebSocketSubject<any>;
-  public wsConnected$ = new BehaviorSubject<boolean>(null);
+  wsConnected$ = new BehaviorSubject<boolean>(null);
   private wsSubscription: Subscription;
 
-  public connect(): void {
+  connect(): void {
     if (!this.wsSubject$) {
-
-      console.log(`connecting... ${this.wsUrl}`);
-
       this.wsSubject$ = webSocket({
-
         deserializer(event: MessageEvent): any {
           return JSON.parse(event.data);
         },
-
         serializer(value: any): WebSocketMessage {
           return JSON.stringify(value);
         },
-
         openObserver: {
           next: () => {
-            console.log('connection established');
             this.wsConnected$.next(true);
           }
         },
-
         url: this.wsUrl
       });
 
       this.wsSubscription = this.wsSubject$.subscribe(
-
         () => {},
-
         () => {
-          console.error('connection error');
           this.closeConnection();
         },
-
         () => {
-          console.log('connection closed');
           this.closeConnection();
         }
       );
@@ -68,7 +55,7 @@ export class WebsocketService {
     }
   }
 
-  public send(event: string, data: any): void {
+  send(event: string, data: any): void {
     if (!this.wsSubject$) {
       this.connect();
     }
@@ -76,7 +63,7 @@ export class WebsocketService {
     this.wsSubject$.next({ event, data });
   }
 
-  public getChannel<T>(channelName: string): Observable<T> {
+  getChannel<T>(channelName: string): Observable<T> {
     if (!this.wsSubject$) {
       this.connect();
     }

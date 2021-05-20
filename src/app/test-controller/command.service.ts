@@ -26,7 +26,7 @@ type TestStartedOrStopped = 'started' | 'terminated' | '';
   providedIn: 'root'
 })
 export class CommandService extends WebsocketBackendService<Command[]> implements OnDestroy {
-  public command$: Subject<Command> = new Subject<Command>();
+  command$: Subject<Command> = new Subject<Command>();
 
   protected initialData = [];
   protected pollingEndpoint = '';
@@ -88,7 +88,6 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
         // min delay between items
         concatMap((command: Command) => timer(1000).pipe(ignoreElements(), startWith(command))),
         mergeMap((command: Command) => {
-          console.log(`try to execute ${CommandService.commandToString(command)}`);
           return this.http.patch(`${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed`, {})
             .pipe(
               map(() => command),
@@ -144,7 +143,6 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
       timestamp: Date.now()
     };
     if (!isKnownCommand(keyword)) {
-      console.warn(`Unknown command: ${CommandService.commandToString(command)}`);
       return;
     }
     this.command$.next(command);

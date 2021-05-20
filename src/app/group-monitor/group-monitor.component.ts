@@ -26,15 +26,6 @@ import { BookletUtil } from './booklet/booklet.util';
   styleUrls: ['./group-monitor.component.css']
 })
 export class GroupMonitorComponent implements OnInit, OnDestroy {
-  constructor(
-    public dialog: MatDialog,
-    private route: ActivatedRoute,
-    private bs: BackendService,
-    public tsm: TestSessionManager,
-    private router: Router,
-    private cts: CustomtextService
-  ) {}
-
   connectionStatus$: Observable<ConnectionStatus>;
 
   ownGroup$: Observable<GroupData>;
@@ -60,8 +51,17 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = [];
 
-  @ViewChild('adminbackground') mainElem:ElementRef;
+  @ViewChild('adminbackground') mainElem: ElementRef;
   @ViewChild('sidenav', { static: true }) sidenav: MatSidenav;
+
+  constructor(
+    public dialog: MatDialog,
+    private route: ActivatedRoute,
+    private bs: BackendService,
+    public tsm: TestSessionManager,
+    private router: Router,
+    private cts: CustomtextService
+  ) {}
 
   ngOnInit(): void {
     this.subscriptions = [
