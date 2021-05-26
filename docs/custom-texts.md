@@ -97,9 +97,9 @@ replacements:
 |`gm_control_goto_tooltip`|Tooltip über dem 'Springe zu'-Knopf, der erscheint, wenn kein Block gewählt ist|Bitte Block auswählen|
 |`gm_control_pause`|Control: pause|pause|
 |`gm_control_resume`|Control: weiter|weiter|
-|`gm_control_unlock`|Control: Entsperren|Entsperren|
+|`gm_control_unlock`|Control: Entsperren|Test Entsperren|
 |`gm_control_unlock_success_warning`|Wird angezeigt, wenn tests entsperrt wurden|ACHTUNG! Die betreffenden Browser müssen ggf. neu gestartet werden.|
-|`gm_control_unlock_tooltip`|Tooltip: Freigeben|Freigeben|
+|`gm_control_unlock_tooltip`|Tooltip: Freigeben|Test Freigeben|
 |`gm_controls`|Überschrift: Test-Steuerung|Test-Steuerung|
 |`gm_filter_locked`|Filter: gesperrte ausblenden|gesperrte|
 |`gm_filter_pending`|Filter: nicht gestartete ausblenden|nicht gestartete|
@@ -121,7 +121,7 @@ replacements:
 |`login_bookletSelectPromptNull`|Nachricht für den Fall, dass Booklet(s) beendet wurden und keine weiteren zur Verfügung stehen|Beendet. Es können keine weiteren Testhefte gestartet werden.|
 |`login_bookletSelectPromptOne`|Aufforderung, den einen gefundenen Test anzuklicken (auf Schalter klicken)|Bitte klicke auf die Schaltfläche auf der linken Seite, um den Test zu starten!|
 |`login_codeInputPrompt`|Aufforderung, Code einzugeben (bei einem zweistufigen Login-Prozess)|Bitte Log-in eingeben, der auf dem Zettel steht!|
-|`login_codeInputTitle`|Titel des Eingabeformulares für den Code|Log-in eingeben|
+|`login_codeInputTitle`|Titel des Eingabeformulars für den Code|Log-in eingeben|
 |`login_pagesNaviPrompt`|Aufforderungstext, weitere Seiten einer Unit auszuwählen, z. B. 'Wähle hier andere Seiten dieser Aufgabe:'|Weitere Seiten:|
 |`login_testEndButtonLabel`|Schalterbeschriftung für 'Test beenden'|Test beenden|
 |`syscheck_intro`|Text auf der ersten Seite des System-Checks|Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte Befragung oder Testung geeignet ist.|
