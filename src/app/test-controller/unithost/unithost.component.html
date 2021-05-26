@@ -8,7 +8,7 @@
   <div id="pageNav" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px" *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM'">
     <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="showPageNav">
         <div id="pageNavPrompt">
-          {{ ''  | customtext:'login_pagesNaviPrompt':cts.updateCount}}
+          {{ ''  | customtext:'login_pagesNaviPrompt' | async}}
         </div>
 
         <div *ngFor="let p of pageList">

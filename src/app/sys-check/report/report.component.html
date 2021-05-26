@@ -6,7 +6,7 @@
       </mat-card-header>
 
       <mat-card-content>
-        <p *ngIf="questionnaireDataWarnings.length > 0" style="color: goldenrod; font-weight: bold">{{'Bitte prüfen Sie die Eingaben (unvollständig):'| customtext:'syscheck_questionsRequiredMessage':cts.updateCount}}</p>
+        <p *ngIf="questionnaireDataWarnings.length > 0" style="color: goldenrod; font-weight: bold">{{'Bitte prüfen Sie die Eingaben (unvollständig):'| customtext:'syscheck_questionsRequiredMessage' | async}}</p>
         <ul>
             <li *ngFor="let qd of questionnaireDataWarnings">
               {{qd.label}}

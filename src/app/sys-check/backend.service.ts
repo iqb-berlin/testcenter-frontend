@@ -6,7 +6,7 @@ import {
   CheckConfig,
   NetworkRequestTestResult,
   UnitAndPlayerContainer,
-  SysCheckReport
+  SysCheckReport, ServerTime
 } from './sys-check.interfaces';
 import { ApiError } from '../app.interfaces';
 
@@ -19,7 +19,7 @@ export class BackendService {
     private http: HttpClient
   ) {}
 
-  public getCheckConfigData(workspaceId: number, sysCheckName: string): Observable<CheckConfig> {
+  getCheckConfigData(workspaceId: number, sysCheckName: string): Observable<CheckConfig> {
     return this.http
       .get<CheckConfig>(`${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckName}`)
       .pipe(
@@ -32,7 +32,7 @@ export class BackendService {
 
   saveReport(workspaceId: number, sysCheckName: string, sysCheckReport: SysCheckReport): Observable<boolean> {
     return this.http
-      .put(`${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckName}/report`, {...sysCheckReport})
+      .put(`${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckName}/report`, { ...sysCheckReport })
       .pipe(
         map(() => true),
         catchError((err: ApiError) => {
@@ -42,7 +42,7 @@ export class BackendService {
       );
   }
 
-  public getUnitAndPlayer(workspaceId: number, sysCheckId: string): Observable<UnitAndPlayerContainer|boolean> {
+  getUnitAndPlayer(workspaceId: number, sysCheckId: string): Observable<UnitAndPlayerContainer|boolean> {
     const startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
     return this.http
       .get<UnitAndPlayerContainer>(`${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckId}/unit-and-player`)
@@ -58,7 +58,18 @@ export class BackendService {
       );
   }
 
-  public benchmarkDownloadRequest(requestedDownloadSize: number): Promise<NetworkRequestTestResult> {
+  getServerTime(): Observable<ServerTime> {
+    return this.http
+      .get<ServerTime>(`${this.serverUrl}system/time`)
+      .pipe(
+        catchError((err: ApiError) => {
+          console.warn(`Could not get Time from Server: ${err.code} ${err.info} `);
+          return of(null);
+        })
+      );
+  }
+
+  benchmarkDownloadRequest(requestedDownloadSize: number): Promise<NetworkRequestTestResult> {
     const { serverUrl } = this;
     const cacheKiller = `&uid=${new Date().getTime()}`;
     const testResult: NetworkRequestTestResult = {
@@ -80,7 +91,8 @@ export class BackendService {
         if (xhr.status !== 200) {
           testResult.error = `Error ${xhr.statusText} (${xhr.status}) `;
         }
-        if (xhr.response.toString().length !== requestedDownloadSize) {
+        // eslint-disable-next-line eqeqeq
+        if (xhr.response.toString().length != requestedDownloadSize) {
           testResult.error = 'Error: Data package has wrong size!' +
             `(${requestedDownloadSize} !== ${xhr.response.toString().length})`;
         }
@@ -106,7 +118,7 @@ export class BackendService {
     });
   }
 
-  public benchmarkUploadRequest(requestedUploadSize: number): Promise<NetworkRequestTestResult> {
+  benchmarkUploadRequest(requestedUploadSize: number): Promise<NetworkRequestTestResult> {
     const { serverUrl } = this;
     const randomContent = BackendService.generateRandomContent(requestedUploadSize);
     const testResult: NetworkRequestTestResult = {
@@ -136,7 +148,8 @@ export class BackendService {
           const response = JSON.parse(xhr.response);
 
           const arrivingSize = parseFloat(response.packageReceivedSize);
-          if (arrivingSize !== requestedUploadSize) {
+          // eslint-disable-next-line eqeqeq
+          if (arrivingSize != requestedUploadSize) {
             testResult.error = `Error: Data package has wrong size! ${requestedUploadSize} != ${arrivingSize}`;
           }
         } catch (e) {
@@ -164,7 +177,9 @@ export class BackendService {
 
   private static getMostPreciseTimestampBrowserCanProvide(): number {
     if (typeof performance !== 'undefined') {
-      const timeOrigin = (typeof performance.timeOrigin !== 'undefined') ? performance.timeOrigin : performance.timing.navigationStart;
+      const timeOrigin = (typeof performance.timeOrigin !== 'undefined') ?
+        performance.timeOrigin :
+        performance.timing.navigationStart;
       if (typeof timeOrigin !== 'undefined' && timeOrigin) {
         return timeOrigin + performance.now();
       }

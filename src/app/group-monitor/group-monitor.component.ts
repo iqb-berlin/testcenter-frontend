@@ -1,23 +1,24 @@
 import {
-  Component, HostListener, OnDestroy, OnInit, ViewChild
+  Component, ElementRef, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Sort } from '@angular/material/sort';
 import { MatSidenav } from '@angular/material/sidenav';
+import { interval, Observable, Subscription } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from 'iqb-components';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import {
-  BehaviorSubject, combineLatest, Observable, Subject, Subscription
-} from 'rxjs';
-import { map, tap } from 'rxjs/operators';
-
+import { switchMap } from 'rxjs/operators';
 import { BackendService } from './backend.service';
 import {
   GroupData,
-  TestSession,
   TestViewDisplayOptions,
-  TestViewDisplayOptionKey, Testlet, Unit, isUnit, Selected, TestSessionFilter
+  TestViewDisplayOptionKey, Selected, TestSession, TestSessionSetStats, CommandResponse, UIMessage, isBooklet
 } from './group-monitor.interfaces';
+import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { ConnectionStatus } from '../shared/websocket-backend.service';
+import { BookletUtil } from './booklet/booklet.util';
 
 @Component({
   selector: 'app-group-monitor',
@@ -25,362 +26,255 @@ import { ConnectionStatus } from '../shared/websocket-backend.service';
   styleUrls: ['./group-monitor.component.css']
 })
 export class GroupMonitorComponent implements OnInit, OnDestroy {
-  constructor(
-    private route: ActivatedRoute,
-    private bs: BackendService
-  ) {}
+  connectionStatus$: Observable<ConnectionStatus>;
 
   ownGroup$: Observable<GroupData>;
+  private ownGroupName = '';
 
-  monitor$: Observable<TestSession[]>;
-  connectionStatus$: Observable<ConnectionStatus>;
-  sortBy$: Subject<Sort>;
-  filters$: Subject<TestSessionFilter[]>;
-  sessions$: BehaviorSubject<TestSession[]>;
+  selectedElement: Selected;
+  markedElement: Selected;
 
   displayOptions: TestViewDisplayOptions = {
-    view: 'full',
+    view: 'medium',
     groupColumn: 'hide',
-    selectionMode: 'block',
-    selectionSpreading: 'booklet'
+    bookletColumn: 'show',
+    blockColumn: 'show',
+    unitColumn: 'hide',
+    highlightSpecies: false,
+    manualChecking: false
   };
 
-  filterOptions: {label: string, filter: TestSessionFilter, selected: boolean}[] = [
-    {
-      label: 'gesperrte',
-      selected: false,
-      filter: {
-        type: 'testState',
-        value: 'status',
-        subValue: 'locked'
-      }
-    },
-    {
-      label: 'nicht aktive',
-      selected: false,
-      filter: {
-        type: 'testState',
-        value: 'CONTROLLER',
-        subValue: 'RUNNING',
-        not: true
-      }
-    }
-  ];
+  isScrollable = false;
+  isClosing = false;
 
-  selectedElement: Selected = {
-    session: null,
-    element: undefined,
-    spreading: false
-  };
+  messages: UIMessage[] = [];
 
-  markedElement: Testlet|Unit|null = null;
-  checkedSessions: {[sessionTestSessionId: number]: TestSession} = {};
-  allSessionsChecked = false;
-  sessionCheckedGroupCount: number;
+  private subscriptions: Subscription[] = [];
 
-  private bookletIdsViewIsAdjustedFor: string[] = [];
-  private lastWindowSize = Infinity;
-  private routingSubscription: Subscription = null;
+  @ViewChild('adminbackground') mainElem: ElementRef;
+  @ViewChild('sidenav', { static: true }) sidenav: MatSidenav;
 
-  @ViewChild('sidenav', {static: true}) sidenav: MatSidenav;
-
-  static getFirstUnit(testletOrUnit: Testlet|Unit): Unit|null {
-    while (!isUnit(testletOrUnit)) {
-      if (!testletOrUnit.children.length) {
-        return null;
-      }
-      testletOrUnit = testletOrUnit.children[0];
-    }
-    return testletOrUnit;
-  }
-
-  private static getPersonXTestId(session: TestSession): number {
-    return session.personId * 10000 +  session.testId;
-  }
-
-  private static hasState(state: object, key: string, value: any = null): boolean {
-    return ((typeof state[key] !== 'undefined') && ((value !== null) ? (state[key] === value) : true));
-  }
+  constructor(
+    public dialog: MatDialog,
+    private route: ActivatedRoute,
+    private bs: BackendService,
+    public tsm: TestSessionManager,
+    private router: Router,
+    private cts: CustomtextService
+  ) {}
 
   ngOnInit(): void {
-    this.routingSubscription = this.route.params.subscribe(params => {
-      this.ownGroup$ = this.bs.getGroupData(params['group-name']);
-    });
-
-    this.sortBy$ = new BehaviorSubject<Sort>({direction: 'asc', active: 'personLabel'});
-    this.filters$ = new BehaviorSubject<TestSessionFilter[]>([]);
-
-    this.monitor$ = this.bs.observeSessionsMonitor();
-
-    this.sessions$ = new BehaviorSubject<TestSession[]>([]);
-
-    combineLatest<[Sort, TestSessionFilter[], TestSession[]]>([this.sortBy$, this.filters$, this.monitor$])
-      .pipe(
-          map(([sortBy, filters, sessions]) => this.sortSessions(sortBy, this.filterSessions(sessions, filters))),
-          tap(sessions => this.updateChecked(sessions))
-      )
-      .subscribe(this.sessions$);
+    this.subscriptions = [
+      this.route.params.subscribe(params => {
+        this.ownGroup$ = this.bs.getGroupData(params['group-name']);
+        this.ownGroupName = params['group-name'];
+        this.tsm.connect(params['group-name']);
+      }),
+      this.tsm.sessionsStats$.subscribe(stats => {
+        this.onSessionsUpdate(stats);
+      }),
+      this.tsm.checkedStats$.subscribe(stats => {
+        this.onCheckedChange(stats);
+      }),
+      this.tsm.commandResponses$.subscribe(commandResponse => {
+        this.messages.push(this.commandResponseToMessage(commandResponse));
+      }),
+      this.tsm.commandResponses$
+        .pipe(switchMap(() => interval(7000)))
+        .subscribe(() => this.messages.shift())
+    ];
 
     this.connectionStatus$ = this.bs.connectionStatus$;
   }
 
+  private commandResponseToMessage(commandResponse: CommandResponse): UIMessage {
+    const command = this.cts.getCustomText(`gm_control_${commandResponse.commandType}`) || commandResponse.commandType;
+    const successWarning = this.cts.getCustomText(`gm_control_${commandResponse.commandType}_success_warning`) || '';
+    if (!commandResponse.testIds.length) {
+      return {
+        level: 'warning',
+        text: 'Keine Tests Betroffen von: `%s`',
+        customtext: 'gm_message_no_session_affected_by_command',
+        replacements: [command, commandResponse.testIds.length.toString(10)]
+      };
+    }
+    return {
+      level: successWarning ? 'warning' : 'info',
+      text: '`%s` an `%s` tests gesendet! %s',
+      customtext: 'gm_message_command_sent_n_sessions',
+      replacements: [command, commandResponse.testIds.length.toString(10), successWarning]
+    };
+  }
+
   ngOnDestroy(): void {
-    if (this.routingSubscription !== null) {
-      this.routingSubscription.unsubscribe();
-    }
-    this.bs.cutConnection();
+    this.tsm.disconnect();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
-  @HostListener('window:resize', ['$event'])
-  adjustViewModeOnWindowResize(): void {
-    if (this.lastWindowSize > window.innerWidth) {
-      this.shrinkViewIfNecessary();
-    } else {
-      this.growViewIfPossible();
-    }
-    this.lastWindowSize = window.innerWidth;
+  ngAfterViewChecked(): void {
+    this.isScrollable = this.mainElem.nativeElement.clientHeight < this.mainElem.nativeElement.scrollHeight;
   }
 
-  switchFilter(indexInFilterOptions: number) {
-    this.filterOptions[indexInFilterOptions].selected = !this.filterOptions[indexInFilterOptions].selected;
-    this.filters$.next(
-        this.filterOptions
-          .filter(filterOption => filterOption.selected)
-          .map(filterOption => filterOption.filter)
-    );
-  }
+  private onSessionsUpdate(stats: TestSessionSetStats): void {
+    this.displayOptions.highlightSpecies = (stats.differentBookletSpecies > 1);
 
-  private filterSessions(sessions: TestSession[], filters: TestSessionFilter[]): TestSession[] {
-    return sessions.filter((session) => this.applyFilters(session, filters));
-  }
-
-  private applyFilters(session: TestSession, filters: TestSessionFilter[]): boolean {
-    const applyNot = (isMatching, not: boolean): boolean => not ? !isMatching : isMatching;
-    return filters.reduce((keep: boolean, nextFilter: TestSessionFilter) => {
-      switch (nextFilter.type) {
-        case 'groupName': {
-          return keep && applyNot(session.groupName !== nextFilter.value, nextFilter.not);
-        }
-        case 'bookletName': {
-          return keep && applyNot(session.bookletName !== nextFilter.value, nextFilter.not);
-        }
-        case 'testState': {
-          const keyExists = (typeof session.testState[nextFilter.value] !== 'undefined');
-          const valueMatches = keyExists && (session.testState[nextFilter.value] === nextFilter.subValue);
-          const keepIn = (typeof nextFilter.subValue !== 'undefined') ? !valueMatches : !keyExists;
-          return keep && applyNot(keepIn, nextFilter.not);
-        }
-        case 'mode': {
-          return keep && applyNot(session.mode !== nextFilter.value, nextFilter.not);
-        }
-      }
-    }, true);
-  }
-
-  private updateChecked(sessions: TestSession[]): void {
-    const newCheckedSessions: {[sessionFullId: number]: TestSession} = {};
-    sessions
-      .forEach((session) => {
-        const sessionFullId = GroupMonitorComponent.getPersonXTestId(session);
-        if (typeof this.checkedSessions[sessionFullId] !== 'undefined') {
-          newCheckedSessions[sessionFullId] = session;
-        }
-      });
-    this.checkedSessions = newCheckedSessions;
-  }
-
-  adjustViewModeOnBookletLoad(bookletId: string): void {
-    if (bookletId && this.bookletIdsViewIsAdjustedFor.indexOf(bookletId) === -1) {
-      this.bookletIdsViewIsAdjustedFor.push(bookletId);
-      this.growViewIfPossible();
+    if (!this.tsm.checkingOptions.enableAutoCheckAll) {
+      this.displayOptions.manualChecking = true;
     }
   }
 
-  private growViewIfPossible() {
-    if (this.getOverflow() <= 0) {
-      this.displayOptions.view = 'full';
-      setTimeout(() => this.shrinkViewIfNecessary(), 15);
+  private onCheckedChange(stats: TestSessionSetStats): void {
+    if (stats.differentBookletSpecies > 1) {
+      this.selectedElement = null;
     }
   }
 
-  private shrinkViewIfNecessary(): void {
-    if (this.getOverflow() > 0) {
-      if (this.displayOptions.view === 'full') {
-        this.displayOptions.view = 'medium';
-        setTimeout(() => this.shrinkViewIfNecessary(), 15);
-      } else if (this.displayOptions.view === 'medium') {
-        this.displayOptions.view = 'small';
-      }
-    }
-  }
-
-  private getOverflow = (): number => {
-    const backgroundElement = document.querySelector('.adminbackground');
-    const testViewTableElement = document.querySelector('.test-view-table');
-    return testViewTableElement.scrollWidth - (backgroundElement.clientWidth - 50); // 50 = adminbackground's padding *2
-  }
-
-  trackSession(index: number, session: TestSession): number {
-    return GroupMonitorComponent.getPersonXTestId(session);
-  }
-
-  sortSessions(sort: Sort, sessions: TestSession[]): TestSession[] {
-    return sessions
-        .sort((testSession1, testSession2) => {
-          if (sort.active === 'timestamp') {
-            return (testSession2.timestamp - testSession1.timestamp) * (sort.direction === 'asc' ? 1 : -1);
-          }
-          if (sort.active === 'selected') {
-            return (this.isChecked(testSession1) === this.isChecked(testSession2) ? 0 : this.isChecked(testSession1) ? 1 : -1)
-                * (sort.direction === 'asc' ? -1 : 1);
-          }
-          const stringA = (testSession1[sort.active] || 'zzzzz');
-          const stringB = (testSession2[sort.active] || 'zzzzz');
-          return stringA.localeCompare(stringB) * (sort.direction === 'asc' ? 1 : -1);
-        });
-  }
+  trackSession = (index: number, session: TestSession): number => session.data.testId;
 
   setTableSorting(sort: Sort): void {
     if (!sort.active || sort.direction === '') {
       return;
     }
-    this.sortBy$.next(sort);
+    this.tsm.sortBy$.next(sort);
   }
 
   setDisplayOption(option: string, value: TestViewDisplayOptions[TestViewDisplayOptionKey]): void {
     this.displayOptions[option] = value;
   }
 
-  testCommandResume() {
-    const testIds = Object.values(this.checkedSessions)
-      .filter((session) => session.testId && session.testId > -1)
-      .filter((session) => GroupMonitorComponent.hasState(session.testState, 'status', 'running'))
-      .filter((session) => GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
-      .map((session) => session.testId);
-    this.bs.command('resume', [], testIds);
+  scrollDown(): void {
+    this.mainElem.nativeElement.scrollTo(0, this.mainElem.nativeElement.scrollHeight);
   }
 
-  testCommandPause() {
-    const testIds = Object.values(this.checkedSessions)
-      .filter((session) => session.testId && session.testId > -1)
-      .filter((session) => GroupMonitorComponent.hasState(session.testState, 'status', 'running'))
-      .filter((session) => !GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
-      .map((session) => session.testId);
-    this.bs.command('pause', [], testIds);
+  updateScrollHint(): void {
+    const elem = this.mainElem.nativeElement;
+    const reachedBottom = (elem.scrollTop + elem.clientHeight === elem.scrollHeight);
+    elem.classList[reachedBottom ? 'add' : 'remove']('hide-scroll-hint');
   }
 
-  testCommandGoto() {
-    if ((this.sessionCheckedGroupCount === 1) && (Object.keys(this.checkedSessions).length > 0)) {
-      const testIds = Object.values(this.checkedSessions)
-        .filter((session) => session.testId && session.testId > -1)
-        .map((session) => session.testId);
-      this.bs.command('goto', ['id', GroupMonitorComponent.getFirstUnit(this.selectedElement.element).id], testIds);
+  getSessionColor(session: TestSession): string {
+    const stripes = (c1, c2) => `repeating-linear-gradient(45deg, ${c1}, ${c1} 10px, ${c2} 10px, ${c2} 20px)`;
+    const hsl = (h, s, l) => `hsl(${h}, ${s}%, ${l}%)`;
+    const colorful = this.displayOptions.highlightSpecies && session.booklet.species;
+    const h = colorful ? (
+      session.booklet.species.length *
+      session.booklet.species.charCodeAt(0) *
+      session.booklet.species.charCodeAt(session.booklet.species.length / 4) *
+      session.booklet.species.charCodeAt(session.booklet.species.length / 4) *
+      session.booklet.species.charCodeAt(session.booklet.species.length / 2) *
+      session.booklet.species.charCodeAt(3 * (session.booklet.species.length / 4)) *
+      session.booklet.species.charCodeAt(session.booklet.species.length - 1)
+    ) % 360 : 0;
+
+    switch (session.state) {
+      case 'paused':
+        return hsl(h, colorful ? 45 : 0, 90);
+      case 'pending':
+        return stripes(hsl(h, colorful ? 75 : 0, 95), hsl(h, 0, 98));
+      case 'locked':
+        return stripes(hsl(h, colorful ? 75 : 0, 95), hsl(0, 0, 92));
+      case 'error':
+        return stripes(hsl(h, colorful ? 75 : 0, 95), hsl(0, 30, 95));
+      default:
+        return hsl(h, colorful ? 75 : 0, colorful ? 95 : 100);
     }
   }
 
-  selectElement(selected: Selected) {
+  markElement(marking: Selected): void {
+    this.markedElement = marking;
+  }
+
+  selectElement(selected: Selected): void {
+    this.tsm.checkSessionsBySelection(selected);
     this.selectedElement = selected;
-    let toCheck: TestSession[] = [];
-    if (selected.element) {
-      if (!selected.spreading) {
-        toCheck = [selected.session];
-      } else {
-        // TODO the 2nd filter should depend on this.displayOptions.selectionSpreading is 'all' or 'booklet' ...
-        // ... can be implemented if it's clear how to broadcast commands to different targets
-        toCheck = this.sessions$.getValue()
-            .filter(session => session.testId && session.testId > -1)
-            .filter(session => session.bookletName === selected.session.bookletName)
-            .filter(session => selected.inversion ? !this.isChecked(session) : true);
+  }
+
+  finishEverythingCommand(): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: 'auto',
+      data: <ConfirmDialogData>{
+        title: 'Testdurchführung Beenden',
+        content: 'Achtung! Diese Aktion sperrt und beendet sämtliche Tests dieser Sitzung.',
+        confirmbuttonlabel: 'Ja, ich möchte die Testdurchführung Beenden',
+        showcancel: true
       }
-    }
-    this.replaceCheckedSessions(toCheck);
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.isClosing = true;
+        this.tsm.commandFinishEverything()
+          .subscribe(() => {
+            setTimeout(() => { this.router.navigateByUrl('/r/login'); }, 5000); // go away
+          });
+      }
+    });
   }
 
-  markElement(testletOrUnit: Testlet|Unit|null) {
-    this.markedElement = testletOrUnit;
-  }
-
-  toggleChecked(checked: boolean, session: TestSession) {
-    if (!this.isChecked(session)) {
-      this.checkSession(session);
+  testCommandGoto(): void {
+    if (!this.selectedElement?.element?.blockId) {
+      this.messages.push({
+        level: 'warning',
+        customtext: 'gm_test_command_no_selected_block',
+        text: 'Kein Zielblock ausgewählt'
+      });
     } else {
-      this.uncheckSession(session);
+      this.tsm.testCommandGoto(this.selectedElement)
+        .subscribe(() => this.selectNextBlock());
     }
-    this.onCheckedChanged();
   }
 
-  toggleCheckAll(event: MatCheckboxChange) {
-    if (event.checked) {
-      this.replaceCheckedSessions(
-          this.sessions$.getValue()
-              .filter(session => session.testId && session.testId > -1)
-      );
+  private selectNextBlock(): void {
+    if (!isBooklet(this.selectedElement.originSession.booklet)) {
+      return;
+    }
+    this.selectedElement = {
+      element: this.selectedElement.element.nextBlockId ?
+        BookletUtil.getBlockById(
+          this.selectedElement.element.nextBlockId,
+          this.selectedElement.originSession.booklet
+        ) : null,
+      inversion: false,
+      originSession: this.selectedElement.originSession,
+      spreading: this.selectedElement.spreading
+    };
+  }
+
+  unlockCommand(): void {
+    this.tsm.testCommandUnlock();
+  }
+
+  toggleChecked(checked: boolean, session: TestSession): void {
+    if (!this.tsm.isChecked(session)) {
+      this.tsm.checkSession(session);
     } else {
-      this.replaceCheckedSessions([]);
+      this.tsm.uncheckSession(session);
     }
   }
 
   invertChecked(event: Event): boolean {
     event.preventDefault();
-    const unChecked = this.sessions$.getValue()
-      .filter((session) => session.testId && session.testId > -1)
-      .filter((session) => !this.isChecked(session));
-    this.replaceCheckedSessions(unChecked);
+    this.tsm.invertChecked();
     return false;
   }
 
-  countCheckedSessions(): number {
-    return Object.values(this.checkedSessions).length;
-  }
-
-  isChecked(session: TestSession): boolean {
-    return (typeof this.checkedSessions[GroupMonitorComponent.getPersonXTestId(session)] !== 'undefined');
-  }
-
-  private checkSession(session: TestSession) {
-    this.checkedSessions[GroupMonitorComponent.getPersonXTestId(session)] = session;
-  }
-
-  private uncheckSession(session: TestSession) {
-    if (this.isChecked(session)) {
-      delete this.checkedSessions[GroupMonitorComponent.getPersonXTestId(session)];
+  toggleAlwaysCheckAll(event: MatSlideToggleChange): void {
+    if (this.tsm.checkingOptions.enableAutoCheckAll && event.checked) {
+      this.tsm.checkAll();
+      this.displayOptions.manualChecking = false;
+      this.tsm.checkingOptions.autoCheckAll = true;
+    } else {
+      this.tsm.checkNone();
+      this.displayOptions.manualChecking = true;
+      this.tsm.checkingOptions.autoCheckAll = false;
     }
   }
 
-  private replaceCheckedSessions(sessionsToCheck: TestSession[]) {
-    const newCheckedSessions = {};
-    sessionsToCheck
-      .forEach((session) => newCheckedSessions[GroupMonitorComponent.getPersonXTestId(session)] = session);
-    this.checkedSessions = newCheckedSessions;
-    this.onCheckedChanged();
-  }
-
-  private onCheckedChanged() {
-    this.sessionCheckedGroupCount = Object.values(this.checkedSessions)
-      .map((session) => session.bookletName)
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .length;
-    const checkableSessions = this.sessions$.getValue().filter(session => session.testId && session.testId > -1);
-    this.allSessionsChecked = (checkableSessions.length === this.countCheckedSessions());
-    if (this.sessionCheckedGroupCount > 1) {
-      this.selectedElement = null;
+  toggleCheckAll(event: MatCheckboxChange): void {
+    if (event.checked) {
+      this.tsm.checkAll();
+    } else {
+      this.tsm.checkNone();
     }
-  }
-
-  isPauseAllowed(): boolean {
-    const activeSessions = Object.values(this.checkedSessions).length && Object.values(this.checkedSessions)
-      .filter((session) => GroupMonitorComponent.hasState(session.testState, 'status', 'running'));
-    return activeSessions.length && activeSessions
-        .filter(session => GroupMonitorComponent.hasState(session.testState, 'status', 'running'))
-        .filter(session => GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
-        .length === 0;
-  }
-
-  isResumeAllowed() {
-    const activeSessions = Object.values(this.checkedSessions)
-      .filter((session) => GroupMonitorComponent.hasState(session.testState, 'status', 'running'));
-    return activeSessions.length && activeSessions
-      .filter((session) => !GroupMonitorComponent.hasState(session.testState, 'CONTROLLER', 'PAUSED'))
-      .length === 0;
   }
 }

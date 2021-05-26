@@ -12,7 +12,7 @@ describe('NewpasswordComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NewpasswordComponent ],
+      declarations: [NewpasswordComponent],
       imports: [
         MatDialogModule,
         ReactiveFormsModule,

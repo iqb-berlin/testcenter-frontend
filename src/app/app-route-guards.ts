@@ -24,10 +24,10 @@ export class RouteDispatcherActivateGuard implements CanActivate {
           this.router.navigate(['/r/admin-starter']);
         } else if (authData.flags.indexOf(AuthFlagType.CODE_REQUIRED) >= 0) {
           this.router.navigate(['/r/code-input']);
-        } else if (authData.access[AuthAccessKeyType.TEST]) {
-          this.router.navigate(['/r/test-starter']);
         } else if (authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
           this.router.navigate(['/r/monitor-starter']);
+        } else if (authData.access[AuthAccessKeyType.TEST]) {
+          this.router.navigate(['/r/test-starter']);
         } else {
           this.router.navigate(['/r/login', '']);
         }

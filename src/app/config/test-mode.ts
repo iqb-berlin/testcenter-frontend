@@ -12,12 +12,13 @@ export class TestMode {
 	presetCode: true;
 	showTimeLeft: true;
 	showUnitMenu: false;
+	receiveRemoteCommands: false;
 	modeLabel: "Nur Ansicht (Demo)";
 	modeId: string = "DEMO";
 
 	public constructor (loginMode: string = 'DEMO') {
 		if (loginMode) {
-			const regExPattern = /(DEMO|HOT|REVIEW|TRIAL)/;
+			const regExPattern = /(DEMO|MONITOR-GROUP|HOT|REVIEW|TRIAL)/;
 			if (regExPattern.test(loginMode.toUpperCase())) {
 				const mode = loginMode.toUpperCase().match(regExPattern)[0];
 				const modeConfig = testModes[mode];
@@ -28,6 +29,7 @@ export class TestMode {
 				this.presetCode = modeConfig.config.presetCode;
 				this.showTimeLeft = modeConfig.config.showTimeLeft;
 				this.showUnitMenu = modeConfig.config.showUnitMenu;
+				this.receiveRemoteCommands = modeConfig.config.receiveRemoteCommands;
 				this.modeLabel = modeConfig.label;
 				this.modeId = mode;
 			} else {

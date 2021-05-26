@@ -3,12 +3,25 @@
     <mat-card-title>Testdurchführung überwachen</mat-card-title>
     <mat-card-content>
       <div fxLayoutGap="10px" fxLayout="column">
-        <p *ngIf="accessObjects.length === 0">
+
+        <p *ngIf="problemText" style="color: chocolate"><b>{{ problemText }}</b></p>
+
+        <p *ngIf="!accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR] || accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR].length === 0">
           Sie sind angemeldet. Aktuell sind keine Testgruppen zur Überwachung für Sie freigegeben.
         </p>
+
         <button mat-raised-button color="primary" (click)="buttonGotoMonitor(accessObject)"
-                *ngFor="let accessObject of accessObjects">
-          {{accessObject.name}}
+                *ngFor="let accessObject of accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR]">
+          <span class="booklet_title">{{accessObject.name}}</span>
+          <span class="booklet_status">Überwachung starten</span>
+        </button>
+
+        <h4>Folgende Testhefte stehen für Sie zur Ansicht bereit:</h4>
+
+        <button mat-raised-button color="primary" (click)="startTest(b)" [disabled]="b.locked"
+                *ngFor="let b of accessObjects[AuthAccessKeyType.TEST]">
+          <span class="booklet_title">{{b.label}}</span>
+          <span class="booklet_status">{{b.locked ? 'gesperrt' : (b.running ? 'Fortsetzen' : 'Ansehen')}}</span>
         </button>
       </div>
     </mat-card-content>
@@ -18,7 +31,7 @@
   </mat-card>
 
   <mat-card fxFlex="0 0 400px" class="mat-card-gray">
-    <mat-card-title>{{ 'app_title' | customtext:'app_title':cts.updateCount }}</mat-card-title>
+    <mat-card-title>{{ 'app_title' | customtext:'app_title' | async }}</mat-card-title>
 
     <mat-card-content>
 

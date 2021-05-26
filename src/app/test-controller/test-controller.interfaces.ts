@@ -45,6 +45,19 @@ export interface TestData {
   laststate: StateReportEntry[];
 }
 
+export enum TestStateKey {
+  CURRENT_UNIT_ID = 'CURRENT_UNIT_ID',
+  TESTLETS_TIMELEFT = 'TESTLETS_TIMELEFT',
+  TESTLETS_CLEARED_CODE = 'TESTLETS_CLEARED_CODE',
+  FOCUS = 'FOCUS',
+  CONTROLLER = 'CONTROLLER',
+  CONNECTION = 'CONNECTION'
+}
+
+/**
+ * TestState.FOCUS
+ * In what state is the whole controller?
+ */
 export enum TestControllerState {
   INIT = 'INIT',
   LOADING = 'LOADING',
@@ -55,18 +68,24 @@ export enum TestControllerState {
   ERROR = 'ERROR'
 }
 
+/**
+ * TestState.FOCUS
+ * Do the application-window has focus or not (because another window or tab has it)?
+ */
 export enum AppFocusState {
   HAS = 'HAS',
   HAS_NOT = 'HAS_NOT',
   DEAD = 'DEAD'
 }
 
-export enum TestStateKey {
-  CURRENT_UNIT_ID = 'CURRENT_UNIT_ID',
-  TESTLETS_TIMELEFT = 'TESTLETS_TIMELEFT',
-  TESTLETS_CLEARED_CODE = 'TESTLETS_CLEARED_CODE',
-  FOCUS = 'FOCUS',
-  CONTROLLER = 'CONTROLLER'
+/**
+ * TestState.CONNECTION
+ * What kind of connection to the server do we have to receive possible commands from a group-monitor?
+ * This can get a third special-value called LOST, which is set *by the backend* on connection loss.
+ */
+export enum TestStateConnectionValue {
+  WEBSOCKET = 'WEBSOCKET',
+  POLLING = 'POLLING'
 }
 
 export enum TestLogEntryKey {

@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { CustomtextService } from 'iqb-components';
 import { TestControllerService } from '../test-controller.service';
 import { MainDataService } from '../../maindata.service';
 
@@ -12,8 +11,7 @@ export class TestStatusComponent implements OnInit {
   loginName = '??';
 
   constructor(
-    public tcs: TestControllerService,
-    public cts: CustomtextService
+    public tcs: TestControllerService
   ) { }
 
   ngOnInit(): void {

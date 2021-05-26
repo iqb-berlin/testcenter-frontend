@@ -8,7 +8,21 @@
       "forceNaviRestrictions": false,
       "presetCode": true,
       "showTimeLeft": true,
-      "showUnitMenu": false
+      "showUnitMenu": false,
+      "receiveRemoteCommands": false
+    }
+  },
+  "MONITOR-GROUP": {
+    "label": "Testgruppen-Monitor (Demo)",
+    "config": {
+      "canReview": false,
+      "saveResponses": false,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
+      "presetCode": true,
+      "showTimeLeft": true,
+      "showUnitMenu": false,
+      "receiveRemoteCommands": false
     }
   },
   "HOT": {
@@ -20,7 +34,8 @@
       "forceNaviRestrictions": true,
       "presetCode": false,
       "showTimeLeft": false,
-      "showUnitMenu": false
+      "showUnitMenu": false,
+      "receiveRemoteCommands": true
     }
   },
   "REVIEW": {
@@ -32,7 +47,8 @@
       "forceNaviRestrictions": false,
       "presetCode": true,
       "showTimeLeft": true,
-      "showUnitMenu": true
+      "showUnitMenu": true,
+      "receiveRemoteCommands": false
     }
   },
   "TRIAL": {
@@ -44,7 +60,8 @@
       "forceNaviRestrictions": true,
       "presetCode": true,
       "showTimeLeft": false,
-      "showUnitMenu": false
+      "showUnitMenu": false,
+      "receiveRemoteCommands": false
     }
   }
 }

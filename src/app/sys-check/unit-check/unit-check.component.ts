@@ -1,8 +1,7 @@
 import {
-  Component, OnInit, HostListener , OnDestroy
+  Component, OnInit, HostListener, OnDestroy
 } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { CustomtextService } from 'iqb-components';
 import { MainDataService } from '../../maindata.service';
 import { BackendService } from '../backend.service';
 import { SysCheckDataService } from '../sys-check-data.service';
@@ -27,7 +26,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   constructor(
     private ds: SysCheckDataService,
     private bs: BackendService,
-    public cts: CustomtextService,
     private mds: MainDataService
   ) {
   }

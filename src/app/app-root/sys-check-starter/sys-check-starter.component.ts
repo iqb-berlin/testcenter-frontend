@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { CustomtextService } from 'iqb-components';
 import { BackendService } from '../../backend.service';
 import { MainDataService } from '../../maindata.service';
 import { SysCheckInfo } from '../../app.interfaces';
@@ -16,7 +15,6 @@ export class SysCheckStarterComponent implements OnInit {
   constructor(
     public mds: MainDataService,
     private bs: BackendService,
-    public cts: CustomtextService,
     private router: Router
   ) { }
 

@@ -10,7 +10,8 @@ import {
   map,
   mergeMap,
   startWith,
-  switchMap, tap
+  switchMap,
+  tap
 } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import {
@@ -25,7 +26,7 @@ type TestStartedOrStopped = 'started' | 'terminated' | '';
   providedIn: 'root'
 })
 export class CommandService extends WebsocketBackendService<Command[]> implements OnDestroy {
-  public command$: Subject<Command> = new Subject<Command>();
+  command$: Subject<Command> = new Subject<Command>();
 
   protected initialData = [];
   protected pollingEndpoint = '';
@@ -72,18 +73,21 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   // this unsubscriptions are only for the case, the project's architecture will be changed dramatically once
   // while not having a OnInit-hook services *do have* an OnDestroy-hook (see: https://v9.angular.io/api/core/OnDestroy)
   ngOnDestroy(): void {
-    this.commandSubscription.unsubscribe();
-    this.testStartedSubscription.unsubscribe();
+    if (this.commandSubscription) {
+      this.commandSubscription.unsubscribe();
+    }
+    if (this.testStartedSubscription) {
+      this.testStartedSubscription.unsubscribe();
+    }
   }
 
   private subscribeReceivedCommands() {
-    this.commandReceived$
+    this.commandSubscription = this.commandReceived$
       .pipe(
         filter((command: Command) => (this.executedCommandIds.indexOf(command.id) < 0)),
         // min delay between items
         concatMap((command: Command) => timer(1000).pipe(ignoreElements(), startWith(command))),
         mergeMap((command: Command) => {
-          console.log(`try to execute ${CommandService.commandToString(command)}`);
           return this.http.patch(`${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed`, {})
             .pipe(
               map(() => command),
@@ -103,7 +107,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
         distinctUntilChanged(),
         map(CommandService.testStartedOrStopped),
         filter(testStartedOrStopped => testStartedOrStopped !== ''),
-        map(testStartedOrStopped => ((testStartedOrStopped === 'started') ? `test/${this.tcs.testId}/commands` : '')),
+        map(testStartedOrStopped => (((testStartedOrStopped === 'started') && (this.tcs.testMode.receiveRemoteCommands)) ? `test/${this.tcs.testId}/commands` : '')),
         filter(newPollingEndpoint => newPollingEndpoint !== this.pollingEndpoint),
         switchMap((pollingEndpoint: string) => {
           this.pollingEndpoint = pollingEndpoint;
@@ -130,7 +134,6 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     if (this.isProductionMode) {
       return;
     }
-    // eslint-disable-next-line no-param-reassign
     const newArgs = (typeof args === 'undefined') ? [] : args;
     const id = Math.round(Math.random() * -10000000);
     const command = {
@@ -140,7 +143,6 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
       timestamp: Date.now()
     };
     if (!isKnownCommand(keyword)) {
-      console.warn(`Unknown command: ${CommandService.commandToString(command)}`);
       return;
     }
     this.command$.next(command);

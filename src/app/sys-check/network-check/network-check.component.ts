@@ -14,26 +14,25 @@ import {
 })
 
 export class NetworkCheckComponent implements OnInit, OnDestroy {
-
   constructor(
     public ds: SysCheckDataService,
     private bs: BackendService
   ) {}
 
-  @ViewChild('downloadChart', {static: true}) downloadPlotter;
-  @ViewChild('uploadChart', {static: true}) uploadPlotter;
+  @ViewChild('downloadChart', { static: true }) downloadPlotter;
+  @ViewChild('uploadChart', { static: true }) uploadPlotter;
 
   @Input() measureNetwork: boolean;
   private networkStatsDownload: number[] = [];
   private networkStatsUpload: number[] = [];
 
-  public networkRating: NetworkRating = {
+  networkRating: NetworkRating = {
     downloadRating: 'N/A',
     uploadRating: 'N/A',
     overallRating: 'N/A'
   };
 
-  public detectedNetworkInformation: DetectedNetworkInformation = {
+  detectedNetworkInformation: DetectedNetworkInformation = {
     downlinkMegabitPerSecond: null,
     effectiveNetworkType: null,
     roundTripTimeMs: null,
@@ -41,7 +40,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
     available: false
   };
 
-  private humanReadableMilliseconds = (milliseconds: number): string => (milliseconds / 1000).toString() + ' sec';
+  private humanReadableMilliseconds = (milliseconds: number): string => `${(milliseconds / 1000).toString()} sec`;
 
   private static calculateAverageSpeedBytePerSecond(testResults: Array<NetworkRequestTestResult>): number {
     return testResults.reduce((sum, result) => sum + (result.size / (result.duration / 1000)), 0) / testResults.length;
@@ -58,7 +57,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
           downlinkMegabitPerSecond: connection.downlink || null,
           effectiveNetworkType: connection.effectiveType || null,
           roundTripTimeMs: connection.rtt || null,
-          networkType: connection.type || null,
+          networkType: connection.type || null
         };
       }
       if (this.ds.checkConfig && this.ds.networkReport.length === 0) {
@@ -67,7 +66,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
     });
   }
 
-  public startCheck(): void {
+  startCheck(): void {
     this.ds.networkReport = [];
     this.ds.networkCheckStatus = {
       done: false,
@@ -206,7 +205,6 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
   }
 
   private plotStatistics(isDownloadPart: boolean, benchmarkSequenceResults: Array<NetworkRequestTestResult>) {
-
     const datapoints = benchmarkSequenceResults
       .filter(measurement => (measurement.error === null))
       .map(measurement => ([measurement.size, measurement.duration]));
@@ -230,7 +228,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
         overallRating: 'unstable'
       };
     }
-    this.ds.networkCheckStatus.message = `Die folgenden Netzwerkeigenschaften wurden festgestellt:`;
+    this.ds.networkCheckStatus.message = 'Die folgenden Netzwerkeigenschaften wurden festgestellt:';
     this.ds.networkCheckStatus.done = true;
 
     const downAvg = this.getAverageNetworkStat(true);
@@ -334,7 +332,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
     }
   }
 
-  public updateNetworkRating(): void {
+  updateNetworkRating(): void {
     const networkRating: NetworkRating = {
       downloadRating: 'N/A',
       uploadRating: 'N/A',

@@ -43,6 +43,11 @@ export interface UnitAndPlayerContainer {
   duration: number;
 }
 
+export interface ServerTime {
+  timestamp: number;
+  timezone: string;
+}
+
 export interface NetworkRequestTestResult {
   'type': 'downloadTest' | 'uploadTest';
   'size': number;

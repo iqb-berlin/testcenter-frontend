@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { CustomtextService } from 'iqb-components';
 import { TestControllerService } from '../test-controller.service';
 import { UnitMenuButtonData } from '../test-controller.interfaces';
 import { MainDataService } from '../../maindata.service';
@@ -13,7 +12,6 @@ export class UnitMenuComponent implements OnInit {
   loginName = '??';
 
   constructor(
-    public cts: CustomtextService,
     public tcs: TestControllerService
   ) { }
 

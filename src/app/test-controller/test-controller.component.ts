@@ -55,12 +55,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private commandSubscription: Subscription = null;
   private lastUnitSequenceId = 0;
   private lastTestletIndex = 0;
-  public timerValue: MaxTimerData = null;
   private timerRunning = false;
   private allUnitIds: string[] = [];
   private loadedUnitCount = 0;
   private unitLoadQueue: TaggedString[] = [];
   private resumeTargetUnitId = 0;
+  timerValue: MaxTimerData = null;
   unitNavigationTarget = UnitNavigationTarget;
   debugPane = false;
 
@@ -303,9 +303,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       );
   }
 
-  @HostListener('window:beforeunload', ['$event'])
-  onBeforeUnload(): void {
-    if (this.tcs.testMode.saveResponses) {
+  @HostListener('window:unload', ['$event'])
+  unloadHandler() {
+    if (this.cmd.connectionStatus$.getValue() !== 'ws-online') {
       this.bs.notifyDyingTest(this.tcs.testId);
     }
   }
@@ -354,6 +354,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       this.routingSubscription = this.route.params.subscribe(params => {
         if (this.tcs.testStatus$.getValue() !== TestControllerState.ERROR) {
           this.tcs.testId = params.t;
+
+          // Reset TestMode to be Demo, before the correct one comes with getTestData
+          // TODO maybe it would be better to retrieve the testmode from the login
+          this.tcs.testMode = new TestMode();
+
           localStorage.setItem(TestControllerComponent.localStorageTestKey, params.t);
 
           this.unsubscribeTestSubscriptions();
@@ -574,6 +579,21 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           }); // getTestData
         }
       }); // routingSubscription
+
+      this.cmd.connectionStatus$
+        .pipe(
+          map(status => status === 'ws-online'),
+          distinctUntilChanged()
+        )
+        .subscribe(isWsConnected => {
+          if (this.tcs.testMode.saveResponses) {
+            this.bs.updateTestState(this.tcs.testId, [{
+              key: TestStateKey.CONNECTION,
+              content: isWsConnected ? 'WEBSOCKET' : 'POLLING',
+              timeStamp: Date.now()
+            }]);
+          }
+        });
     }); // setTimeOut
   }
 
@@ -694,7 +714,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           gotoTarget = params[0];
         }
         if (gotoTarget && gotoTarget !== '0') {
-          console.log('YES', gotoTarget);
           this.resumeTargetUnitId = 0;
           this.tcs.interruptMaxTimer();
           this.tcs.setUnitNavigationRequest(gotoTarget, true);

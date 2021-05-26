@@ -81,11 +81,47 @@ replacements:
 |`booklet_tasklisttitle`|Titel für die Auflistung der Aufgaben (Schalter)|Aufgaben|
 |`booklet_warningLeaveTimerBlockTextPrompt`|Schalterbeschriftung für 'Zurück zum Test'|Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?|
 |`booklet_warningLeaveTimerBlockTitle`|Titel für Warnung (Dialogbox) vor dem vorzeitigen Verlassen eines Abschnittes mit Timer|Aufgabenabschnitt verlassen?|
+|`gm_auto_checkall`|Der 'Immer alle Auswählen'-Schalter|Alle Tests gleichzeitig steuern|
+|`gm_booklet_error_general`|Fehleranzeige im Gruppen monitor: unbekannter Fehler|Fehler beim Zugriff aus Testheft-Datei!|
+|`gm_booklet_error_missing_file`|Fehleranzeige im Gruppen monitor: Kein Zugriff auf Testheft-Datei!|Kein Zugriff auf Testheft-Datei!|
+|`gm_booklet_error_missing_id`|Fehleranzeige im Gruppen monitor: Kein Testheft zugeordnet|Kein Testheft zugeordnet!|
+|`gm_booklet_error_xml`|Fehleranzeige im Gruppen monitor: Invalides XML|Konnte Testheft-Datei nicht lesen!|
+|`gm_col_activity`|Spalte: Aktivität|Aktivität|
+|`gm_col_booklet`|Spalte: Testheft|Testheft|
+|`gm_col_group`|Spalte: Gruppe|Gruppe|
+|`gm_col_person`|Spalte: Teilnehmer|Teilnehmer|
+|`gm_col_testlet`|Spalte: Block|Block|
+|`gm_col_unit`|Spalte: Aufgabe|Aufgabe|
+|`gm_control_finish_everything`|Control: Testung beenden|Testung beenden|
+|`gm_control_goto`|Control: Springe zu Block|Springe zu|
+|`gm_control_goto_tooltip`|Tooltip über dem 'Springe zu'-Knopf, der erscheint, wenn kein Block gewählt ist|Bitte Block auswählen|
+|`gm_control_pause`|Control: pause|pause|
+|`gm_control_resume`|Control: weiter|weiter|
+|`gm_control_unlock`|Control: Entsperren|Test Entsperren|
+|`gm_control_unlock_success_warning`|Wird angezeigt, wenn tests entsperrt wurden|ACHTUNG! Die betreffenden Browser müssen ggf. neu gestartet werden.|
+|`gm_control_unlock_tooltip`|Tooltip: Freigeben|Test Freigeben|
+|`gm_controls`|Überschrift: Test-Steuerung|Test-Steuerung|
+|`gm_filter_locked`|Filter: gesperrte ausblenden|gesperrte|
+|`gm_filter_pending`|Filter: nicht gestartete ausblenden|nicht gestartete|
+|`gm_headline`|Überschrift: Gruppenmonitor|IQB-Testcenter Gruppenüberwachung|
+|`gm_hide_controls_tooltip`|Tooltip: Test-Steuerung verbergen|Test-Steuerung verbergen|
+|`gm_menu_activity`|Meinueintrag: Aktivität|Aktivität|
+|`gm_menu_cols`|Meinueintrag: Spalten|Spalten|
+|`gm_menu_filter`|Meinueintrag: Sitzungen ausblenden|Sitzungen ausblenden|
+|`gm_multiple_booklet_species_warning`|Tooltip über dem 'Immer alle Auswählen'-Schalter, der erscheint, wenn dieser deaktiviert ist| - Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden.|
+|`gm_scroll_down`|Control: Ganz nach unten|Ganz nach unten|
+|`gm_selection_info`|Information gewählte Tests. Text-Substitutionen: (Alle/''), Anzahl, (''/s), Anzahl, (''/e)|%s %s Test%s mit %s Testheft%s ausgewählt.|
+|`gm_selection_info_none`|Information gewählte Tests: Keiner|Kein Test gewählt.|
+|`gm_settings_tooltip`|Control: Ansicht|Ansicht|
+|`gm_timeleft_tooltip`|Tooltip: verbleibende Zeit|Verbleibende Zeit|
+|`gm_view_full`|Ansicht: Vollständig|Vollständig|
+|`gm_view_medium`|Ansicht: Nur Blöcke|Nur Blöcke|
+|`gm_view_small`|Ansicht: Kurz|Kurz|
 |`login_bookletSelectPromptMany`|Aufforderung, aus der Liste der gefundenen Tests einen auszusuchen (auf Schalter klicken)|Bitte klicke auf eine der Schaltflächen auf der linken Seite, um einen Test zu starten!|
 |`login_bookletSelectPromptNull`|Nachricht für den Fall, dass Booklet(s) beendet wurden und keine weiteren zur Verfügung stehen|Beendet. Es können keine weiteren Testhefte gestartet werden.|
 |`login_bookletSelectPromptOne`|Aufforderung, den einen gefundenen Test anzuklicken (auf Schalter klicken)|Bitte klicke auf die Schaltfläche auf der linken Seite, um den Test zu starten!|
 |`login_codeInputPrompt`|Aufforderung, Code einzugeben (bei einem zweistufigen Login-Prozess)|Bitte Log-in eingeben, der auf dem Zettel steht!|
-|`login_codeInputTitle`|Titel des Eingabeformulares für den Code|Log-in eingeben|
+|`login_codeInputTitle`|Titel des Eingabeformulars für den Code|Log-in eingeben|
 |`login_pagesNaviPrompt`|Aufforderungstext, weitere Seiten einer Unit auszuwählen, z. B. 'Wähle hier andere Seiten dieser Aufgabe:'|Weitere Seiten:|
 |`login_testEndButtonLabel`|Schalterbeschriftung für 'Test beenden'|Test beenden|
 |`syscheck_intro`|Text auf der ersten Seite des System-Checks|Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte Befragung oder Testung geeignet ist.|

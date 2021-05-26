@@ -18,6 +18,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatStepperModule } from '@angular/material/stepper';
+import { RouterModule } from '@angular/router';
 import { TcSpeedChartComponent } from './network-check/tc-speed-chart.component';
 import { SaveReportComponent } from './report/save-report/save-report.component';
 import { ReportComponent } from './report/report.component';
@@ -51,7 +52,8 @@ import { SysCheckDataService } from './sys-check-data.service';
     MatTooltipModule,
     ReactiveFormsModule,
     SysCheckRoutingModule,
-    IqbComponentsModule.forChild()
+    IqbComponentsModule.forChild(),
+    RouterModule
   ],
   declarations: [
     SysCheckComponent,

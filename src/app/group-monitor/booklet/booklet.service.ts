@@ -1,20 +1,40 @@
+// noinspection CssInvalidHtmlTagReference
+
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { MainDataService } from '../maindata.service';
-import { BackendService } from './backend.service';
+import { MainDataService } from '../../maindata.service';
+import { BackendService } from '../backend.service';
 import {
-  Booklet, BookletError, BookletMetadata, Restrictions, Testlet, Unit
-} from './group-monitor.interfaces';
-import { BookletConfig } from '../config/booklet-config';
+  Booklet, BookletError, BookletMetadata, isUnit, Restrictions, Testlet, Unit
+} from '../group-monitor.interfaces';
+// eslint-disable-next-line import/extensions
+import { BookletConfig } from '../../config/booklet-config';
 
 @Injectable()
 export class BookletService {
-  public booklets: Observable<Booklet|BookletError>[] = [];
+  booklets: Observable<Booklet|BookletError>[] = [];
 
   constructor(
     private bs: BackendService
   ) { }
+
+  getBooklet(bookletName = ''): Observable<Booklet|BookletError> {
+    if (typeof this.booklets[bookletName] !== 'undefined') {
+      return this.booklets[bookletName];
+    }
+    if (bookletName === '') {
+      this.booklets[bookletName] = of<Booklet|BookletError>({ error: 'missing-id', species: null });
+    } else {
+      this.booklets[bookletName] = this.bs.getBooklet(bookletName)
+        .pipe(
+          // eslint-disable-next-line max-len
+          map((response: string|BookletError) => (typeof response === 'string' ? BookletService.parseBookletXml(response) : response)),
+          shareReplay(1)
+        );
+    }
+    return this.booklets[bookletName];
+  }
 
   private static parseBookletXml(xmlString: string): Booklet|BookletError {
     try {
@@ -22,19 +42,38 @@ export class BookletService {
       const bookletElement = domParser.parseFromString(xmlString, 'text/xml').documentElement;
 
       if (bookletElement.nodeName !== 'Booklet') {
-        console.warn('XML-root is not `Booklet`');
-        return { error: 'xml' };
+        // console.warn('XML-root is not `Booklet`');
+        return { error: 'xml', species: null };
       }
 
-      return {
+      const parsedBooklet: Booklet = {
         units: BookletService.parseTestlet(BookletService.xmlGetChildIfExists(bookletElement, 'Units')),
         metadata: BookletService.parseMetadata(bookletElement),
-        config: BookletService.parseBookletConfig(bookletElement)
+        config: BookletService.parseBookletConfig(bookletElement),
+        species: ''
       };
+      BookletService.addBookletStructureInformation(parsedBooklet);
+      return parsedBooklet;
     } catch (error) {
-      console.warn('Error reading booklet XML:', error);
-      return { error: 'xml' };
+      // console.warn('Error reading booklet XML:', error);
+      return { error: 'xml', species: null };
     }
+  }
+
+  private static addBookletStructureInformation(booklet: Booklet): void {
+    booklet.species = BookletService.getBookletSpecies(booklet);
+    booklet.units.children
+      .filter(testletOrUnit => !isUnit(testletOrUnit))
+      .forEach((block: Testlet, index, blocks) => {
+        block.blockId = `block ${index + 1}`;
+        if (index < blocks.length - 1) {
+          block.nextBlockId = `block ${index + 2}`;
+        }
+      });
+  }
+
+  private static getBookletSpecies(booklet: Booklet): string {
+    return `species: ${booklet.units.children.filter(testletOrUnit => !isUnit(testletOrUnit)).length}`;
   }
 
   private static parseBookletConfig(bookletElement: Element): BookletConfig {
@@ -56,10 +95,9 @@ export class BookletService {
     };
   }
 
-private static parseTestlet(testletElement: Element): Testlet {
-    // TODO id will be mandatory (https://github.com/iqb-berlin/testcenter-iqb-php/issues/116), the remove fallback to ''
+  private static parseTestlet(testletElement: Element): Testlet {
     return {
-      id: testletElement.getAttribute('id') || '',
+      id: testletElement.getAttribute('id'),
       label: testletElement.getAttribute('label') || '',
       restrictions: BookletService.parseRestrictions(testletElement),
       children: BookletService.xmlGetDirectChildrenByTagName(testletElement, ['Unit', 'Testlet'])
@@ -101,7 +139,7 @@ private static parseTestlet(testletElement: Element): Testlet {
     return restrictions;
   }
 
-  private static xmlGetChildIfExists(element: Element, childName: string, isOptional: boolean = false): Element {
+  private static xmlGetChildIfExists(element: Element, childName: string, isOptional = false): Element {
     const elements = BookletService.xmlGetDirectChildrenByTagName(element, [childName]);
     if (!elements.length && !isOptional) {
       throw new Error(`Missing field: '${childName}'`);
@@ -109,7 +147,7 @@ private static parseTestlet(testletElement: Element): Testlet {
     return elements.length ? elements[0] : null;
   }
 
-  private static xmlGetChildTextIfExists(element: Element, childName: string, isOptional: boolean = false): string {
+  private static xmlGetChildTextIfExists(element: Element, childName: string, isOptional = false): string {
     const childElement = BookletService.xmlGetChildIfExists(element, childName, isOptional);
     return childElement ? childElement.textContent : '';
   }
@@ -122,26 +160,5 @@ private static parseTestlet(testletElement: Element): Testlet {
 
   private static xmlCountChildrenOfTagNames(element: Element, tagNames: string[]): number {
     return element.querySelectorAll(tagNames.join(', ')).length;
-  }
-
-  public getBooklet(bookletName: string): Observable<Booklet|BookletError> {
-    if (typeof this.booklets[bookletName] !== 'undefined') {
-      // console.log('FORWARDING booklet for ' + bookletName + '');
-      return this.booklets[bookletName];
-    }
-    if (bookletName === '') {
-      // console.log("EMPTY bookletID");
-      this.booklets[bookletName] = of<Booklet|BookletError>({ error: 'missing-id' });
-    } else {
-      // console.log('LOADING testletOrUnit data for ' + bookletName + ' not available. loading');
-      this.booklets[bookletName] = this.bs.getBooklet(bookletName)
-        .pipe(
-          map((response: string|BookletError) => {
-            return (typeof response === 'string') ? BookletService.parseBookletXml(response) : response;
-          }),
-          shareReplay(1)
-        );
-    }
-    return this.booklets[bookletName];
   }
 }

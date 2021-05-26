@@ -7,7 +7,14 @@
           <input matInput formControlName="name" placeholder="Anmeldename" (keyup.enter)="pw.focus()">
         </mat-form-field>
         <mat-form-field>
-          <input matInput #pw type="password" formControlName="pw" placeholder="Kennwort">
+          <input matInput #pw [type]="showPassword ? 'text' : 'password'" formControlName="pw" placeholder="Kennwort">
+          <mat-icon
+              id="toggle-show-password"
+              (click)="showPassword = !showPassword"
+              [style]="!showPassword ? 'color:silver' : ''"
+              matSuffix
+            >visibility
+          </mat-icon>
         </mat-form-field>
       </mat-card-content>
       <mat-card-actions>
@@ -20,11 +27,11 @@
   </mat-card>
 
   <mat-card fxFlex="0 0 400px" class="mat-card-gray">
-    <mat-card-title>{{ 'IQB-Testcenter' | customtext:'app_title':cts.updateCount }}</mat-card-title>
+    <mat-card-title>{{ 'IQB-Testcenter' | customtext:'app_title' | async }}</mat-card-title>
 
     <mat-card-content>
       <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
-        {{ '' | customtext:'app_intro1':cts.updateCount }}</p>
+        {{ '' | customtext:'app_intro1' | async }}</p>
 
       <status-card></status-card>
     </mat-card-content>

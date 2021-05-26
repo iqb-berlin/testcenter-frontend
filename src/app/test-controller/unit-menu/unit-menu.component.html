@@ -1,7 +1,7 @@
 <div class="menu-body">
   <div fxLayout="row wrap" fxLayoutAlign="center stretch">
     <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="unitMenuButtonList.length > 0">
-      <mat-card-title>{{ 'Aufgaben' | customtext:'booklet_tasklisttitle':cts.updateCount }}</mat-card-title>
+      <mat-card-title>{{ 'Aufgaben' | customtext:'booklet_tasklisttitle' | async }}</mat-card-title>
       <mat-card-content>
         <div fxLayout="column" fxLayoutAlign="center stretch">
           <div *ngFor="let u of unitMenuButtonList" fxLayout="column" fxLayoutAlign="center stretch">
@@ -18,7 +18,7 @@
       </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button color="primary" (click)="terminateTest()">
-          {{ 'Test beenden'  | customtext:'login_testEndButtonLabel':cts.updateCount}}
+          {{ 'Test beenden'  | customtext:'login_testEndButtonLabel' | async}}
         </button>
       </mat-card-actions>
     </mat-card>
@@ -29,10 +29,10 @@
         <p><b>Angemeldet als "{{loginName}}"</b></p>
         <p><b>{{tcs.testMode.modeLabel}}</b></p>
         <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.ERROR" style="color: chocolate">
-          <b>{{ 'Es ist ein Fehler aufgetreten.' | customtext:'booklet_errormessage':cts.updateCount }} </b>
+          <b>{{ 'Es ist ein Fehler aufgetreten.' | customtext:'booklet_errormessage' | async }} </b>
         </p>
         <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.PAUSED" style="color: chocolate">
-          <b>{{ 'Testpause' | customtext:'booklet_pausedmessage':cts.updateCount }} </b>
+          <b>{{ 'Testpause' | customtext:'booklet_pausedmessage' | async }} </b>
         </p>
         <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING" style="color: chocolate">
           <b>Der Test ist aktiv.</b>
@@ -40,7 +40,7 @@
       </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button color="primary" (click)="terminateTest()">
-          {{ 'Test beenden'  | customtext:'login_testEndButtonLabel':cts.updateCount}}
+          {{ 'Test beenden'  | customtext:'login_testEndButtonLabel' | async}}
         </button>
       </mat-card-actions>
     </mat-card>

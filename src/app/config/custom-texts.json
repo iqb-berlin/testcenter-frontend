@@ -114,5 +114,154 @@
   "syscheck_intro": {
     "label": "Text auf der ersten Seite des System-Checks",
     "defaultvalue": "Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte Befragung oder Testung geeignet ist."
+  },
+
+  "gm_headline": {
+    "label": "Überschrift: Gruppenmonitor",
+    "defaultvalue": "IQB-Testcenter Gruppenüberwachung"
+  },
+  "gm_menu_filter": {
+    "label": "Meinueintrag: Sitzungen ausblenden",
+    "defaultvalue": "Sitzungen ausblenden"
+  },
+  "gm_menu_cols": {
+    "label": "Meinueintrag: Spalten",
+    "defaultvalue": "Spalten"
+  },
+  "gm_menu_activity": {
+    "label": "Meinueintrag: Aktivität",
+    "defaultvalue": "Aktivität"
+  },
+  "gm_col_group": {
+    "label": "Spalte: Gruppe",
+    "defaultvalue": "Gruppe"
+  },
+  "gm_col_booklet": {
+    "label": "Spalte: Testheft",
+    "defaultvalue": "Testheft"
+  },
+  "gm_col_testlet": {
+    "label": "Spalte: Block",
+    "defaultvalue": "Block"
+  },
+  "gm_col_unit": {
+    "label": "Spalte: Aufgabe",
+    "defaultvalue": "Aufgabe"
+  },
+  "gm_view_full": {
+    "label": "Ansicht: Vollständig",
+    "defaultvalue": "Vollständig"
+  },
+  "gm_view_medium": {
+    "label": "Ansicht: Nur Blöcke",
+    "defaultvalue": "Nur Blöcke"
+  },
+  "gm_view_small": {
+    "label": "Ansicht: Kurz",
+    "defaultvalue": "Kurz"
+  },
+  "gm_controls": {
+    "label": "Überschrift: Test-Steuerung",
+    "defaultvalue": "Test-Steuerung"
+  },
+  "gm_selection_info": {
+    "label": "Information gewählte Tests. Text-Substitutionen: (Alle/''), Anzahl, (''/s), Anzahl, (''/e)",
+    "defaultvalue": "%s %s Test%s mit %s Testheft%s ausgewählt."
+  },
+  "gm_selection_info_none": {
+    "label": "Information gewählte Tests: Keiner",
+    "defaultvalue": "Kein Test gewählt."
+  },
+  "gm_control_resume": {
+    "label": "Control: weiter",
+    "defaultvalue": "weiter"
+  },
+  "gm_control_pause": {
+    "label": "Control: pause",
+    "defaultvalue": "pause"
+  },
+  "gm_control_goto": {
+    "label": "Control: Springe zu Block",
+    "defaultvalue": "Springe zu"
+  },
+  "gm_control_unlock": {
+    "label": "Control: Entsperren",
+    "defaultvalue": "Test Entsperren"
+  },
+  "gm_control_unlock_success_warning": {
+    "label": "Wird angezeigt, wenn Tests entsperrt wurden",
+    "defaultvalue": "ACHTUNG! Die betreffenden Browser müssen ggf. neu gestartet werden."
+  },
+  "gm_control_finish_everything": {
+    "label": "Control: Testung beenden",
+    "defaultvalue": "Testung beenden"
+  },
+  "gm_settings_tooltip": {
+    "label": "Control: Ansicht",
+    "defaultvalue": "Ansicht"
+  },
+  "gm_scroll_down": {
+    "label": "Control: Ganz nach unten",
+    "defaultvalue": "Ganz nach unten"
+  },
+  "gm_col_person": {
+    "label": "Spalte: Teilnehmer",
+    "defaultvalue": "Teilnehmer"
+  },
+  "gm_col_activity": {
+    "label": "Spalte: Aktivität",
+    "defaultvalue": "Aktivität"
+  },
+  "gm_hide_controls_tooltip": {
+    "label": "Tooltip: Test-Steuerung verbergen",
+    "defaultvalue": "Test-Steuerung verbergen"
+  },
+  "gm_control_unlock_tooltip": {
+    "label": "Tooltip: Freigeben",
+    "defaultvalue": "Test Freigeben"
+  },
+  "gm_filter_locked": {
+    "label": "Filter: gesperrte ausblenden",
+    "defaultvalue": "gesperrte"
+  },
+  "gm_filter_pending": {
+    "label": "Filter: nicht gestartete ausblenden",
+    "defaultvalue": "nicht gestartete"
+  },
+  "gm_timeleft_tooltip": {
+    "label": "Tooltip: verbleibende Zeit",
+    "defaultvalue": "Verbleibende Zeit"
+  },
+  "gm_booklet_error_missing_id":
+  {
+    "label": "Fehleranzeige im Gruppen monitor: Kein Testheft zugeordnet",
+    "defaultvalue": "Kein Testheft zugeordnet!"
+  },
+  "gm_booklet_error_missing_file":
+  {
+    "label": "Fehleranzeige im Gruppen monitor: Kein Zugriff auf Testheft-Datei!",
+    "defaultvalue": "Kein Zugriff auf Testheft-Datei!"
+  },
+  "gm_booklet_error_xml":
+  {
+    "label": "Fehleranzeige im Gruppen monitor: Invalides XML",
+    "defaultvalue": "Konnte Testheft-Datei nicht lesen!"
+  },
+  "gm_booklet_error_general":
+  {
+    "label": "Fehleranzeige im Gruppen monitor: unbekannter Fehler",
+    "defaultvalue": "Fehler beim Zugriff aus Testheft-Datei!"
+  },
+  "gm_control_goto_tooltip": {
+    "label": "Tooltip über dem 'Springe zu'-Knopf, der erscheint, wenn kein Block gewählt ist",
+    "defaultvalue": "Bitte Block auswählen"
+  },
+  "gm_multiple_booklet_species_warning": {
+    "label": "Tooltip über dem 'Immer alle Auswählen'-Schalter, der erscheint, wenn dieser deaktiviert ist",
+    "defaultvalue": " - Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden."
+  },
+  "gm_auto_checkall": {
+    "label": "Der 'Immer alle Auswählen'-Schalter",
+    "defaultvalue": "Alle Tests gleichzeitig steuern"
   }
 }

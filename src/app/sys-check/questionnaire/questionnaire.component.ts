@@ -1,6 +1,5 @@
 import { FormControl, FormGroup } from '@angular/forms';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CustomtextService } from 'iqb-components';
 import { Subscription } from 'rxjs';
 import { SysCheckDataService } from '../sys-check-data.service';
 
@@ -13,8 +12,7 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
   private valueChangesSubscription: Subscription = null;
 
   constructor(
-    public ds: SysCheckDataService,
-    public cts: CustomtextService
+    public ds: SysCheckDataService
   ) {
   }
 

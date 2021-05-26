@@ -2,10 +2,26 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { Observable, of } from 'rxjs';
 import { SyscheckComponent } from './syscheck.component';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
+import { SysCheckStatistics } from '../workspace.interfaces';
+
+class MockBackendService {
+  // eslint-disable-next-line class-methods-use-this
+  getSysCheckReportList(): Observable<SysCheckStatistics[]> {
+    return of([{
+      id: 'sys-check-id',
+      label: 'a sys check',
+      count: 123,
+      details: []
+    }]);
+  }
+}
 
 describe('Workspace-Admin: SyscheckComponent', () => {
   let component: SyscheckComponent;
@@ -17,10 +33,16 @@ describe('Workspace-Admin: SyscheckComponent', () => {
       imports: [
         HttpClientModule,
         MatDialogModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatIconModule,
+        MatTableModule,
+        MatCheckboxModule
       ],
       providers: [
-        BackendService,
+        {
+          provide: BackendService,
+          useValue: new MockBackendService()
+        },
         WorkspaceDataService
       ]
     })

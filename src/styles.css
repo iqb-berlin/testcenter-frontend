@@ -123,21 +123,28 @@ div.logo img {
   color: white;
 }
 
-.error-msg {
-  position: absolute;
-  left: 40px;
-  top: 60px;
-  min-height: 60px;
-  width: calc(100% - 80px);
-  font-size: 1.1em;
-  border-width: 6px;
-  border-style: solid;
-  border-color: brown;
-  background-color: white;
-  color: brown;
+.main-alert {
+  position: fixed !important;
+  top: 20%;
+  right: 10%;
+  left: 10%;
+  padding: 3em;
   z-index: 999;
+  background: white;
+  cursor: pointer;
 }
 
-.error-msg mat-icon {
-  height: 32px;
+.main-alert mat-card-title {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+#shield {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 998;
 }

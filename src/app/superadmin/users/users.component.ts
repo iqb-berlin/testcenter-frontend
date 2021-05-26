@@ -1,5 +1,5 @@
 import { MatTableDataSource } from '@angular/material/table';
-import { ViewChild , Component, OnInit } from '@angular/core';
+import { ViewChild, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
@@ -93,7 +93,7 @@ export class UsersComponent implements OnInit {
             })).subscribe(
               respOk => {
                 if (respOk !== false) {
-                  this.snackBar.open('Nutzer hinzugefügt', '', {duration: 1000});
+                  this.snackBar.open('Nutzer hinzugefügt', '', { duration: 1000 });
                   this.updateObjectList();
                 } else {
                   this.mds.setSpinnerOff();
@@ -151,7 +151,7 @@ export class UsersComponent implements OnInit {
                   .subscribe(
                     respCode => {
                       if (respCode === 0) {
-                        this.snackBar.open('Status geändert', '', {duration: 1000});
+                        this.snackBar.open('Status geändert', '', { duration: 1000 });
                         this.updateObjectList();
                       } else if (respCode === 403) {
                         this.mds.setSpinnerOff();
@@ -242,7 +242,7 @@ export class UsersComponent implements OnInit {
         }
       });
     } else {
-      let prompt = 'Soll';
+      let prompt;
       if (selectedRows.length > 1) {
         prompt = `Sollen ${selectedRows.length} Nutzer gelöscht werden?`;
       } else {
@@ -266,13 +266,14 @@ export class UsersComponent implements OnInit {
           this.bs.deleteUsers(usersToDelete).subscribe(
             respOk => {
               if (respOk !== false) {
-                this.snackBar.open('Nutzer gelöscht', '', {duration: 1000});
+                this.snackBar.open('Nutzer gelöscht', '', { duration: 1000 });
                 this.updateObjectList();
               } else {
                 this.mds.setSpinnerOff();
-                this.snackBar.open('Konnte Nutzer nicht löschen', 'Fehler', {duration: 2000});
+                this.snackBar.open('Konnte Nutzer nicht löschen', 'Fehler', { duration: 2000 });
               }
-            });
+            }
+          );
         }
       });
     }

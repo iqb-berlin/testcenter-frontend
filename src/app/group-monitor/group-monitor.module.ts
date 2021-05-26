@@ -15,16 +15,20 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { CdkTableModule } from '@angular/cdk/table';
 
+import { IqbComponentsModule } from 'iqb-components';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { GroupMonitorRoutingModule } from './group-monitor-routing.module';
 import { GroupMonitorComponent } from './group-monitor.component';
 import { BackendService } from './backend.service';
-import { BookletService } from './booklet.service';
-import { TestViewComponent } from './test-view/test-view.component';
+import { BookletService } from './booklet/booklet.service';
+import { TestSessionComponent } from './test-session/test-session.component';
+import { TestSessionManager } from './test-session-manager/test-session-manager.service';
+import { AlertModule } from '../shared/alert/alert.module';
 
 @NgModule({
   declarations: [
     GroupMonitorComponent,
-    TestViewComponent
+    TestSessionComponent
   ],
   imports: [
     CommonModule,
@@ -42,11 +46,15 @@ import { TestViewComponent } from './test-view/test-view.component';
     MatRadioModule,
     FormsModule,
     MatSidenavModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatSlideToggleModule,
+    IqbComponentsModule,
+    AlertModule
   ],
   providers: [
     BackendService,
-    BookletService
+    BookletService,
+    TestSessionManager
   ]
 })
 export class GroupMonitorModule {

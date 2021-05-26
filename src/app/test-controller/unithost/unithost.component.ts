@@ -45,7 +45,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   constructor(
     public tcs: TestControllerService,
     private mds: MainDataService,
-    public cts: CustomtextService,
     private bs: BackendService,
     private route: ActivatedRoute
   ) { }

@@ -110,11 +110,13 @@ export class BackendService {
   }
 
   notifyDyingTest(testId: string): void {
-    // TODO add auth or change end point
     if (navigator.sendBeacon) {
-      navigator.sendBeacon(`${this.serverUrl}test/${testId}/state`, JSON.stringify(<StateReportEntry>{
-        key: TestStateKey.FOCUS, timeStamp: Date.now(), content: AppFocusState.DEAD
-      }));
+      navigator.sendBeacon(this.serverUrl + `test/${testId}/connection-lost`);
+    } else {
+      fetch(this.serverUrl + `test/${testId}/connection-lost`, {
+        keepalive: true,
+        method: 'POST'
+      });
     }
   }
 

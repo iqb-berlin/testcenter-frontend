@@ -1,10 +1,13 @@
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
 import { TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { BookletService } from './booklet.service';
-import { BackendService } from './backend.service';
+import { BackendService } from '../backend.service';
 
 class MockBackendService {
-  public getBooklet(bookletName: string): Observable<string> {
+  // eslint-disable-next-line class-methods-use-this,@typescript-eslint/no-unused-vars
+  getBooklet(_: string): Observable<string> {
     return of('<booklet>TODO insert nice booklet</booklet>');
   }
 }
@@ -20,7 +23,8 @@ describe('BookletService', () => {
           provide: BackendService,
           useValue: new MockBackendService()
         }
-      ]
+      ],
+      imports: [MatTableModule, MatIconModule]
     });
     service = TestBed.inject(BookletService);
   });
@@ -50,7 +54,8 @@ describe('BookletService', () => {
   });
 
   describe('XML functions', () => {
-    xit('xmlGetChildTextIfExists() should return a child element\'s text of a given name from a domElement if that exists', () => {
+    xit('xmlGetChildTextIfExists() should return a child element\'s text ' +
+      'of a given name from a domElement if that exists', () => {
       // TODO implement unit.test
     });
 
@@ -67,19 +72,23 @@ describe('BookletService', () => {
       const testXml = '<root><a>x<b>x</b><b /><b></b></a><b><!-- ! --><c>x</c>x</b><a><b></b></a>x</root>';
       const testContent = domParser.parseFromString(testXml, 'text/xml').documentElement;
 
-      let result = BookletService['xmlCountChildrenOfTagNames'](testContent, ['a']);
+      // access to private function
+      // eslint-disable-next-line @typescript-eslint/dot-notation, prefer-destructuring
+      const xmlCountChildrenOfTagNames = BookletService['xmlCountChildrenOfTagNames'];
+
+      let result = xmlCountChildrenOfTagNames(testContent, ['a']);
       expect(result).withContext('a').toEqual(2);
 
-      result = BookletService['xmlCountChildrenOfTagNames'](testContent, ['b']);
+      result = xmlCountChildrenOfTagNames(testContent, ['b']);
       expect(result).withContext('b').toEqual(5);
 
-      result = BookletService['xmlCountChildrenOfTagNames'](testContent, ['c']);
+      result = xmlCountChildrenOfTagNames(testContent, ['c']);
       expect(result).withContext('c').toEqual(1);
 
-      result = BookletService['xmlCountChildrenOfTagNames'](testContent, ['d']);
+      result = xmlCountChildrenOfTagNames(testContent, ['d']);
       expect(result).withContext('c').toEqual(0);
 
-      result = BookletService['xmlCountChildrenOfTagNames'](testContent, ['a', 'b', 'c', 'd']);
+      result = xmlCountChildrenOfTagNames(testContent, ['a', 'b', 'c', 'd']);
       expect(result).withContext('c').toEqual(8);
     });
   });

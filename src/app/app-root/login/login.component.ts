@@ -11,15 +11,18 @@ import { BackendService } from '../../backend.service';
   templateUrl: './login.component.html',
   styles: [
     'mat-card {margin: 10px;}',
-    '.mat-card-gray {background-color: lightgray}'
+    '.mat-card-gray {background-color: lightgray}',
+    '#toggle-show-password {cursor: pointer}'
   ]
 })
 
 export class LoginComponent implements OnInit, OnDestroy {
   static oldLoginName = '';
   private routingSubscription: Subscription = null;
+  private systemAnnouncementSubscription: Subscription = null;
   returnTo = '';
   problemText = '';
+  showPassword = false;
 
   loginForm = new FormGroup({
     name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -30,20 +33,18 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   constructor(
     public mds: MainDataService,
-    public cts: CustomtextService,
     private bs: BackendService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cts: CustomtextService
   ) { }
 
   ngOnInit(): void {
     this.mds.setSpinnerOff();
-    this.routingSubscription = this.route.params.subscribe(params => {
-      this.returnTo = params.returnTo;
-    });
-    setTimeout(() => { // the timeout is  avery temporary fix.- after upgrading to iqb-components 3, it can be removed
-      this.systemAnnouncement = this.cts.getCustomText('system_announcement', '-');
-    }, 500);
+    this.routingSubscription = this.route.params
+      .subscribe(params => { this.returnTo = params.returnTo; });
+    this.systemAnnouncementSubscription = <Subscription> this.cts.getCustomText$('system_announcement')
+      .subscribe(text => { this.systemAnnouncement = text || '-'; });
   }
 
   login(): void {
@@ -57,7 +58,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         if (typeof authData === 'number') {
           const errCode = authData as number;
           if (errCode === 400) {
-            this.problemText = 'Anmeldedaten sind nicht gültig. Bitte nocheinmal versuchen!';
+            this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';
           } else if (errCode === 202 || errCode === 204) {
             this.problemText = 'Anmeldedaten sind gültig, aber es sind keine Arbeitsbereiche oder Tests freigegeben.';
           } else {
@@ -67,7 +68,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         } else {
           const authDataTyped = authData as AuthData;
           this.mds.setAuthData(authDataTyped);
-
           if (this.returnTo) {
             this.router.navigateByUrl(this.returnTo).then(navOk => {
               if (!navOk) {

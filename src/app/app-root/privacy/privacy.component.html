@@ -2,12 +2,12 @@
 <div class="root-body">
   <div fxLayout="row" fxLayoutAlign="center start">
     <mat-card fxFlex="0 0 500px">
-      <mat-card-title>{{ 'app_title' | customtext:'app_title':cts.updateCount }} - Impressum/Datenschutz</mat-card-title>
+      <mat-card-title>{{ 'app_title' | customtext:'app_title' | async }} - Impressum/Datenschutz</mat-card-title>
 
       <!-- - - - - - - - - - - - - - - - - -->
       <mat-card-content>
         <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
-          {{ 'app_intro1' | customtext:'app_intro1':cts.updateCount }}</p>
+          {{ 'app_intro1' | customtext:'app_intro1' | async }}</p>
 
         <p>Die mit diesem System erhobenen Daten enthalten grundsätzlich keinen direkten
           Personenbezug. Es werden z. B. nie Namen gespeichert. Um Auskünfte zu einer bestimmten Befragung bzw. Studie
