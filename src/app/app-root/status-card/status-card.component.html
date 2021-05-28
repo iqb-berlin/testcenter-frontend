@@ -10,18 +10,4 @@
     </ul>
   </div>
   <p *ngIf="!loginName"><b>Status: Derzeit nicht angemeldet.</b></p>
-  <p style="margin-bottom: 0;"><b>Angaben zu dieser Web-Anwendung:</b></p>
-  <ul style="margin: 0;">
-    <li *ngIf="!isProductionMode">Build-Modus: Dev</li>
-    <li>Version {{appVersion}}</li>
-    <li>API: Version {{mds.appConfig?.detectedApiVersion}}, {{mds.expectedApiVersion}} erforderlich</li>
-    <li>Broadcasting-Service: {{mds.appConfig?.broadcastingService.status}}
-      <span *ngIf="mds.appConfig?.broadcastingService.version">
-        - Version {{mds.appConfig?.broadcastingService.version}},
-        {{mds.appConfig?.broadcastingService.versionExpected}} erforderlich
-      </span>
-    </li>
-    <li>Verona Player Interface: Version {{veronaApiVersionSupported}}</li>
-    <li>Copyright: {{appPublisher}}</li>
-  </ul>
 </div>

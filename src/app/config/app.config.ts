@@ -55,11 +55,19 @@ export class AppConfig {
     Object.keys(customTextsDefault).forEach(k => {
       ctSettings[k] = customTextsDefault[k].defaultvalue;
       if (k === 'app_title') this.app_title = customTextsDefault[k].defaultvalue;
+      if (k === 'app_intro1') {
+        this.intro_html = customTextsDefault[k].defaultvalue;
+        this.impressum_html = customTextsDefault[k].defaultvalue;
+      }
     });
     if (sysConfig) {
       Object.keys(sysConfig.customTexts).forEach(k => {
         ctSettings[k] = sysConfig.customTexts[k];
         if (k === 'app_title') this.app_title = sysConfig.customTexts[k];
+        if (k === 'app_intro1') {
+          this.intro_html = sysConfig.customTexts[k];
+          this.impressum_html = sysConfig.customTexts[k];
+        }
       });
       if (sysConfig.app_title) this.app_title = sysConfig.app_title;
       if (sysConfig.mainLogo) this.mainLogo = sysConfig.mainLogo;

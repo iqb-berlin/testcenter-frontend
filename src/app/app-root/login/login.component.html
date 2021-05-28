@@ -30,9 +30,7 @@
     <mat-card-title>{{ 'IQB-Testcenter' | customtext:'app_title' | async }}</mat-card-title>
 
     <mat-card-content>
-      <p>Das <a href="http://www.iqb.hu-berlin.de" target="_blank">Institut zur Qualitätsentwicklung im Bildungswesen</a>
-        {{ '' | customtext:'app_intro1' | async }}</p>
-
+      <div [innerHTML]="mds.appConfig?.trusted_intro_html"></div>
       <status-card></status-card>
     </mat-card-content>
     <mat-card-actions>

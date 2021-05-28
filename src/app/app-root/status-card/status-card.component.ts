@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MainDataService } from '../../maindata.service';
 import { AuthAccessKeyType, AuthFlagType } from '../../app.interfaces';
 
@@ -11,11 +11,6 @@ export class StatusCardComponent implements OnInit {
   loginAuthority: string[] = [];
 
   constructor(
-    @Inject('APP_NAME') public appName: string,
-    @Inject('APP_PUBLISHER') public appPublisher: string,
-    @Inject('APP_VERSION') public appVersion: string,
-    @Inject('VERONA_API_VERSION_SUPPORTED') public veronaApiVersionSupported: string,
-    @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
     public mds: MainDataService
   ) { }
 
