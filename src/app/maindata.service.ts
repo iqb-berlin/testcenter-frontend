@@ -1,15 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { CustomtextService } from 'iqb-components';
 import {
   AppError,
   AuthData, KeyValuePairs
 } from './app.interfaces';
-import { BackendService } from './backend.service';
-import { AppConfig, BroadCastingServiceInfo } from './config/app.config';
+import { AppConfig, localStorageTestConfigKey } from './config/app.config';
 
 const localStorageAuthDataKey = 'iqb-tc-a';
-const localStorageTestConfigKey = 'iqb-tc-c';
 
 @Injectable({
   providedIn: 'root'
@@ -20,9 +18,6 @@ export class MainDataService {
   errorReportingSilent = false;
   isSpinnerOn$ = new BehaviorSubject<boolean>(false);
   progressVisualEnabled = true;
-  isApiValid = true;
-  apiVersion: string;
-  broadcastingServiceInfo: BroadCastingServiceInfo = { status: 'none' };
   appConfig: AppConfig = null;
   sysCheckAvailable = false;
 
@@ -74,11 +69,9 @@ export class MainDataService {
   }
 
   constructor(
-    private bs: BackendService,
+    @Inject('API_VERSION_EXPECTED') readonly expectedApiVersion: string,
     private cts: CustomtextService
-  ) {
-    this.appConfig = new AppConfig(cts);
-  }
+  ) { }
 
   setSpinnerOn(): void {
     this.isSpinnerOn$.next(true);
@@ -96,14 +89,6 @@ export class MainDataService {
       localStorage.setItem(localStorageAuthDataKey, JSON.stringify(authData));
     } else {
       localStorage.removeItem(localStorageAuthDataKey);
-    }
-  }
-
-  setTestConfig(testConfig: KeyValuePairs = null): void {
-    if (testConfig) {
-      localStorage.setItem(localStorageTestConfigKey, JSON.stringify(testConfig));
-    } else {
-      localStorage.removeItem(localStorageTestConfigKey);
     }
   }
 }

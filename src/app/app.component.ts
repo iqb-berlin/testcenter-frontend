@@ -1,11 +1,13 @@
 import {
-  Component, Inject, OnDestroy, OnInit
+  Component, OnDestroy, OnInit
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CustomtextService } from 'iqb-components';
+import { DomSanitizer } from '@angular/platform-browser';
 import { MainDataService } from './maindata.service';
 import { BackendService } from './backend.service';
 import { AppError } from './app.interfaces';
+import { AppConfig } from './config/app.config';
 
 @Component({
   selector: 'tc-root',
@@ -14,7 +16,6 @@ import { AppError } from './app.interfaces';
 
 export class AppComponent implements OnInit, OnDestroy {
   private appErrorSubscription: Subscription = null;
-
   showError = false;
 
   errorData: AppError;
@@ -23,40 +24,8 @@ export class AppComponent implements OnInit, OnDestroy {
     public mds: MainDataService,
     private bs: BackendService,
     private cts: CustomtextService,
-    @Inject('API_VERSION_EXPECTED') private readonly expectedApiVersion: string
+    private sanitizer: DomSanitizer
   ) { }
-
-  private static isValidVersion(expectedVersion: string, reportedVersion: string): boolean {
-    if (expectedVersion) {
-      const searchPattern = /\d+/g;
-      const expectedVersionNumbers = expectedVersion.match(searchPattern);
-      if (expectedVersionNumbers) {
-        if (reportedVersion) {
-          const reportedVersionNumbers = reportedVersion.match(searchPattern);
-          if (reportedVersionNumbers) {
-            if (reportedVersionNumbers[0] !== expectedVersionNumbers[0]) {
-              return false;
-            }
-            if (expectedVersionNumbers.length > 1) {
-              if ((reportedVersionNumbers.length < 2) || +reportedVersionNumbers[1] < +expectedVersionNumbers[1]) {
-                return false;
-              }
-              if ((expectedVersionNumbers.length > 2) && reportedVersionNumbers[1] === expectedVersionNumbers[1]) {
-                if ((reportedVersionNumbers.length < 3) || +reportedVersionNumbers[2] < +expectedVersionNumbers[2]) {
-                  return false;
-                }
-              }
-            }
-          } else {
-            return false;
-          }
-        } else {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
 
   closeErrorBox(): void {
     this.showError = false;
@@ -64,8 +33,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mds.appConfig.setDefaultCustomTexts();
-
       this.appErrorSubscription = this.mds.appError$.subscribe(err => {
         if (err && !this.mds.errorReportingSilent) {
           this.errorData = err;
@@ -86,33 +53,28 @@ export class AppComponent implements OnInit, OnDestroy {
       this.setupFocusListeners();
 
       this.bs.getSysConfig().subscribe(sysConfig => {
+        this.mds.appConfig = new AppConfig(sysConfig, this.cts, this.mds.expectedApiVersion, this.sanitizer);
         if (!sysConfig) {
-          this.mds.isApiValid = false; // push on this.mds.appError$ ?
+          this.mds.appError$.next({
+            label: 'Server-Problem: Konnte Konfiguration nicht laden',
+            description: 'getSysConfig ist fehlgeschlagen',
+            category: 'FATAL'
+          });
           return;
         }
-        this.cts.addCustomTexts(sysConfig.customTexts);
         const authData = MainDataService.getAuthData();
         if (authData) {
           this.cts.addCustomTexts(authData.customTexts);
         }
 
-        if (sysConfig.broadcastingService && sysConfig.broadcastingService.status) {
-          this.mds.broadcastingServiceInfo = sysConfig.broadcastingService;
-        }
-        this.mds.isApiValid = AppComponent.isValidVersion(this.expectedApiVersion, sysConfig.version);
-        this.mds.apiVersion = sysConfig.version;
-
-        if (!this.mds.isApiValid) {
+        if (!this.mds.appConfig.isValidApiVersion) {
           this.mds.appError$.next({
             label: 'Server-Problem: API-Version ungültig',
-            description: `erwartet: ${this.expectedApiVersion}, gefunden: ${sysConfig.version}`,
+            description:
+              `erwartet: ${this.mds.expectedApiVersion}, gefunden: ${this.mds.appConfig.detectedApiVersion}`,
             category: 'FATAL'
           });
         }
-
-        // TODO implement SysConfig.mainLogo
-
-        this.mds.setTestConfig(sysConfig.testConfig);
       });
 
       this.bs.getSysCheckInfo().subscribe(sysCheckConfigs => {
