@@ -12,7 +12,8 @@ import { BackendService } from '../../backend.service';
   styles: [
     'mat-card {margin: 10px;}',
     '.mat-card-gray {background: var(--tc-box-background)}',
-    '#toggle-show-password {cursor: pointer}'
+    '#toggle-show-password {cursor: pointer}',
+    '.mat-card-header {background-color: salmon; padding: 4px;}'
   ]
 })
 

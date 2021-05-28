@@ -88,6 +88,7 @@ export class AppComponent implements OnInit, OnDestroy {
             category: 'FATAL'
           });
         }
+        this.mds.globalWarning = this.mds.appConfig.getWarningMessage();
       });
 
       this.bs.getSysCheckInfo().subscribe(sysCheckConfigs => {

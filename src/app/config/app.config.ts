@@ -129,4 +129,14 @@ export class AppConfig {
     }
     return false;
   }
+
+  getWarningMessage(): string {
+    if (this.global_warning_expired_day) {
+      const calcTimePoint = new Date(this.global_warning_expired_day);
+      calcTimePoint.setHours(calcTimePoint.getHours() + Number(this.global_warning_expired_hour));
+      const now = new Date(Date.now());
+      return calcTimePoint < now ? this.global_warning : '';
+    }
+    return this.global_warning;
+  }
 }

@@ -22,7 +22,7 @@ export class MainDataService {
   sysCheckAvailable = false;
   appTitle$ = new BehaviorSubject<string>('IQB-Testcenter');
   appSubTitle$ = new BehaviorSubject<string>('');
-
+  globalWarning = '';
   defaultTcHeaderHeight = document.documentElement.style.getPropertyValue('--tc-header-height');
   defaultTcUnitTitleHeight = document.documentElement.style.getPropertyValue('--tc-unit-title-height');
   defaultTcUnitPageNavHeight = document.documentElement.style.getPropertyValue('--tc-unit-page-nav-height');
