@@ -11,7 +11,7 @@ import { BackendService } from '../../backend.service';
   templateUrl: './login.component.html',
   styles: [
     'mat-card {margin: 10px;}',
-    '.mat-card-gray {background-color: lightgray}',
+    '.mat-card-gray {background: var(--tc-box-background)}',
     '#toggle-show-password {cursor: pointer}'
   ]
 })

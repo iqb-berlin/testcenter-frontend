@@ -11,7 +11,8 @@ export interface SysConfig {
   serverTimestamp: number;
   broadcastingService: BroadCastingServiceInfo;
   app_title: string;
-  background_color: string;
+  background_body: string;
+  background_box: string;
   intro_html: string;
   impressum_html: string;
   global_warning: string;
@@ -35,7 +36,8 @@ export class AppConfig {
   serverTimestamp = 0;
   broadcastingService: BroadCastingServiceInfo = { status: 'none' };
   app_title = 'IQB-Testcenter';
-  background_color: string;
+  background_body: string;
+  background_box: string;
   intro_html = 'Einführungstext nicht definiert';
   trusted_intro_html: SafeUrl = null;
   impressum_html = 'Impressum/Datenschutz nicht definiert';
@@ -71,7 +73,14 @@ export class AppConfig {
       });
       if (sysConfig.app_title) this.app_title = sysConfig.app_title;
       if (sysConfig.mainLogo) this.mainLogo = sysConfig.mainLogo;
-      this.background_color = sysConfig.background_color;
+      if (sysConfig.background_body) {
+        this.background_body = sysConfig.background_body;
+        document.documentElement.style.setProperty('--tc-body-background', this.background_body);
+      }
+      if (sysConfig.background_box) {
+        this.background_box = sysConfig.background_box;
+        document.documentElement.style.setProperty('--tc-box-background', this.background_box);
+      }
       this.isValidApiVersion = AppConfig.checkApiVersion(sysConfig.version, expectedApiVersion);
       this.detectedApiVersion = sysConfig.version;
       if (sysConfig.intro_html) this.intro_html = sysConfig.intro_html;
