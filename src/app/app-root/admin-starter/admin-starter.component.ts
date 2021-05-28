@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { from, Subscription } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
-import { CustomtextService } from 'iqb-components';
 import { BackendService } from '../../backend.service';
 import { AuthAccessKeyType, AuthData, WorkspaceData } from '../../app.interfaces';
 import { MainDataService } from '../../maindata.service';
@@ -23,11 +22,12 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private bs: BackendService,
-    private mds: MainDataService
+    public mds: MainDataService
   ) { }
 
   ngOnInit(): void {
     setTimeout(() => {
+      this.mds.appSubTitle$.next('Verwaltung: Bitte Arbeitsbereich wählen');
       this.mds.setSpinnerOn();
       this.bs.getSessionData().subscribe(authDataUntyped => {
         if (this.getWorkspaceDataSubscription !== null) {

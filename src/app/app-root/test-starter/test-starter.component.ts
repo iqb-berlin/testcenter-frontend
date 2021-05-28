@@ -15,17 +15,19 @@ export class TestStarterComponent implements OnInit, OnDestroy {
   booklets: BookletData[] = [];
   openTestletsCount = 0;
   private getBookletDataSubscription: Subscription = null;
-  public bookletSelectTitle = 'Bitte wählen';
+  bookletSelectTitle = 'Bitte wählen';
   problemText = '';
 
   constructor(
     private router: Router,
     private bs: BackendService,
-    private mds: MainDataService
+    private cts:CustomtextService,
+    public mds: MainDataService
   ) { }
 
   ngOnInit(): void {
     setTimeout(() => {
+      this.mds.appSubTitle$.next('');
       this.mds.setSpinnerOn();
       this.bs.getSessionData().subscribe(authDataUntyped => {
         if (typeof authDataUntyped !== 'number') {
@@ -53,6 +55,13 @@ export class TestStarterComponent implements OnInit, OnDestroy {
                     },
                     () => {
                       this.problemText = this.booklets.length ? '' : 'Für diese Anmeldung wurde kein Test gefunden.';
+                      if (this.openTestletsCount <= 0) {
+                        this.mds.appSubTitle$.next(this.cts.getCustomText('login_bookletSelectPromptNull'));
+                      } else if (this.openTestletsCount === 1) {
+                        this.mds.appSubTitle$.next(this.cts.getCustomText('login_bookletSelectPromptOne'));
+                      } else {
+                        this.mds.appSubTitle$.next(this.cts.getCustomText('login_bookletSelectPromptMany'));
+                      }
                       this.mds.setSpinnerOff();
                     }
                   );

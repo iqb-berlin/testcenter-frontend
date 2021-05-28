@@ -118,7 +118,7 @@
 
   "gm_headline": {
     "label": "Überschrift: Gruppenmonitor",
-    "defaultvalue": "IQB-Testcenter Gruppenüberwachung"
+    "defaultvalue": "Gruppenüberwachung"
   },
   "gm_menu_filter": {
     "label": "Meinueintrag: Sitzungen ausblenden",

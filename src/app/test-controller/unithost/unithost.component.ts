@@ -4,7 +4,6 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { CustomtextService } from 'iqb-components';
 import {
   PageData,
   TestStateKey,
@@ -26,10 +25,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private iFrameHostElement: HTMLElement;
   private iFrameItemplayer: HTMLIFrameElement;
   private routingSubscription: Subscription = null;
-  public leaveWarning = false;
+  leaveWarning = false;
 
-  public unitTitle = '';
-  public showPageNav = false;
+  unitTitle = '';
+  showPageNav = false;
 
   private myUnitSequenceId = -1;
   private myUnitDbKey = '';
@@ -39,7 +38,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private postMessageTarget: Window = null;
   private pendingUnitData: PendingUnitData = null;
 
-  public pageList: PageData[] = [];
+  pageList: PageData[] = [];
   private knownPages: string[];
 
   constructor(
@@ -49,7 +48,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     setTimeout(() => {
       this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
         const msgData = m.data;
@@ -118,7 +117,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
                   const { unitState } = msgData;
                   const { presentationProgress } = unitState;
                   if (presentationProgress) {
-                    this.tcs.updateUnitStatePresentationProgress(this.myUnitDbKey, this.myUnitSequenceId, presentationProgress);
+                    this.tcs.updateUnitStatePresentationProgress(this.myUnitDbKey,
+                      this.myUnitSequenceId, presentationProgress);
                   }
                   const { responseProgress } = unitState;
                   if (responseProgress) {
@@ -170,7 +170,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.routingSubscription = this.route.params.subscribe(params => {
         this.myUnitSequenceId = Number(params.u);
         this.tcs.currentUnitSequenceId = this.myUnitSequenceId;
-
+        this.mds.appSubTitle$.next(`Seite ${this.myUnitSequenceId}`);
         while (this.iFrameHostElement.hasChildNodes()) {
           this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
         }
@@ -201,8 +201,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
           this.pendingUnitData = {
             playerId: this.itemplayerSessionId,
-            unitDefinition: this.tcs.hasUnitDefinition(this.myUnitSequenceId) ? this.tcs.getUnitDefinition(this.myUnitSequenceId) : null,
-            unitState: this.tcs.hasUnitStateData(this.myUnitSequenceId) ? this.tcs.getUnitStateData(this.myUnitSequenceId) : null
+            unitDefinition: this.tcs.hasUnitDefinition(this.myUnitSequenceId) ?
+              this.tcs.getUnitDefinition(this.myUnitSequenceId) : null,
+            unitState: this.tcs.hasUnitStateData(this.myUnitSequenceId) ?
+              this.tcs.getUnitStateData(this.myUnitSequenceId) : null
           };
           this.leaveWarning = false;
           this.iFrameHostElement.appendChild(this.iFrameItemplayer);
@@ -213,7 +215,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:resize')
-  public onResize(): any {
+  onResize(): any {
     if (this.iFrameItemplayer && this.iFrameHostElement) {
       const divHeight = this.iFrameHostElement.clientHeight;
       this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
@@ -221,7 +223,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  setPageList(validPages: string[], currentPage: string) {
+  setPageList(validPages: string[], currentPage: string): void {
     if ((validPages instanceof Array)) {
       this.knownPages = validPages.length ? validPages : [];
       const newPageList: PageData[] = [];
@@ -277,7 +279,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.showPageNav = this.pageList.length > 0;
   }
 
-  gotoPage(action: string, index = 0) {
+  gotoPage(action: string, index = 0): void {
     let nextPageId = '';
     // currentpage is detected by disabled-attribute of page
     if (action === '#next') {
@@ -320,7 +322,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
     }

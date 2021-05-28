@@ -16,18 +16,19 @@ import {
 export class MonitorStarterComponent implements OnInit, OnDestroy {
   accessObjects: { [accessType: string]: (AccessObject|BookletData)[] } = {};
   private getMonitorDataSubscription: Subscription = null;
-  public AuthAccessKeyType = AuthAccessKeyType;
-  public problemText: string;
+  AuthAccessKeyType = AuthAccessKeyType;
+  problemText: string;
 
   constructor(
     private router: Router,
     private bs: BackendService,
     public cts: CustomtextService,
-    private mds: MainDataService
+    public mds: MainDataService
   ) { }
 
   ngOnInit(): void {
     setTimeout(() => {
+      this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline'));
       this.mds.setSpinnerOn();
       this.bs.getSessionData().subscribe(authDataUntyped => {
         if (typeof authDataUntyped === 'number') {

@@ -23,6 +23,7 @@ export class SysCheckComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => this.mds.appSubTitle$.next('System-Check'));
     this.route.paramMap.subscribe((params: ParamMap) => {
       const sysCheckId = params.get('sys-check-name');
       const workspaceId = parseInt(params.get('workspace-id'), 10);
@@ -32,6 +33,7 @@ export class SysCheckComponent implements OnInit {
           this.ds.checkConfig = checkConfig;
           if (checkConfig) {
             this.checkLabel = checkConfig.label;
+            this.mds.appSubTitle$.next(`System-Check ${this.checkLabel}`);
             if (checkConfig.customTexts.length > 0) {
               const myCustomTexts: { [key: string]: string } = {};
               checkConfig.customTexts.forEach(ct => {

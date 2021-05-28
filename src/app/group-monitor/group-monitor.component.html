@@ -1,6 +1,6 @@
 <div class="page-header">
   <p>
-    {{'IQB-Testcenter Gruppenüberwachung' | customtext:'gm_headline' | async}} -
+    {{mds.appTitle$ | async}} {{mds.appSubTitle$ | async}} -
     <span *ngIf="ownGroup$ | async as ownGroup">{{ownGroup.label}}</span>
   </p>
   <span class="fill-remaining-space"></span>

@@ -1,9 +1,9 @@
 import {
   Component, OnDestroy, OnInit
 } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, combineLatest } from 'rxjs';
 import { CustomtextService } from 'iqb-components';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, Title } from '@angular/platform-browser';
 import { MainDataService } from './maindata.service';
 import { BackendService } from './backend.service';
 import { AppError } from './app.interfaces';
@@ -16,6 +16,7 @@ import { AppConfig } from './config/app.config';
 
 export class AppComponent implements OnInit, OnDestroy {
   private appErrorSubscription: Subscription = null;
+  private appTitleSubscription: Subscription = null;
   showError = false;
 
   errorData: AppError;
@@ -24,6 +25,7 @@ export class AppComponent implements OnInit, OnDestroy {
     public mds: MainDataService,
     private bs: BackendService,
     private cts: CustomtextService,
+    private titleService: Title,
     private sanitizer: DomSanitizer
   ) { }
 
@@ -39,6 +41,16 @@ export class AppComponent implements OnInit, OnDestroy {
           this.showError = true;
         }
       });
+      this.appTitleSubscription = combineLatest([this.mds.appTitle$, this.mds.appSubTitle$, this.mds.isSpinnerOn$])
+        .subscribe(titles => {
+          if (titles[2]) {
+            this.titleService.setTitle(`${titles[0]} | Bitte warten}`);
+          } else if (titles[1]) {
+            this.titleService.setTitle(`${titles[0]} | ${titles[1]}`);
+          } else {
+            this.titleService.setTitle(titles[0]);
+          }
+        });
 
       window.addEventListener('message', (event: MessageEvent) => {
         const msgData = event.data;
@@ -54,6 +66,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
       this.bs.getSysConfig().subscribe(sysConfig => {
         this.mds.appConfig = new AppConfig(sysConfig, this.cts, this.mds.expectedApiVersion, this.sanitizer);
+        this.mds.appTitle$.next(this.mds.appConfig.app_title);
         if (!sysConfig) {
           this.mds.appError$.next({
             label: 'Server-Problem: Konnte Konfiguration nicht laden',
@@ -121,6 +134,9 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.appErrorSubscription !== null) {
       this.appErrorSubscription.unsubscribe();
+    }
+    if (this.appTitleSubscription !== null) {
+      this.appTitleSubscription.unsubscribe();
     }
   }
 }

@@ -20,6 +20,7 @@ export class SysCheckStarterComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
+      this.mds.appSubTitle$.next('System-Check Auswahl');
       this.loading = true;
       this.mds.setSpinnerOn();
       this.bs.getSysCheckInfo().subscribe(myConfigs => {

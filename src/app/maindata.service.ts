@@ -20,6 +20,8 @@ export class MainDataService {
   progressVisualEnabled = true;
   appConfig: AppConfig = null;
   sysCheckAvailable = false;
+  appTitle$ = new BehaviorSubject<string>('IQB-Testcenter');
+  appSubTitle$ = new BehaviorSubject<string>('');
 
   defaultTcHeaderHeight = document.documentElement.style.getPropertyValue('--tc-header-height');
   defaultTcUnitTitleHeight = document.documentElement.style.getPropertyValue('--tc-unit-title-height');

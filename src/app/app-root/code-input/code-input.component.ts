@@ -35,6 +35,7 @@ export class CodeInputComponent implements OnInit {
   // eslint-disable-next-line class-methods-use-this
   ngOnInit(): void {
     setTimeout(() => {
+      this.mds.appSubTitle$.next('Bitte Code eingeben');
       const element = <HTMLElement>document.querySelector('.mat-input-element[formControlName="code"]');
       if (element) {
         element.focus();

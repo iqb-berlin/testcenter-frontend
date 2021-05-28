@@ -1,6 +1,7 @@
 <div fxLayout="row wrap" fxLayoutAlign="center stretch">
   <mat-card fxFlex="0 0 400px" fxLayout="column">
-    <mat-card-title>Verwaltung: Bitte Studie wählen</mat-card-title>
+    <mat-card-title>Verwaltung</mat-card-title>
+    <mat-card-subtitle>Bitte Arbeitsbereich wählen</mat-card-subtitle>
     <mat-card-content>
       <div fxLayoutGap="10px" fxLayout="column">
         <p *ngIf="workspaces.length === 0">
@@ -19,7 +20,7 @@
   </mat-card>
 
   <mat-card fxFlex="0 0 400px" class="mat-card-gray">
-    <mat-card-title>{{ 'app_title' | customtext:'app_title' | async }}</mat-card-title>
+    <mat-card-title>{{mds.appTitle$ | async}} {{mds.appSubTitle$ | async}}</mat-card-title>
 
     <mat-card-content>
 

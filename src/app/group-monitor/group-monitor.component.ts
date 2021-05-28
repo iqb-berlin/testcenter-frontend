@@ -19,6 +19,7 @@ import {
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { ConnectionStatus } from '../shared/websocket-backend.service';
 import { BookletUtil } from './booklet/booklet.util';
+import { MainDataService } from '../maindata.service';
 
 @Component({
   selector: 'app-group-monitor',
@@ -60,7 +61,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     private bs: BackendService,
     public tsm: TestSessionManager,
     private router: Router,
-    private cts: CustomtextService
+    private cts: CustomtextService,
+    public mds: MainDataService
   ) {}
 
   ngOnInit(): void {
@@ -85,6 +87,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     ];
 
     this.connectionStatus$ = this.bs.connectionStatus$;
+    this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline'));
   }
 
   private commandResponseToMessage(commandResponse: CommandResponse): UIMessage {

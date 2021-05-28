@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MainDataService } from '../../maindata.service';
 
 @Component({
@@ -7,7 +7,7 @@ import { MainDataService } from '../../maindata.service';
     'mat-card {margin: 10px}'
   ]
 })
-export class PrivacyComponent {
+export class PrivacyComponent implements OnInit {
   constructor(
     @Inject('APP_NAME') public appName: string,
     @Inject('APP_PUBLISHER') public appPublisher: string,
@@ -16,4 +16,8 @@ export class PrivacyComponent {
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
     public mds: MainDataService
   ) { }
+
+  ngOnInit(): void {
+    setTimeout(() => this.mds.appSubTitle$.next('Impressum/Datenschutz'));
+  }
 }

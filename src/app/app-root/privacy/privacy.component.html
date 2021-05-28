@@ -1,7 +1,7 @@
 <div class="root-body">
   <div fxLayout="row" fxLayoutAlign="center start">
     <mat-card fxFlex="0 0 500px">
-      <mat-card-title>{{ 'app_title' | customtext:'app_title' | async }} - Impressum/Datenschutz</mat-card-title>
+      <mat-card-title>{{mds.appTitle$ | async}} {{mds.appSubTitle$ | async}}</mat-card-title>
 
       <!-- - - - - - - - - - - - - - - - - -->
       <mat-card-content>
