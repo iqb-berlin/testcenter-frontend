@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CustomtextService } from 'iqb-components';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MainDataService } from '../../maindata.service';
@@ -20,7 +19,6 @@ import { BackendService } from '../../backend.service';
 export class LoginComponent implements OnInit, OnDestroy {
   static oldLoginName = '';
   private routingSubscription: Subscription = null;
-  private systemAnnouncementSubscription: Subscription = null;
   returnTo = '';
   problemText = '';
   showPassword = false;
@@ -30,14 +28,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     pw: new FormControl('')
   });
 
-  systemAnnouncement: string = '-';
-
   constructor(
     public mds: MainDataService,
     private bs: BackendService,
     private router: Router,
-    private route: ActivatedRoute,
-    private cts: CustomtextService
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -45,8 +40,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.mds.appSubTitle$.next('Bitte Anmelden');
     this.routingSubscription = this.route.params
       .subscribe(params => { this.returnTo = params.returnTo; });
-    this.systemAnnouncementSubscription = <Subscription> this.cts.getCustomText$('system_announcement')
-      .subscribe(text => { this.systemAnnouncement = text || '-'; });
   }
 
   login(): void {

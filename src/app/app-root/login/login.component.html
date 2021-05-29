@@ -1,7 +1,6 @@
 <div fxLayout="row wrap" fxLayoutAlign="center stretch">
   <mat-card fxFlex="0 0 400px">
     <mat-card-title>Anmelden</mat-card-title>
-    <mat-card-header *ngIf="mds.globalWarning">{{mds.globalWarning}}</mat-card-header>
     <form [formGroup]="loginForm" (ngSubmit)="login()" *ngIf="mds.appConfig?.isValidApiVersion">
       <mat-card-content fxLayout="column">
         <mat-form-field>
@@ -24,7 +23,7 @@
     </form>
     <p style="color: chocolate"><b>{{ problemText }}</b></p>
     <p style="color: chocolate" *ngIf="!mds.appConfig?.isValidApiVersion"><b>Die Verbindung mit dem Server ist nicht möglich.</b></p>
-    <alert *ngIf="systemAnnouncement !== '-'" level="warning" [text]="systemAnnouncement"></alert>
+    <alert *ngIf="mds.globalWarning" level="warning" [text]="mds.globalWarning"></alert>
   </mat-card>
 
   <mat-card fxFlex="0 0 400px" class="mat-card-gray">
