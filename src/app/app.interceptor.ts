@@ -84,6 +84,10 @@ export class AuthInterceptor implements HttpInterceptor {
                   label = 'Die übermittelten Objekte sind fehlerhaft!';
                   break;
 
+                case 423:
+                  label = 'Test is gesperrt!';
+                  break;
+
                 case 500:
                   label = 'Allgemeines Server-Problem.';
                   break;
