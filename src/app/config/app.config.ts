@@ -72,7 +72,7 @@ export class AppConfig {
     this.applyBackgroundColors();
   }
 
-  private setCustomTexts(customTexts: KeyValuePairs): void {
+  setCustomTexts(customTexts: KeyValuePairs): void {
     const ctSettings = {};
     Object.keys(customTextsDefault).forEach(k => {
       ctSettings[k] = customTextsDefault[k].defaultvalue;
@@ -85,7 +85,7 @@ export class AppConfig {
     this.cts.addCustomTexts(ctSettings);
   }
 
-  private setAppConfig(appConfig: Map<string, string>): void {
+  setAppConfig(appConfig: Map<string, string>): void {
     this.app_title = this.cts.getCustomText('app_title');
     if (!this.app_title) this.app_title = 'IQB-Testcenter';
     this.intro_html = this.cts.getCustomText('app_intro1');
@@ -142,7 +142,7 @@ export class AppConfig {
     this.trusted_impressum_html = this.sanitizer.bypassSecurityTrustHtml(this.impressum_html);
   }
 
-  private applyBackgroundColors(): void {
+  applyBackgroundColors(): void {
     document.documentElement.style.setProperty('--tc-body-background', this.background_body);
     document.documentElement.style.setProperty('--tc-box-background', this.background_box);
   }
@@ -173,12 +173,17 @@ export class AppConfig {
     return false;
   }
 
+  static isWarningExpired(warningDay: string, warningHour: string): boolean {
+    const calcTimePoint = new Date(warningDay);
+    calcTimePoint.setHours(calcTimePoint.getHours() + Number(warningHour));
+    const now = new Date(Date.now());
+    return calcTimePoint < now;
+  }
+
   getWarningMessage(): string {
     if (this.global_warning_expired_day) {
-      const calcTimePoint = new Date(this.global_warning_expired_day);
-      calcTimePoint.setHours(calcTimePoint.getHours() + Number(this.global_warning_expired_hour));
-      const now = new Date(Date.now());
-      return calcTimePoint < now ? this.global_warning : '';
+      return AppConfig.isWarningExpired(this.global_warning_expired_day, this.global_warning_expired_hour) ?
+        this.global_warning : '';
     }
     return this.global_warning;
   }

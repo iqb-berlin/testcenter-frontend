@@ -18,6 +18,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { WorkspacesComponent } from './workspaces/workspaces.component';
 import { UsersComponent } from './users/users.component';
@@ -31,6 +33,9 @@ import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace
 import {
   SuperadminPasswordRequestComponent
 } from './superadmin-password-request/superadmin-password-request.component';
+import { SettingsComponent } from './settings/settings.component';
+import { AppConfigComponent } from './settings/app-config.component';
+import { EditCustomTextsComponent } from './settings/edit-custom-texts.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +46,10 @@ import {
     NewworkspaceComponent,
     EditworkspaceComponent,
     WorkspacesComponent,
-    SuperadminPasswordRequestComponent
+    SettingsComponent,
+    SuperadminPasswordRequestComponent,
+    AppConfigComponent,
+    EditCustomTextsComponent
   ],
   imports: [
     CommonModule,
@@ -66,6 +74,8 @@ import {
     MatSnackBarModule,
     MatGridListModule,
     MatCardModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
     FlexLayoutModule
   ],
   exports: [
@@ -78,7 +88,10 @@ import {
     EditworkspaceComponent
   ],
   providers: [
-    BackendService
+    BackendService,
+    [
+      { provide: MAT_DATE_LOCALE, useValue: 'de-DE' }
+    ]
   ]
 })
 export class SuperadminModule { }

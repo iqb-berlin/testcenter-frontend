@@ -12,7 +12,8 @@ export class SuperadminComponent implements OnInit {
 
   navLinks = [
     { path: 'users', label: 'Users' },
-    { path: 'workspaces', label: 'Arbeitsbereiche' }
+    { path: 'workspaces', label: 'Arbeitsbereiche' },
+    { path: 'settings', label: 'Einstellungen' }
   ];
 
   ngOnInit():void {
