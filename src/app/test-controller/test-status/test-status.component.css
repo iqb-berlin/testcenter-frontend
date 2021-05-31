@@ -8,7 +8,7 @@ mat-card {
 }
 
 .mat-card-gray {
-  background-color: lightgray
+  background-color: var(--tc-box-background)
 }
 
 .active-unit {

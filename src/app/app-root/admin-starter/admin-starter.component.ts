@@ -10,7 +10,7 @@ import { MainDataService } from '../../maindata.service';
   templateUrl: './admin-starter.component.html',
   styles: [
     'mat-card {margin: 10px;}',
-    '.mat-card-gray {background-color: lightgray}'
+    '.mat-card-gray {background-color: var(--tc-box-background)}'
   ]
 })
 

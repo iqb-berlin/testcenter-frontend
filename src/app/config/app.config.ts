@@ -96,42 +96,43 @@ export class AppConfig {
       this.impressum_html = 'Impressum/Datenschutz nicht definiert';
     }
     this.mainLogo = 'assets/IQB-LogoA.png';
-    this.background_body = '';
-    this.background_box = '';
+    const elementStyle = window.getComputedStyle(document.body);
+    this.background_body = elementStyle.getPropertyValue('--tc-body-background');
+    this.background_box = elementStyle.getPropertyValue('--tc-box-background');
     this.trusted_intro_html = null;
     this.trusted_impressum_html = null;
     this.global_warning = '';
     this.global_warning_expired_day = '';
     this.global_warning_expired_hour = '';
     if (appConfig) {
-      Object.keys(appConfig).forEach(k => {
+      appConfig.forEach((v, k) => {
         switch (k) {
           case 'app_title':
-            this.app_title = appConfig[k];
+            this.app_title = v;
             break;
           case 'mainLogo':
-            this.mainLogo = appConfig[k];
+            this.mainLogo = v;
             break;
           case 'background_body':
-            this.background_body = appConfig[k];
+            this.background_body = v;
             break;
           case 'background_box':
-            this.background_box = appConfig[k];
+            this.background_box = v;
             break;
           case 'intro_html':
-            this.intro_html = appConfig[k];
+            this.intro_html = v;
             break;
           case 'impressum_html':
-            this.impressum_html = appConfig[k];
+            this.impressum_html = v;
             break;
           case 'global_warning':
-            this.global_warning = appConfig[k];
+            this.global_warning = v;
             break;
           case 'global_warning_expired_day':
-            this.global_warning_expired_day = appConfig[k];
+            this.global_warning_expired_day = v;
             break;
           case 'global_warning_expired_hour':
-            this.global_warning_expired_hour = appConfig[k];
+            this.global_warning_expired_hour = v;
             break;
           default:
             console.warn(`unknown key in appConfig "${k}"`);

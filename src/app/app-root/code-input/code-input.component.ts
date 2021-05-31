@@ -13,7 +13,7 @@ import { BackendService } from '../../backend.service';
   templateUrl: './code-input.component.html',
   styles: [
     'mat-card {margin: 10px;}',
-    '.mat-card-gray {background-color: lightgray}'
+    '.mat-card-gray {background-color: var(--tc-box-background)}'
   ]
 })
 export class CodeInputComponent implements OnInit {

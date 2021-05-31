@@ -133,7 +133,7 @@ export class BackendService {
 
   setAppConfig(newConfig: Map<string, string>): Observable<boolean> {
     return this.http
-      .patch<boolean>(`${this.serverUrl}system/config/app`, { newConfig })
+      .patch<boolean>(`${this.serverUrl}system/config/app`, newConfig)
       .pipe(catchError((err: ApiError) => {
         console.warn(`setAppConfig Api-Error: ${err.code} ${err.info}`);
         return of(false);
