@@ -97,7 +97,8 @@ export class AuthInterceptor implements HttpInterceptor {
                   this.mds.resetAuthData();
                   const state: RouterState = this.router.routerState;
                   const { snapshot } = state;
-                  this.router.navigate(['/r/login', snapshot.url]);
+                  const snapshotUrl = (snapshot.url === '/r/login/') ? '' : snapshot.url;
+                  this.router.navigate(['/r/login', snapshotUrl]);
                 } else {
                   this.mds.appError$.next({
                     label,
