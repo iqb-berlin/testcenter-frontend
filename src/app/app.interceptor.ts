@@ -94,7 +94,7 @@ export class AuthInterceptor implements HttpInterceptor {
               if (!ignoreError) {
                 if (goToLoginPage) {
                   console.warn(`AuthError${httpError.status} (${label})`);
-                  MainDataService.resetAuthData();
+                  this.mds.resetAuthData();
                   const state: RouterState = this.router.routerState;
                   const { snapshot } = state;
                   this.router.navigate(['/r/login', snapshot.url]);

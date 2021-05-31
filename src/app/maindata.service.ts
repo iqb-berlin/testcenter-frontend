@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { CustomtextService } from 'iqb-components';
 import {
   AppError,
@@ -17,6 +17,11 @@ const localStorageTestConfigKey = 'iqb-tc-c';
 
 export class MainDataService {
   appError$ = new Subject<AppError>();
+  _authData$ = new Subject<AuthData>();
+  get authData$(): Observable<AuthData> {
+    return this._authData$.asObservable();
+  }
+
   errorReportingSilent = false;
   isSpinnerOn$ = new BehaviorSubject<boolean>(false);
   progressVisualEnabled = true;
@@ -48,13 +53,6 @@ export class MainDataService {
       }
     }
     return myReturn;
-  }
-
-  static resetAuthData(): void {
-    const storageEntry = localStorage.getItem(localStorageAuthDataKey);
-    if (storageEntry) {
-      localStorage.removeItem(localStorageAuthDataKey);
-    }
   }
 
   static getTestConfig(): KeyValuePairs {
@@ -89,6 +87,7 @@ export class MainDataService {
   }
 
   setAuthData(authData: AuthData = null): void {
+    this._authData$.next(authData);
     if (authData) {
       if (authData.customTexts) {
         this.cts.addCustomTexts(authData.customTexts);
@@ -99,11 +98,20 @@ export class MainDataService {
     }
   }
 
+  resetAuthData(): void {
+    const storageEntry = localStorage.getItem(localStorageAuthDataKey);
+    if (storageEntry) {
+      localStorage.removeItem(localStorageAuthDataKey);
+    }
+    this._authData$.next(MainDataService.getAuthData());
+  }
+
   setTestConfig(testConfig: KeyValuePairs = null): void {
     if (testConfig) {
       localStorage.setItem(localStorageTestConfigKey, JSON.stringify(testConfig));
     } else {
       localStorage.removeItem(localStorageTestConfigKey);
     }
+    this._authData$.next(MainDataService.getAuthData());
   }
 }
