@@ -33,10 +33,12 @@ export interface BroadCastingServiceInfo {
 
 export const localStorageTestConfigKey = 'iqb-tc-c';
 
+export const standardLogo = 'assets/IQB-LogoA.png';
+
 export class AppConfig {
   customTexts: KeyValuePairs = {};
   detectedApiVersion = '';
-  mainLogo = 'assets/IQB-LogoA.png';
+  mainLogo = standardLogo;
   testConfig: KeyValuePairs = {};
   serverTimestamp = 0;
   broadcastingService: BroadCastingServiceInfo = { status: 'none' };
@@ -115,7 +117,7 @@ export class AppConfig {
       this.intro_html = 'Einführungstext nicht definiert';
       this.impressum_html = 'Impressum/Datenschutz nicht definiert';
     }
-    this.mainLogo = 'assets/IQB-LogoA.png';
+    this.mainLogo = standardLogo;
     const elementStyle = window.getComputedStyle(document.body);
     this.background_body = elementStyle.getPropertyValue('--tc-body-background');
     this.background_box = elementStyle.getPropertyValue('--tc-box-background');

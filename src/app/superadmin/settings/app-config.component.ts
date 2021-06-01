@@ -2,18 +2,14 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { AppConfig, AppSettings } from '../../config/app.config';
+import { AppConfig, AppSettings, standardLogo } from '../../config/app.config';
 import { MainDataService } from '../../maindata.service';
 import { BackendService } from '../backend.service';
 
 @Component({
   selector: 'app-app-config',
   templateUrl: 'app-config.component.html',
-  styles: [
-    '.example-chip-list {width: 100%;}',
-    '.block-ident {margin-left: 40px}',
-    '.warning-warning { color: darkgoldenrod }'
-  ]
+  styleUrls: ['app-config.component.css']
 })
 
 export class AppConfigComponent implements OnInit, OnDestroy {
@@ -21,6 +17,8 @@ export class AppConfigComponent implements OnInit, OnDestroy {
   dataChanged = false;
   private configDataChangedSubscription: Subscription = null;
   warningIsExpired = false;
+  imageError: string;
+  logoImageBase64 = '';
   expiredHours = {
     '': '',
     '01': '01:00 Uhr',
@@ -83,6 +81,7 @@ export class AppConfigComponent implements OnInit, OnDestroy {
         appConfig.global_warning_expired_day,
         appConfig.global_warning_expired_hour
       );
+      this.logoImageBase64 = appConfig.mainLogo;
       this.configDataChangedSubscription = this.configForm.valueChanges.subscribe(() => {
         this.warningIsExpired = AppConfig.isWarningExpired(
           this.configForm.get('globalWarningExpiredDay').value,
@@ -103,9 +102,8 @@ export class AppConfigComponent implements OnInit, OnDestroy {
       global_warning_expired_hour: this.configForm.get('globalWarningExpiredHour').value,
       background_body: this.configForm.get('backgroundBody').value,
       background_box: this.configForm.get('backgroundBox').value,
-      mainLogo: ''
+      mainLogo: this.logoImageBase64
     };
-    // todo appConfig.set('mainLogo', this.mainLogo);
     this.bs.setAppConfig(appConfig).subscribe(isOk => {
       if (isOk !== false) {
         this.snackBar.open(
@@ -123,6 +121,49 @@ export class AppConfigComponent implements OnInit, OnDestroy {
     () => {
       this.snackBar.open('Konnte Konfigurationsdaten der Anwendung nicht speichern', 'Fehler', { duration: 3000 });
     });
+  }
+
+  imgFileChange(fileInput: any): void {
+    this.imageError = null;
+    if (fileInput.target.files && fileInput.target.files[0]) {
+      // todo check max values
+      const maxSize = 20971520;
+      const allowedTypes = ['image/png', 'image/jpeg'];
+      const maxHeight = 15200;
+      const maxWidth = 25600;
+
+      if (fileInput.target.files[0].size > maxSize) {
+        this.imageError = `Maximum size allowed is ${maxSize / 1000}Mb`;
+        return;
+      }
+
+      if (allowedTypes.indexOf(fileInput.target.files[0].type) < 0) {
+        this.imageError = 'Only Images are allowed ( JPG | PNG )';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const image = new Image();
+        image.src = e.target.result;
+        image.onload = rs => {
+          const imgHeight = rs.currentTarget['height'];
+          const imgWidth = rs.currentTarget['width'];
+          if (imgHeight > maxHeight && imgWidth > maxWidth) {
+            this.imageError = `Maximum dimensions allowed ${maxHeight}*${maxWidth}px`;
+            return false;
+          }
+          this.logoImageBase64 = e.target.result;
+          this.dataChanged = true;
+          return true;
+        };
+      };
+      reader.readAsDataURL(fileInput.target.files[0]);
+    }
+  }
+
+  removeLogoImg(): void {
+    this.logoImageBase64 = standardLogo;
+    this.dataChanged = true;
   }
 
   ngOnDestroy(): void {

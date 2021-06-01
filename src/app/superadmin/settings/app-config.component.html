@@ -3,7 +3,9 @@
   <div class="block-ident" fxLayout="column">
     <mat-form-field>
       <mat-label>Text</mat-label>
-      <input matInput formControlName="globalWarningText" placeholder="Warnung">
+      <textarea matInput formControlName="globalWarningText"
+                cdkTextareaAutosize
+                cdkAutosizeMinRows="1"></textarea>
     </mat-form-field>
     <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="20px">
       <p>Zeige Warnung bis</p>
@@ -39,6 +41,18 @@
               cdkTextareaAutosize
               cdkAutosizeMinRows="6"></textarea>
   </mat-form-field>
+  <label>Logo</label>
+  <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+    <img class="logo-img" [src]="logoImageBase64" />
+    <input #hiddenimgfileinput type="file" (change)="imgFileChange($event)" [hidden]="true"/>
+    <button mat-raised-button (click)="hiddenimgfileinput.click()" matTooltip="Logo hochladen/aktualisieren" matTooltipPosition="above">
+      <mat-icon>cloud_upload</mat-icon>
+    </button>
+    <button mat-raised-button (click)="removeLogoImg()" matTooltip="Logo auf Standard setzen" matTooltipPosition="above">
+      <mat-icon>delete</mat-icon>
+    </button>
+    <alert *ngIf="imageError" level="error" [text]="imageError"></alert>
+  </div>
   <mat-form-field fxLayout="column">
     <mat-label>Hintergrundfarbe Anwendung</mat-label>
     <input matInput formControlName="backgroundBody" placeholder="Farbe">

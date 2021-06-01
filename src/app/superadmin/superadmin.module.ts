@@ -36,6 +36,7 @@ import {
 import { SettingsComponent } from './settings/settings.component';
 import { AppConfigComponent } from './settings/app-config.component';
 import { EditCustomTextsComponent } from './settings/edit-custom-texts.component';
+import { AlertModule } from '../shared/alert/alert.module';
 
 @NgModule({
   declarations: [
@@ -76,7 +77,8 @@ import { EditCustomTextsComponent } from './settings/edit-custom-texts.component
     MatCardModule,
     MatNativeDateModule,
     MatDatepickerModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    AlertModule
   ],
   exports: [
     SuperadminComponent
