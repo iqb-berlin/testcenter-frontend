@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { from, Subscription } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { CustomtextService } from 'iqb-components';
 import { BackendService } from '../../backend.service';
 import { MainDataService } from '../../maindata.service';
 import { AuthAccessKeyType, AuthData, BookletData } from '../../app.interfaces';
@@ -15,7 +14,7 @@ export class TestStarterComponent implements OnInit, OnDestroy {
   booklets: BookletData[] = [];
   openTestletsCount = 0;
   private getBookletDataSubscription: Subscription = null;
-  public bookletSelectTitle = 'Bitte wählen';
+  bookletSelectTitle = 'Bitte wählen';
   problemText = '';
 
   constructor(
@@ -79,6 +78,8 @@ export class TestStarterComponent implements OnInit, OnDestroy {
         const errCode = testId as number;
         if (errCode === 423) {
           this.problemText = 'Dieser Test ist gesperrt';
+        } else if (errCode === 403) {
+          this.problemText = 'Das Starten dieses Tests ist mit dieser Anmeldung nicht erlaubt.';
         } else {
           this.problemText = `Problem beim Start (${errCode})`;
         }
