@@ -31,12 +31,10 @@
   </mat-card>
 
   <mat-card fxFlex="0 0 400px" class="mat-card-gray">
-    <mat-card-title>{{mds.appTitle$ | async}} {{mds.appSubTitle$ | async}}</mat-card-title>
-
+    <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
+    <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
     <mat-card-content>
-
       <status-card></status-card>
-
     </mat-card-content>
   </mat-card>
 </div>

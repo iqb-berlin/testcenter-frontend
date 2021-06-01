@@ -3,6 +3,18 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import customTextsDefault from './custom-texts.json';
 import { KeyValuePairs } from '../app.interfaces';
 
+export interface AppSettings {
+  app_title: string,
+  mainLogo: string,
+  background_body: string,
+  background_box: string,
+  intro_html: string,
+  impressum_html: string,
+  global_warning: string,
+  global_warning_expired_day: string,
+  global_warning_expired_hour: string
+}
+
 export interface SysConfig {
   customTexts: KeyValuePairs;
   version: string;
@@ -10,7 +22,7 @@ export interface SysConfig {
   testConfig: KeyValuePairs;
   serverTimestamp: number;
   broadcastingService: BroadCastingServiceInfo;
-  appConfig: Map<string, string>;
+  appConfig: AppSettings;
 }
 
 export interface BroadCastingServiceInfo {
@@ -41,6 +53,14 @@ export class AppConfig {
   isValidApiVersion = false;
   sanitizer: DomSanitizer = null;
   cts: CustomtextService = null;
+
+  get warningMessage(): string {
+    if (this.global_warning_expired_day) {
+      return AppConfig.isWarningExpired(this.global_warning_expired_day, this.global_warning_expired_hour) ?
+        '' : this.global_warning;
+    }
+    return this.global_warning;
+  }
 
   constructor(
     sysConfig: SysConfig,
@@ -85,7 +105,7 @@ export class AppConfig {
     this.cts.addCustomTexts(ctSettings);
   }
 
-  setAppConfig(appConfig: Map<string, string>): void {
+  setAppConfig(appConfig: AppSettings): void {
     this.app_title = this.cts.getCustomText('app_title');
     if (!this.app_title) this.app_title = 'IQB-Testcenter';
     this.intro_html = this.cts.getCustomText('app_intro1');
@@ -105,39 +125,17 @@ export class AppConfig {
     this.global_warning_expired_day = '';
     this.global_warning_expired_hour = '';
     if (appConfig) {
-      appConfig.forEach((v, k) => {
-        switch (k) {
-          case 'app_title':
-            this.app_title = v;
-            break;
-          case 'mainLogo':
-            this.mainLogo = v;
-            break;
-          case 'background_body':
-            this.background_body = v;
-            break;
-          case 'background_box':
-            this.background_box = v;
-            break;
-          case 'intro_html':
-            this.intro_html = v;
-            break;
-          case 'impressum_html':
-            this.impressum_html = v;
-            break;
-          case 'global_warning':
-            this.global_warning = v;
-            break;
-          case 'global_warning_expired_day':
-            this.global_warning_expired_day = v;
-            break;
-          case 'global_warning_expired_hour':
-            this.global_warning_expired_hour = v;
-            break;
-          default:
-            console.warn(`unknown key in appConfig "${k}"`);
-        }
-      });
+      if (appConfig.app_title) this.app_title = appConfig.app_title;
+      if (appConfig.mainLogo) this.mainLogo = appConfig.mainLogo;
+      if (appConfig.background_body) this.background_body = appConfig.background_body;
+      if (appConfig.background_box) this.background_box = appConfig.background_box;
+      if (appConfig.intro_html) this.intro_html = appConfig.intro_html;
+      if (appConfig.impressum_html) this.impressum_html = appConfig.impressum_html;
+      if (appConfig.global_warning) this.global_warning = appConfig.global_warning;
+      if (appConfig.global_warning_expired_day) this.global_warning_expired_day = appConfig.global_warning_expired_day;
+      if (appConfig.global_warning_expired_hour) {
+        this.global_warning_expired_hour = appConfig.global_warning_expired_hour;
+      }
     }
     this.trusted_intro_html = this.sanitizer.bypassSecurityTrustHtml(this.intro_html);
     this.trusted_impressum_html = this.sanitizer.bypassSecurityTrustHtml(this.impressum_html);
@@ -176,30 +174,22 @@ export class AppConfig {
 
   static isWarningExpired(warningDay: string, warningHour: string): boolean {
     const calcTimePoint = new Date(warningDay);
-    calcTimePoint.setHours(calcTimePoint.getHours() + Number(warningHour));
+    calcTimePoint.setHours(Number(warningHour));
     const now = new Date(Date.now());
     return calcTimePoint < now;
   }
 
-  getWarningMessage(): string {
-    if (this.global_warning_expired_day) {
-      return AppConfig.isWarningExpired(this.global_warning_expired_day, this.global_warning_expired_hour) ?
-        this.global_warning : '';
-    }
-    return this.global_warning;
-  }
-
-  getAppConfig(): Map<string, string> {
-    const appConfig = new Map<string, string>();
-    appConfig.set('app_title', this.app_title);
-    appConfig.set('mainLogo', this.mainLogo);
-    appConfig.set('background_body', this.background_body);
-    appConfig.set('background_box', this.background_box);
-    appConfig.set('intro_html', this.intro_html);
-    appConfig.set('impressum_html', this.impressum_html);
-    appConfig.set('global_warning', this.global_warning);
-    appConfig.set('global_warning_expired_day', this.global_warning_expired_day);
-    appConfig.set('global_warning_expired_hour', this.global_warning_expired_hour);
-    return appConfig;
+  getAppConfig(): AppSettings {
+    return {
+      app_title: this.app_title,
+      mainLogo: this.mainLogo,
+      background_body: this.background_body,
+      background_box: this.background_box,
+      intro_html: this.intro_html,
+      impressum_html: this.impressum_html,
+      global_warning: this.global_warning,
+      global_warning_expired_day: this.global_warning_expired_day,
+      global_warning_expired_hour: this.global_warning_expired_hour
+    };
   }
 }

@@ -67,6 +67,8 @@ export class AppComponent implements OnInit, OnDestroy {
       this.bs.getSysConfig().subscribe(sysConfig => {
         this.mds.appConfig = new AppConfig(sysConfig, this.cts, this.mds.expectedApiVersion, this.sanitizer);
         this.mds.appTitle$.next(this.mds.appConfig.app_title);
+        this.mds.appConfig.applyBackgroundColors();
+        this.mds.globalWarning = this.mds.appConfig.warningMessage;
         if (!sysConfig) {
           this.mds.appError$.next({
             label: 'Server-Problem: Konnte Konfiguration nicht laden',
@@ -88,7 +90,6 @@ export class AppComponent implements OnInit, OnDestroy {
             category: 'FATAL'
           });
         }
-        this.mds.globalWarning = this.mds.appConfig.getWarningMessage();
       });
 
       this.bs.getSysCheckInfo().subscribe(sysCheckConfigs => {

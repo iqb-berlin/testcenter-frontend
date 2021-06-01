@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { AppConfig } from '../../config/app.config';
+import { AppConfig, AppSettings } from '../../config/app.config';
 import { MainDataService } from '../../maindata.service';
 import { BackendService } from '../backend.service';
 
@@ -70,18 +70,18 @@ export class AppConfigComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       const appConfig = this.mds.appConfig.getAppConfig();
       this.configForm.setValue({
-        appTitle: appConfig.get('app_title'),
-        introHtml: appConfig.get('intro_html'),
-        impressumHtml: appConfig.get('impressum_html'),
-        globalWarningText: appConfig.get('global_warning'),
-        globalWarningExpiredDay: appConfig.get('global_warning_expired_day'),
-        globalWarningExpiredHour: appConfig.get('global_warning_expired_hour'),
-        backgroundBody: appConfig.get('background_body'),
-        backgroundBox: appConfig.get('background_box')
+        appTitle: appConfig.app_title,
+        introHtml: appConfig.intro_html,
+        impressumHtml: appConfig.impressum_html,
+        globalWarningText: appConfig.global_warning,
+        globalWarningExpiredDay: appConfig.global_warning_expired_day,
+        globalWarningExpiredHour: appConfig.global_warning_expired_hour,
+        backgroundBody: appConfig.background_body,
+        backgroundBox: appConfig.background_box
       }, { emitEvent: false });
       this.warningIsExpired = AppConfig.isWarningExpired(
-        appConfig.get('global_warning_expired_day'),
-        appConfig.get('global_warning_expired_hour')
+        appConfig.global_warning_expired_day,
+        appConfig.global_warning_expired_hour
       );
       this.configDataChangedSubscription = this.configForm.valueChanges.subscribe(() => {
         this.warningIsExpired = AppConfig.isWarningExpired(
@@ -94,21 +94,20 @@ export class AppConfigComponent implements OnInit, OnDestroy {
   }
 
   saveData(): void {
-    const appConfig = new Map<string, string>();
-    appConfig.set('app_title', this.configForm.get('appTitle').value);
+    const appConfig: AppSettings = {
+      app_title: this.configForm.get('appTitle').value,
+      intro_html: this.configForm.get('introHtml').value,
+      impressum_html: this.configForm.get('impressumHtml').value,
+      global_warning: this.configForm.get('globalWarningText').value,
+      global_warning_expired_day: this.configForm.get('globalWarningExpiredDay').value,
+      global_warning_expired_hour: this.configForm.get('globalWarningExpiredHour').value,
+      background_body: this.configForm.get('backgroundBody').value,
+      background_box: this.configForm.get('backgroundBox').value,
+      mainLogo: ''
+    };
     // todo appConfig.set('mainLogo', this.mainLogo);
-    // todo appConfig.set('background_body', this.background_body);
-    // todo appConfig.set('background_box', this.background_box);
-    appConfig.set('intro_html', this.configForm.get('introHtml').value);
-    appConfig.set('impressum_html', this.configForm.get('impressumHtml').value);
-    appConfig.set('global_warning', this.configForm.get('globalWarningText').value);
-    appConfig.set('global_warning_expired_day', this.configForm.get('globalWarningExpiredDay').value);
-    appConfig.set('global_warning_expired_hour', this.configForm.get('globalWarningExpiredHour').value);
-    appConfig.set('background_body', this.configForm.get('backgroundBody').value);
-    appConfig.set('background_box', this.configForm.get('backgroundBox').value);
-
     this.bs.setAppConfig(appConfig).subscribe(isOk => {
-      if (isOk) {
+      if (isOk !== false) {
         this.snackBar.open(
           'Konfigurationsdaten der Anwendung gespeichert', 'Info', { duration: 3000 }
         );
@@ -116,6 +115,7 @@ export class AppConfigComponent implements OnInit, OnDestroy {
         this.mds.appConfig.setAppConfig(appConfig);
         this.mds.appConfig.applyBackgroundColors();
         this.mds.appTitle$.next(this.configForm.get('appTitle').value);
+        this.mds.globalWarning = this.mds.appConfig.warningMessage;
       } else {
         this.snackBar.open('Konnte Konfigurationsdaten der Anwendung nicht speichern', 'Fehler', { duration: 3000 });
       }

@@ -7,6 +7,7 @@ import {
   IdAndName, IdLabelSelectedData, IdRoleData, UserData
 } from './superadmin.interfaces';
 import { ApiError } from '../app.interfaces';
+import { AppSettings } from '../config/app.config';
 
 @Injectable({
   providedIn: 'root'
@@ -131,7 +132,7 @@ export class BackendService {
       }));
   }
 
-  setAppConfig(newConfig: Map<string, string>): Observable<boolean> {
+  setAppConfig(newConfig: AppSettings): Observable<boolean> {
     return this.http
       .patch<boolean>(`${this.serverUrl}system/config/app`, newConfig)
       .pipe(catchError((err: ApiError) => {

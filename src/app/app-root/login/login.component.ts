@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.mds.setSpinnerOff();
-    this.mds.appSubTitle$.next('Bitte Anmelden');
+    this.mds.appSubTitle$.next('Bitte anmelden');
     this.routingSubscription = this.route.params
       .subscribe(params => { this.returnTo = params.returnTo; });
   }
