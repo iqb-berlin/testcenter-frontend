@@ -42,6 +42,20 @@ make test-unit
 make test-e2e
 ```
 
+For local development you can copy the packages from the container to a local directory. Use the following command for this:
+```
+make copy-packages
+```
+
+To install new packages use:
+```
+make install-packages packages=<package-name>
+```
+If you leave out the argument all packages defined in package.json will be installed.
+```
+make install-packages
+```
+
 There is also a Dockerfile for producing a production ready container
 using nginx as base, under `docker/Dockerfile-prod`.
 
