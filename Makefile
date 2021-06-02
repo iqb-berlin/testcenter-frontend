@@ -22,6 +22,15 @@ test-e2e:
 init-dev-config:
 	cp src/environments/environment.dev.ts src/environments/environment.ts
 
+copy-packages:
+	mkdir node_modules
+	docker cp testcenter-frontend-dev:/app/node_modules/. node_modules
+
+# Use parameter packages=<package-name> to install new package
+# Example: make install-package packages="leftpad babel"
+install-package:
+	docker exec testcenter-frontend-dev npm install $(packages)
+
 tag-major:
 	scripts/new_version.py major
 
