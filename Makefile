@@ -29,7 +29,7 @@ copy-packages:
 # Use parameter packages=<package-name> to install new package
 # Otherwise it installs the packages defined in package.json
 # Example: make install-package packages="leftpad babel"
-install-package:
+install-packages:
 	docker exec testcenter-frontend-dev npm install $(packages)
 
 tag-major:
