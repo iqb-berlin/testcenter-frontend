@@ -6,7 +6,7 @@ import { catchError, map } from 'rxjs/operators';
 import {
   IdAndName, IdLabelSelectedData, IdRoleData, UserData
 } from './superadmin.interfaces';
-import { ApiError } from '../app.interfaces';
+import { ApiError, KeyValuePairs } from '../app.interfaces';
 import { AppSettings } from '../config/app.config';
 
 @Injectable({
@@ -137,6 +137,15 @@ export class BackendService {
       .patch<boolean>(`${this.serverUrl}system/config/app`, newConfig)
       .pipe(catchError((err: ApiError) => {
         console.warn(`setAppConfig Api-Error: ${err.code} ${err.info}`);
+        return of(false);
+      }));
+  }
+
+  setCustomTexts(newCustomTexts: KeyValuePairs): Observable<boolean> {
+    return this.http
+      .patch<boolean>(`${this.serverUrl}system/config/custom-texts`, newCustomTexts)
+      .pipe(catchError((err: ApiError) => {
+        console.warn(`setCustomTexts Api-Error: ${err.code} ${err.info}`);
         return of(false);
       }));
   }

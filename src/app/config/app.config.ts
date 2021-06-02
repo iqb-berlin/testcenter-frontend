@@ -72,6 +72,7 @@ export class AppConfig {
   ) {
     this.sanitizer = sanitizer;
     this.cts = cts;
+    this.customTexts = sysConfig.customTexts;
     if (sysConfig) {
       this.setCustomTexts(sysConfig.customTexts);
       this.setAppConfig(sysConfig.appConfig);

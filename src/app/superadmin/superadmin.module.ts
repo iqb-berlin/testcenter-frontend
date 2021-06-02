@@ -37,6 +37,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { AppConfigComponent } from './settings/app-config.component';
 import { EditCustomTextsComponent } from './settings/edit-custom-texts.component';
 import { AlertModule } from '../shared/alert/alert.module';
+import { EditCustomTextComponent } from './settings/edit-custom-text.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { AlertModule } from '../shared/alert/alert.module';
     SettingsComponent,
     SuperadminPasswordRequestComponent,
     AppConfigComponent,
-    EditCustomTextsComponent
+    EditCustomTextsComponent,
+    EditCustomTextComponent
   ],
   imports: [
     CommonModule,
