@@ -43,6 +43,8 @@ make test-e2e
 ```
 
 For local development you can copy the packages from the container to a local directory. Use the following command for this:
+
+*For this to work the container has to have been created (not necessarily running).*
 ```
 make copy-packages
 ```
