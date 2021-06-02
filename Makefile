@@ -27,6 +27,7 @@ copy-packages:
 	docker cp testcenter-frontend-dev:/app/node_modules/. node_modules
 
 # Use parameter packages=<package-name> to install new package
+# Otherwise it installs the packages defined in package.json
 # Example: make install-package packages="leftpad babel"
 install-package:
 	docker exec testcenter-frontend-dev npm install $(packages)
