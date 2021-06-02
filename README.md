@@ -49,7 +49,7 @@ make copy-packages
 
 To install new packages use:
 ```
-make install-packages packages=<package-name>
+make install-packages packages="<package-name> [<package-name> ...]"
 ```
 If you leave out the argument all packages defined in package.json will be installed.
 ```
