@@ -23,7 +23,7 @@ init-dev-config:
 	cp src/environments/environment.dev.ts src/environments/environment.ts
 
 copy-packages:
-	mkdir node_modules
+	mkdir -p node_modules
 	docker cp testcenter-frontend-dev:/app/node_modules/. node_modules
 
 # Use parameter packages=<package-name> to install new package
