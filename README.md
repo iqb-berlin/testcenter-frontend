@@ -41,10 +41,6 @@ make test
 make test-unit
 make test-e2e
 ```
-
-There is also a Dockerfile for producing a production ready container
-using nginx as base, under `docker/Dockerfile-prod`.
-
 ### Manual Compilation
 #### Prerequisites
 * node 12+
