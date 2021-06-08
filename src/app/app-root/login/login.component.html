@@ -26,7 +26,7 @@
     <alert *ngIf="mds.globalWarning" level="warning" [text]="mds.globalWarning"></alert>
   </mat-card>
 
-  <mat-card fxFlex="0 0 400px" class="mat-card-gray">
+  <mat-card fxFlex="0 0 400px">
     <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
     <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
     <mat-card-content>
