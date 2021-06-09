@@ -32,19 +32,28 @@ make init-dev-config
 make run
 make stop
 ```
-###### Run tests
-```
-make test
-```
 ###### The 2 types of tests can also be run separately.
+*For those to work the containers have to be running.*
 ```
 make test-unit
 make test-e2e
 ```
 
-There is also a Dockerfile for producing a production ready container
-using nginx as base, under `docker/Dockerfile-prod`.
+For local development you can copy the packages from the container to a local directory. Use the following command for this:
 
+*For this to work the container has to have been created (not necessarily running).*
+```
+make copy-packages
+```
+
+To install new packages use:
+```
+make install-packages packages="<package-name> [<package-name> ...]"
+```
+If you leave out the argument all packages defined in package.json will be installed.
+```
+make install-packages
+```
 ### Manual Compilation
 #### Prerequisites
 * node 12+
@@ -61,7 +70,7 @@ Find the compiled app in src folder and open in Browser or serve with `ng serve`
 
 ## Development
 ### Coding Standards
-We are using ESLint with the [airbnb](https://github.com/iqb-berlin/testcenter-setup) coding standard as base.
+We are using ESLint with the base or [airbnb](https://www.npmjs.com/package/eslint-config-airbnb) with our [own rules](https://www.npmjs.com/package/@iqb/eslint-config) on top.
 
 ## Bug Reports
 

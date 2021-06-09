@@ -63,7 +63,7 @@ export class CodeInputComponent implements OnInit {
           if (typeof authData === 'number') {
             const errCode = authData as number;
             if (errCode === 400) {
-              this.problemText = 'Der Code ist leider nicht gültig. Bitte nocheinmal versuchen';
+              this.problemText = 'Der Code ist leider nicht gültig. Bitte noch einmal versuchen';
             } else {
               this.problemText = 'Problem bei der Anmeldung.';
               // app.interceptor will show error message

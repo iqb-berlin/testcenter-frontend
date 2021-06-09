@@ -179,4 +179,5 @@ export interface FileDeletionReport {
   deleted: string[];
   not_allowed: string[];
   did_not_exist: string[];
+  was_used: string[];
 }

@@ -131,6 +131,10 @@ export class FilesComponent implements OnInit {
             if (fileDeletionReport.not_allowed.length > 0) {
               message.push(`${fileDeletionReport.not_allowed.length} Dateien konnten nicht gelöscht werden.`);
             }
+            if (fileDeletionReport.was_used.length > 0) {
+              message.push(`${fileDeletionReport.was_used.length} Dateien werden von anderen verwendet 
+              und wurden nicht gelöscht.`);
+            }
             this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
             this.updateFileList();
           });
