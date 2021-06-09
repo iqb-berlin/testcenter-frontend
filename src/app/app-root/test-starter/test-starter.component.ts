@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { from, Subscription } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { CustomtextService } from 'iqb-components';
 import { BackendService } from '../../backend.service';
 import { MainDataService } from '../../maindata.service';
 import { AuthAccessKeyType, AuthData, BookletData } from '../../app.interfaces';
@@ -20,7 +21,7 @@ export class TestStarterComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private bs: BackendService,
-    private cts:CustomtextService,
+    private cts: CustomtextService,
     public mds: MainDataService
   ) { }
 

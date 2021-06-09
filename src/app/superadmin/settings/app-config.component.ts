@@ -133,12 +133,16 @@ export class AppConfigComponent implements OnInit, OnDestroy {
       const maxWidth = 25600;
 
       if (fileInput.target.files[0].size > maxSize) {
-        this.imageError = `Maximum size allowed is ${maxSize / 1000}Mb`;
+        this.imageError = `Datei zu groß ( > ${maxSize / 1000} Mb)`;
         return;
       }
 
       if (allowedTypes.indexOf(fileInput.target.files[0].type) < 0) {
-        this.imageError = 'Only Images are allowed ( JPG | PNG )';
+        const allowedImageTypesTruncated = [];
+        allowedTypes.forEach(imgType => {
+          allowedImageTypesTruncated.push(imgType.substr(5));
+        });
+        this.imageError = `Zulässige Datei-Typen: (${allowedImageTypesTruncated.join(', ')})`;
         return;
       }
       const reader = new FileReader();
@@ -146,10 +150,11 @@ export class AppConfigComponent implements OnInit, OnDestroy {
         const image = new Image();
         image.src = e.target.result;
         image.onload = rs => {
-          const imgHeight = rs.currentTarget['height'];
-          const imgWidth = rs.currentTarget['width'];
+          const imgTargetElement = rs.currentTarget as HTMLImageElement;
+          const imgHeight = imgTargetElement.height;
+          const imgWidth = imgTargetElement.width;
           if (imgHeight > maxHeight && imgWidth > maxWidth) {
-            this.imageError = `Maximum dimensions allowed ${maxHeight}*${maxWidth}px`;
+            this.imageError = `Unzulässige Größe (maximal erlaubt: ${maxHeight}*${maxWidth}px)`;
             return false;
           }
           this.logoImageBase64 = e.target.result;
