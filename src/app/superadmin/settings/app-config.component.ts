@@ -128,7 +128,7 @@ export class AppConfigComponent implements OnInit, OnDestroy {
     if (fileInput.target.files && fileInput.target.files[0]) {
       // todo check max values
       const maxSize = 20971520;
-      const allowedTypes = ['image/png', 'image/jpeg'];
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/svg+xml'];
       const maxHeight = 15200;
       const maxWidth = 25600;
 
