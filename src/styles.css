@@ -2,7 +2,7 @@
   --tc-header-height: 65px;
   --tc-unit-title-height: 40px;
   --tc-unit-page-nav-height: 45px;
-  --tc-body-background: #003333 linear-gradient(to bottom, #003333, #045659, #0d7b84, #1aa2b2, #2acae5);
+  --tc-body-background: gray;
   --tc-box-background: lightgray;
   min-height: 100%;
 }

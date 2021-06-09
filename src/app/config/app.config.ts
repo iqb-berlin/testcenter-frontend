@@ -4,15 +4,15 @@ import customTextsDefault from './custom-texts.json';
 import { KeyValuePairs } from '../app.interfaces';
 
 export interface AppSettings {
-  app_title: string,
+  appTitle: string,
   mainLogo: string,
-  background_body: string,
-  background_box: string,
-  intro_html: string,
-  impressum_html: string,
-  global_warning: string,
-  global_warning_expired_day: string,
-  global_warning_expired_hour: string
+  backgroundBody: string,
+  backgroundBox: string,
+  introHtml: string,
+  legalNoticeHtml: string,
+  globalWarningText: string,
+  globalWarningExpiredDay: string,
+  globalWarningExpiredHour: string
 }
 
 export interface SysConfig {
@@ -34,6 +34,8 @@ export interface BroadCastingServiceInfo {
 export const localStorageTestConfigKey = 'iqb-tc-c';
 
 export const standardLogo = 'assets/IQB-LogoA.png';
+export const standardBackgroundBody = '#003333 linear-gradient(to bottom, #003333, #045659, #0d7b84, #1aa2b2, #2acae5)';
+export const standardBackgroundBox = 'lightgray';
 
 export class AppConfig {
   customTexts: KeyValuePairs = {};
@@ -42,26 +44,26 @@ export class AppConfig {
   testConfig: KeyValuePairs = {};
   serverTimestamp = 0;
   broadcastingService: BroadCastingServiceInfo = { status: 'none' };
-  app_title = 'IQB-Testcenter';
-  background_body: string;
-  background_box: string;
-  intro_html = 'Einführungstext nicht definiert';
-  trusted_intro_html: SafeUrl = null;
-  impressum_html = 'Impressum/Datenschutz nicht definiert';
-  trusted_impressum_html: SafeUrl = null;
-  global_warning = '';
-  global_warning_expired_day = '';
-  global_warning_expired_hour = '';
+  appTitle = 'IQB-Testcenter';
+  backgroundBody: string;
+  backgroundBox: string;
+  introHtml = 'Einführungstext nicht definiert';
+  trustedIntroHtml: SafeUrl = null;
+  legalNoticeHtml = 'Impressum/Datenschutz nicht definiert';
+  trustedLegalNoticeHtml: SafeUrl = null;
+  globalWarningText = '';
+  globalWarningExpiredDay = '';
+  globalWarningExpiredHour = '';
   isValidApiVersion = false;
   sanitizer: DomSanitizer = null;
   cts: CustomtextService = null;
 
   get warningMessage(): string {
-    if (this.global_warning_expired_day) {
-      return AppConfig.isWarningExpired(this.global_warning_expired_day, this.global_warning_expired_hour) ?
-        '' : this.global_warning;
+    if (this.globalWarningExpiredDay) {
+      return AppConfig.isWarningExpired(this.globalWarningExpiredDay, this.globalWarningExpiredHour) ?
+        '' : this.globalWarningText;
     }
-    return this.global_warning;
+    return this.globalWarningText;
   }
 
   constructor(
@@ -109,44 +111,43 @@ export class AppConfig {
   }
 
   setAppConfig(appConfig: AppSettings): void {
-    this.app_title = this.cts.getCustomText('app_title');
-    if (!this.app_title) this.app_title = 'IQB-Testcenter';
-    this.intro_html = this.cts.getCustomText('app_intro1');
-    if (this.intro_html) {
-      this.impressum_html = this.intro_html;
+    this.appTitle = this.cts.getCustomText('app_title');
+    if (!this.appTitle) this.appTitle = 'IQB-Testcenter';
+    this.introHtml = this.cts.getCustomText('app_intro1');
+    if (this.introHtml) {
+      this.legalNoticeHtml = this.introHtml;
     } else {
-      this.intro_html = 'Einführungstext nicht definiert';
-      this.impressum_html = 'Impressum/Datenschutz nicht definiert';
+      this.introHtml = 'Einführungstext nicht definiert';
+      this.legalNoticeHtml = 'Impressum/Datenschutz nicht definiert';
     }
     this.mainLogo = standardLogo;
-    const elementStyle = window.getComputedStyle(document.body);
-    this.background_body = elementStyle.getPropertyValue('--tc-body-background');
-    this.background_box = elementStyle.getPropertyValue('--tc-box-background');
-    this.trusted_intro_html = null;
-    this.trusted_impressum_html = null;
-    this.global_warning = '';
-    this.global_warning_expired_day = '';
-    this.global_warning_expired_hour = '';
+    this.backgroundBody = standardBackgroundBody;
+    this.backgroundBox = standardBackgroundBox;
+    this.trustedIntroHtml = null;
+    this.trustedLegalNoticeHtml = null;
+    this.globalWarningText = '';
+    this.globalWarningExpiredDay = '';
+    this.globalWarningExpiredHour = '';
     if (appConfig) {
-      if (appConfig.app_title) this.app_title = appConfig.app_title;
+      if (appConfig.appTitle) this.appTitle = appConfig.appTitle;
       if (appConfig.mainLogo) this.mainLogo = appConfig.mainLogo;
-      if (appConfig.background_body) this.background_body = appConfig.background_body;
-      if (appConfig.background_box) this.background_box = appConfig.background_box;
-      if (appConfig.intro_html) this.intro_html = appConfig.intro_html;
-      if (appConfig.impressum_html) this.impressum_html = appConfig.impressum_html;
-      if (appConfig.global_warning) this.global_warning = appConfig.global_warning;
-      if (appConfig.global_warning_expired_day) this.global_warning_expired_day = appConfig.global_warning_expired_day;
-      if (appConfig.global_warning_expired_hour) {
-        this.global_warning_expired_hour = appConfig.global_warning_expired_hour;
+      if (appConfig.backgroundBody) this.backgroundBody = appConfig.backgroundBody;
+      if (appConfig.backgroundBox) this.backgroundBox = appConfig.backgroundBox;
+      if (appConfig.introHtml) this.introHtml = appConfig.introHtml;
+      if (appConfig.legalNoticeHtml) this.legalNoticeHtml = appConfig.legalNoticeHtml;
+      if (appConfig.globalWarningText) this.globalWarningText = appConfig.globalWarningText;
+      if (appConfig.globalWarningExpiredDay) this.globalWarningExpiredDay = appConfig.globalWarningExpiredDay;
+      if (appConfig.globalWarningExpiredHour) {
+        this.globalWarningExpiredHour = appConfig.globalWarningExpiredHour;
       }
     }
-    this.trusted_intro_html = this.sanitizer.bypassSecurityTrustHtml(this.intro_html);
-    this.trusted_impressum_html = this.sanitizer.bypassSecurityTrustHtml(this.impressum_html);
+    this.trustedIntroHtml = this.sanitizer.bypassSecurityTrustHtml(this.introHtml);
+    this.trustedLegalNoticeHtml = this.sanitizer.bypassSecurityTrustHtml(this.legalNoticeHtml);
   }
 
   applyBackgroundColors(): void {
-    document.documentElement.style.setProperty('--tc-body-background', this.background_body);
-    document.documentElement.style.setProperty('--tc-box-background', this.background_box);
+    document.documentElement.style.setProperty('--tc-body-background', this.backgroundBody);
+    document.documentElement.style.setProperty('--tc-box-background', this.backgroundBox);
   }
 
   private static checkApiVersion(versionToCheck: string, expectedVersion: string): boolean {
@@ -184,15 +185,15 @@ export class AppConfig {
 
   getAppConfig(): AppSettings {
     return {
-      app_title: this.app_title,
+      appTitle: this.appTitle,
       mainLogo: this.mainLogo,
-      background_body: this.background_body,
-      background_box: this.background_box,
-      intro_html: this.intro_html,
-      impressum_html: this.impressum_html,
-      global_warning: this.global_warning,
-      global_warning_expired_day: this.global_warning_expired_day,
-      global_warning_expired_hour: this.global_warning_expired_hour
+      backgroundBody: this.backgroundBody,
+      backgroundBox: this.backgroundBox,
+      introHtml: this.introHtml,
+      legalNoticeHtml: this.legalNoticeHtml,
+      globalWarningText: this.globalWarningText,
+      globalWarningExpiredDay: this.globalWarningExpiredDay,
+      globalWarningExpiredHour: this.globalWarningExpiredHour
     };
   }
 }

@@ -55,7 +55,7 @@ export class AppConfigComponent implements OnInit, OnDestroy {
     this.configForm = this.fb.group({
       appTitle: this.fb.control(''),
       introHtml: this.fb.control(''),
-      impressumHtml: this.fb.control(''),
+      legalNoticeHtml: this.fb.control(''),
       globalWarningText: this.fb.control(''),
       globalWarningExpiredDay: this.fb.control(''),
       globalWarningExpiredHour: this.fb.control(''),
@@ -68,18 +68,18 @@ export class AppConfigComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       const appConfig = this.mds.appConfig.getAppConfig();
       this.configForm.setValue({
-        appTitle: appConfig.app_title,
-        introHtml: appConfig.intro_html,
-        impressumHtml: appConfig.impressum_html,
-        globalWarningText: appConfig.global_warning,
-        globalWarningExpiredDay: appConfig.global_warning_expired_day,
-        globalWarningExpiredHour: appConfig.global_warning_expired_hour,
-        backgroundBody: appConfig.background_body,
-        backgroundBox: appConfig.background_box
+        appTitle: appConfig.appTitle,
+        introHtml: appConfig.introHtml,
+        legalNoticeHtml: appConfig.legalNoticeHtml,
+        globalWarningText: appConfig.globalWarningText,
+        globalWarningExpiredDay: appConfig.globalWarningExpiredDay,
+        globalWarningExpiredHour: appConfig.globalWarningExpiredHour,
+        backgroundBody: appConfig.backgroundBody,
+        backgroundBox: appConfig.backgroundBox
       }, { emitEvent: false });
       this.warningIsExpired = AppConfig.isWarningExpired(
-        appConfig.global_warning_expired_day,
-        appConfig.global_warning_expired_hour
+        appConfig.globalWarningExpiredDay,
+        appConfig.globalWarningExpiredHour
       );
       this.logoImageBase64 = appConfig.mainLogo;
       this.configDataChangedSubscription = this.configForm.valueChanges.subscribe(() => {
@@ -94,14 +94,14 @@ export class AppConfigComponent implements OnInit, OnDestroy {
 
   saveData(): void {
     const appConfig: AppSettings = {
-      app_title: this.configForm.get('appTitle').value,
-      intro_html: this.configForm.get('introHtml').value,
-      impressum_html: this.configForm.get('impressumHtml').value,
-      global_warning: this.configForm.get('globalWarningText').value,
-      global_warning_expired_day: this.configForm.get('globalWarningExpiredDay').value,
-      global_warning_expired_hour: this.configForm.get('globalWarningExpiredHour').value,
-      background_body: this.configForm.get('backgroundBody').value,
-      background_box: this.configForm.get('backgroundBox').value,
+      appTitle: this.configForm.get('appTitle').value,
+      introHtml: this.configForm.get('introHtml').value,
+      legalNoticeHtml: this.configForm.get('legalNoticeHtml').value,
+      globalWarningText: this.configForm.get('globalWarningText').value,
+      globalWarningExpiredDay: this.configForm.get('globalWarningExpiredDay').value,
+      globalWarningExpiredHour: this.configForm.get('globalWarningExpiredHour').value,
+      backgroundBody: this.configForm.get('backgroundBody').value,
+      backgroundBox: this.configForm.get('backgroundBox').value,
       mainLogo: this.logoImageBase64
     };
     this.bs.setAppConfig(appConfig).subscribe(isOk => {
@@ -112,7 +112,7 @@ export class AppConfigComponent implements OnInit, OnDestroy {
         this.dataChanged = false;
         this.mds.appConfig.setAppConfig(appConfig);
         this.mds.appConfig.applyBackgroundColors();
-        this.mds.appTitle$.next(this.configForm.get('appTitle').value);
+        this.mds.appTitle$.next(appConfig.appTitle);
         this.mds.globalWarning = this.mds.appConfig.warningMessage;
       } else {
         this.snackBar.open('Konnte Konfigurationsdaten der Anwendung nicht speichern', 'Fehler', { duration: 3000 });

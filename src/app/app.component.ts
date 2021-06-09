@@ -66,7 +66,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
       this.bs.getSysConfig().subscribe(sysConfig => {
         this.mds.appConfig = new AppConfig(sysConfig, this.cts, this.mds.expectedApiVersion, this.sanitizer);
-        this.mds.appTitle$.next(this.mds.appConfig.app_title);
+        this.mds.appTitle$.next(this.mds.appConfig.appTitle);
         this.mds.appConfig.applyBackgroundColors();
         this.mds.globalWarning = this.mds.appConfig.warningMessage;
         if (!sysConfig) {

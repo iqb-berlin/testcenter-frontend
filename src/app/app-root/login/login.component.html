@@ -26,11 +26,11 @@
     <alert *ngIf="mds.globalWarning" level="warning" [text]="mds.globalWarning"></alert>
   </mat-card>
 
-  <mat-card fxFlex="0 0 400px">
+  <mat-card fxFlex="0 0 400px" class="mat-card-box">
     <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
     <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
     <mat-card-content>
-      <div [innerHTML]="mds.appConfig?.trusted_intro_html"></div>
+      <div [innerHTML]="mds.appConfig?.trustedIntroHtml"></div>
       <status-card></status-card>
     </mat-card-content>
     <mat-card-actions>
