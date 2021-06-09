@@ -13,7 +13,7 @@ import {
 } from './app-route-guards';
 import { TestStarterComponent } from './app-root/test-starter/test-starter.component';
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
-import { PrivacyComponent } from './app-root/privacy/privacy.component';
+import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
 import { MonitorStarterComponent } from './app-root/monitor-starter/monitor-starter.component';
 
 const routes: Routes = [
@@ -72,8 +72,8 @@ const routes: Routes = [
     ]
   },
   {
-    path: 'priv',
-    component: PrivacyComponent
+    path: 'legal-notice',
+    component: LegalNoticeComponent
   },
   {
     path: 'check',

@@ -2,12 +2,12 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MainDataService } from '../../maindata.service';
 
 @Component({
-  templateUrl: './privacy.component.html',
+  templateUrl: './legal-notice.component.html',
   styles: [
     'mat-card {margin: 10px}'
   ]
 })
-export class PrivacyComponent implements OnInit {
+export class LegalNoticeComponent implements OnInit {
   constructor(
     @Inject('APP_NAME') public appName: string,
     @Inject('APP_PUBLISHER') public appPublisher: string,

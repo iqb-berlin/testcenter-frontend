@@ -36,7 +36,7 @@ import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-disp
 import { StatusCardComponent } from './app-root/status-card/status-card.component';
 import { TestStarterComponent } from './app-root/test-starter/test-starter.component';
 import { MonitorStarterComponent } from './app-root/monitor-starter/monitor-starter.component';
-import { PrivacyComponent } from './app-root/privacy/privacy.component';
+import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
 import { AlertModule } from './shared/alert/alert.module';
 
 @NgModule({
@@ -51,7 +51,7 @@ import { AlertModule } from './shared/alert/alert.module';
     StatusCardComponent,
     TestStarterComponent,
     MonitorStarterComponent,
-    PrivacyComponent
+    LegalNoticeComponent
   ],
   imports: [
     ApplicationModule,
