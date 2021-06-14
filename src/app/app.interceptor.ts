@@ -37,7 +37,7 @@ export class AuthInterceptor implements HttpInterceptor {
       return next.handle(requestA).pipe(
         catchError(error => {
           const apiError = new ApiError(999);
-          if (error instanceof HttpErrorResponse) { // TODO is the opposite case even possible?
+          if (error instanceof HttpErrorResponse) {
             const httpError = error as HttpErrorResponse;
             apiError.code = httpError.status;
             apiError.info = `${httpError.message} // ${httpError.error}`;
@@ -112,6 +112,22 @@ export class AuthInterceptor implements HttpInterceptor {
                 }
               }
             }
+
+          } else if (error instanceof DOMException) {
+            apiError.info = `Fehler: ${error.name} // ${error.message}`
+            this.mds.appError$.next({
+              label: `Fehler: ${error.name}`,
+              description: error.message,
+              category: 'PROBLEM'
+            });
+
+          } else {
+            apiError.info = 'Unbekannter Fehler';
+            this.mds.appError$.next({
+              label: 'Unbekannter Fehler',
+              description: '',
+              category: 'PROBLEM'
+            });
           }
 
           return throwError(apiError);

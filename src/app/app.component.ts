@@ -65,10 +65,6 @@ export class AppComponent implements OnInit, OnDestroy {
       this.setupFocusListeners();
 
       this.bs.getSysConfig().subscribe(sysConfig => {
-        this.mds.appConfig = new AppConfig(sysConfig, this.cts, this.mds.expectedApiVersion, this.sanitizer);
-        this.mds.appTitle$.next(this.mds.appConfig.appTitle);
-        this.mds.appConfig.applyBackgroundColors();
-        this.mds.globalWarning = this.mds.appConfig.warningMessage;
         if (!sysConfig) {
           this.mds.appError$.next({
             label: 'Server-Problem: Konnte Konfiguration nicht laden',
@@ -77,6 +73,11 @@ export class AppComponent implements OnInit, OnDestroy {
           });
           return;
         }
+        this.mds.appConfig = new AppConfig(sysConfig, this.cts, this.mds.expectedApiVersion, this.sanitizer);
+        this.mds.appTitle$.next(this.mds.appConfig.appTitle);
+        this.mds.appConfig.applyBackgroundColors();
+        this.mds.globalWarning = this.mds.appConfig.warningMessage;
+
         const authData = MainDataService.getAuthData();
         if (authData) {
           this.cts.addCustomTexts(authData.customTexts);
