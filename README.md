@@ -17,6 +17,7 @@ The repository for a complete setup of the application can be found [here](https
 ## Documentation
 
 Some generated Docs
+* [User's Manual](https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter)
 * [CustomTexts](https://iqb-berlin.github.io/testcenter-frontend/custom-texts)
 * [Group-Monitor Superstate-Icons](https://iqb-berlin.github.io/testcenter-frontend/super-states)
 * [Test-Modes](https://iqb-berlin.github.io/testcenter-frontend/test-mode)
