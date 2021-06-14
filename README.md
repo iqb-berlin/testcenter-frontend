@@ -14,6 +14,14 @@ You can find the backend [here](https://github.com/iqb-berlin/testcenter-backend
 
 The repository for a complete setup of the application can be found [here](https://github.com/iqb-berlin/testcenter-setup).
 
+## Documentation
+
+Some generated Docs
+* [CustomTexts](https://iqb-berlin.github.io/testcenter-frontend/custom-texts)
+* [Group-Monitor Superstate-Icons](https://iqb-berlin.github.io/testcenter-frontend/super-states)
+* [Test-Modes](https://iqb-berlin.github.io/testcenter-frontend/test-mode)
+* [Booklet Conifg Parameter](https://iqb-berlin.github.io/testcenter-frontend/booklet-config)
+
 
 ## Installation
 
