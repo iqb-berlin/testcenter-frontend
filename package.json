@@ -12,7 +12,8 @@
     "build": "ng build",
     "test": "ng test  --watch=false",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "compodoc": "npx compodoc -p tsconfig.doc.json -s"
   },
   "private": true,
   "eslintConfig": {
@@ -56,6 +57,7 @@
     "@angular/cli": "~9.0.6",
     "@angular/compiler-cli": "~9.0.6",
     "@angular/language-service": "~9.0.6",
+    "@compodoc/compodoc": "^1.1.11",
     "@iqb/eslint-config": "0.0.12",
     "@types/jasminewd2": "~2.0.8",
     "jasmine-core": "~3.5.0",
