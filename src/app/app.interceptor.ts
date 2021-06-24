@@ -112,15 +112,13 @@ export class AuthInterceptor implements HttpInterceptor {
                 }
               }
             }
-
           } else if (error instanceof DOMException) {
-            apiError.info = `Fehler: ${error.name} // ${error.message}`
+            apiError.info = `Fehler: ${error.name} // ${error.message}`;
             this.mds.appError$.next({
               label: `Fehler: ${error.name}`,
               description: error.message,
               category: 'PROBLEM'
             });
-
           } else {
             apiError.info = 'Unbekannter Fehler';
             this.mds.appError$.next({
