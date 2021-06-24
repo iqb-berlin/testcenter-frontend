@@ -21,7 +21,7 @@ The repository for a complete setup of the application can be found [here](https
 * [List of Group-Monitor's Superstates](https://iqb-berlin.github.io/testcenter-frontend/super-states)
 * [List of Test-Modes](https://iqb-berlin.github.io/testcenter-frontend/test-mode)
 * [List if Booklet Conifg Parameters](https://iqb-berlin.github.io/testcenter-frontend/booklet-config)
-* [Compodoc Documentation of Modules, Classes etc.](https://iqb-berlin.github.io/testcenter-frontend/compodoc)
+* [Compodoc Documentation of Modules, Classes etc.](https://iqb-berlin.github.io/testcenter-frontend/compodoc/)
 
 ## Installation
 
