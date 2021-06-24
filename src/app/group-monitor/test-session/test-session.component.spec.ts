@@ -1,6 +1,6 @@
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TestSessionComponent } from './test-session.component';
 import { TestViewDisplayOptions } from '../group-monitor.interfaces';
@@ -10,7 +10,7 @@ describe('TestViewComponent', () => {
   let component: TestSessionComponent;
   let fixture: ComponentFixture<TestSessionComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [TestSessionComponent],
       imports: [MatIconModule, MatTooltipModule, MatCheckboxModule]

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { NetworkCheckComponent } from './network-check.component';
@@ -9,7 +9,7 @@ describe('NetworkCheckComponent', () => {
   let component: NetworkCheckComponent;
   let fixture: ComponentFixture<NetworkCheckComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         NetworkCheckComponent,
