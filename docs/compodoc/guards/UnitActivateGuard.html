@@ -1,0 +1,936 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>itc-ng documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">itc-ng documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content guard">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+    <li>Guards</li>
+    <li>UnitActivateGuard</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+        <div class="tab-pane fade active in" id="c-info">
+            <p class="comment">
+            <h3>File</h3>
+            </p>
+            <p class="comment">
+                <code>src/app/test-controller/unithost/unit-route-guards.ts</code>
+            </p>
+
+
+
+
+
+                <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#canActivate">canActivate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkAndSolve_Code">checkAndSolve_Code</a>
+                            </li>
+                            <li>
+                                <a href="#checkAndSolve_DefLoaded">checkAndSolve_DefLoaded</a>
+                            </li>
+                            <li>
+                                <a href="#checkAndSolve_maxTime">checkAndSolve_maxTime</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+                <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(tcs: <a href="../injectables/TestControllerService.html">TestControllerService</a>, mds: <a href="../injectables/MainDataService.html">MainDataService</a>, router: <a href="https://angular.io/api/router/Router" target="_blank">Router</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/app/test-controller/unithost/unit-route-guards.ts:22</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>tcs</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/TestControllerService.html" target="_self" >TestControllerService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>mds</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MainDataService.html" target="_self" >MainDataService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>router</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/router/Router" target="_blank" >Router</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+                <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="canActivate"></a>
+                    <span class="name">
+                        <b>
+                            canActivate
+                        </b>
+                        <a href="#canActivate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>canActivate(route: <a href="https://angular.io/api/router/ActivatedRouteSnapshot" target="_blank">ActivatedRouteSnapshot</a>, state: <a href="https://angular.io/api/router/RouterStateSnapshot" target="_blank">RouterStateSnapshot</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="149"
+                            class="link-to-prism">src/app/test-controller/unithost/unit-route-guards.ts:149</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>route</td>
+                                    <td>
+                                                <code><a href="https://angular.io/api/router/ActivatedRouteSnapshot" target="_blank" >ActivatedRouteSnapshot</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>state</td>
+                                    <td>
+                                                <code><a href="https://angular.io/api/router/RouterStateSnapshot" target="_blank" >RouterStateSnapshot</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable | boolean</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkAndSolve_Code"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            checkAndSolve_Code
+                        </b>
+                        <a href="#checkAndSolve_Code"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkAndSolve_Code(newUnit: <a href="../interfaces/Unit.html">UnitControllerData</a>, force: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">src/app/test-controller/unithost/unit-route-guards.ts:29</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>newUnit</td>
+                                    <td>
+                                                <code><a href="../interfaces/Unit.html" target="_self" >UnitControllerData</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>force</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;boolean&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkAndSolve_DefLoaded"></a>
+                    <span class="name">
+                        <b>
+                            checkAndSolve_DefLoaded
+                        </b>
+                        <a href="#checkAndSolve_DefLoaded"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>checkAndSolve_DefLoaded(newUnit: <a href="../interfaces/Unit.html">UnitControllerData</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="67"
+                            class="link-to-prism">src/app/test-controller/unithost/unit-route-guards.ts:67</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>newUnit</td>
+                                    <td>
+                                                <code><a href="../interfaces/Unit.html" target="_self" >UnitControllerData</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;boolean&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkAndSolve_maxTime"></a>
+                    <span class="name">
+                        <b>
+                            checkAndSolve_maxTime
+                        </b>
+                        <a href="#checkAndSolve_maxTime"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>checkAndSolve_maxTime(newUnit: <a href="../interfaces/Unit.html">UnitControllerData</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="136"
+                            class="link-to-prism">src/app/test-controller/unithost/unit-route-guards.ts:136</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>newUnit</td>
+                                    <td>
+                                                <code><a href="../interfaces/Unit.html" target="_self" >UnitControllerData</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;boolean&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+        </div>
+
+
+        <div class="tab-pane fade  tab-source-code" id="c-source">
+            <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from &#x27;iqb-components&#x27;;
+import {
+  filter, map, switchMap, take
+} from &#x27;rxjs/operators&#x27;;
+import { Injectable } from &#x27;@angular/core&#x27;;
+import {
+  ActivatedRouteSnapshot, CanActivate, CanDeactivate, Router, RouterStateSnapshot
+} from &#x27;@angular/router&#x27;;
+import { interval, Observable, of } from &#x27;rxjs&#x27;;
+import { MainDataService } from &#x27;src/app/maindata.service&#x27;;
+import { MatDialog } from &#x27;@angular/material/dialog&#x27;;
+import { MatSnackBar } from &#x27;@angular/material/snack-bar&#x27;;
+import { CodeInputData } from &#x27;../test-controller.interfaces&#x27;;
+import { UnitControllerData } from &#x27;../test-controller.classes&#x27;;
+import { UnithostComponent } from &#x27;./unithost.component&#x27;;
+import { TestControllerService } from &#x27;../test-controller.service&#x27;;
+import { TestControllerComponent } from &#x27;../test-controller.component&#x27;;
+
+@Injectable()
+export class UnitActivateGuard implements CanActivate {
+  constructor(
+    private tcs: TestControllerService,
+    private mds: MainDataService,
+    private router: Router
+  ) {}
+
+  private checkAndSolve_Code(newUnit: UnitControllerData, force: boolean): Observable&lt;boolean&gt; {
+    if (newUnit.codeRequiringTestlets) {
+      if (newUnit.codeRequiringTestlets.length &gt; 0) {
+        const myCodes: CodeInputData[] &#x3D; [];
+        newUnit.codeRequiringTestlets.forEach(t &#x3D;&gt; {
+          if (force) {
+            t.codeToEnter &#x3D; &#x27;&#x27;;
+            this.tcs.addClearedCodeTestlet(t.id);
+          } else {
+            myCodes.push(&lt;CodeInputData&gt;{
+              testletId: t.id,
+              prompt: t.codePrompt,
+              code: t.codeToEnter.toUpperCase().trim(),
+              value: this.tcs.testMode.presetCode ? t.codeToEnter : &#x27;&#x27;
+            });
+          }
+        });
+        if (myCodes.length &gt; 0) {
+          this.router.navigate([&#x60;/t/${this.tcs.testId}/unlock&#x60;], {
+            skipLocationChange: true,
+            state: {
+              returnTo: &#x60;/t/${this.tcs.testId}/u/${this.tcs.currentUnitSequenceId}&#x60;,
+              newUnit: newUnit,
+              codes: myCodes
+            }
+          });
+          return of(false);
+        } else {
+          return of(true);
+        }
+      } else {
+        return of(true);
+      }
+    } else {
+      return of(true);
+    }
+  }
+
+  checkAndSolve_DefLoaded(newUnit: UnitControllerData): Observable&lt;boolean&gt; {
+    if (this.tcs.loadComplete) {
+      return of(true);
+    } else {
+      if (this.tcs.currentUnitSequenceId &lt; newUnit.unitDef.sequenceId) {
+
+        // 1 going forwards
+
+        if ((newUnit.maxTimerRequiringTestlet &#x3D;&#x3D;&#x3D; null) || (!this.tcs.testMode.forceNaviRestrictions)) {
+
+          // 1 a) target is not in timed block or review mode --&gt; check only target unit
+
+          if (this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)) {
+            return of(true);
+          } else {
+            this.mds.setSpinnerOn();
+            return interval(1000)
+              .pipe(
+                filter(() &#x3D;&gt; this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)),
+                map(() &#x3D;&gt; true),
+                take(1)
+              );
+          }
+        } else if (this.tcs.currentMaxTimerTestletId &amp;&amp; (newUnit.maxTimerRequiringTestlet.id &#x3D;&#x3D;&#x3D; this.tcs.currentMaxTimerTestletId)) {
+
+          // 1 b) staying in timed block --&gt; check has been already done
+
+          return of(true);
+
+        } else {
+
+          // entering timed block --&gt; check all units
+          const allUnitsSequenceIdsToCheck &#x3D; this.tcs.rootTestlet.getAllUnitSequenceIds(newUnit.maxTimerRequiringTestlet.id);
+          let ok &#x3D; true;
+          allUnitsSequenceIdsToCheck.forEach(u &#x3D;&gt; {
+            if (!this.tcs.hasUnitDefinition(u)) {
+              ok &#x3D; false;
+            }
+          });
+          if (ok) {
+            return of(true);
+          } else {
+            this.mds.setSpinnerOn();
+            return interval(1000)
+              .pipe(
+                filter(() &#x3D;&gt; {
+                  let localOk &#x3D; true;
+                  allUnitsSequenceIdsToCheck.forEach(u &#x3D;&gt; {
+                    if (!this.tcs.hasUnitDefinition(u)) {
+                      localOk &#x3D; false;
+                    }
+                  });
+                  return localOk;
+                }),
+                map(() &#x3D;&gt; true),
+                take(1)
+              );
+          }
+
+        }
+      } else {
+
+        // 2 going backwards --&gt; no check, because units are loaded in ascending order
+
+        return of(true);
+      }
+    }
+  }
+
+  checkAndSolve_maxTime(newUnit: UnitControllerData): Observable&lt;boolean&gt; {
+    if (newUnit.maxTimerRequiringTestlet &#x3D;&#x3D;&#x3D; null) {
+      return of(true);
+    } else if (this.tcs.currentMaxTimerTestletId &amp;&amp; (newUnit.maxTimerRequiringTestlet.id &#x3D;&#x3D;&#x3D; this.tcs.currentMaxTimerTestletId)) {
+      return of(true);
+    } else {
+      this.tcs.cancelMaxTimer();
+      this.tcs.rootTestlet.lockUnits_before(newUnit.maxTimerRequiringTestlet.id);
+      this.tcs.startMaxTimer(newUnit.maxTimerRequiringTestlet.id, newUnit.maxTimerRequiringTestlet.maxTimeLeft);
+      return of(true);
+    }
+  }
+
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable&lt;boolean&gt;|boolean {
+    const targetUnitSequenceId: number &#x3D; Number(route.params[&#x27;u&#x27;]);
+    if (this.tcs.currentUnitSequenceId &gt; 0) {
+      this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
+    } else {
+      this.tcs.updateMinMaxUnitSequenceId(targetUnitSequenceId);
+    }
+    let forceNavigation &#x3D; false;
+    const routerStateObject &#x3D; this.router.getCurrentNavigation();
+    if (routerStateObject.extras.state &amp;&amp; routerStateObject.extras.state[&#x27;force&#x27;]) {
+      forceNavigation &#x3D; routerStateObject.extras.state[&#x27;force&#x27;];
+    }
+
+    let myReturn &#x3D; false;
+    if (this.tcs.rootTestlet &#x3D;&#x3D;&#x3D; null) {
+      console.warn(&#x27;unit canActivate: true (rootTestlet null)&#x27;);
+      myReturn &#x3D; false;
+      const oldTestId &#x3D; localStorage.getItem(TestControllerComponent.localStorageTestKey);
+      if (oldTestId) {
+        this.router.navigate([&#x60;/t/${oldTestId}&#x60;]);
+      } else {
+        this.router.navigate([&#x27;/&#x27;]);
+      }
+    } else if ((targetUnitSequenceId &lt; this.tcs.minUnitSequenceId) || (targetUnitSequenceId &gt; this.tcs.maxUnitSequenceId)) {
+      console.warn(&#x27;unit canActivate: false (unit# out of range)&#x27;);
+      myReturn &#x3D; false;
+    } else {
+      const newUnit: UnitControllerData &#x3D; this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
+      if (!newUnit) {
+        myReturn &#x3D; false;
+        console.warn(&#x27;target unit null (targetUnitSequenceId: &#x27; + targetUnitSequenceId.toString());
+      } else if (newUnit.unitDef.locked) {
+        myReturn &#x3D; false;
+        console.warn(&#x27;unit canActivate: locked&#x27;);
+      } else if (newUnit.unitDef.canEnter &#x3D;&#x3D;&#x3D; &#x27;n&#x27;) {
+        myReturn &#x3D; false;
+        console.warn(&#x27;unit canActivate: false (unit is locked)&#x27;);
+      } else {
+
+        return this.checkAndSolve_Code(newUnit, forceNavigation).pipe(
+          switchMap(cAsC &#x3D;&gt; {
+            if (!cAsC) {
+              return of(false);
+            } else {
+              return this.checkAndSolve_DefLoaded(newUnit).pipe(
+                switchMap(cAsDL &#x3D;&gt; {
+                  this.mds.setSpinnerOff();
+                  if (!cAsDL) {
+                    return of(false);
+                  } else {
+                    return this.checkAndSolve_maxTime(newUnit).pipe(
+                      switchMap(cAsMT &#x3D;&gt; {
+                        if (!cAsMT) {
+                          return of(false);
+                        } else {
+                          this.tcs.currentUnitSequenceId &#x3D; targetUnitSequenceId;
+                          this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
+                          return of(true);
+                        }
+                      })
+                    );
+                  }
+                })
+              );
+            }
+        }));
+      }
+    }
+    return myReturn;
+  }
+}
+
+
+@Injectable()
+export class UnitDeactivateGuard implements CanDeactivate&lt;UnithostComponent&gt; {
+  constructor(
+    private tcs: TestControllerService,
+    private cts: CustomtextService,
+    public confirmDialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private router: Router
+  ) {}
+
+  private checkAndSolve_maxTime(newUnit: UnitControllerData, force: boolean): Observable&lt;boolean&gt; {
+    if (this.tcs.currentMaxTimerTestletId) {
+      if (newUnit &amp;&amp; newUnit.maxTimerRequiringTestlet &amp;&amp; (newUnit.maxTimerRequiringTestlet.id &#x3D;&#x3D;&#x3D; this.tcs.currentMaxTimerTestletId)) {
+        return of(true);
+      } else {
+        if (force) {
+          this.tcs.interruptMaxTimer();
+          return of(true);
+        } else {
+          const dialogCDRef &#x3D; this.confirmDialog.open(ConfirmDialogComponent, {
+            width: &#x27;500px&#x27;,
+            data: &lt;ConfirmDialogData&gt;{
+              title: this.cts.getCustomText(&#x27;booklet_warningLeaveTimerBlockTitle&#x27;),
+              content: this.cts.getCustomText(&#x27;booklet_warningLeaveTimerBlockTextPrompt&#x27;),
+              confirmbuttonlabel: &#x27;Trotzdem weiter&#x27;,
+              confirmbuttonreturn: true,
+              showcancel: true
+            }
+          });
+          return dialogCDRef.afterClosed()
+            .pipe(
+              switchMap(cdresult &#x3D;&gt; {
+                if ((typeof cdresult &#x3D;&#x3D;&#x3D; &#x27;undefined&#x27;) || (cdresult &#x3D;&#x3D;&#x3D; false)) {
+                  return of(false);
+                } else {
+                  this.tcs.cancelMaxTimer();
+                  return of(true);
+                }
+              })
+            );
+        }
+      }
+    } else {
+      return of(true);
+    }
+  }
+
+  private checkAndSolve_PresentationCompleteCode(newUnit: UnitControllerData, force: boolean): Observable&lt;boolean&gt; {
+    if (force) {
+      return of(true);
+    } else {
+      if ((this.tcs.bookletConfig.force_presentation_complete &#x3D;&#x3D;&#x3D; &#x27;ON&#x27;) &amp;&amp; this.tcs.currentUnitSequenceId &gt; 0) {
+        if (!newUnit || this.tcs.currentUnitSequenceId &lt; newUnit.unitDef.sequenceId) {
+          // go forwards &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;
+          let myreturn &#x3D; true;
+          let checkUnitSequenceId &#x3D; this.tcs.currentUnitSequenceId;
+          if (newUnit) {
+            checkUnitSequenceId &#x3D; newUnit.unitDef.sequenceId - 1;
+          }
+          while (myreturn &amp;&amp; (checkUnitSequenceId &gt;&#x3D; this.tcs.currentUnitSequenceId)) {
+            const tmpUnit &#x3D; this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
+            if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
+              if (this.tcs.hasUnitPresentationComplete(checkUnitSequenceId)) {
+                if (this.tcs.getUnitPresentationComplete(checkUnitSequenceId) !&#x3D;&#x3D; &#x27;complete&#x27;) {
+                  myreturn &#x3D; false;
+                }
+              } else {
+                myreturn &#x3D; false;
+              }
+            }
+            checkUnitSequenceId -&#x3D; 1;
+          }
+          if (myreturn) {
+            return of(true);
+          } else {
+            if (this.tcs.testMode.forceNaviRestrictions) {
+              const dialogCDRef &#x3D; this.confirmDialog.open(ConfirmDialogComponent, {
+                width: &#x27;500px&#x27;,
+                // height: &#x27;300px&#x27;,
+                data: &lt;ConfirmDialogData&gt;{
+                  title: this.cts.getCustomText(&#x27;booklet_msgPresentationNotCompleteTitleNext&#x27;),
+                  content: this.cts.getCustomText(&#x27;booklet_msgPresentationNotCompleteTextNext&#x27;),
+                  confirmbuttonlabel: &#x27;OK&#x27;,
+                  confirmbuttonreturn: false,
+                  showcancel: false
+                }
+              });
+              return dialogCDRef.afterClosed().pipe(map(() &#x3D;&gt; false));
+            } else {
+              this.snackBar.open(&#x27;Im Hot-Modus dürfte hier nicht weitergeblättert werden (PresentationNotComplete).&#x27;,
+                &#x27;Weiterblättern&#x27;, {duration: 3000});
+              return of(true);
+            }
+          }
+        } else {
+          // go backwards &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;
+          let myreturn &#x3D; true;
+          if (this.tcs.hasUnitPresentationComplete(this.tcs.currentUnitSequenceId)) {
+            if (this.tcs.getUnitPresentationComplete(this.tcs.currentUnitSequenceId) !&#x3D;&#x3D; &#x27;complete&#x27;) {
+              myreturn &#x3D; false;
+            }
+          } else {
+            myreturn &#x3D; false;
+          }
+          if (myreturn) {
+            return of(true);
+          } else {
+            if (this.tcs.testMode.forceNaviRestrictions) {
+              const dialogCDRef &#x3D; this.confirmDialog.open(ConfirmDialogComponent, {
+                width: &#x27;500px&#x27;,
+                // height: &#x27;300px&#x27;,
+                data: &lt;ConfirmDialogData&gt;{
+                  title: this.cts.getCustomText(&#x27;booklet_msgPresentationNotCompleteTitlePrev&#x27;),
+                  content: this.cts.getCustomText(&#x27;booklet_msgPresentationNotCompleteTextPrev&#x27;),
+                  confirmbuttonlabel: &#x27;Trotzdem zurück&#x27;,
+                  confirmbuttonreturn: true,
+                  showcancel: true
+                }
+              });
+              return dialogCDRef.afterClosed();
+            } else {
+              this.snackBar.open(&#x27;Im Hot-Modus käme eine Warnung (PresentationNotComplete).&#x27;,
+                &#x27;Zurückblättern&#x27;, {duration: 3000});
+              return of(true);
+            }
+          }
+        }
+      } else {
+        return of(true);
+      }
+    }
+  }
+
+  canDeactivate(component: UnithostComponent, currentRoute: ActivatedRouteSnapshot,
+                currentState: RouterStateSnapshot, nextState: RouterStateSnapshot)
+      : Observable&lt;boolean&gt; | boolean {
+    let newUnit: UnitControllerData &#x3D; null;
+    if (/t\/\d+\/u\/\d+$/.test(nextState.url)) {
+      const targetUnitSequenceId &#x3D; Number(nextState.url.match(/\d+$/)[0]);
+      newUnit &#x3D; this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
+    }
+    let forceNavigation &#x3D; false;
+    const routerStateObject &#x3D; this.router.getCurrentNavigation();
+    if (routerStateObject.extras.state &amp;&amp; routerStateObject.extras.state[&#x27;force&#x27;]) {
+      forceNavigation &#x3D; routerStateObject.extras.state[&#x27;force&#x27;];
+    }
+    return this.checkAndSolve_maxTime(newUnit, forceNavigation)
+      .pipe(
+        switchMap(cAsC &#x3D;&gt; {
+          if (!cAsC) {
+            return of(false);
+          } else {
+            return this.checkAndSolve_PresentationCompleteCode(newUnit, forceNavigation);
+          }
+        })
+      );
+  }
+}
+
+export const unitRouteGuards &#x3D; [UnitActivateGuard, UnitDeactivateGuard];
+</code></pre>
+        </div>
+</div>
+
+
+
+
+
+                   
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'guard';
+            var COMPODOC_CURRENT_PAGE_URL = 'UnitActivateGuard.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

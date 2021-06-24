@@ -1,0 +1,2572 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>itc-ng documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">itc-ng documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Classes</li>
+  <li>Testlet</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/app/test-controller/test-controller.classes.ts</code>
+        </p>
+
+
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                        <code><a href="../interfaces/Testlet.html" target="_self" >TestletContentElement</a></code>
+            </p>
+
+
+
+            <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#codePrompt">codePrompt</a>
+                            </li>
+                            <li>
+                                <a href="#codeToEnter">codeToEnter</a>
+                            </li>
+                            <li>
+                                <a href="#maxTimeLeft">maxTimeLeft</a>
+                            </li>
+                            <li>
+                                <a href="#canEnter">canEnter</a>
+                            </li>
+                            <li>
+                                <a href="#canLeave">canLeave</a>
+                            </li>
+                            <li>
+                                <a href="#children">children</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#id">id</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#sequenceId">sequenceId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#title">title</a>
+                            </li>
+                            <li>
+                                <a href="#tryEnterMessage">tryEnterMessage</a>
+                            </li>
+                            <li>
+                                <a href="#tryLeaveMessage">tryLeaveMessage</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#addTestlet">addTestlet</a>
+                            </li>
+                            <li>
+                                <a href="#addUnit">addUnit</a>
+                            </li>
+                            <li>
+                                <a href="#clearTestletCodes">clearTestletCodes</a>
+                            </li>
+                            <li>
+                                <a href="#getAllUnitSequenceIds">getAllUnitSequenceIds</a>
+                            </li>
+                            <li>
+                                <a href="#getFirstUnlockedUnitSequenceId">getFirstUnlockedUnitSequenceId</a>
+                            </li>
+                            <li>
+                                <a href="#getLastUnlockedUnitSequenceId">getLastUnlockedUnitSequenceId</a>
+                            </li>
+                            <li>
+                                <a href="#getNextUnlockedUnitSequenceId">getNextUnlockedUnitSequenceId</a>
+                            </li>
+                            <li>
+                                <a href="#getSequenceIdByUnitAlias">getSequenceIdByUnitAlias</a>
+                            </li>
+                            <li>
+                                <a href="#getTestlet">getTestlet</a>
+                            </li>
+                            <li>
+                                <a href="#getUnitAt">getUnitAt</a>
+                            </li>
+                            <li>
+                                <a href="#lockUnits_allChildren">lockUnits_allChildren</a>
+                            </li>
+                            <li>
+                                <a href="#lockUnits_before">lockUnits_before</a>
+                            </li>
+                            <li>
+                                <a href="#lockUnitsIfTimeLeftNull">lockUnitsIfTimeLeftNull</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#minTestletUnitSequenceId">minTestletUnitSequenceId</a>
+                            </li>
+                            <li>
+                                <a href="#setTimeLeft">setTimeLeft</a>
+                            </li>
+                            <li>
+                                <a href="#getMaxSequenceId">getMaxSequenceId</a>
+                            </li>
+                            <li>
+                                <a href="#setCanEnter">setCanEnter</a>
+                            </li>
+                            <li>
+                                <a href="#setCanLeave">setCanLeave</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+
+            <section>
+    
+        <h3 id="inputs">
+            Properties
+        </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="codePrompt"></a>
+                        <span class="name">
+                            <b>
+                            codePrompt</b>
+                            <a href="#codePrompt"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>&#x27;&#x27;</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="137" class="link-to-prism">src/app/test-controller/test-controller.classes.ts:137</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="codeToEnter"></a>
+                        <span class="name">
+                            <b>
+                            codeToEnter</b>
+                            <a href="#codeToEnter"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>&#x27;&#x27;</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="136" class="link-to-prism">src/app/test-controller/test-controller.classes.ts:136</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="maxTimeLeft"></a>
+                        <span class="name">
+                            <b>
+                            maxTimeLeft</b>
+                            <a href="#maxTimeLeft"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>-1</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="138" class="link-to-prism">src/app/test-controller/test-controller.classes.ts:138</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="canEnter"></a>
+                        <span class="name">
+                            <b>
+                            canEnter</b>
+                            <a href="#canEnter"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code>&quot;y&quot; | &quot;n&quot; | &quot;w&quot;</code>
+
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from         <code><a href="../interfaces/Testlet.html" target="_self" >TestletContentElement</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in         <code><a href="../interfaces/Testlet.html#source" target="_self" >TestletContentElement:9</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="canLeave"></a>
+                        <span class="name">
+                            <b>
+                            canLeave</b>
+                            <a href="#canLeave"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code>&quot;y&quot; | &quot;n&quot; | &quot;w&quot;</code>
+
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from         <code><a href="../interfaces/Testlet.html" target="_self" >TestletContentElement</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in         <code><a href="../interfaces/Testlet.html#source" target="_self" >TestletContentElement:10</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="children"></a>
+                        <span class="name">
+                            <b>
+                            children</b>
+                            <a href="#children"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="../interfaces/Testlet.html" target="_self" >TestletContentElement[]</a></code>
+
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from         <code><a href="../interfaces/Testlet.html" target="_self" >TestletContentElement</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in         <code><a href="../interfaces/Testlet.html#source" target="_self" >TestletContentElement:13</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="id"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Readonly</span>
+                            id</b>
+                            <a href="#id"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from         <code><a href="../interfaces/Testlet.html" target="_self" >TestletContentElement</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in         <code><a href="../interfaces/Testlet.html#source" target="_self" >TestletContentElement:7</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="sequenceId"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Readonly</span>
+                            sequenceId</b>
+                            <a href="#sequenceId"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from         <code><a href="../interfaces/Testlet.html" target="_self" >TestletContentElement</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in         <code><a href="../interfaces/Testlet.html#source" target="_self" >TestletContentElement:6</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="title"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Readonly</span>
+                            title</b>
+                            <a href="#title"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from         <code><a href="../interfaces/Testlet.html" target="_self" >TestletContentElement</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in         <code><a href="../interfaces/Testlet.html#source" target="_self" >TestletContentElement:8</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="tryEnterMessage"></a>
+                        <span class="name">
+                            <b>
+                            tryEnterMessage</b>
+                            <a href="#tryEnterMessage"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from         <code><a href="../interfaces/Testlet.html" target="_self" >TestletContentElement</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in         <code><a href="../interfaces/Testlet.html#source" target="_self" >TestletContentElement:11</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="tryLeaveMessage"></a>
+                        <span class="name">
+                            <b>
+                            tryLeaveMessage</b>
+                            <a href="#tryLeaveMessage"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Inherited from         <code><a href="../interfaces/Testlet.html" target="_self" >TestletContentElement</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">Defined in         <code><a href="../interfaces/Testlet.html#source" target="_self" >TestletContentElement:12</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addTestlet"></a>
+                    <span class="name">
+                        <b>
+                            addTestlet
+                        </b>
+                        <a href="#addTestlet"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>addTestlet(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, title: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="140"
+                            class="link-to-prism">src/app/test-controller/test-controller.classes.ts:140</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>title</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/Testlet.html" target="_self" >Testlet</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addUnit"></a>
+                    <span class="name">
+                        <b>
+                            addUnit
+                        </b>
+                        <a href="#addUnit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>addUnit(sequenceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, title: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, alias: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, naviButtonLabel: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="146"
+                            class="link-to-prism">src/app/test-controller/test-controller.classes.ts:146</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>sequenceId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>id</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>title</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>alias</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>naviButtonLabel</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/Unit.html" target="_self" >UnitDef</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="clearTestletCodes"></a>
+                    <span class="name">
+                        <b>
+                            clearTestletCodes
+                        </b>
+                        <a href="#clearTestletCodes"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>clearTestletCodes(testletIdList: string[])</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="228"
+                            class="link-to-prism">src/app/test-controller/test-controller.classes.ts:228</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>testletIdList</td>
+                                    <td>
+                                            <code>string[]</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getAllUnitSequenceIds"></a>
+                    <span class="name">
+                        <b>
+                            getAllUnitSequenceIds
+                        </b>
+                        <a href="#getAllUnitSequenceIds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getAllUnitSequenceIds(testletId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="237"
+                            class="link-to-prism">src/app/test-controller/test-controller.classes.ts:237</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>testletId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&#x27;&#x27;</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>number[]</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFirstUnlockedUnitSequenceId"></a>
+                    <span class="name">
+                        <b>
+                            getFirstUnlockedUnitSequenceId
+                        </b>
+                        <a href="#getFirstUnlockedUnitSequenceId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getFirstUnlockedUnitSequenceId(startWith: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="342"
+                            class="link-to-prism">src/app/test-controller/test-controller.classes.ts:342</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>startWith</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getLastUnlockedUnitSequenceId"></a>
+                    <span class="name">
+                        <b>
+                            getLastUnlockedUnitSequenceId
+                        </b>
+                        <a href="#getLastUnlockedUnitSequenceId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getLastUnlockedUnitSequenceId(startWith: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="359"
+                            class="link-to-prism">src/app/test-controller/test-controller.classes.ts:359</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>startWith</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getNextUnlockedUnitSequenceId"></a>
+                    <span class="name">
+                        <b>
+                            getNextUnlockedUnitSequenceId
+                        </b>
+                        <a href="#getNextUnlockedUnitSequenceId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getNextUnlockedUnitSequenceId(currentUnitSequenceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="329"
+                            class="link-to-prism">src/app/test-controller/test-controller.classes.ts:329</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>currentUnitSequenceId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSequenceIdByUnitAlias"></a>
+                    <span class="name">
+                        <b>
+                            getSequenceIdByUnitAlias
+                        </b>
+                        <a href="#getSequenceIdByUnitAlias"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getSequenceIdByUnitAlias(alias: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="191"
+                            class="link-to-prism">src/app/test-controller/test-controller.classes.ts:191</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>alias</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getTestlet"></a>
+                    <span class="name">
+                        <b>
+                            getTestlet
+                        </b>
+                        <a href="#getTestlet"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getTestlet(testletId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="210"
+                            class="link-to-prism">src/app/test-controller/test-controller.classes.ts:210</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>testletId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/Testlet.html" target="_self" >Testlet</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getUnitAt"></a>
+                    <span class="name">
+                        <b>
+                            getUnitAt
+                        </b>
+                        <a href="#getUnitAt"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getUnitAt(sequenceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, isEntryPoint)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="158"
+                            class="link-to-prism">src/app/test-controller/test-controller.classes.ts:158</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>sequenceId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>isEntryPoint</td>
+                                    <td>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>true</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/Unit.html" target="_self" >UnitControllerData</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="lockUnits_allChildren"></a>
+                    <span class="name">
+                        <b>
+                            lockUnits_allChildren
+                        </b>
+                        <a href="#lockUnits_allChildren"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>lockUnits_allChildren(testletId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="281"
+                            class="link-to-prism">src/app/test-controller/test-controller.classes.ts:281</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>testletId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&#x27;&#x27;</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="lockUnits_before"></a>
+                    <span class="name">
+                        <b>
+                            lockUnits_before
+                        </b>
+                        <a href="#lockUnits_before"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>lockUnits_before(testletId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="317"
+                            class="link-to-prism">src/app/test-controller/test-controller.classes.ts:317</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>testletId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&#x27;&#x27;</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="lockUnitsIfTimeLeftNull"></a>
+                    <span class="name">
+                        <b>
+                            lockUnitsIfTimeLeftNull
+                        </b>
+                        <a href="#lockUnitsIfTimeLeftNull"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>lockUnitsIfTimeLeftNull(lock)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="379"
+                            class="link-to-prism">src/app/test-controller/test-controller.classes.ts:379</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>lock</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>false</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="minTestletUnitSequenceId"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Private</span>
+                            minTestletUnitSequenceId
+                        </b>
+                        <a href="#minTestletUnitSequenceId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>minTestletUnitSequenceId(id)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="301"
+                            class="link-to-prism">src/app/test-controller/test-controller.classes.ts:301</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>-1</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setTimeLeft"></a>
+                    <span class="name">
+                        <b>
+                            setTimeLeft
+                        </b>
+                        <a href="#setTimeLeft"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>setTimeLeft(testletId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, maxTimeLeft: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="260"
+                            class="link-to-prism">src/app/test-controller/test-controller.classes.ts:260</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>testletId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>maxTimeLeft</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMaxSequenceId"></a>
+                    <span class="name">
+                        <b>
+                            getMaxSequenceId
+                        </b>
+                        <a href="#getMaxSequenceId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getMaxSequenceId(tmpId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../interfaces/Testlet.html" target="_self" >TestletContentElement</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../interfaces/Testlet.html#source" target="_self" >TestletContentElement:64</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>tmpId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>0</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setCanEnter"></a>
+                    <span class="name">
+                        <b>
+                            setCanEnter
+                        </b>
+                        <a href="#setCanEnter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>setCanEnter(can: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, message: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, allChildren)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../interfaces/Testlet.html" target="_self" >TestletContentElement</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../interfaces/Testlet.html#source" target="_self" >TestletContentElement:26</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>can</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>message</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>allChildren</td>
+                                    <td>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>false</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setCanLeave"></a>
+                    <span class="name">
+                        <b>
+                            setCanLeave
+                        </b>
+                        <a href="#setCanLeave"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>setCanLeave(can: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, message: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, allChildren)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../interfaces/Testlet.html" target="_self" >TestletContentElement</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../interfaces/Testlet.html#source" target="_self" >TestletContentElement:45</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>can</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>message</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>allChildren</td>
+                                    <td>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>false</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MaxTimerDataType } from &#x27;./test-controller.interfaces&#x27;;
+
+export class TestletContentElement {
+  readonly sequenceId: number;
+  readonly id: string;
+  readonly title: string;
+  canEnter: &#x27;y&#x27; | &#x27;n&#x27; | &#x27;w&#x27;;
+  canLeave: &#x27;y&#x27; | &#x27;n&#x27; | &#x27;w&#x27;;
+  tryEnterMessage: string;
+  tryLeaveMessage: string;
+  children: TestletContentElement[];
+
+  constructor(sequenceId: number, id: string, title: string) {
+    this.sequenceId &#x3D; sequenceId;
+    this.id &#x3D; id;
+    this.title &#x3D; title;
+    this.canEnter &#x3D; &#x27;y&#x27;;
+    this.canLeave &#x3D; &#x27;y&#x27;;
+    this.tryEnterMessage &#x3D; &#x27;&#x27;;
+    this.tryLeaveMessage &#x3D; &#x27;&#x27;;
+    this.children &#x3D; [];
+  }
+
+  setCanEnter(can: string, message: string, allChildren &#x3D; false): void {
+    let newCan: &#x27;y&#x27; | &#x27;n&#x27; | &#x27;w&#x27; &#x3D; &#x27;y&#x27;;
+    if (can.length &gt; 0) {
+      const checkChar &#x3D; can.substr(0, 1).toLowerCase();
+      if (checkChar &#x3D;&#x3D;&#x3D; &#x27;n&#x27;) {
+        newCan &#x3D; &#x27;n&#x27;;
+      } else if (checkChar &#x3D;&#x3D;&#x3D; &#x27;w&#x27;) {
+        newCan &#x3D; &#x27;w&#x27;;
+      }
+    }
+    this.canEnter &#x3D; newCan;
+    this.tryEnterMessage &#x3D; message;
+    if (allChildren) {
+      this.children.forEach(tce &#x3D;&gt; {
+        tce.setCanEnter(can, message, allChildren);
+      });
+    }
+  }
+
+  setCanLeave(can: string, message: string, allChildren &#x3D; false): void {
+    let newCan: &#x27;y&#x27; | &#x27;n&#x27; | &#x27;w&#x27; &#x3D; &#x27;y&#x27;;
+    if (can.length &gt; 0) {
+      const checkChar &#x3D; can.substr(0, 1).toLowerCase();
+      if (checkChar &#x3D;&#x3D;&#x3D; &#x27;n&#x27;) {
+        newCan &#x3D; &#x27;n&#x27;;
+      } else if (checkChar &#x3D;&#x3D;&#x3D; &#x27;w&#x27;) {
+        newCan &#x3D; &#x27;w&#x27;;
+      }
+    }
+    this.canLeave &#x3D; newCan;
+    this.tryLeaveMessage &#x3D; message;
+    if (allChildren) {
+      this.children.forEach(tce &#x3D;&gt; {
+        tce.setCanLeave(can, message, allChildren);
+      });
+    }
+  }
+
+  getMaxSequenceId(tmpId &#x3D; 0): number {
+    if (this.sequenceId &gt;&#x3D; tmpId) {
+      tmpId &#x3D; this.sequenceId + 1;
+    }
+    this.children.forEach(tce &#x3D;&gt; {
+      tmpId &#x3D; tce.getMaxSequenceId(tmpId);
+    });
+    return tmpId;
+  }
+}
+
+export class UnitDef extends TestletContentElement {
+  readonly alias: string;
+  readonly naviButtonLabel: string;
+  playerId: string;
+  statusResponses: &#x27;no&#x27; | &#x27;some&#x27; | &#x27;all&#x27;;
+  statusPresentation: &#x27;no&#x27; | &#x27;partly&#x27; | &#x27;full&#x27;;
+  locked &#x3D; false;
+  ignoreCompleted &#x3D; false;
+
+  constructor(
+    sequenceId: number,
+    id: string,
+    title: string,
+    alias: string,
+    naviButtonLabel: string
+  ) {
+    super(sequenceId, id, title);
+    this.alias &#x3D; alias;
+    this.naviButtonLabel &#x3D; naviButtonLabel;
+    this.statusResponses &#x3D; &#x27;no&#x27;;
+    this.statusPresentation &#x3D; &#x27;no&#x27;;
+  }
+
+  setStatusResponses(status: string): void {
+    let newStatus: &#x27;no&#x27; | &#x27;some&#x27; | &#x27;all&#x27; &#x3D; &#x27;no&#x27;;
+    if (status.length &gt; 0) {
+      const checkChar &#x3D; status.substr(0, 1).toLowerCase();
+      if (checkChar &#x3D;&#x3D;&#x3D; &#x27;s&#x27;) {
+        newStatus &#x3D; &#x27;some&#x27;;
+      } else if (checkChar &#x3D;&#x3D;&#x3D; &#x27;a&#x27;) {
+        newStatus &#x3D; &#x27;all&#x27;;
+      }
+    }
+    this.statusResponses &#x3D; newStatus;
+  }
+
+  setStatusPresentation(status: string): void {
+    let newStatus: &#x27;no&#x27; | &#x27;partly&#x27; | &#x27;full&#x27; &#x3D; &#x27;no&#x27;;
+    if (status.length &gt; 0) {
+      const checkChar &#x3D; status.substr(0, 1).toLowerCase();
+      if (checkChar &#x3D;&#x3D;&#x3D; &#x27;p&#x27;) {
+        newStatus &#x3D; &#x27;partly&#x27;;
+      } else if (checkChar &#x3D;&#x3D;&#x3D; &#x27;f&#x27;) {
+        newStatus &#x3D; &#x27;full&#x27;;
+      }
+    }
+    this.statusPresentation &#x3D; newStatus;
+  }
+}
+
+export class UnitControllerData {
+  unitDef: UnitDef &#x3D; null;
+  codeRequiringTestlets: Testlet[] &#x3D; [];
+  maxTimerRequiringTestlet: Testlet &#x3D; null;
+  testletLabel &#x3D; &#x27;&#x27;;
+  constructor(unitDef: UnitDef) {
+    this.unitDef &#x3D; unitDef;
+  }
+}
+
+export class Testlet extends TestletContentElement {
+  codeToEnter &#x3D; &#x27;&#x27;;
+  codePrompt &#x3D; &#x27;&#x27;;
+  maxTimeLeft &#x3D; -1;
+
+  addTestlet(id: string, title: string): Testlet {
+    const newChild &#x3D; new Testlet(0, id, title);
+    this.children.push(newChild);
+    return newChild;
+  }
+
+  addUnit(
+    sequenceId: number,
+    id: string,
+    title: string,
+    alias: string,
+    naviButtonLabel: string): UnitDef {
+    const newChild &#x3D; new UnitDef(sequenceId, id, title, alias, naviButtonLabel);
+    this.children.push(newChild);
+    return newChild;
+  }
+
+  // first looking for the unit, then on the way back adding restrictions
+  getUnitAt(sequenceId: number, isEntryPoint &#x3D; true): UnitControllerData {
+    let myreturn: UnitControllerData &#x3D; null;
+    for (const tce of this.children) {
+      if (tce instanceof Testlet) {
+        const localTestlet &#x3D; tce as Testlet;
+        myreturn &#x3D; localTestlet.getUnitAt(sequenceId, false);
+        if (myreturn !&#x3D;&#x3D; null) {
+          break;
+        }
+      } else if (tce instanceof UnitDef) {
+        if (tce.sequenceId &#x3D;&#x3D;&#x3D; sequenceId) {
+          myreturn &#x3D; new UnitControllerData(tce);
+          break;
+        }
+      }
+    }
+    if (myreturn !&#x3D;&#x3D; null) {
+      if (this.codeToEnter.length &gt; 0) {
+        myreturn.codeRequiringTestlets.push(this);
+      }
+      if (this.maxTimeLeft &gt; 0) {
+        myreturn.maxTimerRequiringTestlet &#x3D; this;
+      }
+      if (!isEntryPoint) {
+        const label &#x3D; this.title.trim();
+        if (label) {
+          myreturn.testletLabel &#x3D; label;
+        }
+      }
+    }
+    return myreturn;
+  }
+
+  getSequenceIdByUnitAlias(alias: string): number {
+    let myReturn &#x3D; -1;
+    for (const tce of this.children) {
+      if (tce instanceof Testlet) {
+        const localTestlet &#x3D; tce as Testlet;
+        myReturn &#x3D; localTestlet.getSequenceIdByUnitAlias(alias);
+        if (myReturn &gt;&#x3D; 0) {
+          break;
+        }
+      } else if (tce instanceof UnitDef) {
+        if (tce.alias &#x3D;&#x3D;&#x3D; alias) {
+          myReturn &#x3D; (tce as UnitDef).sequenceId;
+          break;
+        }
+      }
+    }
+    return myReturn;
+  }
+
+  getTestlet(testletId: string): Testlet {
+    let myreturn &#x3D; null;
+    if (this.id &#x3D;&#x3D;&#x3D; testletId) {
+      myreturn &#x3D; this;
+    } else {
+      for (const tce of this.children) {
+        if (tce instanceof Testlet) {
+          const localTestlet &#x3D; tce as Testlet;
+          myreturn &#x3D; localTestlet.getTestlet(testletId);
+          if (myreturn !&#x3D;&#x3D; null) {
+            break;
+          }
+        }
+      }
+    }
+    return myreturn;
+  }
+
+  clearTestletCodes(testletIdList: string[]): void {
+    testletIdList.forEach(testletId &#x3D;&gt; {
+      const myTestlet &#x3D; this.getTestlet(testletId);
+      if (myTestlet) {
+        myTestlet.codeToEnter &#x3D; &#x27;&#x27;;
+      }
+    });
+  }
+
+  getAllUnitSequenceIds(testletId &#x3D; &#x27;&#x27;): number[] {
+    let myreturn &#x3D; [];
+
+    if (testletId) {
+      // find testlet
+      const myTestlet &#x3D; this.getTestlet(testletId);
+      if (myTestlet) {
+        myreturn &#x3D; myTestlet.getAllUnitSequenceIds();
+      }
+    } else {
+      for (const tce of this.children) {
+        if (tce instanceof Testlet) {
+          const localTestlet &#x3D; tce as Testlet;
+          localTestlet.getAllUnitSequenceIds().forEach(u &#x3D;&gt; myreturn.push(u));
+        } else {
+          const localUnit &#x3D; tce as UnitDef;
+          myreturn.push(localUnit.sequenceId);
+        }
+      }
+    }
+    return myreturn;
+  }
+
+  setTimeLeft(testletId: string, maxTimeLeft: number): void {
+    if (testletId) {
+      // find testlet
+      const myTestlet &#x3D; this.getTestlet(testletId);
+      if (myTestlet) {
+        myTestlet.setTimeLeft(&#x27;&#x27;, maxTimeLeft);
+        if (maxTimeLeft &#x3D;&#x3D;&#x3D; 0) {
+          myTestlet.lockUnits_allChildren();
+        }
+      }
+    } else {
+      this.maxTimeLeft &#x3D; maxTimeLeft;
+      for (const tce of this.children) {
+        if (tce instanceof Testlet) {
+          const localTestlet &#x3D; tce as Testlet;
+          localTestlet.setTimeLeft(&#x27;&#x27;, maxTimeLeft);
+        }
+      }
+    }
+  }
+
+  lockUnits_allChildren(testletId &#x3D; &#x27;&#x27;): void {
+    if (testletId) {
+      // find testlet
+      const myTestlet &#x3D; this.getTestlet(testletId);
+      if (myTestlet) {
+        myTestlet.lockUnits_allChildren();
+      }
+    } else {
+      for (const tce of this.children) {
+        if (tce instanceof Testlet) {
+          const localTestlet &#x3D; tce as Testlet;
+          localTestlet.lockUnits_allChildren();
+        } else {
+          const localUnit &#x3D; tce as UnitDef;
+          localUnit.locked &#x3D; true;
+        }
+      }
+    }
+  }
+
+  private minTestletUnitSequenceId(id &#x3D; -1): number {
+    let myreturn &#x3D; id;
+    for (const tce of this.children) {
+      if (tce instanceof Testlet) {
+        const localTestlet &#x3D; tce as Testlet;
+        myreturn &#x3D; localTestlet.minTestletUnitSequenceId(myreturn);
+      } else {
+        const localUnit &#x3D; tce as UnitDef;
+        if ((myreturn &#x3D;&#x3D;&#x3D; -1) || (localUnit.sequenceId &lt; myreturn)) {
+          myreturn &#x3D; localUnit.sequenceId;
+        }
+      }
+    }
+    return myreturn;
+  }
+
+  lockUnits_before(testletId &#x3D; &#x27;&#x27;): void {
+    let myTestlet: Testlet &#x3D; this;
+    if (testletId) {
+      myTestlet &#x3D; this.getTestlet(testletId);
+    }
+    const minSeq &#x3D; myTestlet.minTestletUnitSequenceId();
+    for (let i &#x3D; minSeq - 1; i &gt; 0; i--) {
+      const u &#x3D; this.getUnitAt(i);
+      u.unitDef.locked &#x3D; true;
+    }
+  }
+
+  getNextUnlockedUnitSequenceId(currentUnitSequenceId: number): number {
+    let nextUnitSequenceId &#x3D; currentUnitSequenceId + 1;
+    let myUnit: UnitControllerData &#x3D; this.getUnitAt(currentUnitSequenceId);
+    while (myUnit !&#x3D;&#x3D; null &amp;&amp; myUnit.unitDef.locked) {
+      nextUnitSequenceId +&#x3D; 1;
+      myUnit &#x3D; this.getUnitAt(nextUnitSequenceId);
+    }
+    if (myUnit) {
+      myUnit.unitDef.ignoreCompleted &#x3D; true;
+    }
+    return myUnit ? nextUnitSequenceId : 0;
+  }
+
+  getFirstUnlockedUnitSequenceId(startWith: number): number {
+    let myreturn &#x3D; startWith;
+    const myUnit: UnitControllerData &#x3D; this.getUnitAt(myreturn);
+    if (myUnit) {
+      if (myUnit.unitDef.locked) {
+        myreturn &#x3D; this.getNextUnlockedUnitSequenceId(myreturn);
+      } else if (myreturn &gt; 1) {
+        let myPrevUnit: UnitControllerData &#x3D; this.getUnitAt(myreturn - 1);
+        while (myPrevUnit !&#x3D;&#x3D; null &amp;&amp; myreturn &gt; 1 &amp;&amp; !myPrevUnit.unitDef.locked) {
+          myreturn -&#x3D; 1;
+          myPrevUnit &#x3D; this.getUnitAt(myreturn - 1);
+        }
+      }
+    }
+    return myUnit ? myreturn : 0;
+  }
+
+  getLastUnlockedUnitSequenceId(startWith: number): number {
+    const maxSequenceId &#x3D; this.getMaxSequenceId();
+    let myreturn &#x3D; startWith;
+    const myUnit: UnitControllerData &#x3D; this.getUnitAt(myreturn);
+    if (myUnit) {
+      if (myUnit.unitDef.locked) {
+        myreturn &#x3D; this.getNextUnlockedUnitSequenceId(myreturn);
+      }
+      if (myreturn &gt; 0 &amp;&amp; myreturn &lt; maxSequenceId) {
+        let myNextUnit: UnitControllerData &#x3D; this.getUnitAt(myreturn + 1);
+        while (myNextUnit !&#x3D;&#x3D; null &amp;&amp; myreturn &lt; maxSequenceId &amp;&amp; !myNextUnit.unitDef.locked) {
+          myreturn +&#x3D; 1;
+          myNextUnit &#x3D; this.getUnitAt(myreturn + 1);
+        }
+      }
+    }
+
+    return myUnit ? myreturn : 0;
+  }
+
+  lockUnitsIfTimeLeftNull(lock &#x3D; false): void {
+    // eslint-disable-next-line no-param-reassign
+    lock &#x3D; lock || this.maxTimeLeft &#x3D;&#x3D;&#x3D; 0;
+    for (const tce of this.children) {
+      if (tce instanceof Testlet) {
+        const localTestlet &#x3D; tce as Testlet;
+        localTestlet.lockUnitsIfTimeLeftNull(lock);
+      } else if (lock) {
+        const localUnit &#x3D; tce as UnitDef;
+        localUnit.locked &#x3D; true;
+      }
+    }
+  }
+}
+
+export class EnvironmentData {
+  public appVersion: string;
+  public browserVersion &#x3D; &#x27;&#x27;;
+  public browserName &#x3D; &#x27;&#x27;;
+  public get browserTxt(): string {
+    return &#x60;${this.browserName} Version ${this.browserVersion}&#x60;;
+  }
+
+  public osName &#x3D; &#x27;&#x27;;
+  public screenSizeWidth &#x3D; 0;
+  public screenSizeHeight &#x3D; 0;
+  public loadTime: number &#x3D; 0;
+  public get screenSizeTxt(): string {
+    return &#x60;Bildschirmgröße ist ${this.screenSizeWidth} x ${this.screenSizeWidth}&#x60;;
+  }
+
+  constructor (appVersion: string) {
+    this.appVersion &#x3D; appVersion;
+    const deviceInfo &#x3D; window.navigator.userAgent;
+
+    // browser
+
+    // eslint-disable-next-line max-len
+    const regex &#x3D; /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/;
+    // credit due to: https://gist.github.com/ticky/3909462#gistcomment-2245669
+    const deviceInfoSplits &#x3D; regex.exec(deviceInfo);
+    const helperRegex &#x3D; /[^.]*/;
+    const browserInfo &#x3D; helperRegex.exec(deviceInfoSplits[0]);
+    const browserInfoSplits &#x3D; browserInfo[0].split(&#x27;/&#x27;);
+    this.browserVersion &#x3D; browserInfoSplits[1];
+    this.browserName &#x3D; browserInfoSplits[0];
+
+    // os
+    if (deviceInfo.indexOf(&#x27;Windows&#x27;) !&#x3D;&#x3D; -1) {
+      if (deviceInfo.indexOf(&#x27;Windows NT 10.0&#x27;) !&#x3D;&#x3D; -1) {
+        this.osName &#x3D; &#x27;Windows 10&#x27;;
+      } else if (deviceInfo.indexOf(&#x27;Windows NT 6.2&#x27;) !&#x3D;&#x3D; -1) {
+        this.osName &#x3D; &#x27;Windows 8&#x27;;
+      } else if (deviceInfo.indexOf(&#x27;Windows NT 6.1&#x27;) !&#x3D;&#x3D; -1) {
+        this.osName &#x3D; &#x27;Windows 7&#x27;;
+      } else if (deviceInfo.indexOf(&#x27;Windows NT 6.0&#x27;) !&#x3D;&#x3D; -1) {
+        this.osName &#x3D; &#x27;Windows Vista&#x27;;
+      } else if (deviceInfo.indexOf(&#x27;Windows NT 5.1&#x27;) !&#x3D;&#x3D; -1) {
+        this.osName &#x3D; &#x27;Windows XP&#x27;;
+      } else if (deviceInfo.indexOf(&#x27;Windows NT 5.0&#x27;) !&#x3D;&#x3D; -1) {
+        this.osName &#x3D; &#x27;Windows 2000&#x27;;
+      } else {
+        this.osName &#x3D; &#x27;Windows, unbekannte Version&#x27;;
+      }
+    } else if (deviceInfo.indexOf(&#x27;Mac&#x27;) !&#x3D;&#x3D; -1) {
+      this.osName &#x3D; &#x27;Mac/iOS&#x27;;
+    } else if (deviceInfo.indexOf(&#x27;X11&#x27;) !&#x3D;&#x3D; -1) {
+      this.osName &#x3D; &#x27;UNIX&#x27;;
+    } else if (deviceInfo.indexOf(&#x27;Linux&#x27;) !&#x3D;&#x3D; -1) {
+      this.osName &#x3D; &#x27;Linux&#x27;;
+    } else {
+      this.osName &#x3D; window.navigator.platform;
+    }
+
+    this.screenSizeHeight &#x3D; window.screen.height;
+    this.screenSizeWidth &#x3D; window.screen.width;
+  }
+}
+
+export class MaxTimerData {
+  timeLeftSeconds: number; // seconds
+  testletId: string;
+  type: MaxTimerDataType;
+
+  get timeLeftString(): string {
+    const afterDecimal &#x3D; Math.round(this.timeLeftSeconds % 60);
+    return (Math.round(this.timeLeftSeconds - afterDecimal) / 60).toString() + &#x27;:&#x27; + (afterDecimal &lt; 10 ? &#x27;0&#x27; : &#x27;&#x27;) + afterDecimal.toString();
+  }
+  get timeLeftMinString(): string {
+    return Math.round(this.timeLeftSeconds / 60).toString() + &#x27; min&#x27;;
+  }
+
+  constructor(timeMinutes: number, tId: string, type: MaxTimerDataType) {
+    this.timeLeftSeconds &#x3D; timeMinutes * 60;
+    this.testletId &#x3D; tId;
+    this.type &#x3D; type;
+  }
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+                   
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'Testlet.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

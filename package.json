@@ -14,7 +14,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "compodoc": "npx compodoc -p tsconfig.doc.json -s",
-    "update-docs": "npx compodoc -p tsconfig.doc.json -d ./docs/compodoc"
+    "update-compodoc": "npx compodoc -p tsconfig.doc.json -d ./docs/compodoc"
   },
   "private": true,
   "eslintConfig": {
