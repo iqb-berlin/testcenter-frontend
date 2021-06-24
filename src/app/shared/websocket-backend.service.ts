@@ -1,4 +1,4 @@
-import { Inject, OnDestroy } from '@angular/core';
+import { Inject, Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import {
   catchError, map, skipWhile, tap
@@ -9,6 +9,7 @@ import { WebsocketService } from './websocket.service';
 
 export type ConnectionStatus = 'initial' | 'ws-offline' | 'ws-online' | 'polling-sleep' | 'polling-fetch' | 'error';
 
+@Injectable()
 export abstract class WebsocketBackendService<T> extends WebsocketService implements OnDestroy {
   protected abstract pollingEndpoint: string;
   protected abstract pollingInterval: number;
