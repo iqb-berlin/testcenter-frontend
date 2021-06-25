@@ -30,7 +30,6 @@ import {
   unitTestExampleSessions,
   unitTestCommandResponse
 } from './unit-test-example-data.spec';
-import { AlertModule } from '../shared/alert/alert.module';
 
 class MockMatDialog {
   open(): { afterClosed: () => Observable<{ action: boolean }> } {
@@ -103,8 +102,7 @@ describe('GroupMonitorComponent', () => {
         MatRadioModule,
         MatCheckboxModule,
         MatTableModule,
-        MatSlideToggleModule,
-        AlertModule
+        MatSlideToggleModule
       ],
       providers: [
         { provide: TestSessionManager, useValue: new MockTestSessionManagerService() },

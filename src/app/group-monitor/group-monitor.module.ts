@@ -23,7 +23,6 @@ import { BackendService } from './backend.service';
 import { BookletService } from './booklet/booklet.service';
 import { TestSessionComponent } from './test-session/test-session.component';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
-import { AlertModule } from '../shared/alert/alert.module';
 
 @NgModule({
   declarations: [
@@ -48,8 +47,7 @@ import { AlertModule } from '../shared/alert/alert.module';
     MatSidenavModule,
     MatCheckboxModule,
     MatSlideToggleModule,
-    IqbComponentsModule,
-    AlertModule
+    IqbComponentsModule
   ],
   providers: [
     BackendService,

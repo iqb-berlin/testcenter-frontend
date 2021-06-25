@@ -9,7 +9,6 @@ import { IqbComponentsModule } from 'iqb-components';
 import { IqbFilesUploadComponent } from './iqbFilesUpload/iqbFilesUpload.component';
 import { IqbFilesUploadQueueComponent } from './iqbFilesUploadQueue/iqbFilesUploadQueue.component';
 import { IqbFilesUploadInputForDirective } from './iqbFilesUploadInputFor/iqbFilesUploadInputFor.directive';
-import { AlertModule } from '../../../shared/alert/alert.module';
 
 @NgModule({
   imports: [
@@ -18,8 +17,7 @@ import { AlertModule } from '../../../shared/alert/alert.module';
     MatIconModule,
     MatCardModule,
     IqbComponentsModule,
-    CommonModule,
-    AlertModule
+    CommonModule
   ],
   declarations: [
     IqbFilesUploadComponent,
