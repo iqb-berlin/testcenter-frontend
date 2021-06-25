@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, Inject, SkipSelf } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, Subscription } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
@@ -6,8 +6,7 @@ import {
   UnitData,
   TaggedString,
   TestData,
-  TestStateKey,
-  StateReportEntry, AppFocusState
+  StateReportEntry
 } from './test-controller.interfaces';
 import { ApiError } from '../app.interfaces';
 
@@ -17,7 +16,7 @@ import { ApiError } from '../app.interfaces';
 export class BackendService {
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
-    private http: HttpClient
+    @SkipSelf() private http: HttpClient
   ) { }
 
   saveUnitReview(testId: string, unitName: string, priority: number, categories: string, entry: string)

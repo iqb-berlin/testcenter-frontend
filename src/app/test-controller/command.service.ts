@@ -1,4 +1,6 @@
-import { Inject, Injectable, OnDestroy } from '@angular/core';
+import {
+  Inject, Injectable, OnDestroy, SkipSelf
+} from '@angular/core';
 import {
   of, Subject, Subscription, timer
 } from 'rxjs';
@@ -42,7 +44,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
     private tcs: TestControllerService,
     @Inject('SERVER_URL') serverUrl: string,
-    protected http: HttpClient
+    @SkipSelf() protected http: HttpClient
   ) {
     super(serverUrl, http);
 

@@ -1,4 +1,6 @@
-import { Inject, Injectable, OnDestroy } from '@angular/core';
+import {
+  Inject, Injectable, OnDestroy, SkipSelf
+} from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import {
   catchError, map, skipWhile, tap
@@ -27,7 +29,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
 
   constructor(
     @Inject('SERVER_URL') protected serverUrl: string,
-    protected http: HttpClient
+    @SkipSelf() protected http: HttpClient
   ) {
     super();
   }

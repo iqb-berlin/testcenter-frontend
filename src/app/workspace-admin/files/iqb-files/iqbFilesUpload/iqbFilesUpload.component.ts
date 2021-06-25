@@ -1,5 +1,5 @@
 import {
-  Component, EventEmitter, HostBinding, Input, OnDestroy, OnInit, Output
+  Component, EventEmitter, HostBinding, Input, OnDestroy, OnInit, Output, SkipSelf
 } from '@angular/core';
 import {
   HttpClient, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaders, HttpParams
@@ -32,7 +32,7 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
   @HostBinding('class') myclass = 'iqb-files-upload';
 
   constructor(
-    private myHttpClient: HttpClient
+    @SkipSelf() private httpClient: HttpClient
   ) { }
 
   private _status: UploadStatus;
@@ -103,8 +103,8 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
   @Output() removeFileRequestEvent = new EventEmitter<IqbFilesUploadComponent>();
   @Output() statusChangedEvent = new EventEmitter<IqbFilesUploadComponent>();
 
-  public progressPercentage = 0;
-  public loaded = 0;
+  progressPercentage = 0;
+  loaded = 0;
   private total = 0;
   private _file: any;
   private _filedate = '';
@@ -131,7 +131,7 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.fileUploadSubscription = this.myHttpClient.post(this.httpUrl, formData, {
+    this.fileUploadSubscription = this.httpClient.post(this.httpUrl, formData, {
       // headers: this.httpRequestHeaders, TODO why is this commented, and would it not be better?
       observe: 'events',
       params: this.httpRequestParams,
@@ -139,7 +139,7 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
       responseType: 'json'
     }).subscribe((event: HttpEvent<any>) => {
       if (event.type === HttpEventType.UploadProgress) {
-        this.progressPercentage = Math.floor(event.loaded * 100 / event.total);
+        this.progressPercentage = Math.floor((event.loaded * 100) / event.total);
         this.loaded = event.loaded;
         this.total = event.total;
         this.status = UploadStatus.busy;
@@ -163,7 +163,7 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
     });
   }
 
-  public remove(): void {
+  remove(): void {
     if (this.fileUploadSubscription) {
       this.fileUploadSubscription.unsubscribe();
     }

@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, Inject, SkipSelf } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -16,7 +16,7 @@ import { ApiError } from '../app.interfaces';
 export class BackendService {
   constructor(
     @Inject('SERVER_URL') private readonly serverUrl: string,
-    private http: HttpClient
+    @SkipSelf() private http: HttpClient
   ) {}
 
   getCheckConfigData(workspaceId: number, sysCheckName: string): Observable<CheckConfig> {
