@@ -11,7 +11,6 @@ import { FilesComponent } from './files.component';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { MainDataService } from '../../maindata.service';
-import { IqbFilesUploadQueueComponent, IqbFilesUploadInputForDirective } from './iqb-files';
 import { GetFileResponseData } from '../workspace.interfaces';
 
 class MockBackendService {
@@ -34,9 +33,7 @@ describe('FilesComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
-        FilesComponent,
-        IqbFilesUploadQueueComponent,
-        IqbFilesUploadInputForDirective
+        FilesComponent
       ],
       imports: [
         HttpClientModule,

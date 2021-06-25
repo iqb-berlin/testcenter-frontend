@@ -1,13 +1,13 @@
 import {
   Directive, ElementRef, HostListener, Input
 } from '@angular/core';
+import { IqbFilesUploadQueueComponent } from '../iqb-files-upload-queue/iqb-files-upload-queue.component';
 
 @Directive({
-  selector: 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]',
+  selector: 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]'
 })
 export class IqbFilesUploadInputForDirective {
-
-  private _queue: any = null;
+  private _queue: IqbFilesUploadQueueComponent = null;
   private _element: HTMLElement;
 
   constructor(private element: ElementRef) {
@@ -15,14 +15,14 @@ export class IqbFilesUploadInputForDirective {
   }
 
   @Input('iqbFilesUploadInputFor')
-  set filesUploadQueue(value: any) {
+  set filesUploadQueue(value: IqbFilesUploadQueueComponent) {
     if (value) {
       this._queue = value;
     }
   }
 
   @HostListener('change')
-  public onChange(): any {
+  onChange(): void {
     const { files } = this.element.nativeElement;
     // this.onFileSelected.emit(files);
 

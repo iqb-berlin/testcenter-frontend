@@ -28,7 +28,10 @@ import { WorkspaceComponent } from './workspace.component';
 import { FilesComponent } from './files/files.component';
 import { ResultsComponent } from './results/results.component';
 import { SyscheckComponent } from './syscheck/syscheck.component';
-import { IqbFilesModule } from './files/iqb-files';
+import { IqbFilesUploadComponent } from './files/iqb-files-upload/iqb-files-upload.component';
+import { IqbFilesUploadQueueComponent } from './files/iqb-files-upload-queue/iqb-files-upload-queue.component';
+import { IqbFilesUploadInputForDirective } from './files/iqb-files-upload-input-for/iqb-files-upload-input-for.directive';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 @NgModule({
   imports: [
@@ -55,7 +58,7 @@ import { IqbFilesModule } from './files/iqb-files';
     IqbComponentsModule,
     MatCardModule,
     FlexLayoutModule,
-    IqbFilesModule
+    MatProgressBarModule,
   ],
   exports: [
     WorkspaceComponent
@@ -64,7 +67,10 @@ import { IqbFilesModule } from './files/iqb-files';
     WorkspaceComponent,
     FilesComponent,
     ResultsComponent,
-    SyscheckComponent
+    SyscheckComponent,
+    IqbFilesUploadComponent,
+    IqbFilesUploadQueueComponent,
+    IqbFilesUploadInputForDirective
   ],
   providers: [
     BackendService,

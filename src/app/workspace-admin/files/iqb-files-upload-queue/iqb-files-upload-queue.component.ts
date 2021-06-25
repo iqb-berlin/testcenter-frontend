@@ -1,35 +1,19 @@
 import {
   Component, EventEmitter, OnDestroy, QueryList, ViewChildren, Input, Output
 } from '@angular/core';
-import { HttpHeaders, HttpParams } from '@angular/common/http';
-import { IqbFilesUploadComponent, UploadStatus } from '../iqbFilesUpload/iqbFilesUpload.component';
+import { IqbFilesUploadComponent } from '../iqb-files-upload/iqb-files-upload.component';
+import { UploadStatus } from '../files.interfaces';
 
 @Component({
   selector: 'iqb-files-upload-queue',
-  templateUrl: 'iqbFilesUploadQueue.component.html',
-  exportAs: 'iqbFilesUploadQueue',
+  templateUrl: 'iqb-files-upload-queue.component.html',
   styleUrls: ['../iqb-files.scss']
 })
 export class IqbFilesUploadQueueComponent implements OnDestroy {
   @ViewChildren(IqbFilesUploadComponent) fileUploads: QueryList<IqbFilesUploadComponent>;
 
-  public files: Array<any> = [];
-
-  public disableClearButton = true;
-
-  /* Http request input bindings */
-  @Input()
-  httpUrl: string;
-
-  @Input()
-  httpRequestHeaders: HttpHeaders | {
-    [header: string]: string | string[];
-  } = new HttpHeaders().set('Content-Type', 'multipart/form-data');
-
-  @Input()
-  httpRequestParams: HttpParams | {
-    [param: string]: string | string[];
-  } = new HttpParams();
+  files: Array<File> = [];
+  disableClearButton = true;
 
   @Input()
   fileAlias: string;
@@ -40,13 +24,14 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
   @Input()
   folder: string;
 
-  @Output() uploadCompleteEvent = new EventEmitter<IqbFilesUploadQueueComponent>();
+  @Output()
+  uploadCompleteEvent = new EventEmitter<IqbFilesUploadQueueComponent>();
 
-  add(file: any): void {
+  add(file: File): void {
     this.files.push(file);
   }
 
-  public removeAll(): void {
+  removeAll(): void {
     this.files.splice(0, this.files.length);
   }
 

@@ -16,9 +16,10 @@ import { WorkspaceDataService } from '../workspacedata.service';
 import {
   IQBFileType, GetFileResponseData, IQBFile, IQBFileTypes
 } from '../workspace.interfaces';
-import { BackendService, FileDeletionReport } from '../backend.service';
+import { BackendService } from '../backend.service';
 import { MainDataService } from '../../maindata.service';
-import { IqbFilesUploadQueueComponent } from './iqb-files';
+import { IqbFilesUploadQueueComponent } from './iqb-files-upload-queue/iqb-files-upload-queue.component';
+import { FileDeletionReport } from './files.interfaces';
 
 interface FileStats {
   invalid: {
@@ -39,8 +40,6 @@ export class FilesComponent implements OnInit {
   files: { [type in IQBFileType]?: MatTableDataSource<IQBFile> } = {};
   fileTypes = IQBFileTypes;
   displayedColumns = ['checked', 'name', 'size', 'modificationTime'];
-
-  uploadUrl = '';
   fileNameAlias = 'fileforvo';
 
   lastSort:Sort = {
@@ -79,7 +78,7 @@ export class FilesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.uploadUrl = `${this.serverUrl}workspace/${this.wds.wsId}/file`;
+    // this.uploadUrl = `${this.serverUrl}workspace/${this.wds.wsId}/file`;
     setTimeout(() => {
       this.mds.setSpinnerOn();
       this.updateFileList();

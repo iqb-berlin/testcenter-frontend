@@ -1,13 +1,19 @@
+/* eslint-disable no-console */
 import { Injectable, Inject, SkipSelf } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {
+  HttpClient, HttpErrorResponse, HttpEvent, HttpEventType
+} from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, filter, map } from 'rxjs/operators';
 import {
   GetFileResponseData, SysCheckStatistics,
   ReviewData, LogData, UnitResponse, ResultData
 } from './workspace.interfaces';
 import { WorkspaceDataService } from './workspacedata.service';
 import { ApiError, WorkspaceData } from '../app.interfaces';
+import {
+  FileDeletionReport, UploadReport, UploadResponse, UploadStatus
+} from './files/files.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -173,11 +179,53 @@ export class BackendService {
         })
       );
   }
-}
 
-export interface FileDeletionReport {
-  deleted: string[];
-  not_allowed: string[];
-  did_not_exist: string[];
-  was_used: string[];
+  uploadFile(formData: FormData): Observable<UploadResponse> {
+    return this.http.post<UploadReport>(
+      `${this.serverUrl}workspace/${this.wds.wsId}/file`,
+      formData,
+      {
+        // TODO de-comment, if backend UploadedFilesHandler.class.php l. 47 was fixed
+        // headers: new HttpHeaders().set('Content-Type', 'multipart/form-data'),
+        observe: 'events',
+        reportProgress: true,
+        responseType: 'json'
+      }
+    )
+      .pipe(
+        catchError((err: ApiError) => {
+          console.warn(`downloadFile Api-Error: ${err.code} ${err.info} `);
+          let errorText = 'Hochladen nicht erfolgreich.';
+          if (err instanceof HttpErrorResponse) {
+            errorText = (err as HttpErrorResponse).message;
+          } else if (err instanceof ApiError) {
+            const slashPos = err.info.indexOf(' // ');
+            errorText = (slashPos > 0) ? err.info.substr(slashPos + 4) : err.info;
+          }
+          return of({
+            progress: 0,
+            status: UploadStatus.error,
+            report: { '': { error: [errorText] } }
+          });
+        }),
+        map((event: HttpEvent<UploadReport>) => {
+          if (event.type === HttpEventType.UploadProgress) {
+            return {
+              progress: Math.floor((event.loaded * 100) / event.total),
+              status: UploadStatus.busy,
+              report: {}
+            };
+          }
+          if (event.type === HttpEventType.Response) {
+            return {
+              progress: 100,
+              status: UploadStatus.ok,
+              report: event.body
+            };
+          }
+          return null;
+        }),
+        filter((response: UploadResponse|null) => !!response)
+      );
+  }
 }

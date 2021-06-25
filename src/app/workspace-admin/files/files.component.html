@@ -99,7 +99,6 @@
     <input #hiddenfileinput type="file" name="fileforvo" multiple [iqbFilesUploadInputFor]="fileUploadQueue" [hidden]="true"/>
 
     <iqb-files-upload-queue #fileUploadQueue
-      [httpUrl]="uploadUrl"
       [fileAlias]="fileNameAlias"
       [folderName]="'ws'"
       [folder]="'workspace'"
