@@ -1,9 +1,14 @@
 <div class="mat-body">
-  <div *ngIf="status == 1" class="upload-progress">
-    <mat-progress-bar class="example-margin" [value]="progressPercentage"></mat-progress-bar><br/>
-    <span class="file-info">{{progressPercentage}}%</span><br/>
-    <mat-icon class="action" (click)="remove()">cancel</mat-icon>
-  </div>
+  <ng-container *ngIf="status == 1">
+    <div class="subheading-2">
+      {{file.name}}
+      <mat-icon class="cancel" (click)="remove()">cancel</mat-icon>
+    </div>
+    <div>
+      <mat-progress-bar class="upload-progress-bar" [value]="progressPercentage"></mat-progress-bar>
+    </div>
+    <div>{{progressPercentage}}%</div>
+  </ng-container>
 
   <ng-container *ngIf="status > 1">
     <ng-container *ngFor="let uploadedFile of uploadResponse | keyvalue">

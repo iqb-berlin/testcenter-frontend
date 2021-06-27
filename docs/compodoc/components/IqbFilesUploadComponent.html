@@ -326,15 +326,15 @@
                                         <tbody>
                                                 <tr>
                                                         <td>myHttpClient</td>
-                                                  
+
                                                         <td>
                                                                         <code><a href="https://angular.io/api/common/http/HttpClient" target="_blank" >HttpClient</a></code>
                                                         </td>
-                                                  
+
                                                     <td>
                                                             No
                                                     </td>
-                                                    
+
                                                 </tr>
                                         </tbody>
                                     </table>
@@ -598,7 +598,7 @@
 
 
     <section>
-    
+
     <h3 id="methods">
         Methods
     </h3>
@@ -762,7 +762,7 @@
     </table>
 </section>
     <section>
-    
+
         <h3 id="inputs">
             Properties
         </h3>
@@ -1089,12 +1089,12 @@
                                             <tbody>
                                                     <tr>
                                                             <td>newstatus</td>
-                                                    
-                                                    
+
+
                                                         <td>
                                                                 No
                                                         </td>
-                                                        
+
                                                     </tr>
                                             </tbody>
                                         </table>
@@ -1167,15 +1167,15 @@
                                             <tbody>
                                                     <tr>
                                                             <td>file</td>
-                                                    
+
                                                             <td>
                                                                             <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
                                                             </td>
-                                                    
+
                                                         <td>
                                                                 No
                                                         </td>
-                                                        
+
                                                     </tr>
                                             </tbody>
                                         </table>
@@ -1236,15 +1236,15 @@
                                             <tbody>
                                                     <tr>
                                                             <td>id</td>
-                                                    
+
                                                             <td>
                                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                                             </td>
-                                                    
+
                                                         <td>
                                                                 No
                                                         </td>
-                                                        
+
                                                     </tr>
                                             </tbody>
                                         </table>
@@ -1524,14 +1524,14 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
         </div>
     </div>
 
-    
+
 </div>
 
 <script src="../js/libs/vis.min.js"></script>
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><div class="mat-body">  <div *ngIf="status == 1" class="upload-progress">    <mat-progress-bar class="example-margin" [value]="progressPercentage"></mat-progress-bar><br/>    <span class="file-info">{{progressPercentage}}%</span><br/>    <mat-icon class="action" (click)="remove()">cancel</mat-icon>  </div>  <ng-container *ngIf="status > 1">    <ng-container *ngFor="let uploadedFile of uploadResponse | keyvalue">      <div class="subheading-2 {{uploadedFile.value.error ? \'error\' : \'success\'}}">        {{uploadedFile.key || file.name}} - {{uploadedFile.value.error ? \'Abgelehnt\' : \'Erfolgreich hochgeladen\'}}      </div>      <ng-container *ngFor="let report of uploadedFile.value | keyvalue">        <alert *ngFor="let reportEntry of report.value" [level]="report.key" [text]="reportEntry"></alert>      </ng-container>    </ng-container>  </ng-container></div></div>'
+        var COMPONENT_TEMPLATE = '<div><div class="mat-body">  <div *ngIf="status == 1" class="upload-progress">    <mat-progress-bar class="example-margin" [value]="progressPercentage"></mat-progress-bar><br/>    <span class="upload-percentage">{{progressPercentage}}%</span><br/>    <mat-icon class="cancel" (click)="remove()">cancel</mat-icon>  </div>  <ng-container *ngIf="status > 1">    <ng-container *ngFor="let uploadedFile of uploadResponse | keyvalue">      <div class="subheading-2 {{uploadedFile.value.error ? \'error\' : \'success\'}}">        {{uploadedFile.key || file.name}} - {{uploadedFile.value.error ? \'Abgelehnt\' : \'Erfolgreich hochgeladen\'}}      </div>      <ng-container *ngFor="let report of uploadedFile.value | keyvalue">        <alert *ngFor="let reportEntry of report.value" [level]="report.key" [text]="reportEntry"></alert>      </ng-container>    </ng-container>  </ng-container></div></div>'
     var COMPONENTS = [{'name': 'AdminStarterComponent', 'selector': ''},{'name': 'AlertComponent', 'selector': 'alert'},{'name': 'AppComponent', 'selector': 'tc-root'},{'name': 'AppConfigComponent', 'selector': 'app-app-config'},{'name': 'AppRootComponent', 'selector': ''},{'name': 'CodeInputComponent', 'selector': ''},{'name': 'EditCustomTextComponent', 'selector': 'app-custom-text'},{'name': 'EditCustomTextsComponent', 'selector': 'app-custom-texts'},{'name': 'EditworkspaceComponent', 'selector': ''},{'name': 'FilesComponent', 'selector': ''},{'name': 'GroupMonitorComponent', 'selector': 'app-group-monitor'},{'name': 'IqbFilesUploadComponent', 'selector': 'iqb-files-upload'},{'name': 'IqbFilesUploadQueueComponent', 'selector': 'iqb-files-upload-queue'},{'name': 'LegalNoticeComponent', 'selector': ''},{'name': 'LoginComponent', 'selector': ''},{'name': 'MonitorStarterComponent', 'selector': ''},{'name': 'NetworkCheckComponent', 'selector': ''},{'name': 'NewpasswordComponent', 'selector': ''},{'name': 'NewuserComponent', 'selector': ''},{'name': 'NewworkspaceComponent', 'selector': ''},{'name': 'QuestionnaireComponent', 'selector': ''},{'name': 'ReportComponent', 'selector': ''},{'name': 'ResultsComponent', 'selector': ''},{'name': 'ReviewDialogComponent', 'selector': ''},{'name': 'RouteDispatcherComponent', 'selector': ''},{'name': 'SaveReportComponent', 'selector': 'app-save-report'},{'name': 'SettingsComponent', 'selector': ''},{'name': 'StatusCardComponent', 'selector': 'status-card'},{'name': 'SuperadminComponent', 'selector': ''},{'name': 'SuperadminPasswordRequestComponent', 'selector': ''},{'name': 'SysCheckComponent', 'selector': ''},{'name': 'SyscheckComponent', 'selector': ''},{'name': 'SysCheckStarterComponent', 'selector': ''},{'name': 'TcSpeedChartComponent', 'selector': 'tc-speed-chart'},{'name': 'TestControllerComponent', 'selector': ''},{'name': 'TestSessionComponent', 'selector': 'tc-test-session'},{'name': 'TestStarterComponent', 'selector': ''},{'name': 'TestStatusComponent', 'selector': ''},{'name': 'UnitCheckComponent', 'selector': 'iqb-unit-check'},{'name': 'UnithostComponent', 'selector': ''},{'name': 'UnitMenuComponent', 'selector': ''},{'name': 'UnlockInputComponent', 'selector': ''},{'name': 'UsersComponent', 'selector': ''},{'name': 'WelcomeComponent', 'selector': ''},{'name': 'WorkspaceComponent', 'selector': ''},{'name': 'WorkspacesComponent', 'selector': ''}];
     var DIRECTIVES = [{'name': 'IqbFilesUploadInputForDirective', 'selector': 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]'}];
     var ACTUAL_COMPONENT = {'name': 'IqbFilesUploadComponent'};
@@ -1547,7 +1547,7 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
 
 
 
-                   
+
 
 
 
