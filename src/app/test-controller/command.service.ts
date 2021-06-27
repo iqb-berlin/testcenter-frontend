@@ -44,7 +44,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
     private tcs: TestControllerService,
     @Inject('SERVER_URL') serverUrl: string,
-    @SkipSelf() protected http: HttpClient
+    protected http: HttpClient
   ) {
     super(serverUrl, http);
 

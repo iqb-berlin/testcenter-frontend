@@ -1,4 +1,5 @@
-import { Injectable, Inject, SkipSelf } from '@angular/core';
+/* eslint-disable no-console */
+import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, Subscription } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
@@ -16,8 +17,9 @@ import { ApiError } from '../app.interfaces';
 export class BackendService {
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
-    @SkipSelf() private http: HttpClient
-  ) { }
+    private http: HttpClient
+  ) {
+  }
 
   saveUnitReview(testId: string, unitName: string, priority: number, categories: string, entry: string)
     : Observable<boolean> {
@@ -66,7 +68,8 @@ export class BackendService {
       );
   }
 
-  getResource(testId: string, internalKey: string, resId: string, versionning = false): Observable<TaggedString | number> {
+  getResource(testId: string, internalKey: string, resId: string,
+              versionning = false): Observable<TaggedString | number> {
     return this.http
       .get(
         `${this.serverUrl}test/${testId}/resource/${resId}`,
@@ -110,9 +113,9 @@ export class BackendService {
 
   notifyDyingTest(testId: string): void {
     if (navigator.sendBeacon) {
-      navigator.sendBeacon(this.serverUrl + `test/${testId}/connection-lost`);
+      navigator.sendBeacon(`${this.serverUrl}test/${testId}/connection-lost`);
     } else {
-      fetch(this.serverUrl + `test/${testId}/connection-lost`, {
+      fetch(`${this.serverUrl}test/${testId}/connection-lost`, {
         keepalive: true,
         method: 'POST'
       });
