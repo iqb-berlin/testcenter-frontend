@@ -21,6 +21,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatGridListModule } from '@angular/material/grid-list';
 
 import { IqbComponentsModule } from 'iqb-components';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { BackendService } from './backend.service';
 import { WorkspaceDataService } from './workspacedata.service';
 import { WorkspaceRoutingModule } from './workspace-routing.module';
@@ -31,7 +32,6 @@ import { SyscheckComponent } from './syscheck/syscheck.component';
 import { IqbFilesUploadComponent } from './files/iqb-files-upload/iqb-files-upload.component';
 import { IqbFilesUploadQueueComponent } from './files/iqb-files-upload-queue/iqb-files-upload-queue.component';
 import { IqbFilesUploadInputForDirective } from './files/iqb-files-upload-input-for/iqb-files-upload-input-for.directive';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 @NgModule({
   imports: [
@@ -58,7 +58,7 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
     IqbComponentsModule,
     MatCardModule,
     FlexLayoutModule,
-    MatProgressBarModule,
+    MatProgressBarModule
   ],
   exports: [
     WorkspaceComponent
