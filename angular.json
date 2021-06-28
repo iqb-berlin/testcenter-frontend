@@ -19,30 +19,12 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
-              "src/assets",
-              "src/web-animations.min.js",
-              "src/assets/android-chrome-192x192.png",
-              "src/assets/android-chrome-512x512.png",
-              "src/assets/apple-touch-icon.png",
-              "src/assets/browserconfig.xml",
-              "src/assets/favicon.ico",
-              "src/assets/favicon-16x16.png",
-              "src/assets/favicon-32x32.png",
-              "src/assets/mstile-150x150.png",
-              "src/assets/safari-pinned-tab.svg",
-              "src/assets/site.webmanifest",
-              "src/assets/MaterialIcons-Regular.ijmap",
-              "src/assets/codepoints",
-              "src/assets/material-icons.css",
-              "src/assets/MaterialIcons-Regular.eot",
-              "src/assets/MaterialIcons-Regular.svg",
-              "src/assets/MaterialIcons-Regular.ttf",
-              "src/assets/MaterialIcons-Regular.woff",
-              "src/assets/MaterialIcons-Regular.woff2"],
+              "src/assets"
+            ],
             "styles": [
               "src/iqb-theme1.scss",
-              "src/assets/material-icons.css",
-              "src/styles.css"
+              "src/styles.css",
+              "src/assets/fonts/material-design-icons-3.0.2/material-icons.css"
             ],
             "scripts": [
               "node_modules/ua-parser-js/dist/ua-parser.min.js"
