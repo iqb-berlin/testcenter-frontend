@@ -3,7 +3,7 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
-import { name, version, repository } from '../package.json';
+import packageJson from '../package.json';
 
 if (environment.production) {
   enableProdMode();
@@ -20,11 +20,11 @@ platformBrowserDynamic(<StaticProvider[]>[
   },
   {
     provide: 'APP_NAME',
-    useValue: name
+    useValue: packageJson.name
   },
   {
     provide: 'APP_VERSION',
-    useValue: version
+    useValue: packageJson.version
   },
   {
     provide: 'API_VERSION_EXPECTED',
@@ -36,11 +36,11 @@ platformBrowserDynamic(<StaticProvider[]>[
   },
   {
     provide: 'REPOSITORY_URL',
-    useValue: repository.url
+    useValue: packageJson.repository.url
   },
   {
     provide: 'IS_PRODUCTION_MODE',
     useValue: environment.production
   }
 ]).bootstrapModule(AppModule)
-  .catch((err) => console.log(err));
+  .catch(err => console.log(err));

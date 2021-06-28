@@ -1,11 +1,15 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { HttpClientModule } from '@angular/common/http';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReportComponent } from './report.component';
 import { BackendService } from '../backend.service';
+
+class MockBackendService {
+
+}
 
 describe('ReportComponent', () => {
   let component: ReportComponent;
@@ -17,14 +21,17 @@ describe('ReportComponent', () => {
         ReportComponent
       ],
       imports: [
-        HttpClientModule,
+        HttpClientTestingModule,
         MatDialogModule,
         MatSnackBarModule,
         MatCardModule,
         RouterTestingModule
       ],
       providers: [
-        BackendService
+        {
+          provide: BackendService,
+          useClass: MockBackendService
+        }
       ]
     })
       .compileComponents();

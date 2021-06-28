@@ -7,11 +7,13 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { Observable, of } from 'rxjs';
+import { IqbComponentsModule } from 'iqb-components';
 import { FilesComponent } from './files.component';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { MainDataService } from '../../maindata.service';
 import { GetFileResponseData } from '../workspace.interfaces';
+import { IqbFilesUploadQueueComponent } from './iqb-files-upload-queue/iqb-files-upload-queue.component';
 
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this
@@ -33,7 +35,8 @@ describe('FilesComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
-        FilesComponent
+        FilesComponent,
+        IqbFilesUploadQueueComponent
       ],
       imports: [
         HttpClientModule,
@@ -42,7 +45,8 @@ describe('FilesComponent', () => {
         MatSnackBarModule,
         MatTableModule,
         MatIconModule,
-        MatCheckboxModule
+        MatCheckboxModule,
+        IqbComponentsModule
       ],
       providers: [
         {
