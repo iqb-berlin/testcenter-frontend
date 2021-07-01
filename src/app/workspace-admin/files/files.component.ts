@@ -79,8 +79,8 @@ export class FilesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.uploadUrl = `${this.serverUrl}workspace/${this.wds.wsId}/file`;
     setTimeout(() => {
+      this.uploadUrl = `${this.serverUrl}workspace/${this.wds.wsId}/file`;
       this.mds.setSpinnerOn();
       this.updateFileList();
     });
@@ -113,7 +113,7 @@ export class FilesComponent implements OnInit {
         width: '400px',
         data: <ConfirmDialogData>{
           title: 'Löschen von Dateien',
-          content: `Sie haben ${p ? filesToDelete.length : 'eine'} Datei${p ? 'en' : ''}\` 
+          content: `Sie haben ${p ? filesToDelete.length : 'eine'} Datei${p ? 'en' : ''}\`
             ausgewählt. Soll${p ? 'en' : ''}  diese gelöscht werden?`,
           confirmbuttonlabel: 'Löschen',
           showcancel: true
@@ -132,7 +132,7 @@ export class FilesComponent implements OnInit {
               message.push(`${fileDeletionReport.not_allowed.length} Dateien konnten nicht gelöscht werden.`);
             }
             if (fileDeletionReport.was_used.length > 0) {
-              message.push(`${fileDeletionReport.was_used.length} Dateien werden von anderen verwendet 
+              message.push(`${fileDeletionReport.was_used.length} Dateien werden von anderen verwendet
               und wurden nicht gelöscht.`);
             }
             this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
@@ -215,7 +215,7 @@ export class FilesComponent implements OnInit {
           // eslint-disable-next-line no-param-reassign
           file.report.error = [];
         }
-        file.report.error.push(`Verona Version of this Player is not compatible 
+        file.report.error.push(`Verona Version of this Player is not compatible
           with this system's version (\`${this.veronaApiVersionSupported}\`)!`);
       }
     }
