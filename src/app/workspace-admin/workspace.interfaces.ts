@@ -28,10 +28,8 @@ export interface UnitResponse {
   bookletname: string;
   unitname: string;
   responses: string;
-  restorepoint: string;
   responsetype: string;
   responses_ts: number;
-  restorepoint_ts: number;
   laststate: string;
 }
 

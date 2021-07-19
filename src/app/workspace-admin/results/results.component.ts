@@ -90,10 +90,8 @@ export class ResultsComponent implements OnInit {
               + 'bookletname' + columnDelimiter
               + 'unitname' + columnDelimiter
               + 'responses' + columnDelimiter
-              + 'restorePoint' + columnDelimiter
               + 'responseType' + columnDelimiter
               + 'response-ts' + columnDelimiter
-              + 'restorePoint-ts' + columnDelimiter
               + 'laststate' + lineDelimiter;
           responseData.forEach((resp: UnitResponse) => {
             myCsvData += '"' + resp.groupname + '"' + columnDelimiter
@@ -106,17 +104,11 @@ export class ResultsComponent implements OnInit {
             } else {
               myCsvData += columnDelimiter;
             }
-            if ((resp.restorepoint !== null) && (resp.restorepoint.length > 0)) {
-              myCsvData += resp.restorepoint.replace(/\\"/g, '""') + columnDelimiter;
-            } else {
-              myCsvData += columnDelimiter;
-            }
             if ((resp.responsetype !== null) && (resp.responsetype.length > 0)) {
               myCsvData += '"' + resp.responsetype + '"' + columnDelimiter;
             } else {
               myCsvData += columnDelimiter;
             }
-            myCsvData += resp.responses_ts + columnDelimiter + resp.restorepoint_ts + columnDelimiter;
             if ((resp.laststate !== null) && (resp.laststate.length > 0)) {
               myCsvData += '"' + resp.laststate + '"' + lineDelimiter;
             } else {

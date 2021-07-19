@@ -33,11 +33,14 @@ export interface KeyValuePair {
   [K: string]: string;
 }
 
-export interface UnitData {
-  xml: string;
-  restorepoint: string;
-  laststate: KeyValuePair[];
-}
+export type UnitData = {
+  data: string;
+  state: KeyValuePair[];
+  playerId: string;
+} & (
+  | { definitionRef: string; definition?: string; }
+  | { definitionRef?: string; definition: string; }
+);
 
 export interface TestData {
   xml: string;

@@ -122,26 +122,15 @@ export class BackendService {
     }
   }
 
-  updateUnitStateData(testId: string, timeStamp: number, unitName: string,
-                      dataPartsAllString: string, unitStateDataType: string) : Observable<boolean> {
-    // TODO remove after api changed
-    const response = dataPartsAllString;
-    const restorePoint = dataPartsAllString;
-    const responseType = unitStateDataType;
+  updateUnitStateData(testId: string, unitId: string, dataPartsAll: string, responseType: string): Observable<boolean> {
+    const response = dataPartsAll;
+    const timeStamp = Date.now();
     return this.http
-      .put(`${this.serverUrl}test/${testId}/unit/${unitName}/response`, { timeStamp, response, responseType })
+      .put(`${this.serverUrl}test/${testId}/unit/${unitId}/response`, { timeStamp, response, responseType })
       .pipe(
-        switchMap(() => this.http
-          .patch(`${this.serverUrl}test/${testId}/unit/${unitName}/restorepoint`, { timeStamp, restorePoint })
-          .pipe(
-            map(() => true),
-            catchError((err: ApiError) => {
-              console.warn(`newUnitStateData/restorepoint Api-Error: ${err.code} ${err.info} `);
-              return of(false);
-            })
-          )),
+        map(() => true),
         catchError((err: ApiError) => {
-          console.warn(`newUnitStateData/response Api-Error: ${err.code} ${err.info} `);
+          console.warn(`Error storing unitState - Api-Error: ${err.code} ${err.info} `);
           return of(false);
         })
       );

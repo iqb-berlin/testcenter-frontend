@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   Component, HostListener, Inject, OnDestroy, OnInit
@@ -48,7 +49,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private testStatusSubscription: Subscription = null;
   private routingSubscription: Subscription = null;
   private maxTimerSubscription: Subscription = null;
-  private unitLoadXmlSubscription: Subscription = null;
+  private unitLoadSubscription: Subscription = null;
   private unitLoadBlobSubscription: Subscription = null;
   private appWindowHasFocusSubscription: Subscription = null;
   private appFocusSubscription: Subscription = null;
@@ -220,85 +221,58 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   private incrementProgressValueBy1() {
     this.loadedUnitCount += 1;
-    this.tcs.loadProgressValue = this.loadedUnitCount * 100 / this.lastUnitSequenceId;
+    this.tcs.loadProgressValue = (this.loadedUnitCount * 100) / this.lastUnitSequenceId;
   }
 
   // private: read unitdata
-  private loadUnitOk(myUnit: UnitDef, sequenceId: number): Observable<number> {
+  private loadUnit(myUnit: UnitDef, sequenceId: number): Observable<number> {
     myUnit.setCanEnter('n', 'Fehler beim Laden');
     return this.bs.getUnitData(this.tcs.testId, myUnit.id, myUnit.alias)
       .pipe(
-        switchMap(myData => {
-          if (myData === false) {
+        switchMap(unit => {
+          if (typeof unit === 'boolean') {
             return throwError(`error requesting unit ${this.tcs.testId}/${myUnit.id}`);
           }
-          const myUnitData = myData as UnitData;
-          if (myUnitData.restorepoint) {
-            this.tcs.addUnitStateData(sequenceId, JSON.parse(myUnitData.restorepoint));
-          }
-          let playerId = null;
-          let definitionRef = '';
-          if (myUnitData.laststate && myUnitData.laststate[UnitStateKey.PRESENTATION_PROGRESS]) {
-            this.tcs.setOldUnitPresentationComplete(sequenceId, myUnitData.laststate[UnitStateKey.PRESENTATION_PROGRESS]);
-          }
+
+          this.tcs.setOldUnitPresentationComplete(sequenceId, unit.state[UnitStateKey.PRESENTATION_PROGRESS]);
 
           try {
-            const oParser = new DOMParser();
-            const oDOM = oParser.parseFromString(myUnitData.xml, 'text/xml');
-
-            if (oDOM.documentElement.nodeName === 'Unit') {
-              const defElements = oDOM.documentElement.getElementsByTagName('Definition');
-
-              if (defElements.length > 0) {
-                const defElement = defElements[0];
-                this.tcs.addUnitDefinition(sequenceId, defElement.textContent);
-                playerId = defElement.getAttribute('player');
-              } else {
-                const defRefElements = oDOM.documentElement.getElementsByTagName('DefinitionRef');
-
-                if (defRefElements.length > 0) {
-                  const defRefElement = defRefElements[0];
-                  definitionRef = defRefElement.textContent;
-                  // this.tcs.addUnitDefinition(sequenceId, '');
-                  playerId = defRefElement.getAttribute('player');
-                }
-              }
-            }
+            const dataParts = unit.data ? JSON.parse(unit.data) : ''; // TODO why has this to be done. an issue in the simple-player?
+            this.tcs.addUnitStateDataParts(sequenceId, dataParts);
           } catch (error) {
-            return throwError(`error parsing unit def ${this.tcs.testId}/${myUnit.id} (${error.toString()})`);
+            console.warn(`error parsing unit state ${this.tcs.testId}/${myUnit.id} (${error.toString()})`, unit.data);
           }
 
-          if (playerId) {
-            myUnit.playerId = playerId;
-            if (definitionRef.length > 0) {
-              this.unitLoadQueue.push(<TaggedString>{
-                tag: sequenceId.toString(),
-                value: definitionRef
-              });
-            }
-            myUnit.setCanEnter('y', '');
-
-            if (this.tcs.hasPlayer(playerId)) {
-              return of(sequenceId);
-            }
-            // to avoid multiple calls before returning:
-            this.tcs.addPlayer(playerId, '');
-            return this.bs.getResource(this.tcs.testId, '', this.tcs.normaliseId(playerId, 'html'), true)
-              .pipe(
-                switchMap((data: number|TaggedString) => {
-                  if (typeof data === 'number') {
-                    return throwError(`error getting player "${playerId}"`);
-                  }
-                  const player = data as TaggedString;
-                  if (player.value.length > 0) {
-                    this.tcs.addPlayer(playerId, player.value);
-                    return of(sequenceId);
-                  }
-                  return throwError(`error getting player "${playerId}" (size = 0)`);
-                })
-              );
+          myUnit.playerId = unit.playerId;
+          if (unit.definitionRef) {
+            this.unitLoadQueue.push(<TaggedString>{
+              tag: sequenceId.toString(),
+              value: unit.definitionRef
+            });
+          } else {
+            this.tcs.addUnitDefinition(sequenceId, unit.definition);
           }
-          return throwError(`player def missing for unit ${this.tcs.testId}/${myUnit.id}`);
+          myUnit.setCanEnter('y', '');
+
+          if (this.tcs.hasPlayer(unit.playerId)) {
+            return of(sequenceId);
+          }
+          // to avoid multiple calls before returning:
+          this.tcs.addPlayer(unit.playerId, '');
+          return this.bs.getResource(this.tcs.testId, '', this.tcs.normaliseId(unit.playerId, 'html'), true)
+            .pipe(
+              switchMap((data: number|TaggedString) => {
+                if (typeof data === 'number') {
+                  return throwError(`error getting player "${unit.playerId}"`);
+                }
+                const player = data as TaggedString;
+                if (player.value.length > 0) {
+                  this.tcs.addPlayer(unit.playerId, player.value);
+                  return of(sequenceId);
+                }
+                return throwError(`error getting player "${unit.playerId}" (size = 0)`);
+              })
+            );
         })
       );
   }
@@ -480,15 +454,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 }
 
                 this.loadedUnitCount = 0;
-                const sequArray = [];
+                const sequence = [];
                 for (let i = 1; i < this.tcs.maxUnitSequenceId + 1; i++) {
-                  sequArray.push(i);
+                  sequence.push(i);
                 }
 
-                this.unitLoadXmlSubscription = from(sequArray).pipe(
+                this.unitLoadSubscription = from(sequence).pipe(
                   concatMap(uSequ => {
                     const ud = this.tcs.rootTestlet.getUnitAt(uSequ);
-                    return this.loadUnitOk(ud.unitDef, uSequ);
+                    return this.loadUnit(ud.unitDef, uSequ);
                   })
                 ).subscribe(() => {
                   this.incrementProgressValueBy1();
@@ -674,9 +648,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       this.maxTimerSubscription.unsubscribe();
       this.maxTimerSubscription = null;
     }
-    if (this.unitLoadXmlSubscription !== null) {
-      this.unitLoadXmlSubscription.unsubscribe();
-      this.unitLoadXmlSubscription = null;
+    if (this.unitLoadSubscription !== null) {
+      this.unitLoadSubscription.unsubscribe();
+      this.unitLoadSubscription = null;
     }
     if (this.unitLoadBlobSubscription !== null) {
       this.unitLoadBlobSubscription.unsubscribe();

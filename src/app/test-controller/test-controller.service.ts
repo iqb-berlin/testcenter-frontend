@@ -91,10 +91,14 @@ export class TestControllerService {
     this.unitStateDataToSave$
       .pipe(debounceTime(200))
       .subscribe(unitStateData => {
-        this.bs.updateUnitStateData(this.testId, Date.now(), unitStateData.unitDbKey,
-          JSON.stringify(unitStateData.dataPartsAllString), unitStateData.unitStateDataType).subscribe(ok => {
+        this.bs.updateUnitStateData(
+          this.testId,
+          unitStateData.unitDbKey,
+          JSON.stringify(unitStateData.dataPartsAllString),
+          unitStateData.unitStateDataType
+        ).subscribe(ok => {
           if (!ok) {
-            console.warn('newUnitRestorePoint failed');
+            console.warn('storing unitData failed');
           }
         });
       });
@@ -164,7 +168,6 @@ export class TestControllerService {
     return this.unitDefinitions[sequenceId];
   }
 
-  // adding RestorePoint via newUnitRestorePoint below
   hasUnitStateData(sequenceId: number): boolean {
     return this.unitStateDataParts.hasOwnProperty(sequenceId);
   }
@@ -173,7 +176,7 @@ export class TestControllerService {
     return this.unitStateDataParts[sequenceId];
   }
 
-  setOldUnitPresentationComplete(sequenceId: number, state: string) {
+  setOldUnitPresentationComplete(sequenceId: number, state: string): void {
     this.unitPresentationCompleteStates[sequenceId] = state;
   }
 
@@ -185,7 +188,7 @@ export class TestControllerService {
     return this.unitPresentationCompleteStates[sequenceId];
   }
 
-  addUnitStateData(unitSequenceId: number, dataPartsAllString: string) {
+  addUnitStateDataParts(unitSequenceId: number, dataPartsAllString: string): void {
     this.unitStateDataParts[unitSequenceId] = dataPartsAllString;
   }
 
