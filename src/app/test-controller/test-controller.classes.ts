@@ -328,7 +328,7 @@ export class Testlet extends TestletContentElement {
 
   getNextUnlockedUnitSequenceId(currentUnitSequenceId: number): number {
     let nextUnitSequenceId = currentUnitSequenceId + 1;
-    let myUnit: UnitControllerData = this.getUnitAt(currentUnitSequenceId);
+    let myUnit: UnitControllerData = this.getUnitAt(nextUnitSequenceId);
     while (myUnit !== null && myUnit.unitDef.locked) {
       nextUnitSequenceId += 1;
       myUnit = this.getUnitAt(nextUnitSequenceId);
