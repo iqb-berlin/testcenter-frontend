@@ -31,8 +31,12 @@ platformBrowserDynamic(<StaticProvider[]>[
     useValue: environment.apiVersionExpected
   },
   {
-    provide: 'VERONA_API_VERSION_SUPPORTED',
-    useValue: packageJson.iqb['verona-version']
+    provide: 'VERONA_PLAYER_API_VERSION_MIN',
+    useValue: packageJson.iqb['verona-player-api-versions'].min
+  },
+  {
+    provide: 'VERONA_PLAYER_API_VERSION_MAX',
+    useValue: packageJson.iqb['verona-player-api-versions'].max
   },
   {
     provide: 'REPOSITORY_URL',

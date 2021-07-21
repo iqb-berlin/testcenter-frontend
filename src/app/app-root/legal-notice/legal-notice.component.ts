@@ -12,7 +12,8 @@ export class LegalNoticeComponent implements OnInit {
     @Inject('APP_NAME') public appName: string,
     @Inject('APP_PUBLISHER') public appPublisher: string,
     @Inject('APP_VERSION') public appVersion: string,
-    @Inject('VERONA_API_VERSION_SUPPORTED') public veronaApiVersionSupported: string,
+    @Inject('VERONA_PLAYER_API_VERSION_MIN') public veronaPlayerApiVersionMin: number,
+    @Inject('VERONA_PLAYER_API_VERSION_MAX') public veronaPlayerApiVersionMax: number,
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
     public mds: MainDataService
   ) { }

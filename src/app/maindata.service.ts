@@ -12,7 +12,6 @@ const localStorageAuthDataKey = 'iqb-tc-a';
 @Injectable({
   providedIn: 'root'
 })
-
 export class MainDataService {
   appError$ = new Subject<AppError>();
   _authData$ = new Subject<AuthData>();

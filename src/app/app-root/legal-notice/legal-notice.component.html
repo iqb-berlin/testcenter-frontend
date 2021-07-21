@@ -14,12 +14,11 @@
           <li>Version {{appVersion}}</li>
           <li>API: Version {{mds.appConfig?.detectedApiVersion}}, {{mds.expectedApiVersion}} erforderlich</li>
           <li>Broadcasting-Service: {{mds.appConfig?.broadcastingService.status}}
-            <span *ngIf="mds.appConfig?.broadcastingService.version">
-      - Version {{mds.appConfig?.broadcastingService.version}},
+            <span *ngIf="mds.appConfig?.broadcastingService.version"> - Version {{mds.appConfig?.broadcastingService.version}},
               {{mds.appConfig?.broadcastingService.versionExpected}} erforderlich
             </span>
           </li>
-          <li>Verona Player Interface: Version {{veronaApiVersionSupported}}</li>
+          <li>Verona Player Interface: Versionen {{veronaPlayerApiVersionMin}} bis {{veronaPlayerApiVersionMax}} unterstützt</li>
           <li>Code Maintainer: {{appPublisher}}</li>
         </ul>
       </mat-card-content>

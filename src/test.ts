@@ -37,8 +37,12 @@ getTestBed().initTestEnvironment(
       useValue: environment.apiVersionExpected
     },
     {
-      provide: 'VERONA_API_VERSION_SUPPORTED',
-      useValue: packageJSON.iqb['verona-version']
+      provide: 'VERONA_PLAYER_API_VERSION_MIN',
+      useValue: packageJSON.iqb['verona-player-api-versions'].min
+    },
+    {
+      provide: 'VERONA_PLAYER_API_VERSION_MAX',
+      useValue: packageJSON.iqb['verona-player-api-versions'].max
     },
     {
       provide: 'REPOSITORY_URL',

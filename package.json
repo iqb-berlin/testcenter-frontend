@@ -2,7 +2,10 @@
   "name": "itc-ng",
   "version": "8.1.2",
   "iqb": {
-    "verona-version": "2.1.0"
+    "verona-player-api-versions": {
+      "min": 2,
+      "max": 2
+    }
   },
   "license": "MIT",
   "repository": {

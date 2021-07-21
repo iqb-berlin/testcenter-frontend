@@ -68,7 +68,8 @@ export class FilesComponent implements OnInit {
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
-    @Inject('VERONA_API_VERSION_SUPPORTED') private veronaApiVersionSupported: string,
+    @Inject('VERONA_PLAYER_API_VERSION_MIN') public veronaPlayerApiVersionMin: number,
+    @Inject('VERONA_PLAYER_API_VERSION_MAX') public veronaPlayerApiVersionMax: number,
     private bs: BackendService,
     public wds: WorkspaceDataService,
     public confirmDialog: MatDialog,
@@ -207,15 +208,14 @@ export class FilesComponent implements OnInit {
 
   private addFrontendChecksToFile(file: IQBFile): IQBFile {
     if (typeof file.info['verona-version'] !== 'undefined') {
-      const fileMayor = file.info['verona-version'].toString().split('.').shift();
-      const systemMayor = this.veronaApiVersionSupported.split('.').shift();
-      if (fileMayor !== systemMayor) {
-        if (typeof file.report.error === 'undefined') {
-          // eslint-disable-next-line no-param-reassign
-          file.report.error = [];
-        }
-        file.report.error.push(`Verona Version of this Player is not compatible 
-          with this system's version (\`${this.veronaApiVersionSupported}\`)!`);
+      const fileMayor = parseInt(file.info['verona-version'].toString().split('.').shift(), 10);
+      if (typeof file.report.error === 'undefined') {
+        // eslint-disable-next-line no-param-reassign
+        file.report.error = [];
+      }
+      if (fileMayor < this.veronaPlayerApiVersionMin || fileMayor > this.veronaPlayerApiVersionMin) {
+        file.report.error.push(`Verona Version is not supported 
+          (only versions between \`${this.veronaPlayerApiVersionMin}\` and \`${this.veronaPlayerApiVersionMax}\`)`);
       }
     }
     return file;
