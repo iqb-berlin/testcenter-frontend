@@ -32,7 +32,7 @@ platformBrowserDynamic(<StaticProvider[]>[
   },
   {
     provide: 'VERONA_API_VERSION_SUPPORTED',
-    useValue: environment.veronaApiVersionSupported
+    useValue: packageJson.iqb['verona-version']
   },
   {
     provide: 'REPOSITORY_URL',

@@ -38,7 +38,7 @@ getTestBed().initTestEnvironment(
     },
     {
       provide: 'VERONA_API_VERSION_SUPPORTED',
-      useValue: environment.veronaApiVersionSupported
+      useValue: packageJSON.iqb['verona-version']
     },
     {
       provide: 'REPOSITORY_URL',

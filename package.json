@@ -1,6 +1,9 @@
 {
   "name": "itc-ng",
   "version": "8.1.2",
+  "iqb": {
+    "verona-version": "2.1.0"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -12,7 +15,7 @@
     "build": "ng build",
     "test": "ng test  --watch=false",
     "lint": "ng lint",
-    "e2e": "ng e2e",
+    "e2e": "ng e2e --webdriver-update=false",
     "compodoc": "npx compodoc -p tsconfig.doc.json -s",
     "update-compodoc": "npx compodoc -p tsconfig.doc.json -d ./docs/compodoc"
   },
