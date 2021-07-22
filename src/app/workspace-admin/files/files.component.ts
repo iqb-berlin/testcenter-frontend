@@ -213,8 +213,8 @@ export class FilesComponent implements OnInit {
         // eslint-disable-next-line no-param-reassign
         file.report.error = [];
       }
-      if (fileMayor < this.veronaPlayerApiVersionMin || fileMayor > this.veronaPlayerApiVersionMin) {
-        file.report.error.push(`Verona Version is not supported 
+      if (fileMayor < this.veronaPlayerApiVersionMin || fileMayor > this.veronaPlayerApiVersionMax) {
+        file.report.error.push(`Verona Version \`${fileMayor}\` is not supported 
           (only versions between \`${this.veronaPlayerApiVersionMin}\` and \`${this.veronaPlayerApiVersionMax}\`)`);
       }
     }
