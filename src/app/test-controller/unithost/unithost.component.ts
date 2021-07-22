@@ -8,13 +8,18 @@ import {
   PageData,
   TestStateKey,
   KeyValuePairString,
-  WindowFocusState, PendingUnitData, StateReportEntry, UnitStateKey, UnitPlayerState
+  WindowFocusState,
+  PendingUnitData,
+  StateReportEntry,
+  UnitStateKey,
+  UnitPlayerState
 } from '../test-controller.interfaces';
 import { BackendService } from '../backend.service';
 import { TestControllerService } from '../test-controller.service';
 import { MainDataService } from '../../maindata.service';
+import { VeronaNavigationTarget, VeronaPlayerConfig } from '../verona.interfaces';
 
-declare let srcDoc: any;
+declare let srcDoc;
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -49,173 +54,201 @@ export class UnithostComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
+    this.iFrameItemplayer = null;
+    this.leaveWarning = false;
     setTimeout(() => {
-      this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
-        const msgData = m.data;
-        const msgType = msgData.type;
-        let msgPlayerId = msgData.sessionId;
-        if ((msgPlayerId === undefined) || (msgPlayerId === null)) {
-          msgPlayerId = this.itemplayerSessionId;
-        }
-
-        if ((msgType !== undefined) && (msgType !== null)) {
-          switch (msgType) {
-            case 'vopReadyNotification':
-              // TODO add apiVersion check
-              // TODO respect linting moaning
-              // eslint-disable-next-line no-case-declarations
-              let pendingUnitDef = '';
-              // eslint-disable-next-line no-case-declarations
-              const pendingUnitDataToRestore: KeyValuePairString = {};
-              if (this.pendingUnitData && this.pendingUnitData.playerId === msgPlayerId) {
-                pendingUnitDef = this.pendingUnitData.unitDefinition;
-                pendingUnitDataToRestore.all = this.pendingUnitData.unitState;
-                this.pendingUnitData = null;
-              }
-              if (this.tcs.testMode.saveResponses) {
-                this.bs.updateUnitState(this.tcs.testId, this.myUnitDbKey, [<StateReportEntry>{
-                  key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.RUNNING
-                }]);
-              }
-              this.postMessageTarget = m.source as Window;
-              if (typeof this.postMessageTarget !== 'undefined') {
-                this.postMessageTarget.postMessage({
-                  type: 'vopStartCommand',
-                  sessionId: this.itemplayerSessionId,
-                  unitDefinition: pendingUnitDef,
-                  unitState: {
-                    dataParts: pendingUnitDataToRestore
-                  },
-                  playerConfig: {
-                    logPolicy: this.tcs.bookletConfig.logPolicy,
-                    unitNumber: this.myUnitSequenceId,
-                    unitTitle: this.unitTitle,
-                    unitId: this.myUnitDbKey,
-                    unitCount: this.tcs.maxUnitSequenceId,
-                    stateReportPolicy: this.tcs.bookletConfig.stateReportPolicy,
-                    pagingMode: this.tcs.bookletConfig.pagingMode
-                  }
-                }, '*');
-              }
-              break;
-
-            case 'vopStateChangedNotification':
-              if (msgPlayerId === this.itemplayerSessionId) {
-                if (msgData.playerState) {
-                  const { playerState } = msgData;
-                  this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
-                  if (typeof playerState.currentPage !== 'undefined') {
-                    const pageId = playerState.currentPage;
-                    const pageNr = this.knownPages.indexOf(playerState.currentPage) + 1;
-                    const pageCount = this.knownPages.length;
-                    if (this.knownPages.length > 1 && this.knownPages.indexOf(playerState.currentPage) >= 0) {
-                      this.tcs.newUnitStatePage(this.myUnitDbKey, pageNr, pageId, pageCount);
-                    }
-                  }
-                }
-                if (msgData.unitState) {
-                  const { unitState } = msgData;
-                  const { presentationProgress } = unitState;
-                  if (presentationProgress) {
-                    this.tcs.updateUnitStatePresentationProgress(this.myUnitDbKey,
-                      this.myUnitSequenceId, presentationProgress);
-                  }
-                  const { responseProgress } = unitState;
-                  if (responseProgress) {
-                    this.tcs.newUnitStateResponseProgress(this.myUnitDbKey, this.myUnitSequenceId, responseProgress);
-                  }
-                  const unitData = unitState.dataParts;
-                  if (unitData) {
-                    const dataPartsAllString = unitData.all;
-                    if (dataPartsAllString) {
-                      this.tcs.newUnitStateData(this.myUnitDbKey, this.myUnitSequenceId, dataPartsAllString,
-                        unitState.unitStateDataType);
-                    }
-                  }
-                }
-                if (msgData.log) {
-                  this.bs.addUnitLog(this.tcs.testId, this.myUnitDbKey, msgData.log);
-                }
-              }
-              break;
-
-            case 'vopUnitNavigationRequestedNotification':
-              if (msgPlayerId === this.itemplayerSessionId) {
-                this.tcs.setUnitNavigationRequest(msgData.targetRelative);
-              }
-              break;
-
-            case 'vopWindowFocusChangedNotification':
-              if (msgData.hasFocus) {
-                this.tcs.windowFocusState$.next(WindowFocusState.PLAYER);
-              } else if (document.hasFocus()) {
-                this.tcs.windowFocusState$.next(WindowFocusState.HOST);
-              } else {
-                this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
-              }
-              break;
-
-            default:
-              console.log(`processMessagePost ignored message: ${msgType}`);
-              break;
-          }
-        }
-      });
-
-      this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
-
-      this.iFrameItemplayer = null;
-      this.leaveWarning = false;
-
-      this.routingSubscription = this.route.params.subscribe(params => {
-        this.myUnitSequenceId = Number(params.u);
-        this.tcs.currentUnitSequenceId = this.myUnitSequenceId;
-        this.mds.appSubTitle$.next(`Seite ${this.myUnitSequenceId}`);
-        while (this.iFrameHostElement.hasChildNodes()) {
-          this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
-        }
-
-        if ((this.myUnitSequenceId >= 1) && (this.tcs.rootTestlet !== null)) {
-          const currentUnit = this.tcs.rootTestlet.getUnitAt(this.myUnitSequenceId);
-          this.unitTitle = currentUnit.unitDef.title;
-          this.myUnitDbKey = currentUnit.unitDef.alias;
-          if (this.tcs.testMode.saveResponses) {
-            this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
-              key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.myUnitDbKey
-            }]);
-            this.bs.updateUnitState(this.tcs.testId, this.myUnitDbKey, [<StateReportEntry>{
-              key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.LOADING
-            }]);
-          }
-          this.tcs.currentUnitDbKey = this.myUnitDbKey;
-          this.tcs.currentUnitTitle = this.unitTitle;
-          this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
-
-          this.setPageList([], '');
-
-          this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-          // this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(currentUnit.unitDef.playerId));
-          this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
-          this.iFrameItemplayer.setAttribute('class', 'unitHost');
-          this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
-
-          this.pendingUnitData = {
-            playerId: this.itemplayerSessionId,
-            unitDefinition: this.tcs.hasUnitDefinition(this.myUnitSequenceId) ?
-              this.tcs.getUnitDefinition(this.myUnitSequenceId) : null,
-            unitState: this.tcs.hasUnitStateData(this.myUnitSequenceId) ?
-              this.tcs.getUnitStateData(this.myUnitSequenceId) : null
-          };
-          this.leaveWarning = false;
-          this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-          srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(currentUnit.unitDef.playerId));
-        }
-      });
+      this.postMessageSubscription = this.mds.postMessage$
+        .subscribe(messageEvent => this.handleIncomingMessage(messageEvent));
+      this.routingSubscription = this.route.params
+        .subscribe(params => this.loadPlayer(Number(params.u)));
     });
   }
 
+  private handleIncomingMessage(messageEvent: MessageEvent): void {
+    const msgData = messageEvent.data;
+    const msgType = msgData.type;
+    let msgPlayerId = msgData.sessionId;
+    if ((msgPlayerId === undefined) || (msgPlayerId === null)) {
+      msgPlayerId = this.itemplayerSessionId;
+    }
+
+    switch (msgType) {
+      case 'vopReadyNotification':
+        // TODO add apiVersion check
+        // TODO respect linting moaning
+        // eslint-disable-next-line no-case-declarations
+        let pendingUnitDef = '';
+        // eslint-disable-next-line no-case-declarations
+        const pendingUnitDataToRestore: KeyValuePairString = {};
+        if (this.pendingUnitData && this.pendingUnitData.playerId === msgPlayerId) {
+          pendingUnitDef = this.pendingUnitData.unitDefinition;
+          pendingUnitDataToRestore.all = this.pendingUnitData.unitState;
+          this.pendingUnitData = null;
+        }
+        if (this.tcs.testMode.saveResponses) {
+          this.bs.updateUnitState(this.tcs.testId, this.myUnitDbKey, [<StateReportEntry>{
+            key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.RUNNING
+          }]);
+        }
+        this.postMessageTarget = messageEvent.source as Window;
+        if (typeof this.postMessageTarget !== 'undefined') {
+          this.postMessageTarget.postMessage({
+            type: 'vopStartCommand',
+            sessionId: this.itemplayerSessionId,
+            unitDefinition: pendingUnitDef,
+            unitState: {
+              dataParts: pendingUnitDataToRestore
+            },
+            playerConfig: this.getPlayerConfig()
+          }, '*');
+        }
+        break;
+
+      case 'vopStateChangedNotification':
+        if (msgPlayerId === this.itemplayerSessionId) {
+          if (msgData.playerState) {
+            const { playerState } = msgData;
+            this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
+            if (typeof playerState.currentPage !== 'undefined') {
+              const pageId = playerState.currentPage;
+              const pageNr = this.knownPages.indexOf(playerState.currentPage) + 1;
+              const pageCount = this.knownPages.length;
+              if (this.knownPages.length > 1 && this.knownPages.indexOf(playerState.currentPage) >= 0) {
+                this.tcs.newUnitStatePage(this.myUnitDbKey, pageNr, pageId, pageCount);
+              }
+            }
+          }
+          if (msgData.unitState) {
+            const { unitState } = msgData;
+            const { presentationProgress } = unitState;
+            if (presentationProgress) {
+              this.tcs.updateUnitStatePresentationProgress(this.myUnitDbKey,
+                this.myUnitSequenceId, presentationProgress);
+            }
+            const { responseProgress } = unitState;
+            if (responseProgress) {
+              this.tcs.newUnitStateResponseProgress(this.myUnitDbKey, this.myUnitSequenceId, responseProgress);
+            }
+            const unitData = unitState.dataParts;
+            if (unitData) {
+              const dataPartsAllString = unitData.all;
+              if (dataPartsAllString) {
+                this.tcs.newUnitStateData(this.myUnitDbKey, this.myUnitSequenceId, dataPartsAllString,
+                  unitState.unitStateDataType);
+              }
+            }
+          }
+          if (msgData.log) {
+            this.bs.addUnitLog(this.tcs.testId, this.myUnitDbKey, msgData.log);
+          }
+        }
+        break;
+
+      case 'vopUnitNavigationRequestedNotification':
+        if (msgPlayerId === this.itemplayerSessionId) {
+          this.tcs.setUnitNavigationRequest(msgData.targetRelative);
+        }
+        break;
+
+      case 'vopWindowFocusChangedNotification':
+        if (msgData.hasFocus) {
+          this.tcs.windowFocusState$.next(WindowFocusState.PLAYER);
+        } else if (document.hasFocus()) {
+          this.tcs.windowFocusState$.next(WindowFocusState.HOST);
+        } else {
+          this.tcs.windowFocusState$.next(WindowFocusState.UNKNOWN);
+        }
+        break;
+
+      default:
+        console.log(`processMessagePost ignored message: ${msgType}`);
+        break;
+    }
+  }
+
+  private loadPlayer(currentUnitSequenceId: number): void {
+    this.myUnitSequenceId = currentUnitSequenceId;
+    this.tcs.currentUnitSequenceId = this.myUnitSequenceId;
+    this.mds.appSubTitle$.next(`Seite ${this.myUnitSequenceId}`);
+    while (this.iFrameHostElement.hasChildNodes()) {
+      this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
+    }
+
+    if ((this.myUnitSequenceId >= 1) && (this.tcs.rootTestlet !== null)) {
+      const currentUnit = this.tcs.rootTestlet.getUnitAt(this.myUnitSequenceId);
+      this.unitTitle = currentUnit.unitDef.title;
+      this.myUnitDbKey = currentUnit.unitDef.alias;
+      if (this.tcs.testMode.saveResponses) {
+        this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
+          key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.myUnitDbKey
+        }]);
+        this.bs.updateUnitState(this.tcs.testId, this.myUnitDbKey, [<StateReportEntry>{
+          key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.LOADING
+        }]);
+      }
+      this.tcs.currentUnitDbKey = this.myUnitDbKey;
+      this.tcs.currentUnitTitle = this.unitTitle;
+      this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+
+      this.setPageList([], '');
+
+      this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
+      // this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(currentUnit.unitDef.playerId));
+      this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
+      this.iFrameItemplayer.setAttribute('class', 'unitHost');
+      this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
+
+      this.pendingUnitData = {
+        playerId: this.itemplayerSessionId,
+        unitDefinition: this.tcs.hasUnitDefinition(this.myUnitSequenceId) ?
+          this.tcs.getUnitDefinition(this.myUnitSequenceId) : null,
+        unitState: this.tcs.hasUnitStateData(this.myUnitSequenceId) ?
+          this.tcs.getUnitStateData(this.myUnitSequenceId) : null
+      };
+      this.leaveWarning = false;
+      this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+      srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(currentUnit.unitDef.playerId));
+    }
+  }
+
+  // TODO find better places for the following 2 functions, maybe tcs
+  private getPlayerConfig(): VeronaPlayerConfig {
+    return {
+      enabledNavigationTargets: UnithostComponent.getEnabledNavigationTargets(
+        this.myUnitSequenceId,
+        this.tcs.minUnitSequenceId,
+        this.tcs.maxUnitSequenceId
+      ),
+      logPolicy: this.tcs.bookletConfig.logPolicy,
+      pagingMode: this.tcs.bookletConfig.pagingMode,
+      stateReportPolicy: this.tcs.bookletConfig.stateReportPolicy,
+      unitNumber: this.myUnitSequenceId,
+      unitTitle: this.unitTitle,
+      unitId: this.myUnitDbKey
+    };
+  }
+
+  private static getEnabledNavigationTargets(nr, min, max): VeronaNavigationTarget[] {
+    const navigationTargets = [];
+    if (nr < max) {
+      navigationTargets.push('next');
+    }
+    if (nr > min) {
+      navigationTargets.push('previous');
+    }
+    if (nr !== min) {
+      navigationTargets.push('first');
+    }
+    if (nr !== max) {
+      navigationTargets.push('last');
+    }
+    navigationTargets.push('end'); // TODO when is this allowed
+    return navigationTargets;
+  }
+
   @HostListener('window:resize')
-  onResize(): any {
+  onResize(): void {
     if (this.iFrameItemplayer && this.iFrameHostElement) {
       const divHeight = this.iFrameHostElement.clientHeight;
       this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
