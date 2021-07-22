@@ -281,8 +281,8 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
           while (myreturn && (checkUnitSequenceId >= this.tcs.currentUnitSequenceId)) {
             const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
             if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
-              if (this.tcs.hasUnitPresentationComplete(checkUnitSequenceId)) {
-                if (this.tcs.getUnitPresentationComplete(checkUnitSequenceId) !== 'complete') {
+              if (this.tcs.hasUnitPresentationProgress(checkUnitSequenceId)) {
+                if (this.tcs.getUnitPresentationProgress(checkUnitSequenceId) !== 'complete') {
                   myreturn = false;
                 }
               } else {
@@ -316,8 +316,8 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
         } else {
           // go backwards ===================================
           let myreturn = true;
-          if (this.tcs.hasUnitPresentationComplete(this.tcs.currentUnitSequenceId)) {
-            if (this.tcs.getUnitPresentationComplete(this.tcs.currentUnitSequenceId) !== 'complete') {
+          if (this.tcs.hasUnitPresentationProgress(this.tcs.currentUnitSequenceId)) {
+            if (this.tcs.getUnitPresentationProgress(this.tcs.currentUnitSequenceId) !== 'complete') {
               myreturn = false;
             }
           } else {

@@ -52,7 +52,7 @@ export class TestControllerService {
   set currentUnitSequenceId(v: number) {
     this.unitPrevEnabled = v > this.minUnitSequenceId;
     this.unitNextEnabled = v < this.maxUnitSequenceId;
-    if (this.rootTestlet && (this.bookletConfig.unit_navibuttons !== 'OFF') ) {
+    if (this.rootTestlet && (this.bookletConfig.unit_navibuttons !== 'OFF')) {
       const myUnitListForNaviButtons: UnitNaviButtonData[] = [];
       for (let sequ = 1; sequ <= this.rootTestlet.getMaxSequenceId(); sequ++) {
         const myUnitData = this.rootTestlet.getUnitAt(sequ);
@@ -78,8 +78,9 @@ export class TestControllerService {
   private players: { [filename: string]: string } = {};
   private unitDefinitions: { [sequenceId: number]: string } = {};
   private unitStateDataParts: { [sequenceId: number]: string } = {};
-  private unitPresentationCompleteStates: { [sequenceId: number]: string } = {};
+  private unitPresentationProgressStates: { [sequenceId: number]: string } = {};
   private unitResponseCompleteStates: { [sequenceId: number]: string } = {};
+  private unitStateCurrentPages: { [sequenceId: number]: string } = {};
 
   private unitStateDataToSave$ = new Subject<UnitStateData>();
   windowFocusState$ = new Subject<WindowFocusState>();
@@ -123,7 +124,7 @@ export class TestControllerService {
     this.currentMaxTimerTestletId = '';
     this.LastMaxTimerState = {};
     this.unitListForNaviButtons = [];
-    this.unitPresentationCompleteStates = {};
+    this.unitPresentationProgressStates = {};
     // this.dataLoading = false; TODO set test status?
     // this.bookletLoadComplete = false;
   }
@@ -168,28 +169,40 @@ export class TestControllerService {
     return this.unitDefinitions[sequenceId];
   }
 
-  hasUnitStateData(sequenceId: number): boolean {
+  hasUnitStateDataParts(sequenceId: number): boolean {
     return this.unitStateDataParts.hasOwnProperty(sequenceId);
   }
 
-  getUnitStateData(sequenceId: number): string {
+  getUnitStateDataParts(sequenceId: number): string {
     return this.unitStateDataParts[sequenceId];
-  }
-
-  setOldUnitPresentationComplete(sequenceId: number, state: string): void {
-    this.unitPresentationCompleteStates[sequenceId] = state;
-  }
-
-  hasUnitPresentationComplete(sequenceId: number): boolean {
-    return this.unitPresentationCompleteStates.hasOwnProperty(sequenceId);
-  }
-
-  getUnitPresentationComplete(sequenceId: number): string {
-    return this.unitPresentationCompleteStates[sequenceId];
   }
 
   addUnitStateDataParts(unitSequenceId: number, dataPartsAllString: string): void {
     this.unitStateDataParts[unitSequenceId] = dataPartsAllString;
+  }
+
+  setOldUnitPresentationProgress(sequenceId: number, state: string): void {
+    this.unitPresentationProgressStates[sequenceId] = state;
+  }
+
+  hasUnitPresentationProgress(sequenceId: number): boolean {
+    return this.unitPresentationProgressStates.hasOwnProperty(sequenceId);
+  }
+
+  getUnitPresentationProgress(sequenceId: number): string {
+    return this.unitPresentationProgressStates[sequenceId];
+  }
+
+  hasUnitStateCurrentPage(sequenceId: number): boolean {
+    return this.unitStateCurrentPages.hasOwnProperty(sequenceId);
+  }
+
+  getUnitStateCurrentPage(sequenceId: number): string {
+    return this.unitStateCurrentPages[sequenceId];
+  }
+
+  setOldUnitDataCurrentPage(sequenceId: number, pageId: string): void {
+    this.unitStateCurrentPages[sequenceId] = pageId;
   }
 
   newUnitStateData(unitDbKey: string, unitSequenceId: number, dataPartsAllString: string, unitStateDataType: string): void {
@@ -217,11 +230,11 @@ export class TestControllerService {
 
   updateUnitStatePresentationProgress(unitDbKey: string, unitSequenceId: number, presentationProgress: string): void {
     let stateChanged = false;
-    if (!this.unitPresentationCompleteStates[unitSequenceId] || this.unitPresentationCompleteStates[unitSequenceId] === 'none') {
-      this.unitPresentationCompleteStates[unitSequenceId] = presentationProgress;
+    if (!this.unitPresentationProgressStates[unitSequenceId] || this.unitPresentationProgressStates[unitSequenceId] === 'none') {
+      this.unitPresentationProgressStates[unitSequenceId] = presentationProgress;
       stateChanged = true;
-    } else if (this.unitPresentationCompleteStates[unitSequenceId] === 'some' && presentationProgress === 'complete') {
-      this.unitPresentationCompleteStates[unitSequenceId] = presentationProgress;
+    } else if (this.unitPresentationProgressStates[unitSequenceId] === 'some' && presentationProgress === 'complete') {
+      this.unitPresentationProgressStates[unitSequenceId] = presentationProgress;
       stateChanged = true;
     }
     if (stateChanged && this.testMode.saveResponses) {
@@ -242,7 +255,8 @@ export class TestControllerService {
     }
   }
 
-  newUnitStatePage(unitDbKey: string, pageNr: number, pageId: string, pageCount: number): void {
+  newUnitStateCurrentPage(unitDbKey: string, unitSequenceId: number, pageNr: number, pageId: string, pageCount: number): void {
+    this.unitStateCurrentPages[unitSequenceId] = pageId;
     if (this.testMode.saveResponses) {
       this.bs.updateUnitState(this.testId, unitDbKey, [
           <StateReportEntry>{ key: UnitStateKey.CURRENT_PAGE_NR, timeStamp: Date.now(), content: pageNr.toString() },

@@ -179,8 +179,9 @@ export enum NoUnitFlag {
 
 export interface PendingUnitData {
   playerId: string;
-  unitState: string;
+  unitDataParts: string;
   unitDefinition: string;
+  currentPage: string;
 }
 
 export interface KeyValuePairNumber {

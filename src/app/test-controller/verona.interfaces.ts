@@ -17,6 +17,7 @@ interface Verona2PlayerConfig {
 
 interface Verona3PlayerConfig extends Verona2PlayerConfig {
   enabledNavigationTargets: Verona2NavigationTarget[];
+  startPage?: string;
 }
 
 export { Verona3PlayerConfig as VeronaPlayerConfig };

@@ -234,7 +234,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             return throwError(`error requesting unit ${this.tcs.testId}/${myUnit.id}`);
           }
 
-          this.tcs.setOldUnitPresentationComplete(sequenceId, unit.state[UnitStateKey.PRESENTATION_PROGRESS]);
+          this.tcs.setOldUnitPresentationProgress(sequenceId, unit.state[UnitStateKey.PRESENTATION_PROGRESS]);
+          this.tcs.setOldUnitDataCurrentPage(sequenceId, unit.state[UnitStateKey.CURRENT_PAGE_ID]);
 
           try {
             const dataParts = unit.data ? JSON.parse(unit.data) : ''; // TODO why has this to be done. an issue in the simple-player?

@@ -76,15 +76,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
     switch (msgType) {
       case 'vopReadyNotification':
         // TODO add apiVersion check
-        // TODO respect linting moaning
-        // eslint-disable-next-line no-case-declarations
-        let pendingUnitDef = '';
-        // eslint-disable-next-line no-case-declarations
-        const pendingUnitDataToRestore: KeyValuePairString = {};
-        if (this.pendingUnitData && this.pendingUnitData.playerId === msgPlayerId) {
-          pendingUnitDef = this.pendingUnitData.unitDefinition;
-          pendingUnitDataToRestore.all = this.pendingUnitData.unitState;
-          this.pendingUnitData = null;
+        if (!this.pendingUnitData || this.pendingUnitData.playerId !== msgPlayerId) {
+          this.pendingUnitData = {
+            unitDefinition: '',
+            unitDataParts: '',
+            playerId: '',
+            currentPage: null
+          };
         }
         if (this.tcs.testMode.saveResponses) {
           this.bs.updateUnitState(this.tcs.testId, this.myUnitDbKey, [<StateReportEntry>{
@@ -92,16 +90,19 @@ export class UnithostComponent implements OnInit, OnDestroy {
           }]);
         }
         this.postMessageTarget = messageEvent.source as Window;
-        if (typeof this.postMessageTarget !== 'undefined') {
-          this.postMessageTarget.postMessage({
-            type: 'vopStartCommand',
-            sessionId: this.itemplayerSessionId,
-            unitDefinition: pendingUnitDef,
-            unitState: {
-              dataParts: pendingUnitDataToRestore
-            },
-            playerConfig: this.getPlayerConfig()
-          }, '*');
+
+        this.postMessageTarget.postMessage({
+          type: 'vopStartCommand',
+          sessionId: this.itemplayerSessionId,
+          unitDefinition: this.pendingUnitData.unitDefinition,
+          unitState: {
+            dataParts: { all: this.pendingUnitData.unitDataParts }
+          },
+          playerConfig: this.getPlayerConfig()
+        }, '*');
+
+        if (!this.pendingUnitData.unitDefinition) {
+          this.pendingUnitData = null;
         }
         break;
 
@@ -115,28 +116,27 @@ export class UnithostComponent implements OnInit, OnDestroy {
               const pageNr = this.knownPages.indexOf(playerState.currentPage) + 1;
               const pageCount = this.knownPages.length;
               if (this.knownPages.length > 1 && this.knownPages.indexOf(playerState.currentPage) >= 0) {
-                this.tcs.newUnitStatePage(this.myUnitDbKey, pageNr, pageId, pageCount);
+                this.tcs.newUnitStateCurrentPage(this.myUnitDbKey, this.myUnitSequenceId, pageNr, pageId, pageCount);
               }
             }
           }
           if (msgData.unitState) {
             const { unitState } = msgData;
-            const { presentationProgress } = unitState;
+            const { presentationProgress, responseProgress } = unitState;
+
             if (presentationProgress) {
               this.tcs.updateUnitStatePresentationProgress(this.myUnitDbKey,
                 this.myUnitSequenceId, presentationProgress);
             }
-            const { responseProgress } = unitState;
+
             if (responseProgress) {
               this.tcs.newUnitStateResponseProgress(this.myUnitDbKey, this.myUnitSequenceId, responseProgress);
             }
-            const unitData = unitState.dataParts;
-            if (unitData) {
-              const dataPartsAllString = unitData.all;
-              if (dataPartsAllString) {
-                this.tcs.newUnitStateData(this.myUnitDbKey, this.myUnitSequenceId, dataPartsAllString,
-                  unitState.unitStateDataType);
-              }
+
+            const unitDataPartsAll = unitState?.dataParts?.all;
+            if (unitDataPartsAll) {
+              this.tcs.newUnitStateData(this.myUnitDbKey, this.myUnitSequenceId,
+                unitDataPartsAll, unitState.unitStateDataType);
             }
           }
           if (msgData.log) {
@@ -203,8 +203,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
         playerId: this.itemplayerSessionId,
         unitDefinition: this.tcs.hasUnitDefinition(this.myUnitSequenceId) ?
           this.tcs.getUnitDefinition(this.myUnitSequenceId) : null,
-        unitState: this.tcs.hasUnitStateData(this.myUnitSequenceId) ?
-          this.tcs.getUnitStateData(this.myUnitSequenceId) : null
+        unitDataParts: this.tcs.hasUnitStateDataParts(this.myUnitSequenceId) ?
+          this.tcs.getUnitStateDataParts(this.myUnitSequenceId) : null,
+        currentPage: this.tcs.hasUnitStateCurrentPage(this.myUnitSequenceId) ?
+          this.tcs.getUnitStateCurrentPage(this.myUnitSequenceId) : null
       };
       this.leaveWarning = false;
       this.iFrameHostElement.appendChild(this.iFrameItemplayer);
@@ -214,7 +216,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   // TODO find better places for the following 2 functions, maybe tcs
   private getPlayerConfig(): VeronaPlayerConfig {
-    return {
+    const playerConfig: VeronaPlayerConfig = {
       enabledNavigationTargets: UnithostComponent.getEnabledNavigationTargets(
         this.myUnitSequenceId,
         this.tcs.minUnitSequenceId,
@@ -227,6 +229,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitTitle: this.unitTitle,
       unitId: this.myUnitDbKey
     };
+    if (this.pendingUnitData.currentPage) {
+      playerConfig.startPage = this.pendingUnitData.currentPage;
+    }
+    return playerConfig;
   }
 
   private static getEnabledNavigationTargets(nr, min, max): VeronaNavigationTarget[] {
