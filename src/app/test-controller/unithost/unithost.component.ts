@@ -147,7 +147,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
       case 'vopUnitNavigationRequestedNotification':
         if (msgPlayerId === this.itemplayerSessionId) {
-          this.tcs.setUnitNavigationRequest(msgData.targetRelative);
+          // support Verona2 and Verona3 version
+          const target = msgData.target ? `#${msgData.target}` : msgData.targetRelative;
+          this.tcs.setUnitNavigationRequest(target);
         }
         break;
 
