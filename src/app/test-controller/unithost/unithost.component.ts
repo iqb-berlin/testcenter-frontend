@@ -7,7 +7,6 @@ import { ActivatedRoute } from '@angular/router';
 import {
   PageData,
   TestStateKey,
-  KeyValuePairString,
   WindowFocusState,
   PendingUnitData,
   StateReportEntry,
@@ -17,7 +16,7 @@ import {
 import { BackendService } from '../backend.service';
 import { TestControllerService } from '../test-controller.service';
 import { MainDataService } from '../../maindata.service';
-import { VeronaNavigationTarget, VeronaPlayerConfig } from '../verona.interfaces';
+import { VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig } from '../verona.interfaces';
 
 declare let srcDoc;
 
@@ -29,7 +28,7 @@ declare let srcDoc;
 export class UnithostComponent implements OnInit, OnDestroy {
   private iFrameHostElement: HTMLElement;
   private iFrameItemplayer: HTMLIFrameElement;
-  private routingSubscription: Subscription = null;
+  private subscriptions: Subscription[] = [];
   leaveWarning = false;
 
   unitTitle = '';
@@ -38,7 +37,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private myUnitSequenceId = -1;
   private myUnitDbKey = '';
 
-  private postMessageSubscription: Subscription = null;
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
   private pendingUnitData: PendingUnitData = null;
@@ -58,10 +56,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.iFrameItemplayer = null;
     this.leaveWarning = false;
     setTimeout(() => {
-      this.postMessageSubscription = this.mds.postMessage$
+      const postMessageSubscription = this.mds.postMessage$
         .subscribe(messageEvent => this.handleIncomingMessage(messageEvent));
-      this.routingSubscription = this.route.params
+      const routingSubscription = this.route.params
         .subscribe(params => this.loadPlayer(Number(params.u)));
+      const navigationDenialSubscription = this.tcs.navigationDenial
+        .subscribe(navigationDenial => this.handleNavigationDenial(navigationDenial));
+
+      this.subscriptions = [postMessageSubscription, routingSubscription, navigationDenialSubscription];
     });
   }
 
@@ -364,11 +366,18 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.routingSubscription !== null) {
-      this.routingSubscription.unsubscribe();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  private handleNavigationDenial(navigationDenial: { sourceUnitSequenceId: number; reason: VeronaNavigationDeniedReason[] }) {
+    if (navigationDenial.sourceUnitSequenceId !== this.myUnitSequenceId) {
+      return;
     }
-    if (this.postMessageSubscription !== null) {
-      this.postMessageSubscription.unsubscribe();
-    }
+
+    this.postMessageTarget.postMessage({
+      type: 'vopNavigationDeniedNotification',
+      sessionId: this.itemplayerSessionId,
+      reason: navigationDenial.reason
+    }, '*');
   }
 }

@@ -233,12 +233,12 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       });
       return dialogCDRef.afterClosed()
         .pipe(
-          switchMap(cdresult => {
+          map(cdresult => {
             if ((typeof cdresult === 'undefined') || (cdresult === false)) {
-              return of(false);
+              return false;
             }
             this.tcs.cancelMaxTimer();
-            return of(true);
+            return true;
           })
         );
     }
@@ -264,6 +264,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
         if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
           if (this.tcs.hasUnitPresentationProgress(checkUnitSequenceId)) {
             if (this.tcs.getUnitPresentationProgress(checkUnitSequenceId) !== 'complete') {
+              this.tcs.addNavigationDeniedEvent(this.tcs.currentUnitSequenceId, ['presentationIncomplete']);
               myreturn = false;
             }
           } else {
@@ -330,6 +331,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     if (routerStateObject.extras.state && routerStateObject.extras.state.force) {
       forceNavigation = routerStateObject.extras.state.force;
     }
+
     return this.checkAndSolve_maxTime(newUnit, forceNavigation)
       .pipe(
         switchMap(cAsC => {
@@ -339,6 +341,10 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
           return this.checkAndSolve_PresentationCompleteCode(newUnit, forceNavigation);
         })
       );
+  }
+
+  private navigationDenied(presentationProgress: string) {
+
   }
 }
 

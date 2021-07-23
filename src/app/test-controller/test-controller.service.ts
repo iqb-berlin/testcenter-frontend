@@ -1,6 +1,6 @@
 import { debounceTime, map, takeUntil } from 'rxjs/operators';
 import {
-  BehaviorSubject, interval, Subject, Subscription, timer
+  BehaviorSubject, interval, Observable, Subject, Subscription, timer
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -16,6 +16,7 @@ import {
 import { BackendService } from './backend.service';
 import { TestMode } from '../config/test-mode';
 import { BookletConfig } from '../config/booklet-config';
+import {VeronaNavigationDeniedReason, VeronaNavigationTarget} from './verona.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -38,13 +39,18 @@ export class TestControllerService {
   currentMaxTimerTestletId = '';
   private maxTimeIntervalSubscription: Subscription = null;
 
-  private _currentUnitSequenceId: number;
   currentUnitDbKey = '';
   currentUnitTitle = '';
   unitPrevEnabled = false;
   unitNextEnabled = false;
   unitListForNaviButtons: UnitNaviButtonData[] = [];
 
+  private _navigationDenial = new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>();
+  get navigationDenial(): Observable<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }> {
+    return this._navigationDenial;
+  }
+
+  private _currentUnitSequenceId: number;
   get currentUnitSequenceId(): number {
     return this._currentUnitSequenceId;
   }
@@ -313,6 +319,10 @@ export class TestControllerService {
       this.minUnitSequenceId = this.rootTestlet.getFirstUnlockedUnitSequenceId(startWith);
       this.maxUnitSequenceId = this.rootTestlet.getLastUnlockedUnitSequenceId(startWith);
     }
+  }
+
+  addNavigationDeniedEvent(sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[]): void {
+    this._navigationDenial.next({ sourceUnitSequenceId, reason });
   }
 
   terminateTest(logEntryKey: string, lockTest: boolean = false): void {
