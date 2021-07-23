@@ -1,4 +1,4 @@
-/* eslint-disable max-classes-per-file */
+/* eslint-disable max-classes-per-file,no-console */
 
 import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from 'iqb-components';
 import {
@@ -29,13 +29,13 @@ export class UnitActivateGuard implements CanActivate {
   private checkAndSolve_Code(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
     if (newUnit.codeRequiringTestlets) {
       if (newUnit.codeRequiringTestlets.length > 0) {
-        const myCodes: CodeInputData[] = [];
+        const codes: CodeInputData[] = [];
         newUnit.codeRequiringTestlets.forEach(t => {
           if (force) {
             t.codeToEnter = '';
             this.tcs.addClearedCodeTestlet(t.id);
           } else {
-            myCodes.push(<CodeInputData>{
+            codes.push(<CodeInputData>{
               testletId: t.id,
               prompt: t.codePrompt,
               code: t.codeToEnter.toUpperCase().trim(),
@@ -43,111 +43,98 @@ export class UnitActivateGuard implements CanActivate {
             });
           }
         });
-        if (myCodes.length > 0) {
+        if (codes.length > 0) {
           this.router.navigate([`/t/${this.tcs.testId}/unlock`], {
             skipLocationChange: true,
-            state: {
-              returnTo: `/t/${this.tcs.testId}/u/${this.tcs.currentUnitSequenceId}`,
-              newUnit: newUnit,
-              codes: myCodes
-            }
+            state: { returnTo: `/t/${this.tcs.testId}/u/${this.tcs.currentUnitSequenceId}`, newUnit, codes }
           });
           return of(false);
-        } else {
-          return of(true);
         }
-      } else {
         return of(true);
       }
-    } else {
       return of(true);
     }
+    return of(true);
   }
 
   checkAndSolve_DefLoaded(newUnit: UnitControllerData): Observable<boolean> {
     if (this.tcs.loadComplete) {
       return of(true);
-    } else {
-      if (this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
+    }
+    if (this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
+      // 1 going forwards
 
-        // 1 going forwards
+      if ((newUnit.maxTimerRequiringTestlet === null) || (!this.tcs.testMode.forceNaviRestrictions)) {
+        // 1 a) target is not in timed block or review mode --> check only target unit
 
-        if ((newUnit.maxTimerRequiringTestlet === null) || (!this.tcs.testMode.forceNaviRestrictions)) {
-
-          // 1 a) target is not in timed block or review mode --> check only target unit
-
-          if (this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)) {
-            return of(true);
-          } else {
-            this.mds.setSpinnerOn();
-            return interval(1000)
-              .pipe(
-                filter(() => this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)),
-                map(() => true),
-                take(1)
-              );
-          }
-        } else if (this.tcs.currentMaxTimerTestletId && (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)) {
-
-          // 1 b) staying in timed block --> check has been already done
-
+        if (this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)) {
           return of(true);
-
-        } else {
-
-          // entering timed block --> check all units
-          const allUnitsSequenceIdsToCheck = this.tcs.rootTestlet.getAllUnitSequenceIds(newUnit.maxTimerRequiringTestlet.id);
-          let ok = true;
-          allUnitsSequenceIdsToCheck.forEach(u => {
-            if (!this.tcs.hasUnitDefinition(u)) {
-              ok = false;
-            }
-          });
-          if (ok) {
-            return of(true);
-          } else {
-            this.mds.setSpinnerOn();
-            return interval(1000)
-              .pipe(
-                filter(() => {
-                  let localOk = true;
-                  allUnitsSequenceIdsToCheck.forEach(u => {
-                    if (!this.tcs.hasUnitDefinition(u)) {
-                      localOk = false;
-                    }
-                  });
-                  return localOk;
-                }),
-                map(() => true),
-                take(1)
-              );
-          }
-
         }
-      } else {
-
-        // 2 going backwards --> no check, because units are loaded in ascending order
-
+        this.mds.setSpinnerOn();
+        return interval(1000)
+          .pipe(
+            filter(() => this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)),
+            map(() => true),
+            take(1)
+          );
+      }
+      if (this.tcs.currentMaxTimerTestletId &&
+        (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
+      ) {
+        // 1 b) staying in timed block --> check has been already done
         return of(true);
       }
+
+      // entering timed block --> check all units
+      const allUnitsSequenceIdsToCheck =
+        this.tcs.rootTestlet.getAllUnitSequenceIds(newUnit.maxTimerRequiringTestlet.id);
+      let ok = true;
+      allUnitsSequenceIdsToCheck.forEach(u => {
+        if (!this.tcs.hasUnitDefinition(u)) {
+          ok = false;
+        }
+      });
+      if (ok) {
+        return of(true);
+      }
+      this.mds.setSpinnerOn();
+      return interval(1000)
+        .pipe(
+          filter(() => {
+            let localOk = true;
+            allUnitsSequenceIdsToCheck.forEach(u => {
+              if (!this.tcs.hasUnitDefinition(u)) {
+                localOk = false;
+              }
+            });
+            return localOk;
+          }),
+          map(() => true),
+          take(1)
+        );
     }
+    // 2 going backwards --> no check, because units are loaded in ascending order
+    return of(true);
   }
 
+  // TODO is it correct, that always returns always of(true)
   checkAndSolve_maxTime(newUnit: UnitControllerData): Observable<boolean> {
     if (newUnit.maxTimerRequiringTestlet === null) {
       return of(true);
-    } else if (this.tcs.currentMaxTimerTestletId && (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)) {
-      return of(true);
-    } else {
-      this.tcs.cancelMaxTimer();
-      this.tcs.rootTestlet.lockUnits_before(newUnit.maxTimerRequiringTestlet.id);
-      this.tcs.startMaxTimer(newUnit.maxTimerRequiringTestlet.id, newUnit.maxTimerRequiringTestlet.maxTimeLeft);
+    }
+    if (this.tcs.currentMaxTimerTestletId &&
+      (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
+    ) {
       return of(true);
     }
+    this.tcs.cancelMaxTimer();
+    this.tcs.rootTestlet.lockUnits_before(newUnit.maxTimerRequiringTestlet.id);
+    this.tcs.startMaxTimer(newUnit.maxTimerRequiringTestlet.id, newUnit.maxTimerRequiringTestlet.maxTimeLeft);
+    return of(true);
   }
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean>|boolean {
-    const targetUnitSequenceId: number = Number(route.params['u']);
+  canActivate(route: ActivatedRouteSnapshot): Observable<boolean>|boolean {
+    const targetUnitSequenceId: number = Number(route.params.u);
     if (this.tcs.currentUnitSequenceId > 0) {
       this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
     } else {
@@ -155,8 +142,8 @@ export class UnitActivateGuard implements CanActivate {
     }
     let forceNavigation = false;
     const routerStateObject = this.router.getCurrentNavigation();
-    if (routerStateObject.extras.state && routerStateObject.extras.state['force']) {
-      forceNavigation = routerStateObject.extras.state['force'];
+    if (routerStateObject.extras.state && routerStateObject.extras.state.force) {
+      forceNavigation = routerStateObject.extras.state.force;
     }
 
     let myReturn = false;
@@ -169,14 +156,15 @@ export class UnitActivateGuard implements CanActivate {
       } else {
         this.router.navigate(['/']);
       }
-    } else if ((targetUnitSequenceId < this.tcs.minUnitSequenceId) || (targetUnitSequenceId > this.tcs.maxUnitSequenceId)) {
+    } else if ((targetUnitSequenceId < this.tcs.minUnitSequenceId) ||
+      (targetUnitSequenceId > this.tcs.maxUnitSequenceId)) {
       console.warn('unit canActivate: false (unit# out of range)');
       myReturn = false;
     } else {
       const newUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
       if (!newUnit) {
         myReturn = false;
-        console.warn('target unit null (targetUnitSequenceId: ' + targetUnitSequenceId.toString());
+        console.warn(`target unit null (targetUnitSequenceId: ${targetUnitSequenceId.toString()})`);
       } else if (newUnit.unitDef.locked) {
         myReturn = false;
         console.warn('unit canActivate: locked');
@@ -184,40 +172,33 @@ export class UnitActivateGuard implements CanActivate {
         myReturn = false;
         console.warn('unit canActivate: false (unit is locked)');
       } else {
-
-        return this.checkAndSolve_Code(newUnit, forceNavigation).pipe(
-          switchMap(cAsC => {
+        return this.checkAndSolve_Code(newUnit, forceNavigation)
+          .pipe(switchMap(cAsC => {
             if (!cAsC) {
               return of(false);
-            } else {
-              return this.checkAndSolve_DefLoaded(newUnit).pipe(
-                switchMap(cAsDL => {
-                  this.mds.setSpinnerOff();
-                  if (!cAsDL) {
-                    return of(false);
-                  } else {
-                    return this.checkAndSolve_maxTime(newUnit).pipe(
-                      switchMap(cAsMT => {
-                        if (!cAsMT) {
-                          return of(false);
-                        } else {
-                          this.tcs.currentUnitSequenceId = targetUnitSequenceId;
-                          this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
-                          return of(true);
-                        }
-                      })
-                    );
-                  }
-                })
-              );
             }
-        }));
+            return this.checkAndSolve_DefLoaded(newUnit)
+              .pipe(switchMap(cAsDL => {
+                this.mds.setSpinnerOff();
+                if (!cAsDL) {
+                  return of(false);
+                }
+                return this.checkAndSolve_maxTime(newUnit)
+                  .pipe(switchMap(cAsMT => {
+                    if (!cAsMT) {
+                      return of(false);
+                    }
+                    this.tcs.currentUnitSequenceId = targetUnitSequenceId;
+                    this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
+                    return of(true);
+                  }));
+              }));
+          }));
       }
     }
     return myReturn;
   }
 }
-
 
 @Injectable()
 export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
@@ -231,130 +212,114 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
 
   private checkAndSolve_maxTime(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
     if (this.tcs.currentMaxTimerTestletId) {
-      if (newUnit && newUnit.maxTimerRequiringTestlet && (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)) {
+      if (newUnit && newUnit.maxTimerRequiringTestlet &&
+        (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
+      ) {
         return of(true);
-      } else {
-        if (force) {
-          this.tcs.interruptMaxTimer();
-          return of(true);
-        } else {
-          const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-            width: '500px',
-            data: <ConfirmDialogData>{
-              title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
-              content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
-              confirmbuttonlabel: 'Trotzdem weiter',
-              confirmbuttonreturn: true,
-              showcancel: true
-            }
-          });
-          return dialogCDRef.afterClosed()
-            .pipe(
-              switchMap(cdresult => {
-                if ((typeof cdresult === 'undefined') || (cdresult === false)) {
-                  return of(false);
-                } else {
-                  this.tcs.cancelMaxTimer();
-                  return of(true);
-                }
-              })
-            );
-        }
       }
-    } else {
-      return of(true);
+      if (force) {
+        this.tcs.interruptMaxTimer();
+        return of(true);
+      }
+      const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+        width: '500px',
+        data: <ConfirmDialogData>{
+          title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
+          content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
+          confirmbuttonlabel: 'Trotzdem weiter',
+          confirmbuttonreturn: true,
+          showcancel: true
+        }
+      });
+      return dialogCDRef.afterClosed()
+        .pipe(
+          switchMap(cdresult => {
+            if ((typeof cdresult === 'undefined') || (cdresult === false)) {
+              return of(false);
+            }
+            this.tcs.cancelMaxTimer();
+            return of(true);
+          })
+        );
     }
+    return of(true);
   }
 
   private checkAndSolve_PresentationCompleteCode(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
     if (force) {
       return of(true);
-    } else {
-      if ((this.tcs.bookletConfig.force_presentation_complete === 'ON') && this.tcs.currentUnitSequenceId > 0) {
-        if (!newUnit || this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
-          // go forwards ===================================
-          let myreturn = true;
-          let checkUnitSequenceId = this.tcs.currentUnitSequenceId;
-          if (newUnit) {
-            checkUnitSequenceId = newUnit.unitDef.sequenceId - 1;
-          }
-          while (myreturn && (checkUnitSequenceId >= this.tcs.currentUnitSequenceId)) {
-            const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
-            if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
-              if (this.tcs.hasUnitPresentationProgress(checkUnitSequenceId)) {
-                if (this.tcs.getUnitPresentationProgress(checkUnitSequenceId) !== 'complete') {
-                  myreturn = false;
-                }
-              } else {
-                myreturn = false;
-              }
-            }
-            checkUnitSequenceId -= 1;
-          }
-          if (myreturn) {
-            return of(true);
-          } else {
-            if (this.tcs.testMode.forceNaviRestrictions) {
-              const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-                width: '500px',
-                // height: '300px',
-                data: <ConfirmDialogData>{
-                  title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitleNext'),
-                  content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextNext'),
-                  confirmbuttonlabel: 'OK',
-                  confirmbuttonreturn: false,
-                  showcancel: false
-                }
-              });
-              return dialogCDRef.afterClosed().pipe(map(() => false));
-            } else {
-              this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden (PresentationNotComplete).',
-                'Weiterblättern', {duration: 3000});
-              return of(true);
-            }
-          }
-        } else {
-          // go backwards ===================================
-          let myreturn = true;
-          if (this.tcs.hasUnitPresentationProgress(this.tcs.currentUnitSequenceId)) {
-            if (this.tcs.getUnitPresentationProgress(this.tcs.currentUnitSequenceId) !== 'complete') {
+    }
+    if ((this.tcs.bookletConfig.force_presentation_complete !== 'ON') || this.tcs.currentUnitSequenceId <= 0) {
+      return of(true);
+    }
+    if (!newUnit || this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
+      // go forwards ===================================
+      let myreturn = true;
+      let checkUnitSequenceId = this.tcs.currentUnitSequenceId;
+      if (newUnit) {
+        checkUnitSequenceId = newUnit.unitDef.sequenceId - 1;
+      }
+      while (myreturn && (checkUnitSequenceId >= this.tcs.currentUnitSequenceId)) {
+        const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
+        if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
+          if (this.tcs.hasUnitPresentationProgress(checkUnitSequenceId)) {
+            if (this.tcs.getUnitPresentationProgress(checkUnitSequenceId) !== 'complete') {
               myreturn = false;
             }
           } else {
             myreturn = false;
           }
-          if (myreturn) {
-            return of(true);
-          } else {
-            if (this.tcs.testMode.forceNaviRestrictions) {
-              const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-                width: '500px',
-                // height: '300px',
-                data: <ConfirmDialogData>{
-                  title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitlePrev'),
-                  content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextPrev'),
-                  confirmbuttonlabel: 'Trotzdem zurück',
-                  confirmbuttonreturn: true,
-                  showcancel: true
-                }
-              });
-              return dialogCDRef.afterClosed();
-            } else {
-              this.snackBar.open('Im Hot-Modus käme eine Warnung (PresentationNotComplete).',
-                'Zurückblättern', {duration: 3000});
-              return of(true);
-            }
-          }
         }
-      } else {
+        checkUnitSequenceId -= 1;
+      }
+      if (myreturn) {
         return of(true);
       }
+      if (this.tcs.testMode.forceNaviRestrictions) {
+        const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+          width: '500px',
+          // height: '300px',
+          data: <ConfirmDialogData>{
+            title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitleNext'),
+            content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextNext'),
+            confirmbuttonlabel: 'OK',
+            confirmbuttonreturn: false,
+            showcancel: false
+          }
+        });
+        return dialogCDRef.afterClosed().pipe(map(() => false));
+      }
+      this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden (PresentationNotComplete).',
+        'Weiterblättern', { duration: 3000 });
+      return of(true);
     }
+    // go backwards ===================================
+    if (!this.tcs.hasUnitPresentationProgress(this.tcs.currentUnitSequenceId) ||
+      (this.tcs.getUnitPresentationProgress(this.tcs.currentUnitSequenceId) === 'complete')
+    ) {
+      return of(true);
+    }
+    if (this.tcs.testMode.forceNaviRestrictions) {
+      const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+        width: '500px',
+        // height: '300px',
+        data: <ConfirmDialogData>{
+          title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitlePrev'),
+          content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextPrev'),
+          confirmbuttonlabel: 'Trotzdem zurück',
+          confirmbuttonreturn: true,
+          showcancel: true
+        }
+      });
+      return dialogCDRef.afterClosed();
+    }
+    this.snackBar.open('Im Hot-Modus käme eine Warnung (PresentationNotComplete).',
+      'Zurückblättern', { duration: 3000 });
+    return of(true);
   }
 
   canDeactivate(component: UnithostComponent, currentRoute: ActivatedRouteSnapshot,
-                currentState: RouterStateSnapshot, nextState: RouterStateSnapshot)
-      : Observable<boolean> | boolean {
+                currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): Observable<boolean> | boolean {
     let newUnit: UnitControllerData = null;
     if (/t\/\d+\/u\/\d+$/.test(nextState.url)) {
       const targetUnitSequenceId = Number(nextState.url.match(/\d+$/)[0]);
@@ -362,17 +327,16 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     }
     let forceNavigation = false;
     const routerStateObject = this.router.getCurrentNavigation();
-    if (routerStateObject.extras.state && routerStateObject.extras.state['force']) {
-      forceNavigation = routerStateObject.extras.state['force'];
+    if (routerStateObject.extras.state && routerStateObject.extras.state.force) {
+      forceNavigation = routerStateObject.extras.state.force;
     }
     return this.checkAndSolve_maxTime(newUnit, forceNavigation)
       .pipe(
         switchMap(cAsC => {
           if (!cAsC) {
             return of(false);
-          } else {
-            return this.checkAndSolve_PresentationCompleteCode(newUnit, forceNavigation);
           }
+          return this.checkAndSolve_PresentationCompleteCode(newUnit, forceNavigation);
         })
       );
   }
