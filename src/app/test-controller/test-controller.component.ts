@@ -92,6 +92,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       let codeToEnter = '';
       let codePrompt = '';
       let maxTime = -1;
+      let navigationDenial: {
+        presentationComplete?: 'ON' | 'OFF',
+        responseComplete?: 'ON' | 'OFF'
+      } = {};
 
       let restrictionElement: Element = null;
       for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
@@ -109,13 +113,24 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               codeToEnter = restrictionParameter.toUpperCase();
               codePrompt = restrictionElements[childIndex].textContent;
             }
-          } else if (restrictionElements[childIndex].nodeName === 'TimeMax') {
+          }
+          if (restrictionElements[childIndex].nodeName === 'TimeMax') {
             const restrictionParameter = restrictionElements[childIndex].getAttribute('minutes');
             if ((typeof restrictionParameter !== 'undefined') && (restrictionParameter !== null)) {
               maxTime = Number(restrictionParameter);
               if (Number.isNaN(maxTime)) {
                 maxTime = -1;
               }
+            }
+          }
+          if (restrictionElements[childIndex].nodeName === 'DenyNavigation') {
+            if (restrictionElements[childIndex].getAttribute('force_presentation_complete')) {
+              navigationDenial.presentationComplete =
+                restrictionElements[childIndex].getAttribute('force_presentation_complete');
+            }
+            if (restrictionElements[childIndex].getAttribute('force_response_complete')) {
+              navigationDenial.responseComplete =
+                restrictionElements[childIndex].getAttribute('force_response_complete');
             }
           }
         }
@@ -127,9 +142,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       }
       targetTestlet.maxTimeLeft = maxTime;
       if (this.tcs.LastMaxTimerState) {
-        if (this.tcs.LastMaxTimerState.hasOwnProperty(targetTestlet.id)) {
+        if (targetTestlet.id in this.tcs.LastMaxTimerState) {
           targetTestlet.maxTimeLeft = this.tcs.LastMaxTimerState[targetTestlet.id];
         }
+      }
+      if (navigationDenial.responseComplete || navigationDenial.presentationComplete) {
+        targetTestlet.navigationDenial = navigationDenial;
       }
 
       for (let childIndex = 0; childIndex < childElements.length; childIndex++) {

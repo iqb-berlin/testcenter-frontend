@@ -136,6 +136,10 @@ export class Testlet extends TestletContentElement {
   codeToEnter = '';
   codePrompt = '';
   maxTimeLeft = -1;
+  navigationDenial: {
+    presentationComplete?: 'ON' | 'OFF',
+    responseComplete?: 'ON' | 'OFF'
+  };
 
   addTestlet(id: string, title: string): Testlet {
     const newChild = new Testlet(0, id, title);
@@ -148,7 +152,8 @@ export class Testlet extends TestletContentElement {
     id: string,
     title: string,
     alias: string,
-    naviButtonLabel: string): UnitDef {
+    naviButtonLabel: string
+  ): UnitDef {
     const newChild = new UnitDef(sequenceId, id, title, alias, naviButtonLabel);
     this.children.push(newChild);
     return newChild;
