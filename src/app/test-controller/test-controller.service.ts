@@ -16,7 +16,7 @@ import {
 import { BackendService } from './backend.service';
 import { TestMode } from '../config/test-mode';
 import { BookletConfig } from '../config/booklet-config';
-import {VeronaNavigationDeniedReason, VeronaNavigationTarget} from './verona.interfaces';
+import { VeronaNavigationDeniedReason } from './verona.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -136,31 +136,25 @@ export class TestControllerService {
   }
 
   // uppercase and add extension if not part
-  normaliseId(id: string, standardext = ''): string {
-    id = id.trim().toUpperCase();
-    id.replace(/\s/g, '_');
-    if (standardext.length > 0) {
-      standardext = standardext.trim().toUpperCase();
-      standardext.replace(/\s/g, '_');
-      standardext = '.' + standardext.replace('.', '');
-
-      if (id.slice(-(standardext.length)) !== standardext) {
-        id = id + standardext;
-      }
+  static normaliseId(id: string, expectedExtension = ''): string {
+    let normalisedId = id.trim().toUpperCase();
+    const normalisedExtension = expectedExtension.toUpperCase();
+    if (normalisedExtension && (normalisedId.split('.').pop() !== normalisedExtension)) {
+      normalisedId += `.${normalisedExtension}`;
     }
-    return id;
+    return normalisedId;
   }
 
   addPlayer(id: string, player: string): void {
-    this.players[this.normaliseId(id, 'html')] = player;
+    this.players[TestControllerService.normaliseId(id, 'html')] = player;
   }
 
   hasPlayer(id: string): boolean {
-    return this.players.hasOwnProperty(this.normaliseId(id, 'html'));
+    return TestControllerService.normaliseId(id, 'html') in this.players;
   }
 
   getPlayer(id: string): string {
-    return this.players[this.normaliseId(id, 'html')];
+    return this.players[TestControllerService.normaliseId(id, 'html')];
   }
 
   addUnitDefinition(sequenceId: number, uDef: string): void {
@@ -168,7 +162,7 @@ export class TestControllerService {
   }
 
   hasUnitDefinition(sequenceId: number): boolean {
-    return this.unitDefinitions.hasOwnProperty(sequenceId);
+    return sequenceId in this.unitDefinitions;
   }
 
   getUnitDefinition(sequenceId: number): string {
@@ -176,7 +170,7 @@ export class TestControllerService {
   }
 
   hasUnitStateDataParts(sequenceId: number): boolean {
-    return this.unitStateDataParts.hasOwnProperty(sequenceId);
+    return sequenceId in this.unitStateDataParts;
   }
 
   getUnitStateDataParts(sequenceId: number): string {
@@ -192,7 +186,7 @@ export class TestControllerService {
   }
 
   hasUnitPresentationProgress(sequenceId: number): boolean {
-    return this.unitPresentationProgressStates.hasOwnProperty(sequenceId);
+    return sequenceId in this.unitPresentationProgressStates;
   }
 
   getUnitPresentationProgress(sequenceId: number): string {
@@ -200,7 +194,7 @@ export class TestControllerService {
   }
 
   hasUnitStateCurrentPage(sequenceId: number): boolean {
-    return this.unitStateCurrentPages.hasOwnProperty(sequenceId);
+    return sequenceId in this.unitStateCurrentPages;
   }
 
   getUnitStateCurrentPage(sequenceId: number): string {
@@ -211,8 +205,8 @@ export class TestControllerService {
     this.unitStateCurrentPages[sequenceId] = pageId;
   }
 
-  newUnitStateData(unitDbKey: string, unitSequenceId: number, dataPartsAllString: string, unitStateDataType: string): void {
-    this.unitStateDataParts[unitSequenceId] = dataPartsAllString;
+  newUnitStateData(unitDbKey: string, sequenceId: number, dataPartsAllString: string, unitStateDataType: string): void {
+    this.unitStateDataParts[sequenceId] = dataPartsAllString;
     if (this.testMode.saveResponses) {
       this.unitStateDataToSave$.next({ unitDbKey, dataPartsAllString, unitStateDataType });
     }

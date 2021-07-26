@@ -260,7 +260,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           }
           // to avoid multiple calls before returning:
           this.tcs.addPlayer(unit.playerId, '');
-          return this.bs.getResource(this.tcs.testId, '', this.tcs.normaliseId(unit.playerId, 'html'), true)
+          const playerFileId = TestControllerService.normaliseId(unit.playerId, 'html');
+          return this.bs.getResource(this.tcs.testId, '', playerFileId, true)
             .pipe(
               switchMap((data: number|TaggedString) => {
                 if (typeof data === 'number') {
