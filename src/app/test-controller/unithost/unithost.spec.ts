@@ -34,7 +34,9 @@ const MockMainDataService = {
   postMessage$: new Subject()
 };
 const MockActivatedRoute = {
-  paramMap: of({ get: () => 'value' })
+  route: {
+    params: of({ u: 1 })
+  }
 };
 
 describe('UnithostComponent', () => {
@@ -67,7 +69,7 @@ describe('UnithostComponent', () => {
 
   it('[getEnabledNavigationTargets] should return the correct targets', () => {
     // eslint-disable-next-line @typescript-eslint/dot-notation
-    const getEnabledNavigationTargets = UnithostComponent['getEnabledNavigationTargets'];
+    const getEnabledNavigationTargets = component['getEnabledNavigationTargets'];
     expect(getEnabledNavigationTargets(2, 2, 5)).toEqual(['next', 'last', 'end']);
     expect(getEnabledNavigationTargets(3, 2, 5)).toEqual(['next', 'previous', 'first', 'last', 'end']);
     expect(getEnabledNavigationTargets(5, 2, 5)).toEqual(['previous', 'first', 'end']);
