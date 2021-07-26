@@ -233,7 +233,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitTitle: this.unitTitle,
       unitId: this.myUnitDbKey
     };
-    if (this.pendingUnitData.currentPage) {
+    if (this.pendingUnitData.currentPage && (this.tcs.bookletConfig.restore_current_page_on_return === 'ON')) {
       playerConfig.startPage = this.pendingUnitData.currentPage;
     }
     return playerConfig;
