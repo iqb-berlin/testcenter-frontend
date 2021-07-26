@@ -108,3 +108,14 @@ Festlegung, ob oberhalb des Unitbereiches eine Zeile mit dem Unit-Titel gezeigt 
 Festlegung, ob im obersten Seitenbereich bei einer festgelegten Maximalzeit für einen Testbereich die verbleibende Zeit angezeigt wird.
   * "OFF" (default): Die verbleibende Zeit wird nicht angezeigt.
   * "ON": Die verbleibende Zeit wird angezeigt.
+
+#### `show_end_button_in_player`
+Manche Player können einen Test-Beenden anzeigen, wenn es es ihnen vom Testcenter erlaubt wird. Diese Einstellung legt fest, wann das der Fall ist.
+  * "OFF" (default): Den Test-Beenden-Button im Player nie anzeigen.
+  * "ALWAYS": Den Test-Beenden-Button im Player immer anzeigen.
+  * "ONLY_LAST_UNIT": Den Test-Beenden-Button im Player nur in der letzten Unit anzeigen.
+
+#### `restore_current_page_on_return`
+Legt fest, ob, wenn (z. B.) nach einem Neuladen eine Unit wieder geöffnet wird, zur letzten geöffneten Seite gesprungen werden soll.
+  * "OFF" (default): Beim Zurückkehren zur Unit auf Seite 1 beginnen.
+  * "ON": Beim Zurückkehren zur Unit auf der letzten gesehenen Seite beginnen.

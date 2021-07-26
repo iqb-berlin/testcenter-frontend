@@ -106,5 +106,22 @@
       "ON": "Die verbleibende Zeit wird angezeigt."
     },
     "defaultvalue": "OFF"
+  },
+  "show_end_button_in_player": {
+    "label": "Manche Player können einen Test-Beenden anzeigen, wenn es es ihnen vom Testcenter erlaubt wird. Diese Einstellung legt fest, wann das der Fall ist.",
+    "options": {
+      "OFF": "Den Test-Beenden-Button im Player nie anzeigen.",
+      "ALWAYS": "Den Test-Beenden-Button im Player immer anzeigen.",
+      "ONLY_LAST_UNIT": "Den Test-Beenden-Button im Player nur in der letzten Unit anzeigen."
+    },
+    "defaultvalue": "OFF"
+  },
+  "restore_current_page_on_return": {
+    "label": "Legt fest, ob, wenn (z. B.) nach einem Neuladen eine Unit wieder geöffnet wird, zur letzten geöffneten Seite gesprungen werden soll.",
+    "options": {
+      "OFF": "Beim Zurückkehren zur Unit auf Seite 1 beginnen.",
+      "ON": "Beim Zurückkehren zur Unit auf der letzten gesehenen Seite beginnen."
+    },
+    "defaultvalue": "OFF"
   }
 }

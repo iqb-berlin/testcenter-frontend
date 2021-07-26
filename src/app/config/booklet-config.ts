@@ -14,6 +14,8 @@ export class BookletConfig {
 	unit_screenheader: "OFF" | "WITH_UNIT_TITLE" | "WITH_BOOKLET_TITLE" | "EMPTY" = "EMPTY";
 	unit_title: "OFF" | "ON" = "ON";
 	unit_show_time_left: "OFF" | "ON" = "OFF";
+	show_end_button_in_player: "OFF" | "ALWAYS" | "ONLY_LAST_UNIT" = "OFF";
+	restore_current_page_on_return: "OFF" | "ON" = "OFF";
 
 	public setFromKeyValuePairs(config) {
 		if (config) {
@@ -29,6 +31,8 @@ export class BookletConfig {
 			if (config['unit_screenheader']) { this.unit_screenheader = config['unit_screenheader']}
 			if (config['unit_title']) { this.unit_title = config['unit_title']}
 			if (config['unit_show_time_left']) { this.unit_show_time_left = config['unit_show_time_left']}
+			if (config['show_end_button_in_player']) { this.show_end_button_in_player = config['show_end_button_in_player']}
+			if (config['restore_current_page_on_return']) { this.restore_current_page_on_return = config['restore_current_page_on_return']}
 		}
 	}
 
@@ -74,6 +78,12 @@ export class BookletConfig {
 						break;
 					case 'unit_show_time_left':
 						this.unit_show_time_left = configValue;
+						break;
+					case 'show_end_button_in_player':
+						this.show_end_button_in_player = configValue;
+						break;
+					case 'restore_current_page_on_return':
+						this.restore_current_page_on_return = configValue;
 						break;
 				}
 			}
