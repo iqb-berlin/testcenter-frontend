@@ -23,7 +23,6 @@ import {
   TestData,
   TestLogEntryKey,
   TestStateKey,
-  UnitData,
   UnitNavigationTarget, UnitStateKey,
   WindowFocusState
 } from './test-controller.interfaces';
@@ -295,7 +294,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:unload', ['$event'])
-  unloadHandler() {
+  unloadHandler(): void {
     if (this.cmd.connectionStatus$.getValue() !== 'ws-online') {
       this.bs.notifyDyingTest(this.tcs.testId);
     }
@@ -315,7 +314,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.testStatus$.next(TestControllerState.ERROR);
       });
       this.testStatusSubscription = this.tcs.testStatus$.subscribe(testControllerState => {
-        if (this.tcs.testMode.saveResponses && [TestControllerState.FINISHED, TestControllerState.INIT, TestControllerState.LOADING].indexOf(testControllerState) === -1) {
+        if (this.tcs.testMode.saveResponses &&
+          [TestControllerState.FINISHED, TestControllerState.INIT, TestControllerState.LOADING]
+            .indexOf(testControllerState) === -1
+        ) {
           this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
             key: TestStateKey.CONTROLLER, timeStamp: Date.now(), content: testControllerState
           }]);
@@ -330,6 +332,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             // TODO pause time
             this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE, true);
             break;
+          default:
         }
       });
       this.appWindowHasFocusSubscription = this.mds.appWindowHasFocus$.subscribe(hasFocus => {
@@ -407,6 +410,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                   this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver1Minute'), '', { duration: 3000 });
                 }
                 break;
+              default:
             }
           });
 
@@ -445,6 +449,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                     case (TestStateKey.TESTLETS_CLEARED_CODE):
                       this.tcs.clearCodeTestlets = JSON.parse(testData.laststate[stateKey]);
                       break;
+                    default:
                   }
                 });
               }
@@ -563,8 +568,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                       this.addAppFocusSubscription();
                     }
                   }
-                } // complete
-                );
+                }); // complete
               }
             }
           }); // getTestData
@@ -607,7 +611,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     });
   }
 
-  showReviewDialog() {
+  showReviewDialog(): void {
     if (this.tcs.rootTestlet === null) {
       this.snackBar.open('Kein Testheft verfügbar.', '', { duration: 3000 });
     } else {
@@ -675,7 +679,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleCommand(commandName: string, params: string[]) {
+  handleCommand(commandName: string, params: string[]): void {
     switch (commandName.toLowerCase()) {
       case 'debug':
         this.debugPane = params.length === 0 || params[0].toLowerCase() !== 'off';
@@ -689,7 +693,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.resumeTargetUnitId = this.tcs.currentUnitSequenceId;
         break;
       case 'resume':
-        const navTarget = (this.resumeTargetUnitId > 0) ? this.resumeTargetUnitId.toString() : UnitNavigationTarget.FIRST;
+        // eslint-disable-next-line no-case-declarations
+        const navTarget =
+          (this.resumeTargetUnitId > 0) ? this.resumeTargetUnitId.toString() : UnitNavigationTarget.FIRST;
         this.tcs.testStatus$.next(TestControllerState.RUNNING);
         this.tcs.setUnitNavigationRequest(navTarget, true);
         break;
@@ -698,6 +704,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         break;
       case 'goto':
         this.tcs.testStatus$.next(TestControllerState.RUNNING);
+        // eslint-disable-next-line no-case-declarations
         let gotoTarget: string;
         if ((params.length === 2) && (params[0] === 'id')) {
           gotoTarget = (this.allUnitIds.indexOf(params[1]) + 1).toString(10);
@@ -710,10 +717,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.tcs.setUnitNavigationRequest(gotoTarget, true);
         }
         break;
+      default:
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.routingSubscription !== null) {
       this.routingSubscription.unsubscribe();
     }
