@@ -137,8 +137,8 @@ export class Testlet extends TestletContentElement {
   codePrompt = '';
   maxTimeLeft = -1;
   navigationDenial: {
-    presentationComplete?: 'ON' | 'OFF',
-    responseComplete?: 'ON' | 'OFF'
+    presentationComplete: boolean,
+    responseComplete: boolean
   };
 
   addTestlet(id: string, title: string): Testlet {

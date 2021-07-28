@@ -80,7 +80,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  private static getChildElements(element) {
+  private static getChildElements(element: Element): Element[] {
     return Array.prototype.slice.call(element.childNodes)
       .filter(e => e.nodeType === 1);
   }
@@ -92,10 +92,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       let codeToEnter = '';
       let codePrompt = '';
       let maxTime = -1;
-      let navigationDenial: {
-        presentationComplete?: 'ON' | 'OFF',
-        responseComplete?: 'ON' | 'OFF'
-      } = {};
+      const navigationDenial = {
+        presentationComplete: false,
+        responseComplete: false
+      };
 
       let restrictionElement: Element = null;
       for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
@@ -124,14 +124,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             }
           }
           if (restrictionElements[childIndex].nodeName === 'DenyNavigation') {
-            if (restrictionElements[childIndex].getAttribute('force_presentation_complete')) {
-              navigationDenial.presentationComplete =
-                restrictionElements[childIndex].getAttribute('force_presentation_complete');
-            }
-            if (restrictionElements[childIndex].getAttribute('force_response_complete')) {
-              navigationDenial.responseComplete =
-                restrictionElements[childIndex].getAttribute('force_response_complete');
-            }
+            const OffOnMap = { OFF: false, ON: true };
+            navigationDenial.presentationComplete =
+              OffOnMap[restrictionElements[childIndex].getAttribute('force_presentation_complete')] ??
+              OffOnMap[this.tcs.bookletConfig.force_presentation_complete];
+            navigationDenial.responseComplete =
+              OffOnMap[restrictionElements[childIndex].getAttribute('force_response_complete')] ??
+              OffOnMap[this.tcs.bookletConfig.force_responses_complete];
           }
         }
       }
@@ -146,9 +145,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           targetTestlet.maxTimeLeft = this.tcs.LastMaxTimerState[targetTestlet.id];
         }
       }
-      if (navigationDenial.responseComplete || navigationDenial.presentationComplete) {
-        targetTestlet.navigationDenial = navigationDenial;
-      }
+      targetTestlet.navigationDenial = navigationDenial;
 
       for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
         if (childElements[childIndex].nodeName === 'Unit') {
