@@ -55,6 +55,22 @@
     "label": "Nachrichttext, dass nicht zurückgeblättert werden kann, solange die Präsentation des Aufgabeninhaltes nicht abgeschlossen ist",
     "defaultvalue": "Eine Audio-Datei ist noch nicht bis zu Ende abgespielt oder Seiten wurden noch nicht vollständig gezeigt. Wenn du jetzt zurückblätterst, kannst Du später Audio-Dateien nicht nocheinmal starten."
   },
+  "booklet_msgResponseNotCompleteTitleNext": {
+    "label": "Titel der Nachricht (Dialogbox), dass nicht weitergeblättert werden kann, solange die Bearbeitung der Aufgabe nicht abgeschlossen ist",
+    "defaultvalue": "Weiterblättern nicht möglich!"
+  },
+  "booklet_msgResponseNotCompleteTextNext": {
+    "label": "Nachrichttext, dass nicht weitergeblättert werden kann, solange die Bearbeitung der Aufgaben nicht abgeschlossen ist",
+    "defaultvalue": "Du kannst erst weiterblättern, wenn alle Felder ausgefüllt sind."
+  },
+  "booklet_msgResponseNotCompleteTitlePrev": {
+    "label": "Titel der Nachricht (Dialogbox), dass nicht zurückgeblättert werden kann, solange die Präsentation des Aufgabeninhaltes nicht abgeschlossen ist",
+    "defaultvalue": "Zurückblättern - Warnung"
+  },
+  "booklet_msgResponseNotCompleteTextPrev": {
+    "label": "Nachrichttext, dass nicht zurückgeblättert werden kann, solange die Präsentation des Aufgabeninhaltes nicht abgeschlossen ist",
+    "defaultvalue": "Eine Audio-Datei ist noch nicht bis zu Ende abgespielt oder Seiten wurden noch nicht vollständig gezeigt. Wenn du jetzt zurückblätterst, kannst Du später Audio-Dateien nicht nocheinmal starten."
+  },
   "booklet_codeToEnterTitle": {
     "label": "Titel der Dialogbox für die Eingabe eines Freigabewortes",
     "defaultvalue": "Freigabewort"

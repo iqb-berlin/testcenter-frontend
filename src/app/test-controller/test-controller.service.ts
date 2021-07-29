@@ -193,6 +193,14 @@ export class TestControllerService {
     return this.unitPresentationProgressStates[sequenceId];
   }
 
+  hasUnitUnitResponseProgress(sequenceId: number): boolean {
+    return sequenceId in this.unitResponseCompleteStates;
+  }
+
+  getUnitUnitResponseProgress(sequenceId: number): string {
+    return this.unitResponseCompleteStates[sequenceId];
+  }
+
   hasUnitStateCurrentPage(sequenceId: number): boolean {
     return sequenceId in this.unitStateCurrentPages;
   }
@@ -315,7 +323,7 @@ export class TestControllerService {
     }
   }
 
-  addNavigationDeniedEvent(sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[]): void {
+  notifyNavigationDenied(sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[]): void {
     this._navigationDenial.next({ sourceUnitSequenceId, reason });
   }
 

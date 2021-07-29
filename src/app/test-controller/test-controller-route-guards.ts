@@ -12,15 +12,11 @@ import { TestControllerService } from './test-controller.service';
 @Injectable()
 export class TestControllerDeactivateGuard implements CanDeactivate<TestControllerComponent> {
   constructor(
-    private tcs: TestControllerService,
+    private tcs: TestControllerService
   ) {
   }
 
-  canDeactivate(
-    component: TestControllerComponent,
-    currentRoute: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
+  canDeactivate(): boolean {
     if (this.tcs.testMode.saveResponses) {
       const testStatus: TestControllerState = this.tcs.testStatus$.getValue();
       if ((testStatus !== TestControllerState.ERROR) && (testStatus !== TestControllerState.FINISHED)) {
@@ -30,14 +26,10 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
           this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
         }
         return false;
-      } else {
-        localStorage.removeItem(TestControllerComponent.localStorageTestKey);
-        return true;
       }
-    } else {
-      localStorage.removeItem(TestControllerComponent.localStorageTestKey);
-      return true;
     }
+    localStorage.removeItem(TestControllerComponent.localStorageTestKey);
+    return true;
   }
 }
 
@@ -48,11 +40,11 @@ export class TestControllerErrorPausedActivateGuard implements CanActivate {
   ) {
   }
 
-  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
+  canActivate(): boolean {
     const testStatus: TestControllerState = this.tcs.testStatus$.getValue();
-    return (testStatus !== TestControllerState.ERROR)
-      && (testStatus !== TestControllerState.FINISHED)
-      && (testStatus !== TestControllerState.PAUSED);
+    return (testStatus !== TestControllerState.ERROR) &&
+      (testStatus !== TestControllerState.FINISHED) &&
+      (testStatus !== TestControllerState.PAUSED);
   }
 }
 

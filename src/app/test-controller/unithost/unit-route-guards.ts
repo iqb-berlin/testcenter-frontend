@@ -17,6 +17,7 @@ import { UnitControllerData } from '../test-controller.classes';
 import { UnithostComponent } from './unithost.component';
 import { TestControllerService } from '../test-controller.service';
 import { TestControllerComponent } from '../test-controller.component';
+import { VeronaNavigationDeniedReason } from "../verona.interfaces";
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
@@ -57,7 +58,7 @@ export class UnitActivateGuard implements CanActivate {
     return of(true);
   }
 
-  checkAndSolve_DefLoaded(newUnit: UnitControllerData): Observable<boolean> {
+  private checkAndSolve_DefLoaded(newUnit: UnitControllerData): Observable<boolean> {
     if (this.tcs.loadComplete) {
       return of(true);
     }
@@ -118,7 +119,7 @@ export class UnitActivateGuard implements CanActivate {
   }
 
   // TODO is it correct, that always returns always of(true)
-  checkAndSolve_maxTime(newUnit: UnitControllerData): Observable<boolean> {
+  private checkAndSolve_maxTime(newUnit: UnitControllerData): Observable<boolean> {
     if (newUnit.maxTimerRequiringTestlet === null) {
       return of(true);
     }
@@ -245,7 +246,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     return of(true);
   }
 
-  private checkAndSolve_PresentationCompleteCode(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
+  private checkAndSolve_Completeness(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
     if (force) {
       return of(true);
     }
@@ -253,60 +254,103 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       return of(true);
     }
     if (!newUnit || this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
-      // go forwards ===================================
-      let myreturn = true;
-      let checkUnitSequenceId = this.tcs.currentUnitSequenceId;
-      if (newUnit) {
-        checkUnitSequenceId = newUnit.unitDef.sequenceId - 1;
-      }
-      while (myreturn && (checkUnitSequenceId >= this.tcs.currentUnitSequenceId)) {
-        const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
-        if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
-          if (this.tcs.hasUnitPresentationProgress(checkUnitSequenceId)) {
-            if (this.tcs.getUnitPresentationProgress(checkUnitSequenceId) !== 'complete') {
-              this.tcs.addNavigationDeniedEvent(this.tcs.currentUnitSequenceId, ['presentationIncomplete']);
-              myreturn = false;
-            }
-          } else {
-            myreturn = false;
-          }
+      return this.canGoForwards(newUnit);
+    }
+    return this.canGoBackwards();
+  }
+
+  private canGoForwards(newUnit: UnitControllerData): Observable<boolean> {
+    let checkUnitSequenceId = this.tcs.currentUnitSequenceId;
+    if (newUnit) {
+      checkUnitSequenceId = newUnit.unitDef.sequenceId - 1;
+    }
+    while (checkUnitSequenceId >= this.tcs.currentUnitSequenceId) {
+      const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
+      if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
+        const reasonsForNavigationDenial = this.checkCompleteness(checkUnitSequenceId);
+        if (reasonsForNavigationDenial.length) {
+          return this.navigationForwardsDenied(reasonsForNavigationDenial);
         }
-        checkUnitSequenceId -= 1;
       }
-      if (myreturn) {
-        return of(true);
-      }
-      if (this.tcs.testMode.forceNaviRestrictions) {
-        const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-          width: '500px',
-          // height: '300px',
-          data: <ConfirmDialogData>{
-            title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitleNext'),
-            content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextNext'),
-            confirmbuttonlabel: 'OK',
-            confirmbuttonreturn: false,
-            showcancel: false
-          }
-        });
-        return dialogCDRef.afterClosed().pipe(map(() => false));
-      }
-      this.snackBar.open('Im Hot-Modus dürfte hier nicht weitergeblättert werden (PresentationNotComplete).',
-        'Weiterblättern', { duration: 3000 });
-      return of(true);
+      checkUnitSequenceId -= 1;
     }
-    // go backwards ===================================
-    if (!this.tcs.hasUnitPresentationProgress(this.tcs.currentUnitSequenceId) ||
-      (this.tcs.getUnitPresentationProgress(this.tcs.currentUnitSequenceId) === 'complete')
+    return of(true);
+  }
+
+  private checkCompleteness(checkUnitSequenceId: number): VeronaNavigationDeniedReason[] {
+    const reason: VeronaNavigationDeniedReason[] = [];
+    if (this.tcs.hasUnitPresentationProgress(checkUnitSequenceId) &&
+      (this.tcs.getUnitPresentationProgress(checkUnitSequenceId) !== 'complete')
     ) {
-      return of(true);
+      reason.push('presentationIncomplete');
     }
+    if (this.tcs.hasUnitUnitResponseProgress(checkUnitSequenceId) &&
+      (['complete', 'complete-and-valid'].indexOf(this.tcs.getUnitUnitResponseProgress(checkUnitSequenceId)) === -1)
+    ) {
+      reason.push('responsesIncomplete');
+    }
+    return reason;
+  }
+
+  private getCustomTexts(direction: 'Next'|'Prev', reasons: VeronaNavigationDeniedReason[]) {
+    const customTexts = {
+      presentationIncomplete: {
+        title: this.cts.getCustomText(`booklet_msgPresentationNotCompleteTitle${direction}`),
+        content: this.cts.getCustomText(`booklet_msgPresentationNotCompleteText${direction}`)
+      },
+      responsesIncomplete: {
+        title: this.cts.getCustomText(`booklet_msgResponseNotCompleteTitle${direction}`),
+        content: this.cts.getCustomText(`booklet_msgResponseNotCompleteText${direction}`)
+      }
+    };
+    return {
+      title: reasons.map(r => customTexts[r].title)[0],
+      content: reasons.map(r => customTexts[r].content).join(' ')
+    };
+  }
+
+  private navigationForwardsDenied(reasonsForNavigationDenial: VeronaNavigationDeniedReason[]): Observable<boolean> {
+    console.log(reasonsForNavigationDenial);
+    this.tcs.notifyNavigationDenied(this.tcs.currentUnitSequenceId, reasonsForNavigationDenial);
     if (this.tcs.testMode.forceNaviRestrictions) {
+      const customTexts = this.getCustomTexts('Next', reasonsForNavigationDenial);
       const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
         width: '500px',
-        // height: '300px',
         data: <ConfirmDialogData>{
-          title: this.cts.getCustomText('booklet_msgPresentationNotCompleteTitlePrev'),
-          content: this.cts.getCustomText('booklet_msgPresentationNotCompleteTextPrev'),
+          title: customTexts.title,
+          content: customTexts.content,
+          confirmbuttonlabel: 'OK',
+          confirmbuttonreturn: false,
+          showcancel: false
+        }
+      });
+      return dialogCDRef.afterClosed().pipe(map(() => false));
+    }
+    this.snackBar.open(
+      `Im Hot-Modus dürfte hier nicht weitergeblättert werden (${reasonsForNavigationDenial.join(', ')}).`,
+      'Weiterblättern',
+      { duration: 3000 }
+    );
+    return of(true);
+  }
+
+  private canGoBackwards(): Observable<boolean> {
+    const reasonsForNavigationDenial = this.checkCompleteness(this.tcs.currentUnitSequenceId);
+    if (reasonsForNavigationDenial.length) {
+      return this.navigationBackwardsDenied(reasonsForNavigationDenial);
+    }
+    return of(true);
+  }
+
+  private navigationBackwardsDenied(reasonsForNavigationDenial: VeronaNavigationDeniedReason[]): Observable<boolean> {
+    this.tcs.notifyNavigationDenied(this.tcs.currentUnitSequenceId, reasonsForNavigationDenial);
+    if (this.tcs.testMode.forceNaviRestrictions) {
+      const customTexts = this.getCustomTexts('Prev', reasonsForNavigationDenial);
+      const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+        width: '500px',
+        data: <ConfirmDialogData>{
+          title: customTexts.title,
+          content: customTexts.content,
           confirmbuttonlabel: 'Trotzdem zurück',
           confirmbuttonreturn: true,
           showcancel: true
@@ -314,8 +358,11 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       });
       return dialogCDRef.afterClosed();
     }
-    this.snackBar.open('Im Hot-Modus käme eine Warnung (PresentationNotComplete).',
-      'Zurückblättern', { duration: 3000 });
+    this.snackBar.open(
+      `Im Hot-Modus dürfte hier nicht zurück geblättert werden (${reasonsForNavigationDenial.join(', ')}).`,
+      'Zurückblättern',
+      { duration: 3000 }
+    );
     return of(true);
   }
 
@@ -338,13 +385,9 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
           if (!cAsC) {
             return of(false);
           }
-          return this.checkAndSolve_PresentationCompleteCode(newUnit, forceNavigation);
+          return this.checkAndSolve_Completeness(newUnit, forceNavigation);
         })
       );
-  }
-
-  private navigationDenied(presentationProgress: string) {
-
   }
 }
 
