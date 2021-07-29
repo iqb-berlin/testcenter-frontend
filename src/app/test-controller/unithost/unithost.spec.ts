@@ -1,8 +1,8 @@
 import {
   ComponentFixture, TestBed, waitForAsync
 } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
-import { of, Subject } from 'rxjs';
+import { ActivatedRoute, Params } from '@angular/router';
+import { Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { UnithostComponent } from './unithost.component';
 import { ReviewDialogComponent } from '../review-dialog/review-dialog.component';
@@ -11,6 +11,7 @@ import { BackendService } from '../backend.service';
 import { MainDataService } from '../../maindata.service';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../../config/booklet-config';
+import { VeronaNavigationDeniedReason } from '../verona.interfaces';
 
 const bookletConfig = new BookletConfig();
 bookletConfig.setFromKeyValuePairs({
@@ -28,15 +29,16 @@ bookletConfig.setFromKeyValuePairs({
   unit_show_time_left: 'OFF'
 });
 
-const MockTestControllerService = { bookletConfig };
+const MockTestControllerService = {
+  bookletConfig,
+  navigationDenial: new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>()
+};
 const MockBackendService = { };
 const MockMainDataService = {
   postMessage$: new Subject()
 };
 const MockActivatedRoute = {
-  route: {
-    params: of({ u: 1 })
-  }
+  params: new Subject<Params>()
 };
 
 describe('UnithostComponent', () => {
@@ -45,8 +47,13 @@ describe('UnithostComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ReviewDialogComponent],
-      imports: [CommonModule],
+      declarations: [
+        UnithostComponent,
+        ReviewDialogComponent
+      ],
+      imports: [
+        CommonModule
+      ],
       providers: [
         { provide: TestControllerService, useValue: MockTestControllerService },
         { provide: BackendService, useValue: MockBackendService },
@@ -67,12 +74,14 @@ describe('UnithostComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('[getEnabledNavigationTargets] should return the correct targets', () => {
-    // eslint-disable-next-line @typescript-eslint/dot-notation
-    const getEnabledNavigationTargets = component['getEnabledNavigationTargets'];
-    expect(getEnabledNavigationTargets(2, 2, 5)).toEqual(['next', 'last', 'end']);
-    expect(getEnabledNavigationTargets(3, 2, 5)).toEqual(['next', 'previous', 'first', 'last', 'end']);
-    expect(getEnabledNavigationTargets(5, 2, 5)).toEqual(['previous', 'first', 'end']);
-    expect(getEnabledNavigationTargets(1, 1, 1)).toEqual(['end']);
+  describe('getEnabledNavigationTargets', () => {
+    it('should return the correct targets', () => {
+      // eslint-disable-next-line @typescript-eslint/dot-notation
+      const getEnabledNavigationTargets = UnithostComponent['getEnabledNavigationTargets'];
+      expect(getEnabledNavigationTargets(2, 2, 5)).toEqual(['next', 'last', 'end']);
+      expect(getEnabledNavigationTargets(3, 2, 5)).toEqual(['next', 'previous', 'first', 'last', 'end']);
+      expect(getEnabledNavigationTargets(5, 2, 5)).toEqual(['previous', 'first', 'end']);
+      expect(getEnabledNavigationTargets(1, 1, 1)).toEqual(['end']);
+    });
   });
 });
