@@ -267,7 +267,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     while (checkUnitSequenceId >= this.tcs.currentUnitSequenceId) {
       const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
       if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
-        const reasonsForNavigationDenial = this.checkCompleteness(checkUnitSequenceId);
+        const reasonsForNavigationDenial = this.checkCompleteness(checkUnitSequenceId, tmpUnit);
         if (reasonsForNavigationDenial.length) {
           return this.navigationForwardsDenied(reasonsForNavigationDenial);
         }
@@ -277,15 +277,24 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     return of(true);
   }
 
-  private checkCompleteness(checkUnitSequenceId: number): VeronaNavigationDeniedReason[] {
+  private checkCompleteness(checkUnitSequenceId: number, unit: UnitControllerData): VeronaNavigationDeniedReason[] {
     const reason: VeronaNavigationDeniedReason[] = [];
-    console.log("yehey", this.tcs.getUnitPresentationProgress(checkUnitSequenceId),this.tcs.getUnitResponseProgress(checkUnitSequenceId));
-    if (this.tcs.hasUnitPresentationProgress(checkUnitSequenceId) &&
+    console.log(
+      'yehey',
+      this.tcs.getUnitPresentationProgress(checkUnitSequenceId),
+      this.tcs.getUnitResponseProgress(checkUnitSequenceId),
+      unit.unitDef.navigationLeaveRestrictions
+    );
+    if (
+      (unit.unitDef.navigationLeaveRestrictions.presentationComplete === 'ON') &&
+      this.tcs.hasUnitPresentationProgress(checkUnitSequenceId) &&
       (this.tcs.getUnitPresentationProgress(checkUnitSequenceId) !== 'complete')
     ) {
       reason.push('presentationIncomplete');
     }
-    if (this.tcs.hasUnitResponseProgress(checkUnitSequenceId) &&
+    if (
+      (unit.unitDef.navigationLeaveRestrictions.responseComplete === 'ON') &&
+      this.tcs.hasUnitResponseProgress(checkUnitSequenceId) &&
       (['complete', 'complete-and-valid'].indexOf(this.tcs.getUnitResponseProgress(checkUnitSequenceId)) === -1)
     ) {
       reason.push('responsesIncomplete');
@@ -336,7 +345,8 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   }
 
   private canGoBackwards(): Observable<boolean> {
-    const reasonsForNavigationDenial = this.checkCompleteness(this.tcs.currentUnitSequenceId);
+    const currentUnit = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId);
+    const reasonsForNavigationDenial = this.checkCompleteness(this.tcs.currentUnitSequenceId, currentUnit);
     if (reasonsForNavigationDenial.length) {
       return this.navigationBackwardsDenied(reasonsForNavigationDenial);
     }
