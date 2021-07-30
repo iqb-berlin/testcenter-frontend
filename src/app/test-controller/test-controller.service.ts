@@ -193,11 +193,11 @@ export class TestControllerService {
     return this.unitPresentationProgressStates[sequenceId];
   }
 
-  hasUnitUnitResponseProgress(sequenceId: number): boolean {
+  hasUnitResponseProgress(sequenceId: number): boolean {
     return sequenceId in this.unitResponseCompleteStates;
   }
 
-  getUnitUnitResponseProgress(sequenceId: number): string {
+  getUnitResponseProgress(sequenceId: number): string {
     return this.unitResponseCompleteStates[sequenceId];
   }
 

@@ -75,9 +75,7 @@
     "label": "Verhalten, wenn noch nicht alle Antworten der Aufgabe vollständig gegeben wurden",
     "options": {
       "OFF": "Ignorieren - Weiterblättern möglich",
-      "SOME": "Weiterblättern erst möglich, wenn einige Antworten gegeben wurden",
-      "COMPLETE": "Weiterblättern erst möglich, wenn alle Antworten gegeben wurden",
-      "COMPLETE_AND_VALID": "Weiterblättern erst möglich, wenn alle Antworten gegeben wurden und als gültig eingeschätzt wurden"
+      "ON": "Weiterblättern erst möglich, wenn alle Antworten gegeben wurden (die der Player für nötig erachtet!)"
     },
     "defaultvalue": "OFF"
   },

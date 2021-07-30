@@ -1,6 +1,6 @@
-/* eslint-disable max-classes-per-file */
+/* eslint-disable max-classes-per-file,no-restricted-syntax */ // TODO Get rif of all the for-in-loops
 
-import { MaxTimerDataType } from './test-controller.interfaces';
+import { MaxTimerDataType, OnOff } from './test-controller.interfaces';
 
 export class TestletContentElement {
   readonly sequenceId: number;
@@ -62,13 +62,14 @@ export class TestletContentElement {
   }
 
   getMaxSequenceId(tmpId = 0): number {
-    if (this.sequenceId >= tmpId) {
-      tmpId = this.sequenceId + 1;
+    let maxSequenceId = tmpId;
+    if (this.sequenceId >= maxSequenceId) {
+      maxSequenceId = this.sequenceId + 1;
     }
     this.children.forEach(tce => {
-      tmpId = tce.getMaxSequenceId(tmpId);
+      maxSequenceId = tce.getMaxSequenceId(maxSequenceId);
     });
-    return tmpId;
+    return maxSequenceId;
   }
 }
 
@@ -80,19 +81,22 @@ export class UnitDef extends TestletContentElement {
   statusPresentation: 'no' | 'partly' | 'full';
   locked = false;
   ignoreCompleted = false;
+  navigationLeaveRestrictions: NavigationLeaveRestrictions;
 
   constructor(
     sequenceId: number,
     id: string,
     title: string,
     alias: string,
-    naviButtonLabel: string
+    naviButtonLabel: string,
+    navigationLeaveRestrictions: NavigationLeaveRestrictions
   ) {
     super(sequenceId, id, title);
     this.alias = alias;
     this.naviButtonLabel = naviButtonLabel;
     this.statusResponses = 'no';
     this.statusPresentation = 'no';
+    this.navigationLeaveRestrictions = navigationLeaveRestrictions;
   }
 
   setStatusResponses(status: string): void {
@@ -132,14 +136,20 @@ export class UnitControllerData {
   }
 }
 
+export class NavigationLeaveRestrictions {
+  constructor(presentationComplete: OnOff, responseComplete: OnOff) {
+    this.presentationComplete = presentationComplete;
+    this.responseComplete = responseComplete;
+  }
+
+  presentationComplete: OnOff = 'OFF';
+  responseComplete: OnOff = 'OFF';
+}
+
 export class Testlet extends TestletContentElement {
   codeToEnter = '';
   codePrompt = '';
   maxTimeLeft = -1;
-  navigationDenial: {
-    presentationComplete: boolean,
-    responseComplete: boolean
-  };
 
   addTestlet(id: string, title: string): Testlet {
     const newChild = new Testlet(0, id, title);
@@ -152,9 +162,10 @@ export class Testlet extends TestletContentElement {
     id: string,
     title: string,
     alias: string,
-    naviButtonLabel: string
+    naviButtonLabel: string,
+    navigationLeaveRestrictions: NavigationLeaveRestrictions
   ): UnitDef {
-    const newChild = new UnitDef(sequenceId, id, title, alias, naviButtonLabel);
+    const newChild = new UnitDef(sequenceId, id, title, alias, naviButtonLabel, navigationLeaveRestrictions);
     this.children.push(newChild);
     return newChild;
   }
@@ -320,6 +331,8 @@ export class Testlet extends TestletContentElement {
   }
 
   lockUnits_before(testletId = ''): void {
+    // TODO refactor this to satisfy linter
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     let myTestlet: Testlet = this;
     if (testletId) {
       myTestlet = this.getTestlet(testletId);
@@ -397,29 +410,27 @@ export class Testlet extends TestletContentElement {
 }
 
 export class EnvironmentData {
-  public appVersion: string;
-  public browserVersion = '';
-  public browserName = '';
-  public get browserTxt(): string {
+  appVersion: string;
+  browserVersion = '';
+  browserName = '';
+  get browserTxt(): string {
     return `${this.browserName} Version ${this.browserVersion}`;
   }
 
-  public osName = '';
-  public screenSizeWidth = 0;
-  public screenSizeHeight = 0;
-  public loadTime: number = 0;
-  public get screenSizeTxt(): string {
+  osName = '';
+  screenSizeWidth = 0;
+  screenSizeHeight = 0;
+  loadTime: number = 0;
+  get screenSizeTxt(): string {
     return `Bildschirmgröße ist ${this.screenSizeWidth} x ${this.screenSizeWidth}`;
   }
 
-  constructor (appVersion: string) {
+  constructor(appVersion: string) {
     this.appVersion = appVersion;
     const deviceInfo = window.navigator.userAgent;
 
-    // browser
-
     // eslint-disable-next-line max-len
-    const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/;
+    const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d.apre]+)/;
     // credit due to: https://gist.github.com/ticky/3909462#gistcomment-2245669
     const deviceInfoSplits = regex.exec(deviceInfo);
     const helperRegex = /[^.]*/;
@@ -467,10 +478,14 @@ export class MaxTimerData {
 
   get timeLeftString(): string {
     const afterDecimal = Math.round(this.timeLeftSeconds % 60);
-    return (Math.round(this.timeLeftSeconds - afterDecimal) / 60).toString() + ':' + (afterDecimal < 10 ? '0' : '') + afterDecimal.toString();
+    const a = (Math.round(this.timeLeftSeconds - afterDecimal) / 60).toString();
+    const b = afterDecimal < 10 ? '0' : '';
+    const c = afterDecimal.toString();
+    return `${a}:${b}${c}`;
   }
+
   get timeLeftMinString(): string {
-    return Math.round(this.timeLeftSeconds / 60).toString() + ' min';
+    return `${Math.round(this.timeLeftSeconds / 60).toString()} min`;
   }
 
   constructor(timeMinutes: number, tId: string, type: MaxTimerDataType) {

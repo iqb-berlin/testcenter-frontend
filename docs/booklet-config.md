@@ -88,9 +88,7 @@ Verhalten, wenn noch nicht alle Elemente der Aufgabe angezeigt wurden
 #### `force_responses_complete`
 Verhalten, wenn noch nicht alle Antworten der Aufgabe vollständig gegeben wurden
   * "OFF" (default): Ignorieren - Weiterblättern möglich
-  * "SOME": Weiterblättern erst möglich, wenn einige Antworten gegeben wurden
-  * "COMPLETE": Weiterblättern erst möglich, wenn alle Antworten gegeben wurden
-  * "COMPLETE_AND_VALID": Weiterblättern erst möglich, wenn alle Antworten gegeben wurden und als gültig eingeschätzt wurden
+  * "ON": Weiterblättern erst möglich, wenn alle Antworten gegeben wurden (die der Player für nötig erachtet!)
 
 #### `unit_screenheader`
 Legt fest, ob im obersten Seitenbereich Platz für Logo, Navigations-Buttons u. ä. gelassen wird.

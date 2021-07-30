@@ -217,3 +217,8 @@ export interface Command {
   arguments: string[];
   timestamp: number;
 }
+
+export type OnOff = 'ON' | 'OFF';
+export function isOnOff(s: string): s is OnOff {
+  return ['ON', 'OFF'].indexOf(s) > -1;
+}

@@ -14,7 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   AppFocusState,
-  Command,
+  Command, isOnOff,
   MaxTimerDataType,
   ReviewDialogData,
   StateReportEntry,
@@ -27,7 +27,7 @@ import {
   WindowFocusState
 } from './test-controller.interfaces';
 import {
-  EnvironmentData, MaxTimerData, Testlet, UnitDef
+  EnvironmentData, MaxTimerData, NavigationLeaveRestrictions, Testlet, UnitDef
 } from './test-controller.classes';
 import { BackendService } from './backend.service';
 import { MainDataService } from '../maindata.service';
@@ -85,16 +85,16 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   // private: recursive reading testlets/units from xml
-  private addTestletContentFromBookletXml(targetTestlet: Testlet, node: Element) {
+  private addTestletContentFromBookletXml(targetTestlet: Testlet, node: Element, inheritedRestrictions: NavigationLeaveRestrictions = null) {
     const childElements = TestControllerComponent.getChildElements(node);
     if (childElements.length > 0) {
       let codeToEnter = '';
       let codePrompt = '';
       let maxTime = -1;
-      const navigationDenial = {
-        presentationComplete: false,
-        responseComplete: false
-      };
+      const navigationLeaveRestrictions = inheritedRestrictions ?? new NavigationLeaveRestrictions(
+        this.tcs.bookletConfig.force_presentation_complete,
+        this.tcs.bookletConfig.force_responses_complete
+      );
 
       let restrictionElement: Element = null;
       for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
@@ -123,13 +123,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             }
           }
           if (restrictionElements[childIndex].nodeName === 'DenyNavigation') {
-            const OffOnMap = { OFF: false, ON: true };
-            navigationDenial.presentationComplete =
-              OffOnMap[restrictionElements[childIndex].getAttribute('force_presentation_complete')] ??
-              OffOnMap[this.tcs.bookletConfig.force_presentation_complete];
-            navigationDenial.responseComplete =
-              OffOnMap[restrictionElements[childIndex].getAttribute('force_response_complete')] ??
-              OffOnMap[this.tcs.bookletConfig.force_responses_complete];
+            const presentationComplete = restrictionElements[childIndex].getAttribute('force_presentation_complete');
+            if (isOnOff(presentationComplete)) {
+              navigationLeaveRestrictions.presentationComplete = presentationComplete;
+            }
+            const responseComplete = restrictionElements[childIndex].getAttribute('force_response_complete');
+            if (isOnOff(responseComplete)) {
+              navigationLeaveRestrictions.responseComplete = responseComplete;
+            }
           }
         }
       }
@@ -144,7 +145,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           targetTestlet.maxTimeLeft = this.tcs.LastMaxTimerState[targetTestlet.id];
         }
       }
-      targetTestlet.navigationDenial = navigationDenial;
 
       for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
         if (childElements[childIndex].nodeName === 'Unit') {
@@ -161,20 +161,27 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           }
           this.allUnitIds.push(myUnitAliasClear);
 
-          targetTestlet.addUnit(this.lastUnitSequenceId, myUnitId,
-            childElements[childIndex].getAttribute('label'), myUnitAliasClear,
-            childElements[childIndex].getAttribute('labelshort'));
+          targetTestlet.addUnit(
+            this.lastUnitSequenceId, myUnitId,
+            childElements[childIndex].getAttribute('label'),
+            myUnitAliasClear,
+            childElements[childIndex].getAttribute('labelshort'),
+            navigationLeaveRestrictions
+          );
           this.lastUnitSequenceId += 1;
         } else if (childElements[childIndex].nodeName === 'Testlet') {
           let testletId: string = childElements[childIndex].getAttribute('id');
-          if (!testletId) {
+          if (!testletId) { // TODO this can not happen, so remove it?
             testletId = `Testlet${this.lastTestletIndex.toString()}`;
             this.lastTestletIndex += 1;
           }
           let testletLabel: string = childElements[childIndex].getAttribute('label');
           testletLabel = testletLabel ? testletLabel.trim() : '';
 
-          this.addTestletContentFromBookletXml(targetTestlet.addTestlet(testletId, testletLabel), childElements[childIndex]);
+          this.addTestletContentFromBookletXml(
+            targetTestlet.addTestlet(testletId, testletLabel),
+            childElements[childIndex]
+          );
         }
       }
     }

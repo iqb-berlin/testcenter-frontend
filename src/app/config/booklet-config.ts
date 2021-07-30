@@ -10,7 +10,7 @@ export class BookletConfig {
 	unit_navibuttons: "OFF" | "ARROWS_ONLY" | "FULL" = "FULL";
 	unit_menu: "OFF" | "ENABLED_ONLY" | "FULL" = "OFF";
 	force_presentation_complete: "OFF" | "ON" = "OFF";
-	force_responses_complete: "OFF" | "SOME" | "COMPLETE" | "COMPLETE_AND_VALID" = "OFF";
+	force_responses_complete: "OFF" | "ON" = "OFF";
 	unit_screenheader: "OFF" | "WITH_UNIT_TITLE" | "WITH_BOOKLET_TITLE" | "EMPTY" = "EMPTY";
 	unit_title: "OFF" | "ON" = "ON";
 	unit_show_time_left: "OFF" | "ON" = "OFF";

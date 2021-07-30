@@ -250,7 +250,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     if (force) {
       return of(true);
     }
-    if ((this.tcs.bookletConfig.force_presentation_complete !== 'ON') || this.tcs.currentUnitSequenceId <= 0) {
+    if (this.tcs.currentUnitSequenceId <= 0) { // TODO is this even possible
       return of(true);
     }
     if (!newUnit || this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
@@ -279,13 +279,14 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
 
   private checkCompleteness(checkUnitSequenceId: number): VeronaNavigationDeniedReason[] {
     const reason: VeronaNavigationDeniedReason[] = [];
+    console.log("yehey", this.tcs.getUnitPresentationProgress(checkUnitSequenceId),this.tcs.getUnitResponseProgress(checkUnitSequenceId));
     if (this.tcs.hasUnitPresentationProgress(checkUnitSequenceId) &&
       (this.tcs.getUnitPresentationProgress(checkUnitSequenceId) !== 'complete')
     ) {
       reason.push('presentationIncomplete');
     }
-    if (this.tcs.hasUnitUnitResponseProgress(checkUnitSequenceId) &&
-      (['complete', 'complete-and-valid'].indexOf(this.tcs.getUnitUnitResponseProgress(checkUnitSequenceId)) === -1)
+    if (this.tcs.hasUnitResponseProgress(checkUnitSequenceId) &&
+      (['complete', 'complete-and-valid'].indexOf(this.tcs.getUnitResponseProgress(checkUnitSequenceId)) === -1)
     ) {
       reason.push('responsesIncomplete');
     }
