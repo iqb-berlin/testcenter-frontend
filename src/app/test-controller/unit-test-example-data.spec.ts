@@ -19,14 +19,13 @@ export const TestBookletXML = `<Booklet>
      <Restrictions>
        <CodeToEnter code="d" />
        <TimeMax minutes="5" />
-       <DenyNavigation force_presentation_complete="ON" force_response_complete="OFF"/>
      </Restrictions>
      <Unit id="u2" label="l" />
      <Testlet id="t2">
        <Restrictions>
          <CodeToEnter code="d" />
          <TimeMax minutes="3" />
-         <DenyNavigation force_presentation_complete="OFF" force_response_complete="ON"/>
+         <DenyNavigation force_presentation_complete="ON" force_response_complete="OFF"/>
        </Restrictions>
        <Unit id="u3" label="l" />
      </Testlet>
@@ -59,7 +58,11 @@ export const testBookletJSON = {
       alias: 'u1',
       naviButtonLabel: null,
       statusResponses: 'no',
-      statusPresentation: 'no'
+      statusPresentation: 'no',
+      navigationLeaveRestrictions: {
+        presentationComplete: 'OFF',
+        responseComplete: 'ON'
+      }
     },
     {
       sequenceId: 0,
@@ -84,7 +87,11 @@ export const testBookletJSON = {
           alias: 'u2',
           naviButtonLabel: null,
           statusResponses: 'no',
-          statusPresentation: 'no'
+          statusPresentation: 'no',
+          navigationLeaveRestrictions: {
+            presentationComplete: 'OFF',
+            responseComplete: 'ON'
+          }
         },
         {
           sequenceId: 0,
@@ -109,16 +116,16 @@ export const testBookletJSON = {
               alias: 'u3',
               naviButtonLabel: null,
               statusResponses: 'no',
-              statusPresentation: 'no'
+              statusPresentation: 'no',
+              navigationLeaveRestrictions: {
+                presentationComplete: 'ON',
+                responseComplete: 'OFF'
+              }
             }
           ],
           codeToEnter: 'D',
           codePrompt: '',
-          maxTimeLeft: 3,
-          navigationDenial: {
-            presentationComplete: false,
-            responseComplete: true
-          }
+          maxTimeLeft: 3
         },
         {
           sequenceId: 4,
@@ -134,16 +141,16 @@ export const testBookletJSON = {
           alias: 'u4',
           naviButtonLabel: null,
           statusResponses: 'no',
-          statusPresentation: 'no'
+          statusPresentation: 'no',
+          navigationLeaveRestrictions: {
+            presentationComplete: 'OFF',
+            responseComplete: 'ON'
+          }
         }
       ],
       codeToEnter: 'D',
       codePrompt: '',
-      maxTimeLeft: 5,
-      navigationDenial: {
-        presentationComplete: true,
-        responseComplete: false
-      }
+      maxTimeLeft: 5
     },
     {
       sequenceId: 5,
@@ -159,14 +166,14 @@ export const testBookletJSON = {
       alias: 'u5',
       naviButtonLabel: null,
       statusResponses: 'no',
-      statusPresentation: 'no'
+      statusPresentation: 'no',
+      navigationLeaveRestrictions: {
+        presentationComplete: 'OFF',
+        responseComplete: 'ON'
+      }
     }
   ],
   codeToEnter: '',
   codePrompt: '',
-  maxTimeLeft: 10,
-  navigationDenial: {
-    presentationComplete: false,
-    responseComplete: true
-  }
+  maxTimeLeft: 10
 };

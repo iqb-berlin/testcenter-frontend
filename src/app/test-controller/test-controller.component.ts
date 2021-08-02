@@ -85,16 +85,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   // private: recursive reading testlets/units from xml
-  private addTestletContentFromBookletXml(targetTestlet: Testlet, node: Element, inheritedRestrictions: NavigationLeaveRestrictions = null) {
+  private addTestletContentFromBookletXml(targetTestlet: Testlet, node: Element, inheritedRestrictions: NavigationLeaveRestrictions) {
     const childElements = TestControllerComponent.getChildElements(node);
     if (childElements.length > 0) {
       let codeToEnter = '';
       let codePrompt = '';
       let maxTime = -1;
-      const navigationLeaveRestrictions = inheritedRestrictions ?? new NavigationLeaveRestrictions(
-        this.tcs.bookletConfig.force_presentation_complete,
-        this.tcs.bookletConfig.force_responses_complete
-      );
+      const navigationLeaveRestrictions = inheritedRestrictions;
+      console.log(targetTestlet.id, {inheritedRestrictions,navigationLeaveRestrictions});
 
       let restrictionElement: Element = null;
       for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
@@ -180,7 +178,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
           this.addTestletContentFromBookletXml(
             targetTestlet.addTestlet(testletId, testletLabel),
-            childElements[childIndex]
+            childElements[childIndex],
+            navigationLeaveRestrictions
           );
         }
       }
@@ -229,7 +228,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             this.lastUnitSequenceId = 1;
             this.lastTestletIndex = 1;
             this.allUnitIds = [];
-            this.addTestletContentFromBookletXml(rootTestlet, unitsElements[0]);
+            this.addTestletContentFromBookletXml(
+              rootTestlet,
+              unitsElements[0],
+              new NavigationLeaveRestrictions(
+                this.tcs.bookletConfig.force_presentation_complete,
+                this.tcs.bookletConfig.force_responses_complete
+              )
+            );
           }
         }
       }
