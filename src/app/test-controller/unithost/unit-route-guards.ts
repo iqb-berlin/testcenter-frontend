@@ -17,7 +17,7 @@ import { UnitControllerData } from '../test-controller.classes';
 import { UnithostComponent } from './unithost.component';
 import { TestControllerService } from '../test-controller.service';
 import { TestControllerComponent } from '../test-controller.component';
-import { VeronaNavigationDeniedReason } from "../verona.interfaces";
+import { VeronaNavigationDeniedReason } from '../verona.interfaces';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
@@ -279,12 +279,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
 
   private checkCompleteness(checkUnitSequenceId: number, unit: UnitControllerData): VeronaNavigationDeniedReason[] {
     const reason: VeronaNavigationDeniedReason[] = [];
-    console.log(
-      'yehey',
-      this.tcs.getUnitPresentationProgress(checkUnitSequenceId),
-      this.tcs.getUnitResponseProgress(checkUnitSequenceId),
-      unit.unitDef.navigationLeaveRestrictions
-    );
     if (
       (unit.unitDef.navigationLeaveRestrictions.presentationComplete === 'ON') &&
       this.tcs.hasUnitPresentationProgress(checkUnitSequenceId) &&
@@ -320,7 +314,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   }
 
   private navigationForwardsDenied(reasonsForNavigationDenial: VeronaNavigationDeniedReason[]): Observable<boolean> {
-    console.log(reasonsForNavigationDenial);
     this.tcs.notifyNavigationDenied(this.tcs.currentUnitSequenceId, reasonsForNavigationDenial);
     if (this.tcs.testMode.forceNaviRestrictions) {
       const customTexts = this.getCustomTexts('Next', reasonsForNavigationDenial);
