@@ -121,5 +121,14 @@
       "ON": "Beim Zurückkehren zur Unit auf der letzten gesehenen Seite beginnen."
     },
     "defaultvalue": "OFF"
+  },
+  "allow_player_to_terminate_test": {
+    "label": "Legt fest, ob der Player des laufenden Test beenden darf, in dem er z. B. einen entsprechenden Navigationsknopf zeigt.",
+    "options": {
+      "OFF": "Der Player darf den laufenden Test nicht beenden.",
+      "LAST_UNIT": "Der Player darf den laufenden Test nur Beenden, wenn die letzte Unit erreicht ist.",
+      "ON": "Der Player darf den laufenden test immer beenden. (`force_presentation_complete` und `force_response_complete` gelten trotzdem!)."
+    },
+    "defaultvalue": "ON"
   }
 }

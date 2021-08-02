@@ -224,7 +224,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
       enabledNavigationTargets: UnithostComponent.getEnabledNavigationTargets(
         this.myUnitSequenceId,
         this.tcs.minUnitSequenceId,
-        this.tcs.maxUnitSequenceId
+        this.tcs.maxUnitSequenceId,
+        this.tcs.bookletConfig.allow_player_to_terminate_test
       ),
       logPolicy: this.tcs.bookletConfig.logPolicy,
       pagingMode: this.tcs.bookletConfig.pagingMode,
@@ -239,7 +240,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
     return playerConfig;
   }
 
-  private static getEnabledNavigationTargets(nr, min, max): VeronaNavigationTarget[] {
+  private static getEnabledNavigationTargets(
+    nr: number, min: number, max: number,
+    terminationAllowed: 'ON' | 'OFF' | 'LAST_UNIT' = 'ON'
+  ): VeronaNavigationTarget[] {
     const navigationTargets = [];
     if (nr < max) {
       navigationTargets.push('next');
@@ -253,7 +257,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
     if (nr !== max) {
       navigationTargets.push('last');
     }
-    navigationTargets.push('end'); // TODO when is this allowed
+    if (terminationAllowed === 'ON') {
+      navigationTargets.push('end');
+    }
+    if ((terminationAllowed === 'LAST_UNIT') && (nr === max)) {
+      navigationTargets.push('end');
+    }
+
     return navigationTargets;
   }
 

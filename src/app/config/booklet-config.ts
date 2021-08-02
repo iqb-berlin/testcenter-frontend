@@ -16,6 +16,7 @@ export class BookletConfig {
 	unit_show_time_left: "OFF" | "ON" = "OFF";
 	show_end_button_in_player: "OFF" | "ALWAYS" | "ONLY_LAST_UNIT" = "OFF";
 	restore_current_page_on_return: "OFF" | "ON" = "OFF";
+	allow_player_to_terminate_test: "OFF" | "LAST_UNIT" | "ON" = "ON";
 
 	public setFromKeyValuePairs(config) {
 		if (config) {
@@ -33,6 +34,7 @@ export class BookletConfig {
 			if (config['unit_show_time_left']) { this.unit_show_time_left = config['unit_show_time_left']}
 			if (config['show_end_button_in_player']) { this.show_end_button_in_player = config['show_end_button_in_player']}
 			if (config['restore_current_page_on_return']) { this.restore_current_page_on_return = config['restore_current_page_on_return']}
+			if (config['allow_player_to_terminate_test']) { this.allow_player_to_terminate_test = config['allow_player_to_terminate_test']}
 		}
 	}
 
@@ -84,6 +86,9 @@ export class BookletConfig {
 						break;
 					case 'restore_current_page_on_return':
 						this.restore_current_page_on_return = configValue;
+						break;
+					case 'allow_player_to_terminate_test':
+						this.allow_player_to_terminate_test = configValue;
 						break;
 				}
 			}

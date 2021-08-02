@@ -117,3 +117,9 @@ Manche Player können einen Test-Beenden anzeigen, wenn es es ihnen vom Testcent
 Legt fest, ob, wenn (z. B.) nach einem Neuladen eine Unit wieder geöffnet wird, zur letzten geöffneten Seite gesprungen werden soll.
   * "OFF" (default): Beim Zurückkehren zur Unit auf Seite 1 beginnen.
   * "ON": Beim Zurückkehren zur Unit auf der letzten gesehenen Seite beginnen.
+
+#### `allow_player_to_terminate_test`
+Legt fest, ob der Player des laufenden Test beenden darf, in dem er z. B. einen entsprechenden Navigationsknopf zeigt.
+  * "OFF": Der Player darf den laufenden Test nicht beenden.
+  * "LAST_UNIT": Der Player darf den laufenden Test nur Beenden, wenn die letzte Unit erreicht ist.
+  * "ON" (default): Der Player darf den laufenden test immer beenden. (`force_presentation_complete` und `force_response_complete` gelten trotzdem!).
