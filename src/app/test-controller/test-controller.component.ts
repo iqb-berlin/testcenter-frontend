@@ -331,10 +331,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.testStatus$.next(TestControllerState.ERROR);
       });
       this.testStatusSubscription = this.tcs.testStatus$.subscribe(testControllerState => {
-        if (this.tcs.testMode.saveResponses &&
-          [TestControllerState.FINISHED, TestControllerState.INIT, TestControllerState.LOADING]
-            .indexOf(testControllerState) === -1
-        ) {
+        console.log('STATE', testControllerState);
+        const unloggableStates = [
+          TestControllerState.INIT,
+          TestControllerState.LOADING,
+          TestControllerState.FINISHED,
+          TestControllerState.LEAVING
+        ];
+        if (this.tcs.testMode.saveResponses && unloggableStates.indexOf(testControllerState) === -1) {
           this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
             key: TestStateKey.CONTROLLER, timeStamp: Date.now(), content: testControllerState
           }]);
@@ -717,7 +721,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.setUnitNavigationRequest(navTarget, true);
         break;
       case 'terminate':
-        this.tcs.terminateTest('BOOKLETLOCKEDbyOPERATOR');
+        this.tcs.terminateTest('BOOKLETLOCKEDbyOPERATOR', true);
         break;
       case 'goto':
         this.tcs.testStatus$.next(TestControllerState.RUNNING);

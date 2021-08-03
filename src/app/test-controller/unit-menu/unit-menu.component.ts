@@ -53,6 +53,6 @@ export class UnitMenuComponent implements OnInit {
   }
 
   terminateTest(): void {
-    this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE');
+    this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', false);
   }
 }

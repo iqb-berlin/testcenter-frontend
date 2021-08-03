@@ -58,13 +58,14 @@ export enum TestStateKey {
 }
 
 /**
- * TestState.FOCUS
+ * TestState.state
  * In what state is the whole controller?
  */
 export enum TestControllerState {
   INIT = 'INIT',
   LOADING = 'LOADING',
   RUNNING = 'RUNNING',
+  LEAVING = 'LEAVING',
   TERMINATED = 'TERMINATED',
   FINISHED = 'FINISHED',
   PAUSED = 'PAUSED',

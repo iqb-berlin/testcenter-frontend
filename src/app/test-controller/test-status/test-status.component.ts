@@ -24,6 +24,6 @@ export class TestStatusComponent implements OnInit {
   }
 
   terminateTest(): void {
-    this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE');
+    this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', false);
   }
 }

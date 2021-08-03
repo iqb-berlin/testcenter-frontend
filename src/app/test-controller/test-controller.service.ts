@@ -327,7 +327,7 @@ export class TestControllerService {
     this._navigationDenial.next({ sourceUnitSequenceId, reason });
   }
 
-  terminateTest(logEntryKey: string, lockTest: boolean = false): void {
+  terminateTest(logEntryKey: string, force: boolean, lockTest: boolean = false): void {
     if (
       (this.testStatus$.getValue() === TestControllerState.TERMINATED) ||
       (this.testStatus$.getValue() === TestControllerState.FINISHED)
@@ -335,18 +335,26 @@ export class TestControllerService {
       // sometimes terminateTest get called two times from player
       return;
     }
+    const oldTestStatus = this.testStatus$.getValue();
+    this.testStatus$.next(TestControllerState.LEAVING); // will not be logged, is necessary to leave test
 
-    if (!this.testMode.saveResponses || !lockTest) {
-      this.testStatus$.next(TestControllerState.FINISHED);
-      this.router.navigate(['/'], { state: { force: true } });
-      return;
-    }
-
-    this.testStatus$.next(TestControllerState.TERMINATED);
-    this.bs.lockTest(this.testId, Date.now(), logEntryKey).subscribe(bsOk => {
-      this.testStatus$.next(bsOk ? TestControllerState.FINISHED : TestControllerState.ERROR);
-      this.router.navigate(['/'], { state: { force: true } });
-    });
+    this.router.navigate(['/r/test-starter'])
+      .then(navigationSuccessful => {
+        console.log({ navigationSuccessful, status: this.testStatus$.getValue() });
+        if (!navigationSuccessful) {
+          this.testStatus$.next(oldTestStatus); // navigation was denied, test continues
+          return;
+        }
+        this.testStatus$.next(TestControllerState.TERMINATED); // will be logged
+        if (this.testMode.saveResponses && lockTest) {
+          this.bs.lockTest(this.testId, Date.now(), logEntryKey)
+            .subscribe(bsOk => {
+              this.testStatus$.next(bsOk ? TestControllerState.FINISHED : TestControllerState.ERROR);
+            });
+        } else {
+          this.testStatus$.next(TestControllerState.FINISHED);
+        }
+      });
   }
 
   setUnitNavigationRequest(navString: string, force = false): void {
@@ -388,7 +396,7 @@ export class TestControllerService {
             { state: { force } });
           break;
         case UnitNavigationTarget.END:
-          this.terminateTest(force ? 'BOOKLETLOCKEDforced' : 'BOOKLETLOCKEDbyTESTEE');
+          this.terminateTest(force ? 'BOOKLETLOCKEDforced' : 'BOOKLETLOCKEDbyTESTEE', force);
           break;
 
         default:
