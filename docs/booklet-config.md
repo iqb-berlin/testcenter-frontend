@@ -85,7 +85,7 @@ Verhalten, wenn noch nicht alle Elemente der Aufgabe angezeigt wurden
   * "OFF" (default): Ignorieren - Weiterblättern möglich
   * "ON": Weiterblättern verhindern, bis Anzeige vollständig
 
-#### `force_responses_complete`
+#### `force_response_complete`
 Verhalten, wenn noch nicht alle Antworten der Aufgabe vollständig gegeben wurden
   * "OFF" (default): Ignorieren - Weiterblättern möglich
   * "ON": Weiterblättern erst möglich, wenn alle Antworten gegeben wurden (die der Player für nötig erachtet!)

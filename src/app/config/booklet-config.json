@@ -71,7 +71,7 @@
     },
     "defaultvalue": "OFF"
   },
-  "force_responses_complete": {
+  "force_response_complete": {
     "label": "Verhalten, wenn noch nicht alle Antworten der Aufgabe vollständig gegeben wurden",
     "options": {
       "OFF": "Ignorieren - Weiterblättern möglich",
