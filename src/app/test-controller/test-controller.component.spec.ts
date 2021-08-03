@@ -102,7 +102,7 @@ describe('TestControllerComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  fdescribe('getBookletFromXml', () => {
+  describe('getBookletFromXml', () => {
     it('should read booklet content correctly', () => {
       // eslint-disable-next-line @typescript-eslint/dot-notation
       const booklet = component['getBookletFromXml'](TestBookletXML);
