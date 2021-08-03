@@ -81,7 +81,7 @@ export class UnitDef extends TestletContentElement {
   statusPresentation: 'no' | 'partly' | 'full';
   locked = false;
   ignoreCompleted = false;
-  navigationLeaveRestrictions: NavigationLeaveRestrictions;
+  readonly navigationLeaveRestrictions: NavigationLeaveRestrictions;
 
   constructor(
     sequenceId: number,
@@ -137,13 +137,13 @@ export class UnitControllerData {
 }
 
 export class NavigationLeaveRestrictions {
+  readonly presentationComplete: OnOff = 'OFF';
+  readonly responseComplete: OnOff = 'OFF';
+
   constructor(presentationComplete: OnOff, responseComplete: OnOff) {
     this.presentationComplete = presentationComplete;
     this.responseComplete = responseComplete;
   }
-
-  presentationComplete: OnOff = 'OFF';
-  responseComplete: OnOff = 'OFF';
 }
 
 export class Testlet extends TestletContentElement {

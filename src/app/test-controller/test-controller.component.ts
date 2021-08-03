@@ -85,14 +85,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   // private: recursive reading testlets/units from xml
-  private addTestletContentFromBookletXml(targetTestlet: Testlet, node: Element, inheritedRestrictions: NavigationLeaveRestrictions) {
+  private addTestletContentFromBookletXml(targetTestlet: Testlet, node: Element,
+                                          navigationLeaveRestrictions: NavigationLeaveRestrictions) {
     const childElements = TestControllerComponent.getChildElements(node);
     if (childElements.length > 0) {
       let codeToEnter = '';
       let codePrompt = '';
       let maxTime = -1;
-      const navigationLeaveRestrictions = inheritedRestrictions;
-      console.log(targetTestlet.id, {inheritedRestrictions,navigationLeaveRestrictions});
+      let forcePresentationComplete = navigationLeaveRestrictions.presentationComplete;
+      let forceResponseComplete = navigationLeaveRestrictions.responseComplete;
 
       let restrictionElement: Element = null;
       for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
@@ -123,11 +124,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           if (restrictionElements[childIndex].nodeName === 'DenyNavigation') {
             const presentationComplete = restrictionElements[childIndex].getAttribute('force_presentation_complete');
             if (isOnOff(presentationComplete)) {
-              navigationLeaveRestrictions.presentationComplete = presentationComplete;
+              forcePresentationComplete = presentationComplete;
             }
             const responseComplete = restrictionElements[childIndex].getAttribute('force_response_complete');
             if (isOnOff(responseComplete)) {
-              navigationLeaveRestrictions.responseComplete = responseComplete;
+              forceResponseComplete = responseComplete;
             }
           }
         }
@@ -143,28 +144,31 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           targetTestlet.maxTimeLeft = this.tcs.LastMaxTimerState[targetTestlet.id];
         }
       }
+      const newNavigationLeaveRestrictions =
+        new NavigationLeaveRestrictions(forcePresentationComplete, forceResponseComplete);
 
       for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
         if (childElements[childIndex].nodeName === 'Unit') {
-          const myUnitId = childElements[childIndex].getAttribute('id');
-          let myUnitAlias = childElements[childIndex].getAttribute('alias');
-          if (!myUnitAlias) {
-            myUnitAlias = myUnitId;
+          const unitId = childElements[childIndex].getAttribute('id');
+          let unitAlias = childElements[childIndex].getAttribute('alias');
+          if (!unitAlias) {
+            unitAlias = unitId;
           }
-          let myUnitAliasClear = myUnitAlias;
+          let unitAliasClear = unitAlias;
           let unitIdSuffix = 1;
-          while (this.allUnitIds.indexOf(myUnitAliasClear) > -1) {
-            myUnitAliasClear = `${myUnitAlias}-${unitIdSuffix.toString()}`;
+          while (this.allUnitIds.indexOf(unitAliasClear) > -1) {
+            unitAliasClear = `${unitAlias}-${unitIdSuffix.toString()}`;
             unitIdSuffix += 1;
           }
-          this.allUnitIds.push(myUnitAliasClear);
+          this.allUnitIds.push(unitAliasClear);
 
           targetTestlet.addUnit(
-            this.lastUnitSequenceId, myUnitId,
+            this.lastUnitSequenceId,
+            unitId,
             childElements[childIndex].getAttribute('label'),
-            myUnitAliasClear,
+            unitAliasClear,
             childElements[childIndex].getAttribute('labelshort'),
-            navigationLeaveRestrictions
+            newNavigationLeaveRestrictions
           );
           this.lastUnitSequenceId += 1;
         } else if (childElements[childIndex].nodeName === 'Testlet') {
@@ -179,7 +183,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.addTestletContentFromBookletXml(
             targetTestlet.addTestlet(testletId, testletLabel),
             childElements[childIndex],
-            navigationLeaveRestrictions
+            newNavigationLeaveRestrictions
           );
         }
       }
@@ -233,7 +237,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               unitsElements[0],
               new NavigationLeaveRestrictions(
                 this.tcs.bookletConfig.force_presentation_complete,
-                this.tcs.bookletConfig.force_responses_complete
+                this.tcs.bookletConfig.force_response_complete
               )
             );
           }

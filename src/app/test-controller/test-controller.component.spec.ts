@@ -21,7 +21,7 @@ import { AppError } from '../app.interfaces';
 import { TestMode } from '../config/test-mode';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../config/booklet-config';
-import {MaxTimerData, TestletContentElement, UnitDef} from './test-controller.classes';
+import { MaxTimerData } from './test-controller.classes';
 import { testBookletJSON, TestBookletXML } from './unit-test-example-data.spec';
 
 const testData$ = new Subject<boolean|TestData>();
@@ -106,16 +106,6 @@ describe('TestControllerComponent', () => {
     it('should read booklet content correctly', () => {
       // eslint-disable-next-line @typescript-eslint/dot-notation
       const booklet = component['getBookletFromXml'](TestBookletXML);
-
-      const p = (t:TestletContentElement) => {
-        if ('navigationLeaveRestrictions' in t) {
-          const tt = t as UnitDef;
-          console.log(t.id, tt.navigationLeaveRestrictions);
-        }
-        t.children.forEach(p);
-      };
-      p(booklet);
-
       const bookletJSON = JSON.parse(JSON.stringify(booklet)); // strip functions
       expect(bookletJSON).toEqual(testBookletJSON);
     });
