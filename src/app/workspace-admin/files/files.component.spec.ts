@@ -14,6 +14,7 @@ import { WorkspaceDataService } from '../workspacedata.service';
 import { MainDataService } from '../../maindata.service';
 import { GetFileResponseData } from '../workspace.interfaces';
 import { IqbFilesUploadQueueComponent } from './iqb-files-upload-queue/iqb-files-upload-queue.component';
+import { IqbFilesUploadInputForDirective } from './iqb-files-upload-input-for/iqb-files-upload-input-for.directive';
 
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this
@@ -36,7 +37,8 @@ describe('FilesComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         FilesComponent,
-        IqbFilesUploadQueueComponent
+        IqbFilesUploadQueueComponent,
+        IqbFilesUploadInputForDirective
       ],
       imports: [
         HttpClientModule,

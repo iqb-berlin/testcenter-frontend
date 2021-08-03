@@ -12,7 +12,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { CustomtextPipe } from 'iqb-components';
+import { AlertComponent, CustomtextPipe } from 'iqb-components';
 import { Pipe } from '@angular/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { GroupMonitorComponent } from './group-monitor.component';
@@ -89,7 +89,8 @@ describe('GroupMonitorComponent', () => {
       declarations: [
         GroupMonitorComponent,
         TestSessionComponent,
-        CustomtextPipe
+        CustomtextPipe,
+        AlertComponent
       ],
       imports: [
         MatIconModule,
