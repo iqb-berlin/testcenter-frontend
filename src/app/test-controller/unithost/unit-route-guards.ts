@@ -12,7 +12,7 @@ import { interval, Observable, of } from 'rxjs';
 import { MainDataService } from 'src/app/maindata.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CodeInputData } from '../test-controller.interfaces';
+import { CodeInputData, TestControllerState } from '../test-controller.interfaces';
 import { UnitControllerData } from '../test-controller.classes';
 import { UnithostComponent } from './unithost.component';
 import { TestControllerService } from '../test-controller.service';
@@ -135,6 +135,7 @@ export class UnitActivateGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean>|boolean {
+    console.log('UnitActivateGuard canActivate');
     const targetUnitSequenceId: number = Number(route.params.u);
     if (this.tcs.currentUnitSequenceId > 0) {
       this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
@@ -372,11 +373,16 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
 
   canDeactivate(component: UnithostComponent, currentRoute: ActivatedRouteSnapshot,
                 currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): Observable<boolean> | boolean {
+    if (this.tcs.testStatus$.getValue() === TestControllerState.ERROR) {
+      return true;
+    }
+
     let newUnit: UnitControllerData = null;
     if (/t\/\d+\/u\/\d+$/.test(nextState.url)) {
       const targetUnitSequenceId = Number(nextState.url.match(/\d+$/)[0]);
       newUnit = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
     }
+
     let forceNavigation = false;
     const routerStateObject = this.router.getCurrentNavigation();
     if (routerStateObject.extras.state && routerStateObject.extras.state.force) {

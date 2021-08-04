@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { TestControllerService } from '../test-controller.service';
 import { MainDataService } from '../../maindata.service';
 
@@ -7,11 +8,14 @@ import { MainDataService } from '../../maindata.service';
   styleUrls: ['./test-status.component.css']
 })
 
-export class TestStatusComponent implements OnInit {
+export class TestStatusComponent implements OnInit, OnDestroy {
   loginName = '??';
+  errorLabel = '';
+  private appErrorSubscription: Subscription;
 
   constructor(
-    public tcs: TestControllerService
+    public tcs: TestControllerService,
+    public mds: MainDataService
   ) { }
 
   ngOnInit(): void {
@@ -20,7 +24,15 @@ export class TestStatusComponent implements OnInit {
       if (authData) {
         this.loginName = authData.displayName;
       }
+      this.appErrorSubscription = this.mds.appError$
+        .subscribe(error => {
+          this.errorLabel = error.label;
+        });
     });
+  }
+
+  ngOnDestroy(): void {
+    this.appErrorSubscription.unsubscribe();
   }
 
   terminateTest(): void {

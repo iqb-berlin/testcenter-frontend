@@ -324,44 +324,19 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       if (this.isProductionMode && this.tcs.testMode.saveResponses) {
         this.mds.errorReportingSilent = true;
       }
-      this.errorReportingSubscription = this.mds.appError$.subscribe(e => {
-        if (this.isProductionMode && this.tcs.testMode.saveResponses) {
-          console.error(`${e.label} / ${e.description}`);
-        }
-        this.tcs.testStatus$.next(TestControllerState.ERROR);
-      });
-      this.testStatusSubscription = this.tcs.testStatus$.subscribe(testControllerState => {
-        console.log('STATE', testControllerState);
-        const unloggableStates = [
-          TestControllerState.INIT,
-          TestControllerState.LOADING,
-          TestControllerState.FINISHED,
-          TestControllerState.LEAVING
-        ];
-        if (this.tcs.testMode.saveResponses && unloggableStates.indexOf(testControllerState) === -1) {
-          this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
-            key: TestStateKey.CONTROLLER, timeStamp: Date.now(), content: testControllerState
-          }]);
-        }
-
-        switch (testControllerState) {
-          case TestControllerState.ERROR:
-            this.tcs.loadProgressValue = 0;
-            this.tcs.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
-            break;
-          case TestControllerState.PAUSED:
-            // TODO pause time
-            this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE, true);
-            break;
-          default:
-        }
-      });
-      this.appWindowHasFocusSubscription = this.mds.appWindowHasFocus$.subscribe(hasFocus => {
-        this.tcs.windowFocusState$.next(hasFocus ? WindowFocusState.HOST : WindowFocusState.UNKNOWN);
-      });
-      this.commandSubscription = this.cmd.command$.pipe(
-        distinctUntilChanged((command1: Command, command2: Command): boolean => (command1.id === command2.id))
-      )
+      this.errorReportingSubscription = this.mds.appError$
+        .subscribe(e => this.tcs.handleError(e));
+      this.testStatusSubscription = this.tcs.testStatus$
+        .pipe(distinctUntilChanged())
+        .subscribe(status => this.logTestControllerStatusChange(status));
+      this.appWindowHasFocusSubscription = this.mds.appWindowHasFocus$
+        .subscribe(hasFocus => {
+          this.tcs.windowFocusState$.next(hasFocus ? WindowFocusState.HOST : WindowFocusState.UNKNOWN);
+        });
+      this.commandSubscription = this.cmd.command$
+        .pipe(
+          distinctUntilChanged((command1: Command, command2: Command): boolean => (command1.id === command2.id))
+        )
         .subscribe((command: Command) => {
           this.handleCommand(command.keyword, command.arguments);
         });
@@ -489,7 +464,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                   description: 'TestController.Component: getBookletFromXml(testData.xml)',
                   category: 'PROBLEM'
                 });
-                this.tcs.testStatus$.next(TestControllerState.ERROR);
               } else {
                 this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
                 if (this.tcs.clearCodeTestlets.length > 0) {
@@ -558,7 +532,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                         description: errorMessage,
                         category: 'PROBLEM'
                       });
-                      this.tcs.testStatus$.next(TestControllerState.ERROR);
                     },
                     () => { // complete
                       if (this.tcs.testMode.saveResponses) {
@@ -613,6 +586,20 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }); // setTimeOut
   }
 
+  private logTestControllerStatusChange = (testControllerState: TestControllerState): void => {
+    const unloggableStates = [
+      TestControllerState.INIT,
+      TestControllerState.LOADING,
+      TestControllerState.FINISHED,
+      TestControllerState.LEAVING
+    ];
+    if (this.tcs.testMode.saveResponses && unloggableStates.indexOf(testControllerState) === -1) {
+      this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
+        key: TestStateKey.CONTROLLER, timeStamp: Date.now(), content: testControllerState
+      }]);
+    }
+  };
+
   private addAppFocusSubscription() {
     if (this.appFocusSubscription !== null) {
       this.appFocusSubscription.unsubscribe();
@@ -620,6 +607,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     this.appFocusSubscription = this.tcs.windowFocusState$.pipe(
       debounceTime(500)
     ).subscribe((newState: WindowFocusState) => {
+      if (this.tcs.testStatus$.getValue() === TestControllerState.ERROR) {
+        return;
+      }
       if (newState === WindowFocusState.UNKNOWN) {
         this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
           key: TestStateKey.FOCUS, timeStamp: Date.now(), content: AppFocusState.HAS_NOT
@@ -709,9 +699,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         break;
       case 'pause':
-        this.tcs.interruptMaxTimer();
-        this.tcs.testStatus$.next(TestControllerState.PAUSED);
         this.resumeTargetUnitId = this.tcs.currentUnitSequenceId;
+        this.tcs.pause();
         break;
       case 'resume':
         // eslint-disable-next-line no-case-declarations

@@ -15,8 +15,10 @@ import {
 } from './test-controller.interfaces';
 import { BackendService } from './backend.service';
 import { TestMode } from '../config/test-mode';
+// eslint-disable-next-line import/extensions
 import { BookletConfig } from '../config/booklet-config';
 import { VeronaNavigationDeniedReason } from './verona.interfaces';
+import { AppError } from '../app.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -412,5 +414,17 @@ export class TestControllerService {
           break;
       }
     }
+  }
+
+  handleError(error: AppError): void {
+    this.loadProgressValue = 0;
+    this.testStatus$.next(TestControllerState.ERROR);
+    this.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
+  }
+
+  pause(): void {
+    this.interruptMaxTimer();
+    this.testStatus$.next(TestControllerState.PAUSED);
+    this.setUnitNavigationRequest(UnitNavigationTarget.PAUSE, true);
   }
 }
