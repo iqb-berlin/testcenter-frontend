@@ -213,38 +213,38 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   ) {}
 
   private checkAndSolve_maxTime(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
-    if (this.tcs.currentMaxTimerTestletId) {
-      if (newUnit && newUnit.maxTimerRequiringTestlet &&
-        (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
-      ) {
-        return of(true);
-      }
-      if (force) {
-        this.tcs.interruptMaxTimer();
-        return of(true);
-      }
-      const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-        width: '500px',
-        data: <ConfirmDialogData>{
-          title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
-          content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
-          confirmbuttonlabel: 'Trotzdem weiter',
-          confirmbuttonreturn: true,
-          showcancel: true
-        }
-      });
-      return dialogCDRef.afterClosed()
-        .pipe(
-          map(cdresult => {
-            if ((typeof cdresult === 'undefined') || (cdresult === false)) {
-              return false;
-            }
-            this.tcs.cancelMaxTimer();
-            return true;
-          })
-        );
+    if (!this.tcs.currentMaxTimerTestletId) {
+      return of(true);
     }
-    return of(true);
+    if (newUnit && newUnit.maxTimerRequiringTestlet &&
+      (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
+    ) {
+      return of(true);
+    }
+    if (force) {
+      this.tcs.interruptMaxTimer();
+      return of(true);
+    }
+    const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
+      width: '500px',
+      data: <ConfirmDialogData>{
+        title: this.cts.getCustomText('booklet_warningLeaveTimerBlockTitle'),
+        content: this.cts.getCustomText('booklet_warningLeaveTimerBlockTextPrompt'),
+        confirmbuttonlabel: 'Trotzdem weiter',
+        confirmbuttonreturn: true,
+        showcancel: true
+      }
+    });
+    return dialogCDRef.afterClosed()
+      .pipe(
+        map(cdresult => {
+          if ((typeof cdresult === 'undefined') || (cdresult === false)) {
+            return false;
+          }
+          this.tcs.cancelMaxTimer();
+          return true;
+        })
+      );
   }
 
   private checkAndSolve_Completeness(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
@@ -254,7 +254,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     if (this.tcs.currentUnitSequenceId <= 0) { // TODO is this even possible
       return of(true);
     }
-    if (!newUnit || this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
+    if (!newUnit || this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) { // if going to menu for example
       return this.canGoForwards(newUnit);
     }
     return this.canGoBackwards();
@@ -383,11 +383,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       newUnit = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
     }
 
-    let forceNavigation = false;
-    const routerStateObject = this.router.getCurrentNavigation();
-    if (routerStateObject.extras.state && routerStateObject.extras.state.force) {
-      forceNavigation = routerStateObject.extras.state.force;
-    }
+    const forceNavigation = this.router.getCurrentNavigation().extras?.state?.force ?? false;
 
     return this.checkAndSolve_maxTime(newUnit, forceNavigation)
       .pipe(

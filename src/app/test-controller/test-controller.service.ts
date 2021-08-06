@@ -337,26 +337,31 @@ export class TestControllerService {
       // sometimes terminateTest get called two times from player
       return;
     }
+
     const oldTestStatus = this.testStatus$.getValue();
     this.testStatus$.next(TestControllerState.LEAVING); // will not be logged, is necessary to leave test
 
-    this.router.navigate(['/r/test-starter'])
+    this.router.navigate(['/r/test-starter'], { state: { force } })
       .then(navigationSuccessful => {
-        console.log({ navigationSuccessful, status: this.testStatus$.getValue() });
-        if (!navigationSuccessful) {
+        if (!(navigationSuccessful || force)) {
           this.testStatus$.next(oldTestStatus); // navigation was denied, test continues
           return;
         }
-        this.testStatus$.next(TestControllerState.TERMINATED); // will be logged
-        if (this.testMode.saveResponses && lockTest) {
-          this.bs.lockTest(this.testId, Date.now(), logEntryKey)
-            .subscribe(bsOk => {
-              this.testStatus$.next(bsOk ? TestControllerState.FINISHED : TestControllerState.ERROR);
-            });
-        } else {
-          this.testStatus$.next(TestControllerState.FINISHED);
-        }
+        this.finishTest(logEntryKey);
       });
+  }
+
+  private finishTest(logEntryKey: string, lockTest: boolean = false): void {
+    this.testStatus$.next(TestControllerState.TERMINATED); // last state that will an can be logged
+    if (this.testMode.saveResponses && lockTest) {
+      this.bs.lockTest(this.testId, Date.now(), logEntryKey)
+        .subscribe(bsOk => {
+          this.testStatus$.next(bsOk ? TestControllerState.FINISHED : TestControllerState.ERROR);
+        });
+    } else {
+      // TODO write log anyway
+      this.testStatus$.next(TestControllerState.FINISHED); // will not be logged, test is already locked maybe
+    }
   }
 
   setUnitNavigationRequest(navString: string, force = false): void {

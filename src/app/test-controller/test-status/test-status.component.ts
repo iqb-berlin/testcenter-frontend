@@ -36,6 +36,6 @@ export class TestStatusComponent implements OnInit, OnDestroy {
   }
 
   terminateTest(): void {
-    this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', false);
+    this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', true);
   }
 }
