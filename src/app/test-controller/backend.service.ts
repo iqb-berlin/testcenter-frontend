@@ -46,15 +46,9 @@ export class BackendService {
       );
   }
 
-  getTestData(testId: string): Observable<TestData | boolean> {
+  getTestData(testId: string): Observable<TestData> {
     return this.http
-      .get<TestData>(`${this.serverUrl}test/${testId}`)
-      .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getTestData Api-Error: ${err.code} ${err.info} `);
-          return of(false);
-        })
-      );
+      .get<TestData>(`${this.serverUrl}test/${testId}`);
   }
 
   getUnitData(testId: string, unitid: string, unitalias: string): Observable<UnitData | boolean> {
