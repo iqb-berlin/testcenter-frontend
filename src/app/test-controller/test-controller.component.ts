@@ -99,8 +99,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           switchMap(params => this.tls.loadTest(params.t))
         )
         .subscribe({
-          next: x => console.log('[NEXT]', x),
-          error: x => console.log('[ERROR]', x),
           complete: () => {
             this.addAppFocusSubscription();
           }

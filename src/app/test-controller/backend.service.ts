@@ -73,11 +73,7 @@ export class BackendService {
         }
       )
       .pipe(
-        map(def => <TaggedString>{ tag: internalKey, value: def }),
-        catchError((err: ApiError) => {
-          console.warn(`getResource Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
+        map(def => <TaggedString>{ tag: internalKey, value: def })
       );
   }
 

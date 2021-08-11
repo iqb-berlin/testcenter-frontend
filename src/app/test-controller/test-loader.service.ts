@@ -1,9 +1,10 @@
+/* eslint-disable no-console */
 import { Inject, Injectable } from '@angular/core';
 import {
   from, Observable, of, Subject, Subscription, throwError
 } from 'rxjs';
 import {
-  concatMap, map, switchMap, tap
+  concatMap, first, switchMap, tap
 } from 'rxjs/operators';
 import { CustomtextService } from 'iqb-components';
 import {
@@ -65,11 +66,9 @@ export class TestLoaderService {
 
     return this.bs.getTestData(this.tcs.testId)
       .pipe(
-        tap(() => console.log('a')),
         tap(testData => this.parseBooklet(testData)),
-        tap(() => console.log('b')),
-        switchMap(() => this.loadUnits()), // TODO STAND, der muss completen
-        tap(() => console.log('c')),
+        switchMap(() => this.loadUnits()),
+        first(),
         switchMap(() => this.runTest())
       );
   }
@@ -89,7 +88,6 @@ export class TestLoaderService {
   }
 
   private parseBooklet(testData: TestData): void {
-    console.log('parseBooklet');
     this.tcs.testMode = new TestMode(testData.mode);
     this.navTargetUnitId = '';
     this.newTestStatus = TestControllerState.RUNNING;
@@ -157,15 +155,15 @@ export class TestLoaderService {
         () => {
           this.incrementProgressValueBy1();
         },
-        errorMessage => {
+        (error: ApiError) => {
           this.mds.appError$.next({
             label: 'Problem beim Laden der Unit',
-            description: errorMessage,
+            description: error.info,
             category: 'PROBLEM'
           });
         },
         () => {
-          complete$.complete();
+          complete$.next();
         }
       );
     return complete$;
@@ -183,7 +181,8 @@ export class TestLoaderService {
           this.tcs.setOldUnitDataCurrentPage(sequenceId, unit.state[UnitStateKey.CURRENT_PAGE_ID]);
 
           try {
-            const dataParts = unit.data ? JSON.parse(unit.data) : ''; // TODO why has this to be done. an issue in the simple-player?
+            const dataParts = unit.data ? JSON.parse(unit.data) : '';
+            // TODO why has the above to be done. an issue in the simple-player?
             this.tcs.addUnitStateDataParts(sequenceId, dataParts);
           } catch (error) {
             console.warn(`error parsing unit state ${this.tcs.testId}/${myUnit.id} (${error.toString()})`, unit.data);
@@ -208,10 +207,7 @@ export class TestLoaderService {
           const playerFileId = TestControllerService.normaliseId(unit.playerId, 'html');
           return this.bs.getResource(this.tcs.testId, '', playerFileId, true)
             .pipe(
-              switchMap((data: number|TaggedString) => {
-                if (typeof data === 'number') {
-                  return throwError(`error getting player "${unit.playerId}"`);
-                }
+              switchMap((data: TaggedString) => {
                 const player = data as TaggedString;
                 if (player.value.length > 0) {
                   this.tcs.addPlayer(unit.playerId, player.value);
@@ -249,32 +245,23 @@ export class TestLoaderService {
           if (unitSequ < this.tcs.minUnitSequenceId) {
             return of(<TaggedString>{ tag: unitSequ.toString(), value: '' });
           }
-          return this.bs.getResource(this.tcs.testId, queueEntry.tag, queueEntry.value)
-            .pipe(
-              map(response => {
-                if (typeof response === 'number') {
-                  return throwError(
-                    `error loading ${this.tcs.testId} / ${queueEntry.tag} / ${queueEntry.value}: status ${response}`
-                  );
-                }
-                return response;
-              })
-            );
+          return this.bs.getResource(this.tcs.testId, queueEntry.tag, queueEntry.value);
         })
       )
       .subscribe(
         (def: TaggedString) => {
           this.tcs.addUnitDefinition(Number(def.tag), def.value);
         },
-        errorMessage => {
+        (errorMessage: ApiError) => { // TODO even this could be omitted, interceptor does the job
+          this.mds.setSpinnerOff();
+          console.warn(errorMessage.info);
           this.mds.appError$.next({
-            label: 'Problem beim Laden der Testinformation',
-            description: errorMessage,
+            label: 'Problem beim Laden einer Unit',
+            description: errorMessage.info,
             category: 'PROBLEM'
           });
         },
         () => { // complete
-          console.log("complete !!!!");
           if (this.tcs.testMode.saveResponses) {
             this.environment.loadTime = Date.now() - this.loadStartTimeStamp;
             this.bs.addTestLog(this.tcs.testId, [<StateReportEntry>{
@@ -304,15 +291,6 @@ export class TestLoaderService {
     }
 
     return continue$;
-  }
-
-  private handleLoadingError(err: ApiError): void {
-    console.warn(`getTestData Api-Error: ${err.code} ${err.info} `);
-    this.mds.appError$.next({
-      label: 'Konnte Testinformation nicht laden',
-      description: 'TestController.Component: getTestData()',
-      category: 'PROBLEM'
-    });
   }
 
   private unsubscribeTestSubscriptions() {
