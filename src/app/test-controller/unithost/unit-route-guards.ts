@@ -16,8 +16,8 @@ import { CodeInputData, TestControllerState } from '../test-controller.interface
 import { UnitControllerData } from '../test-controller.classes';
 import { UnithostComponent } from './unithost.component';
 import { TestControllerService } from '../test-controller.service';
-import { TestControllerComponent } from '../test-controller.component';
 import { VeronaNavigationDeniedReason } from '../verona.interfaces';
+import { LocalStorage } from '../local-storage.util';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
@@ -152,7 +152,7 @@ export class UnitActivateGuard implements CanActivate {
     if (this.tcs.rootTestlet === null) {
       console.warn('unit canActivate: true (rootTestlet null)');
       myReturn = false;
-      const oldTestId = localStorage.getItem(TestControllerComponent.localStorageTestKey);
+      const oldTestId = LocalStorage.getTestId();
       if (oldTestId) {
         this.router.navigate([`/t/${oldTestId}`]);
       } else {

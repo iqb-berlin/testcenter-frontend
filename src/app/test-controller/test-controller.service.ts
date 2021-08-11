@@ -47,6 +47,10 @@ export class TestControllerService {
   unitNextEnabled = false;
   unitListForNaviButtons: UnitNaviButtonData[] = [];
 
+  allUnitIds: string[] = [];
+
+  resumeTargetUnitId = 0;
+
   private _navigationDenial = new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>();
   get navigationDenial(): Observable<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }> {
     return this._navigationDenial;
@@ -381,10 +385,12 @@ export class TestControllerService {
           });
           break;
         case UnitNavigationTarget.NEXT:
+          // eslint-disable-next-line no-case-declarations
           let startWith = this.currentUnitSequenceId;
           if (startWith < this.minUnitSequenceId) {
             startWith = this.minUnitSequenceId - 1;
           }
+          // eslint-disable-next-line no-case-declarations
           const nextUnitSequenceId = this.rootTestlet.getNextUnlockedUnitSequenceId(startWith);
           if (nextUnitSequenceId > 0) {
             this.router.navigate([`/t/${this.testId}/u/${nextUnitSequenceId}`], { state: { force } });
