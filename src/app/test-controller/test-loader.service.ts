@@ -4,7 +4,7 @@ import {
   from, Observable, of, Subject, Subscription, throwError
 } from 'rxjs';
 import {
-  concatMap, first, switchMap, tap
+  concatMap, first, map, switchMap, take, tap
 } from 'rxjs/operators';
 import { CustomtextService } from 'iqb-components';
 import {
@@ -69,7 +69,17 @@ export class TestLoaderService {
         tap(testData => this.parseBooklet(testData)),
         switchMap(() => this.loadUnits()),
         first(),
-        switchMap(() => this.runTest())
+        switchMap(() => {
+          const rt$ = this.runTest();
+          rt$.subscribe({
+            next: n => console.log('n', n),
+            error: e => console.log('e', e),
+            complete: () => console.log('c')
+          });
+          return rt$;
+        }),
+        take(1),
+        tap(x => console.log("im here",x)),
       );
   }
 
@@ -142,7 +152,7 @@ export class TestLoaderService {
       sequence.push(i);
     }
 
-    const complete$ = new Subject<void>();
+    const continue$ = new Subject<void>();
 
     this.unitLoadSubscription = from(sequence)
       .pipe(
@@ -163,10 +173,10 @@ export class TestLoaderService {
           });
         },
         () => {
-          complete$.next();
+          continue$.next();
         }
       );
-    return complete$;
+    return continue$;
   }
 
   private loadUnit(myUnit: UnitDef, sequenceId: number): Observable<number> {
@@ -260,8 +270,10 @@ export class TestLoaderService {
             description: errorMessage.info,
             category: 'PROBLEM'
           });
+          continue$.error(errorMessage);
         },
         () => { // complete
+          console.log("KORMPLET", this.tcs.testMode.saveResponses, this.tcs.bookletConfig.loading_mode);
           if (this.tcs.testMode.saveResponses) {
             this.environment.loadTime = Date.now() - this.loadStartTimeStamp;
             this.bs.addTestLog(this.tcs.testId, [<StateReportEntry>{
@@ -274,9 +286,12 @@ export class TestLoaderService {
             this.tcs.resumeTargetUnitId = navTarget;
             this.tcs.setUnitNavigationRequest(navTarget.toString());
             this.tcs.testStatus$.next(this.newTestStatus);
-            if (this.tcs.testMode.saveResponses) {
-              continue$.complete();
-            }
+            setTimeout(
+              () => {
+                continue$.next();
+              },
+              500
+            );
           }
         }
       );
@@ -286,7 +301,7 @@ export class TestLoaderService {
       this.tcs.setUnitNavigationRequest(navTarget.toString());
       this.tcs.testStatus$.next(this.newTestStatus);
       if (this.tcs.testMode.saveResponses) {
-        continue$.complete();
+        continue$.next();
       }
     }
 

@@ -35,13 +35,16 @@ import { MaxTimerData } from './test-controller.classes';
   styleUrls: ['./test-controller.component.css']
 })
 export class TestControllerComponent implements OnInit, OnDestroy {
-  private errorReportingSubscription: Subscription = null;
-  private testStatusSubscription: Subscription = null;
-  private routingSubscription: Subscription = null;
-  private appWindowHasFocusSubscription: Subscription = null;
-  private appFocusSubscription: Subscription = null;
-  private commandSubscription: Subscription = null;
-  private maxTimerSubscription: Subscription = null;
+  private subscriptions: { [key: string]: Subscription|null } = {
+    errorReporting: null,
+    testStatus: null,
+    routing: null,
+    appWindowHasFocus: null,
+    appFocus: null,
+    command: null,
+    maxTimer: null,
+    connectionStatus: null
+  };
 
   private timerRunning = false;
 
@@ -74,19 +77,19 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.mds.errorReportingSilent = true;
       }
 
-      this.errorReportingSubscription = this.mds.appError$
+      this.subscriptions.errorReporting = this.mds.appError$
         .subscribe(e => this.tcs.handleError(e));
 
-      this.testStatusSubscription = this.tcs.testStatus$
+      this.subscriptions.testStatus = this.tcs.testStatus$
         .pipe(distinctUntilChanged())
         .subscribe(status => this.logTestControllerStatusChange(status));
 
-      this.appWindowHasFocusSubscription = this.mds.appWindowHasFocus$
+      this.subscriptions.appWindowHasFocus = this.mds.appWindowHasFocus$
         .subscribe(hasFocus => {
           this.tcs.windowFocusState$.next(hasFocus ? WindowFocusState.HOST : WindowFocusState.UNKNOWN);
         });
 
-      this.commandSubscription = this.cmd.command$
+      this.subscriptions.command = this.cmd.command$
         .pipe(
           distinctUntilChanged((command1: Command, command2: Command): boolean => (command1.id === command2.id))
         )
@@ -94,36 +97,23 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.handleCommand(command.keyword, command.arguments);
         });
 
-      this.routingSubscription = this.route.params
+      this.subscriptions.routing = this.route.params
         .pipe(
           switchMap(params => this.tls.loadTest(params.t))
         )
         .subscribe({
+          next: n => console.log("[NEXT]", n),
+          error: e => console.log("[ERR]", e),
           complete: () => {
-            this.addAppFocusSubscription();
+            // TODO STAND we never reach this point
+            console.log("KOMPLEET");
+            this.logAppFocus();
+            this.logConnectionStatus();
           }
         });
 
-      this.maxTimerSubscription = this.tcs.maxTimeTimer$
+      this.subscriptions.maxTimer = this.tcs.maxTimeTimer$
         .subscribe(maxTimerEvent => this.handleMaxTimer(maxTimerEvent));
-
-      this.cmd.connectionStatus$
-        .pipe(
-          tap(s => console.log('CONN', s)),
-          map(status => status === 'ws-online'),
-          tap(o => console.log('ONLI', o))
-          // distinctUntilChanged()
-        )
-        .subscribe(isWsConnected => {
-          console.log('ISCO', isWsConnected, this.tcs.testMode.saveResponses);
-          if (this.tcs.testMode.saveResponses) {
-            this.bs.updateTestState(this.tcs.testId, [{
-              key: TestStateKey.CONNECTION,
-              content: isWsConnected ? 'WEBSOCKET' : 'POLLING',
-              timeStamp: Date.now()
-            }]);
-          }
-        });
     });
   }
 
@@ -141,11 +131,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   };
 
-  private addAppFocusSubscription() {
-    if (this.appFocusSubscription !== null) {
-      this.appFocusSubscription.unsubscribe();
+  private logAppFocus() {
+    if (!this.tcs.testMode.saveResponses) {
+      return;
     }
-    this.appFocusSubscription = this.tcs.windowFocusState$.pipe(
+    if (this.subscriptions.appFocus !== null) {
+      this.subscriptions.appFocus.unsubscribe();
+    }
+    this.subscriptions.appFocus = this.tcs.windowFocusState$.pipe(
       debounceTime(500)
     ).subscribe((newState: WindowFocusState) => {
       if (this.tcs.testStatus$.getValue() === TestControllerState.ERROR) {
@@ -161,6 +154,26 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }]);
       }
     });
+  }
+
+  private logConnectionStatus() {
+    this.subscriptions.connectionStatus = this.cmd.connectionStatus$
+      .pipe(
+        tap(s => console.log('CONN', s)),
+        map(status => status === 'ws-online'),
+        tap(o => console.log('ONLI', o))
+        // distinctUntilChanged()
+      )
+      .subscribe(isWsConnected => {
+        console.log('ISCO', isWsConnected, this.tcs.testMode.saveResponses);
+        if (this.tcs.testMode.saveResponses) {
+          this.bs.updateTestState(this.tcs.testId, [{
+            key: TestStateKey.CONNECTION,
+            content: isWsConnected ? 'WEBSOCKET' : 'POLLING',
+            timeStamp: Date.now()
+          }]);
+        }
+      });
   }
 
   showReviewDialog(): void {
@@ -331,29 +344,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.routingSubscription !== null) {
-      this.routingSubscription.unsubscribe();
-    }
-    if (this.errorReportingSubscription !== null) {
-      this.errorReportingSubscription.unsubscribe();
-    }
-    if (this.testStatusSubscription !== null) {
-      this.testStatusSubscription.unsubscribe();
-    }
-    if (this.appWindowHasFocusSubscription !== null) {
-      this.appWindowHasFocusSubscription.unsubscribe();
-    }
-    if (this.appFocusSubscription !== null) {
-      this.appFocusSubscription.unsubscribe();
-    }
-    if (this.commandSubscription !== null) {
-      this.commandSubscription.unsubscribe();
-    }
+    Object.keys(this.subscriptions)
+      .forEach(subscriptionKey => {
+        this.subscriptions[subscriptionKey].unsubscribe();
+        this.subscriptions[subscriptionKey] = null;
+      });
     this.tls.reset();
-    if (this.maxTimerSubscription !== null) {
-      this.maxTimerSubscription.unsubscribe();
-      this.maxTimerSubscription = null;
-    }
 
     this.mds.progressVisualEnabled = true;
     this.mds.errorReportingSilent = false;
