@@ -1,16 +1,17 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { SelectionModel } from '@angular/cdk/collections';
 
 import { saveAs } from 'file-saver';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
-import { BackendService } from '../backend.service';
-import { SysCheckStatistics } from '../workspace.interfaces';
+
 import { MainDataService } from '../../maindata.service';
-import {WorkspaceDataService} from "../workspacedata.service";
+import { BackendService } from '../backend.service';
+import { WorkspaceDataService } from "../workspacedata.service";
+import { ReportType, SysCheckStatistics } from '../workspace.interfaces';
 
 @Component({
   templateUrl: './syscheck.component.html',
@@ -25,10 +26,10 @@ export class SyscheckComponent implements OnInit {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
-    public wds: WorkspaceDataService,
+    private mds: MainDataService,
     private bs: BackendService,
     private deleteConfirmDialog: MatDialog,
-    private mds: MainDataService,
+    public wds: WorkspaceDataService,
     public snackBar: MatSnackBar
   ) {
   }
@@ -65,14 +66,12 @@ export class SyscheckComponent implements OnInit {
 
   downloadReportsCSV(): void {
     if (this.tableselectionCheckbox.selected.length > 0) {
-      const selectedReports: string[] = [];
+      const dataIds: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
-        selectedReports.push(element.id);
+        dataIds.push(element.id);
       });
-      // TODO determine OS dependent line ending char and use this
       this.mds.setSpinnerOn();
-      this.bs.getSysCheckReport(this.wds.wsId, selectedReports, ';', '"', '\n').subscribe(
-      (response) => {
+      this.bs.getReport(this.wds.wsId, ReportType.SYSTEM_CHECK, dataIds).subscribe((response) => {
         this.mds.setSpinnerOff();
         if (response === false) {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});

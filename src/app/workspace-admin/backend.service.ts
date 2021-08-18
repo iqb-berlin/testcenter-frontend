@@ -1,18 +1,21 @@
 /* eslint-disable no-console */
 import { Injectable, Inject, SkipSelf } from '@angular/core';
-import {
-  HttpClient, HttpErrorResponse, HttpEvent, HttpEventType
-} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
+
 import { Observable, of } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
+
 import {
-  GetFileResponseData, SysCheckStatistics,
-  ReviewData, LogData, UnitResponse, ResultData
+  GetFileResponseData,
+  SysCheckStatistics,
+  ReviewData,
+  LogData,
+  UnitResponse,
+  ResultData,
+  ReportType
 } from './workspace.interfaces';
+import { FileDeletionReport, UploadReport, UploadResponse, UploadStatus } from './files/files.interfaces';
 import { ApiError, WorkspaceData } from '../app.interfaces';
-import {
-  FileDeletionReport, UploadReport, UploadResponse, UploadStatus
-} from './files/files.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -72,6 +75,12 @@ export class BackendService {
       );
   }
 
+  /**
+   *
+   * @param workspaceId
+   * @param groups
+   * @deprecated
+   */
   getResponses(workspaceId: string, groups: string[]): Observable<UnitResponse[]> {
     return this.http
       .get<UnitResponse[]>(`${this.serverUrl}workspace/${workspaceId}/responses`, { params: { groups: groups.join(',') } })
@@ -83,6 +92,12 @@ export class BackendService {
       );
   }
 
+  /**
+   *
+   * @param workspaceId
+   * @param groups
+   * @deprecated
+   */
   getLogs(workspaceId: string, groups: string[]): Observable<LogData[]> {
     return this.http
       .get<LogData[]>(`${this.serverUrl}workspace/${workspaceId}/logs`, { params: { groups: groups.join(',') } })
@@ -94,6 +109,12 @@ export class BackendService {
       );
   }
 
+  /**
+   *
+   * @param workspaceId
+   * @param groups
+   * @deprecated
+   */
   getReviews(workspaceId: string, groups: string[]): Observable<ReviewData[]> {
     return this.http
       .get<ReviewData[]>(`${this.serverUrl}workspace/${workspaceId}/reviews`, { params: { groups: groups.join(',') } })
@@ -128,6 +149,15 @@ export class BackendService {
       );
   }
 
+  /**
+   *
+   * @param workspaceId
+   * @param reports
+   * @param enclosure
+   * @param delimiter
+   * @param lineEnding
+   * @deprecated
+   */
   getSysCheckReport(workspaceId: string, reports: string[], enclosure: string, delimiter: string, lineEnding: string)
     : Observable<Blob | boolean> {
     return this.http
@@ -163,6 +193,26 @@ export class BackendService {
             not_allowed: [`deleteSysCheckReports Api-Error: ${err.code} ${err.info} `],
             did_not_exist: []
           });
+        })
+      );
+  }
+
+  getReport(workspaceId: string, reportType: ReportType, dataIds: string[]) : Observable<Blob | boolean> {
+    return this.http
+      .get(`${this.serverUrl}workspace/${workspaceId}/report/${reportType}`,
+        {
+          params: {
+            dataIds: dataIds.join(','),
+          },
+          headers: {
+            Accept: 'text/csv'
+          },
+          responseType: 'blob'
+        })
+      .pipe(
+        catchError((err: ApiError) => {
+          console.warn(`getReports Api-Error: ${err.code} ${err.info} `);
+          return of(false);
         })
       );
   }

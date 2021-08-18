@@ -1,17 +1,17 @@
-import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { SelectionModel } from '@angular/cdk/collections';
+
 import { saveAs } from 'file-saver';
+import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
+
+import { MainDataService } from '../../maindata.service';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
-import {
-  LogData, ResultData, UnitResponse, ReviewData
-} from '../workspace.interfaces';
-import { MainDataService } from '../../maindata.service';
+import { ReportType, ResultData } from '../workspace.interfaces';
 
 @Component({
   templateUrl: './results.component.html',
@@ -30,9 +30,9 @@ export class ResultsComponent implements OnInit {
 
   constructor(
     private bs: BackendService,
-    public wds: WorkspaceDataService,
     private deleteConfirmDialog: MatDialog,
     private mds: MainDataService,
+    public wds: WorkspaceDataService,
     public snackBar: MatSnackBar
   ) { }
 
@@ -73,61 +73,22 @@ export class ResultsComponent implements OnInit {
 
   downloadResponsesCSV(): void {
     if (this.tableselectionCheckbox.selected.length > 0) {
-      const selectedGroups: string[] = [];
+      const dataIds: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
-        selectedGroups.push(element.groupname);
+        dataIds.push(element.groupname);
       });
       this.mds.setSpinnerOn();
-      this.bs.getResponses(this.wds.wsId, selectedGroups).subscribe(
-      (responseData: UnitResponse[]) => {
+      this.bs.getReport(this.wds.wsId, ReportType.RESPONSE, dataIds).subscribe((response) => {
         this.mds.setSpinnerOff();
-        if (responseData.length > 0) {
-          const bom = '\ufeff';
-          const columnDelimiter = ';';
-          const lineDelimiter = '\n';
-          let myCsvData = 'groupname' + columnDelimiter
-              + 'loginname' + columnDelimiter
-              + 'code' + columnDelimiter
-              + 'bookletname' + columnDelimiter
-              + 'unitname' + columnDelimiter
-              + 'responses' + columnDelimiter
-              + 'restorePoint' + columnDelimiter
-              + 'responseType' + columnDelimiter
-              + 'response-ts' + columnDelimiter
-              + 'restorePoint-ts' + columnDelimiter
-              + 'laststate' + lineDelimiter;
-          responseData.forEach((resp: UnitResponse) => {
-            myCsvData += '"' + resp.groupname + '"' + columnDelimiter
-                + '"' + resp.loginname + '"' + columnDelimiter
-                + '"' + resp.code + '"' + columnDelimiter
-                + '"' + resp.bookletname + '"' + columnDelimiter
-                + '"' + resp.unitname + '"' + columnDelimiter;
-            if ((resp.responses !== null) && (resp.responses.length > 0)) {
-              myCsvData += resp.responses.replace(/\\"/g, '""') + columnDelimiter;
-            } else {
-              myCsvData += columnDelimiter;
-            }
-            if ((resp.restorepoint !== null) && (resp.restorepoint.length > 0)) {
-              myCsvData += resp.restorepoint.replace(/\\"/g, '""') + columnDelimiter;
-            } else {
-              myCsvData += columnDelimiter;
-            }
-            if ((resp.responsetype !== null) && (resp.responsetype.length > 0)) {
-              myCsvData += '"' + resp.responsetype + '"' + columnDelimiter;
-            } else {
-              myCsvData += columnDelimiter;
-            }
-            myCsvData += resp.responses_ts + columnDelimiter + resp.restorepoint_ts + columnDelimiter;
-            if ((resp.laststate !== null) && (resp.laststate.length > 0)) {
-              myCsvData += '"' + resp.laststate + '"' + lineDelimiter;
-            } else {
-              myCsvData += lineDelimiter;
-            }
-          });
-          const blob = new Blob([bom + myCsvData], {type: 'text/csv;charset=utf-8'});
-          saveAs(blob, 'iqb-testcenter-responses.csv');
-        } else {
+        if (response === false) {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
+        } else {
+          const reportData = response as Blob;
+          if (reportData.size > 0) {
+            saveAs(reportData, 'iqb-testcenter-responses.csv');
+          } else {
+            this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
+          }
         }
         this.tableselectionCheckbox.clear();
       });
@@ -136,60 +97,22 @@ export class ResultsComponent implements OnInit {
 
   downloadReviewsCSV(): void {
     if (this.tableselectionCheckbox.selected.length > 0) {
-      const selectedGroups: string[] = [];
+      const dataIds: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
-        selectedGroups.push(element.groupname);
+        dataIds.push(element.groupname);
       });
       this.mds.setSpinnerOn();
-      this.bs.getReviews(this.wds.wsId, selectedGroups).subscribe(
-      (responseData: ReviewData[]) => {
+      this.bs.getReport(this.wds.wsId, ReportType.REVIEW, dataIds).subscribe((response) => {
         this.mds.setSpinnerOff();
-        if (responseData.length > 0) {
-          // collect categories
-          const allCategories: string[] = [];
-          responseData.forEach((resp: ReviewData) => {
-            resp.categories.split(' ').forEach(s => {
-              const s_trimmed = s.trim();
-              if (s_trimmed.length > 0) {
-                if (!allCategories.includes(s_trimmed)) {
-                  allCategories.push(s_trimmed);
-                }
-              }
-            });
-          });
-
-          const bom = '\ufeff';
-          const columnDelimiter = ';';
-          const lineDelimiter = '\n';
-          let myCsvData = 'groupname' + columnDelimiter + 'loginname' + columnDelimiter + 'code' + columnDelimiter +
-              'bookletname' + columnDelimiter + 'unitname' + columnDelimiter +
-              'priority' + columnDelimiter;
-          allCategories.forEach(s => {
-            myCsvData += 'category: ' + s + columnDelimiter;
-          });
-          myCsvData += 'reviewtime' + columnDelimiter + 'entry' + lineDelimiter;
-
-          responseData.forEach((resp: ReviewData) => {
-            if ((resp.entry !== null) && (resp.entry.length > 0)) {
-              myCsvData += '"' + resp.groupname + '"' + columnDelimiter + '"' + resp.loginname + '"' +
-                columnDelimiter + '"' + resp.code + '"' + columnDelimiter + '"' + resp.bookletname + '"' +
-                columnDelimiter + '"' + resp.unitname + '"' + columnDelimiter  + '"' +
-                resp.priority  + '"' + columnDelimiter;
-              const resp_categories = resp.categories.split(' ');
-              allCategories.forEach(s => {
-                if (resp_categories.includes(s)) {
-                  myCsvData += '"X"' + columnDelimiter;
-                } else {
-                  myCsvData += columnDelimiter;
-                }
-              });
-              myCsvData += '"' + resp.reviewtime + '"' + columnDelimiter  + '"' +  resp.entry  + '"' + lineDelimiter;
-            }
-          });
-          const blob = new Blob([bom + myCsvData], {type: 'text/csv;charset=utf-8'});
-          saveAs(blob, 'iqb-testcenter-reviews.csv');
-        } else {
+        if (response === false) {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
+        } else {
+          const reportData = response as Blob;
+          if (reportData.size > 0) {
+            saveAs(reportData, 'iqb-testcenter-reviews.csv');
+          } else {
+            this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
+          }
         }
         this.tableselectionCheckbox.clear();
       });
@@ -198,32 +121,22 @@ export class ResultsComponent implements OnInit {
 
   downloadLogsCSV(): void {
     if (this.tableselectionCheckbox.selected.length > 0) {
-      const selectedGroups: string[] = [];
+      const dataIds: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
-        selectedGroups.push(element.groupname);
+        dataIds.push(element.groupname);
       });
       this.mds.setSpinnerOn();
-      this.bs.getLogs(this.wds.wsId, selectedGroups).subscribe(
-      (responseData: LogData[]) => {
+      this.bs.getReport(this.wds.wsId, ReportType.LOG, dataIds).subscribe((response) => {
         this.mds.setSpinnerOff();
-        if (responseData.length > 0) {
-          const bom = '\ufeff';
-          const columnDelimiter = ';';
-          const lineDelimiter = '\n';
-          let myCsvData = 'groupname' + columnDelimiter + 'loginname' + columnDelimiter + 'code' + columnDelimiter +
-              'bookletname' + columnDelimiter + 'unitname' + columnDelimiter +
-              'timestamp' + columnDelimiter + 'logentry' + lineDelimiter;
-          responseData.forEach((resp: LogData) => {
-            if ((resp.logentry !== null) && (resp.logentry.length > 0)) {
-             myCsvData += '"' + resp.groupname + '"' + columnDelimiter + '"' + resp.loginname + '"' + columnDelimiter + '"' + resp.code + '"' + columnDelimiter +
-              '"' + resp.bookletname + '"' + columnDelimiter + '"' + resp.unitname + '"' + columnDelimiter  + '"' +
-              resp.timestamp.toString() + '"' + columnDelimiter  + resp.logentry.replace(/\\"/g, '""')  + lineDelimiter;
-            }
-          });
-          const blob = new Blob([bom + myCsvData], {type: 'text/csv;charset=utf-8'});
-          saveAs(blob, 'iqb-testcenter-logs.csv');
-        } else {
+        if (response === false) {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
+        } else {
+          const reportData = response as Blob;
+          if (reportData.size > 0) {
+            saveAs(reportData, 'iqb-testcenter-logs.csv');
+          } else {
+            this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
+          }
         }
         this.tableselectionCheckbox.clear();
       });

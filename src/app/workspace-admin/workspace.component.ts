@@ -3,9 +3,9 @@ import { ActivatedRoute } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 
-import { WorkspaceDataService } from './workspacedata.service';
-import { BackendService } from './backend.service';
 import { MainDataService } from '../maindata.service';
+import { BackendService } from './backend.service';
+import { WorkspaceDataService } from './workspacedata.service';
 
 @Component({
   templateUrl: './workspace.component.html',
