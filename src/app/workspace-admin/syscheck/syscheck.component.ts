@@ -5,7 +5,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { saveAs } from 'file-saver';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 
 import { MainDataService } from '../../maindata.service';
@@ -70,21 +69,10 @@ export class SyscheckComponent implements OnInit {
       this.tableselectionCheckbox.selected.forEach(element => {
         dataIds.push(element.id);
       });
-      this.mds.setSpinnerOn();
-      this.bs.getReport(this.wds.wsId, ReportType.SYSTEM_CHECK, dataIds).subscribe((response) => {
-        this.mds.setSpinnerOff();
-        if (response === false) {
-          this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
-        } else {
-          const reportData = response as Blob;
-          if (reportData.size > 0) {
-            saveAs(reportData, 'iqb-testcenter-syscheckreports.csv');
-          } else {
-            this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
-          }
-          this.tableselectionCheckbox.clear();
-        }
-      });
+
+      this.wds.downloadReport(dataIds, ReportType.SYSTEM_CHECK, 'iqb-testcenter-syscheckreports.csv');
+
+      this.tableselectionCheckbox.clear();
     }
   }
 

@@ -5,7 +5,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { saveAs } from 'file-saver';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 
 import { MainDataService } from '../../maindata.service';
@@ -72,74 +71,28 @@ export class ResultsComponent implements OnInit {
   }
 
   downloadResponsesCSV(): void {
-    if (this.tableselectionCheckbox.selected.length > 0) {
-      const dataIds: string[] = [];
-      this.tableselectionCheckbox.selected.forEach(element => {
-        dataIds.push(element.groupname);
-      });
-      this.mds.setSpinnerOn();
-      this.bs.getReport(this.wds.wsId, ReportType.RESPONSE, dataIds).subscribe((response) => {
-        this.mds.setSpinnerOff();
-        if (response === false) {
-          this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
-        } else {
-          const reportData = response as Blob;
-          if (reportData.size > 0) {
-            saveAs(reportData, 'iqb-testcenter-responses.csv');
-          } else {
-            this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
-          }
-        }
-        this.tableselectionCheckbox.clear();
-      });
-    }
+    this.downloadCSVReport(ReportType.RESPONSE, 'iqb-testcenter-responses.csv');
   }
 
   downloadReviewsCSV(): void {
-    if (this.tableselectionCheckbox.selected.length > 0) {
-      const dataIds: string[] = [];
-      this.tableselectionCheckbox.selected.forEach(element => {
-        dataIds.push(element.groupname);
-      });
-      this.mds.setSpinnerOn();
-      this.bs.getReport(this.wds.wsId, ReportType.REVIEW, dataIds).subscribe((response) => {
-        this.mds.setSpinnerOff();
-        if (response === false) {
-          this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
-        } else {
-          const reportData = response as Blob;
-          if (reportData.size > 0) {
-            saveAs(reportData, 'iqb-testcenter-reviews.csv');
-          } else {
-            this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
-          }
-        }
-        this.tableselectionCheckbox.clear();
-      });
-    }
+    this.downloadCSVReport(ReportType.REVIEW, 'iqb-testcenter-reviews.csv');
   }
 
   downloadLogsCSV(): void {
+    this.downloadCSVReport(ReportType.LOG, 'iqb-testcenter-logs.csv');
+  }
+
+  downloadCSVReport(reportType: ReportType, filename: string): void {
     if (this.tableselectionCheckbox.selected.length > 0) {
       const dataIds: string[] = [];
+
       this.tableselectionCheckbox.selected.forEach(element => {
         dataIds.push(element.groupname);
       });
-      this.mds.setSpinnerOn();
-      this.bs.getReport(this.wds.wsId, ReportType.LOG, dataIds).subscribe((response) => {
-        this.mds.setSpinnerOff();
-        if (response === false) {
-          this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
-        } else {
-          const reportData = response as Blob;
-          if (reportData.size > 0) {
-            saveAs(reportData, 'iqb-testcenter-logs.csv');
-          } else {
-            this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
-          }
-        }
-        this.tableselectionCheckbox.clear();
-      });
+
+      this.wds.downloadReport(dataIds, reportType, filename);
+
+      this.tableselectionCheckbox.clear();
     }
   }
 
