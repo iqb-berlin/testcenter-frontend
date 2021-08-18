@@ -4,6 +4,7 @@ import {
 import { Subscription } from 'rxjs';
 import { BackendService } from '../../backend.service';
 import { UploadReport, UploadStatus } from '../files.interfaces';
+import {WorkspaceDataService} from "../../workspacedata.service";
 
 @Component({
   selector: 'iqb-files-upload',
@@ -14,7 +15,8 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
   @HostBinding('class') myclass = 'iqb-files-upload';
 
   constructor(
-    private bs: BackendService
+    private bs: BackendService,
+    public wds: WorkspaceDataService
   ) { }
 
   private _status: UploadStatus;
@@ -98,7 +100,7 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.fileUploadSubscription = this.bs.uploadFile(formData)
+    this.fileUploadSubscription = this.bs.uploadFile(this.wds.wsId, formData)
       .subscribe(res => {
         this.requestResponse = res.report;
         this.status = res.status;

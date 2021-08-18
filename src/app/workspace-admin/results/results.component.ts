@@ -49,7 +49,7 @@ export class ResultsComponent implements OnInit {
       this.resultDataSource = new MatTableDataSource<ResultData>([]);
       this.mds.setSpinnerOff();
     } else {
-      this.bs.getResultData().subscribe(
+      this.bs.getResultData(this.wds.wsId).subscribe(
         (resultData: ResultData[]) => {
           this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
           this.resultDataSource.sort = this.sort;
@@ -78,7 +78,7 @@ export class ResultsComponent implements OnInit {
         selectedGroups.push(element.groupname);
       });
       this.mds.setSpinnerOn();
-      this.bs.getResponses(selectedGroups).subscribe(
+      this.bs.getResponses(this.wds.wsId, selectedGroups).subscribe(
       (responseData: UnitResponse[]) => {
         this.mds.setSpinnerOff();
         if (responseData.length > 0) {
@@ -141,7 +141,7 @@ export class ResultsComponent implements OnInit {
         selectedGroups.push(element.groupname);
       });
       this.mds.setSpinnerOn();
-      this.bs.getReviews(selectedGroups).subscribe(
+      this.bs.getReviews(this.wds.wsId, selectedGroups).subscribe(
       (responseData: ReviewData[]) => {
         this.mds.setSpinnerOff();
         if (responseData.length > 0) {
@@ -203,7 +203,7 @@ export class ResultsComponent implements OnInit {
         selectedGroups.push(element.groupname);
       });
       this.mds.setSpinnerOn();
-      this.bs.getLogs(selectedGroups).subscribe(
+      this.bs.getLogs(this.wds.wsId, selectedGroups).subscribe(
       (responseData: LogData[]) => {
         this.mds.setSpinnerOff();
         if (responseData.length > 0) {
@@ -257,7 +257,7 @@ export class ResultsComponent implements OnInit {
       dialogRef.afterClosed().subscribe((result) => {
         if (result !== false) {
           this.mds.setSpinnerOn();
-          this.bs.deleteData(selectedGroups).subscribe((ok: boolean) => {
+          this.bs.deleteData(this.wds.wsId, selectedGroups).subscribe((ok: boolean) => {
             if (ok) {
               this.snackBar.open('Löschen erfolgreich.', 'Ok.', { duration: 3000 });
             } else {

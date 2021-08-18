@@ -10,6 +10,7 @@ import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 import { BackendService } from '../backend.service';
 import { SysCheckStatistics } from '../workspace.interfaces';
 import { MainDataService } from '../../maindata.service';
+import {WorkspaceDataService} from "../workspacedata.service";
 
 @Component({
   templateUrl: './syscheck.component.html',
@@ -24,6 +25,7 @@ export class SyscheckComponent implements OnInit {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
+    public wds: WorkspaceDataService,
     private bs: BackendService,
     private deleteConfirmDialog: MatDialog,
     private mds: MainDataService,
@@ -40,7 +42,7 @@ export class SyscheckComponent implements OnInit {
 
   updateTable(): void {
     this.tableselectionCheckbox.clear();
-    this.bs.getSysCheckReportList().subscribe(
+    this.bs.getSysCheckReportList(this.wds.wsId).subscribe(
       (resultData: SysCheckStatistics[]) => {
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);
         this.resultDataSource.sort = this.sort;
@@ -69,7 +71,7 @@ export class SyscheckComponent implements OnInit {
       });
       // TODO determine OS dependent line ending char and use this
       this.mds.setSpinnerOn();
-      this.bs.getSysCheckReport(selectedReports, ';', '"', '\n').subscribe(
+      this.bs.getSysCheckReport(this.wds.wsId, selectedReports, ';', '"', '\n').subscribe(
       (response) => {
         this.mds.setSpinnerOff();
         if (response === false) {
@@ -114,7 +116,7 @@ export class SyscheckComponent implements OnInit {
       dialogRef.afterClosed().subscribe((result) => {
         if (result !== false) {
           this.mds.setSpinnerOn();
-          this.bs.deleteSysCheckReports(selectedReports).subscribe((fileDeletionReport) => {
+          this.bs.deleteSysCheckReports(this.wds.wsId, selectedReports).subscribe((fileDeletionReport) => {
             const message = [];
             if (fileDeletionReport.deleted.length > 0) {
               message.push(`${fileDeletionReport.deleted.length} Berichte erfolgreich gelöscht.`);
