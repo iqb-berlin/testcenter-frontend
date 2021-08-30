@@ -82,6 +82,7 @@ export class ResultsComponent implements OnInit {
       (responseData: UnitResponse[]) => {
         this.mds.setSpinnerOff();
         if (responseData.length > 0) {
+          const bom = '\ufeff';
           const columnDelimiter = ';';
           const lineDelimiter = '\n';
           let myCsvData = 'groupname' + columnDelimiter
@@ -115,7 +116,7 @@ export class ResultsComponent implements OnInit {
               myCsvData += lineDelimiter;
             }
           });
-          const blob = new Blob([myCsvData], {type: 'text/csv;charset=utf-8'});
+          const blob = new Blob([bom + myCsvData], {type: 'text/csv;charset=utf-8'});
           saveAs(blob, 'iqb-testcenter-responses.csv');
         } else {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
@@ -149,6 +150,7 @@ export class ResultsComponent implements OnInit {
             });
           });
 
+          const bom = '\ufeff';
           const columnDelimiter = ';';
           const lineDelimiter = '\n';
           let myCsvData = 'groupname' + columnDelimiter + 'loginname' + columnDelimiter + 'code' + columnDelimiter +
@@ -176,7 +178,7 @@ export class ResultsComponent implements OnInit {
               myCsvData += '"' + resp.reviewtime + '"' + columnDelimiter  + '"' +  resp.entry  + '"' + lineDelimiter;
             }
           });
-          const blob = new Blob([myCsvData], {type: 'text/csv;charset=utf-8'});
+          const blob = new Blob([bom + myCsvData], {type: 'text/csv;charset=utf-8'});
           saveAs(blob, 'iqb-testcenter-reviews.csv');
         } else {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
@@ -197,6 +199,7 @@ export class ResultsComponent implements OnInit {
       (responseData: LogData[]) => {
         this.mds.setSpinnerOff();
         if (responseData.length > 0) {
+          const bom = '\ufeff';
           const columnDelimiter = ';';
           const lineDelimiter = '\n';
           let myCsvData = 'groupname' + columnDelimiter + 'loginname' + columnDelimiter + 'code' + columnDelimiter +
@@ -209,7 +212,7 @@ export class ResultsComponent implements OnInit {
               resp.timestamp.toString() + '"' + columnDelimiter  + resp.logentry.replace(/\\"/g, '""')  + lineDelimiter;
             }
           });
-          const blob = new Blob([myCsvData], {type: 'text/csv;charset=utf-8'});
+          const blob = new Blob([bom + myCsvData], {type: 'text/csv;charset=utf-8'});
           saveAs(blob, 'iqb-testcenter-logs.csv');
         } else {
           this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
