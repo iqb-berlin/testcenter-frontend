@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 import { Inject, Injectable } from '@angular/core';
 import {
-  from, Observable, of, Subject, Subscription, throwError
+  from, Observable, of, Subscription, throwError
 } from 'rxjs';
 import {
-  concatMap, first, map, switchMap, take, tap
+  concatMap, switchMap, tap
 } from 'rxjs/operators';
 import { CustomtextService } from 'iqb-components';
 import {
@@ -18,7 +18,6 @@ import { TestMode } from '../config/test-mode';
 import {
   EnvironmentData, NavigationLeaveRestrictions, Testlet, UnitDef
 } from './test-controller.classes';
-import { ApiError } from '../app.interfaces';
 import { MainDataService } from '../maindata.service';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
@@ -51,11 +50,11 @@ export class TestLoaderService {
   ) {
   }
 
-  loadTest(testId: string): Observable<void> {
+  async loadTest(testId: string): Promise<void> {
     if (this.tcs.testStatus$.getValue() === TestControllerState.ERROR) {
       // TODO does this make sense?
       // eslint-disable-next-line no-void
-      return of(void 0);
+      return of(void 0).toPromise();
     }
 
     this.reset();
@@ -64,37 +63,33 @@ export class TestLoaderService {
     this.tcs.testId = testId;
     LocalStorage.setTestId(testId);
 
-    return this.bs.getTestData(this.tcs.testId)
-      .pipe(
-        tap(testData => this.parseBooklet(testData)),
-        switchMap(() => this.loadUnits()),
-        first(),
-        switchMap(() => {
-          const rt$ = this.runTest();
-          rt$.subscribe({
-            next: n => console.log('n', n),
-            error: e => console.log('e', e),
-            complete: () => console.log('c')
-          });
-          return rt$;
-        }),
-        take(1),
-        tap(x => console.log("im here",x)),
-      );
+    const testData = await this.bs.getTestData(this.tcs.testId).toPromise();
+    this.parseBooklet(testData);
+
+    this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
+    if (this.tcs.clearCodeTestlets.length > 0) {
+      this.tcs.rootTestlet.clearTestletCodes(this.tcs.clearCodeTestlets);
+    }
+
+    await this.loadUnits();
+    this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
+    this.setUpResumeNavTarget();
+    return this.loadContentsOfUnits(); // the promise resolves, when the is allowed to start
   }
 
   reset(): void {
+    this.unsubscribeTestSubscriptions();
+
     // Reset TestMode to be Demo, before the correct one comes with getTestData
     // TODO maybe it would be better to retrieve the testmode from the login
     this.tcs.testMode = new TestMode();
-
-    this.unsubscribeTestSubscriptions();
-
-    this.environment = new EnvironmentData(this.appVersion);
     this.tcs.resetDataStore();
-    this.loadStartTimeStamp = Date.now();
     this.tcs.loadProgressValue = 0;
     this.tcs.loadComplete = false;
+
+    this.environment = new EnvironmentData(this.appVersion);
+    this.loadStartTimeStamp = Date.now();
+    this.unitLoadQueue = [];
   }
 
   private parseBooklet(testData: TestData): void {
@@ -140,52 +135,28 @@ export class TestLoaderService {
     }
   }
 
-  private loadUnits(): Observable<void> {
-    this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
-    if (this.tcs.clearCodeTestlets.length > 0) {
-      this.tcs.rootTestlet.clearTestletCodes(this.tcs.clearCodeTestlets);
-    }
-
+  private loadUnits(): Promise<number> {
     this.loadedUnitCount = 0;
     const sequence = [];
     for (let i = 1; i < this.tcs.maxUnitSequenceId + 1; i++) {
       sequence.push(i);
     }
-
-    const continue$ = new Subject<void>();
-
-    this.unitLoadSubscription = from(sequence)
+    const loadingUnits = from(sequence)
       .pipe(
-        concatMap(uSequ => {
-          const ud = this.tcs.rootTestlet.getUnitAt(uSequ);
-          return this.loadUnit(ud.unitDef, uSequ);
-        })
-      )
-      .subscribe(
-        () => {
-          this.incrementProgressValueBy1();
-        },
-        (error: ApiError) => {
-          this.mds.appError$.next({
-            label: 'Problem beim Laden der Unit',
-            description: error.info,
-            category: 'PROBLEM'
-          });
-        },
-        () => {
-          continue$.next();
-        }
+        tap(() => this.incrementProgressValueBy1()),
+        concatMap(nr => this.loadUnit(this.tcs.rootTestlet.getUnitAt(nr).unitDef, nr))
       );
-    return continue$;
+
+    return loadingUnits.toPromise();
   }
 
-  private loadUnit(myUnit: UnitDef, sequenceId: number): Observable<number> {
-    myUnit.setCanEnter('n', 'Fehler beim Laden');
-    return this.bs.getUnitData(this.tcs.testId, myUnit.id, myUnit.alias)
+  private loadUnit(unitDef: UnitDef, sequenceId: number): Observable<number> {
+    unitDef.setCanEnter('n', 'Fehler beim Laden');
+    return this.bs.getUnitData(this.tcs.testId, unitDef.id, unitDef.alias)
       .pipe(
         switchMap(unit => {
           if (typeof unit === 'boolean') {
-            return throwError(`error requesting unit ${this.tcs.testId}/${myUnit.id}`);
+            return throwError(`error requesting unit ${this.tcs.testId}/${unitDef.id}`);
           }
           this.tcs.setOldUnitPresentationProgress(sequenceId, unit.state[UnitStateKey.PRESENTATION_PROGRESS]);
           this.tcs.setOldUnitDataCurrentPage(sequenceId, unit.state[UnitStateKey.CURRENT_PAGE_ID]);
@@ -195,10 +166,10 @@ export class TestLoaderService {
             // TODO why has the above to be done. an issue in the simple-player?
             this.tcs.addUnitStateDataParts(sequenceId, dataParts);
           } catch (error) {
-            console.warn(`error parsing unit state ${this.tcs.testId}/${myUnit.id} (${error.toString()})`, unit.data);
+            console.warn(`error parsing unit state ${this.tcs.testId}/${unitDef.id} (${error.toString()})`, unit.data);
           }
 
-          myUnit.playerId = unit.playerId;
+          unitDef.playerId = unit.playerId;
           if (unit.definitionRef) {
             this.unitLoadQueue.push(<TaggedString>{
               tag: sequenceId.toString(),
@@ -207,7 +178,7 @@ export class TestLoaderService {
           } else {
             this.tcs.addUnitDefinition(sequenceId, unit.definition);
           }
-          myUnit.setCanEnter('y', '');
+          unitDef.setCanEnter('y', '');
 
           if (this.tcs.hasPlayer(unit.playerId)) {
             return of(sequenceId);
@@ -230,8 +201,7 @@ export class TestLoaderService {
       );
   }
 
-  private runTest(): Observable<void> {
-    this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
+  private setUpResumeNavTarget() : void {
     let navTarget = 1;
     if (this.navTargetUnitId) {
       const tmpNavTarget = this.tcs.rootTestlet.getSequenceIdByUnitAlias(this.navTargetUnitId);
@@ -240,72 +210,54 @@ export class TestLoaderService {
       }
     }
     this.tcs.updateMinMaxUnitSequenceId(navTarget);
+    this.tcs.resumeTargetUnitId = navTarget;
     this.loadedUnitCount = 0;
+  }
 
-    const continue$ = new Subject<void>();
+  private loadContentsOfUnits(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.unitLoadBlobSubscription = from(this.unitLoadQueue)
+        .pipe(
+          concatMap(queueEntry => {
+            const unitSequ = Number(queueEntry.tag);
+            if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
+              this.incrementProgressValueBy1();
+            }
+            // avoid to load unit def if not necessary
+            if (unitSequ < this.tcs.minUnitSequenceId) {
+              return of(<TaggedString>{ tag: unitSequ.toString(), value: '' });
+            }
+            return this.bs.getResource(this.tcs.testId, queueEntry.tag, queueEntry.value);
+          })
+        )
+        .subscribe({
+          next: (def: TaggedString) => {
+            this.tcs.addUnitDefinition(Number(def.tag), def.value);
+          },
+          error: reject,
+          complete: () => {
+            if (this.tcs.testMode.saveResponses) {
+              this.environment.loadTime = Date.now() - this.loadStartTimeStamp;
+              this.bs.addTestLog(this.tcs.testId, [<StateReportEntry>{
+                key: TestLogEntryKey.LOADCOMPLETE, timeStamp: Date.now(), content: JSON.stringify(this.environment)
+              }]);
+            }
+            this.tcs.loadProgressValue = 100;
+            this.tcs.loadComplete = true;
+            if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
+              this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitId.toString());
+              this.tcs.testStatus$.next(this.newTestStatus);
+              resolve();
+            }
+          }
+        });
 
-    this.unitLoadBlobSubscription = from(this.unitLoadQueue)
-      .pipe(
-        concatMap(queueEntry => {
-          const unitSequ = Number(queueEntry.tag);
-          if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
-            this.incrementProgressValueBy1();
-          }
-          // avoid to load unit def if not necessary
-          if (unitSequ < this.tcs.minUnitSequenceId) {
-            return of(<TaggedString>{ tag: unitSequ.toString(), value: '' });
-          }
-          return this.bs.getResource(this.tcs.testId, queueEntry.tag, queueEntry.value);
-        })
-      )
-      .subscribe(
-        (def: TaggedString) => {
-          this.tcs.addUnitDefinition(Number(def.tag), def.value);
-        },
-        (errorMessage: ApiError) => { // TODO even this could be omitted, interceptor does the job
-          this.mds.setSpinnerOff();
-          console.warn(errorMessage.info);
-          this.mds.appError$.next({
-            label: 'Problem beim Laden einer Unit',
-            description: errorMessage.info,
-            category: 'PROBLEM'
-          });
-          continue$.error(errorMessage);
-        },
-        () => { // complete
-          console.log("KORMPLET", this.tcs.testMode.saveResponses, this.tcs.bookletConfig.loading_mode);
-          if (this.tcs.testMode.saveResponses) {
-            this.environment.loadTime = Date.now() - this.loadStartTimeStamp;
-            this.bs.addTestLog(this.tcs.testId, [<StateReportEntry>{
-              key: TestLogEntryKey.LOADCOMPLETE, timeStamp: Date.now(), content: JSON.stringify(this.environment)
-            }]);
-          }
-          this.tcs.loadProgressValue = 100;
-          this.tcs.loadComplete = true;
-          if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
-            this.tcs.resumeTargetUnitId = navTarget;
-            this.tcs.setUnitNavigationRequest(navTarget.toString());
-            this.tcs.testStatus$.next(this.newTestStatus);
-            setTimeout(
-              () => {
-                continue$.next();
-              },
-              500
-            );
-          }
-        }
-      );
-
-    if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
-      this.tcs.resumeTargetUnitId = navTarget;
-      this.tcs.setUnitNavigationRequest(navTarget.toString());
-      this.tcs.testStatus$.next(this.newTestStatus);
-      if (this.tcs.testMode.saveResponses) {
-        continue$.next();
+      if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
+        this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitId.toString());
+        this.tcs.testStatus$.next(this.newTestStatus);
+        resolve();
       }
-    }
-
-    return continue$;
+    });
   }
 
   private unsubscribeTestSubscriptions() {

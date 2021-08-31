@@ -7,7 +7,7 @@ import {
   Subscription
 } from 'rxjs';
 import {
-  debounceTime, distinctUntilChanged, map, switchMap, tap
+  debounceTime, distinctUntilChanged, map, tap
 } from 'rxjs/operators';
 import { CustomtextService } from 'iqb-components';
 import { MatDialog } from '@angular/material/dialog';
@@ -98,18 +98,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         });
 
       this.subscriptions.routing = this.route.params
-        .pipe(
-          switchMap(params => this.tls.loadTest(params.t))
-        )
-        .subscribe({
-          next: n => console.log("[NEXT]", n),
-          error: e => console.log("[ERR]", e),
-          complete: () => {
-            // TODO STAND we never reach this point
-            console.log("KOMPLEET");
-            this.logAppFocus();
-            this.logConnectionStatus();
-          }
+        .subscribe(params => {
+          this.tls.loadTest(params.t)
+            .then(() => {
+              this.logAppFocus();
+              this.logConnectionStatus();
+            });
         });
 
       this.subscriptions.maxTimer = this.tcs.maxTimeTimer$
@@ -345,6 +339,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     Object.keys(this.subscriptions)
+      .filter(subscriptionKey => this.subscriptions[subscriptionKey])
       .forEach(subscriptionKey => {
         this.subscriptions[subscriptionKey].unsubscribe();
         this.subscriptions[subscriptionKey] = null;
