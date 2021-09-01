@@ -42,7 +42,6 @@ export class TestLoaderService {
   constructor(
     @Inject('APP_VERSION') public appVersion: string,
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
-    private mds: MainDataService,
     public tcs: TestControllerService,
     private bs: BackendService,
     private cts: CustomtextService
@@ -50,12 +49,6 @@ export class TestLoaderService {
   }
 
   async loadTest(testId: string): Promise<void> {
-    if (this.tcs.testStatus$.getValue() === TestControllerState.ERROR) {
-      // TODO does this make sense?
-      // eslint-disable-next-line no-void
-      return of(void 0).toPromise();
-    }
-
     this.reset();
 
     this.tcs.testStatus$.next(TestControllerState.LOADING);
@@ -118,19 +111,8 @@ export class TestLoaderService {
     }
     this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
 
-    document.documentElement.style.setProperty('--tc-unit-title-height',
-      this.tcs.bookletConfig.unit_title === 'ON' ? this.mds.defaultTcUnitTitleHeight : '0');
-    document.documentElement.style.setProperty('--tc-header-height',
-      this.tcs.bookletConfig.unit_screenheader === 'OFF' ? '0' : this.mds.defaultTcHeaderHeight);
-    document.documentElement.style.setProperty('--tc-unit-page-nav-height',
-      this.tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' ? this.mds.defaultTcUnitPageNavHeight : '0');
-
     if (this.tcs.rootTestlet === null) {
-      this.mds.appError$.next({
-        label: 'Problem beim Parsen der Testinformation',
-        description: '',
-        category: 'PROBLEM'
-      });
+      throw Error('Problem beim Parsen der Testinformation');
     }
   }
 

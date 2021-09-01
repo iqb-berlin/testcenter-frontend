@@ -101,8 +101,16 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         .subscribe(params => {
           this.tls.loadTest(params.t)
             .then(() => {
-              this.logAppFocus();
-              this.logConnectionStatus();
+              this.applyUiSettings();
+              this.startAppFocusLogging();
+              this.startConnectionStatusLogging();
+            })
+            .catch(errorMessage => {
+              this.mds.appError$.next({
+                label: 'Test konnte nicht geladen werden',
+                description: errorMessage,
+                category: 'PROBLEM'
+              });
             });
         });
 
@@ -125,7 +133,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   };
 
-  private logAppFocus() {
+  private startAppFocusLogging() {
     if (!this.tcs.testMode.saveResponses) {
       return;
     }
@@ -150,7 +158,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     });
   }
 
-  private logConnectionStatus() {
+  private startConnectionStatusLogging() {
     this.subscriptions.connectionStatus = this.cmd.connectionStatus$
       .pipe(
         tap(s => console.log('CONN', s)),
@@ -335,6 +343,22 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         break;
       default:
     }
+  }
+
+  private applyUiSettings(): void {
+    // TODO has this to be done as CSS-vars? better use the angular way of doing it
+    document.documentElement.style.setProperty(
+      '--tc-unit-title-height',
+      this.tcs.bookletConfig.unit_title === 'ON' ? this.mds.defaultTcUnitTitleHeight : '0'
+    );
+    document.documentElement.style.setProperty(
+      '--tc-header-height',
+      this.tcs.bookletConfig.unit_screenheader === 'OFF' ? '0' : this.mds.defaultTcHeaderHeight
+    );
+    document.documentElement.style.setProperty(
+      '--tc-unit-page-nav-height',
+      this.tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' ? this.mds.defaultTcUnitPageNavHeight : '0'
+    );
   }
 
   ngOnDestroy(): void {
