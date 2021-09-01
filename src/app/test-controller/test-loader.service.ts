@@ -30,7 +30,6 @@ import { BookletConfig } from '../config/booklet-config';
 })
 export class TestLoaderService {
   private loadStartTimeStamp = 0;
-  private unitLoadSubscription: Subscription = null;
   private unitLoadBlobSubscription: Subscription = null;
   private environment: EnvironmentData;
   private lastUnitSequenceId = 0;
@@ -261,10 +260,6 @@ export class TestLoaderService {
   }
 
   private unsubscribeTestSubscriptions() {
-    if (this.unitLoadSubscription !== null) {
-      this.unitLoadSubscription.unsubscribe();
-      this.unitLoadSubscription = null;
-    }
     if (this.unitLoadBlobSubscription !== null) {
       this.unitLoadBlobSubscription.unsubscribe();
       this.unitLoadBlobSubscription = null;
