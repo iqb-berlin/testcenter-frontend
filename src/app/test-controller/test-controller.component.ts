@@ -106,9 +106,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               this.startConnectionStatusLogging();
             })
             .catch(errorMessage => {
+              const msg = (errorMessage.info) ? errorMessage.info : errorMessage;
               this.mds.appError$.next({
                 label: 'Test konnte nicht geladen werden',
-                description: errorMessage,
+                description: msg,
                 category: 'PROBLEM'
               });
             });
