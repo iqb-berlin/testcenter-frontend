@@ -30,11 +30,11 @@ import { BookletConfig } from '../config/booklet-config';
 })
 export class TestLoaderService {
   private loadStartTimeStamp = 0;
-  private unitLoadBlobSubscription: Subscription = null;
+  private unitContentLoadSubscription: Subscription = null;
   private environment: EnvironmentData;
   private lastUnitSequenceId = 0;
   private loadedUnitCount = 0;
-  private unitLoadQueue: TaggedString[] = [];
+  private unitContentLoadQueue: TaggedString[] = [];
   private navTargetUnitId: string;
   private newTestStatus: TestControllerState;
   private lastTestletIndex = 0;
@@ -81,7 +81,7 @@ export class TestLoaderService {
 
     this.environment = new EnvironmentData(this.appVersion);
     this.loadStartTimeStamp = Date.now();
-    this.unitLoadQueue = [];
+    this.unitContentLoadQueue = [];
   }
 
   private parseBooklet(testData: TestData): void {
@@ -152,7 +152,7 @@ export class TestLoaderService {
 
           unitDef.playerId = unit.playerId;
           if (unit.definitionRef) {
-            this.unitLoadQueue.push(<TaggedString>{
+            this.unitContentLoadQueue.push(<TaggedString>{
               tag: sequenceId.toString(),
               value: unit.definitionRef
             });
@@ -197,12 +197,12 @@ export class TestLoaderService {
 
   private loadContentsOfUnits(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this.unitLoadBlobSubscription = from(this.unitLoadQueue)
+      this.unitContentLoadSubscription = from(this.unitContentLoadQueue)
         .pipe(
           concatMap(queueEntry => {
             const unitSequ = Number(queueEntry.tag);
             if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
-              this.incrementProgressValueBy1();
+              this.incrementProgressValueBy1(); // TODO this does not count the right way
             }
             // avoid to load unit def if not necessary
             if (unitSequ < this.tcs.minUnitSequenceId) {
@@ -217,6 +217,7 @@ export class TestLoaderService {
           },
           error: reject,
           complete: () => {
+            console.log("KORMPLEET");
             if (this.tcs.testMode.saveResponses) {
               this.environment.loadTime = Date.now() - this.loadStartTimeStamp;
               this.bs.addTestLog(this.tcs.testId, [<StateReportEntry>{
@@ -241,10 +242,10 @@ export class TestLoaderService {
     });
   }
 
-  private unsubscribeTestSubscriptions() {
-    if (this.unitLoadBlobSubscription !== null) {
-      this.unitLoadBlobSubscription.unsubscribe();
-      this.unitLoadBlobSubscription = null;
+  private unsubscribeTestSubscriptions(): void {
+    if (this.unitContentLoadSubscription !== null) {
+      this.unitContentLoadSubscription.unsubscribe();
+      this.unitContentLoadSubscription = null;
     }
   }
 
@@ -253,9 +254,10 @@ export class TestLoaderService {
       .filter(e => e.nodeType === 1);
   }
 
-  private incrementProgressValueBy1() {
+  private incrementProgressValueBy1(): void {
     this.loadedUnitCount += 1;
     this.tcs.loadProgressValue = (this.loadedUnitCount * 100) / this.lastUnitSequenceId;
+    console.log(this.loadedUnitCount, this.lastUnitSequenceId, this.tcs.loadProgressValue);
   }
 
   private getBookletFromXml(xmlString: string): Testlet {

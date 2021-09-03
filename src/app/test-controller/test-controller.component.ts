@@ -7,7 +7,7 @@ import {
   Subscription
 } from 'rxjs';
 import {
-  debounceTime, distinctUntilChanged, map, tap
+  debounceTime, distinctUntilChanged, map
 } from 'rxjs/operators';
 import { CustomtextService } from 'iqb-components';
 import { MatDialog } from '@angular/material/dialog';
@@ -101,6 +101,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         .subscribe(params => {
           this.tls.loadTest(params.t)
             .then(() => {
+              console.log("[NEXT]");
               this.applyUiSettings();
               this.startAppFocusLogging();
               this.startConnectionStatusLogging();
@@ -161,13 +162,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private startConnectionStatusLogging() {
     this.subscriptions.connectionStatus = this.cmd.connectionStatus$
       .pipe(
-        tap(s => console.log('CONN', s)),
+        // tap(s => console.log('CONN', s)),
         map(status => status === 'ws-online'),
-        tap(o => console.log('ONLI', o))
+        // tap(o => console.log('ONLI', o))
         // distinctUntilChanged()
       )
       .subscribe(isWsConnected => {
-        console.log('ISCO', isWsConnected, this.tcs.testMode.saveResponses);
+        // console.log('ISCO', isWsConnected, this.tcs.testMode.saveResponses);
         if (this.tcs.testMode.saveResponses) {
           this.bs.updateTestState(this.tcs.testId, [{
             key: TestStateKey.CONNECTION,

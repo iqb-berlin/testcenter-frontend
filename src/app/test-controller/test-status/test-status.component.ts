@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { TestControllerService } from '../test-controller.service';
 import { MainDataService } from '../../maindata.service';
+import { AppError } from '../../app.interfaces';
 
 @Component({
   templateUrl: './test-status.component.html',
@@ -10,7 +11,8 @@ import { MainDataService } from '../../maindata.service';
 
 export class TestStatusComponent implements OnInit, OnDestroy {
   loginName = '??';
-  errorLabel = '';
+  error: AppError;
+  errorDetailsOpen = false;
   private appErrorSubscription: Subscription;
 
   constructor(
@@ -26,13 +28,19 @@ export class TestStatusComponent implements OnInit, OnDestroy {
       }
       this.appErrorSubscription = this.mds.appError$
         .subscribe(error => {
-          this.errorLabel = error.label;
+          this.errorDetailsOpen = false;
+          this.error = error;
+          this.mds.setSpinnerOff(); // if error occurred while loading
         });
     });
   }
 
   ngOnDestroy(): void {
     this.appErrorSubscription.unsubscribe();
+  }
+
+  toggleErrorDetails(): void {
+    this.errorDetailsOpen = !this.errorDetailsOpen;
   }
 
   terminateTest(): void {

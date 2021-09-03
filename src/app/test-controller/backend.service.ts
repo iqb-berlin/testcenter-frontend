@@ -63,7 +63,7 @@ export class BackendService {
   }
 
   getResource(testId: string, internalKey: string, resId: string,
-              versionning = false): Observable<TaggedString | number> {
+              versionning = false): Observable<TaggedString> {
     return this.http
       .get(
         `${this.serverUrl}test/${testId}/resource/${resId}`,
@@ -73,7 +73,13 @@ export class BackendService {
         }
       )
       .pipe(
-        map(def => <TaggedString>{ tag: internalKey, value: def })
+        map(def => {
+          console.log('DEF', def.length);
+          // if (!def.length) { // this might happen in Chrome, when file is so large, that memory size get exhausted
+          //   throw new Error(`could not load ${resId}`);
+          // }
+          return <TaggedString>{ tag: internalKey, value: def };
+        })
       );
   }
 

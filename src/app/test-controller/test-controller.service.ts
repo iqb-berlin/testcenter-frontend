@@ -52,6 +52,7 @@ export class TestControllerService {
   resumeTargetUnitId = 0;
 
   private _navigationDenial = new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>();
+  isLazyLoadingUnit: number = NaN;
   get navigationDenial(): Observable<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }> {
     return this._navigationDenial;
   }
