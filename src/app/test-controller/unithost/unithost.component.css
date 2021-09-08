@@ -7,6 +7,17 @@
   background-color: white;
 }
 
+#waiting-room {
+  position: absolute;
+  top: var(--tc-unit-title-height);
+  width: 100%;
+  z-index: 1000;
+}
+
+#waiting-room mat-card {
+  margin: 4em;
+}
+
 #unit-title {
   position: absolute;
   width: 100%;

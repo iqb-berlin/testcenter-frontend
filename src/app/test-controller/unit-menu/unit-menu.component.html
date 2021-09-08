@@ -7,8 +7,11 @@
           <div *ngFor="let u of unitMenuButtonList" fxLayout="column" fxLayoutAlign="center stretch">
             <div fxLayout="row" fxLayoutAlign="space-between stretch">
               <div [class]="u.testletMarker" [matTooltip]="u.testletLabel" fxFlex="0 0 10px"></div>
-              <div [class]="u.isCurrent ? 'active-unit' : 'non-active-unit'" fxFlex fxLayout="column">
+              <div [class]="{ 'unit': true, 'active': u.isCurrent }" fxFlex fxLayout="column">
                 <button mat-flat-button (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())" [disabled]="u.isDisabled">
+                  <mat-icon *ngIf="!tcs.isUnitContentLoaded(u.sequenceId)" matTooltip="wird geladen">
+                    hourglass_empty
+                  </mat-icon>
                   {{u.label}}
                 </button>
               </div>

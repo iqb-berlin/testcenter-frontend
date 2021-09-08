@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
 import { Inject, Injectable } from '@angular/core';
 import {
-  from, Observable, of, Subscription, throwError
+  BehaviorSubject,
+  from, Observable, of, ReplaySubject, Subject, Subscription, throwError
 } from 'rxjs';
 import {
-  concatMap, switchMap, tap
+  concatMap, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
 import { CustomtextService } from 'iqb-components';
 import {
@@ -66,7 +67,7 @@ export class TestLoaderService {
     await this.loadUnits();
     this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
     this.setUpResumeNavTarget();
-    return this.loadContentsOfUnits(); // the promise resolves, when the is allowed to start
+    return this.loadUnitContents(); // the promise resolves, when it is allowed to start
   }
 
   reset(): void {
@@ -158,6 +159,7 @@ export class TestLoaderService {
             });
           } else {
             this.tcs.addUnitDefinition(sequenceId, unit.definition);
+            this.tcs.setUnitLoadProgress$(sequenceId, of(100));
           }
           unitDef.setCanEnter('y', '');
 
@@ -167,12 +169,12 @@ export class TestLoaderService {
           // to avoid multiple calls before returning:
           this.tcs.addPlayer(unit.playerId, '');
           const playerFileId = TestControllerService.normaliseId(unit.playerId, 'html');
-          return this.bs.getResource(this.tcs.testId, '', playerFileId, true)
+          return this.bs.getResource(this.tcs.testId, playerFileId, true)
             .pipe(
-              switchMap((data: TaggedString) => {
-                const player = data as TaggedString;
-                if (player.value.length > 0) {
-                  this.tcs.addPlayer(unit.playerId, player.value);
+              last(),
+              switchMap((player: string) => {
+                if (player.length > 0) {
+                  this.tcs.addPlayer(unit.playerId, player);
                   return of(sequenceId);
                 }
                 return throwError(`error getting player "${unit.playerId}" (size = 0)`);
@@ -195,29 +197,53 @@ export class TestLoaderService {
     this.loadedUnitCount = 0;
   }
 
-  private loadContentsOfUnits(): Promise<void> {
+  private loadUnitContents(): Promise<void> {
+    // we don't load files in parallel since it made problems when a whole class tried it at once
+    const unitContentLoadingProgresses$: { [unitSequenceID: number] : Subject<number> } = {};
+    this.unitContentLoadQueue
+      .forEach(unitToLoad => {
+        unitContentLoadingProgresses$[Number(unitToLoad.tag)] = new BehaviorSubject<number>(-Infinity);
+        this.tcs.setUnitLoadProgress$(
+          Number(unitToLoad.tag),
+          unitContentLoadingProgresses$[Number(unitToLoad.tag)].asObservable()
+        );
+      });
     return new Promise<void>((resolve, reject) => {
       this.unitContentLoadSubscription = from(this.unitContentLoadQueue)
         .pipe(
           concatMap(queueEntry => {
-            const unitSequ = Number(queueEntry.tag);
+            const unitSequenceID = Number(queueEntry.tag);
             if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
               this.incrementProgressValueBy1(); // TODO this does not count the right way
             }
-            // avoid to load unit def if not necessary
-            if (unitSequ < this.tcs.minUnitSequenceId) {
-              return of(<TaggedString>{ tag: unitSequ.toString(), value: '' });
+            // avoid to load unit def if not necessary TODO is this useful?
+            if (unitSequenceID < this.tcs.minUnitSequenceId) {
+              return of({ unitSequenceID, content: '' });
             }
-            return this.bs.getResource(this.tcs.testId, queueEntry.tag, queueEntry.value);
+
+            const unitContentLoading$ = this.bs.getResource(this.tcs.testId, queueEntry.value)
+              .pipe(shareReplay());
+
+            unitContentLoading$
+              .pipe(
+                map(event => {
+                  if (typeof event === 'number') {
+                    return event;
+                  }
+                  console.log('GOT UNIT', event.length);
+                  this.tcs.addUnitDefinition(unitSequenceID, event);
+                  return 100;
+                })
+              )
+              .subscribe(unitContentLoadingProgresses$[unitSequenceID]);
+
+            return unitContentLoading$;
           })
         )
         .subscribe({
-          next: (def: TaggedString) => {
-            this.tcs.addUnitDefinition(Number(def.tag), def.value);
-          },
           error: reject,
           complete: () => {
-            console.log("KORMPLEET");
+            console.log('KOMPLETT');
             if (this.tcs.testMode.saveResponses) {
               this.environment.loadTime = Date.now() - this.loadStartTimeStamp;
               this.bs.addTestLog(this.tcs.testId, [<StateReportEntry>{

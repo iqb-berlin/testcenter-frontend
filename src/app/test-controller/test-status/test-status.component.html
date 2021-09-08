@@ -8,7 +8,6 @@
         <p><b>{{tcs.testMode.modeLabel}}</b></p>
         <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING" style="color: chocolate">
           <b>Der Test ist aktiv.</b>
-          <b *ngIf="tcs.isLazyLoadingUnit"><br>Unit {{tcs.isLazyLoadingUnit}} wird geladen.</b>
         </p>
       </mat-card-content>
       <mat-card-actions>
@@ -30,7 +29,7 @@
     </mat-card>
 
     <mat-card fxFlex="0 0 400px" fxLayout="column" class="mat-card-box" *ngSwitchCase="tcs.testStatusEnum.ERROR">
-      <mat-card-title >{{error.label}}</mat-card-title>
+      <mat-card-title >{{error?.label}}</mat-card-title>
       <mat-card-content>
         <p><b>Angemeldet als "{{loginName}}"</b></p>
         <p><b>{{tcs.testMode.modeLabel}}</b></p>
@@ -38,8 +37,8 @@
           <b>{{ 'Es ist ein Fehler aufgetreten.' | customtext:'booklet_errormessage' | async }} </b>
         </p>
         <div id="errorDetails" *ngIf="errorDetailsOpen">
-          <b>{{error.label}}</b><br>
-          {{error.description}}
+          <b>{{error?.label}}</b><br>
+          {{error?.description}}
         </div>
       </mat-card-content>
       <mat-card-actions>

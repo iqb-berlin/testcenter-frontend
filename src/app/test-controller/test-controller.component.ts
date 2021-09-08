@@ -78,7 +78,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       }
 
       this.subscriptions.errorReporting = this.mds.appError$
-        .subscribe(e => this.tcs.handleError(e));
+        .subscribe(e => this.tcs.errorOut(e));
 
       this.subscriptions.testStatus = this.tcs.testStatus$
         .pipe(distinctUntilChanged())
@@ -101,12 +101,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         .subscribe(params => {
           this.tls.loadTest(params.t)
             .then(() => {
-              console.log("[NEXT]");
               this.applyUiSettings();
               this.startAppFocusLogging();
               this.startConnectionStatusLogging();
             })
             .catch(errorMessage => {
+              console.log(`REJECTED ${errorMessage}`);
               const msg = (errorMessage.info) ? errorMessage.info : errorMessage;
               this.mds.appError$.next({
                 label: 'Test konnte nicht geladen werden',
@@ -164,7 +164,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     this.subscriptions.connectionStatus = this.cmd.connectionStatus$
       .pipe(
         // tap(s => console.log('CONN', s)),
-        map(status => status === 'ws-online'),
+        map(status => status === 'ws-online')
+        //,
         // tap(o => console.log('ONLI', o))
         // distinctUntilChanged()
       )

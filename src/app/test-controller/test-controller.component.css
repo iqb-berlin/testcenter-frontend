@@ -74,6 +74,10 @@ mat-toolbar {
   background-color: #bdbdbd;
 }
 
+.unit-button.loading {
+  color: red;
+}
+
 .debug-pane {
   color: orange;
   position: absolute;

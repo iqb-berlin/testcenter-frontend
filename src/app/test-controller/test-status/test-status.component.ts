@@ -28,9 +28,13 @@ export class TestStatusComponent implements OnInit, OnDestroy {
       }
       this.appErrorSubscription = this.mds.appError$
         .subscribe(error => {
+          // This happens, when in lazy-loading-mode, an error occurred during the loading of the unit's content.
+          // The error is caught here because
+          // a) it can not get caught in testcontroller.component oder test-loader.service,
+          // because the test-loading-promise is already completed when the unit's content gets loaded.
+          // b) the error becomes visible when the units has been entered, not when it occurred.
           this.errorDetailsOpen = false;
           this.error = error;
-          this.mds.setSpinnerOff(); // if error occurred while loading
         });
     });
   }

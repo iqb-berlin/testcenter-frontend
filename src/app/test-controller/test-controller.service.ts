@@ -52,7 +52,7 @@ export class TestControllerService {
   resumeTargetUnitId = 0;
 
   private _navigationDenial = new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>();
-  isLazyLoadingUnit: number = NaN;
+
   get navigationDenial(): Observable<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }> {
     return this._navigationDenial;
   }
@@ -94,6 +94,7 @@ export class TestControllerService {
   private unitPresentationProgressStates: { [sequenceId: number]: string } = {};
   private unitResponseCompleteStates: { [sequenceId: number]: string } = {};
   private unitStateCurrentPages: { [sequenceId: number]: string } = {};
+  private unitContentLoadProgress$: { [sequenceId: number]: Observable<number> } = {};
 
   private unitStateDataToSave$ = new Subject<UnitStateData>();
   windowFocusState$ = new Subject<WindowFocusState>();
@@ -218,6 +219,14 @@ export class TestControllerService {
 
   setOldUnitDataCurrentPage(sequenceId: number, pageId: string): void {
     this.unitStateCurrentPages[sequenceId] = pageId;
+  }
+
+  setUnitLoadProgress$(sequenceId: number, progress: Observable<number>): void {
+    this.unitContentLoadProgress$[sequenceId] = progress;
+  }
+
+  getUnitLoadProgress$(sequenceId: number): Observable<number> {
+    return this.unitContentLoadProgress$[sequenceId];
   }
 
   newUnitStateData(unitDbKey: string, sequenceId: number, dataPartsAllString: string, unitStateDataType: string): void {
@@ -428,7 +437,7 @@ export class TestControllerService {
     }
   }
 
-  handleError(error: AppError): void {
+  errorOut(error: AppError): void {
     this.loadProgressValue = 0;
     this.testStatus$.next(TestControllerState.ERROR);
     this.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
@@ -438,5 +447,9 @@ export class TestControllerService {
     this.interruptMaxTimer();
     this.testStatus$.next(TestControllerState.PAUSED);
     this.setUnitNavigationRequest(UnitNavigationTarget.PAUSE, true);
+  }
+
+  isUnitContentLoaded(sequenceId: number): boolean {
+    return !!this.unitDefinitions[sequenceId];
   }
 }

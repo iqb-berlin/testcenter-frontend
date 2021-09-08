@@ -2,7 +2,7 @@
 
 import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from 'iqb-components';
 import {
-  filter, map, switchMap, take, tap
+  filter, map, switchMap, take
 } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import {
@@ -59,6 +59,7 @@ export class UnitActivateGuard implements CanActivate {
   }
 
   private checkAndSolve_DefLoaded(newUnit: UnitControllerData): Observable<boolean> {
+    return of(true); // TODO URGENT remove this
     if (this.tcs.loadComplete) {
       return of(true);
     }
@@ -74,9 +75,7 @@ export class UnitActivateGuard implements CanActivate {
         this.mds.setSpinnerOn();
         return interval(1000)
           .pipe(
-            tap(() => { this.tcs.isLazyLoadingUnit = newUnit.unitDef.sequenceId; }),
             filter(() => this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)),
-            tap(() => { this.tcs.isLazyLoadingUnit = NaN; }),
             map(() => true),
             take(1)
           );

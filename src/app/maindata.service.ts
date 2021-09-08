@@ -1,5 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import {
+  BehaviorSubject, Observable, ReplaySubject, Subject
+} from 'rxjs';
 import { CustomtextService } from 'iqb-components';
 import {
   AppError,
@@ -13,7 +15,7 @@ const localStorageAuthDataKey = 'iqb-tc-a';
   providedIn: 'root'
 })
 export class MainDataService {
-  appError$ = new Subject<AppError>();
+  appError$ = new ReplaySubject<AppError>();
   _authData$ = new Subject<AuthData>();
   get authData$(): Observable<AuthData> {
     return this._authData$.asObservable();

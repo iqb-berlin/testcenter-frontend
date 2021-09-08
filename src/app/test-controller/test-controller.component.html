@@ -15,7 +15,12 @@
     <div *ngIf="(tcs.bookletConfig.unit_navibuttons === 'FULL') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)" fxLayout="row wrap" fxLayoutAlign="start center">
       <div *ngFor="let u of tcs.unitListForNaviButtons">
         <div fxLayout="column" fxLayoutAlign="start center">
-            <button (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())" class="unit-button" [disabled]="u.disabled">{{ u.shortLabel }}</button>
+            <button
+              (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())"
+              class="unit-button"
+              [disabled]="u.disabled"
+              [matTooltip]="u.longLabel + (!tcs.isUnitContentLoaded(u.sequenceId) ? ' (wird noch geladen!)' : '')"
+            >{{ u.shortLabel }}</button>
             <span class="current-unit-dot" *ngIf="u.isCurrent"></span>
             <span class="notcurrent-unit-dot" *ngIf="!u.isCurrent"></span>
         </div>

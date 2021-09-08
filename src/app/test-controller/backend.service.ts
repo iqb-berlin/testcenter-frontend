@@ -1,14 +1,9 @@
 /* eslint-disable no-console */
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpEventType, HttpParams } from '@angular/common/http';
 import { Observable, of, Subscription } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import {
-  UnitData,
-  TaggedString,
-  TestData,
-  StateReportEntry
-} from './test-controller.interfaces';
+import { catchError, filter, map } from 'rxjs/operators';
+import { UnitData, TestData, StateReportEntry } from './test-controller.interfaces';
 import { ApiError } from '../app.interfaces';
 
 @Injectable({
@@ -62,24 +57,39 @@ export class BackendService {
       );
   }
 
-  getResource(testId: string, internalKey: string, resId: string,
-              versionning = false): Observable<TaggedString> {
+  getResource(testId: string, resId: string, versionning = false): Observable<number | string | null> {
     return this.http
       .get(
         `${this.serverUrl}test/${testId}/resource/${resId}`,
         {
           params: new HttpParams().set('v', versionning ? '1' : 'f'),
-          responseType: 'text'
+          responseType: 'text',
+          reportProgress: true,
+          observe: 'events'
         }
       )
       .pipe(
-        map(def => {
-          console.log('DEF', def.length);
-          // if (!def.length) { // this might happen in Chrome, when file is so large, that memory size get exhausted
-          //   throw new Error(`could not load ${resId}`);
-          // }
-          return <TaggedString>{ tag: internalKey, value: def };
-        })
+        map(event => {
+          switch (event.type) {
+            case HttpEventType.DownloadProgress:
+              if (!event.total) { // happens if file is huge because browser switches to chunked loading
+                return NaN;
+              }
+              return Math.round(100 * (event.loaded / event.total));
+
+            case HttpEventType.Response:
+              console.log(resId, event.body.length);
+              if (!event.body.length) {
+                // this might happen when file is so large, that memory size get exhausted
+                throw new Error(`Empty response for  '${resId}'. Most likely the browsers memory was exhausted.`);
+              }
+              return event.body;
+
+            default:
+              return null;
+          }
+        }),
+        filter(progressOfContent => progressOfContent != null)
       );
   }
 
