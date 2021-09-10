@@ -1,9 +1,13 @@
 /* eslint-disable no-console */
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpEventType, HttpParams } from '@angular/common/http';
+import {
+  HttpClient, HttpEvent, HttpEventType, HttpParams
+} from '@angular/common/http';
 import { Observable, of, Subscription } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
-import { UnitData, TestData, StateReportEntry } from './test-controller.interfaces';
+import {
+  UnitData, TestData, StateReportEntry, LoadingFile
+} from './test-controller.interfaces';
 import { ApiError } from '../app.interfaces';
 
 @Injectable({
@@ -57,7 +61,8 @@ export class BackendService {
       );
   }
 
-  getResource(testId: string, resId: string, versionning = false): Observable<number | string | null> {
+  getResource(testId: string, resId: string, versionning = false): Observable<LoadingFile> {
+    const DLID = Math.random();
     return this.http
       .get(
         `${this.serverUrl}test/${testId}/resource/${resId}`,
@@ -69,13 +74,18 @@ export class BackendService {
         }
       )
       .pipe(
-        map(event => {
+        map((event: HttpEvent<any>) => {
           switch (event.type) {
+            case HttpEventType.ResponseHeader:
+              console.log('RRR', event.headers);
+              return { progress: 0 };
+
             case HttpEventType.DownloadProgress:
+              console.log(`[DL ${DLID}] ${resId} ${event.loaded}/${event.total}`);
               if (!event.total) { // happens if file is huge because browser switches to chunked loading
-                return NaN;
+                return <LoadingFile>{ progress: 'UNKNOWN' };
               }
-              return Math.round(100 * (event.loaded / event.total));
+              return { progress: Math.round(100 * (event.loaded / event.total)) };
 
             case HttpEventType.Response:
               console.log(resId, event.body.length);
@@ -83,7 +93,7 @@ export class BackendService {
                 // this might happen when file is so large, that memory size get exhausted
                 throw new Error(`Empty response for  '${resId}'. Most likely the browsers memory was exhausted.`);
               }
-              return event.body;
+              return { content: event.body };
 
             default:
               return null;

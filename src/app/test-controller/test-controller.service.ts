@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { MaxTimerData, Testlet } from './test-controller.classes';
 import {
-  KeyValuePairNumber,
+  KeyValuePairNumber, LoadingProgress,
   MaxTimerDataType, StateReportEntry,
   TestControllerState, TestStateKey,
   UnitNaviButtonData,
@@ -94,7 +94,7 @@ export class TestControllerService {
   private unitPresentationProgressStates: { [sequenceId: number]: string } = {};
   private unitResponseCompleteStates: { [sequenceId: number]: string } = {};
   private unitStateCurrentPages: { [sequenceId: number]: string } = {};
-  private unitContentLoadProgress$: { [sequenceId: number]: Observable<number> } = {};
+  private unitContentLoadProgress$: { [sequenceId: number]: Observable<LoadingProgress> } = {};
 
   private unitStateDataToSave$ = new Subject<UnitStateData>();
   windowFocusState$ = new Subject<WindowFocusState>();
@@ -221,11 +221,11 @@ export class TestControllerService {
     this.unitStateCurrentPages[sequenceId] = pageId;
   }
 
-  setUnitLoadProgress$(sequenceId: number, progress: Observable<number>): void {
+  setUnitLoadProgress$(sequenceId: number, progress: Observable<LoadingProgress>): void {
     this.unitContentLoadProgress$[sequenceId] = progress;
   }
 
-  getUnitLoadProgress$(sequenceId: number): Observable<number> {
+  getUnitLoadProgress$(sequenceId: number): Observable<LoadingProgress> {
     return this.unitContentLoadProgress$[sequenceId];
   }
 

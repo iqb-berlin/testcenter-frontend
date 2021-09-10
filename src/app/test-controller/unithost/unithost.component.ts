@@ -1,4 +1,4 @@
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import {
   Component, HostListener, OnInit, OnDestroy
 } from '@angular/core';
@@ -11,7 +11,7 @@ import {
   PendingUnitData,
   StateReportEntry,
   UnitStateKey,
-  UnitPlayerState
+  UnitPlayerState, LoadingProgress
 } from '../test-controller.interfaces';
 import { BackendService } from '../backend.service';
 import { TestControllerService } from '../test-controller.service';
@@ -29,7 +29,7 @@ declare let srcDoc;
 export class UnithostComponent implements OnInit, OnDestroy {
   private iFrameHostElement: HTMLElement;
   private iFrameItemplayer: HTMLIFrameElement;
-  private subscriptions: Subscription[] = [];
+  private subscriptions: { [tag: string ]: Subscription } = {};
   leaveWarning = false;
 
   unitTitle = '';
@@ -44,7 +44,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   pageList: PageData[] = [];
   private knownPages: string[];
-  unitLoadingProgress: number = 0;
+  unitLoading$: BehaviorSubject<LoadingProgress> = new BehaviorSubject<LoadingProgress>({ progress: 'PENDING' });
 
   isNaN = Number.isNaN;
 
@@ -60,14 +60,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.iFrameItemplayer = null;
     this.leaveWarning = false;
     setTimeout(() => {
-      const postMessageSubscription = this.mds.postMessage$
+      this.subscriptions.postMessage = this.mds.postMessage$
         .subscribe(messageEvent => this.handleIncomingMessage(messageEvent));
-      const routingSubscription = this.route.params
-        .subscribe(params => this.startUnit(Number(params.u)));
-      const navigationDenialSubscription = this.tcs.navigationDenial
+      this.subscriptions.routing = this.route.params
+        .subscribe(params => this.open(Number(params.u)));
+      this.subscriptions.navigationDenial = this.tcs.navigationDenial
         .subscribe(navigationDenial => this.handleNavigationDenial(navigationDenial));
-
-      this.subscriptions = [postMessageSubscription, routingSubscription, navigationDenialSubscription];
     });
   }
 
@@ -107,9 +105,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
           playerConfig: this.getPlayerConfig()
         }, '*');
 
-        if (!this.pendingUnitData.unitDefinition) {
-          this.pendingUnitData = null;
-        }
+        // TODO maybe clean up memory?
+
         break;
 
       case 'vopStateChangedNotification':
@@ -181,7 +178,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  private startUnit(currentUnitSequenceId: number): void {
+  private open(currentUnitSequenceId: number): void {
+    console.log(`[start open] ${currentUnitSequenceId}`);
     this.currentUnitSequenceId = currentUnitSequenceId;
     this.tcs.currentUnitSequenceId = this.currentUnitSequenceId;
     this.mds.appSubTitle$.next(`Seite ${this.currentUnitSequenceId}`); // TODO this should show the UNIT?!
@@ -194,10 +192,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.unitTitle = currentUnit.unitDef.title;
     this.myUnitDbKey = currentUnit.unitDef.alias;
 
-    this.subscriptions[`unit-${currentUnitSequenceId}`] = this.tcs.getUnitLoadProgress$(currentUnitSequenceId)
+    if (this.subscriptions.unit) {
+      this.subscriptions.unit.unsubscribe();
+    }
+    this.subscriptions.unit = this.tcs.getUnitLoadProgress$(currentUnitSequenceId)
       .subscribe({
         next: value => {
-          this.unitLoadingProgress = value;
+          this.unitLoading$.next(value);
           console.log(`[next] [ ${currentUnitSequenceId} ] --- ${value}`);
         },
         error: err => {
@@ -209,9 +210,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
         },
         complete: () => this.runUnit(currentUnit)
       });
+
+    this.unitLoading$.subscribe(x => console.log(`[X] ${x}`));
   }
 
   private runUnit(currentUnit: UnitControllerData): void {
+    console.log(`[run] ${this.currentUnitSequenceId}`);
     if (this.tcs.testMode.saveResponses) {
       this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
         key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.myUnitDbKey
@@ -235,11 +239,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.pendingUnitData = {
       playerId: this.itemplayerSessionId,
       unitDefinition: this.tcs.hasUnitDefinition(this.currentUnitSequenceId) ?
-        this.tcs.getUnitDefinition(this.currentUnitSequenceId) : 'xxx'+this.currentUnitSequenceId,
+        this.tcs.getUnitDefinition(this.currentUnitSequenceId) :
+        null,
       unitDataParts: this.tcs.hasUnitStateDataParts(this.currentUnitSequenceId) ?
-        this.tcs.getUnitStateDataParts(this.currentUnitSequenceId) : null,
+        this.tcs.getUnitStateDataParts(this.currentUnitSequenceId) :
+        null,
       currentPage: this.tcs.hasUnitStateCurrentPage(this.currentUnitSequenceId) ?
-        this.tcs.getUnitStateCurrentPage(this.currentUnitSequenceId) : null
+        this.tcs.getUnitStateCurrentPage(this.currentUnitSequenceId) :
+        null
     };
     this.leaveWarning = false;
     this.iFrameHostElement.appendChild(this.iFrameItemplayer);
@@ -404,7 +411,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    Object.values(this.subscriptions).forEach(subscription => subscription.unsubscribe());
   }
 
   private handleNavigationDenial(navigationDenial: { sourceUnitSequenceId: number; reason: VeronaNavigationDeniedReason[] }) {

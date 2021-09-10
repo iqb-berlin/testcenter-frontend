@@ -1,24 +1,27 @@
 <div id="unit-title" *ngIf="tcs.bookletConfig.unit_title === 'ON'" fxLayout="column" fxLayoutAlign="center center">
-  <p>{{ unitTitle }}</p>
+  <p>{{ unitTitle }} {{currentUnitSequenceId}}</p>
 </div>
 
 <div id="iFrameHost">
 </div>
 
-<ng-container *ngIf="tcs.getUnitLoadProgress$(currentUnitSequenceId) | async as loadingProgress">
-  <div id="waiting-room" *ngIf="loadingProgress < 100 || isNaN(loadingProgress)">
+<pre style="position: fixed; background: black; color: yellow; display: block; z-index: 99999999">
+{{unitLoading$ | async | json}}
+</pre>
+
+<ng-container *ngIf="unitLoading$ | async as loading">
+  <div id="waiting-room" *ngIf="loading.progress !== 100">
     <mat-card>
-      <mat-card-header>
-        {{loadingProgress}}
-        <mat-card-title *ngIf="isNaN(loadingProgress)">Unit wird geladen (Restdauer unbekannt)</mat-card-title>
-        <mat-card-title *ngIf="loadingProgress < 0 ">Unit wid geladen und ist noch in der Warteschleife</mat-card-title>
-        <mat-card-title *ngIf="loadingProgress">Unit wird geladen ({{loadingProgress}}%)</mat-card-title>
+      <mat-card-header [ngSwitch]="loading.progress">
+        <mat-card-title *ngSwitchCase="'UNKNOWN'">Unit wird geladen (Fortschritt unbekannt)</mat-card-title>
+        <mat-card-title *ngSwitchCase="'PENDING'">Unit wid geladen und ist noch in der Warteschleife</mat-card-title>
+        <mat-card-title *ngSwitchDefault>Unit wird geladen ({{loading.progress}}%)</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-progress-bar
           color="primary"
-          [mode]="isNaN(loadingProgress) ? 'indeterminate' : 'determinate'"
-          [value]="loadingProgress"
+          [mode]="loading.progress === 'UNKNOWN' ? 'indeterminate' : 'determinate'"
+          [value]="loading.progress"
         >
         </mat-progress-bar>
       </mat-card-content>

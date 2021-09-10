@@ -9,7 +9,8 @@ import {
 } from 'rxjs/operators';
 import { CustomtextService } from 'iqb-components';
 import {
-  isOnOff,
+  isLoadingFileLoaded,
+  isOnOff, LoadedFile, LoadingProgress,
   StateReportEntry, TaggedString,
   TestControllerState, TestData, TestLogEntryKey,
   TestStateKey,
@@ -159,7 +160,7 @@ export class TestLoaderService {
             });
           } else {
             this.tcs.addUnitDefinition(sequenceId, unit.definition);
-            this.tcs.setUnitLoadProgress$(sequenceId, of(100));
+            this.tcs.setUnitLoadProgress$(sequenceId, of({ progress: 100 }));
           }
           unitDef.setCanEnter('y', '');
 
@@ -172,12 +173,9 @@ export class TestLoaderService {
           return this.bs.getResource(this.tcs.testId, playerFileId, true)
             .pipe(
               last(),
-              switchMap((player: string) => {
-                if (player.length > 0) {
-                  this.tcs.addPlayer(unit.playerId, player);
-                  return of(sequenceId);
-                }
-                return throwError(`error getting player "${unit.playerId}" (size = 0)`);
+              map((player: LoadedFile) => {
+                this.tcs.addPlayer(unit.playerId, player.content);
+                return sequenceId;
               })
             );
         })
@@ -199,16 +197,23 @@ export class TestLoaderService {
 
   private loadUnitContents(): Promise<void> {
     // we don't load files in parallel since it made problems when a whole class tried it at once
-    const unitContentLoadingProgresses$: { [unitSequenceID: number] : Subject<number> } = {};
+    const unitContentLoadingProgresses$: { [unitSequenceID: number] : Subject<LoadingProgress> } = {};
     this.unitContentLoadQueue
       .forEach(unitToLoad => {
-        unitContentLoadingProgresses$[Number(unitToLoad.tag)] = new BehaviorSubject<number>(-Infinity);
+        unitContentLoadingProgresses$[Number(unitToLoad.tag)] =
+          new BehaviorSubject<LoadingProgress>({ progress: 'PENDING' });
         this.tcs.setUnitLoadProgress$(
           Number(unitToLoad.tag),
           unitContentLoadingProgresses$[Number(unitToLoad.tag)].asObservable()
         );
       });
     return new Promise<void>((resolve, reject) => {
+      if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
+        this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitId.toString());
+        this.tcs.testStatus$.next(this.newTestStatus);
+        resolve();
+      }
+
       this.unitContentLoadSubscription = from(this.unitContentLoadQueue)
         .pipe(
           concatMap(queueEntry => {
@@ -226,13 +231,13 @@ export class TestLoaderService {
 
             unitContentLoading$
               .pipe(
-                map(event => {
-                  if (typeof event === 'number') {
-                    return event;
+                map(loadingFile => {
+                  if (!isLoadingFileLoaded(loadingFile)) {
+                    return loadingFile;
                   }
-                  console.log('GOT UNIT', event.length);
-                  this.tcs.addUnitDefinition(unitSequenceID, event);
-                  return 100;
+                  console.log(`[GOT UNIT] ${unitSequenceID} -  ${loadingFile.content.length}`);
+                  this.tcs.addUnitDefinition(unitSequenceID, loadingFile.content);
+                  return { progress: 100 };
                 })
               )
               .subscribe(unitContentLoadingProgresses$[unitSequenceID]);
@@ -259,12 +264,6 @@ export class TestLoaderService {
             }
           }
         });
-
-      if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
-        this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitId.toString());
-        this.tcs.testStatus$.next(this.newTestStatus);
-        resolve();
-      }
     });
   }
 

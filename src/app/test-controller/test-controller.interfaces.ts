@@ -223,3 +223,19 @@ export type OnOff = 'ON' | 'OFF';
 export function isOnOff(s: string): s is OnOff {
   return ['ON', 'OFF'].indexOf(s) > -1;
 }
+
+export interface LoadingProgress {
+  progress: number | 'UNKNOWN' | 'PENDING';
+}
+
+// export type LoadingProgress = LoadingProgressSpecial | LoadingProgressRegular;
+
+export interface LoadedFile {
+  content: string;
+}
+
+export type LoadingFile = LoadingProgress | LoadedFile;
+
+export function isLoadingFileLoaded(loadingFile: LoadingFile): loadingFile is LoadedFile {
+  return 'content' in loadingFile;
+}
