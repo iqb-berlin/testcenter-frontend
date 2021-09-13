@@ -199,7 +199,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       .subscribe({
         next: value => {
           this.unitLoading$.next(value);
-          console.log(`[next] [ ${currentUnitSequenceId} ] --- ${value}`);
+          console.log(`[next] [ ${currentUnitSequenceId} ] --- ${value.progress}`);
         },
         error: err => {
           this.mds.appError$.next({
@@ -211,10 +211,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
         complete: () => this.runUnit(currentUnit)
       });
 
-    this.unitLoading$.subscribe(x => console.log(`[X] ${x}`));
+    this.unitLoading$.subscribe(x => console.log(`[X] ${x.progress}`));
   }
 
   private runUnit(currentUnit: UnitControllerData): void {
+    this.unitLoading$.next({ progress: 100 });
     console.log(`[run] ${this.currentUnitSequenceId}`);
     if (this.tcs.testMode.saveResponses) {
       this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{

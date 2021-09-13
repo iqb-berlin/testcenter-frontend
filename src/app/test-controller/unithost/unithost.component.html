@@ -5,17 +5,13 @@
 <div id="iFrameHost">
 </div>
 
-<pre style="position: fixed; background: black; color: yellow; display: block; z-index: 99999999">
-{{unitLoading$ | async | json}}
-</pre>
-
 <ng-container *ngIf="unitLoading$ | async as loading">
   <div id="waiting-room" *ngIf="loading.progress !== 100">
     <mat-card>
       <mat-card-header [ngSwitch]="loading.progress">
-        <mat-card-title *ngSwitchCase="'UNKNOWN'">Unit wird geladen (Fortschritt unbekannt)</mat-card-title>
-        <mat-card-title *ngSwitchCase="'PENDING'">Unit wid geladen und ist noch in der Warteschleife</mat-card-title>
-        <mat-card-title *ngSwitchDefault>Unit wird geladen ({{loading.progress}}%)</mat-card-title>
+        <mat-card-title *ngSwitchCase="'UNKNOWN'">"{{unitTitle}}" - wird geladen (Fortschritt unbekannt)</mat-card-title>
+        <mat-card-title *ngSwitchCase="'PENDING'">"{{unitTitle}}" - in der Warteschleife</mat-card-title>
+        <mat-card-title *ngSwitchDefault>"{{unitTitle}}" wird geladen ({{loading.progress}}%)</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <mat-progress-bar

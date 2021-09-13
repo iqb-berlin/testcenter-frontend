@@ -2,7 +2,7 @@
 import { Inject, Injectable } from '@angular/core';
 import {
   BehaviorSubject,
-  from, Observable, of, ReplaySubject, Subject, Subscription, throwError
+  from, Observable, of, Subject, Subscription, throwError
 } from 'rxjs';
 import {
   concatMap, last, map, shareReplay, switchMap, tap
