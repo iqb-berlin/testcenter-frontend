@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, Subscription } from 'rxjs';
 import {
   Component, HostListener, OnInit, OnDestroy
 } from '@angular/core';
@@ -44,7 +44,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   pageList: PageData[] = [];
   private knownPages: string[];
-  unitLoading$: BehaviorSubject<LoadingProgress> = new BehaviorSubject<LoadingProgress>({ progress: 'PENDING' });
+  unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
 
   isNaN = Number.isNaN;
 
@@ -192,18 +192,30 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.unitTitle = currentUnit.unitDef.title;
     this.myUnitDbKey = currentUnit.unitDef.alias;
 
-    if (this.subscriptions.unit) {
-      this.subscriptions.unit.unsubscribe();
+    if (this.subscriptions.loading) {
+      this.subscriptions.loading.unsubscribe();
     }
-    this.subscriptions.unit = this.tcs.getUnitLoadProgress$(currentUnitSequenceId)
+
+    const unitsToLoadIds = currentUnit.maxTimerRequiringTestlet ?
+      this.tcs.rootTestlet.getAllUnitSequenceIds(currentUnit.maxTimerRequiringTestlet?.id) :
+      [currentUnitSequenceId];
+
+    console.log('HAVE TO LAOD', unitsToLoadIds);
+
+    const unitsToLoad = unitsToLoadIds
+      .map(unitSequenceId => this.tcs.getUnitLoadProgress$(unitSequenceId));
+
+    this.subscriptions.loading = combineLatest<LoadingProgress[]>(
+      unitsToLoad
+    )
       .subscribe({
         next: value => {
-          this.unitLoading$.next(value);
-          console.log(`[next] [ ${currentUnitSequenceId} ] --- ${value.progress}`);
+          this.unitsLoading$.next(value);
+          console.log('[next]', value);
         },
         error: err => {
           this.mds.appError$.next({
-            label: `Unit ${currentUnit.unitDef.title} konnte nicht geladen werden.`,
+            label: `Unit konnte nicht geladen werden. ${err.info}`, // TODO which item failed?
             description: (err.info) ? err.info : err,
             category: 'PROBLEM'
           });
@@ -211,11 +223,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
         complete: () => this.runUnit(currentUnit)
       });
 
-    this.unitLoading$.subscribe(x => console.log(`[X] ${x.progress}`));
+    this.unitsLoading$.subscribe(x => console.log('[X]', x));
   }
 
   private runUnit(currentUnit: UnitControllerData): void {
-    this.unitLoading$.next({ progress: 100 });
+    const loadingState = this.unitsLoading$.getValue();
+    loadingState[this.currentUnitSequenceId].progress = 100;
+    this.unitsLoading$.next(loadingState);
+
     console.log(`[run] ${this.currentUnitSequenceId}`);
     if (this.tcs.testMode.saveResponses) {
       this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{

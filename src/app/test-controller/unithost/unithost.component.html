@@ -5,24 +5,30 @@
 <div id="iFrameHost">
 </div>
 
-<ng-container *ngIf="unitLoading$ | async as loading">
-  <div id="waiting-room" *ngIf="loading.progress !== 100">
-    <mat-card>
-      <mat-card-header [ngSwitch]="loading.progress">
-        <mat-card-title *ngSwitchCase="'UNKNOWN'">"{{unitTitle}}" - wird geladen (Fortschritt unbekannt)</mat-card-title>
-        <mat-card-title *ngSwitchCase="'PENDING'">"{{unitTitle}}" - in der Warteschleife</mat-card-title>
-        <mat-card-title *ngSwitchDefault>"{{unitTitle}}" wird geladen ({{loading.progress}}%)</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-progress-bar
-          color="primary"
-          [mode]="loading.progress === 'UNKNOWN' ? 'indeterminate' : 'determinate'"
-          [value]="loading.progress"
-        >
-        </mat-progress-bar>
-      </mat-card-content>
-    </mat-card>
-  </div>
+<pre style="position: fixed; background: black; color: yellow; display: block; z-index: 99999999">
+{{unitsLoading$ | async | json}}
+</pre>
+
+<ng-container *ngIf="unitsLoading$ | async as loadingUnits">
+  <ng-container *ngFor="let loading of loadingUnits">
+    <div id="waiting-room" *ngIf="loading.progress !== 100">
+      <mat-card>
+        <mat-card-header [ngSwitch]="loading.progress">
+          <mat-card-title *ngSwitchCase="'UNKNOWN'">"{{unitTitle}}" - wird geladen (Fortschritt unbekannt)</mat-card-title>
+          <mat-card-title *ngSwitchCase="'PENDING'">"{{unitTitle}}" - in der Warteschleife</mat-card-title>
+          <mat-card-title *ngSwitchDefault>"{{unitTitle}}" wird geladen ({{loading.progress}}%)</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-progress-bar
+            color="primary"
+            [mode]="loading.progress === 'UNKNOWN' ? 'indeterminate' : 'determinate'"
+            [value]="loading.progress"
+          >
+          </mat-progress-bar>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </ng-container>
 </ng-container>
 
 <div id="pageNav" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px" *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM'">
