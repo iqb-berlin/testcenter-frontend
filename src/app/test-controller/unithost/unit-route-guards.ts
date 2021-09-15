@@ -58,67 +58,6 @@ export class UnitActivateGuard implements CanActivate {
     return of(true);
   }
 
-  private checkAndSolve_DefLoaded(newUnit: UnitControllerData): Observable<boolean> {
-    return of(true); // TODO URGENT remove this
-    if (this.tcs.loadComplete) {
-      return of(true);
-    }
-    if (this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) {
-      // 1 going forwards
-
-      if ((newUnit.maxTimerRequiringTestlet === null) || (!this.tcs.testMode.forceNaviRestrictions)) {
-        // 1 a) target is not in timed block or review mode --> check only target unit
-
-        if (this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)) {
-          return of(true);
-        }
-        this.mds.setSpinnerOn();
-        return interval(1000)
-          .pipe(
-            filter(() => this.tcs.hasUnitDefinition(newUnit.unitDef.sequenceId)),
-            map(() => true),
-            take(1)
-          );
-      }
-      if (this.tcs.currentMaxTimerTestletId &&
-        (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
-      ) {
-        // 1 b) staying in timed block --> check has been already done
-        return of(true);
-      }
-
-      // entering timed block --> check all units
-      const allUnitsSequenceIdsToCheck =
-        this.tcs.rootTestlet.getAllUnitSequenceIds(newUnit.maxTimerRequiringTestlet.id);
-      let ok = true;
-      allUnitsSequenceIdsToCheck.forEach(u => {
-        if (!this.tcs.hasUnitDefinition(u)) {
-          ok = false;
-        }
-      });
-      if (ok) {
-        return of(true);
-      }
-      this.mds.setSpinnerOn();
-      return interval(1000)
-        .pipe(
-          filter(() => {
-            let localOk = true;
-            allUnitsSequenceIdsToCheck.forEach(u => {
-              if (!this.tcs.hasUnitDefinition(u)) {
-                localOk = false;
-              }
-            });
-            return localOk;
-          }),
-          map(() => true),
-          take(1)
-        );
-    }
-    // 2 going backwards --> no check, because units are loaded in ascending order
-    return of(true);
-  }
-
   // TODO is it correct, that always returns always of(true)
   private checkAndSolve_maxTime(newUnit: UnitControllerData): Observable<boolean> {
     if (newUnit.maxTimerRequiringTestlet === null) {
@@ -181,21 +120,14 @@ export class UnitActivateGuard implements CanActivate {
             if (!cAsC) {
               return of(false);
             }
-            return this.checkAndSolve_DefLoaded(newUnit)
-              .pipe(switchMap(cAsDL => {
-                this.mds.setSpinnerOff();
-                if (!cAsDL) {
+            return this.checkAndSolve_maxTime(newUnit)
+              .pipe(switchMap(cAsMT => {
+                if (!cAsMT) {
                   return of(false);
                 }
-                return this.checkAndSolve_maxTime(newUnit)
-                  .pipe(switchMap(cAsMT => {
-                    if (!cAsMT) {
-                      return of(false);
-                    }
-                    this.tcs.currentUnitSequenceId = targetUnitSequenceId;
-                    this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
-                    return of(true);
-                  }));
+                this.tcs.currentUnitSequenceId = targetUnitSequenceId;
+                this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
+                return of(true);
               }));
           }));
       }
