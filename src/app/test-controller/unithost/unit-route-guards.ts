@@ -161,8 +161,9 @@ export class UnitActivateGuard implements CanActivate {
       }
     } else if ((targetUnitSequenceId < this.tcs.minUnitSequenceId) ||
       (targetUnitSequenceId > this.tcs.maxUnitSequenceId)) {
-      console.warn('unit canActivate: false (unit# out of range)');
-      myReturn = false;
+      console.warn(`unit canActivate: false (unit #${targetUnitSequenceId} out
+        of range [${this.tcs.minUnitSequenceId} - ${this.tcs.maxUnitSequenceId}])`);
+      this.router.navigate([`/t/${this.tcs.testId}/u/${this.tcs.minUnitSequenceId}`]);
     } else {
       const newUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
       if (!newUnit) {
