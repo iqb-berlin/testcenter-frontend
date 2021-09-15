@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, Subscription } from 'rxjs';
 import {
   Component, HostListener, OnInit, OnDestroy
 } from '@angular/core';
@@ -44,7 +44,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   pageList: PageData[] = [];
   private knownPages: string[];
-  unitLoading$: BehaviorSubject<LoadingProgress> = new BehaviorSubject<LoadingProgress>({ progress: 'PENDING' });
+  unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
 
   isNaN = Number.isNaN;
 
@@ -67,6 +67,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.subscriptions.navigationDenial = this.tcs.navigationDenial
         .subscribe(navigationDenial => this.handleNavigationDenial(navigationDenial));
     });
+  }
+
+  ngOnDestroy(): void {
+    Object.values(this.subscriptions).forEach(subscription => subscription.unsubscribe());
   }
 
   private handleIncomingMessage(messageEvent: MessageEvent): void {
@@ -192,30 +196,38 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.unitTitle = currentUnit.unitDef.title;
     this.myUnitDbKey = currentUnit.unitDef.alias;
 
-    if (this.subscriptions.unit) {
-      this.subscriptions.unit.unsubscribe();
+    if (this.subscriptions.loading) {
+      this.subscriptions.loading.unsubscribe();
     }
-    this.subscriptions.unit = this.tcs.getUnitLoadProgress$(currentUnitSequenceId)
+
+    const unitsToLoadIds = currentUnit.maxTimerRequiringTestlet ?
+      this.tcs.rootTestlet.getAllUnitSequenceIds(currentUnit.maxTimerRequiringTestlet?.id) :
+      [currentUnitSequenceId];
+
+    const unitsToLoad = unitsToLoadIds
+      .map(unitSequenceId => this.tcs.getUnitLoadProgress$(unitSequenceId));
+
+    this.subscriptions.loading = combineLatest<LoadingProgress[]>(
+      unitsToLoad
+    )
       .subscribe({
         next: value => {
-          this.unitLoading$.next(value);
-          console.log(`[next] [ ${currentUnitSequenceId} ] --- ${value.progress}`);
+          this.unitsLoading$.next(value);
+          console.log('[next]', value);
         },
         error: err => {
           this.mds.appError$.next({
-            label: `Unit ${currentUnit.unitDef.title} konnte nicht geladen werden.`,
+            label: `Unit konnte nicht geladen werden. ${err.info}`, // TODO which item failed?
             description: (err.info) ? err.info : err,
             category: 'PROBLEM'
           });
         },
         complete: () => this.runUnit(currentUnit)
       });
-
-    this.unitLoading$.subscribe(x => console.log(`[X] ${x.progress}`));
   }
 
   private runUnit(currentUnit: UnitControllerData): void {
-    this.unitLoading$.next({ progress: 100 });
+    this.unitsLoading$.next([]);
     console.log(`[run] ${this.currentUnitSequenceId}`);
     if (this.tcs.testMode.saveResponses) {
       this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
@@ -411,11 +423,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    Object.values(this.subscriptions).forEach(subscription => subscription.unsubscribe());
-  }
-
-  private handleNavigationDenial(navigationDenial: { sourceUnitSequenceId: number; reason: VeronaNavigationDeniedReason[] }) {
+  private handleNavigationDenial(
+    navigationDenial: { sourceUnitSequenceId: number; reason: VeronaNavigationDeniedReason[] }
+  ): void {
     if (navigationDenial.sourceUnitSequenceId !== this.currentUnitSequenceId) {
       return;
     }

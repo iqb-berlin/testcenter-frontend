@@ -5,7 +5,7 @@ import {
   from, Observable, of, Subject, Subscription, throwError
 } from 'rxjs';
 import {
-  concatMap, last, map, shareReplay, switchMap, tap
+  concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
 import { CustomtextService } from 'iqb-components';
 import {
@@ -238,7 +238,8 @@ export class TestLoaderService {
                   console.log(`[GOT UNIT] ${unitSequenceID} -  ${loadingFile.content.length}`);
                   this.tcs.addUnitDefinition(unitSequenceID, loadingFile.content);
                   return { progress: 100 };
-                })
+                }),
+                distinctUntilChanged((v1, v2) => v1.progress === v2.progress)
               )
               .subscribe(unitContentLoadingProgresses$[unitSequenceID]);
 
