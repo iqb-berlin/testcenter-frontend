@@ -39,8 +39,6 @@
     "label": "Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)",
     "options": {
       "OFF": "Keine Seitennavigation unterstützen (übernimmt ggf. die Aufgabe selbst)",
-      "MERGED": "Die Seitennavigation wird durch die Aufgabennavigation mit übernommen",
-      "SEPARATE_TOP": "Seitennavigation über getrennte Button-Leiste - oben",
       "SEPARATE_BOTTOM": "Seitennavigation über getrennte Button-Leiste - unten"
     },
     "defaultvalue": "SEPARATE_BOTTOM"
