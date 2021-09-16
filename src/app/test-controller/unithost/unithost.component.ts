@@ -33,7 +33,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private subscriptions: { [tag: string ]: Subscription } = {};
   leaveWarning = false;
 
-  unitTitle = '';
+  unitScreenHeader = '';
   showPageNav = false;
 
   currentUnitSequenceId = -1;
@@ -187,14 +187,15 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private open(currentUnitSequenceId: number): void {
     this.currentUnitSequenceId = currentUnitSequenceId;
     this.tcs.currentUnitSequenceId = this.currentUnitSequenceId;
-    this.mds.appSubTitle$.next(`Seite ${this.currentUnitSequenceId}`); // TODO this should show the UNIT?!
+    this.mds.appSubTitle$.next(`Aufgabe ${this.currentUnitSequenceId}`);
 
     while (this.iFrameHostElement.hasChildNodes()) {
       this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
     }
 
+    this.setUnitScreenHeader();
+
     const currentUnit = this.tcs.rootTestlet.getUnitAt(this.currentUnitSequenceId);
-    this.unitTitle = currentUnit.unitDef.title;
     this.myUnitDbKey = currentUnit.unitDef.alias;
 
     if (this.subscriptions.loading) {
@@ -230,6 +231,23 @@ export class UnithostComponent implements OnInit, OnDestroy {
       });
   }
 
+  private setUnitScreenHeader(): void {
+    switch (this.tcs.bookletConfig.unit_screenheader) {
+      case 'WITH_UNIT_TITLE':
+        this.unitScreenHeader = this.tcs.rootTestlet.getUnitAt(this.currentUnitSequenceId).unitDef.title;
+        break;
+      case 'WITH_BOOKLET_TITLE':
+        this.unitScreenHeader = this.tcs.rootTestlet.title;
+        break;
+      case 'WITH_BLOCK_TITLE':
+        this.unitScreenHeader = this.tcs.rootTestlet.getUnitAt(this.currentUnitSequenceId).testletLabel;
+        console.log('BT', this.unitScreenHeader);
+        break;
+      default:
+        this.unitScreenHeader = '';
+    }
+  }
+
   private runUnit(currentUnit: UnitControllerData): void {
     this.unitsLoading$.next([]);
     console.log(`[run] ${this.currentUnitSequenceId}`);
@@ -242,7 +260,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       }]);
     }
     this.tcs.currentUnitDbKey = this.myUnitDbKey;
-    this.tcs.currentUnitTitle = this.unitTitle;
+    this.tcs.currentUnitTitle = this.unitScreenHeader;
     this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
 
     this.setPageList([], '');
@@ -283,7 +301,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       pagingMode: this.tcs.bookletConfig.pagingMode,
       stateReportPolicy: this.tcs.bookletConfig.stateReportPolicy,
       unitNumber: this.currentUnitSequenceId,
-      unitTitle: this.unitTitle,
+      unitTitle: this.unitScreenHeader,
       unitId: this.myUnitDbKey
     };
     if (this.pendingUnitData.currentPage && (this.tcs.bookletConfig.restore_current_page_on_return === 'ON')) {

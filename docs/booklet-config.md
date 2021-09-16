@@ -64,8 +64,6 @@ stateReportPolicy (https://verona-interfaces.github.io/player/#operation-publish
 #### `page_navibuttons`
 Navigationsbuttons für die Seitennavigation (innerhalb einer Aufgabe)
   * "OFF": Keine Seitennavigation unterstützen (übernimmt ggf. die Aufgabe selbst)
-  * "MERGED": Die Seitennavigation wird durch die Aufgabennavigation mit übernommen
-  * "SEPARATE_TOP": Seitennavigation über getrennte Button-Leiste - oben
   * "SEPARATE_BOTTOM" (default): Seitennavigation über getrennte Button-Leiste - unten
 
 #### `unit_navibuttons`
@@ -93,9 +91,10 @@ Verhalten, wenn noch nicht alle Antworten der Aufgabe vollständig gegeben wurde
 #### `unit_screenheader`
 Legt fest, ob im obersten Seitenbereich Platz für Logo, Navigations-Buttons u. ä. gelassen wird.
   * "OFF": Kein Seitenkopf. Achtung: Logo bleibt sichtbar (überlappt).
-  * "WITH_UNIT_TITLE": Seitenkopf wird angezeigt mit Titel der Unit (s. Booklet-XML)
+  * "WITH_UNIT_TITLE" (default): Seitenkopf wird angezeigt mit Titel der Unit (s. Booklet-XML)
   * "WITH_BOOKLET_TITLE": Seitenkopf wird angezeigt mit Titel des Booklets (s. Booklet-XML)
-  * "EMPTY" (default): Seitenkopf wird angezeigt (leer)
+  * "WITH_BLOCK_TITLE": Seitenkopf wird angezeigt mit Titel des Aufgabenblocks (s. Booklet-XML)
+  * "EMPTY": Seitenkopf wird angezeigt (leer)
 
 #### `unit_title`
 Festlegung, ob oberhalb des Unitbereiches eine Zeile mit dem Unit-Titel gezeigt werden soll

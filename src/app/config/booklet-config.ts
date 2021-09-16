@@ -6,12 +6,12 @@ export class BookletConfig {
 	logPolicy: "disabled" | "lean" | "rich" | "debug" = "rich";
 	pagingMode: "separate" | "concat-scroll" | "concat-scroll-snap" = "separate";
 	stateReportPolicy: "none" | "eager" | "on-demand" = "eager";
-	page_navibuttons: "OFF" | "MERGED" | "SEPARATE_TOP" | "SEPARATE_BOTTOM" = "SEPARATE_BOTTOM";
+	page_navibuttons: "OFF" | "SEPARATE_BOTTOM" = "SEPARATE_BOTTOM";
 	unit_navibuttons: "OFF" | "ARROWS_ONLY" | "FULL" = "FULL";
 	unit_menu: "OFF" | "ENABLED_ONLY" | "FULL" = "OFF";
 	force_presentation_complete: "OFF" | "ON" = "OFF";
 	force_response_complete: "OFF" | "ON" = "OFF";
-	unit_screenheader: "OFF" | "WITH_UNIT_TITLE" | "WITH_BOOKLET_TITLE" | "EMPTY" = "EMPTY";
+	unit_screenheader: "OFF" | "WITH_UNIT_TITLE" | "WITH_BOOKLET_TITLE" | "WITH_BLOCK_TITLE" | "EMPTY" = "WITH_UNIT_TITLE";
 	unit_title: "OFF" | "ON" = "ON";
 	unit_show_time_left: "OFF" | "ON" = "OFF";
 	show_end_button_in_player: "OFF" | "ALWAYS" | "ONLY_LAST_UNIT" = "OFF";
