@@ -38,7 +38,6 @@ export class TestLoaderService {
   private unitContentLoadQueue: TaggedString[] = [];
   private navTargetUnitId: string;
   private newTestStatus: TestControllerState;
-  private lastTestletIndex = 0;
 
   totalLoadingProgress: { [loadingId: string]: number } = {};
 
@@ -345,7 +344,6 @@ export class TestLoaderService {
 
             // recursive call through all testlets
             this.lastUnitSequenceId = 1;
-            this.lastTestletIndex = 1;
             this.tcs.allUnitIds = [];
             this.addTestletContentFromBookletXml(
               rootTestlet,
@@ -452,11 +450,7 @@ export class TestLoaderService {
           );
           this.lastUnitSequenceId += 1;
         } else if (childElements[childIndex].nodeName === 'Testlet') {
-          let testletId: string = childElements[childIndex].getAttribute('id');
-          if (!testletId) { // TODO this can not happen, so remove it?
-            testletId = `Testlet${this.lastTestletIndex.toString()}`;
-            this.lastTestletIndex += 1;
-          }
+          const testletId: string = childElements[childIndex].getAttribute('id');
           let testletLabel: string = childElements[childIndex].getAttribute('label');
           testletLabel = testletLabel ? testletLabel.trim() : '';
 
