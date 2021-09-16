@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { BehaviorSubject, combineLatest, Subscription } from 'rxjs';
 import {
   Component, HostListener, OnInit, OnDestroy
@@ -45,6 +46,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   pageList: PageData[] = [];
   private knownPages: string[];
   unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
+  unitsToLoadLabels: string[];
 
   isNaN = Number.isNaN;
 
@@ -183,7 +185,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private open(currentUnitSequenceId: number): void {
-    console.log(`[start open] ${currentUnitSequenceId}`);
     this.currentUnitSequenceId = currentUnitSequenceId;
     this.tcs.currentUnitSequenceId = this.currentUnitSequenceId;
     this.mds.appSubTitle$.next(`Seite ${this.currentUnitSequenceId}`); // TODO this should show the UNIT?!
@@ -206,6 +207,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     const unitsToLoad = unitsToLoadIds
       .map(unitSequenceId => this.tcs.getUnitLoadProgress$(unitSequenceId));
+
+    this.unitsToLoadLabels = unitsToLoadIds
+      .map(unitSequenceId => this.tcs.rootTestlet.getUnitAt(unitSequenceId).unitDef.title);
 
     this.subscriptions.loading = combineLatest<LoadingProgress[]>(
       unitsToLoad
