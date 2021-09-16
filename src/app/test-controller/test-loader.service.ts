@@ -35,11 +35,12 @@ export class TestLoaderService {
   private unitContentLoadSubscription: Subscription = null;
   private environment: EnvironmentData;
   private lastUnitSequenceId = 0;
-  private loadedUnitCount = 0;
   private unitContentLoadQueue: TaggedString[] = [];
   private navTargetUnitId: string;
   private newTestStatus: TestControllerState;
   private lastTestletIndex = 0;
+
+  totalLoadingProgress: { [loadingId: string]: number } = {};
 
   constructor(
     @Inject('APP_VERSION') public appVersion: string,
@@ -68,6 +69,7 @@ export class TestLoaderService {
     await this.loadUnits();
     this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
     this.setUpResumeNavTarget();
+
     return this.loadUnitContents(); // the promise resolves, when it is allowed to start
   }
 
@@ -80,6 +82,8 @@ export class TestLoaderService {
     this.tcs.resetDataStore();
     this.tcs.loadProgressValue = 0;
     this.tcs.loadComplete = false;
+
+    this.totalLoadingProgress = {};
 
     this.environment = new EnvironmentData(this.appVersion);
     this.loadStartTimeStamp = Date.now();
@@ -119,18 +123,18 @@ export class TestLoaderService {
   }
 
   private loadUnits(): Promise<number> {
-    this.loadedUnitCount = 0;
     const sequence = [];
     for (let i = 1; i < this.tcs.maxUnitSequenceId + 1; i++) {
+      this.totalLoadingProgress[`unit-${i}`] = 0;
+      this.totalLoadingProgress[`player-${i}`] = 0;
+      this.totalLoadingProgress[`content-${i}`] = 0;
       sequence.push(i);
     }
-    const loadingUnits = from(sequence)
+    return from(sequence)
       .pipe(
-        tap(() => this.incrementProgressValueBy1()),
         concatMap(nr => this.loadUnit(this.tcs.rootTestlet.getUnitAt(nr).unitDef, nr))
-      );
-
-    return loadingUnits.toPromise();
+      )
+      .toPromise();
   }
 
   private loadUnit(unitDef: UnitDef, sequenceId: number): Observable<number> {
@@ -141,6 +145,9 @@ export class TestLoaderService {
           if (typeof unit === 'boolean') {
             return throwError(`error requesting unit ${this.tcs.testId}/${unitDef.id}`);
           }
+
+          this.incrementTotalProgress({ progress: 100 }, `unit-${sequenceId}`);
+
           this.tcs.setOldUnitPresentationProgress(sequenceId, unit.state[UnitStateKey.PRESENTATION_PROGRESS]);
           this.tcs.setOldUnitDataCurrentPage(sequenceId, unit.state[UnitStateKey.CURRENT_PAGE_ID]);
 
@@ -161,17 +168,25 @@ export class TestLoaderService {
           } else {
             this.tcs.addUnitDefinition(sequenceId, unit.definition);
             this.tcs.setUnitLoadProgress$(sequenceId, of({ progress: 100 }));
+            this.incrementTotalProgress({ progress: 100 }, `content-${sequenceId}`);
           }
           unitDef.setCanEnter('y', '');
 
           if (this.tcs.hasPlayer(unit.playerId)) {
+            this.incrementTotalProgress({ progress: 100 }, `player-${sequenceId}`);
             return of(sequenceId);
           }
-          // to avoid multiple calls before returning:
+
           this.tcs.addPlayer(unit.playerId, '');
           const playerFileId = TestControllerService.normaliseId(unit.playerId, 'html');
           return this.bs.getResource(this.tcs.testId, playerFileId, true)
             .pipe(
+              tap((progress: LoadedFile | LoadingProgress) => {
+                this.incrementTotalProgress(
+                  isLoadingFileLoaded(progress) ? { progress: 100 } : progress,
+                  `player-${sequenceId}`
+                );
+              }),
               last(),
               map((player: LoadedFile) => {
                 this.tcs.addPlayer(unit.playerId, player.content);
@@ -192,11 +207,10 @@ export class TestLoaderService {
     }
     this.tcs.updateMinMaxUnitSequenceId(navTarget);
     this.tcs.resumeTargetUnitId = navTarget;
-    this.loadedUnitCount = 0;
   }
 
   private loadUnitContents(): Promise<void> {
-    // we don't load files in parallel since it made problems when a whole class tried it at once
+    // we don't load files in parallel since it made problems, when a whole class tried it at once
     const unitContentLoadingProgresses$: { [unitSequenceID: number] : Subject<LoadingProgress> } = {};
     this.unitContentLoadQueue
       .forEach(unitToLoad => {
@@ -207,6 +221,7 @@ export class TestLoaderService {
           unitContentLoadingProgresses$[Number(unitToLoad.tag)].asObservable()
         );
       });
+
     return new Promise<void>((resolve, reject) => {
       if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
         this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitId.toString());
@@ -218,11 +233,10 @@ export class TestLoaderService {
         .pipe(
           concatMap(queueEntry => {
             const unitSequenceID = Number(queueEntry.tag);
-            if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
-              this.incrementProgressValueBy1(); // TODO this does not count the right way
-            }
-            // avoid to load unit def if not necessary TODO is this useful?
+
+            // don't load content of units which are already blocked (by timer)
             if (unitSequenceID < this.tcs.minUnitSequenceId) {
+              this.incrementTotalProgress({ progress: 100 }, `content-${unitSequenceID}`);
               return of({ unitSequenceID, content: '' });
             }
 
@@ -239,7 +253,8 @@ export class TestLoaderService {
                   this.tcs.addUnitDefinition(unitSequenceID, loadingFile.content);
                   return { progress: 100 };
                 }),
-                distinctUntilChanged((v1, v2) => v1.progress === v2.progress)
+                distinctUntilChanged((v1, v2) => v1.progress === v2.progress),
+                tap(progress => this.incrementTotalProgress(progress, `content-${unitSequenceID}`))
               )
               .subscribe(unitContentLoadingProgresses$[unitSequenceID]);
 
@@ -280,10 +295,14 @@ export class TestLoaderService {
       .filter(e => e.nodeType === 1);
   }
 
-  private incrementProgressValueBy1(): void {
-    this.loadedUnitCount += 1;
-    this.tcs.loadProgressValue = (this.loadedUnitCount * 100) / this.lastUnitSequenceId;
-    console.log(this.loadedUnitCount, this.lastUnitSequenceId, this.tcs.loadProgressValue);
+  private incrementTotalProgress(progress: LoadingProgress, file: string): void {
+    if (typeof progress.progress !== 'number') {
+      return;
+    }
+    this.totalLoadingProgress[file] = progress.progress;
+    const sumOfProgresses = Object.values(this.totalLoadingProgress).reduce((i, a) => i + a, 0);
+    const maxProgresses = Object.values(this.totalLoadingProgress).length * 100;
+    this.tcs.loadProgressValue = (sumOfProgresses / maxProgresses) * 100;
   }
 
   private getBookletFromXml(xmlString: string): Testlet {

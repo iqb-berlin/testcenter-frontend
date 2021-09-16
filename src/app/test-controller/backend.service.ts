@@ -62,7 +62,6 @@ export class BackendService {
   }
 
   getResource(testId: string, resId: string, versionning = false): Observable<LoadingFile> {
-    const DLID = Math.random();
     return this.http
       .get(
         `${this.serverUrl}test/${testId}/resource/${resId}`,
@@ -77,11 +76,9 @@ export class BackendService {
         map((event: HttpEvent<any>) => {
           switch (event.type) {
             case HttpEventType.ResponseHeader:
-              console.log('RRR', event.headers);
               return { progress: 0 };
 
             case HttpEventType.DownloadProgress:
-              console.log(`[DL ${DLID}] ${resId} ${event.loaded}/${event.total}`);
               if (!event.total) { // happens if file is huge because browser switches to chunked loading
                 return <LoadingFile>{ progress: 'UNKNOWN' };
               }
