@@ -1,5 +1,5 @@
 <div id="unit-title" *ngIf="tcs.bookletConfig.unit_title === 'ON'" fxLayout="column" fxLayoutAlign="center center">
-  <p>{{ unitTitle }} {{currentUnitSequenceId}}</p>
+  <p>{{ unitTitle }}</p>
 </div>
 
 <div id="iFrameHost">
@@ -9,7 +9,12 @@
     <div id="waiting-room" *ngIf="loadingUnits.length">
       <mat-card>
         <mat-card-header>
-          <mat-card-title>{{loadingUnits.length > 1 ? 'Aufgabenblock' : 'Aufgabe'}} wird geladen</mat-card-title>
+          <mat-card-title *ngIf="loadingUnits.length > 1">
+            {{'Aufgabenblock wird geladen' | customtext:'booklet_loadingBlock' | async}}
+          </mat-card-title>
+          <mat-card-title *ngIf="loadingUnits.length <= 1">
+            {{'Aufgabe wird geladen' | customtext:'booklet_loadingUnit' | async}}
+          </mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <ng-container *ngFor="let loading of loadingUnits; let index = index">
@@ -22,9 +27,15 @@
             <p class="progress-bar-sub-text">
               {{unitsToLoadLabels[index]}}
               <ng-container [ngSwitch]="loading.progress">
-                <span *ngSwitchCase="'UNKNOWN'">(wird geladen)</span>
-                <span *ngSwitchCase="'PENDING'">(in der Warteschleife)</span>
-                <span *ngSwitchDefault>({{loading.progress}}% geladen)</span>
+                <span *ngSwitchCase="'UNKNOWN'">
+                  ({{'wird geladen' | customtext:'booklet_unitLoadingUnknownProgress' | async}})
+                </span>
+                <span *ngSwitchCase="'PENDING'">
+                  ({{'in der Warteschleife' | customtext:'booklet_unitLoadingPending' | async}})
+                </span>
+                <span *ngSwitchDefault>
+                  ({{loading.progress}}% {{'geladen' | customtext:'booklet_unitLoading' | async}})
+                </span>
               </ng-container>
             </p>
           </ng-container>

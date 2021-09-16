@@ -119,6 +119,26 @@
     "label": "Nachricht an die Testperson, wenn der Test vom System unterbrochen wurde",
     "defaultvalue": "Der Test wurde kurz angehalten."
   },
+  "booklet_loadingBlock" : {
+    "label": "Meldung wenn ein Zeitgesteuerter Block betreten wurde, der noch nicht geladen wurde",
+    "defaultvalue": "Aufgabenblock wird geladen"
+  },
+  "booklet_loadingUnit" : {
+    "label": "Meldung wenn eine Unit betreten wird, die noch nicht geladen wurde",
+    "defaultvalue": "Aufgabe wird geladen"
+  },
+  "booklet_unitLoadingUnknownProgress" : {
+    "label": "Untertitel des Ladebalkens, wenn Aufgabe geladen wird, Fortschritt aber unbekannt",
+    "defaultvalue": "wird geladen"
+  },
+  "booklet_unitLoadingPending" : {
+    "label": "Untertitel des Ladebalkens, wenn Aufgabe geladen werden wird, aber noch nicht dran ist",
+    "defaultvalue": "in der Warteschleife"
+  },
+  "booklet_unitLoading" : {
+    "label": "Untertitel des Ladebalkens, xxx% geladen",
+    "defaultvalue": "geladen"
+  },
   "syscheck_questionsRequiredMessage": {
     "label": "Nachricht an die Testperson, wenn einige Fragen, die als 'required' markiert sind, nicht beantwortet wurden",
     "defaultvalue": "Bitte prüfen Sie die Eingaben (unvollständig):"
