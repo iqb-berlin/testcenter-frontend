@@ -27,7 +27,6 @@ export class TestControllerService {
   testId = '';
   testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
   testStatusEnum = TestControllerState;
-  loadComplete = false;
   loadProgressValue = 0;
   clearCodeTestlets: string[] = [];
 
@@ -139,8 +138,6 @@ export class TestControllerService {
     this.LastMaxTimerState = {};
     this.unitListForNaviButtons = [];
     this.unitPresentationProgressStates = {};
-    // this.dataLoading = false; TODO set test status?
-    // this.bookletLoadComplete = false;
   }
 
   // uppercase and add extension if not part

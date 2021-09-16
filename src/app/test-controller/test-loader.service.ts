@@ -38,8 +38,7 @@ export class TestLoaderService {
   private unitContentLoadQueue: TaggedString[] = [];
   private navTargetUnitId: string;
   private newTestStatus: TestControllerState;
-
-  totalLoadingProgress: { [loadingId: string]: number } = {};
+  private totalLoadingProgress: { [loadingId: string]: number } = {};
 
   constructor(
     @Inject('APP_VERSION') public appVersion: string,
@@ -79,9 +78,8 @@ export class TestLoaderService {
     // TODO maybe it would be better to retrieve the testmode from the login
     this.tcs.testMode = new TestMode();
     this.tcs.resetDataStore();
-    this.tcs.loadProgressValue = 0;
-    this.tcs.loadComplete = false;
 
+    this.tcs.loadProgressValue = 0;
     this.totalLoadingProgress = {};
 
     this.environment = new EnvironmentData(this.appVersion);
@@ -263,7 +261,6 @@ export class TestLoaderService {
         .subscribe({
           error: reject,
           complete: () => {
-            console.log('KOMPLETT');
             if (this.tcs.testMode.saveResponses) {
               this.environment.loadTime = Date.now() - this.loadStartTimeStamp;
               this.bs.addTestLog(this.tcs.testId, [<StateReportEntry>{
@@ -271,7 +268,6 @@ export class TestLoaderService {
               }]);
             }
             this.tcs.loadProgressValue = 100;
-            this.tcs.loadComplete = true;
             if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
               this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitId.toString());
               this.tcs.testStatus$.next(this.newTestStatus);
