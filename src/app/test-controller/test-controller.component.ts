@@ -78,7 +78,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       }
 
       this.subscriptions.errorReporting = this.mds.appError$
-        .subscribe(e => this.tcs.errorOut(e));
+        .subscribe(() => this.tcs.errorOut());
 
       this.subscriptions.testStatus = this.tcs.testStatus$
         .pipe(distinctUntilChanged())
@@ -106,7 +106,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               this.startConnectionStatusLogging();
             })
             .catch(errorMessage => {
-              console.log(`REJECTED ${errorMessage}`);
               const msg = (errorMessage.info) ? errorMessage.info : errorMessage;
               this.mds.appError$.next({
                 label: 'Test konnte nicht geladen werden',
@@ -163,11 +162,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   private startConnectionStatusLogging() {
     this.subscriptions.connectionStatus = this.cmd.connectionStatus$
       .pipe(
-        // tap(s => console.log('CONN', s)),
-        map(status => status === 'ws-online')
-        //,
-        // tap(o => console.log('ONLI', o))
-        // distinctUntilChanged()
+        map(status => status === 'ws-online'),
+        distinctUntilChanged()
       )
       .subscribe(isWsConnected => {
         // console.log('ISCO', isWsConnected, this.tcs.testMode.saveResponses);
@@ -286,14 +282,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case MaxTimerDataType.ENDED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', { duration: 3000 });
         this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
-        this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
+        console.log('setTimeLeft 1 - handleMaxTimer ENDED');
+        this.tcs.lastMaxTimerState[maxTimerData.testletId] = 0;
         if (this.tcs.testMode.saveResponses) {
           this.bs.updateTestState(
             this.tcs.testId,
             [<StateReportEntry>{
               key: TestStateKey.TESTLETS_TIMELEFT,
               timeStamp: Date.now(),
-              content: JSON.stringify(this.tcs.LastMaxTimerState)
+              content: JSON.stringify(this.tcs.lastMaxTimerState)
             }]
           );
         }
@@ -306,34 +303,36 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case MaxTimerDataType.CANCELLED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', { duration: 3000 });
         this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
-        this.tcs.LastMaxTimerState[maxTimerData.testletId] = 0;
+        console.log('setTimeLeft 2 - handleMaxTimer CANCELLED');
+        this.tcs.lastMaxTimerState[maxTimerData.testletId] = 0;
         if (this.tcs.testMode.saveResponses) {
           this.bs.updateTestState(
             this.tcs.testId,
             [<StateReportEntry>{
               key: TestStateKey.TESTLETS_TIMELEFT,
               timeStamp: Date.now(),
-              content: JSON.stringify(this.tcs.LastMaxTimerState)
+              content: JSON.stringify(this.tcs.lastMaxTimerState)
             }]
           );
         }
         this.timerValue = null;
         break;
       case MaxTimerDataType.INTERRUPTED:
-        this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, this.tcs.LastMaxTimerState[maxTimerData.testletId]);
+        this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, this.tcs.lastMaxTimerState[maxTimerData.testletId]);
+        console.log('setTimeLeft 3 - handleMaxTimer INTERRUPTED');
         this.timerValue = null;
         break;
       case MaxTimerDataType.STEP:
         this.timerValue = maxTimerData;
         if ((maxTimerData.timeLeftSeconds % 15) === 0) {
-          this.tcs.LastMaxTimerState[maxTimerData.testletId] = Math.round(maxTimerData.timeLeftSeconds / 60);
+          this.tcs.lastMaxTimerState[maxTimerData.testletId] = Math.round(maxTimerData.timeLeftSeconds / 60);
           if (this.tcs.testMode.saveResponses) {
             this.bs.updateTestState(
               this.tcs.testId,
               [<StateReportEntry>{
                 key: TestStateKey.TESTLETS_TIMELEFT,
                 timeStamp: Date.now(),
-                content: JSON.stringify(this.tcs.LastMaxTimerState)
+                content: JSON.stringify(this.tcs.lastMaxTimerState)
               }]
             );
           }

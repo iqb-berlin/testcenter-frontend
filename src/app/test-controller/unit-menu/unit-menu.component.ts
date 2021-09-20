@@ -27,8 +27,9 @@ export class UnitMenuComponent implements OnInit {
       let prevTestletLabel = '';
       if (this.tcs.bookletConfig.unit_menu !== 'OFF' || this.tcs.testMode.showUnitMenu) {
         for (let unitIndex = 0; unitIndex < this.tcs.unitListForNaviButtons.length; unitIndex++) {
-          if (this.tcs.unitListForNaviButtons[unitIndex].longLabel.trim()
-            && (!this.tcs.unitListForNaviButtons[unitIndex].disabled || this.tcs.bookletConfig.unit_menu === 'FULL')) {
+          if (this.tcs.unitListForNaviButtons[unitIndex].longLabel.trim() &&
+            (!this.tcs.unitListForNaviButtons[unitIndex].disabled || this.tcs.bookletConfig.unit_menu === 'FULL')
+          ) {
             const testletLabel = this.tcs.unitListForNaviButtons[unitIndex].testletLabel;
             let testletMarker = 'testlet-marker-non';
             if (testletLabel) {

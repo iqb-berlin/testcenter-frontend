@@ -85,7 +85,6 @@ export class BackendService {
               return { progress: Math.round(100 * (event.loaded / event.total)) };
 
             case HttpEventType.Response:
-              console.log(resId, event.body.length);
               if (!event.body.length) {
                 // this might happen when file is so large, that memory size get exhausted
                 throw new Error(`Empty response for  '${resId}'. Most likely the browsers memory was exhausted.`);

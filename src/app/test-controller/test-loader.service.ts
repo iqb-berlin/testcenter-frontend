@@ -50,6 +50,7 @@ export class TestLoaderService {
   }
 
   async loadTest(testId: string): Promise<void> {
+    console.log(`load test #${testId}`);
     this.reset();
 
     this.tcs.testStatus$.next(TestControllerState.LOADING);
@@ -98,7 +99,7 @@ export class TestLoaderService {
             this.navTargetUnitId = testData.laststate[stateKey];
             break;
           case (TestStateKey.TESTLETS_TIMELEFT):
-            this.tcs.LastMaxTimerState = JSON.parse(testData.laststate[stateKey]);
+            this.tcs.lastMaxTimerState = JSON.parse(testData.laststate[stateKey]);
             break;
           case (TestStateKey.CONTROLLER):
             if (testData.laststate[stateKey] === TestControllerState.PAUSED) {
@@ -221,6 +222,7 @@ export class TestLoaderService {
 
     return new Promise<void>((resolve, reject) => {
       if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
+        console.log('[setUnitNavigationRequest] loadUnitContents (tcs.bookletConfig.loading_mode === \'LAZY\')', { t: this.tcs.resumeTargetUnitId.toString() });
         this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitId.toString());
         this.tcs.testStatus$.next(this.newTestStatus);
         resolve();
@@ -246,7 +248,6 @@ export class TestLoaderService {
                   if (!isLoadingFileLoaded(loadingFile)) {
                     return loadingFile;
                   }
-                  console.log(`[GOT UNIT] ${unitSequenceID} -  ${loadingFile.content.length}`);
                   this.tcs.addUnitDefinition(unitSequenceID, loadingFile.content);
                   return { progress: 100 };
                 }),
@@ -269,6 +270,7 @@ export class TestLoaderService {
             }
             this.tcs.loadProgressValue = 100;
             if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
+              console.log('[setUnitNavigationRequest] loadUnitContents (tcs.bookletConfig.loading_mode === \'EAGER\')', { t: this.tcs.resumeTargetUnitId.toString() });
               this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitId.toString());
               this.tcs.testStatus$.next(this.newTestStatus);
               resolve();
@@ -413,9 +415,9 @@ export class TestLoaderService {
         targetTestlet.codePrompt = codePrompt;
       }
       targetTestlet.maxTimeLeft = maxTime;
-      if (this.tcs.LastMaxTimerState) {
-        if (targetTestlet.id in this.tcs.LastMaxTimerState) {
-          targetTestlet.maxTimeLeft = this.tcs.LastMaxTimerState[targetTestlet.id];
+      if (this.tcs.lastMaxTimerState) {
+        if (targetTestlet.id in this.tcs.lastMaxTimerState) {
+          targetTestlet.maxTimeLeft = this.tcs.lastMaxTimerState[targetTestlet.id];
         }
       }
       const newNavigationLeaveRestrictions =

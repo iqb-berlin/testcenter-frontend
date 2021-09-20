@@ -218,7 +218,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
       .subscribe({
         next: value => {
           this.unitsLoading$.next(value);
-          console.log('[next]', value);
         },
         error: err => {
           this.mds.appError$.next({
@@ -241,7 +240,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
         break;
       case 'WITH_BLOCK_TITLE':
         this.unitScreenHeader = this.tcs.rootTestlet.getUnitAt(this.currentUnitSequenceId).testletLabel;
-        console.log('BT', this.unitScreenHeader);
         break;
       default:
         this.unitScreenHeader = '';
@@ -250,7 +248,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private runUnit(currentUnit: UnitControllerData): void {
     this.unitsLoading$.next([]);
-    console.log(`[run] ${this.currentUnitSequenceId}`);
     if (this.tcs.testMode.saveResponses) {
       this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
         key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.myUnitDbKey

@@ -18,7 +18,6 @@ import { TestMode } from '../config/test-mode';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../config/booklet-config';
 import { VeronaNavigationDeniedReason } from './verona.interfaces';
-import { AppError } from '../app.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -62,30 +61,11 @@ export class TestControllerService {
   }
 
   set currentUnitSequenceId(v: number) {
-    this.unitPrevEnabled = v > this.minUnitSequenceId;
-    this.unitNextEnabled = v < this.maxUnitSequenceId;
-    if (this.rootTestlet && (this.bookletConfig.unit_navibuttons !== 'OFF')) {
-      const myUnitListForNaviButtons: UnitNaviButtonData[] = [];
-      for (let sequ = 1; sequ <= this.rootTestlet.getMaxSequenceId(); sequ++) {
-        const myUnitData = this.rootTestlet.getUnitAt(sequ);
-        if (myUnitData) {
-          const disabled = (sequ < this.minUnitSequenceId) || (sequ > this.maxUnitSequenceId) || myUnitData.unitDef.locked;
-          myUnitListForNaviButtons.push({
-            sequenceId: sequ,
-            shortLabel: myUnitData.unitDef.naviButtonLabel,
-            longLabel: myUnitData.unitDef.title,
-            testletLabel: myUnitData.testletLabel,
-            disabled,
-            isCurrent: sequ === v
-          });
-        }
-      }
-      this.unitListForNaviButtons = myUnitListForNaviButtons;
-    }
     this._currentUnitSequenceId = v;
+    this.refreshUnitMenu();
   }
 
-  LastMaxTimerState: KeyValuePairNumber = {};
+  lastMaxTimerState: KeyValuePairNumber = {};
 
   private players: { [filename: string]: string } = {};
   private unitDefinitions: { [sequenceId: number]: string } = {};
@@ -135,7 +115,7 @@ export class TestControllerService {
       this.maxTimeIntervalSubscription = null;
     }
     this.currentMaxTimerTestletId = '';
-    this.LastMaxTimerState = {};
+    this.lastMaxTimerState = {};
     this.unitListForNaviButtons = [];
     this.unitPresentationProgressStates = {};
   }
@@ -148,6 +128,27 @@ export class TestControllerService {
       normalisedId += `.${normalisedExtension}`;
     }
     return normalisedId;
+  }
+
+  refreshUnitMenu(): void {
+    this.unitPrevEnabled = this._currentUnitSequenceId > this.minUnitSequenceId;
+    this.unitNextEnabled = this._currentUnitSequenceId < this.maxUnitSequenceId;
+    if (this.rootTestlet && (this.bookletConfig.unit_navibuttons !== 'OFF')) {
+      this.unitListForNaviButtons = [];
+      for (let sequ = 1; sequ <= this.rootTestlet.getMaxSequenceId(); sequ++) {
+        const myUnitData = this.rootTestlet.getUnitAt(sequ);
+        if (myUnitData) {
+          this.unitListForNaviButtons.push({
+            sequenceId: sequ,
+            shortLabel: myUnitData.unitDef.naviButtonLabel,
+            longLabel: myUnitData.unitDef.title,
+            testletLabel: myUnitData.testletLabel,
+            disabled: myUnitData.unitDef.locked,
+            isCurrent: sequ === this._currentUnitSequenceId
+          });
+        }
+      }
+    }
   }
 
   addPlayer(id: string, player: string): void {
