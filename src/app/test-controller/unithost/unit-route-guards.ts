@@ -1,14 +1,12 @@
 /* eslint-disable max-classes-per-file,no-console */
 
 import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from 'iqb-components';
-import {
-  filter, map, switchMap, take
-} from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import {
   ActivatedRouteSnapshot, CanActivate, CanDeactivate, Router, RouterStateSnapshot
 } from '@angular/router';
-import { interval, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { MainDataService } from 'src/app/maindata.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -308,6 +306,10 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   canDeactivate(component: UnithostComponent, currentRoute: ActivatedRouteSnapshot,
                 currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): Observable<boolean> | boolean {
     if (this.tcs.testStatus$.getValue() === TestControllerState.ERROR) {
+      return true;
+    }
+
+    if (nextState.url === '/r/route-dispatcher') { // clicking on the IQB-Logo
       return true;
     }
 
