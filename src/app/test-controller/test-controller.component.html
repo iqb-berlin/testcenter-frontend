@@ -4,10 +4,13 @@
   <div><b>MODE:</b> {{tcs.testMode.modeId}}</div>
   <div><b>FOCUS:</b> {{tcs.windowFocusState$ | async}}</div>
   <div><b>BS:</b> {{cmd.connectionStatus$ | async}}</div>
+  <div><b>CONFIG:</b> <pre>{{tcs.bookletConfig | json}}</pre></div>
 </div>
 
 <div id="header" fxLayout="row" fxLayoutAlign="end center">
-    <p class="timer" *ngIf="tcs.testMode.showTimeLeft">{{ timerValue?.timeLeftString }}</p>
+    <p class="timer" *ngIf="tcs.testMode.showTimeLeft || (tcs.bookletConfig.unit_show_time_left === 'ON')">
+      {{ timerValue?.timeLeftString }}
+    </p>
     <button mat-fab [disabled]="!tcs.unitPrevEnabled" *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)" color="accent"
             (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none">
       <i class="material-icons">chevron_left</i>
