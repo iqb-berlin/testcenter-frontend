@@ -17,6 +17,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
 import { unitRouteGuards } from './unithost/unit-route-guards';
 import { TestControllerComponent } from './test-controller.component';
@@ -49,7 +50,8 @@ export { TestControllerService } from './test-controller.service';
     MatButtonModule,
     MatToolbarModule,
     MatIconModule,
-    IqbComponentsModule.forChild()
+    IqbComponentsModule.forChild(),
+    DragDropModule
   ],
   declarations: [
     UnithostComponent,

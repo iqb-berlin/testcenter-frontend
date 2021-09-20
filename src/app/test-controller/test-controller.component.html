@@ -1,4 +1,4 @@
-<div class="debug-pane" *ngIf="debugPane">
+<div class="debug-pane" *ngIf="debugPane" cdkDrag>
   <div><b>STATUS:</b> {{tcs.testStatus$ | async}}</div>
   <div><b>TIMER:</b> {{timerValue?.timeLeftString}}<b> {{timerValue?.testletId}} {{timerValue?.type}}</b></div>
   <div><b>MODE:</b> {{tcs.testMode.modeId}}</div>
@@ -11,11 +11,20 @@
     <p class="timer" *ngIf="tcs.testMode.showTimeLeft || (tcs.bookletConfig.unit_show_time_left === 'ON')">
       {{ timerValue?.timeLeftString }}
     </p>
-    <button mat-fab [disabled]="!tcs.unitPrevEnabled" *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)" color="accent"
-            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none">
+    <button
+      mat-fab
+      [disabled]="!tcs.unitPrevEnabled"
+      *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
+      color="accent"
+      (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none"
+    >
       <i class="material-icons">chevron_left</i>
     </button>
-    <div *ngIf="(tcs.bookletConfig.unit_navibuttons === 'FULL') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)" fxLayout="row wrap" fxLayoutAlign="start center">
+    <div
+      *ngIf="(tcs.bookletConfig.unit_navibuttons === 'FULL') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
+      fxLayout="row wrap"
+      fxLayoutAlign="start center"
+    >
       <div *ngFor="let u of tcs.unitListForNaviButtons">
         <div fxLayout="column" fxLayoutAlign="start center">
             <button
@@ -23,14 +32,21 @@
               class="unit-button"
               [disabled]="u.disabled"
               [matTooltip]="u.longLabel + (!tcs.isUnitContentLoaded(u.sequenceId) ? ' (wird noch geladen!)' : '')"
-            >{{ u.shortLabel }}</button>
+            >
+              {{ u.shortLabel }}
+            </button>
             <span class="current-unit-dot" *ngIf="u.isCurrent"></span>
             <span class="notcurrent-unit-dot" *ngIf="!u.isCurrent"></span>
         </div>
       </div>
     </div>
-    <button mat-fab [disabled]="!tcs.unitNextEnabled" *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF')  && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)" color="accent"
-            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none">
+    <button
+      mat-fab
+      [disabled]="!tcs.unitNextEnabled"
+      *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
+      color="accent"
+      (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none"
+    >
       <i class="material-icons">chevron_right</i>
     </button>
     <div class="plus-buttons" fxFlex="none" fxLayout="row">

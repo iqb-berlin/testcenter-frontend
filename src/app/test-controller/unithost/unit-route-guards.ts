@@ -66,71 +66,63 @@ export class UnitActivateGuard implements CanActivate {
     ) {
       return of(true);
     }
-    this.tcs.cancelMaxTimer();
-    this.tcs.rootTestlet.lockUnits_before(newUnit.maxTimerRequiringTestlet.id);
     this.tcs.startMaxTimer(newUnit.maxTimerRequiringTestlet.id, newUnit.maxTimerRequiringTestlet.maxTimeLeft);
     return of(true);
   }
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean>|boolean {
-    console.log('UnitActivateGuard canActivate');
     const targetUnitSequenceId: number = Number(route.params.u);
-    if (this.tcs.currentUnitSequenceId > 0) {
-      this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
-    } else {
-      this.tcs.updateMinMaxUnitSequenceId(targetUnitSequenceId);
-    }
     let forceNavigation = false;
     const routerStateObject = this.router.getCurrentNavigation();
     if (routerStateObject.extras.state && routerStateObject.extras.state.force) {
       forceNavigation = routerStateObject.extras.state.force;
     }
 
-    let myReturn = false;
+    if (this.tcs.currentUnitSequenceId > 0) {
+      this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
+    } else {
+      this.tcs.updateMinMaxUnitSequenceId(targetUnitSequenceId);
+    }
+
     if (this.tcs.rootTestlet === null) {
       console.warn('unit canActivate: true (rootTestlet null)');
-      myReturn = false;
       const oldTestId = LocalStorage.getTestId();
       if (oldTestId) {
         this.router.navigate([`/t/${oldTestId}`]);
       } else {
         this.router.navigate(['/']);
       }
-    } else if ((targetUnitSequenceId < this.tcs.minUnitSequenceId) ||
-      (targetUnitSequenceId > this.tcs.maxUnitSequenceId)) {
-      console.warn(`unit canActivate: false (unit #${targetUnitSequenceId} out
-        of range [${this.tcs.minUnitSequenceId} - ${this.tcs.maxUnitSequenceId}])`);
-      this.router.navigate([`/t/${this.tcs.testId}/u/${this.tcs.minUnitSequenceId}`]);
-    } else {
-      const newUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
-      if (!newUnit) {
-        myReturn = false;
-        console.warn(`target unit null (targetUnitSequenceId: ${targetUnitSequenceId.toString()})`);
-      } else if (newUnit.unitDef.locked) {
-        myReturn = false;
-        console.warn('unit canActivate: locked');
-      } else if (newUnit.unitDef.canEnter === 'n') {
-        myReturn = false;
-        console.warn('unit canActivate: false (unit is locked)');
-      } else {
-        return this.checkAndSolve_Code(newUnit, forceNavigation)
-          .pipe(switchMap(cAsC => {
-            if (!cAsC) {
+      return false;
+    }
+    const newUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
+    if (!newUnit) {
+      console.warn(`target unit null (targetUnitSequenceId: ${targetUnitSequenceId.toString()})`);
+      return false;
+    }
+    if (newUnit.unitDef.locked) {
+      console.warn('unit canActivate: locked');
+      return false;
+    }
+    if (newUnit.unitDef.canEnter === 'n') {
+      console.warn('unit canEnter === n');
+      return false;
+    }
+
+    return this.checkAndSolve_Code(newUnit, forceNavigation)
+      .pipe(switchMap(cAsC => {
+        if (!cAsC) {
+          return of(false);
+        }
+        return this.checkAndSolve_maxTime(newUnit)
+          .pipe(switchMap(cAsMT => {
+            if (!cAsMT) {
               return of(false);
             }
-            return this.checkAndSolve_maxTime(newUnit)
-              .pipe(switchMap(cAsMT => {
-                if (!cAsMT) {
-                  return of(false);
-                }
-                this.tcs.currentUnitSequenceId = targetUnitSequenceId;
-                this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
-                return of(true);
-              }));
+            this.tcs.currentUnitSequenceId = targetUnitSequenceId;
+            this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
+            return of(true);
           }));
-      }
-    }
-    return myReturn;
+      }));
   }
 }
 
@@ -144,11 +136,12 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     private router: Router
   ) {}
 
-  private checkAndSolve_maxTime(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
-    if (!this.tcs.currentMaxTimerTestletId) {
+  private checkAndSolve_maxTime_DEACTIVATE(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
+    console.log('checkAndSolve_maxTime', { newUnit, force, tcs_currentMaxTimerTestletId: this.tcs.currentMaxTimerTestletId });
+    if (!this.tcs.currentMaxTimerTestletId) { // leaving unit is not in a timed block
       return of(true);
     }
-    if (newUnit && newUnit.maxTimerRequiringTestlet &&
+    if (newUnit && newUnit.maxTimerRequiringTestlet && // staying in the same timed block
       (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
     ) {
       return of(true);
@@ -173,7 +166,8 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
           if ((typeof cdresult === 'undefined') || (cdresult === false)) {
             return false;
           }
-          this.tcs.cancelMaxTimer();
+          this.tcs.cancelMaxTimer(); // does locking the block
+          console.log("['cancel here']", this.tcs.currentMaxTimerTestletId);
           return true;
         })
       );
@@ -321,7 +315,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
 
     const forceNavigation = this.router.getCurrentNavigation().extras?.state?.force ?? false;
 
-    return this.checkAndSolve_maxTime(newUnit, forceNavigation)
+    return this.checkAndSolve_maxTime_DEACTIVATE(newUnit, forceNavigation)
       .pipe(
         switchMap(cAsC => {
           if (!cAsC) {

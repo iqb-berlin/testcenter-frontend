@@ -276,19 +276,18 @@ export class Testlet extends TestletContentElement {
   setTimeLeft(testletId: string, maxTimeLeft: number): void {
     if (testletId) {
       // find testlet
-      const myTestlet = this.getTestlet(testletId);
-      if (myTestlet) {
-        myTestlet.setTimeLeft('', maxTimeLeft);
+      const testlet = this.getTestlet(testletId);
+      if (testlet) {
+        testlet.setTimeLeft('', maxTimeLeft);
         if (maxTimeLeft === 0) {
-          myTestlet.lockUnits_allChildren();
+          testlet.lockUnits_allChildren();
         }
       }
     } else {
       this.maxTimeLeft = maxTimeLeft;
       for (const tce of this.children) {
         if (tce instanceof Testlet) {
-          const localTestlet = tce as Testlet;
-          localTestlet.setTimeLeft('', maxTimeLeft);
+          tce.setTimeLeft('', maxTimeLeft);
         }
       }
     }
@@ -311,36 +310,6 @@ export class Testlet extends TestletContentElement {
           localUnit.locked = true;
         }
       }
-    }
-  }
-
-  private minTestletUnitSequenceId(id = -1): number {
-    let myreturn = id;
-    for (const tce of this.children) {
-      if (tce instanceof Testlet) {
-        const localTestlet = tce as Testlet;
-        myreturn = localTestlet.minTestletUnitSequenceId(myreturn);
-      } else {
-        const localUnit = tce as UnitDef;
-        if ((myreturn === -1) || (localUnit.sequenceId < myreturn)) {
-          myreturn = localUnit.sequenceId;
-        }
-      }
-    }
-    return myreturn;
-  }
-
-  lockUnits_before(testletId = ''): void {
-    // TODO refactor this to satisfy linter
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    let myTestlet: Testlet = this;
-    if (testletId) {
-      myTestlet = this.getTestlet(testletId);
-    }
-    const minSeq = myTestlet.minTestletUnitSequenceId();
-    for (let i = minSeq - 1; i > 0; i--) {
-      const u = this.getUnitAt(i);
-      u.unitDef.locked = true;
     }
   }
 
