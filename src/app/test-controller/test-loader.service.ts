@@ -35,7 +35,7 @@ export class TestLoaderService {
   private unitContentLoadSubscription: Subscription = null;
   private environment: EnvironmentData;
   private lastUnitSequenceId = 0;
-  private unitContentLoadQueue: TaggedString[] = [];
+  private unitContentLoadingQueue: TaggedString[] = [];
   private navTargetUnitId: string;
   private newTestStatus: TestControllerState;
   private totalLoadingProgress: { [loadingId: string]: number } = {};
@@ -66,8 +66,9 @@ export class TestLoaderService {
     }
 
     await this.loadUnits();
-    this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
     this.setUpResumeNavTarget();
+    this.prepareUnitContentLoadingQueueOrder();
+    this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
 
     return this.loadUnitContents(); // the promise resolves, when it is allowed to start
   }
@@ -85,7 +86,7 @@ export class TestLoaderService {
 
     this.environment = new EnvironmentData(this.appVersion);
     this.loadStartTimeStamp = Date.now();
-    this.unitContentLoadQueue = [];
+    this.unitContentLoadingQueue = [];
   }
 
   private parseBooklet(testData: TestData): void {
@@ -159,7 +160,7 @@ export class TestLoaderService {
 
           unitDef.playerId = unit.playerId;
           if (unit.definitionRef) {
-            this.unitContentLoadQueue.push(<TaggedString>{
+            this.unitContentLoadingQueue.push(<TaggedString>{
               tag: sequenceId.toString(),
               value: unit.definitionRef
             });
@@ -195,7 +196,7 @@ export class TestLoaderService {
       );
   }
 
-  private setUpResumeNavTarget() : void {
+  private setUpResumeNavTarget(): void {
     let navTarget = 1;
     if (this.navTargetUnitId) {
       const tmpNavTarget = this.tcs.rootTestlet.getSequenceIdByUnitAlias(this.navTargetUnitId);
@@ -204,13 +205,25 @@ export class TestLoaderService {
       }
     }
     this.tcs.updateMinMaxUnitSequenceId(navTarget);
-    this.tcs.resumeTargetUnitId = navTarget;
+    this.tcs.resumeTargetUnitSequenceId = navTarget;
+  }
+
+  private prepareUnitContentLoadingQueueOrder(): void {
+    const queue = this.unitContentLoadingQueue;
+    let firstToLoadQueuePosition;
+    for (firstToLoadQueuePosition = 0; firstToLoadQueuePosition < queue.length; firstToLoadQueuePosition++) {
+      if (Number(queue[firstToLoadQueuePosition % queue.length].tag) >= this.tcs.resumeTargetUnitSequenceId) {
+        break;
+      }
+    }
+    const offset = ((firstToLoadQueuePosition % queue.length) + queue.length) % queue.length;
+    this.unitContentLoadingQueue = queue.slice(offset).concat(queue.slice(0, offset));
   }
 
   private loadUnitContents(): Promise<void> {
     // we don't load files in parallel since it made problems, when a whole class tried it at once
     const unitContentLoadingProgresses$: { [unitSequenceID: number] : Subject<LoadingProgress> } = {};
-    this.unitContentLoadQueue
+    this.unitContentLoadingQueue
       .forEach(unitToLoad => {
         unitContentLoadingProgresses$[Number(unitToLoad.tag)] =
           new BehaviorSubject<LoadingProgress>({ progress: 'PENDING' });
@@ -222,22 +235,16 @@ export class TestLoaderService {
 
     return new Promise<void>((resolve, reject) => {
       if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
-        console.log('[setUnitNavigationRequest] loadUnitContents (tcs.bookletConfig.loading_mode === \'LAZY\')', { t: this.tcs.resumeTargetUnitId.toString() });
-        this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitId.toString());
+        console.log('[setUnitNavigationRequest] loadUnitContents (tcs.bookletConfig.loading_mode === \'LAZY\')', { t: this.tcs.resumeTargetUnitSequenceId.toString() });
+        this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitSequenceId.toString());
         this.tcs.testStatus$.next(this.newTestStatus);
         resolve();
       }
 
-      this.unitContentLoadSubscription = from(this.unitContentLoadQueue)
+      this.unitContentLoadSubscription = from(this.unitContentLoadingQueue)
         .pipe(
           concatMap(queueEntry => {
             const unitSequenceID = Number(queueEntry.tag);
-
-            // don't load content of units which are already blocked (by timer)
-            if (unitSequenceID < this.tcs.minUnitSequenceId) {
-              this.incrementTotalProgress({ progress: 100 }, `content-${unitSequenceID}`);
-              return of({ unitSequenceID, content: '' });
-            }
 
             const unitContentLoading$ = this.bs.getResource(this.tcs.testId, queueEntry.value)
               .pipe(shareReplay());
@@ -270,8 +277,8 @@ export class TestLoaderService {
             }
             this.tcs.loadProgressValue = 100;
             if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
-              console.log('[setUnitNavigationRequest] loadUnitContents (tcs.bookletConfig.loading_mode === \'EAGER\')', { t: this.tcs.resumeTargetUnitId.toString() });
-              this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitId.toString());
+              console.log('[setUnitNavigationRequest] loadUnitContents (tcs.bookletConfig.loading_mode === \'EAGER\')', { t: this.tcs.resumeTargetUnitSequenceId.toString() });
+              this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitSequenceId.toString());
               this.tcs.testStatus$.next(this.newTestStatus);
               resolve();
             }

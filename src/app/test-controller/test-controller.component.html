@@ -33,7 +33,7 @@
               [disabled]="u.disabled"
               [matTooltip]="u.longLabel + (!tcs.isUnitContentLoaded(u.sequenceId) ? ' (wird noch geladen!)' : '')"
             >
-              {{ u.shortLabel }}
+              {{ u.shortLabel }} {{u.sequenceId}}
             </button>
             <span class="current-unit-dot" *ngIf="u.isCurrent"></span>
             <span class="notcurrent-unit-dot" *ngIf="!u.isCurrent"></span>

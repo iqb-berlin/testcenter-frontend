@@ -240,13 +240,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         break;
       case 'pause':
-        this.tcs.resumeTargetUnitId = this.tcs.currentUnitSequenceId;
+        this.tcs.resumeTargetUnitSequenceId = this.tcs.currentUnitSequenceId;
         this.tcs.pause();
         break;
       case 'resume':
         // eslint-disable-next-line no-case-declarations
         const navTarget =
-          (this.tcs.resumeTargetUnitId > 0) ? this.tcs.resumeTargetUnitId.toString() : UnitNavigationTarget.FIRST;
+          (this.tcs.resumeTargetUnitSequenceId > 0) ? this.tcs.resumeTargetUnitSequenceId.toString() : UnitNavigationTarget.FIRST;
         this.tcs.testStatus$.next(TestControllerState.RUNNING);
         this.tcs.setUnitNavigationRequest(navTarget, true);
         break;
@@ -263,7 +263,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           gotoTarget = params[0];
         }
         if (gotoTarget && gotoTarget !== '0') {
-          this.tcs.resumeTargetUnitId = 0;
+          this.tcs.resumeTargetUnitSequenceId = 0;
           this.tcs.interruptMaxTimer();
           this.tcs.setUnitNavigationRequest(gotoTarget, true);
         }

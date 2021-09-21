@@ -47,7 +47,7 @@ export class TestControllerService {
 
   allUnitIds: string[] = [];
 
-  resumeTargetUnitId = 0;
+  resumeTargetUnitSequenceId = 0;
 
   private _navigationDenial = new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>();
 
