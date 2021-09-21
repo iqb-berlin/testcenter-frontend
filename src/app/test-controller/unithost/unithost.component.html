@@ -5,8 +5,37 @@
 <div id="iFrameHost">
 </div>
 
+<ng-container *ngIf="currentUnit?.unitDef?.locked">
+  <div class="waiting-room">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          {{'Diese Aufgabe ist gesperrt.' | customtext:'booklet_lockedBlock' | async}}
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <!-- (tcs.bookletConfig.unit_navibuttons !== 'OFF' -->
+        <button mat-mini-fab
+          color="accent"
+          (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none"
+        >
+          <i class="material-icons">chevron_left</i>
+        </button>
+        <button
+          mat-mini-fab
+          [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
+          color="accent"
+          (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none"
+        >
+          <i class="material-icons">chevron_right</i>
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</ng-container>
+
 <ng-container *ngIf="unitsLoading$ | async as loadingUnits">
-    <div id="waiting-room" *ngIf="loadingUnits.length">
+    <div class="waiting-room" *ngIf="loadingUnits.length">
       <mat-card>
         <mat-card-header>
           <mat-card-title *ngIf="loadingUnits.length > 1">

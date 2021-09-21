@@ -386,20 +386,10 @@ export class TestControllerService {
           this.router.navigate([`/t/${this.testId}/menu`], { state: { force } });
           break;
         case UnitNavigationTarget.NEXT:
-          // eslint-disable-next-line no-case-declarations
-          let startWith = this.currentUnitSequenceId;
-          if (startWith < this.minUnitSequenceId) {
-            startWith = this.minUnitSequenceId - 1;
-          }
-          // eslint-disable-next-line no-case-declarations
-          const nextUnitSequenceId = this.rootTestlet.getNextUnlockedUnitSequenceId(startWith);
-          if (nextUnitSequenceId > 0) {
-            this.router.navigate([`/t/${this.testId}/u/${nextUnitSequenceId}`], { state: { force } });
-          }
+          this.router.navigate([`/t/${this.testId}/u/${this.currentUnitSequenceId + 1}`], { state: { force } });
           break;
         case UnitNavigationTarget.PREVIOUS:
-          this.router.navigate([`/t/${this.testId}/u/${this.currentUnitSequenceId - 1}`],
-            { state: { force } });
+          this.router.navigate([`/t/${this.testId}/u/${this.currentUnitSequenceId - 1}`], { state: { force } });
           break;
         case UnitNavigationTarget.FIRST:
           this.router.navigate([`/t/${this.testId}/u/${this.minUnitSequenceId}`],
