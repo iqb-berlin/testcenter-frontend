@@ -85,10 +85,6 @@ export class UnitActivateGuard implements CanActivate {
       console.warn(`target unit null (targetUnitSequenceId: ${targetUnitSequenceId.toString()})`);
       return false;
     }
-    if (newUnit.unitDef.locked) {
-      console.warn('unit canActivate: locked');
-      return false;
-    }
     if (newUnit.unitDef.canEnter === 'n') {
       console.warn('unit canEnter === n');
       return false;
@@ -99,7 +95,7 @@ export class UnitActivateGuard implements CanActivate {
         if (!cAsC) {
           return of(false);
         }
-        this.tcs.currentUnitSequenceId = targetUnitSequenceId;
+        this.tcs.currentUnitSequenceId = targetUnitSequenceId; // TODO passiert auch in unit host noch mal
         this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
         return of(true);
       }));

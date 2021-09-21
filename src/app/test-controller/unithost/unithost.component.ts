@@ -12,7 +12,7 @@ import {
   PendingUnitData,
   StateReportEntry,
   UnitStateKey,
-  UnitPlayerState, LoadingProgress
+  UnitPlayerState, LoadingProgress, UnitNavigationTarget
 } from '../test-controller.interfaces';
 import { BackendService } from '../backend.service';
 import { TestControllerService } from '../test-controller.service';
@@ -37,7 +37,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   showPageNav = false;
 
   currentUnitSequenceId = -1;
-  private myUnitDbKey = '';
 
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
@@ -48,7 +47,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
   unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
   unitsToLoadLabels: string[];
 
-  isNaN = Number.isNaN;
+  currentUnit: UnitControllerData;
+  unitNavigationTarget = UnitNavigationTarget;
 
   constructor(
     public tcs: TestControllerService,
@@ -95,7 +95,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
           };
         }
         if (this.tcs.testMode.saveResponses) {
-          this.bs.updateUnitState(this.tcs.testId, this.myUnitDbKey, [<StateReportEntry>{
+          this.bs.updateUnitState(this.tcs.testId, this.currentUnit.unitDef.alias, [<StateReportEntry>{
             key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.RUNNING
           }]);
         }
@@ -126,7 +126,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
               const pageCount = this.knownPages.length;
               if (this.knownPages.length > 1 && this.knownPages.indexOf(playerState.currentPage) >= 0) {
                 this.tcs.newUnitStateCurrentPage(
-                  this.myUnitDbKey,
+                  this.currentUnit.unitDef.alias,
                   this.currentUnitSequenceId,
                   pageNr,
                   pageId,
@@ -135,27 +135,27 @@ export class UnithostComponent implements OnInit, OnDestroy {
               }
             }
           }
+          const unitDbKey = this.currentUnit.unitDef.alias;
           if (msgData.unitState) {
             const { unitState } = msgData;
             const { presentationProgress, responseProgress } = unitState;
 
             if (presentationProgress) {
-              this.tcs.updateUnitStatePresentationProgress(this.myUnitDbKey,
-                this.currentUnitSequenceId, presentationProgress);
+              this.tcs.updateUnitStatePresentationProgress(unitDbKey, this.currentUnitSequenceId, presentationProgress);
             }
 
             if (responseProgress) {
-              this.tcs.newUnitStateResponseProgress(this.myUnitDbKey, this.currentUnitSequenceId, responseProgress);
+              this.tcs.newUnitStateResponseProgress(unitDbKey, this.currentUnitSequenceId, responseProgress);
             }
 
             const unitDataPartsAll = unitState?.dataParts?.all;
             if (unitDataPartsAll) {
-              this.tcs.newUnitStateData(this.myUnitDbKey, this.currentUnitSequenceId,
+              this.tcs.newUnitStateData(unitDbKey, this.currentUnitSequenceId,
                 unitDataPartsAll, unitState.unitStateDataType);
             }
           }
           if (msgData.log) {
-            this.bs.addUnitLog(this.tcs.testId, this.myUnitDbKey, msgData.log);
+            this.bs.addUnitLog(this.tcs.testId, unitDbKey, msgData.log);
           }
         }
         break;
@@ -195,15 +195,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     this.setUnitScreenHeader();
 
-    const currentUnit = this.tcs.rootTestlet.getUnitAt(this.currentUnitSequenceId);
-    this.myUnitDbKey = currentUnit.unitDef.alias;
+    this.currentUnit = this.tcs.rootTestlet.getUnitAt(this.currentUnitSequenceId);
 
     if (this.subscriptions.loading) {
       this.subscriptions.loading.unsubscribe();
     }
 
-    const unitsToLoadIds = currentUnit.maxTimerRequiringTestlet ?
-      this.tcs.rootTestlet.getAllUnitSequenceIds(currentUnit.maxTimerRequiringTestlet?.id) :
+    const unitsToLoadIds = this.currentUnit.maxTimerRequiringTestlet ?
+      this.tcs.rootTestlet.getAllUnitSequenceIds(this.currentUnit.maxTimerRequiringTestlet?.id) :
       [currentUnitSequenceId];
 
     const unitsToLoad = unitsToLoadIds
@@ -226,7 +225,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
             category: 'PROBLEM'
           });
         },
-        complete: () => this.runUnit(currentUnit)
+        complete: () => this.runUnit()
       });
   }
 
@@ -246,21 +245,25 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  private runUnit(currentUnit: UnitControllerData): void {
+  private runUnit(): void {
     this.unitsLoading$.next([]);
-
-    this.startTimerIfNecessary(currentUnit);
+    this.tcs.currentUnitDbKey = this.currentUnit.unitDef.alias;
+    this.tcs.currentUnitTitle = this.unitScreenHeader;
 
     if (this.tcs.testMode.saveResponses) {
       this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
-        key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.myUnitDbKey
+        key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.currentUnit.unitDef.alias
       }]);
-      this.bs.updateUnitState(this.tcs.testId, this.myUnitDbKey, [<StateReportEntry>{
+      this.bs.updateUnitState(this.tcs.testId, this.currentUnit.unitDef.alias, [<StateReportEntry>{
         key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.LOADING
       }]);
     }
-    this.tcs.currentUnitDbKey = this.myUnitDbKey;
-    this.tcs.currentUnitTitle = this.unitScreenHeader;
+
+    if (this.currentUnit.unitDef.locked) {
+      return;
+    }
+
+    this.startTimerIfNecessary();
 
     this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
 
@@ -280,31 +283,34 @@ export class UnithostComponent implements OnInit, OnDestroy {
     };
     this.leaveWarning = false;
 
-    this.prepareIframe(currentUnit);
+    this.prepareIframe();
   }
 
-  private startTimerIfNecessary(currentUnit: UnitControllerData): void {
-    if (currentUnit.maxTimerRequiringTestlet === null) {
+  private startTimerIfNecessary(): void {
+    if (this.currentUnit.maxTimerRequiringTestlet === null) {
       console.log('[MT] no timer');
       return;
     }
     if (this.tcs.currentMaxTimerTestletId &&
-      (currentUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
+      (this.currentUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
     ) {
       console.log('[MT] same block');
       return;
     }
     console.log('[MT] start');
-    this.tcs.startMaxTimer(currentUnit.maxTimerRequiringTestlet.id, currentUnit.maxTimerRequiringTestlet.maxTimeLeft);
+    this.tcs.startMaxTimer(
+      this.currentUnit.maxTimerRequiringTestlet.id,
+      this.currentUnit.maxTimerRequiringTestlet.maxTimeLeft
+    );
   }
 
-  private prepareIframe(currentUnit: UnitControllerData): void {
+  private prepareIframe(): void {
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
     this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
     this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-    srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(currentUnit.unitDef.playerId));
+    srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(this.currentUnit.unitDef.playerId));
   }
 
   // TODO find better places for the following 2 functions, maybe tcs
@@ -312,8 +318,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     const playerConfig: VeronaPlayerConfig = {
       enabledNavigationTargets: UnithostComponent.getEnabledNavigationTargets(
         this.currentUnitSequenceId,
-        this.tcs.minUnitSequenceId,
-        this.tcs.maxUnitSequenceId,
+        1,
+        this.tcs.allUnitIds.length,
         this.tcs.bookletConfig.allow_player_to_terminate_test
       ),
       logPolicy: this.tcs.bookletConfig.logPolicy,
@@ -321,7 +327,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       stateReportPolicy: this.tcs.bookletConfig.stateReportPolicy,
       unitNumber: this.currentUnitSequenceId,
       unitTitle: this.unitScreenHeader,
-      unitId: this.myUnitDbKey
+      unitId: this.currentUnit.unitDef.alias
     };
     if (this.pendingUnitData.currentPage && (this.tcs.bookletConfig.restore_current_page_on_return === 'ON')) {
       playerConfig.startPage = this.pendingUnitData.currentPage;
