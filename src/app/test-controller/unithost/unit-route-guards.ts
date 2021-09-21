@@ -56,20 +56,6 @@ export class UnitActivateGuard implements CanActivate {
     return of(true);
   }
 
-  // TODO is it correct, that always returns always of(true)
-  private checkAndSolve_maxTime(newUnit: UnitControllerData): Observable<boolean> {
-    if (newUnit.maxTimerRequiringTestlet === null) {
-      return of(true);
-    }
-    if (this.tcs.currentMaxTimerTestletId &&
-      (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
-    ) {
-      return of(true);
-    }
-    this.tcs.startMaxTimer(newUnit.maxTimerRequiringTestlet.id, newUnit.maxTimerRequiringTestlet.maxTimeLeft);
-    return of(true);
-  }
-
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean>|boolean {
     const targetUnitSequenceId: number = Number(route.params.u);
     let forceNavigation = false;
@@ -113,15 +99,9 @@ export class UnitActivateGuard implements CanActivate {
         if (!cAsC) {
           return of(false);
         }
-        return this.checkAndSolve_maxTime(newUnit)
-          .pipe(switchMap(cAsMT => {
-            if (!cAsMT) {
-              return of(false);
-            }
-            this.tcs.currentUnitSequenceId = targetUnitSequenceId;
-            this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
-            return of(true);
-          }));
+        this.tcs.currentUnitSequenceId = targetUnitSequenceId;
+        this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
+        return of(true);
       }));
   }
 }
@@ -136,7 +116,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     private router: Router
   ) {}
 
-  private checkAndSolve_maxTime_DEACTIVATE(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
+  private checkAndSolve_maxTime(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
     console.log('checkAndSolve_maxTime', { newUnit, force, tcs_currentMaxTimerTestletId: this.tcs.currentMaxTimerTestletId });
     if (!this.tcs.currentMaxTimerTestletId) { // leaving unit is not in a timed block
       return of(true);
@@ -315,7 +295,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
 
     const forceNavigation = this.router.getCurrentNavigation().extras?.state?.force ?? false;
 
-    return this.checkAndSolve_maxTime_DEACTIVATE(newUnit, forceNavigation)
+    return this.checkAndSolve_maxTime(newUnit, forceNavigation)
       .pipe(
         switchMap(cAsC => {
           if (!cAsC) {

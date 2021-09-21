@@ -248,6 +248,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private runUnit(currentUnit: UnitControllerData): void {
     this.unitsLoading$.next([]);
+
+    this.startTimerIfNecessary(currentUnit);
+
     if (this.tcs.testMode.saveResponses) {
       this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
         key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.myUnitDbKey
@@ -258,15 +261,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
     this.tcs.currentUnitDbKey = this.myUnitDbKey;
     this.tcs.currentUnitTitle = this.unitScreenHeader;
+
     this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
 
     this.setPageList([], '');
-
-    this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-    // this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(currentUnit.unitDef.playerId));
-    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
-    this.iFrameItemplayer.setAttribute('class', 'unitHost');
-    this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
 
     this.pendingUnitData = {
       playerId: this.itemplayerSessionId,
@@ -281,6 +279,30 @@ export class UnithostComponent implements OnInit, OnDestroy {
         null
     };
     this.leaveWarning = false;
+
+    this.prepareIframe(currentUnit);
+  }
+
+  private startTimerIfNecessary(currentUnit: UnitControllerData): void {
+    if (currentUnit.maxTimerRequiringTestlet === null) {
+      console.log('[MT] no timer');
+      return;
+    }
+    if (this.tcs.currentMaxTimerTestletId &&
+      (currentUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
+    ) {
+      console.log('[MT] same block');
+      return;
+    }
+    console.log('[MT] start');
+    this.tcs.startMaxTimer(currentUnit.maxTimerRequiringTestlet.id, currentUnit.maxTimerRequiringTestlet.maxTimeLeft);
+  }
+
+  private prepareIframe(currentUnit: UnitControllerData): void {
+    this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
+    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
+    this.iFrameItemplayer.setAttribute('class', 'unitHost');
+    this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
     this.iFrameHostElement.appendChild(this.iFrameItemplayer);
     srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(currentUnit.unitDef.playerId));
   }
