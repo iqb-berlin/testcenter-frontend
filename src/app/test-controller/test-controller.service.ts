@@ -41,8 +41,7 @@ export class TestControllerService {
 
   currentUnitDbKey = '';
   currentUnitTitle = '';
-  unitPrevEnabled = false;
-  unitNextEnabled = false;
+
   unitListForNaviButtons: UnitNaviButtonData[] = [];
 
   allUnitIds: string[] = [];
@@ -108,8 +107,6 @@ export class TestControllerService {
     this.currentUnitSequenceId = 0;
     this.currentUnitDbKey = '';
     this.currentUnitTitle = '';
-    this.unitPrevEnabled = false;
-    this.unitNextEnabled = false;
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
       this.maxTimeIntervalSubscription = null;
@@ -131,8 +128,6 @@ export class TestControllerService {
   }
 
   refreshUnitMenu(): void {
-    this.unitPrevEnabled = this._currentUnitSequenceId > this.minUnitSequenceId;
-    this.unitNextEnabled = this._currentUnitSequenceId < this.maxUnitSequenceId;
     if (this.rootTestlet && (this.bookletConfig.unit_navibuttons !== 'OFF')) {
       this.unitListForNaviButtons = [];
       for (let sequ = 1; sequ <= this.rootTestlet.getMaxSequenceId(); sequ++) {
