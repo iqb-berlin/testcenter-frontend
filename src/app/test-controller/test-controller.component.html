@@ -13,7 +13,7 @@
     </p>
     <button
       mat-fab
-      [disabled]="!tcs.unitPrevEnabled"
+      [disabled]="tcs.currentUnitSequenceId <= 1"
       *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
       color="accent"
       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none"
@@ -42,7 +42,7 @@
     </div>
     <button
       mat-fab
-      [disabled]="!tcs.unitNextEnabled"
+      [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
       *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
       color="accent"
       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none"
