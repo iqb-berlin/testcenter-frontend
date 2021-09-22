@@ -6,59 +6,13 @@ export class TestletContentElement {
   readonly sequenceId: number;
   readonly id: string;
   readonly title: string;
-  canEnter: 'y' | 'n' | 'w';
-  canLeave: 'y' | 'n' | 'w';
-  tryEnterMessage: string;
-  tryLeaveMessage: string;
   children: TestletContentElement[];
 
   constructor(sequenceId: number, id: string, title: string) {
     this.sequenceId = sequenceId;
     this.id = id;
     this.title = title;
-    this.canEnter = 'y';
-    this.canLeave = 'y';
-    this.tryEnterMessage = '';
-    this.tryLeaveMessage = '';
     this.children = [];
-  }
-
-  setCanEnter(can: string, message: string, allChildren = false): void {
-    let newCan: 'y' | 'n' | 'w' = 'y';
-    if (can.length > 0) {
-      const checkChar = can.substr(0, 1).toLowerCase();
-      if (checkChar === 'n') {
-        newCan = 'n';
-      } else if (checkChar === 'w') {
-        newCan = 'w';
-      }
-    }
-    this.canEnter = newCan;
-    this.tryEnterMessage = message;
-    if (allChildren) {
-      this.children.forEach(tce => {
-        tce.setCanEnter(can, message, allChildren);
-      });
-    }
-  }
-
-  setCanLeave(can: string, message: string, allChildren = false): void {
-    let newCan: 'y' | 'n' | 'w' = 'y';
-    if (can.length > 0) {
-      const checkChar = can.substr(0, 1).toLowerCase();
-      if (checkChar === 'n') {
-        newCan = 'n';
-      } else if (checkChar === 'w') {
-        newCan = 'w';
-      }
-    }
-    this.canLeave = newCan;
-    this.tryLeaveMessage = message;
-    if (allChildren) {
-      this.children.forEach(tce => {
-        tce.setCanLeave(can, message, allChildren);
-      });
-    }
   }
 
   getMaxSequenceId(tmpId = 0): number {
@@ -77,8 +31,6 @@ export class UnitDef extends TestletContentElement {
   readonly alias: string;
   readonly naviButtonLabel: string;
   playerId: string;
-  statusResponses: 'no' | 'some' | 'all';
-  statusPresentation: 'no' | 'partly' | 'full';
   locked = false;
   ignoreCompleted = false;
   readonly navigationLeaveRestrictions: NavigationLeaveRestrictions;
@@ -94,35 +46,7 @@ export class UnitDef extends TestletContentElement {
     super(sequenceId, id, title);
     this.alias = alias;
     this.naviButtonLabel = naviButtonLabel;
-    this.statusResponses = 'no';
-    this.statusPresentation = 'no';
     this.navigationLeaveRestrictions = navigationLeaveRestrictions;
-  }
-
-  setStatusResponses(status: string): void {
-    let newStatus: 'no' | 'some' | 'all' = 'no';
-    if (status.length > 0) {
-      const checkChar = status.substr(0, 1).toLowerCase();
-      if (checkChar === 's') {
-        newStatus = 'some';
-      } else if (checkChar === 'a') {
-        newStatus = 'all';
-      }
-    }
-    this.statusResponses = newStatus;
-  }
-
-  setStatusPresentation(status: string): void {
-    let newStatus: 'no' | 'partly' | 'full' = 'no';
-    if (status.length > 0) {
-      const checkChar = status.substr(0, 1).toLowerCase();
-      if (checkChar === 'p') {
-        newStatus = 'partly';
-      } else if (checkChar === 'f') {
-        newStatus = 'full';
-      }
-    }
-    this.statusPresentation = newStatus;
   }
 }
 
@@ -280,7 +204,7 @@ export class Testlet extends TestletContentElement {
       if (testlet) {
         testlet.setTimeLeft('', maxTimeLeft);
         if (maxTimeLeft === 0) {
-          testlet.lockUnits_allChildren();
+          testlet.lockAllChildren();
         }
       }
     } else {
@@ -293,18 +217,17 @@ export class Testlet extends TestletContentElement {
     }
   }
 
-  lockUnits_allChildren(testletId = ''): void {
+  lockAllChildren(testletId = ''): void {
     if (testletId) {
-      // find testlet
-      const myTestlet = this.getTestlet(testletId);
-      if (myTestlet) {
-        myTestlet.lockUnits_allChildren();
+      const testlet = this.getTestlet(testletId);
+      if (testlet) {
+        testlet.lockAllChildren();
       }
     } else {
       for (const tce of this.children) {
         if (tce instanceof Testlet) {
           const localTestlet = tce as Testlet;
-          localTestlet.lockUnits_allChildren();
+          localTestlet.lockAllChildren();
         } else {
           const localUnit = tce as UnitDef;
           localUnit.locked = true;
@@ -398,6 +321,7 @@ export class EnvironmentData {
     this.appVersion = appVersion;
     const deviceInfo = window.navigator.userAgent;
 
+    // TODO use class from SysCheck
     // eslint-disable-next-line max-len
     const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d.apre]+)/;
     // credit due to: https://gist.github.com/ticky/3909462#gistcomment-2245669

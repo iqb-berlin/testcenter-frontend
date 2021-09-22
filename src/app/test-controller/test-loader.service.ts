@@ -137,7 +137,6 @@ export class TestLoaderService {
   }
 
   private loadUnit(unitDef: UnitDef, sequenceId: number): Observable<number> {
-    unitDef.setCanEnter('n', 'Fehler beim Laden');
     return this.bs.getUnitData(this.tcs.testId, unitDef.id, unitDef.alias)
       .pipe(
         switchMap(unit => {
@@ -169,7 +168,6 @@ export class TestLoaderService {
             this.tcs.setUnitLoadProgress$(sequenceId, of({ progress: 100 }));
             this.incrementTotalProgress({ progress: 100 }, `content-${sequenceId}`);
           }
-          unitDef.setCanEnter('y', '');
 
           if (this.tcs.hasPlayer(unit.playerId)) {
             this.incrementTotalProgress({ progress: 100 }, `player-${sequenceId}`);

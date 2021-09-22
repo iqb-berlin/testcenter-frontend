@@ -85,10 +85,6 @@ export class UnitActivateGuard implements CanActivate {
       console.warn(`target unit null (targetUnitSequenceId: ${targetUnitSequenceId.toString()})`);
       return false;
     }
-    if (newUnit.unitDef.canEnter === 'n') {
-      console.warn('unit canEnter === n');
-      return false;
-    }
 
     return this.checkAndSolve_Code(newUnit, forceNavigation)
       .pipe(switchMap(cAsC => {
