@@ -50,27 +50,30 @@ export class TestLoaderService {
   }
 
   async loadTest(testId: string): Promise<void> {
-    console.log(`load test #${testId}`);
-    this.reset();
+    try {
+      console.log(`load test #${testId}`);
+      this.reset();
 
-    this.tcs.testStatus$.next(TestControllerState.LOADING);
-    this.tcs.testId = testId;
-    LocalStorage.setTestId(testId);
+      this.tcs.testStatus$.next(TestControllerState.LOADING);
+      this.tcs.testId = testId;
+      LocalStorage.setTestId(testId);
 
-    const testData = await this.bs.getTestData(this.tcs.testId).toPromise();
-    this.tcs.testMode = new TestMode(testData.mode);
-    this.parseBooklet(testData);
+      const testData = await this.bs.getTestData(this.tcs.testId).toPromise();
+      this.tcs.testMode = new TestMode(testData.mode);
+      this.parseBooklet(testData);
 
-    this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
-    if (this.tcs.clearCodeTestlets.length > 0) {
-      this.tcs.rootTestlet.clearTestletCodes(this.tcs.clearCodeTestlets);
+      this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
+      if (this.tcs.clearCodeTestlets.length > 0) {
+        this.tcs.rootTestlet.clearTestletCodes(this.tcs.clearCodeTestlets);
+      }
+
+      await this.loadUnits();
+      this.setUpResumeNavTarget();
+      this.prepareUnitContentLoadingQueueOrder();
+      this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
+    } catch (e) {
+      return Promise.reject(e);
     }
-
-    await this.loadUnits();
-    this.setUpResumeNavTarget();
-    this.prepareUnitContentLoadingQueueOrder();
-    this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
-
     return this.loadUnitContents(); // the promise resolves, when it is allowed to start
   }
 

@@ -29,6 +29,7 @@ import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
 import { CommandService } from './command.service';
 import { TestLoaderService } from './test-loader.service';
 import { MaxTimerData } from './test-controller.classes';
+import { ApiError } from '../app.interfaces';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -105,13 +106,26 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               this.startAppFocusLogging();
               this.startConnectionStatusLogging();
             })
-            .catch(errorMessage => {
-              const msg = (errorMessage.info) ? errorMessage.info : errorMessage;
-              this.mds.appError$.next({
-                label: 'Test konnte nicht geladen werden',
-                description: msg,
-                category: 'PROBLEM'
-              });
+            .catch((error: string|Error|ApiError) => {
+              console.log('error', error);
+              if (typeof error === 'string') {
+                // interceptor already pushed mds.appError$
+                return;
+              }
+              if (error instanceof Error) {
+                this.mds.appError$.next({
+                  label: error.message,
+                  description: '',
+                  category: 'PROBLEM'
+                });
+              }
+              if (error instanceof ApiError) {
+                this.mds.appError$.next({
+                  label: 'Problem beim Laden des Tests',
+                  description: error.info,
+                  category: 'PROBLEM'
+                });
+              }
             });
         });
 
