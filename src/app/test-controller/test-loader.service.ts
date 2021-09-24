@@ -58,6 +58,7 @@ export class TestLoaderService {
     LocalStorage.setTestId(testId);
 
     const testData = await this.bs.getTestData(this.tcs.testId).toPromise();
+    this.tcs.testMode = new TestMode(testData.mode);
     this.parseBooklet(testData);
 
     this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
@@ -90,7 +91,6 @@ export class TestLoaderService {
   }
 
   private parseBooklet(testData: TestData): void {
-    this.tcs.testMode = new TestMode(testData.mode);
     this.navTargetUnitId = '';
     this.newTestStatus = TestControllerState.RUNNING;
     if (testData.laststate !== null) {

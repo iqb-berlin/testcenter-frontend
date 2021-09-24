@@ -346,7 +346,7 @@ export class TestControllerService {
     }
 
     const oldTestStatus = this.testStatus$.getValue();
-    this.testStatus$.next(TestControllerState.LEAVING); // will not be logged, is necessary to leave test
+    this.testStatus$.next(TestControllerState.TERMINATED); // last state that will an can be logged
 
     this.router.navigate(['/r/test-starter'], { state: { force } })
       .then(navigationSuccessful => {
@@ -354,19 +354,17 @@ export class TestControllerService {
           this.testStatus$.next(oldTestStatus); // navigation was denied, test continues
           return;
         }
-        this.finishTest(logEntryKey);
+        this.finishTest(logEntryKey, lockTest);
       });
   }
 
   private finishTest(logEntryKey: string, lockTest: boolean = false): void {
-    this.testStatus$.next(TestControllerState.TERMINATED); // last state that will an can be logged
-    if (this.testMode.saveResponses && lockTest) {
+    if (lockTest) {
       this.bs.lockTest(this.testId, Date.now(), logEntryKey)
         .subscribe(bsOk => {
           this.testStatus$.next(bsOk ? TestControllerState.FINISHED : TestControllerState.ERROR);
         });
     } else {
-      // TODO write log anyway
       this.testStatus$.next(TestControllerState.FINISHED); // will not be logged, test is already locked maybe
     }
   }

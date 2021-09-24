@@ -148,9 +148,9 @@ export class BackendService {
       );
   }
 
-  lockTest(testId: string, timeStamp: number, content: string): Observable<boolean> {
+  lockTest(testId: string, timeStamp: number, message: string): Observable<boolean> {
     return this.http
-      .patch<boolean>(`${this.serverUrl}test/${testId}/lock`, { timeStamp, content })
+      .patch<boolean>(`${this.serverUrl}test/${testId}/lock`, { timeStamp, message })
       .pipe(
         map(() => true),
         catchError((err: ApiError) => {

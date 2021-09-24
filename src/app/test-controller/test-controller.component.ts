@@ -121,13 +121,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   private logTestControllerStatusChange = (testControllerState: TestControllerState): void => {
-    const unloggableStates = [
-      TestControllerState.INIT,
-      TestControllerState.LOADING,
-      TestControllerState.FINISHED,
-      TestControllerState.LEAVING
-    ];
-    if (this.tcs.testMode.saveResponses && unloggableStates.indexOf(testControllerState) === -1) {
+    if (this.tcs.testMode.saveResponses) {
       this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
         key: TestStateKey.CONTROLLER, timeStamp: Date.now(), content: testControllerState
       }]);
@@ -251,7 +245,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.tcs.setUnitNavigationRequest(navTarget, true);
         break;
       case 'terminate':
-        this.tcs.terminateTest('BOOKLETLOCKEDbyOPERATOR', true);
+        this.tcs.terminateTest('BOOKLETLOCKEDbyOPERATOR', true, params.indexOf('lock') > -1);
         break;
       case 'goto':
         this.tcs.testStatus$.next(TestControllerState.RUNNING);

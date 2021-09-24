@@ -330,9 +330,9 @@ export class TestSessionManager {
 
     this.filters$.next([]);
 
-    return this.bs.command('terminate', [], getUnlockedConnectedTestIds())
+    return this.bs.command('terminate', ['lock'], getUnlockedConnectedTestIds())
       .pipe(
-        delay(1900),
+        delay(1500),
         flatMap(() => this.bs.lock(this.groupName, getUnlockedTestIds()))
       );
   }

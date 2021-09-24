@@ -65,7 +65,6 @@ export enum TestControllerState {
   INIT = 'INIT',
   LOADING = 'LOADING',
   RUNNING = 'RUNNING',
-  LEAVING = 'LEAVING',
   TERMINATED = 'TERMINATED',
   FINISHED = 'FINISHED',
   PAUSED = 'PAUSED',
