@@ -154,6 +154,12 @@ div.logo img {
   font-weight: 500;
 }
 
+.main-alert-close-button {
+  position: absolute !important;
+  right: 3px;
+  top: 3px;
+}
+
 #shield {
   position: fixed;
   top: 0;
