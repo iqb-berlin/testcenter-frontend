@@ -61,7 +61,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/app/workspace-admin/backend.service.ts</code>
+            <code>src/app/workspace-admin/files/files.interfaces.ts</code>
         </p>
 
 
@@ -222,188 +222,32 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Inject } from &#x27;@angular/core&#x27;;
-import { HttpClient } from &#x27;@angular/common/http&#x27;;
-import { Observable, of } from &#x27;rxjs&#x27;;
-import { catchError, map } from &#x27;rxjs/operators&#x27;;
-import {
-  GetFileResponseData, SysCheckStatistics,
-  ReviewData, LogData, UnitResponse, ResultData
-} from &#x27;./workspace.interfaces&#x27;;
-import { WorkspaceDataService } from &#x27;./workspacedata.service&#x27;;
-import { ApiError, WorkspaceData } from &#x27;../app.interfaces&#x27;;
-
-@Injectable({
-  providedIn: &#x27;root&#x27;
-})
-export class BackendService {
-  constructor(
-    @Inject(&#x27;SERVER_URL&#x27;) private readonly serverUrl: string,
-    private wds: WorkspaceDataService,
-    private http: HttpClient
-  ) {
-  }
-
-  getWorkspaceData(workspaceId: string): Observable&lt;WorkspaceData | number&gt; {
-    return this.http
-      .get&lt;WorkspaceData&gt;(&#x60;${this.serverUrl}workspace/${workspaceId}&#x60;)
-      .pipe(
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;getWorkspaceData Api-Error: ${err.code} ${err.info} &#x60;);
-          return of(err.code);
-        })
-      );
-  }
-
-  getFiles(): Observable&lt;GetFileResponseData&gt; {
-    return this.http
-      .get&lt;GetFileResponseData&gt;(&#x60;${this.serverUrl}workspace/${this.wds.wsId}/files&#x60;)
-      .pipe(
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;getFiles Api-Error: ${err.code} ${err.info} &#x60;);
-          return [];
-        })
-      );
-  }
-
-  deleteFiles(filesToDelete: Array&lt;string&gt;): Observable&lt;FileDeletionReport&gt; {
-    return this.http
-      .request&lt;FileDeletionReport&gt;(&#x27;delete&#x27;, &#x60;${this.serverUrl}workspace/${this.wds.wsId}/files&#x60;, { body: { f: filesToDelete } })
-      .pipe(
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;deleteFiles Api-Error: ${err.code} ${err.info} &#x60;);
-          return of(&lt;FileDeletionReport&gt; {
-            deleted: [],
-            not_allowed: [&#x60;deleteFiles Api-Error: ${err.code} ${err.info} &#x60;],
-            did_not_exist: []
-          });
-        })
-      );
-  }
-
-  getResultData(): Observable&lt;ResultData[]&gt; {
-    return this.http
-      .get&lt;ResultData[]&gt;(&#x60;${this.serverUrl}workspace/${this.wds.wsId}/results&#x60;, {})
-      .pipe(
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;getResultData Api-Error: ${err.code} ${err.info} &#x60;);
-          return [];
-        })
-      );
-  }
-
-  getResponses(groups: string[]): Observable&lt;UnitResponse[]&gt; {
-    return this.http
-      .get&lt;UnitResponse[]&gt;(&#x60;${this.serverUrl}workspace/${this.wds.wsId}/responses&#x60;, { params: { groups: groups.join(&#x27;,&#x27;) } })
-      .pipe(
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;getResponses Api-Error: ${err.code} ${err.info} &#x60;);
-          return [];
-        })
-      );
-  }
-
-  getLogs(groups: string[]): Observable&lt;LogData[]&gt; {
-    return this.http
-      .get&lt;LogData[]&gt;(&#x60;${this.serverUrl}workspace/${this.wds.wsId}/logs&#x60;, { params: { groups: groups.join(&#x27;,&#x27;) } })
-      .pipe(
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;getLogs Api-Error: ${err.code} ${err.info} &#x60;);
-          return [];
-        })
-      );
-  }
-
-  getReviews(groups: string[]): Observable&lt;ReviewData[]&gt; {
-    return this.http
-      .get&lt;ReviewData[]&gt;(&#x60;${this.serverUrl}workspace/${this.wds.wsId}/reviews&#x60;, { params: { groups: groups.join(&#x27;,&#x27;) } })
-      .pipe(
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;getReviews Api-Error: ${err.code} ${err.info} &#x60;);
-          return [];
-        })
-      );
-  }
-
-  deleteData(groups: string[]): Observable&lt;boolean&gt; {
-    return this.http
-      .request(&#x27;delete&#x27;, &#x60;${this.serverUrl}workspace/${this.wds.wsId}/responses&#x60;, { body: { groups } })
-      .pipe(
-        map(() &#x3D;&gt; true),
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;deleteData Api-Error: ${err.code} ${err.info} &#x60;);
-          return of(false);
-        })
-      );
-  }
-
-  getSysCheckReportList(): Observable&lt;SysCheckStatistics[]&gt; {
-    return this.http
-      .get&lt;ReviewData[]&gt;(&#x60;${this.serverUrl}workspace/${this.wds.wsId}/sys-check/reports/overview&#x60;)
-      .pipe(
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;getSysCheckReportList Api-Error: ${err.code} ${err.info} &#x60;);
-          return [];
-        })
-      );
-  }
-
-  getSysCheckReport(reports: string[], enclosure: string, delimiter: string, lineEnding: string)
-    : Observable&lt;Blob | boolean&gt; {
-    return this.http
-      .get(&#x60;${this.serverUrl}workspace/${this.wds.wsId}/sys-check/reports&#x60;,
-        {
-          params: {
-            checkIds: reports.join(&#x27;,&#x27;),
-            delimiter,
-            enclosure,
-            lineEnding
-          },
-          headers: {
-            Accept: &#x27;text/csv&#x27;
-          },
-          responseType: &#x27;blob&#x27;
-        })
-      .pipe(
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;getSysCheckReport Api-Error: ${err.code} ${err.info} &#x60;);
-          return of(false);
-        })
-      );
-  }
-
-  deleteSysCheckReports(checkIds: string[]): Observable &lt;FileDeletionReport&gt; {
-    return this.http
-      .request&lt;FileDeletionReport&gt;(&#x27;delete&#x27;, &#x60;${this.serverUrl}workspace/${this.wds.wsId}/sys-check/reports&#x60;, { body: { checkIds } })
-      .pipe(
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;deleteSysCheckReports Api-Error: ${err.code} ${err.info} &#x60;);
-          return of(&lt;FileDeletionReport&gt; {
-            deleted: [],
-            not_allowed: [&#x60;deleteSysCheckReports Api-Error: ${err.code} ${err.info} &#x60;],
-            did_not_exist: []
-          });
-        })
-      );
-  }
-
-  downloadFile(fileType: string, fileName: string): Observable&lt;Blob | boolean&gt; {
-    return this.http
-      .get(&#x60;${this.serverUrl}workspace/${this.wds.wsId}/file/${fileType}/${fileName}&#x60;, { responseType: &#x27;blob&#x27; })
-      .pipe(
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;downloadFile Api-Error: ${err.code} ${err.info} &#x60;);
-          return of(false);
-        })
-      );
-  }
-}
-
-export interface FileDeletionReport {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export interface FileDeletionReport {
   deleted: string[];
   not_allowed: string[];
   did_not_exist: string[];
   was_used: string[];
+}
+
+export interface UploadReport {
+  [filename: string]: {
+    warning?: string[];
+    error?: string[];
+    info?: string[];
+  }
+}
+
+export enum UploadStatus {
+  ready,
+  busy,
+  ok,
+  error
+}
+
+export interface UploadResponse {
+  status: UploadStatus;
+  progress: number;
+  report: UploadReport;
 }
 </code></pre>
     </div>

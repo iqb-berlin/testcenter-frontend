@@ -202,9 +202,10 @@ import { WorkspaceDataService } from &#x27;../workspacedata.service&#x27;;
 import {
   IQBFileType, GetFileResponseData, IQBFile, IQBFileTypes
 } from &#x27;../workspace.interfaces&#x27;;
-import { BackendService, FileDeletionReport } from &#x27;../backend.service&#x27;;
+import { BackendService } from &#x27;../backend.service&#x27;;
 import { MainDataService } from &#x27;../../maindata.service&#x27;;
-import { IqbFilesUploadQueueComponent } from &#x27;./iqb-files&#x27;;
+import { IqbFilesUploadQueueComponent } from &#x27;./iqb-files-upload-queue/iqb-files-upload-queue.component&#x27;;
+import { FileDeletionReport } from &#x27;./files.interfaces&#x27;;
 
 interface FileStats {
   invalid: {
@@ -225,8 +226,6 @@ export class FilesComponent implements OnInit {
   files: { [type in IQBFileType]?: MatTableDataSource&lt;IQBFile&gt; } &#x3D; {};
   fileTypes &#x3D; IQBFileTypes;
   displayedColumns &#x3D; [&#x27;checked&#x27;, &#x27;name&#x27;, &#x27;size&#x27;, &#x27;modificationTime&#x27;];
-
-  uploadUrl &#x3D; &#x27;&#x27;;
   fileNameAlias &#x3D; &#x27;fileforvo&#x27;;
 
   lastSort:Sort &#x3D; {
@@ -265,7 +264,7 @@ export class FilesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.uploadUrl &#x3D; &#x60;${this.serverUrl}workspace/${this.wds.wsId}/file&#x60;;
+    // this.uploadUrl &#x3D; &#x60;${this.serverUrl}workspace/${this.wds.wsId}/file&#x60;;
     setTimeout(() &#x3D;&gt; {
       this.mds.setSpinnerOn();
       this.updateFileList();

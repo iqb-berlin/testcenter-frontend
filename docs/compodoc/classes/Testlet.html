@@ -2363,7 +2363,7 @@ export class Testlet extends TestletContentElement {
 
   getNextUnlockedUnitSequenceId(currentUnitSequenceId: number): number {
     let nextUnitSequenceId &#x3D; currentUnitSequenceId + 1;
-    let myUnit: UnitControllerData &#x3D; this.getUnitAt(currentUnitSequenceId);
+    let myUnit: UnitControllerData &#x3D; this.getUnitAt(nextUnitSequenceId);
     while (myUnit !&#x3D;&#x3D; null &amp;&amp; myUnit.unitDef.locked) {
       nextUnitSequenceId +&#x3D; 1;
       myUnit &#x3D; this.getUnitAt(nextUnitSequenceId);

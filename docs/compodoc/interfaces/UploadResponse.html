@@ -61,46 +61,143 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/app/workspace-admin/files/iqb-files/iqbFilesUpload/iqbFilesUpload.component.ts</code>
+            <code>src/app/workspace-admin/files/files.interfaces.ts</code>
         </p>
 
 
 
+        <section>
+            <h3 id="index">Index</h3>
+            <table class="table table-sm table-bordered index-table">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Properties</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                        <a href="#progress">progress</a>
+                                </li>
+                                <li>
+                                        <a href="#report">report</a>
+                                </li>
+                                <li>
+                                        <a href="#status">status</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
 
 
             <section>
-    <h3 id="inputs">Indexable</h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <code>[filename: string]:    <code>literal type</code>
+                <h3 id="inputs">Properties</h3>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="progress"></a>
+                                        <span class="name"><b>progress</b><a href="#progress"><span class="icon ion-ios-link"></span></a></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>progress:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
 </code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">src/app/workspace-admin/files/iqb-files/iqbFilesUpload/iqbFilesUpload.component.ts:10</a></div>
-                            </td>
-                        </tr>
-            </tbody>
-        </table>
-</section>
+                                    </td>
+                                </tr>
 
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="report"></a>
+                                        <span class="name"><b>report</b><a href="#report"><span class="icon ion-ios-link"></span></a></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>report:         <code><a href="../interfaces/UploadReport.html" target="_self" >UploadReport</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="../interfaces/UploadReport.html" target="_self" >UploadReport</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="status"></a>
+                                        <span class="name"><b>status</b><a href="#status"><span class="icon ion-ios-link"></span></a></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>status:         <code><a href="../miscellaneous/enumerations.html#UploadStatus" target="_self" >UploadStatus</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#UploadStatus" target="_self" >UploadStatus</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+            </section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
-  Component, EventEmitter, HostBinding, Input, OnDestroy, OnInit, Output
-} from &#x27;@angular/core&#x27;;
-import {
-  HttpClient, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaders, HttpParams
-} from &#x27;@angular/common/http&#x27;;
-import { Subscription } from &#x27;rxjs&#x27;;
-import { ApiError } from &#x27;../../../../app.interfaces&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export interface FileDeletionReport {
+  deleted: string[];
+  not_allowed: string[];
+  did_not_exist: string[];
+  was_used: string[];
+}
 
-interface UploadResponse {
+export interface UploadReport {
   [filename: string]: {
     warning?: string[];
     error?: string[];
@@ -115,159 +212,10 @@ export enum UploadStatus {
   error
 }
 
-@Component({
-  selector: &#x27;iqb-files-upload&#x27;,
-  templateUrl: &#x27;./iqbFilesUpload.component.html&#x27;,
-  exportAs: &#x27;iqbFilesUpload&#x27;,
-  styleUrls: [&#x27;../iqb-files.scss&#x27;]
-})
-export class IqbFilesUploadComponent implements OnInit, OnDestroy {
-  @HostBinding(&#x27;class&#x27;) myclass &#x3D; &#x27;iqb-files-upload&#x27;;
-
-  constructor(
-    private myHttpClient: HttpClient
-  ) { }
-
-  private _status: UploadStatus;
-  get status(): UploadStatus {
-    return this._status;
-  }
-
-  set status(newstatus: UploadStatus) {
-    this._status &#x3D; newstatus;
-    this.statusChangedEvent.emit(this);
-  }
-
-  private requestResponse: UploadResponse;
-  get uploadResponse(): UploadResponse {
-    switch (this._status) {
-      case UploadStatus.busy:
-        return { &#x27;&#x27;: { info: [&#x27;Bitte warten&#x27;] } };
-      case UploadStatus.ready:
-        return { &#x27;&#x27;: { info: [&#x27;Bereit&#x27;] } };
-      default:
-        return this.requestResponse;
-    }
-  }
-
-  /* Http request input bindings */
-  @Input()
-  httpUrl &#x3D; &#x27;http://localhost:8080&#x27;; // TODO use normal backend-connection instead
-
-  @Input()
-  httpRequestHeaders: HttpHeaders | {
-    [header: string]: string | string[];
-  } &#x3D; new HttpHeaders().set(&#x27;Content-Type&#x27;, &#x27;multipart/form-data&#x27;);
-
-  @Input()
-  httpRequestParams: HttpParams | {
-    [param: string]: string | string[];
-  } &#x3D; new HttpParams();
-
-  @Input()
-  fileAlias &#x3D; &#x27;file&#x27;;
-
-  @Input()
-  folderName &#x3D; &#x27;&#x27;;
-
-  @Input()
-  folder &#x3D; &#x27;&#x27;;
-
-  @Input()
-  get file(): any {
-    return this._file;
-  }
-
-  set file(file: any) {
-    this._file &#x3D; file;
-    this._filedate &#x3D; this._file.lastModified;
-    this.total &#x3D; this._file.size;
-  }
-
-  @Input()
-  set id(id: number) {
-    this._id &#x3D; id;
-  }
-
-  get id(): number {
-    return this._id;
-  }
-
-  @Output() removeFileRequestEvent &#x3D; new EventEmitter&lt;IqbFilesUploadComponent&gt;();
-  @Output() statusChangedEvent &#x3D; new EventEmitter&lt;IqbFilesUploadComponent&gt;();
-
-  public progressPercentage &#x3D; 0;
-  public loaded &#x3D; 0;
-  private total &#x3D; 0;
-  private _file: any;
-  private _filedate &#x3D; &#x27;&#x27;;
-  private _id: number;
-  private fileUploadSubscription: Subscription;
-
-  ngOnInit(): void {
-    this._status &#x3D; UploadStatus.ready;
-    this.requestResponse &#x3D; {};
-    this.upload();
-  }
-
-  upload(): void {
-    if (this.status !&#x3D;&#x3D; UploadStatus.ready) {
-      return;
-    }
-
-    this.status &#x3D; UploadStatus.busy;
-    const formData &#x3D; new FormData();
-    formData.set(this.fileAlias, this._file, this._file.name);
-    if ((typeof this.folderName !&#x3D;&#x3D; &#x27;undefined&#x27;) &amp;&amp; (typeof this.folder !&#x3D;&#x3D; &#x27;undefined&#x27;)) {
-      if (this.folderName.length &gt; 0) {
-        formData.append(this.folderName, this.folder);
-      }
-    }
-
-    this.fileUploadSubscription &#x3D; this.myHttpClient.post(this.httpUrl, formData, {
-      // headers: this.httpRequestHeaders, TODO why is this commented, and would it not be better?
-      observe: &#x27;events&#x27;,
-      params: this.httpRequestParams,
-      reportProgress: true,
-      responseType: &#x27;json&#x27;
-    }).subscribe((event: HttpEvent&lt;any&gt;) &#x3D;&gt; {
-      if (event.type &#x3D;&#x3D;&#x3D; HttpEventType.UploadProgress) {
-        this.progressPercentage &#x3D; Math.floor(event.loaded * 100 / event.total);
-        this.loaded &#x3D; event.loaded;
-        this.total &#x3D; event.total;
-        this.status &#x3D; UploadStatus.busy;
-      } else if (event.type &#x3D;&#x3D;&#x3D; HttpEventType.Response) {
-        this.requestResponse &#x3D; event.body;
-        this.status &#x3D; UploadStatus.ok;
-      }
-    }, err &#x3D;&gt; {
-      if (this.fileUploadSubscription) {
-        this.fileUploadSubscription.unsubscribe();
-      }
-      this.status &#x3D; UploadStatus.error;
-      let errorText &#x3D; &#x27;Hochladen nicht erfolgreich.&#x27;;
-      if (err instanceof HttpErrorResponse) {
-        errorText &#x3D; (err as HttpErrorResponse).message;
-      } else if (err instanceof ApiError) {
-        const slashPos &#x3D; err.info.indexOf(&#x27; // &#x27;);
-        errorText &#x3D; (slashPos &gt; 0) ? err.info.substr(slashPos + 4) : err.info;
-      }
-      this.requestResponse &#x3D; { &#x27;&#x27;: { error: [errorText] } };
-    });
-  }
-
-  public remove(): void {
-    if (this.fileUploadSubscription) {
-      this.fileUploadSubscription.unsubscribe();
-    }
-    this.removeFileRequestEvent.emit(this);
-  }
-
-  ngOnDestroy(): void {
-    if (this.fileUploadSubscription) {
-      this.fileUploadSubscription.unsubscribe();
-    }
-  }
+export interface UploadResponse {
+  status: UploadStatus;
+  progress: number;
+  report: UploadReport;
 }
 </code></pre>
     </div>
