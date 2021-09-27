@@ -121,7 +121,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               }
               if (error instanceof ApiError) {
                 this.mds.appError$.next({
-                  label: 'Problem beim Laden des Tests',
+                  label: error.code === 423 ? 'Test ist gesperrt' : 'Problem beim Laden des Tests',
                   description: error.info,
                   category: 'PROBLEM'
                 });
@@ -254,7 +254,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case 'resume':
         // eslint-disable-next-line no-case-declarations
         const navTarget =
-          (this.tcs.resumeTargetUnitSequenceId > 0) ? this.tcs.resumeTargetUnitSequenceId.toString() : UnitNavigationTarget.FIRST;
+          (this.tcs.resumeTargetUnitSequenceId > 0) ?
+            this.tcs.resumeTargetUnitSequenceId.toString() :
+            UnitNavigationTarget.FIRST;
         this.tcs.testStatus$.next(TestControllerState.RUNNING);
         this.tcs.setUnitNavigationRequest(navTarget, true);
         break;
