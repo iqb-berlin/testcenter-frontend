@@ -117,15 +117,12 @@ export class BackendService {
           bData.id = bookletId;
           return bData;
         }),
-        catchError(() => {
-          console.warn(`get booklet data failed for ${bookletId}`);
-          return of(<BookletData>{
-            id: bookletId,
-            label: bookletId,
-            locked: true,
-            running: false
-          });
-        })
+        catchError(() => of(<BookletData>{
+          id: bookletId,
+          label: bookletId,
+          locked: true,
+          running: false
+        }))
       );
   }
 

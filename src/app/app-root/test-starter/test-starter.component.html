@@ -1,9 +1,14 @@
 <div fxLayout="row wrap" fxLayoutAlign="center stretch">
   <mat-card fxFlex="0 0 400px" fxLayout="column">
-    <mat-card-title>{{ bookletSelectTitle }}</mat-card-title>
+    <mat-card-title>Bitte wählen</mat-card-title>
     <mat-card-content>
       <div fxLayoutGap="10px" fxLayout="column">
-        <p style="color: chocolate"><b>{{ problemText }}</b></p>
+        <alert
+            *ngIf="!booklets.length"
+            level="info"
+            customtext="login_noBookletsAvailable"
+            text="Für diese Anmeldung wurde kein Test gefunden."
+        ></alert>
         <button mat-raised-button color="primary" (click)="startTest(b)"
                 [disabled]="b.locked" *ngFor="let b of booklets">
           <div class="booklet_title">{{b.label}}</div>
@@ -20,9 +25,9 @@
     <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
 
     <mat-card-content>
-      <p *ngIf="openTestletsCount === 0">{{ 'login_bookletSelectPromptNull' | customtext: 'login_bookletSelectPromptNull' | async}}</p>
-      <p *ngIf="openTestletsCount === 1">{{ 'login_bookletSelectPromptOne' | customtext: 'login_bookletSelectPromptOne' | async}}</p>
-      <p *ngIf="openTestletsCount > 1">{{ 'login_bookletSelectPromptMany' | customtext: 'login_bookletSelectPromptMany' | async}}</p>
+      <p *ngIf="bookletCount === 0">{{ 'login_bookletSelectPromptNull' | customtext: 'login_bookletSelectPromptNull' | async}}</p>
+      <p *ngIf="bookletCount === 1">{{ 'login_bookletSelectPromptOne' | customtext: 'login_bookletSelectPromptOne' | async}}</p>
+      <p *ngIf="bookletCount > 1">{{ 'login_bookletSelectPromptMany' | customtext: 'login_bookletSelectPromptMany' | async}}</p>
 
       <status-card></status-card>
 
