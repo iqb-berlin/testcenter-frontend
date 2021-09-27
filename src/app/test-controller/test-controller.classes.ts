@@ -310,6 +310,8 @@ export class EnvironmentData {
   }
 
   osName = '';
+  device = '' ;
+
   screenSizeWidth = 0;
   screenSizeHeight = 0;
   loadTime: number = 0;
@@ -319,45 +321,16 @@ export class EnvironmentData {
 
   constructor(appVersion: string) {
     this.appVersion = appVersion;
-    const deviceInfo = window.navigator.userAgent;
 
-    // TODO use class from SysCheck
-    // eslint-disable-next-line max-len
-    const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d.apre]+)/;
-    // credit due to: https://gist.github.com/ticky/3909462#gistcomment-2245669
-    const deviceInfoSplits = regex.exec(deviceInfo);
-    const helperRegex = /[^.]*/;
-    const browserInfo = helperRegex.exec(deviceInfoSplits[0]);
-    const browserInfoSplits = browserInfo[0].split('/');
-    this.browserVersion = browserInfoSplits[1];
-    this.browserName = browserInfoSplits[0];
+    // eslint-disable-next-line @typescript-eslint/dot-notation
+    const UAParser = window['UAParser']();
 
-    // os
-    if (deviceInfo.indexOf('Windows') !== -1) {
-      if (deviceInfo.indexOf('Windows NT 10.0') !== -1) {
-        this.osName = 'Windows 10';
-      } else if (deviceInfo.indexOf('Windows NT 6.2') !== -1) {
-        this.osName = 'Windows 8';
-      } else if (deviceInfo.indexOf('Windows NT 6.1') !== -1) {
-        this.osName = 'Windows 7';
-      } else if (deviceInfo.indexOf('Windows NT 6.0') !== -1) {
-        this.osName = 'Windows Vista';
-      } else if (deviceInfo.indexOf('Windows NT 5.1') !== -1) {
-        this.osName = 'Windows XP';
-      } else if (deviceInfo.indexOf('Windows NT 5.0') !== -1) {
-        this.osName = 'Windows 2000';
-      } else {
-        this.osName = 'Windows, unbekannte Version';
-      }
-    } else if (deviceInfo.indexOf('Mac') !== -1) {
-      this.osName = 'Mac/iOS';
-    } else if (deviceInfo.indexOf('X11') !== -1) {
-      this.osName = 'UNIX';
-    } else if (deviceInfo.indexOf('Linux') !== -1) {
-      this.osName = 'Linux';
-    } else {
-      this.osName = window.navigator.platform;
-    }
+    this.browserVersion = UAParser.browser.version;
+    this.browserName = UAParser.browser.name;
+    this.osName = `${UAParser.os.name} ${UAParser.os.version}`;
+    this.device = Object.values(UAParser.device)
+      .filter(elem => elem)
+      .join(' ');
 
     this.screenSizeHeight = window.screen.height;
     this.screenSizeWidth = window.screen.width;
