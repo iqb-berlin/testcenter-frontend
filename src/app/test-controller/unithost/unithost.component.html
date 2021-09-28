@@ -74,25 +74,39 @@
 </ng-container>
 
 <div id="pageNav" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px" *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM'">
-  <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="showPageNav">
-      <div id="pageNavPrompt">
-        {{ ''  | customtext:'login_pagesNaviPrompt' | async}}
-      </div>
+  <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="knownPages && knownPages.length">
+    <div id="pageNavPrompt">
+      {{ ''  | customtext:'login_pagesNaviPrompt' | async}}
+    </div>
 
-      <div *ngFor="let p of pageList">
-          <button *ngIf="p.type === '#previous'" (click)="gotoPage(p.type)" [disabled]="p.disabled" fxLayout="row" fxLayoutAlign="center center">
-              <i class="material-icons">chevron_left</i>
-          </button>
-          <button *ngIf="p.type === '#next'" (click)="gotoPage(p.type)" [disabled]="p.disabled" fxLayout="row" fxLayoutAlign="center center">
-              <i class="material-icons">chevron_right</i>
-          </button>
-          <div *ngIf="p.type === '#goto'" fxLayout="column">
-              <div class="pageNavEnabled" *ngIf="!p.disabled"></div>
-              <div class="pageNavDisabled" *ngIf="p.disabled"></div>
-              <button (click)="gotoPage(p.type, p.index)" [disabled]="p.disabled">{{ p.index }}</button>
-              <div class="pageNavEnabled" *ngIf="!p.disabled"></div>
-              <div class="pageNavDisabled" *ngIf="p.disabled"></div>
-          </div>
-      </div>
+    <mat-button-toggle-group>
+      <mat-button-toggle
+        [disabled]="currentPageIndex <= 0"
+        (click)="gotoPage(knownPages[currentPageIndex - 1].id);"
+        fxLayout="row"
+        fxLayoutAlign="center center"
+      >
+        <i class="material-icons">chevron_left</i>
+      </mat-button-toggle>
+
+      <mat-button-toggle
+        *ngFor="let page of knownPages; let index = index"
+        fxLayout="column"
+        (click)="gotoPage(page.id)"
+        [matTooltip]="page.label"
+        [checked]="currentPageIndex === index"
+      >
+        {{ index + 1 }}
+      </mat-button-toggle>
+
+      <mat-button-toggle
+        [disabled]="currentPageIndex >= knownPages.length - 1"
+        (click)="gotoPage(knownPages[currentPageIndex + 1].id);"
+        fxLayout="row"
+        fxLayoutAlign="center center"
+      >
+        <i class="material-icons">chevron_right</i>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
   </div>
 </div>

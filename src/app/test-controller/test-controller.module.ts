@@ -18,6 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
 import { unitRouteGuards } from './unithost/unit-route-guards';
 import { TestControllerComponent } from './test-controller.component';
@@ -51,7 +52,8 @@ export { TestControllerService } from './test-controller.service';
     MatToolbarModule,
     MatIconModule,
     IqbComponentsModule.forChild(),
-    DragDropModule
+    DragDropModule,
+    MatButtonToggleModule
   ],
   declarations: [
     UnithostComponent,

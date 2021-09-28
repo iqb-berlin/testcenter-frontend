@@ -127,18 +127,18 @@ export class TestControllerService {
     return normalisedId;
   }
 
-  refreshUnitMenu(): void {
+  private refreshUnitMenu(): void {
     if (this.rootTestlet && (this.bookletConfig.unit_navibuttons !== 'OFF')) {
       this.unitListForNaviButtons = [];
       for (let sequ = 1; sequ <= this.rootTestlet.getMaxSequenceId(); sequ++) {
-        const myUnitData = this.rootTestlet.getUnitAt(sequ);
-        if (myUnitData) {
+        const unitData = this.rootTestlet.getUnitAt(sequ);
+        if (unitData) {
           this.unitListForNaviButtons.push({
             sequenceId: sequ,
-            shortLabel: myUnitData.unitDef.naviButtonLabel,
-            longLabel: myUnitData.unitDef.title,
-            testletLabel: myUnitData.testletLabel,
-            disabled: myUnitData.unitDef.locked,
+            shortLabel: unitData.unitDef.naviButtonLabel,
+            longLabel: unitData.unitDef.title,
+            testletLabel: unitData.testletLabel,
+            disabled: unitData.unitDef.locked,
             isCurrent: sequ === this._currentUnitSequenceId
           });
         }

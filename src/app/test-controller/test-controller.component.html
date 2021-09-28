@@ -11,51 +11,57 @@
     <p class="timer" *ngIf="tcs.testMode.showTimeLeft || (tcs.bookletConfig.unit_show_time_left === 'ON')">
       {{ timerValue?.timeLeftString }}
     </p>
-    <button
-      mat-fab
-      [disabled]="tcs.currentUnitSequenceId <= 1"
-      *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
-      color="accent"
-      (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none"
-    >
-      <i class="material-icons">chevron_left</i>
-    </button>
-    <div
+
+    <mat-button-toggle-group
       *ngIf="(tcs.bookletConfig.unit_navibuttons === 'FULL') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
       fxLayout="row wrap"
       fxLayoutAlign="start center"
     >
-      <div *ngFor="let u of tcs.unitListForNaviButtons">
-        <div fxLayout="column" fxLayoutAlign="start center">
-            <button
-              (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())"
-              class="unit-button"
-              [disabled]="u.disabled"
-              [matTooltip]="u.longLabel + (!tcs.isUnitContentLoaded(u.sequenceId) ? ' (wird noch geladen!)' : '')"
-            >
-              {{ u.shortLabel }} {{u.sequenceId}}
-            </button>
-            <span class="current-unit-dot" *ngIf="u.isCurrent"></span>
-            <span class="notcurrent-unit-dot" *ngIf="!u.isCurrent"></span>
-        </div>
-      </div>
-    </div>
-    <button
-      mat-fab
-      [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
-      *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
-      color="accent"
-      (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none"
-    >
-      <i class="material-icons">chevron_right</i>
-    </button>
+      <mat-button-toggle
+        [disabled]="tcs.currentUnitSequenceId <= 1"
+        *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
+        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none"
+      >
+        <i class="material-icons">chevron_left</i>
+      </mat-button-toggle>
+
+      <mat-button-toggle
+        *ngFor="let u of tcs.unitListForNaviButtons; let index = index"
+        fxLayoutAlign="start center"
+        [checked]="u.isCurrent"
+        (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())"
+        [disabled]="u.disabled"
+        [matTooltip]="u.longLabel + (!tcs.isUnitContentLoaded(u.sequenceId) ? ' (wird noch geladen!)' : '')"
+      >
+        {{ u.shortLabel }}
+      </mat-button-toggle>
+
+      <mat-button-toggle
+        [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
+        *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
+        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none"
+      >
+        <i class="material-icons">chevron_right</i>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+
     <div class="plus-buttons" fxFlex="none" fxLayout="row">
-      <button mat-button (click)="showReviewDialog()" *ngIf="tcs.testMode.canReview" matTooltip="Kommentar senden" fxFlex="none">
+      <button
+        mat-button
+        (click)="showReviewDialog()"
+        *ngIf="tcs.testMode.canReview"
+        matTooltip="Kommentar senden"
+        fxFlex="none"
+      >
         <mat-icon>rate_review</mat-icon>
       </button>
-      <button mat-button (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.MENU)"
-              *ngIf="(tcs.bookletConfig.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
-              matTooltip="Zur Aufgabenliste" fxFlex="none">
+      <button
+        mat-button
+        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.MENU)"
+          *ngIf="(tcs.bookletConfig.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
+          matTooltip="Zur Aufgabenliste"
+        fxFlex="none"
+      >
         <mat-icon>menu</mat-icon>
       </button>
     </div>

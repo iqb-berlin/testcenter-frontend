@@ -38,29 +38,29 @@
   width: 100%;
   height: 45px;
   bottom: 0;
-  padding: 0 30px;
+  padding: 0 16px;
   font-size: 1.2em;
 }
 
 #pageNavPrompt {
-  padding: 2px 8px;
+  padding-right: 8px;
   color: white;
 }
 
-#pageNav button {
-  font-size: 1.1em;
-}
+/*#pageNav button {*/
+/*  font-size: 1.1em;*/
+/*}*/
 
-#pageNav button i {
-  font-size: 1.2em;
-}
+/*#pageNav button i {*/
+/*  font-size: 1.2em;*/
+/*}*/
 
-.pageNavDisabled {
-  height: 5px;
-  background-color: orangered;
-}
+/*.pageNavDisabled {*/
+/*  height: 5px;*/
+/*  background-color: orangered;*/
+/*}*/
 
-.pageNavEnabled {
-  height: 5px;
-  background-color: darkgrey;
-}
+/*.pageNavEnabled {*/
+/*  height: 5px;*/
+/*  background-color: darkgrey;*/
+/*}*/

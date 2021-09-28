@@ -11,18 +11,8 @@ mat-card {
   background-color: var(--tc-box-background)
 }
 
-.menu-body .unit {
-  background-color: transparent;
-  padding: 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.menu-body .unit.active {
-  background-color: #b2ff59;
-}
+mat-button-toggle {
 
-.menu-body .unit.loading button {
-  background-color: rgba(0,0,0,0.5);
 }
 
 .testlet-marker-non {

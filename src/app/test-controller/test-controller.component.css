@@ -22,60 +22,13 @@
   bottom: 0;
 }
 
-/* --------------------------------------------- */
 #header {
   position: absolute;
   width: 100%;
-  padding-right: 5px;
-  padding-top: 2px;
-  padding-left: 25px;
-  color: white;
   z-index: 444;
-}
-#header .material-icons {
-  /* font-size: 2.0rem; */
-  position: relative;
-  top: -8px;
-  font-size: 36px;
-  padding: 2px;
-}
-
-#header .plus-buttons {
-  background-color: rgba(0, 51, 51, 0.4);
-  height: 48px;
-}
-/* --------------------------------------------- */
-mat-toolbar {
-  position: fixed;
-  z-index: 100;
-  top: 4px;
-  right: 90px;
-}
-
-.mat-fab {
-  margin: 0 6px;
-}
-
-.current-unit-dot {
-  height: 8px;
-  width: 8px;
-  background-color: red;
-  border-radius: 50%;
-  display: inline-block;
-}
-.notcurrent-unit-dot {
-  height: 8px;
-  width: 8px;
-  background-color: transparent;
-  border-radius: 50%;
-  display: inline-block;
-}
-.unit-button[disabled], .mat-fab[disabled] {
-  background-color: #bdbdbd;
-}
-
-.unit-button.loading {
-  color: red;
+  color: white;;
+  height: var(--tc-header-height);
+  padding-left: 116px;
 }
 
 .debug-pane {

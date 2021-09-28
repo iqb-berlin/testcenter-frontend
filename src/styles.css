@@ -169,3 +169,22 @@ div.logo img {
   background: rgba(0, 0, 0, 0.7);
   z-index: 998;
 }
+
+mat-button-toggle-group {
+  flex-wrap: nowrap !important
+}
+
+.mat-button-toggle-appearance-standard .mat-button-toggle-label-content,
+.mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  line-height: 36px !important;
+}
+
+.mat-button-disabled.mat-button-disabled,
+.mat-button-disabled.mat-button-disabled {
+  background-color: lightgray
+}
+
+.mat-button-toggle-checked .mat-button-toggle-button,
+.mat-button-toggle-checked .mat-button-toggle-button {
+  background-color: var(--accent);
+}
