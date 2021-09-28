@@ -129,15 +129,6 @@ export interface UnitLogData {
   entry: string;
 }
 
-export interface UnitMenuButtonData {
-  sequenceId: number;
-  label: string;
-  isCurrent: boolean;
-  isDisabled: boolean;
-  testletLabel: string;
-  testletMarker: string;
-}
-
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++
 
 export enum MaxTimerDataType {

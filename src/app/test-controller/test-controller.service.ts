@@ -128,20 +128,21 @@ export class TestControllerService {
   }
 
   private refreshUnitMenu(): void {
-    if (this.rootTestlet && (this.bookletConfig.unit_navibuttons !== 'OFF')) {
-      this.unitListForNaviButtons = [];
-      for (let sequ = 1; sequ <= this.rootTestlet.getMaxSequenceId(); sequ++) {
-        const unitData = this.rootTestlet.getUnitAt(sequ);
-        if (unitData) {
-          this.unitListForNaviButtons.push({
-            sequenceId: sequ,
-            shortLabel: unitData.unitDef.naviButtonLabel,
-            longLabel: unitData.unitDef.title,
-            testletLabel: unitData.testletLabel,
-            disabled: unitData.unitDef.locked,
-            isCurrent: sequ === this._currentUnitSequenceId
-          });
-        }
+    this.unitListForNaviButtons = [];
+    if (!this.rootTestlet) {
+      return;
+    }
+    for (let sequenceId = 1; sequenceId <= this.rootTestlet.getMaxSequenceId(); sequenceId++) {
+      const unitData = this.rootTestlet.getUnitAt(sequenceId);
+      if (unitData) {
+        this.unitListForNaviButtons.push({
+          sequenceId,
+          shortLabel: unitData.unitDef.naviButtonLabel,
+          longLabel: unitData.unitDef.title,
+          testletLabel: unitData.testletLabel,
+          disabled: unitData.unitDef.locked,
+          isCurrent: sequenceId === this._currentUnitSequenceId
+        });
       }
     }
   }
