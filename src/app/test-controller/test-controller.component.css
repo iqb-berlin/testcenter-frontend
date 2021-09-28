@@ -31,6 +31,10 @@
   padding-left: 116px;
 }
 
+#header .plus-buttons {
+  min-width: 16px;
+}
+
 .debug-pane {
   color: orange;
   position: absolute;
