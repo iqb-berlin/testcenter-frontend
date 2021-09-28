@@ -1,8 +1,17 @@
-<div id="unit-title" *ngIf="tcs.bookletConfig.unit_title === 'ON'" fxLayout="column" fxLayoutAlign="center center">
+<div
+  *ngIf="tcs.bookletConfig.unit_title === 'ON'"
+  [style]="{'visibility': currentUnit?.unitDef?.locked || (unitsLoading$ | async).length ? 'hidden' : 'visible'}"
+  id="unit-title"
+  fxLayout="column"
+  fxLayoutAlign="center center"
+>
   <p>{{ unitScreenHeader }}</p>
 </div>
 
-<div id="iFrameHost">
+<div
+  id="iFrameHost"
+  [style]="{'visibility': currentUnit?.unitDef?.locked || (unitsLoading$ | async).length ? 'hidden' : 'visible'}"
+>
 </div>
 
 <ng-container *ngIf="currentUnit?.unitDef?.locked">
@@ -10,67 +19,73 @@
     <mat-card>
       <mat-card-header>
         <mat-card-title>
-          {{'Diese Aufgabe ist gesperrt.' | customtext:'booklet_lockedBlock' | async}}
+          {{ unitScreenHeader }}
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <!-- (tcs.bookletConfig.unit_navibuttons !== 'OFF' -->
-        <button mat-mini-fab
-          color="accent"
-          (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none"
-        >
-          <i class="material-icons">chevron_left</i>
-        </button>
-        <button
-          mat-mini-fab
-          [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
-          color="accent"
-          (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none"
-        >
-          <i class="material-icons">chevron_right</i>
-        </button>
+        {{'Diese Aufgabe ist gesperrt.' | customtext:'booklet_lockedBlock' | async}}
       </mat-card-content>
+      <mat-card-actions>
+
+          <button
+            mat-raised-button
+            [disabled]="tcs.currentUnitSequenceId === 0"
+            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none"
+          >
+            <i class="material-icons">chevron_left</i>
+          </button>
+          <button
+            mat-raised-button
+            [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
+            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none"
+          >
+            <i class="material-icons">chevron_right</i>
+          </button>
+
+      </mat-card-actions>
     </mat-card>
+
   </div>
 </ng-container>
 
 <ng-container *ngIf="unitsLoading$ | async as loadingUnits">
-    <div class="waiting-room" *ngIf="loadingUnits.length">
-      <mat-card>
-        <mat-card-header>
-          <mat-card-title *ngIf="loadingUnits.length > 1">
-            {{'Aufgabenblock wird geladen' | customtext:'booklet_loadingBlock' | async}}
-          </mat-card-title>
-          <mat-card-title *ngIf="loadingUnits.length <= 1">
-            {{'Aufgabe wird geladen' | customtext:'booklet_loadingUnit' | async}}
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <ng-container *ngFor="let loading of loadingUnits; let index = index">
-            <mat-progress-bar
-              color="primary"
-              [mode]="({'UNKNOWN': 'indeterminate', 'PENDING': 'query'})[loading.progress] || 'determinate'"
-              [value]="loading.progress"
-            >
-            </mat-progress-bar>
-            <p class="progress-bar-sub-text">
-              {{unitsToLoadLabels[index]}}
-              <ng-container [ngSwitch]="loading.progress">
-                <span *ngSwitchCase="'UNKNOWN'">
-                  ({{'wird geladen' | customtext:'booklet_unitLoadingUnknownProgress' | async}})
-                </span>
-                <span *ngSwitchCase="'PENDING'">
-                  ({{'in der Warteschleife' | customtext:'booklet_unitLoadingPending' | async}})
-                </span>
-                <span *ngSwitchDefault>
-                  ({{loading.progress}}% {{'geladen' | customtext:'booklet_unitLoading' | async}})
-                </span>
-              </ng-container>
-            </p>
-          </ng-container>
-        </mat-card-content>
-      </mat-card>
-    </div>
+  <div class="waiting-room" *ngIf="loadingUnits.length">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{unitScreenHeader}}</mat-card-title>
+        <mat-card-subtitle *ngIf="loadingUnits.length > 1">
+          {{'Aufgabenblock wird geladen' | customtext:'booklet_loadingBlock' | async}}
+        </mat-card-subtitle>
+        <mat-card-subtitle *ngIf="loadingUnits.length <= 1">
+          {{'Aufgabe wird geladen' | customtext:'booklet_loadingUnit' | async}}
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <ng-container *ngFor="let loading of loadingUnits; let index = index">
+          <mat-progress-bar
+            color="primary"
+            [mode]="({'UNKNOWN': 'indeterminate', 'PENDING': 'query'})[loading.progress] || 'determinate'"
+            [value]="loading.progress"
+          >
+          </mat-progress-bar>
+          <p class="progress-bar-sub-text">
+            {{unitsToLoadLabels[index]}}
+            <ng-container [ngSwitch]="loading.progress">
+              <span *ngSwitchCase="'UNKNOWN'">
+                ({{'wird geladen' | customtext:'booklet_unitLoadingUnknownProgress' | async}})
+              </span>
+              <span *ngSwitchCase="'PENDING'">
+                ({{'in der Warteschleife' | customtext:'booklet_unitLoadingPending' | async}})
+              </span>
+              <span *ngSwitchDefault>
+                ({{loading.progress}}% {{'geladen' | customtext:'booklet_unitLoading' | async}})
+              </span>
+            </ng-container>
+          </p>
+        </ng-container>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </ng-container>
 
 <div id="pageNav" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px" *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM'">
