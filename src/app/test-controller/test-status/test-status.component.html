@@ -50,7 +50,8 @@
     </mat-card>
 
     <mat-card *ngSwitchCase="tcs.testStatusEnum.LOADING" class="progress-bar">
-      <mat-card-title>{{ tcs.rootTestlet?.title }} - bitte warten</mat-card-title>
+      <mat-card-title>{{ tcs.rootTestlet?.title || 'Test' }}</mat-card-title>
+      <mat-card-subtitle>{{'bitte warten' | customtext:'booklet_loading' | async }}</mat-card-subtitle>
       <mat-card-content fxLayout="column">
         <mat-progress-bar
           color="primary"

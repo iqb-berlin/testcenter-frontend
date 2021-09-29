@@ -196,6 +196,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
     }
 
+    this.currentPageIndex = undefined;
+    this.knownPages = [];
+
     this.setUnitScreenHeader();
 
     this.currentUnit = this.tcs.rootTestlet.getUnitAt(this.currentUnitSequenceId);
@@ -269,9 +272,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.startTimerIfNecessary();
 
     this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
-
-    this.currentPageIndex = undefined;
-    this.knownPages = [];
 
     this.pendingUnitData = {
       playerId: this.itemplayerSessionId,
