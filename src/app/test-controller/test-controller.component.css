@@ -3,17 +3,6 @@
   margin: 0 10px;
 }
 
-.tcSidenav {
-  background-color: teal;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-.tcSidenav > p, .tcSidenav > button {
-  margin: 15px 10px 0 10px;
-}
-
 .tc-body {
   overflow-x: auto;
   position: absolute;
@@ -29,6 +18,15 @@
   color: white;;
   height: var(--tc-header-height);
   padding-left: 116px;
+}
+
+#header mat-button-toggle-group {
+  background: white;
+}
+
+#header .nav-buttons {
+  overflow-x: auto;
+  display: flex;
 }
 
 #header .plus-buttons {

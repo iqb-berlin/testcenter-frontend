@@ -27,7 +27,7 @@
         <i class="material-icons">chevron_left</i>
       </mat-button-toggle>
 
-      <ng-container *ngIf="tcs.bookletConfig.unit_navibuttons !== 'ARROWS_ONLY'">
+      <span *ngIf="tcs.bookletConfig.unit_navibuttons !== 'ARROWS_ONLY'" class="nav-buttons">
         <mat-button-toggle
           *ngFor="let u of tcs.unitListForNaviButtons; let index = index"
           fxLayoutAlign="start center"
@@ -38,7 +38,7 @@
         >
           {{ u.shortLabel }}
         </mat-button-toggle>
-      </ng-container>
+      </span>
 
       <mat-button-toggle
         #nextButton="matButtonToggle"
