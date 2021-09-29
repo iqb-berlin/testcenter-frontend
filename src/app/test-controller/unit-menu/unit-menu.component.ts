@@ -25,15 +25,25 @@ export class UnitMenuComponent implements OnInit {
 
       this.menu = [];
       let prevBlockLabel = '';
-      let blockUnitList = [];
+      let blockUnitList: UnitNaviButtonData[] = [];
+      const unitCount = this.tcs.rootTestlet.getMaxSequenceId() - 1;
 
-      for (let sequenceId = 0; sequenceId < this.tcs.unitListForNaviButtons.length; sequenceId++) {
-        const blockLabel = this.tcs.unitListForNaviButtons[sequenceId].testletLabel || '';
+      for (let sequenceId = 1; sequenceId <= unitCount; sequenceId++) {
+        const unitData = this.tcs.rootTestlet.getUnitAt(sequenceId);
+        const unitButtonData: UnitNaviButtonData = {
+          sequenceId,
+          shortLabel: unitData.unitDef.naviButtonLabel,
+          longLabel: unitData.unitDef.title,
+          testletLabel: unitData.testletLabel,
+          disabled: unitData.unitDef.locked,
+          isCurrent: sequenceId === this.tcs.currentUnitSequenceId
+        };
+        const blockLabel = unitData.testletLabel || '';
         if (blockLabel !== prevBlockLabel) {
           this.menu.push(prevBlockLabel, blockUnitList);
           blockUnitList = [];
         }
-        blockUnitList.push(this.tcs.unitListForNaviButtons[sequenceId]);
+        blockUnitList.push(unitButtonData);
         prevBlockLabel = blockLabel;
       }
       this.menu.push(prevBlockLabel, blockUnitList);

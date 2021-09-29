@@ -9,7 +9,6 @@ import {
   KeyValuePairNumber, LoadingProgress,
   MaxTimerDataType, StateReportEntry,
   TestControllerState, TestStateKey,
-  UnitNaviButtonData,
   UnitNavigationTarget,
   UnitStateData, UnitStateKey, WindowFocusState
 } from './test-controller.interfaces';
@@ -42,8 +41,6 @@ export class TestControllerService {
   currentUnitDbKey = '';
   currentUnitTitle = '';
 
-  unitListForNaviButtons: UnitNaviButtonData[] = [];
-
   allUnitIds: string[] = [];
 
   resumeTargetUnitSequenceId = 0;
@@ -54,14 +51,17 @@ export class TestControllerService {
     return this._navigationDenial;
   }
 
-  private _currentUnitSequenceId: number;
+  private _currentUnitSequenceId$: BehaviorSubject<number> = new BehaviorSubject<number>(-Infinity);
   get currentUnitSequenceId(): number {
-    return this._currentUnitSequenceId;
+    return this._currentUnitSequenceId$.getValue();
   }
 
   set currentUnitSequenceId(v: number) {
-    this._currentUnitSequenceId = v;
-    this.refreshUnitMenu();
+    this._currentUnitSequenceId$.next(v);
+  }
+
+  get currentUnitSequenceId$(): Observable<number> {
+    return this._currentUnitSequenceId$.asObservable();
   }
 
   lastMaxTimerState: KeyValuePairNumber = {};
@@ -113,7 +113,6 @@ export class TestControllerService {
     }
     this.currentMaxTimerTestletId = '';
     this.lastMaxTimerState = {};
-    this.unitListForNaviButtons = [];
     this.unitPresentationProgressStates = {};
   }
 
@@ -125,26 +124,6 @@ export class TestControllerService {
       normalisedId += `.${normalisedExtension}`;
     }
     return normalisedId;
-  }
-
-  private refreshUnitMenu(): void {
-    this.unitListForNaviButtons = [];
-    if (!this.rootTestlet) {
-      return;
-    }
-    for (let sequenceId = 1; sequenceId <= this.rootTestlet.getMaxSequenceId(); sequenceId++) {
-      const unitData = this.rootTestlet.getUnitAt(sequenceId);
-      if (unitData) {
-        this.unitListForNaviButtons.push({
-          sequenceId,
-          shortLabel: unitData.unitDef.naviButtonLabel,
-          longLabel: unitData.unitDef.title,
-          testletLabel: unitData.testletLabel,
-          disabled: unitData.unitDef.locked,
-          isCurrent: sequenceId === this._currentUnitSequenceId
-        });
-      }
-    }
   }
 
   addPlayer(id: string, player: string): void {

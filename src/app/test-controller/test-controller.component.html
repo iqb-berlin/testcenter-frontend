@@ -29,7 +29,7 @@
 
       <span *ngIf="tcs.bookletConfig.unit_navibuttons !== 'ARROWS_ONLY'" class="nav-buttons">
         <mat-button-toggle
-          *ngFor="let u of tcs.unitListForNaviButtons; let index = index"
+          *ngFor="let u of unitNavigationList; let index = index"
           fxLayoutAlign="start center"
           [checked]="u.isCurrent"
           (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())"

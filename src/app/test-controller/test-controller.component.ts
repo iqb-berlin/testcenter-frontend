@@ -18,7 +18,7 @@ import {
   ReviewDialogData,
   StateReportEntry,
   TestControllerState,
-  TestStateKey,
+  TestStateKey, UnitNaviButtonData,
   UnitNavigationTarget,
   WindowFocusState
 } from './test-controller.interfaces';
@@ -51,6 +51,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   timerValue: MaxTimerData = null;
   unitNavigationTarget = UnitNavigationTarget;
+  unitNavigationList: UnitNaviButtonData[] = [];
   debugPane = false;
 
   constructor(
@@ -131,6 +132,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
       this.subscriptions.maxTimer = this.tcs.maxTimeTimer$
         .subscribe(maxTimerEvent => this.handleMaxTimer(maxTimerEvent));
+
+      this.subscriptions.currentUnit = this.tcs.currentUnitSequenceId$
+        .subscribe(currentUnitSequenceId => this.refreshUnitMenu(currentUnitSequenceId));
     });
   }
 
@@ -371,6 +375,25 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       '--tc-unit-page-nav-height',
       this.tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' ? this.mds.defaultTcUnitPageNavHeight : '0'
     );
+  }
+
+  private refreshUnitMenu(currentUnitSequenceId: number): void {
+    this.unitNavigationList = [];
+    if (!this.tcs.rootTestlet) {
+      return;
+    }
+    const unitCount = this.tcs.rootTestlet.getMaxSequenceId() - 1;
+    for (let sequenceId = 1; sequenceId <= unitCount; sequenceId++) {
+      const unitData = this.tcs.rootTestlet.getUnitAt(sequenceId);
+      this.unitNavigationList.push({
+        sequenceId,
+        shortLabel: unitData.unitDef.naviButtonLabel,
+        longLabel: unitData.unitDef.title,
+        testletLabel: unitData.testletLabel,
+        disabled: unitData.unitDef.locked,
+        isCurrent: sequenceId === currentUnitSequenceId
+      });
+    }
   }
 
   ngOnDestroy(): void {
