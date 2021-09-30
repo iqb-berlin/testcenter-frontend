@@ -75,7 +75,6 @@ Navigationsbuttons für die Navigation zwischen den Aufgaben
 #### `unit_menu`
 Extra-Seite mit großen Buttons für Aufgaben zum direkten Springen
   * "OFF" (default): Ausgeschaltet
-  * "ENABLED_ONLY": Eingeschaltet - nur die Aufgaben anzeigen, die noch freigegeben sind
   * "FULL": Eingeschaltet - auch die Aufgaben anzeigen, die nicht mehr freigegeben sind (gegraut)
 
 #### `force_presentation_complete`

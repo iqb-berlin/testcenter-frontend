@@ -8,7 +8,7 @@ export class BookletConfig {
 	stateReportPolicy: "none" | "eager" | "on-demand" = "eager";
 	page_navibuttons: "OFF" | "SEPARATE_BOTTOM" = "SEPARATE_BOTTOM";
 	unit_navibuttons: "OFF" | "ARROWS_ONLY" | "FULL" = "FULL";
-	unit_menu: "OFF" | "ENABLED_ONLY" | "FULL" = "OFF";
+	unit_menu: "OFF" | "FULL" = "OFF";
 	force_presentation_complete: "OFF" | "ON" = "OFF";
 	force_response_complete: "OFF" | "ON" = "OFF";
 	unit_screenheader: "OFF" | "WITH_UNIT_TITLE" | "WITH_BOOKLET_TITLE" | "WITH_BLOCK_TITLE" | "EMPTY" = "WITH_UNIT_TITLE";
