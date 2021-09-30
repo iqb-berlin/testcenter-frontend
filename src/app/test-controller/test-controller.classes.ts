@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 
-import { MaxTimerDataType, OnOff } from './test-controller.interfaces';
+import { MaxTimerDataType, NavigationLeaveRestrictionValue } from './test-controller.interfaces';
 
 export class TestletContentElement {
   readonly sequenceId: number;
@@ -61,10 +61,11 @@ export class UnitControllerData {
 }
 
 export class NavigationLeaveRestrictions {
-  readonly presentationComplete: OnOff = 'OFF';
-  readonly responseComplete: OnOff = 'OFF';
+  readonly presentationComplete: NavigationLeaveRestrictionValue = 'OFF';
+  readonly responseComplete: NavigationLeaveRestrictionValue = 'OFF';
 
-  constructor(presentationComplete: OnOff, responseComplete: OnOff) {
+  constructor(presentationComplete: NavigationLeaveRestrictionValue,
+              responseComplete: NavigationLeaveRestrictionValue) {
     this.presentationComplete = presentationComplete;
     this.responseComplete = responseComplete;
   }

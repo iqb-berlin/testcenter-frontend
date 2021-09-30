@@ -78,14 +78,16 @@ Extra-Seite mit großen Buttons für Aufgaben zum direkten Springen
   * "FULL": Eingeschaltet - auch die Aufgaben anzeigen, die nicht mehr freigegeben sind (gegraut)
 
 #### `force_presentation_complete`
-Verhalten, wenn noch nicht alle Elemente der Aufgabe angezeigt wurden
-  * "OFF" (default): Ignorieren - Weiterblättern möglich
-  * "ON": Weiterblättern verhindern, bis Anzeige vollständig
+Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht vollständig angezeigt wurde
+  * "OFF" (default): Das Verlasen der unvollständig betrachteten Aufgabe wird nicht verhindert.
+  * "ON": Das Verlasen der unvollständig betrachteten Aufgabe nicht verhindert.
+  * "FORWARD_ONLY": Das Verlasen der unvollständig betrachteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll.
 
 #### `force_response_complete`
-Verhalten, wenn noch nicht alle Antworten der Aufgabe vollständig gegeben wurden
-  * "OFF" (default): Ignorieren - Weiterblättern möglich
-  * "ON": Weiterblättern erst möglich, wenn alle Antworten gegeben wurden (die der Player für nötig erachtet!)
+Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht beantwortet wurde
+  * "OFF" (default): Das Verlasen der unvollständig beantworteten Aufgabe wird nicht verhindert.
+  * "ON": Das Verlasen der unvollständig beantworteten Aufgabe nicht verhindert.
+  * "FORWARD_ONLY": Das Verlasen der unvollständig beantworteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll.
 
 #### `unit_screenheader`
 Legt fest, ob im obersten Seitenbereich Platz für Logo, Navigations-Buttons u. ä. gelassen wird.

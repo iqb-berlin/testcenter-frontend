@@ -209,9 +209,9 @@ export interface Command {
   timestamp: number;
 }
 
-export type OnOff = 'ON' | 'OFF';
-export function isOnOff(s: string): s is OnOff {
-  return ['ON', 'OFF'].indexOf(s) > -1;
+export type NavigationLeaveRestrictionValue = 'ON' | 'OFF' | 'FORWARD_ONLY';
+export function isNavigationLeaveRestrictionValue(s: string): s is NavigationLeaveRestrictionValue {
+  return ['ON', 'OFF', 'FORWARD_ONLY'].indexOf(s) > -1;
 }
 
 export interface LoadingProgress {

@@ -10,7 +10,7 @@ import { Observable, of } from 'rxjs';
 import { MainDataService } from 'src/app/maindata.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CodeInputData, TestControllerState } from '../test-controller.interfaces';
+import { CodeInputData, NavigationLeaveRestrictionValue, TestControllerState } from '../test-controller.interfaces';
 import { UnitControllerData } from '../test-controller.classes';
 import { UnithostComponent } from './unithost.component';
 import { TestControllerService } from '../test-controller.service';
@@ -94,7 +94,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   ) {}
 
   private checkAndSolve_maxTime(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
-    console.log('checkAndSolve_maxTime', { newUnit, force, tcs_currentMaxTimerTestletId: this.tcs.currentMaxTimerTestletId });
     if (!this.tcs.currentMaxTimerTestletId) { // leaving unit is not in a timed block
       return of(true);
     }
@@ -124,7 +123,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
             return false;
           }
           this.tcs.cancelMaxTimer(); // does locking the block
-          console.log("['cancel here']", this.tcs.currentMaxTimerTestletId);
           return true;
         })
       );
@@ -137,75 +135,57 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     if (this.tcs.currentUnitSequenceId <= 0) { // TODO is this even possible
       return of(true);
     }
-    if (!newUnit || this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) { // if going to menu for example
-      return this.canGoForwards(newUnit);
+    const direction = (newUnit && this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) ? 'Next' : 'Prev';
+    const reasons = this.checkCompleteness(direction);
+    if (!reasons.length) {
+      return of(true);
     }
-    return this.canGoBackwards();
+    return this.notifyNavigationDenied(reasons, direction);
   }
 
-  private canGoForwards(newUnit: UnitControllerData): Observable<boolean> {
-    let checkUnitSequenceId = this.tcs.currentUnitSequenceId;
-    if (newUnit) {
-      checkUnitSequenceId = newUnit.unitDef.sequenceId - 1;
-    }
-    while (checkUnitSequenceId >= this.tcs.currentUnitSequenceId) {
-      const tmpUnit = this.tcs.rootTestlet.getUnitAt(checkUnitSequenceId);
-      if (!tmpUnit.unitDef.locked) { // when forced jump by timer units will be locked but not presentationComplete
-        const reasonsForNavigationDenial = this.checkCompleteness(checkUnitSequenceId, tmpUnit);
-        if (reasonsForNavigationDenial.length) {
-          return this.navigationForwardsDenied(reasonsForNavigationDenial);
-        }
-      }
-      checkUnitSequenceId -= 1;
-    }
-    return of(true);
-  }
-
-  private checkCompleteness(checkUnitSequenceId: number, unit: UnitControllerData): VeronaNavigationDeniedReason[] {
-    const reason: VeronaNavigationDeniedReason[] = [];
+  private checkCompleteness(direction: 'Next'|'Prev'): VeronaNavigationDeniedReason[] {
+    const unit = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId);
+    const reasons: VeronaNavigationDeniedReason[] = [];
+    const valuesAllowed = {
+      Next: <NavigationLeaveRestrictionValue[]>['ON', 'FORWARD_ONLY'],
+      Prev: <NavigationLeaveRestrictionValue[]>['ON']
+    };
     if (
-      (unit.unitDef.navigationLeaveRestrictions.presentationComplete === 'ON') &&
-      this.tcs.hasUnitPresentationProgress(checkUnitSequenceId) &&
-      (this.tcs.getUnitPresentationProgress(checkUnitSequenceId) !== 'complete')
+      (valuesAllowed[direction].indexOf(unit.unitDef.navigationLeaveRestrictions.presentationComplete) > -1) &&
+      this.tcs.hasUnitPresentationProgress(this.tcs.currentUnitSequenceId) &&
+      (this.tcs.getUnitPresentationProgress(this.tcs.currentUnitSequenceId) !== 'complete')
     ) {
-      reason.push('presentationIncomplete');
+      reasons.push('presentationIncomplete');
     }
     if (
-      (unit.unitDef.navigationLeaveRestrictions.responseComplete === 'ON') &&
-      this.tcs.hasUnitResponseProgress(checkUnitSequenceId) &&
-      (['complete', 'complete-and-valid'].indexOf(this.tcs.getUnitResponseProgress(checkUnitSequenceId)) === -1)
+      (valuesAllowed[direction].indexOf(unit.unitDef.navigationLeaveRestrictions.responseComplete) > -1) &&
+      this.tcs.hasUnitResponseProgress(this.tcs.currentUnitSequenceId) &&
+      (['complete', 'complete-and-valid']
+        .indexOf(this.tcs.getUnitResponseProgress(this.tcs.currentUnitSequenceId)) === -1
+      )
     ) {
-      reason.push('responsesIncomplete');
+      reasons.push('responsesIncomplete');
     }
-    return reason;
+    console.log({
+      direction,
+      reasons,
+      valuesAllowed: valuesAllowed[direction],
+      navigationLeaveRestrictions: unit.unitDef.navigationLeaveRestrictions,
+      getUnitPresentationProgress: this.tcs.getUnitPresentationProgress(this.tcs.currentUnitSequenceId),
+      getUnitResponseProgress: this.tcs.getUnitResponseProgress(this.tcs.currentUnitSequenceId)
+    });
+    return reasons;
   }
 
-  private getCustomTexts(direction: 'Next'|'Prev', reasons: VeronaNavigationDeniedReason[]) {
-    const customTexts = {
-      presentationIncomplete: {
-        title: this.cts.getCustomText(`booklet_msgPresentationNotCompleteTitle${direction}`),
-        content: this.cts.getCustomText(`booklet_msgPresentationNotCompleteText${direction}`)
-      },
-      responsesIncomplete: {
-        title: this.cts.getCustomText(`booklet_msgResponseNotCompleteTitle${direction}`),
-        content: this.cts.getCustomText(`booklet_msgResponseNotCompleteText${direction}`)
-      }
-    };
-    return {
-      title: reasons.map(r => customTexts[r].title)[0],
-      content: reasons.map(r => customTexts[r].content).join(' ')
-    };
-  }
-
-  private navigationForwardsDenied(reasonsForNavigationDenial: VeronaNavigationDeniedReason[]): Observable<boolean> {
-    this.tcs.notifyNavigationDenied(this.tcs.currentUnitSequenceId, reasonsForNavigationDenial);
+  private notifyNavigationDenied(reasons: VeronaNavigationDeniedReason[], dir: 'Next' | 'Prev'): Observable<boolean> {
     if (this.tcs.testMode.forceNaviRestrictions) {
-      const customTexts = this.getCustomTexts('Next', reasonsForNavigationDenial);
+      this.tcs.notifyNavigationDenied(this.tcs.currentUnitSequenceId, reasons);
+
       const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
         width: '500px',
         data: <ConfirmDialogData>{
-          title: customTexts.title,
-          content: customTexts.content,
+          title: this.cts.getCustomText('booklet_msgNavigationDeniedTitle'),
+          content: reasons.map(r => this.cts.getCustomText(`booklet_msgNavigationDeniedText_${r}`)).join(' '),
           confirmbuttonlabel: 'OK',
           confirmbuttonreturn: false,
           showcancel: false
@@ -214,41 +194,9 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       return dialogCDRef.afterClosed().pipe(map(() => false));
     }
     this.snackBar.open(
-      `Im Hot-Modus dürfte hier nicht weitergeblättert werden (${reasonsForNavigationDenial.join(', ')}).`,
-      'Weiterblättern',
-      { duration: 3000 }
-    );
-    return of(true);
-  }
-
-  private canGoBackwards(): Observable<boolean> {
-    const currentUnit = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId);
-    const reasonsForNavigationDenial = this.checkCompleteness(this.tcs.currentUnitSequenceId, currentUnit);
-    if (reasonsForNavigationDenial.length) {
-      return this.navigationBackwardsDenied(reasonsForNavigationDenial);
-    }
-    return of(true);
-  }
-
-  private navigationBackwardsDenied(reasonsForNavigationDenial: VeronaNavigationDeniedReason[]): Observable<boolean> {
-    this.tcs.notifyNavigationDenied(this.tcs.currentUnitSequenceId, reasonsForNavigationDenial);
-    if (this.tcs.testMode.forceNaviRestrictions) {
-      const customTexts = this.getCustomTexts('Prev', reasonsForNavigationDenial);
-      const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
-        width: '500px',
-        data: <ConfirmDialogData>{
-          title: customTexts.title,
-          content: customTexts.content,
-          confirmbuttonlabel: 'Trotzdem zurück',
-          confirmbuttonreturn: true,
-          showcancel: true
-        }
-      });
-      return dialogCDRef.afterClosed();
-    }
-    this.snackBar.open(
-      `Im Hot-Modus dürfte hier nicht zurück geblättert werden (${reasonsForNavigationDenial.join(', ')}).`,
-      'Zurückblättern',
+      `Im Hot-Modus dürfte hier nicht ${(dir === 'Next') ? 'weiter' : ' zurück'}geblättert
+                werden: ${reasons.join(', ')}.`,
+      'Blättern',
       { duration: 3000 }
     );
     return of(true);

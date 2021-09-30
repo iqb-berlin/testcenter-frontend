@@ -61,18 +61,20 @@
     "defaultvalue": "OFF"
   },
   "force_presentation_complete": {
-    "label": "Verhalten, wenn noch nicht alle Elemente der Aufgabe angezeigt wurden",
+    "label": "Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht vollständig angezeigt wurde",
     "options": {
-      "OFF": "Ignorieren - Weiterblättern möglich",
-      "ON": "Weiterblättern verhindern, bis Anzeige vollständig"
+      "OFF": "Das Verlasen der unvollständig betrachteten Aufgabe wird nicht verhindert.",
+      "ON": "Das Verlasen der unvollständig betrachteten Aufgabe nicht verhindert.",
+      "FORWARD_ONLY": "Das Verlasen der unvollständig betrachteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll."
     },
     "defaultvalue": "OFF"
   },
   "force_response_complete": {
-    "label": "Verhalten, wenn noch nicht alle Antworten der Aufgabe vollständig gegeben wurden",
+    "label": "Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht beantwortet wurde",
     "options": {
-      "OFF": "Ignorieren - Weiterblättern möglich",
-      "ON": "Weiterblättern erst möglich, wenn alle Antworten gegeben wurden (die der Player für nötig erachtet!)"
+      "OFF": "Das Verlasen der unvollständig beantworteten Aufgabe wird nicht verhindert.",
+      "ON": "Das Verlasen der unvollständig beantworteten Aufgabe nicht verhindert.",
+      "FORWARD_ONLY": "Das Verlasen der unvollständig beantworteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll."
     },
     "defaultvalue": "OFF"
   },

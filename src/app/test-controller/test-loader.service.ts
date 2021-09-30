@@ -10,7 +10,7 @@ import {
 import { CustomtextService } from 'iqb-components';
 import {
   isLoadingFileLoaded,
-  isOnOff, LoadedFile, LoadingProgress,
+  isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress,
   StateReportEntry, TaggedString,
   TestControllerState, TestData, TestLogEntryKey,
   TestStateKey,
@@ -117,6 +117,7 @@ export class TestLoaderService {
       });
     }
     this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
+    console.log(this.tcs.rootTestlet.children);
 
     if (this.tcs.rootTestlet === null) {
       throw Error('Problem beim Parsen der Testinformation');
@@ -234,7 +235,6 @@ export class TestLoaderService {
 
     return new Promise<void>((resolve, reject) => {
       if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
-        console.log('[setUnitNavigationRequest] loadUnitContents (tcs.bookletConfig.loading_mode === \'LAZY\')', { t: this.tcs.resumeTargetUnitSequenceId.toString() });
         this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitSequenceId.toString());
         this.tcs.testStatus$.next(this.newTestStatus);
         resolve();
@@ -276,7 +276,6 @@ export class TestLoaderService {
             }
             this.tcs.loadProgressValue = 100;
             if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
-              console.log('[setUnitNavigationRequest] loadUnitContents (tcs.bookletConfig.loading_mode === \'EAGER\')', { t: this.tcs.resumeTargetUnitSequenceId.toString() });
               this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitSequenceId.toString());
               this.tcs.testStatus$.next(this.newTestStatus);
               resolve();
@@ -405,11 +404,11 @@ export class TestLoaderService {
           }
           if (restrictionElements[childIndex].nodeName === 'DenyNavigation') {
             const presentationComplete = restrictionElements[childIndex].getAttribute('force_presentation_complete');
-            if (isOnOff(presentationComplete)) {
+            if (isNavigationLeaveRestrictionValue(presentationComplete)) {
               forcePresentationComplete = presentationComplete;
             }
             const responseComplete = restrictionElements[childIndex].getAttribute('force_response_complete');
-            if (isOnOff(responseComplete)) {
+            if (isNavigationLeaveRestrictionValue(responseComplete)) {
               forceResponseComplete = responseComplete;
             }
           }
