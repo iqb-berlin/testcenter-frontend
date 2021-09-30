@@ -1,4 +1,4 @@
-/* eslint-disable max-classes-per-file,no-restricted-syntax */ // TODO Get rif of all the for-in-loops
+/* eslint-disable max-classes-per-file */
 
 import { MaxTimerDataType, OnOff } from './test-controller.interfaces';
 
@@ -97,7 +97,8 @@ export class Testlet extends TestletContentElement {
   // first looking for the unit, then on the way back adding restrictions
   getUnitAt(sequenceId: number, isEntryPoint = true): UnitControllerData {
     let myreturn: UnitControllerData = null;
-    for (const tce of this.children) {
+    for (let i = 0; i < this.children.length; i++) {
+      const tce = this.children[i];
       if (tce instanceof Testlet) {
         const localTestlet = tce as Testlet;
         myreturn = localTestlet.getUnitAt(sequenceId, false);
@@ -130,7 +131,8 @@ export class Testlet extends TestletContentElement {
 
   getSequenceIdByUnitAlias(alias: string): number {
     let myReturn = -1;
-    for (const tce of this.children) {
+    for (let i = 0; i < this.children.length; i++) {
+      const tce = this.children[i];
       if (tce instanceof Testlet) {
         const localTestlet = tce as Testlet;
         myReturn = localTestlet.getSequenceIdByUnitAlias(alias);
@@ -152,7 +154,8 @@ export class Testlet extends TestletContentElement {
     if (this.id === testletId) {
       myreturn = this;
     } else {
-      for (const tce of this.children) {
+      for (let i = 0; i < this.children.length; i++) {
+        const tce = this.children[i];
         if (tce instanceof Testlet) {
           const localTestlet = tce as Testlet;
           myreturn = localTestlet.getTestlet(testletId);
@@ -184,7 +187,8 @@ export class Testlet extends TestletContentElement {
         myreturn = myTestlet.getAllUnitSequenceIds();
       }
     } else {
-      for (const tce of this.children) {
+      for (let i = 0; i < this.children.length; i++) {
+        const tce = this.children[i];
         if (tce instanceof Testlet) {
           const localTestlet = tce as Testlet;
           localTestlet.getAllUnitSequenceIds().forEach(u => myreturn.push(u));
@@ -209,7 +213,8 @@ export class Testlet extends TestletContentElement {
       }
     } else {
       this.maxTimeLeft = maxTimeLeft;
-      for (const tce of this.children) {
+      for (let i = 0; i < this.children.length; i++) {
+        const tce = this.children[i];
         if (tce instanceof Testlet) {
           tce.setTimeLeft('', maxTimeLeft);
         }
@@ -224,7 +229,8 @@ export class Testlet extends TestletContentElement {
         testlet.lockAllChildren();
       }
     } else {
-      for (const tce of this.children) {
+      for (let i = 0; i < this.children.length; i++) {
+        const tce = this.children[i];
         if (tce instanceof Testlet) {
           const localTestlet = tce as Testlet;
           localTestlet.lockAllChildren();
@@ -239,7 +245,8 @@ export class Testlet extends TestletContentElement {
   lockUnitsIfTimeLeftNull(lock = false): void {
     // eslint-disable-next-line no-param-reassign
     lock = lock || this.maxTimeLeft === 0;
-    for (const tce of this.children) {
+    for (let i = 0; i < this.children.length; i++) {
+      const tce = this.children[i];
       if (tce instanceof Testlet) {
         const localTestlet = tce as Testlet;
         localTestlet.lockUnitsIfTimeLeftNull(lock);
