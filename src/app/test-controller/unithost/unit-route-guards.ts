@@ -64,12 +64,6 @@ export class UnitActivateGuard implements CanActivate {
       forceNavigation = routerStateObject.extras.state.force;
     }
 
-    if (this.tcs.currentUnitSequenceId > 0) {
-      this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
-    } else {
-      this.tcs.updateMinMaxUnitSequenceId(targetUnitSequenceId);
-    }
-
     if (this.tcs.rootTestlet === null) {
       console.warn('unit canActivate: true (rootTestlet null)');
       const oldTestId = LocalStorage.getTestId();
@@ -85,14 +79,7 @@ export class UnitActivateGuard implements CanActivate {
       console.warn(`target unit null (targetUnitSequenceId: ${targetUnitSequenceId.toString()})`);
       return false;
     }
-    return this.checkAndSolve_Code(newUnit, forceNavigation)
-      .pipe(switchMap(cAsC => {
-        if (!cAsC) {
-          return of(false);
-        }
-        this.tcs.updateMinMaxUnitSequenceId(this.tcs.currentUnitSequenceId);
-        return of(true);
-      }));
+    return this.checkAndSolve_Code(newUnit, forceNavigation);
   }
 }
 

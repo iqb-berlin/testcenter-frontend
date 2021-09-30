@@ -31,8 +31,6 @@ export class TestControllerService {
   testMode = new TestMode();
   bookletConfig = new BookletConfig();
   rootTestlet: Testlet = null;
-  maxUnitSequenceId = 0;
-  minUnitSequenceId = 0;
 
   maxTimeTimer$ = new Subject<MaxTimerData>();
   currentMaxTimerTestletId = '';
@@ -102,7 +100,6 @@ export class TestControllerService {
     this.unitDefinitions = {};
     this.unitStateDataParts = {};
     this.rootTestlet = null;
-    this.maxUnitSequenceId = 0;
     this.clearCodeTestlets = [];
     this.currentUnitSequenceId = 0;
     this.currentUnitDbKey = '';
@@ -305,13 +302,6 @@ export class TestControllerService {
     this.currentMaxTimerTestletId = '';
   }
 
-  updateMinMaxUnitSequenceId(startWith: number): void {
-    if (this.rootTestlet) {
-      this.minUnitSequenceId = this.rootTestlet.getFirstUnlockedUnitSequenceId(startWith);
-      this.maxUnitSequenceId = this.rootTestlet.getLastUnlockedUnitSequenceId(startWith);
-    }
-  }
-
   notifyNavigationDenied(sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[]): void {
     this._navigationDenial.next({ sourceUnitSequenceId, reason });
   }
@@ -370,11 +360,11 @@ export class TestControllerService {
           this.router.navigate([`/t/${this.testId}/u/${this.currentUnitSequenceId - 1}`], { state: { force } });
           break;
         case UnitNavigationTarget.FIRST:
-          this.router.navigate([`/t/${this.testId}/u/${this.minUnitSequenceId}`],
+          this.router.navigate([`/t/${this.testId}/u/1`],
             { state: { force } });
           break;
         case UnitNavigationTarget.LAST:
-          this.router.navigate([`/t/${this.testId}/u/${this.maxUnitSequenceId}`],
+          this.router.navigate([`/t/${this.testId}/u/${this.allUnitIds.length}`],
             { state: { force } });
           break;
         case UnitNavigationTarget.END:

@@ -62,7 +62,6 @@ export class TestLoaderService {
       this.tcs.testMode = new TestMode(testData.mode);
       this.parseBooklet(testData);
 
-      this.tcs.maxUnitSequenceId = this.lastUnitSequenceId - 1;
       if (this.tcs.clearCodeTestlets.length > 0) {
         this.tcs.rootTestlet.clearTestletCodes(this.tcs.clearCodeTestlets);
       }
@@ -126,7 +125,7 @@ export class TestLoaderService {
 
   private loadUnits(): Promise<number> {
     const sequence = [];
-    for (let i = 1; i < this.tcs.maxUnitSequenceId + 1; i++) {
+    for (let i = 1; i < this.lastUnitSequenceId; i++) {
       this.totalLoadingProgress[`unit-${i}`] = 0;
       this.totalLoadingProgress[`player-${i}`] = 0;
       this.totalLoadingProgress[`content-${i}`] = 0;
@@ -205,7 +204,6 @@ export class TestLoaderService {
         navTarget = tmpNavTarget;
       }
     }
-    this.tcs.updateMinMaxUnitSequenceId(navTarget);
     this.tcs.resumeTargetUnitSequenceId = navTarget;
   }
 

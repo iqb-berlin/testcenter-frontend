@@ -236,56 +236,6 @@ export class Testlet extends TestletContentElement {
     }
   }
 
-  getNextUnlockedUnitSequenceId(currentUnitSequenceId: number): number {
-    let nextUnitSequenceId = currentUnitSequenceId + 1;
-    let myUnit: UnitControllerData = this.getUnitAt(nextUnitSequenceId);
-    while (myUnit !== null && myUnit.unitDef.locked) {
-      nextUnitSequenceId += 1;
-      myUnit = this.getUnitAt(nextUnitSequenceId);
-    }
-    if (myUnit) {
-      myUnit.unitDef.ignoreCompleted = true;
-    }
-    return myUnit ? nextUnitSequenceId : 0;
-  }
-
-  getFirstUnlockedUnitSequenceId(startWith: number): number {
-    let myreturn = startWith;
-    const myUnit: UnitControllerData = this.getUnitAt(myreturn);
-    if (myUnit) {
-      if (myUnit.unitDef.locked) {
-        myreturn = this.getNextUnlockedUnitSequenceId(myreturn);
-      } else if (myreturn > 1) {
-        let myPrevUnit: UnitControllerData = this.getUnitAt(myreturn - 1);
-        while (myPrevUnit !== null && myreturn > 1 && !myPrevUnit.unitDef.locked) {
-          myreturn -= 1;
-          myPrevUnit = this.getUnitAt(myreturn - 1);
-        }
-      }
-    }
-    return myUnit ? myreturn : 0;
-  }
-
-  getLastUnlockedUnitSequenceId(startWith: number): number {
-    const maxSequenceId = this.getMaxSequenceId();
-    let myreturn = startWith;
-    const myUnit: UnitControllerData = this.getUnitAt(myreturn);
-    if (myUnit) {
-      if (myUnit.unitDef.locked) {
-        myreturn = this.getNextUnlockedUnitSequenceId(myreturn);
-      }
-      if (myreturn > 0 && myreturn < maxSequenceId) {
-        let myNextUnit: UnitControllerData = this.getUnitAt(myreturn + 1);
-        while (myNextUnit !== null && myreturn < maxSequenceId && !myNextUnit.unitDef.locked) {
-          myreturn += 1;
-          myNextUnit = this.getUnitAt(myreturn + 1);
-        }
-      }
-    }
-
-    return myUnit ? myreturn : 0;
-  }
-
   lockUnitsIfTimeLeftNull(lock = false): void {
     // eslint-disable-next-line no-param-reassign
     lock = lock || this.maxTimeLeft === 0;
