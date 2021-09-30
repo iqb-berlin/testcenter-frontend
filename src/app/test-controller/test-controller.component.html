@@ -32,6 +32,7 @@
           *ngFor="let u of unitNavigationList; let index = index"
           fxLayoutAlign="start center"
           [checked]="u.isCurrent"
+          [class]="{'current-unit': u.isCurrent}"
           (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())"
           [disabled]="u.disabled"
           [matTooltip]="u.longLabel + (!tcs.isUnitContentLoaded(u.sequenceId) ? ' (wird noch geladen!)' : '')"

@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  Component, HostListener, Inject, OnDestroy, OnInit, ViewChild
+  Component, ElementRef, HostListener, Inject, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
 import {
   Subscription
@@ -54,7 +54,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   unitNavigationList: UnitNaviButtonData[] = [];
   debugPane = false;
 
-  @ViewChild('navButtons') navButtons: HTMLElement;
+  @ViewChild('navButtons') navButtons: ElementRef;
 
   constructor(
     @Inject('APP_VERSION') public appVersion: string,
@@ -397,7 +397,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       });
     }
     if (this.navButtons) {
-      this.navButtons.querySelector('[checked]').scrollIntoView();
+      setTimeout(() => {
+        this.navButtons.nativeElement.querySelector('.current-unit')
+          .scrollIntoView({ inline: 'center' });
+      }, 50);
     }
   }
 
