@@ -33,6 +33,11 @@
   min-width: 16px;
 }
 
+#header .plus-buttons button ~ button {
+  min-width: 48px;
+  padding-left: 0;
+}
+
 .debug-pane {
   color: orange;
   position: absolute;
