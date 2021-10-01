@@ -2,7 +2,7 @@ import { IqbComponentsModule } from 'iqb-components';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { ReactiveFormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -32,29 +32,30 @@ import { testControllerRouteGuards } from './test-controller-route-guards';
 export { TestControllerService } from './test-controller.service';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    TestControllerRoutingModule,
-    MatProgressSpinnerModule,
-    FlexLayoutModule,
-    MatTooltipModule,
-    MatSnackBarModule,
-    MatCheckboxModule,
-    MatRadioModule,
-    ReactiveFormsModule,
-    MatCardModule,
-    MatDialogModule,
-    MatProgressBarModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatMenuModule,
-    MatButtonModule,
-    MatToolbarModule,
-    MatIconModule,
-    IqbComponentsModule.forChild(),
-    DragDropModule,
-    MatButtonToggleModule
-  ],
+    imports: [
+        CommonModule,
+        TestControllerRoutingModule,
+        MatProgressSpinnerModule,
+        FlexLayoutModule,
+        MatTooltipModule,
+        MatSnackBarModule,
+        MatCheckboxModule,
+        MatRadioModule,
+        ReactiveFormsModule,
+        MatCardModule,
+        MatDialogModule,
+        MatProgressBarModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatMenuModule,
+        MatButtonModule,
+        MatToolbarModule,
+        MatIconModule,
+        IqbComponentsModule.forChild(),
+        DragDropModule,
+        MatButtonToggleModule,
+        FormsModule
+    ],
   declarations: [
     UnithostComponent,
     TestControllerComponent,

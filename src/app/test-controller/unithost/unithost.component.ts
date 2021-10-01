@@ -17,7 +17,7 @@ import { BackendService } from '../backend.service';
 import { TestControllerService } from '../test-controller.service';
 import { MainDataService } from '../../maindata.service';
 import { VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig } from '../verona.interfaces';
-import { UnitControllerData } from '../test-controller.classes';
+import {Testlet, UnitControllerData} from '../test-controller.classes';
 
 declare let srcDoc;
 
@@ -48,6 +48,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   currentUnit: UnitControllerData;
   currentPageIndex: number;
   unitNavigationTarget = UnitNavigationTarget;
+  code: string;
 
   constructor(
     public tcs: TestControllerService,
@@ -397,5 +398,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
       sessionId: this.itemplayerSessionId,
       reason: navigationDenial.reason
     }, '*');
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  codeChanged(newValue: string, testlet: Testlet): void {
+    if (testlet.codeToEnter.toUpperCase().trim() === newValue.toUpperCase().trim()) {
+      testlet.codeToEnter = '';
+      this.tcs.addClearedCodeTestlet(testlet.id);
+      console.log("unlocked", newValue);
+    }
   }
 }

@@ -32,7 +32,7 @@ export class UnitDef extends TestletContentElement {
   readonly naviButtonLabel: string;
   playerId: string;
   locked = false;
-  ignoreCompleted = false;
+  ignoreCompleted = false; // TODO what's this?
   readonly navigationLeaveRestrictions: NavigationLeaveRestrictions;
 
   constructor(

@@ -80,6 +80,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       if (this.isProductionMode && this.tcs.testMode.saveResponses) {
         this.mds.errorReportingSilent = true;
       }
+      this.mds.errorReportingSilent = true;
 
       this.subscriptions.errorReporting = this.mds.appError$
         .subscribe(() => this.tcs.errorOut());

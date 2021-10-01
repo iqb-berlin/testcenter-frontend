@@ -26,6 +26,7 @@ export class UnitActivateGuard implements CanActivate {
   ) {}
 
   private checkAndSolve_Code(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
+    return of(true);
     if (newUnit.codeRequiringTestlets) {
       if (newUnit.codeRequiringTestlets.length > 0) {
         const codes: CodeInputData[] = [];
