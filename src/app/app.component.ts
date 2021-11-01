@@ -17,8 +17,8 @@ import { AppConfig } from './config/app.config';
 export class AppComponent implements OnInit, OnDestroy {
   private appErrorSubscription: Subscription = null;
   private appTitleSubscription: Subscription = null;
-  showError = false;
 
+  showError = false;
   errorData: AppError;
 
   constructor(
@@ -36,7 +36,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.appErrorSubscription = this.mds.appError$.subscribe(err => {
-        if (err && !this.mds.errorReportingSilent) {
+        if (err) {
           this.errorData = err;
           this.showError = true;
         }

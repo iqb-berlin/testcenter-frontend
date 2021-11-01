@@ -76,12 +76,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.mds.progressVisualEnabled = false;
 
-      // TODO rethink if different behaviour in production and normal mode is dangerous maybe
-      if (this.isProductionMode && this.tcs.testMode.saveResponses) {
-        this.mds.errorReportingSilent = true;
-      }
-      this.mds.errorReportingSilent = true;
-
       this.subscriptions.errorReporting = this.mds.appError$
         .subscribe(() => this.tcs.errorOut());
 
@@ -415,7 +409,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     this.tls.reset();
 
     this.mds.progressVisualEnabled = true;
-    this.mds.errorReportingSilent = false;
   }
 
   @HostListener('window:unload', ['$event'])
