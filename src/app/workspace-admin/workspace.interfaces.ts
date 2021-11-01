@@ -21,6 +21,13 @@ export type GetFileResponseData = {
   [type in IQBFileType]: IQBFile[]
 };
 
+export enum ReportType {
+  SYSTEM_CHECK = 'sys-check',
+  RESPONSE = 'response',
+  LOG = 'log',
+  REVIEW = 'review'
+}
+
 export interface UnitResponse {
   groupname: string;
   loginname: string;

@@ -65,7 +65,7 @@
             <ng-container matColumnDef="modificationTime">
               <mat-header-cell *matHeaderCellDef mat-sort-header class="datecell"> Letzte Änderung </mat-header-cell>
               <mat-cell *matCellDef="let element" class="datecell">
-                {{(element.modificationTime * 1000) | date: 'dd.MM.yy hh:mm'}}
+                {{(element.modificationTime * 1000) | date: 'dd.MM.yy HH:mm'}}
               </mat-cell>
             </ng-container>
 

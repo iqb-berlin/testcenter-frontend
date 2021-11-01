@@ -1,15 +1,16 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { SelectionModel } from '@angular/cdk/collections';
 
-import { saveAs } from 'file-saver';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
-import { BackendService } from '../backend.service';
-import { SysCheckStatistics } from '../workspace.interfaces';
+
 import { MainDataService } from '../../maindata.service';
+import { BackendService } from '../backend.service';
+import { WorkspaceDataService } from '../workspacedata.service';
+import { ReportType, SysCheckStatistics } from '../workspace.interfaces';
 
 @Component({
   templateUrl: './syscheck.component.html',
@@ -17,16 +18,17 @@ import { MainDataService } from '../../maindata.service';
 })
 export class SyscheckComponent implements OnInit {
   displayedColumns: string[] = ['selectCheckbox', 'syscheckLabel', 'number', 'details-os', 'details-browser'];
-  public resultDataSource = new MatTableDataSource<SysCheckStatistics>([]);
+  resultDataSource = new MatTableDataSource<SysCheckStatistics>([]);
   // prepared for selection if needed sometime
-  public tableselectionCheckbox = new SelectionModel<SysCheckStatistics>(true, []);
+  tableselectionCheckbox = new SelectionModel<SysCheckStatistics>(true, []);
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
+    private mds: MainDataService,
     private bs: BackendService,
     private deleteConfirmDialog: MatDialog,
-    private mds: MainDataService,
+    public wds: WorkspaceDataService,
     public snackBar: MatSnackBar
   ) {
   }
@@ -40,7 +42,7 @@ export class SyscheckComponent implements OnInit {
 
   updateTable(): void {
     this.tableselectionCheckbox.clear();
-    this.bs.getSysCheckReportList().subscribe(
+    this.bs.getSysCheckReportList(this.wds.wsId).subscribe(
       (resultData: SysCheckStatistics[]) => {
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);
         this.resultDataSource.sort = this.sort;
@@ -63,34 +65,21 @@ export class SyscheckComponent implements OnInit {
 
   downloadReportsCSV(): void {
     if (this.tableselectionCheckbox.selected.length > 0) {
-      const selectedReports: string[] = [];
+      const dataIds: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
-        selectedReports.push(element.id);
+        dataIds.push(element.id);
       });
-      // TODO determine OS dependent line ending char and use this
-      this.mds.setSpinnerOn();
-      this.bs.getSysCheckReport(selectedReports, ';', '"', '\n').subscribe(
-      (response) => {
-        this.mds.setSpinnerOff();
-        if (response === false) {
-          this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
-        } else {
-          const reportData = response as Blob;
-          if (reportData.size > 0) {
-            saveAs(reportData, 'iqb-testcenter-syscheckreports.csv');
-          } else {
-            this.snackBar.open('Keine Daten verfügbar.', 'Fehler', {duration: 3000});
-          }
-          this.tableselectionCheckbox.clear();
-        }
-      });
+
+      this.wds.downloadReport(dataIds, ReportType.SYSTEM_CHECK, 'iqb-testcenter-syscheckreports.csv');
+
+      this.tableselectionCheckbox.clear();
     }
   }
 
-  deleteReports() {
+  deleteReports(): void {
     if (this.tableselectionCheckbox.selected.length > 0) {
       const selectedReports: string[] = [];
-      this.tableselectionCheckbox.selected.forEach((element) => {
+      this.tableselectionCheckbox.selected.forEach(element => {
         selectedReports.push(element.id);
       });
 
@@ -98,7 +87,7 @@ export class SyscheckComponent implements OnInit {
       if (selectedReports.length > 1) {
         prompt = `${prompt} ${selectedReports.length} System-Checks `;
       } else {
-        prompt = prompt + 'n System-Check "' + selectedReports[0] + '" ';
+        prompt = `${prompt}n System-Check "${selectedReports[0]}" `;
       }
 
       const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
@@ -111,10 +100,10 @@ export class SyscheckComponent implements OnInit {
         }
       });
 
-      dialogRef.afterClosed().subscribe((result) => {
+      dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           this.mds.setSpinnerOn();
-          this.bs.deleteSysCheckReports(selectedReports).subscribe((fileDeletionReport) => {
+          this.bs.deleteSysCheckReports(this.wds.wsId, selectedReports).subscribe(fileDeletionReport => {
             const message = [];
             if (fileDeletionReport.deleted.length > 0) {
               message.push(`${fileDeletionReport.deleted.length} Berichte erfolgreich gelöscht.`);

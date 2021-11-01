@@ -1,6 +1,6 @@
 {
   "name": "itc-ng",
-  "version": "8.1.2",
+  "version": "11.1.0",
   "iqb": {
     "verona-player-api-versions": {
       "min": 2,
@@ -18,7 +18,7 @@
     "build": "ng build",
     "test": "ng test  --watch=false",
     "lint": "ng lint",
-    "e2e": "ng e2e --webdriver-update=false",
+    "e2e": "ng e2e",
     "compodoc": "npx compodoc -p tsconfig.doc.json -s",
     "update-compodoc": "npx compodoc -p tsconfig.doc.json -d ./docs/compodoc"
   },
