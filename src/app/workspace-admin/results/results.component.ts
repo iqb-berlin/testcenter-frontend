@@ -44,18 +44,13 @@ export class ResultsComponent implements OnInit {
 
   updateTable(): void {
     this.tableselectionCheckbox.clear();
-    if (this.wds.wsRole === 'MO') {
-      this.resultDataSource = new MatTableDataSource<ResultData>([]);
-      this.mds.setSpinnerOff();
-    } else {
-      this.bs.getResultData(this.wds.wsId).subscribe(
-        (resultData: ResultData[]) => {
-          this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
-          this.resultDataSource.sort = this.sort;
-          this.mds.setSpinnerOff();
-        }
-      );
-    }
+    this.bs.getResultData(this.wds.wsId).subscribe(
+      (resultData: ResultData[]) => {
+        this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
+        this.resultDataSource.sort = this.sort;
+        this.mds.setSpinnerOff();
+      }
+    );
   }
 
   isAllSelected(): boolean {
