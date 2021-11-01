@@ -9,7 +9,7 @@ import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
 
 import { MainDataService } from '../../maindata.service';
 import { BackendService } from '../backend.service';
-import { WorkspaceDataService } from "../workspacedata.service";
+import { WorkspaceDataService } from '../workspacedata.service';
 import { ReportType, SysCheckStatistics } from '../workspace.interfaces';
 
 @Component({
@@ -18,9 +18,9 @@ import { ReportType, SysCheckStatistics } from '../workspace.interfaces';
 })
 export class SyscheckComponent implements OnInit {
   displayedColumns: string[] = ['selectCheckbox', 'syscheckLabel', 'number', 'details-os', 'details-browser'];
-  public resultDataSource = new MatTableDataSource<SysCheckStatistics>([]);
+  resultDataSource = new MatTableDataSource<SysCheckStatistics>([]);
   // prepared for selection if needed sometime
-  public tableselectionCheckbox = new SelectionModel<SysCheckStatistics>(true, []);
+  tableselectionCheckbox = new SelectionModel<SysCheckStatistics>(true, []);
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
@@ -76,10 +76,10 @@ export class SyscheckComponent implements OnInit {
     }
   }
 
-  deleteReports() {
+  deleteReports(): void {
     if (this.tableselectionCheckbox.selected.length > 0) {
       const selectedReports: string[] = [];
-      this.tableselectionCheckbox.selected.forEach((element) => {
+      this.tableselectionCheckbox.selected.forEach(element => {
         selectedReports.push(element.id);
       });
 
@@ -87,7 +87,7 @@ export class SyscheckComponent implements OnInit {
       if (selectedReports.length > 1) {
         prompt = `${prompt} ${selectedReports.length} System-Checks `;
       } else {
-        prompt = prompt + 'n System-Check "' + selectedReports[0] + '" ';
+        prompt = `${prompt}n System-Check "${selectedReports[0]}" `;
       }
 
       const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
@@ -100,10 +100,10 @@ export class SyscheckComponent implements OnInit {
         }
       });
 
-      dialogRef.afterClosed().subscribe((result) => {
+      dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           this.mds.setSpinnerOn();
-          this.bs.deleteSysCheckReports(this.wds.wsId, selectedReports).subscribe((fileDeletionReport) => {
+          this.bs.deleteSysCheckReports(this.wds.wsId, selectedReports).subscribe(fileDeletionReport => {
             const message = [];
             if (fileDeletionReport.deleted.length > 0) {
               message.push(`${fileDeletionReport.deleted.length} Berichte erfolgreich gelöscht.`);

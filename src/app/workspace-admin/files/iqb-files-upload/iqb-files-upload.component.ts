@@ -4,7 +4,7 @@ import {
 import { Subscription } from 'rxjs';
 import { BackendService } from '../../backend.service';
 import { UploadReport, UploadStatus } from '../files.interfaces';
-import {WorkspaceDataService} from "../../workspacedata.service";
+import { WorkspaceDataService } from '../../workspacedata.service';
 
 @Component({
   selector: 'iqb-files-upload',

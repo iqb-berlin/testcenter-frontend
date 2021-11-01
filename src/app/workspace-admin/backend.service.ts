@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 import { Injectable, Inject, SkipSelf } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
+import {
+  HttpClient, HttpErrorResponse, HttpEvent, HttpEventType
+} from '@angular/common/http';
 
 import { Observable, of } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
@@ -14,7 +16,9 @@ import {
   ResultData,
   ReportType
 } from './workspace.interfaces';
-import { FileDeletionReport, UploadReport, UploadResponse, UploadStatus } from './files/files.interfaces';
+import {
+  FileDeletionReport, UploadReport, UploadResponse, UploadStatus
+} from './files/files.interfaces';
 import { ApiError, WorkspaceData } from '../app.interfaces';
 
 @Injectable({
@@ -50,8 +54,9 @@ export class BackendService {
   }
 
   deleteFiles(workspaceId: string, filesToDelete: Array<string>): Observable<FileDeletionReport> {
+    const endpointUrl = `${this.serverUrl}workspace/${workspaceId}/files`;
     return this.http
-      .request<FileDeletionReport>('delete', `${this.serverUrl}workspace/${workspaceId}/files`, { body: { f: filesToDelete } })
+      .request<FileDeletionReport>('delete', endpointUrl, { body: { f: filesToDelete } })
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`deleteFiles Api-Error: ${err.code} ${err.info} `);
@@ -184,7 +189,11 @@ export class BackendService {
 
   deleteSysCheckReports(workspaceId: string, checkIds: string[]): Observable <FileDeletionReport> {
     return this.http
-      .request<FileDeletionReport>('delete', `${this.serverUrl}workspace/${workspaceId}/sys-check/reports`, { body: { checkIds } })
+      .request<FileDeletionReport>(
+      'delete',
+      `${this.serverUrl}workspace/${workspaceId}/sys-check/reports`,
+      { body: { checkIds } }
+    )
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`deleteSysCheckReports Api-Error: ${err.code} ${err.info} `);
@@ -202,7 +211,7 @@ export class BackendService {
       .get(`${this.serverUrl}workspace/${workspaceId}/report/${reportType}`,
         {
           params: {
-            dataIds: dataIds.join(','),
+            dataIds: dataIds.join(',')
           },
           headers: {
             Accept: 'text/csv'

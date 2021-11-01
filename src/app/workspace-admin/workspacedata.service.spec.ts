@@ -1,12 +1,12 @@
 import { TestBed, inject } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http';
-
+import { Observable, of } from 'rxjs';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { WorkspaceDataService } from './workspacedata.service';
-import {Observable, of} from "rxjs";
-import {MatDialog, MatDialogModule} from "@angular/material/dialog";
-import {MatSnackBarModule} from "@angular/material/snack-bar";
 
 class MockMatDialog {
+  // eslint-disable-next-line class-methods-use-this
   open(): { afterClosed: () => Observable<{ action: boolean }> } {
     return {
       afterClosed: () => of({ action: true })
@@ -24,7 +24,7 @@ describe('WorkspaceDataService', () => {
       ],
       providers: [
         WorkspaceDataService,
-        { provide: MatDialog, useValue: new MockMatDialog() },
+        { provide: MatDialog, useValue: new MockMatDialog() }
       ]
     });
   });

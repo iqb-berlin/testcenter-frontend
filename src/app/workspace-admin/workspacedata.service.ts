@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { MatDialog } from "@angular/material/dialog";
-import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { saveAs } from "file-saver";
+import { saveAs } from 'file-saver';
 
-import { MainDataService } from "../maindata.service";
+import { MainDataService } from '../maindata.service';
 import { BackendService } from './backend.service';
-import { ReportType } from "./workspace.interfaces";
+import { ReportType } from './workspace.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -14,9 +14,9 @@ import { ReportType } from "./workspace.interfaces";
 
 @Injectable()
 export class WorkspaceDataService {
-  public wsId: string;
-  public wsRole = 'RW';
-  public wsName = '';
+  wsId: string;
+  wsRole = 'RW';
+  wsName = '';
 
   constructor(
     private bs: BackendService,
@@ -26,28 +26,26 @@ export class WorkspaceDataService {
   ) { }
 
   downloadReport(dataIds: string[], reportType: ReportType, filename: string): void {
-      this.mds.setSpinnerOn();
+    this.mds.setSpinnerOn();
 
-      this.bs.getReport(this.wsId, reportType, dataIds).subscribe((response) => {
-        const errorMessage: string = 'Keine Daten verfügbar.';
-        const errorType: string = 'Fehler';
-        const errorDisplayDuration: number = 3000;
+    this.bs.getReport(this.wsId, reportType, dataIds).subscribe(response => {
+      const errorMessage: string = 'Keine Daten verfügbar.';
+      const errorType: string = 'Fehler';
+      const errorDisplayDuration: number = 3000;
 
-        this.mds.setSpinnerOff();
+      this.mds.setSpinnerOff();
 
-        if (response === false) {
-          this.snackBar.open(errorMessage, errorType, {duration: errorDisplayDuration});
+      if (response === false) {
+        this.snackBar.open(errorMessage, errorType, { duration: errorDisplayDuration });
+      } else {
+        const reportData = response as Blob;
 
+        if (reportData.size > 0) {
+          saveAs(reportData, filename);
         } else {
-          const reportData = response as Blob;
-
-          if (reportData.size > 0) {
-            saveAs(reportData, filename);
-
-          } else {
-            this.snackBar.open(errorMessage, errorType, {duration: errorDisplayDuration});
-          }
+          this.snackBar.open(errorMessage, errorType, { duration: errorDisplayDuration });
         }
-      });
+      }
+    });
   }
 }

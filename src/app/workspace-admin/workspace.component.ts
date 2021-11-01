@@ -21,7 +21,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     public wds: WorkspaceDataService
   ) { }
 
-  public navLinks = [
+  navLinks = [
     { path: 'files', label: 'Dateien' },
     { path: 'syscheck', label: 'System-Check Berichte' },
     { path: 'results', label: 'Ergebnisse/Antworten' }
