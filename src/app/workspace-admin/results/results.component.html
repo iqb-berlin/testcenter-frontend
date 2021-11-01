@@ -61,7 +61,9 @@
 
     <ng-container matColumnDef="lastchange">
       <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Letzte Änderung</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.lastchange | date:'dd.MM.yyyy HH:mm'}} </mat-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">
+        <span *ngIf="element.lastchange !== '0'">{{element.lastchange | date:'dd.MM.yyyy HH:mm'}}</span>
+      </mat-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
