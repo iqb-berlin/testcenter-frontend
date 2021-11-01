@@ -105,9 +105,9 @@ export class ResultsComponent implements OnInit {
 
       let prompt = 'Es werden alle Antwort- und Logdaten in der Datenbank für diese ';
       if (selectedGroups.length > 1) {
-        prompt = prompt + selectedGroups.length + ' Gruppen ';
+        prompt += `${selectedGroups.length} Gruppen `;
       } else {
-        prompt = prompt + ' Gruppe "' + selectedGroups[0] + '" ';
+        prompt += `Gruppe "${selectedGroups[0]}" `;
       }
 
       const dialogRef = this.deleteConfirmDialog.open(ConfirmDialogComponent, {
@@ -120,7 +120,7 @@ export class ResultsComponent implements OnInit {
         }
       });
 
-      dialogRef.afterClosed().subscribe((result) => {
+      dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           this.mds.setSpinnerOn();
           this.bs.deleteData(this.wds.wsId, selectedGroups).subscribe((ok: boolean) => {
