@@ -52,3 +52,13 @@
   color: white;
   font-weight: normal;
 }
+
+.sidebar {
+  top: var(--tc-header-height) !important;
+  min-width: 200px;
+  max-width: 25%;
+}
+
+.mat-drawer-container {
+  background: transparent !important;
+}

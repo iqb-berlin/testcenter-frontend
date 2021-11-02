@@ -2,7 +2,7 @@ import { IqbComponentsModule } from 'iqb-components';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -19,6 +19,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
 import { unitRouteGuards } from './unithost/unit-route-guards';
 import { TestControllerComponent } from './test-controller.component';
@@ -32,30 +33,31 @@ import { testControllerRouteGuards } from './test-controller-route-guards';
 export { TestControllerService } from './test-controller.service';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        TestControllerRoutingModule,
-        MatProgressSpinnerModule,
-        FlexLayoutModule,
-        MatTooltipModule,
-        MatSnackBarModule,
-        MatCheckboxModule,
-        MatRadioModule,
-        ReactiveFormsModule,
-        MatCardModule,
-        MatDialogModule,
-        MatProgressBarModule,
-        MatInputModule,
-        MatFormFieldModule,
-        MatMenuModule,
-        MatButtonModule,
-        MatToolbarModule,
-        MatIconModule,
-        IqbComponentsModule.forChild(),
-        DragDropModule,
-        MatButtonToggleModule,
-        FormsModule
-    ],
+  imports: [
+    CommonModule,
+    TestControllerRoutingModule,
+    MatProgressSpinnerModule,
+    FlexLayoutModule,
+    MatTooltipModule,
+    MatSnackBarModule,
+    MatCheckboxModule,
+    MatRadioModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatDialogModule,
+    MatProgressBarModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatToolbarModule,
+    MatIconModule,
+    IqbComponentsModule.forChild(),
+    DragDropModule,
+    MatButtonToggleModule,
+    FormsModule,
+    MatSidenavModule
+  ],
   declarations: [
     UnithostComponent,
     TestControllerComponent,

@@ -64,9 +64,9 @@
       </button>
       <button
         mat-button
-        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.MENU)"
-          *ngIf="(tcs.bookletConfig.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
-          matTooltip="Zur Aufgabenliste"
+        (click)="toggleSidebar()"
+        *ngIf="(tcs.bookletConfig.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
+        matTooltip="Zur Aufgabenliste"
         fxFlex="none"
       >
         <mat-icon>menu</mat-icon>
@@ -74,6 +74,12 @@
     </div>
 </div>
 
-<div class="tc-body" fxLayout="row" fxLayoutAlign="start stretch">
+<mat-sidenav-container class="tc-body" hasBackdrop="true">
+  <mat-sidenav [(opened)]="sidebarOpen" mode="over" class="sidebar" fixedInViewport="true" fixedTopGap="55" position="end">
+    <unit-menu></unit-menu>
+  </mat-sidenav>
+  <mat-sidenav-content>
     <router-outlet></router-outlet>
-</div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+

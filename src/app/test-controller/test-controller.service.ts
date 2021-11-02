@@ -341,17 +341,12 @@ export class TestControllerService {
 
   setUnitNavigationRequest(navString: string, force = false): void {
     if (!this.rootTestlet) {
-      console.log('[GOTO STATUS] setUnitNavigationRequest (!this.rootTestlet)', { navString, force });
       this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true });
     } else {
       switch (navString) {
         case UnitNavigationTarget.ERROR:
         case UnitNavigationTarget.PAUSE:
-          console.log('[GOTO STATUS] setUnitNavigationRequest (UnitNavigationTarget.PAUSE)', { navString, force });
           this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
-          break;
-        case UnitNavigationTarget.MENU:
-          this.router.navigate([`/t/${this.testId}/menu`], { state: { force } });
           break;
         case UnitNavigationTarget.NEXT:
           this.router.navigate([`/t/${this.testId}/u/${this.currentUnitSequenceId + 1}`], { state: { force } });

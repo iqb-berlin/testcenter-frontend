@@ -18,11 +18,7 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
     if (this.tcs.testMode.saveResponses) {
       const testStatus: TestControllerState = this.tcs.testStatus$.getValue();
       if ((testStatus === TestControllerState.RUNNING) || (testStatus === TestControllerState.PAUSED)) {
-        if (this.tcs.bookletConfig.unit_menu !== 'OFF' || this.tcs.testMode.showUnitMenu) {
-          this.tcs.setUnitNavigationRequest(UnitNavigationTarget.MENU);
-        } else {
-          this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
-        }
+        this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
         return false;
       }
     }

@@ -53,6 +53,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   unitNavigationTarget = UnitNavigationTarget;
   unitNavigationList: UnitNaviButtonData[] = [];
   debugPane = false;
+  sidebarOpen = false;
 
   @ViewChild('navButtons') navButtons: ElementRef;
 
@@ -375,6 +376,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   private refreshUnitMenu(currentUnitSequenceId: number): void {
+    this.sidebarOpen = false;
     this.unitNavigationList = [];
     if (!this.tcs.rootTestlet) {
       return;
@@ -397,6 +399,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           .scrollIntoView({ inline: 'center' });
       }, 50);
     }
+  }
+
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
   }
 
   ngOnDestroy(): void {
