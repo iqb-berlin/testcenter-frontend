@@ -1,6 +1,6 @@
 <div
   *ngIf="tcs.bookletConfig.unit_title === 'ON'"
-  [style]="{'visibility': currentUnit?.unitDef?.locked || (unitsLoading$ | async).length ? 'hidden' : 'visible'}"
+  [style]="{'visibility': currentUnit?.unitDef?.locked || (unitsLoading$ | async).length || codeRequiringTestlets.length ? 'hidden' : 'visible'}"
   id="unit-title"
   fxLayout="column"
   fxLayoutAlign="center center"
@@ -9,15 +9,13 @@
 </div>
 
 <div
-  id="iFrameHost"
-  [style]="{'visibility': currentUnit?.unitDef?.locked || (unitsLoading$ | async).length ? 'hidden' : 'visible'}"
+  id="iframe-host"
+  [style]="{'visibility': currentUnit?.unitDef?.locked || (unitsLoading$ | async).length || codeRequiringTestlets.length ? 'hidden' : 'visible'}"
 >
 </div>
 
-<pre>{{currentUnit?.codeRequiringTestlets | json}}</pre>
-
 <ng-container *ngIf="{ list: (unitsLoading$ | async) } as loadingUnits">
-  <div id="waiting-room" *ngIf="loadingUnits.list.length || currentUnit?.unitDef?.locked || currentUnit?.codeRequiringTestlets.length">
+  <div id="waiting-room" *ngIf="loadingUnits.list.length || currentUnit?.unitDef?.locked || codeRequiringTestlets.length">
     <mat-card>
       <mat-card-title>{{unitScreenHeader}}</mat-card-title>
       <mat-card-subtitle *ngIf="loadingUnits.list.length > 1">
@@ -33,19 +31,21 @@
         {{'Aufgabenblock erfordert ein Freigabewort' | customtext:'booklet_codeToEnterTitle' | async}}
       </mat-card-subtitle>
 
-      <mat-card-content *ngIf="currentUnit.codeRequiringTestlets.length">
-        <ng-container *ngFor="let testlet of currentUnit.codeRequiringTestlets">
-          <mat-form-field style="width: 100%">
-            <mat-label>
-              {{testlet.title}}: {{testlet.codePrompt | customtext:'booklet_codeToEnterPrompt' | async}}
-            </mat-label>
+      <mat-card-content *ngIf="codeRequiringTestlets.length">
+        <ng-container *ngFor="let testlet of codeRequiringTestlets">
+          <mat-form-field style="display: block">
+            <mat-label>{{testlet.title || ('Block ' + (testlet.sequenceId + 1))}}</mat-label>
             <input
               matInput
               type="text"
-              [(ngModel)]="code"
-              (ngModelChange)="codeChanged($event, testlet)"
+              [(ngModel)]="clearCodes[testlet.id]"
               style="text-transform:uppercase"
+              (keydown)="onKeydownInClearCodeInput($event)"
             >
+            <mat-hint align="start" *ngIf="testlet.codePrompt">{{testlet.codePrompt}}</mat-hint>
+            <mat-hint *ngIf="!testlet.codePrompt">
+              {{'Bitte Freigabewort eingeben!' | customtext:'booklet_codeToEnterPrompt' | async}}
+            </mat-hint>
           </mat-form-field>
         </ng-container>
       </mat-card-content>
@@ -76,18 +76,27 @@
 
       <mat-card-actions>
         <button
-            *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"
-            mat-raised-button
-            [disabled]="tcs.currentUnitSequenceId === 0"
-            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none"
+          *ngIf="codeRequiringTestlets.length"
+          mat-raised-button
+          color="primary"
+          [disabled]="(clearCodes | keyvalue)?.length < codeRequiringTestlets.length"
+          (click)="verifyCodes()"
+        >
+          OK
+        </button>
+        <button
+          *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"
+          mat-raised-button
+          [disabled]="tcs.currentUnitSequenceId === 0"
+          (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none"
         >
           <i class="material-icons">chevron_left</i>
         </button>
         <button
-            *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"
-            mat-raised-button
-            [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
-            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none"
+          *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"
+          mat-raised-button
+          [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
+          (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none"
         >
           <i class="material-icons">chevron_right</i>
         </button>
@@ -96,9 +105,9 @@
   </div>
 </ng-container>
 
-<div id="pageNav" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px" *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM'">
+<div id="page-navigation" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px" *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM'">
   <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="knownPages && knownPages.length">
-    <div id="pageNavPrompt">
+    <div id="page-navigation-prompt">
       {{ ''  | customtext:'login_pagesNaviPrompt' | async}}
     </div>
 

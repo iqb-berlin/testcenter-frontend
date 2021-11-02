@@ -5,6 +5,7 @@
   <div><b>FOCUS:</b> {{tcs.windowFocusState$ | async}}</div>
   <div><b>BS:</b> {{cmd.connectionStatus$ | async}}</div>
   <div><b>CONFIG:</b> <pre>{{tcs.bookletConfig | json}}</pre></div>
+  <div><b>TESTMODE:</b> <pre>{{tcs.testMode | json}}</pre></div>
 </div>
 
 <div id="header" fxLayout="row" fxLayoutAlign="end center">

@@ -14,20 +14,6 @@ export enum WindowFocusState {
   UNKNOWN = 'UNKNOWN'
 }
 
-// testcontroller restrictions +++++++++++++++++++++++++++++++++++
-export interface StartLockData {
-  title: string;
-  prompt: string;
-  codes: CodeInputData[];
-}
-
-export interface CodeInputData {
-  testletId: string;
-  prompt: string;
-  code: string;
-  value: string;
-}
-
 // for backend ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 export interface KeyValuePair {
   [K: string]: string;

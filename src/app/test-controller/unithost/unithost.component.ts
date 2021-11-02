@@ -4,7 +4,7 @@ import {
   Component, HostListener, OnInit, OnDestroy
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   TestStateKey,
   WindowFocusState,
@@ -17,7 +17,7 @@ import { BackendService } from '../backend.service';
 import { TestControllerService } from '../test-controller.service';
 import { MainDataService } from '../../maindata.service';
 import { VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig } from '../verona.interfaces';
-import {Testlet, UnitControllerData} from '../test-controller.classes';
+import { Testlet, UnitControllerData } from '../test-controller.classes';
 
 declare let srcDoc;
 
@@ -48,17 +48,20 @@ export class UnithostComponent implements OnInit, OnDestroy {
   currentUnit: UnitControllerData;
   currentPageIndex: number;
   unitNavigationTarget = UnitNavigationTarget;
-  code: string;
+
+  clearCodes = {};
+  codeRequiringTestlets: Testlet[] = [];
 
   constructor(
     public tcs: TestControllerService,
     private mds: MainDataService,
     private bs: BackendService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
-    this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
+    this.iFrameHostElement = <HTMLElement>document.querySelector('#iframe-host');
     this.iFrameItemplayer = null;
     this.leaveWarning = false;
     setTimeout(() => {
@@ -232,7 +235,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
             category: 'PROBLEM'
           });
         },
-        complete: () => this.runUnit()
+        complete: () => this.prepareUnit()
       });
   }
 
@@ -252,7 +255,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
   }
 
-  private runUnit(): void {
+  private prepareUnit(): void {
     this.unitsLoading$.next([]);
     this.tcs.currentUnitDbKey = this.currentUnit.unitDef.alias;
     this.tcs.currentUnitTitle = this.unitScreenHeader;
@@ -264,6 +267,22 @@ export class UnithostComponent implements OnInit, OnDestroy {
       this.bs.updateUnitState(this.tcs.testId, this.currentUnit.unitDef.alias, [<StateReportEntry>{
         key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.LOADING
       }]);
+    }
+
+    if (this.tcs.testMode.presetCode) {
+      this.currentUnit.codeRequiringTestlets
+        .forEach(testlet => { this.clearCodes[testlet.id] = testlet.codeToEnter; });
+    }
+
+    this.runUnit();
+  }
+
+  private runUnit(): void {
+    this.codeRequiringTestlets = this.currentUnit.codeRequiringTestlets
+      .filter(testlet => !this.tcs.clearCodeTestlets.includes(testlet.id));
+
+    if (this.codeRequiringTestlets.length) {
+      return;
     }
 
     if (this.currentUnit.unitDef.locked) {
@@ -400,12 +419,32 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }, '*');
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  codeChanged(newValue: string, testlet: Testlet): void {
-    if (testlet.codeToEnter.toUpperCase().trim() === newValue.toUpperCase().trim()) {
-      testlet.codeToEnter = '';
-      this.tcs.addClearedCodeTestlet(testlet.id);
-      console.log("unlocked", newValue);
+  verifyCodes(): void {
+    this.currentUnit.codeRequiringTestlets
+      .forEach(
+        testlet => {
+          if (!this.clearCodes[testlet.id]) {
+            return;
+          }
+          if (testlet.codeToEnter.toUpperCase().trim() === this.clearCodes[testlet.id].toUpperCase().trim()) {
+            testlet.codeToEnter = '';
+            this.tcs.addClearedCodeTestlet(testlet.id);
+            this.runUnit();
+          } else {
+            this.snackBar.open(
+              `Freigabewort '${this.clearCodes[testlet.id]}' für '${testlet.title}' stimmt nicht.`,
+              'OK',
+              { duration: 3000 }
+            );
+            delete this.clearCodes[testlet.id];
+          }
+        }
+      );
+  }
+
+  onKeydownInClearCodeInput($event: KeyboardEvent): void {
+    if ($event.key === 'Enter') {
+      this.verifyCodes();
     }
   }
 }

@@ -5,8 +5,6 @@ import { UnithostComponent } from './unithost/unithost.component';
 import { TestControllerComponent } from './test-controller.component';
 import { TestStatusComponent } from './test-status/test-status.component';
 import { TestControllerDeactivateGuard, TestControllerErrorPausedActivateGuard } from './test-controller-route-guards';
-import { UnlockInputComponent } from './unlock-input/unlock-input.component';
-import { UnitMenuComponent } from './unit-menu/unit-menu.component';
 
 const routes: Routes = [
   {
@@ -20,17 +18,8 @@ const routes: Routes = [
         pathMatch: 'full'
       },
       {
-        path: 'unlock',
-        component: UnlockInputComponent
-      },
-      {
         path: 'status',
         component: TestStatusComponent
-      },
-      {
-        path: 'menu',
-        component: UnitMenuComponent,
-        canActivate: [TestControllerErrorPausedActivateGuard]
       },
       {
         path: 'u/:u',

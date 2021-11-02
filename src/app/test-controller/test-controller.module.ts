@@ -26,7 +26,6 @@ import { TestControllerComponent } from './test-controller.component';
 import { UnithostComponent } from './unithost/unithost.component';
 import { TestControllerRoutingModule } from './test-controller-routing.module';
 import { TestStatusComponent } from './test-status/test-status.component';
-import { UnlockInputComponent } from './unlock-input/unlock-input.component';
 import { UnitMenuComponent } from './unit-menu/unit-menu.component';
 import { testControllerRouteGuards } from './test-controller-route-guards';
 
@@ -63,7 +62,6 @@ export { TestControllerService } from './test-controller.service';
     TestControllerComponent,
     ReviewDialogComponent,
     TestStatusComponent,
-    UnlockInputComponent,
     UnitMenuComponent
   ],
   entryComponents: [

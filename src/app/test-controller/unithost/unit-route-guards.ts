@@ -10,7 +10,7 @@ import { Observable, of } from 'rxjs';
 import { MainDataService } from 'src/app/maindata.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CodeInputData, NavigationLeaveRestrictionValue, TestControllerState } from '../test-controller.interfaces';
+import { NavigationLeaveRestrictionValue, TestControllerState } from '../test-controller.interfaces';
 import { UnitControllerData } from '../test-controller.classes';
 import { UnithostComponent } from './unithost.component';
 import { TestControllerService } from '../test-controller.service';
@@ -25,46 +25,8 @@ export class UnitActivateGuard implements CanActivate {
     private router: Router
   ) {}
 
-  private checkAndSolve_Code(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
-    return of(true);
-    if (newUnit.codeRequiringTestlets) {
-      if (newUnit.codeRequiringTestlets.length > 0) {
-        const codes: CodeInputData[] = [];
-        newUnit.codeRequiringTestlets.forEach(t => {
-          if (force) {
-            t.codeToEnter = '';
-            this.tcs.addClearedCodeTestlet(t.id);
-          } else {
-            codes.push(<CodeInputData>{
-              testletId: t.id,
-              prompt: t.codePrompt,
-              code: t.codeToEnter.toUpperCase().trim(),
-              value: this.tcs.testMode.presetCode ? t.codeToEnter : ''
-            });
-          }
-        });
-        if (codes.length > 0) {
-          this.router.navigate([`/t/${this.tcs.testId}/unlock`], {
-            skipLocationChange: true,
-            state: { returnTo: `/t/${this.tcs.testId}/u/${this.tcs.currentUnitSequenceId}`, newUnit, codes }
-          });
-          return of(false);
-        }
-        return of(true);
-      }
-      return of(true);
-    }
-    return of(true);
-  }
-
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean>|boolean {
     const targetUnitSequenceId: number = Number(route.params.u);
-    let forceNavigation = false;
-    const routerStateObject = this.router.getCurrentNavigation();
-    if (routerStateObject.extras.state && routerStateObject.extras.state.force) {
-      forceNavigation = routerStateObject.extras.state.force;
-    }
-
     if (this.tcs.rootTestlet === null) {
       console.warn('unit canActivate: true (rootTestlet null)');
       const oldTestId = LocalStorage.getTestId();
@@ -80,7 +42,7 @@ export class UnitActivateGuard implements CanActivate {
       console.warn(`target unit null (targetUnitSequenceId: ${targetUnitSequenceId.toString()})`);
       return false;
     }
-    return this.checkAndSolve_Code(newUnit, forceNavigation);
+    return true;
   }
 }
 
