@@ -32,7 +32,6 @@ export class UnitDef extends TestletContentElement {
   readonly naviButtonLabel: string;
   playerId: string;
   locked = false;
-  ignoreCompleted = false; // TODO what's this?
   readonly navigationLeaveRestrictions: NavigationLeaveRestrictions;
 
   constructor(
@@ -169,7 +168,7 @@ export class Testlet extends TestletContentElement {
     return myreturn;
   }
 
-  clearTestletCodes(testletIdList: string[]): void {
+  clearTestletCodes(testletIdList: string[]): void { // TODO maybe unnecessary?
     testletIdList.forEach(testletId => {
       const myTestlet = this.getTestlet(testletId);
       if (myTestlet) {
@@ -256,6 +255,16 @@ export class Testlet extends TestletContentElement {
         localUnit.locked = true;
       }
     }
+  }
+
+  getNextUnlockedUnitSequenceId(currentUnitSequenceId: number): number {
+    let nextUnitSequenceId = currentUnitSequenceId + 1;
+    let myUnit: UnitControllerData = this.getUnitAt(nextUnitSequenceId);
+    while (myUnit !== null && myUnit.unitDef.locked) {
+      nextUnitSequenceId += 1;
+      myUnit = this.getUnitAt(nextUnitSequenceId);
+    }
+    return myUnit ? nextUnitSequenceId : 0; // TODO why 0 when there is no next. should be the last
   }
 }
 

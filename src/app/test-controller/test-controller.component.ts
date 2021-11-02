@@ -309,7 +309,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.timerRunning = false;
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions) {
-          this.tcs.setUnitNavigationRequest(UnitNavigationTarget.NEXT);
+          const nextUnlockedUSId = this.tcs.rootTestlet.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
+          this.tcs.setUnitNavigationRequest(nextUnlockedUSId.toString(10));
         }
         break;
       case MaxTimerDataType.CANCELLED:

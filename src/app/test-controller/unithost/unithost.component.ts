@@ -312,16 +312,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private startTimerIfNecessary(): void {
     if (this.currentUnit.maxTimerRequiringTestlet === null) {
-      console.log('[MT] no timer');
       return;
     }
     if (this.tcs.currentMaxTimerTestletId &&
       (this.currentUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
     ) {
-      console.log('[MT] same block');
       return;
     }
-    console.log('[MT] start');
     this.tcs.startMaxTimer(
       this.currentUnit.maxTimerRequiringTestlet.id,
       this.currentUnit.maxTimerRequiringTestlet.maxTimeLeft
