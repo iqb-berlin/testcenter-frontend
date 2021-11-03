@@ -402,12 +402,12 @@ export class TestLoaderService {
               }
             }
           }
-          if (restrictionElements[childIndex].nodeName === 'DenyNavigation') {
-            const presentationComplete = restrictionElements[childIndex].getAttribute('force_presentation_complete');
+          if (restrictionElements[childIndex].nodeName === 'DenyNavigationOnIncomplete') {
+            const presentationComplete = restrictionElements[childIndex].getAttribute('presentation');
             if (isNavigationLeaveRestrictionValue(presentationComplete)) {
               forcePresentationComplete = presentationComplete;
             }
-            const responseComplete = restrictionElements[childIndex].getAttribute('force_response_complete');
+            const responseComplete = restrictionElements[childIndex].getAttribute('response');
             if (isNavigationLeaveRestrictionValue(responseComplete)) {
               forceResponseComplete = responseComplete;
             }
