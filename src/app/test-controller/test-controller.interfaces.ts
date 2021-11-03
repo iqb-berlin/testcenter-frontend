@@ -194,9 +194,9 @@ export interface Command {
   timestamp: number;
 }
 
-export type NavigationLeaveRestrictionValue = 'ON' | 'OFF' | 'FORWARD_ONLY';
+export type NavigationLeaveRestrictionValue = 'ON' | 'OFF' | 'ALWAYS';
 export function isNavigationLeaveRestrictionValue(s: string): s is NavigationLeaveRestrictionValue {
-  return ['ON', 'OFF', 'FORWARD_ONLY'].indexOf(s) > -1;
+  return ['ON', 'OFF', 'ALWAYS'].indexOf(s) > -1;
 }
 
 export interface LoadingProgress {

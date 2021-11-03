@@ -30,6 +30,7 @@ export class UnitActivateGuard implements CanActivate {
     if (this.tcs.rootTestlet === null) {
       console.warn('unit canActivate: true (rootTestlet null)');
       const oldTestId = LocalStorage.getTestId();
+      console.log('try old test id', oldTestId);
       if (oldTestId) {
         this.router.navigate([`/t/${oldTestId}`]);
       } else {
@@ -109,19 +110,19 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   private checkCompleteness(direction: 'Next'|'Prev'): VeronaNavigationDeniedReason[] {
     const unit = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId);
     const reasons: VeronaNavigationDeniedReason[] = [];
-    const valuesAllowed = {
-      Next: <NavigationLeaveRestrictionValue[]>['ON', 'FORWARD_ONLY'],
-      Prev: <NavigationLeaveRestrictionValue[]>['ON']
+    const checkOnValue = {
+      Next: <NavigationLeaveRestrictionValue[]>['ON', 'ALWAYS'],
+      Prev: <NavigationLeaveRestrictionValue[]>['ALWAYS']
     };
     if (
-      (valuesAllowed[direction].indexOf(unit.unitDef.navigationLeaveRestrictions.presentationComplete) > -1) &&
+      (checkOnValue[direction].indexOf(unit.unitDef.navigationLeaveRestrictions.presentationComplete) > -1) &&
       this.tcs.hasUnitPresentationProgress(this.tcs.currentUnitSequenceId) &&
       (this.tcs.getUnitPresentationProgress(this.tcs.currentUnitSequenceId) !== 'complete')
     ) {
       reasons.push('presentationIncomplete');
     }
     if (
-      (valuesAllowed[direction].indexOf(unit.unitDef.navigationLeaveRestrictions.responseComplete) > -1) &&
+      (checkOnValue[direction].indexOf(unit.unitDef.navigationLeaveRestrictions.responseComplete) > -1) &&
       this.tcs.hasUnitResponseProgress(this.tcs.currentUnitSequenceId) &&
       (['complete', 'complete-and-valid']
         .indexOf(this.tcs.getUnitResponseProgress(this.tcs.currentUnitSequenceId)) === -1
@@ -129,14 +130,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     ) {
       reasons.push('responsesIncomplete');
     }
-    console.log({
-      direction,
-      reasons,
-      valuesAllowed: valuesAllowed[direction],
-      navigationLeaveRestrictions: unit.unitDef.navigationLeaveRestrictions,
-      getUnitPresentationProgress: this.tcs.getUnitPresentationProgress(this.tcs.currentUnitSequenceId),
-      getUnitResponseProgress: this.tcs.getUnitResponseProgress(this.tcs.currentUnitSequenceId)
-    });
     return reasons;
   }
 
