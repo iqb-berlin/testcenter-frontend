@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { TestControllerService } from '../test-controller.service';
 import { MainDataService } from '../../maindata.service';
 import { AppError } from '../../app.interfaces';
@@ -27,6 +28,7 @@ export class TestStatusComponent implements OnInit, OnDestroy {
         this.loginName = authData.displayName;
       }
       this.appErrorSubscription = this.mds.appError$
+        .pipe(filter(error => !!error))
         .subscribe(error => {
           // This happens, when in lazy-loading-mode, an error occurred during the loading of the unit's content.
           // The error is caught here because
@@ -43,7 +45,7 @@ export class TestStatusComponent implements OnInit, OnDestroy {
     if (this.appErrorSubscription) {
       this.appErrorSubscription.unsubscribe();
     } else {
-      console.log('HOW CAN THIS BE?');
+      console.log('HOW CAN THIS BE?'); // TODO remove this
     }
   }
 

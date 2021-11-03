@@ -7,7 +7,7 @@ import {
   Subscription
 } from 'rxjs';
 import {
-  debounceTime, distinctUntilChanged, map
+  debounceTime, distinctUntilChanged, filter, map
 } from 'rxjs/operators';
 import { CustomtextService } from 'iqb-components';
 import { MatDialog } from '@angular/material/dialog';
@@ -78,6 +78,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       this.mds.progressVisualEnabled = false;
 
       this.subscriptions.errorReporting = this.mds.appError$
+        .pipe(filter(e => !!e))
         .subscribe(() => this.tcs.errorOut());
 
       this.subscriptions.testStatus = this.tcs.testStatus$
@@ -99,7 +100,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
       this.subscriptions.routing = this.route.params
         .subscribe(params => {
-          this.tls.loadTest(params.t)
+          this.tcs.testId = params.t;
+          this.tls.loadTest()
             .then(() => {
               this.applyUiSettings();
               this.startAppFocusLogging();

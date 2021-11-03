@@ -28,9 +28,7 @@ export class UnitActivateGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean>|boolean {
     const targetUnitSequenceId: number = Number(route.params.u);
     if (this.tcs.rootTestlet === null) {
-      console.warn('unit canActivate: true (rootTestlet null)');
       const oldTestId = LocalStorage.getTestId();
-      console.log('try old test id', oldTestId);
       if (oldTestId) {
         this.router.navigate([`/t/${oldTestId}`]);
       } else {

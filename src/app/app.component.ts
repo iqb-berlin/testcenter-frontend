@@ -31,6 +31,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   closeErrorBox(): void {
     this.showError = false;
+    this.mds.appError$.next();
   }
 
   ngOnInit(): void {

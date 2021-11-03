@@ -367,10 +367,7 @@ export class TestControllerService {
           break;
 
         default:
-          this.router.navigate(
-            [`/t/${this.testId}/u/${navString}`],
-            { state: { force } }
-          )
+          this.router.navigate([`/t/${this.testId}/u/${navString}`], { state: { force } })
             .then(navOk => {
               if (!navOk) {
                 console.log(`navigation failed ("${navString}")`);

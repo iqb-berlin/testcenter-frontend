@@ -15,7 +15,7 @@ const localStorageAuthDataKey = 'iqb-tc-a';
   providedIn: 'root'
 })
 export class MainDataService {
-  appError$ = new ReplaySubject<AppError>();
+  appError$ = new ReplaySubject<AppError>(1);
   _authData$ = new Subject<AuthData>();
   get authData$(): Observable<AuthData> {
     return this._authData$.asObservable();

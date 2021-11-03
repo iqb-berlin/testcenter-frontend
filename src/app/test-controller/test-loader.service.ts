@@ -49,14 +49,12 @@ export class TestLoaderService {
   ) {
   }
 
-  async loadTest(testId: string): Promise<void> {
+  async loadTest(): Promise<void> {
     try {
-      console.log(`load test #${testId}`);
       this.reset();
 
       this.tcs.testStatus$.next(TestControllerState.LOADING);
-      this.tcs.testId = testId;
-      LocalStorage.setTestId(testId);
+      LocalStorage.setTestId(this.tcs.testId);
 
       const testData = await this.bs.getTestData(this.tcs.testId).toPromise();
       this.tcs.testMode = new TestMode(testData.mode);
@@ -117,7 +115,6 @@ export class TestLoaderService {
       });
     }
     this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
-    console.log(this.tcs.rootTestlet.children);
 
     if (this.tcs.rootTestlet === null) {
       throw Error('Problem beim Parsen der Testinformation');
