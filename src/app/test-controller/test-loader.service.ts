@@ -59,11 +59,6 @@ export class TestLoaderService {
       const testData = await this.bs.getTestData(this.tcs.testId).toPromise();
       this.tcs.testMode = new TestMode(testData.mode);
       this.parseBooklet(testData);
-
-      if (this.tcs.clearCodeTestlets.length > 0) {
-        this.tcs.rootTestlet.clearTestletCodes(this.tcs.clearCodeTestlets);
-      }
-
       await this.loadUnits();
       this.setUpResumeNavTarget();
       this.prepareUnitContentLoadingQueueOrder();

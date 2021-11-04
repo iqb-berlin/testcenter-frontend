@@ -404,7 +404,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
             return;
           }
           if (testlet.codeToEnter.toUpperCase().trim() === this.clearCodes[testlet.id].toUpperCase().trim()) {
-            testlet.codeToEnter = '';
             this.tcs.addClearedCodeTestlet(testlet.id);
             this.runUnit();
           } else {

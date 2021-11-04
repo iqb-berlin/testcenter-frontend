@@ -168,15 +168,6 @@ export class Testlet extends TestletContentElement {
     return myreturn;
   }
 
-  clearTestletCodes(testletIdList: string[]): void { // TODO maybe unnecessary?
-    testletIdList.forEach(testletId => {
-      const myTestlet = this.getTestlet(testletId);
-      if (myTestlet) {
-        myTestlet.codeToEnter = '';
-      }
-    });
-  }
-
   getAllUnitSequenceIds(testletId = ''): number[] {
     let myreturn = [];
 
