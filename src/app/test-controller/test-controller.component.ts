@@ -363,7 +363,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   private applyUiSettings(): void {
-    // TODO has this to be done as CSS-vars? better use the angular way of doing it
     document.documentElement.style.setProperty(
       '--tc-unit-title-height',
       this.tcs.bookletConfig.unit_title === 'ON' ? this.mds.defaultTcUnitTitleHeight : '0'

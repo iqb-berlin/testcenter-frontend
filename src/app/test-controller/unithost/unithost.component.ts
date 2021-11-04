@@ -221,9 +221,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.unitsToLoadLabels = unitsToLoadIds
       .map(unitSequenceId => this.tcs.rootTestlet.getUnitAt(unitSequenceId).unitDef.title);
 
-    this.subscriptions.loading = combineLatest<LoadingProgress[]>(
-      unitsToLoad
-    )
+    this.subscriptions.loading = combineLatest<LoadingProgress[]>(unitsToLoad)
       .subscribe({
         next: value => {
           this.unitsLoading$.next(value);
@@ -334,7 +332,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(this.currentUnit.unitDef.playerId));
   }
 
-  // TODO find better places for the following 2 functions, maybe tcs
   private getPlayerConfig(): VeronaPlayerConfig {
     const playerConfig: VeronaPlayerConfig = {
       enabledNavigationTargets: UnithostComponent.getEnabledNavigationTargets(

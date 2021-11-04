@@ -94,9 +94,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     if (force) {
       return of(true);
     }
-    if (this.tcs.currentUnitSequenceId <= 0) { // TODO is this even possible
-      return of(true);
-    }
     const direction = (newUnit && this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) ? 'Next' : 'Prev';
     const reasons = this.checkCompleteness(direction);
     if (!reasons.length) {

@@ -42,11 +42,7 @@ export class TestStatusComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.appErrorSubscription) {
-      this.appErrorSubscription.unsubscribe();
-    } else {
-      console.log('HOW CAN THIS BE?'); // TODO remove this
-    }
+    this.appErrorSubscription.unsubscribe();
   }
 
   toggleErrorDetails(): void {
