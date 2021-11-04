@@ -3,7 +3,7 @@
 }
 
 #iframe-host {
-  position: absolute;
+  position: fixed;
   width: 100%;
   top: var(--tc-unit-title-height);
   bottom: var(--tc-unit-page-nav-height);

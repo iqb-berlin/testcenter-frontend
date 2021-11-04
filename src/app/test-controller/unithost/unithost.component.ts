@@ -327,9 +327,20 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
     this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
-    this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
+    this.adjustIframeSize();
     this.iFrameHostElement.appendChild(this.iFrameItemplayer);
     srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(this.currentUnit.unitDef.playerId));
+  }
+
+  private adjustIframeSize(): void {
+    this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (this.iFrameItemplayer && this.iFrameHostElement) {
+      this.adjustIframeSize();
+    }
   }
 
   private getPlayerConfig(): VeronaPlayerConfig {
@@ -378,15 +389,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
 
     return navigationTargets;
-  }
-
-  @HostListener('window:resize')
-  onResize(): void {
-    if (this.iFrameItemplayer && this.iFrameHostElement) {
-      const divHeight = this.iFrameHostElement.clientHeight;
-      this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
-      // TODO: Why minus 5px?
-    }
   }
 
   gotoPage(navigationTarget: string): void {
