@@ -264,7 +264,7 @@ export class Testlet extends TestletContentElement {
       nextUnitSequenceId += 1;
       myUnit = this.getUnitAt(nextUnitSequenceId);
     }
-    return myUnit ? nextUnitSequenceId : 0; // TODO why 0 when there is no next. should be the last
+    return myUnit ? nextUnitSequenceId : currentUnitSequenceId;
   }
 }
 
