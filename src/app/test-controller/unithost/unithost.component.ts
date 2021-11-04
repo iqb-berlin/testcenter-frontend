@@ -32,7 +32,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private subscriptions: { [tag: string ]: Subscription } = {};
   leaveWarning = false;
 
-  unitScreenHeader = '';
   showPageNav = false;
 
   currentUnitSequenceId = -1;
@@ -203,8 +202,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.currentPageIndex = undefined;
     this.knownPages = [];
 
-    this.setUnitScreenHeader();
-
     this.currentUnit = this.tcs.rootTestlet.getUnitAt(this.currentUnitSequenceId);
 
     if (this.subscriptions.loading) {
@@ -237,26 +234,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
       });
   }
 
-  private setUnitScreenHeader(): void {
-    switch (this.tcs.bookletConfig.unit_screenheader) {
-      case 'WITH_UNIT_TITLE':
-        this.unitScreenHeader = this.tcs.rootTestlet.getUnitAt(this.currentUnitSequenceId).unitDef.title;
-        break;
-      case 'WITH_BOOKLET_TITLE':
-        this.unitScreenHeader = this.tcs.rootTestlet.title;
-        break;
-      case 'WITH_BLOCK_TITLE':
-        this.unitScreenHeader = this.tcs.rootTestlet.getUnitAt(this.currentUnitSequenceId).testletLabel;
-        break;
-      default:
-        this.unitScreenHeader = '';
-    }
-  }
-
   private prepareUnit(): void {
     this.unitsLoading$.next([]);
     this.tcs.currentUnitDbKey = this.currentUnit.unitDef.alias;
-    this.tcs.currentUnitTitle = this.unitScreenHeader;
+    this.tcs.currentUnitTitle = this.currentUnit.unitDef.title;
 
     if (this.tcs.testMode.saveResponses) {
       this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
@@ -355,7 +336,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       pagingMode: this.tcs.bookletConfig.pagingMode,
       stateReportPolicy: this.tcs.bookletConfig.stateReportPolicy,
       unitNumber: this.currentUnitSequenceId,
-      unitTitle: this.unitScreenHeader,
+      unitTitle: this.tcs.currentUnitTitle,
       unitId: this.currentUnit.unitDef.alias
     };
     if (this.pendingUnitData.currentPage && (this.tcs.bookletConfig.restore_current_page_on_return === 'ON')) {

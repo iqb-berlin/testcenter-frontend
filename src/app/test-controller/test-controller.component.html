@@ -9,8 +9,12 @@
 </div>
 
 <div id="header" fxLayout="row" fxLayoutAlign="end center">
+    <h1>{{unitScreenHeader}}</h1>
+
+    <span fxFlex></span>
+
     <p class="timer" *ngIf="tcs.testMode.showTimeLeft || (tcs.bookletConfig.unit_show_time_left === 'ON')">
-      {{ timerValue?.timeLeftString }}
+      {{timerValue?.timeLeftString}}
     </p>
 
     <mat-button-toggle-group

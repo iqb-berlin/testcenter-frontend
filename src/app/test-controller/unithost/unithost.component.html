@@ -5,7 +5,7 @@
   fxLayout="column"
   fxLayoutAlign="center center"
 >
-  <p>{{ unitScreenHeader }}</p>
+  <p>{{currentUnit?.unitDef?.title}}</p>
 </div>
 
 <div
@@ -17,7 +17,7 @@
 <ng-container *ngIf="{ list: (unitsLoading$ | async) } as loadingUnits">
   <div id="waiting-room" *ngIf="loadingUnits.list.length || currentUnit?.unitDef?.locked || codeRequiringTestlets.length">
     <mat-card>
-      <mat-card-title>{{unitScreenHeader}}</mat-card-title>
+      <mat-card-title>{{currentUnit?.unitDef?.title}}</mat-card-title>
       <mat-card-subtitle *ngIf="loadingUnits.list.length > 1">
         {{'Aufgabenblock wird geladen' | customtext:'booklet_loadingBlock' | async}}
       </mat-card-subtitle>

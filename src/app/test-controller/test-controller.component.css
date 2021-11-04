@@ -11,6 +11,12 @@
   bottom: 0;
 }
 
+h1 {
+  font-size: 1.5em;
+  color: white;
+  margin-right: 1em;
+}
+
 #header {
   position: absolute;
   width: 100%;

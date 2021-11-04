@@ -54,13 +54,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   unitNavigationList: UnitNaviButtonData[] = [];
   debugPane = false;
   sidebarOpen = false;
+  unitScreenHeader: string = '';
 
   @ViewChild('navButtons') navButtons: ElementRef;
 
   constructor(
     @Inject('APP_VERSION') public appVersion: string,
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
-    private mds: MainDataService,
+    public mds: MainDataService,
     public tcs: TestControllerService,
     private bs: BackendService,
     private reviewDialog: MatDialog,
@@ -106,6 +107,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               this.applyUiSettings();
               this.startAppFocusLogging();
               this.startConnectionStatusLogging();
+              this.setUnitScreenHeader();
             })
             .catch((error: string|Error|ApiError) => {
               console.log('error', error);
@@ -134,7 +136,10 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         .subscribe(maxTimerEvent => this.handleMaxTimer(maxTimerEvent));
 
       this.subscriptions.currentUnit = this.tcs.currentUnitSequenceId$
-        .subscribe(currentUnitSequenceId => this.refreshUnitMenu(currentUnitSequenceId));
+        .subscribe(() => {
+          this.refreshUnitMenu();
+          this.setUnitScreenHeader();
+        });
     });
   }
 
@@ -377,7 +382,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     );
   }
 
-  private refreshUnitMenu(currentUnitSequenceId: number): void {
+  private refreshUnitMenu(): void {
     this.sidebarOpen = false;
     this.unitNavigationList = [];
     if (!this.tcs.rootTestlet) {
@@ -392,7 +397,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         longLabel: unitData.unitDef.title,
         testletLabel: unitData.testletLabel,
         disabled: unitData.unitDef.locked,
-        isCurrent: sequenceId === currentUnitSequenceId
+        isCurrent: sequenceId === this.tcs.currentUnitSequenceId
       });
     }
     if (this.navButtons) {
@@ -405,6 +410,27 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   toggleSidebar(): void {
     this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  private setUnitScreenHeader(): void {
+    console.log('setUnitScreenHeader', this.tcs.currentUnitSequenceId);
+    if (!this.tcs.rootTestlet || !this.tcs.currentUnitSequenceId) {
+      this.unitScreenHeader = '';
+      return;
+    }
+    switch (this.tcs.bookletConfig.unit_screenheader) {
+      case 'WITH_UNIT_TITLE':
+        this.unitScreenHeader = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId).unitDef.title;
+        break;
+      case 'WITH_BOOKLET_TITLE':
+        this.unitScreenHeader = this.tcs.rootTestlet.title;
+        break;
+      case 'WITH_BLOCK_TITLE':
+        this.unitScreenHeader = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId).testletLabel;
+        break;
+      default:
+        this.unitScreenHeader = '';
+    }
   }
 
   ngOnDestroy(): void {
