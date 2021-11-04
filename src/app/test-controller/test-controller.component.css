@@ -24,6 +24,7 @@ h1 {
   color: white;;
   height: var(--tc-header-height);
   padding-left: 116px;
+  pointer-events: none;
 }
 
 #header mat-button-toggle-group {
@@ -35,6 +36,11 @@ h1 {
   display: flex;
   border-left: solid 1px rgba(0, 0, 0, 0.12);
   border-right: solid 1px rgba(0, 0, 0, 0.12);
+}
+
+#header .main-buttons,
+#header .plus-buttons {
+  pointer-events: auto;
 }
 
 #header .plus-buttons {

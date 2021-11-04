@@ -21,6 +21,7 @@
       *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
       fxLayout="row wrap"
       fxLayoutAlign="start center"
+      class="main-buttons"
     >
       <mat-button-toggle
         #prevButton="matButtonToggle"
@@ -79,8 +80,16 @@
     </div>
 </div>
 
-<mat-sidenav-container class="tc-body" hasBackdrop="true">
-  <mat-sidenav [(opened)]="sidebarOpen" mode="over" class="sidebar" fixedInViewport="true" fixedTopGap="55" position="end">
+<mat-sidenav-container class="tc-body" hasBackdrop="false">
+  <mat-sidenav
+      [(opened)]="sidebarOpen"
+      (click)="toggleSidebar()"
+      mode="over"
+      class="sidebar"
+      fixedInViewport="true"
+      fixedTopGap="55"
+      position="end"
+  >
     <unit-menu></unit-menu>
   </mat-sidenav>
   <mat-sidenav-content>

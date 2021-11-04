@@ -369,7 +369,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   private applyUiSettings(): void {
     document.documentElement.style.setProperty(
-      '--tc-unit-title-height',
+      '--tc-header-height',
       this.tcs.bookletConfig.unit_title === 'ON' ? this.mds.defaultTcUnitTitleHeight : '0'
     );
     document.documentElement.style.setProperty(
