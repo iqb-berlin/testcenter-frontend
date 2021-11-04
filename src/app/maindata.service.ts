@@ -29,9 +29,6 @@ export class MainDataService {
   appTitle$ = new BehaviorSubject<string>('IQB-Testcenter');
   appSubTitle$ = new BehaviorSubject<string>('');
   globalWarning = '';
-  defaultTcHeaderHeight = document.documentElement.style.getPropertyValue('--tc-header-height');
-  defaultTcUnitTitleHeight = document.documentElement.style.getPropertyValue('--tc-unit-title-height');
-  defaultTcUnitPageNavHeight = document.documentElement.style.getPropertyValue('--tc-unit-page-nav-height');
 
   // set by app.component.ts
   postMessage$ = new Subject<MessageEvent>();
@@ -72,7 +69,8 @@ export class MainDataService {
   constructor(
     @Inject('API_VERSION_EXPECTED') readonly expectedApiVersion: string,
     private cts: CustomtextService
-  ) { }
+  ) {
+  }
 
   setSpinnerOn(): void {
     this.isSpinnerOn$.next(true);

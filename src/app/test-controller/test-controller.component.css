@@ -7,8 +7,12 @@
   overflow-x: auto;
   position: absolute;
   width: 100%;
-  top: var(--tc-header-height);
+  top: 0;
   bottom: 0;
+}
+
+.tc-body.with-header {
+  top: 65px;
 }
 
 h1 {
@@ -22,8 +26,9 @@ h1 {
   width: 100%;
   z-index: 444;
   color: white;;
-  height: var(--tc-header-height);
+  height: 65px;
   padding-left: 116px;
+  pointer-events: none;
 }
 
 #header mat-button-toggle-group {
@@ -35,6 +40,11 @@ h1 {
   display: flex;
   border-left: solid 1px rgba(0, 0, 0, 0.12);
   border-right: solid 1px rgba(0, 0, 0, 0.12);
+}
+
+#header .main-buttons,
+#header .plus-buttons {
+  pointer-events: auto;
 }
 
 #header .plus-buttons {
@@ -60,9 +70,12 @@ h1 {
 }
 
 .sidebar {
-  top: var(--tc-header-height) !important;
   min-width: 200px;
   max-width: 25%;
+}
+
+.with-header .sidebar {
+  top: 65px !important;
 }
 
 .mat-drawer-container {

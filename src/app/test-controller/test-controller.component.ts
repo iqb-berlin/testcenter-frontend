@@ -104,7 +104,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.tcs.testId = params.t;
           this.tls.loadTest()
             .then(() => {
-              this.applyUiSettings();
               this.startAppFocusLogging();
               this.startConnectionStatusLogging();
               this.setUnitScreenHeader();
@@ -367,21 +366,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
   }
 
-  private applyUiSettings(): void {
-    document.documentElement.style.setProperty(
-      '--tc-unit-title-height',
-      this.tcs.bookletConfig.unit_title === 'ON' ? this.mds.defaultTcUnitTitleHeight : '0'
-    );
-    document.documentElement.style.setProperty(
-      '--tc-header-height',
-      this.tcs.bookletConfig.unit_screenheader === 'OFF' ? '0' : this.mds.defaultTcHeaderHeight
-    );
-    document.documentElement.style.setProperty(
-      '--tc-unit-page-nav-height',
-      this.tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' ? this.mds.defaultTcUnitPageNavHeight : '0'
-    );
-  }
-
   private refreshUnitMenu(): void {
     this.sidebarOpen = false;
     this.unitNavigationList = [];
@@ -413,7 +397,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   private setUnitScreenHeader(): void {
-    console.log('setUnitScreenHeader', this.tcs.currentUnitSequenceId);
     if (!this.tcs.rootTestlet || !this.tcs.currentUnitSequenceId) {
       this.unitScreenHeader = '';
       return;

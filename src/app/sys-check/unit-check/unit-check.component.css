@@ -7,11 +7,11 @@
 }
 
 #iFrameHost {
-  position: absolute;
+  position: fixed;
   width: 100%;
-  top: var(--tc-unit-title-height);
-  bottom: var(--tc-unit-page-nav-height);
   padding: 0;
+  top: 120px;
+  bottom: 0;
   background-color: white;
 }
 
