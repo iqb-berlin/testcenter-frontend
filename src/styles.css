@@ -44,20 +44,6 @@ body {
   bottom: 0;
 }
 
-.sheetofpaper {
-  display: block;
-  position: absolute;
-  box-shadow: 5px 10px 20px black;
-  background-color: white;
-  min-height: auto;
-  bottom:0;
-  top:0;
-  left:0;
-  right:0;
-  margin: 15px;
-  padding: 5px;
-}
-
 .spinner {
   bottom: 0;
   height: 2em;
@@ -85,16 +71,11 @@ body {
   z-index: 999;
 }
 
-iframe.unitHost {
+iframe.unitHost { /* has to be global because dynamic created element is not in the scope of the component */
   width: 100%;
   background-color: white;
   border: none;
   margin: 0;
-}
-
-p.unitMessage { /* TODO why here? */
-  margin: 50px;
-  text-align: center;
 }
 
 .logo {
@@ -155,16 +136,6 @@ div.logo img {
   position: absolute !important;
   right: 3px;
   top: 3px;
-}
-
-#shield {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.7);
-  z-index: 998;
 }
 
 mat-button-toggle-group {
