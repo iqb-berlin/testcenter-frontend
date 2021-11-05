@@ -26,7 +26,7 @@ const unit = (params: NonFunctionProperties<UnitDef>) => {
     params.navigationLeaveRestrictions
   );
   unitInstance.locked = params.locked;
-  unitInstance.playerId = params.playerId;
+  // unitInstance.playerId = params.playerId;
   return unitInstance;
 };
 
@@ -44,7 +44,7 @@ export const TestBookletXML = `<Booklet>
 
   <Units>
     <Restrictions>
-      <DenyNavigation force_presentation_complete="OFF" force_response_complete="ON"/>
+      <DenyNavigationOnIncomplete presentation="OFF" response="ON"/>
       <TimeMax minutes="10" />
     </Restrictions>
     <Unit id="u1" label="l" />
@@ -58,7 +58,7 @@ export const TestBookletXML = `<Booklet>
        <Restrictions>
          <CodeToEnter code="d" />
          <TimeMax minutes="3" />
-         <DenyNavigation force_presentation_complete="ON" force_response_complete="OFF"/>
+         <DenyNavigationOnIncomplete presentation="ON" response="OFF"/>
        </Restrictions>
        <Unit id="u3" label="l" />
      </Testlet>
