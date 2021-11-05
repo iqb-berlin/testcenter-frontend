@@ -1,30 +1,34 @@
 <div fxLayout="row wrap" fxLayoutAlign="center stretch">
-  <mat-card fxFlex="0 0 400px">
-    <mat-card-title>Anmelden</mat-card-title>
-    <form [formGroup]="loginForm" (ngSubmit)="login()" *ngIf="mds.appConfig?.isValidApiVersion">
-      <mat-card-content fxLayout="column">
+  <form [formGroup]="loginForm" (ngSubmit)="login()">
+    <mat-card fxFlex="0 0 400px">
+      <mat-card-title>Anmelden</mat-card-title>
+      <mat-card-content *ngIf="mds.appConfig?.isValidApiVersion">
         <mat-form-field>
           <input matInput formControlName="name" placeholder="Anmeldename" (keyup.enter)="pw.focus()">
         </mat-form-field>
         <mat-form-field>
           <input matInput #pw [type]="showPassword ? 'text' : 'password'" formControlName="pw" placeholder="Kennwort">
           <mat-icon
-              id="toggle-show-password"
-              (click)="showPassword = !showPassword"
-              [style]="!showPassword ? 'color:silver' : ''"
-              matSuffix
-            >visibility
+            id="toggle-show-password"
+            (click)="showPassword = !showPassword"
+            [style]="!showPassword ? 'color:silver' : ''"
+            matSuffix
+          >
+            visibility
           </mat-icon>
         </mat-form-field>
+
+        <alert level="error" *ngIf="problemText" [text]="problemText"></alert>
+        <alert *ngIf="mds.globalWarning" level="warning" [text]="mds.globalWarning"></alert>
+      </mat-card-content>
+      <mat-card-content *ngIf="!mds.appConfig?.isValidApiVersion">
+        <alert level="error" text="Die Verbindung mit dem Server ist nicht möglich."></alert>
       </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button type="submit" [disabled]="loginForm.invalid" color="primary">Weiter</button>
       </mat-card-actions>
-    </form>
-    <p style="color: chocolate"><b>{{ problemText }}</b></p>
-    <p style="color: chocolate" *ngIf="!mds.appConfig?.isValidApiVersion"><b>Die Verbindung mit dem Server ist nicht möglich.</b></p>
-    <alert *ngIf="mds.globalWarning" level="warning" [text]="mds.globalWarning"></alert>
-  </mat-card>
+    </mat-card>
+  </form>
 
   <mat-card fxFlex="0 0 400px" class="mat-card-box">
     <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
