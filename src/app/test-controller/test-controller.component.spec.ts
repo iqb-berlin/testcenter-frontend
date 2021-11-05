@@ -22,7 +22,6 @@ import { TestMode } from '../config/test-mode';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../config/booklet-config';
 import { MaxTimerData } from './test-controller.classes';
-import { testBookletJSON, TestBookletXML } from './unit-test-example-data.spec';
 
 const testData$ = new Subject<boolean|TestData>();
 const command$ = new Subject<Command>();
@@ -32,6 +31,7 @@ const appError$ = new Subject<AppError>();
 const testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.ERROR);
 const maxTimeTimer$ = new Subject<MaxTimerData>();
 const routeParams$ = new Subject<Params>();
+const currentUnitSequenceId$ = new Subject<number>();
 
 const MockBackendService = {
   getTestData: () => testData$
@@ -51,15 +51,30 @@ const MockMainDataService = {
 const MockTestControllerService = {
   testStatus$,
   maxTimeTimer$,
+  currentUnitSequenceId$,
   testMode: new TestMode(),
   bookletConfig: new BookletConfig(),
   testStatusEnum: TestControllerState,
-  setUnitNavigationRequest: () => {}
+  setUnitNavigationRequest: () => {},
+  resetDataStore: () => {}
 };
 
 const MockActivatedRoute = {
   params: routeParams$
 };
+
+// eslint-disable-next-line @typescript-eslint/dot-notation
+window['UAParser'] = () => ({
+  browser: {
+    version: 0,
+    name: 'unit-tests'
+  },
+  os: {
+    version: 0,
+    name: 'unit-tests'
+  },
+  device: ['karma']
+});
 
 describe('TestControllerComponent', () => {
   let component: TestControllerComponent;
@@ -100,14 +115,5 @@ describe('TestControllerComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  describe('getBookletFromXml', () => {
-    it('should read booklet content correctly', () => {
-      // eslint-disable-next-line @typescript-eslint/dot-notation
-      const booklet = component['getBookletFromXml'](TestBookletXML);
-      const bookletJSON = JSON.parse(JSON.stringify(booklet)); // strip functions
-      expect(bookletJSON).toEqual(testBookletJSON);
-    });
   });
 });

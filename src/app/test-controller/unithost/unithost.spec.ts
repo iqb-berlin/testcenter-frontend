@@ -4,6 +4,7 @@ import {
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { UnithostComponent } from './unithost.component';
 import { ReviewDialogComponent } from '../review-dialog/review-dialog.component';
 import { TestControllerService } from '../test-controller.service';
@@ -52,7 +53,8 @@ describe('UnithostComponent', () => {
         ReviewDialogComponent
       ],
       imports: [
-        CommonModule
+        CommonModule,
+        MatSnackBarModule
       ],
       providers: [
         { provide: TestControllerService, useValue: MockTestControllerService },
