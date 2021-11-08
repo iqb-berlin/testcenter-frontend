@@ -1,4 +1,5 @@
 import { NavigationLeaveRestrictions, Testlet, UnitDef } from './test-controller.classes';
+import {KeyValuePair, UnitData, UnitStateKey} from "./test-controller.interfaces";
 
 // helper functions to construct testdata
 type NonFunctionPropertyNames<T> = {
@@ -67,6 +68,49 @@ export const TestBookletXML = `<Booklet>
     <Unit id="u5" label="l" />
   </Units>
 </Booklet>`;
+
+export const TestUnits: { [unitId: string]: UnitData } =
+{
+  u1: {
+    data: 'some data from a previous session',
+    state: <KeyValuePair[]>[],
+    playerId: 'a-player',
+    definition: 'the unit (1) definition itself'
+  },
+  u2: {
+    data: 'some data from a previous session',
+    state: <KeyValuePair[]>[
+      { PRESENTATION_PROGRESS: 'some' }
+    ],
+    playerId: 'another-player',
+    definition: 'the unit (2) definition itself'
+  },
+  u3: {
+    data: 'some data from a previous session',
+    state: <KeyValuePair[]>[],
+    playerId: 'a-player-but-version-2',
+    definition: 'the unit (3) definition itself'
+  },
+  u4: {
+    data: 'some data from a previous session',
+    state: <KeyValuePair[]>[],
+    playerId: 'a-player',
+    definition: 'the unit (4) definition itself'
+  },
+  u5: {
+    data: 'some data from a previous session',
+    state: <KeyValuePair[]>[],
+    playerId: 'a-player',
+    definition: 'the unit (5) definition itself'
+  }
+};
+
+export const TestResources = {
+  'a-player': 'a player',
+  'another-player': 'another player',
+  'a-player-but-version-2': 'a player, but version 2',
+  TestResource: 'the unit (2) definition'
+};
 
 export const TestBooklet = testlet({
   sequenceId: 0,
