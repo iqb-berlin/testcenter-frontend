@@ -8,6 +8,9 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { Component } from '@angular/core';
 import { BackendService } from '../group-monitor/backend.service';
 import { CommandService } from './command.service';
 import { TestControllerComponent } from './test-controller.component';
@@ -22,6 +25,7 @@ import { TestMode } from '../config/test-mode';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../config/booklet-config';
 import { MaxTimerData } from './test-controller.classes';
+// import { UnitMenuComponent } from './unit-menu/unit-menu.component';
 
 const testData$ = new Subject<boolean|TestData>();
 const command$ = new Subject<Command>();
@@ -32,6 +36,12 @@ const testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState
 const maxTimeTimer$ = new Subject<MaxTimerData>();
 const routeParams$ = new Subject<Params>();
 const currentUnitSequenceId$ = new Subject<number>();
+
+@Component({
+  template: '',
+  selector: 'unit-menu'
+})
+class MockUnitMenuComponent {}
 
 const MockBackendService = {
   getTestData: () => testData$
@@ -83,14 +93,17 @@ describe('TestControllerComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
-        TestControllerComponent
+        TestControllerComponent,
+        MockUnitMenuComponent
       ],
       imports: [
         CommonModule,
         MatIconModule,
         MatDialogModule,
+        MatSidenavModule,
         RouterTestingModule.withRoutes([{ path: 'yourpath', redirectTo: '' }]),
-        HttpClientModule
+        HttpClientModule,
+        NoopAnimationsModule
       ],
       providers: [
         CustomtextService,
