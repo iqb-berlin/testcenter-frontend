@@ -14,9 +14,9 @@ import {
   TestUnits, TestUnitStateCurrentPages, TestUnitStateDataParts
 } from './unit-test-example-data.spec';
 import {
-  LoadingFile, StateReportEntry, TestData, UnitData
+  LoadingFile, LoadingProgress, StateReportEntry, TestData, UnitData
 } from './test-controller.interfaces';
-import { json } from './unit-test.util';
+import { Watcher, json } from './unit-test.util';
 
 const MockBackendService = {
   getTestData: (): Observable<TestData> => of({
@@ -99,6 +99,25 @@ describe('TestLoaderService', () => {
       expect(service.tcs['unitPresentationProgressStates']).toEqual(TestUnitPresentationProgressStates);
       expect(service.tcs['unitResponseProgressStates']).toEqual(TestUnitResponseProgressStates);
       expect(service.tcs['unitStateCurrentPages']).toEqual(TestUnitStateCurrentPages);
+    });
+
+    fit('should track the correct loading progresses', async () => {
+      const watcher = new Watcher();
+      watcher.watchProperty('tls', service, 'totalLoadingProgress');
+      watcher.watchObservable('tcs', service.tcs.testStatus$);
+      watcher.watchProperty('tcs', service.tcs, 'unitContentLoadProgress$')
+        .subscribe((unitLoadProgresses: { [sequenceId: number]: Observable<LoadingProgress> }) => {
+          Object.keys(unitLoadProgresses)
+            .forEach(loadId => {
+              watcher.watchObservable(`tcs.unitContentLoadProgress$[${loadId}]`, unitLoadProgresses[loadId]);
+            });
+        });
+
+      await service.loadTest();
+      watcher.eventLog.forEach(logEntry => {
+        console.log(`#### ${logEntry.name} ####`);
+        console.log(logEntry.value);
+      });
     });
   });
 });
