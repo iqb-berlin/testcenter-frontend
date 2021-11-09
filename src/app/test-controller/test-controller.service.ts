@@ -68,7 +68,7 @@ export class TestControllerService {
   private unitDefinitions: { [sequenceId: number]: string } = {};
   private unitStateDataParts: { [sequenceId: number]: string } = {};
   private unitPresentationProgressStates: { [sequenceId: number]: string } = {};
-  private unitResponseCompleteStates: { [sequenceId: number]: string } = {};
+  private unitResponseProgressStates: { [sequenceId: number]: string } = {};
   private unitStateCurrentPages: { [sequenceId: number]: string } = {};
   private unitContentLoadProgress$: { [sequenceId: number]: Observable<LoadingProgress> } = {};
 
@@ -172,11 +172,15 @@ export class TestControllerService {
   }
 
   hasUnitResponseProgress(sequenceId: number): boolean {
-    return sequenceId in this.unitResponseCompleteStates;
+    return sequenceId in this.unitResponseProgressStates;
+  }
+
+  setOldUnitResponseProgress(sequenceId: number, state: string): void {
+    this.unitResponseProgressStates[sequenceId] = state;
   }
 
   getUnitResponseProgress(sequenceId: number): string {
-    return this.unitResponseCompleteStates[sequenceId];
+    return this.unitResponseProgressStates[sequenceId];
   }
 
   hasUnitStateCurrentPage(sequenceId: number): boolean {
@@ -222,13 +226,13 @@ export class TestControllerService {
     }
   }
 
-  updateUnitStatePresentationProgress(unitDbKey: string, unitSequenceId: number, presentationProgress: string): void {
+  updateUnitStatePresentationProgress(unitDbKey: string, unitSeqId: number, presentationProgress: string): void {
     let stateChanged = false;
-    if (!this.unitPresentationProgressStates[unitSequenceId] || this.unitPresentationProgressStates[unitSequenceId] === 'none') {
-      this.unitPresentationProgressStates[unitSequenceId] = presentationProgress;
+    if (!this.unitPresentationProgressStates[unitSeqId] || this.unitPresentationProgressStates[unitSeqId] === 'none') {
+      this.unitPresentationProgressStates[unitSeqId] = presentationProgress;
       stateChanged = true;
-    } else if (this.unitPresentationProgressStates[unitSequenceId] === 'some' && presentationProgress === 'complete') {
-      this.unitPresentationProgressStates[unitSequenceId] = presentationProgress;
+    } else if (this.unitPresentationProgressStates[unitSeqId] === 'some' && presentationProgress === 'complete') {
+      this.unitPresentationProgressStates[unitSeqId] = presentationProgress;
       stateChanged = true;
     }
     if (stateChanged && this.testMode.saveResponses) {
@@ -238,10 +242,12 @@ export class TestControllerService {
     }
   }
 
-  newUnitStateResponseProgress(unitDbKey: string, unitSequenceId: number, responseProgress: string): void {
+  newUnitStateResponseProgress(unitDbKey: string, unitSeqId: number, responseProgress: string): void {
     if (this.testMode.saveResponses) {
-      if (!this.unitResponseCompleteStates[unitSequenceId] || this.unitResponseCompleteStates[unitSequenceId] !== responseProgress) {
-        this.unitResponseCompleteStates[unitSequenceId] = responseProgress;
+      if (
+        !this.unitResponseProgressStates[unitSeqId] || this.unitResponseProgressStates[unitSeqId] !== responseProgress
+      ) {
+        this.unitResponseProgressStates[unitSeqId] = responseProgress;
         this.bs.updateUnitState(this.testId, unitDbKey, [<StateReportEntry>{
           key: UnitStateKey.RESPONSE_PROGRESS, timeStamp: Date.now(), content: responseProgress
         }]);
@@ -249,7 +255,9 @@ export class TestControllerService {
     }
   }
 
-  newUnitStateCurrentPage(unitDbKey: string, unitSequenceId: number, pageNr: number, pageId: string, pageCount: number): void {
+  newUnitStateCurrentPage(
+    unitDbKey: string, unitSequenceId: number, pageNr: number, pageId: string, pageCount: number
+  ): void {
     this.unitStateCurrentPages[unitSequenceId] = pageId;
     if (this.testMode.saveResponses) {
       this.bs.updateUnitState(this.testId, unitDbKey, [

@@ -139,6 +139,7 @@ export class TestLoaderService {
           this.incrementTotalProgress({ progress: 100 }, `unit-${sequenceId}`);
 
           this.tcs.setOldUnitPresentationProgress(sequenceId, unit.state[UnitStateKey.PRESENTATION_PROGRESS]);
+          this.tcs.setOldUnitResponseProgress(sequenceId, unit.state[UnitStateKey.RESPONSE_PROGRESS]);
           this.tcs.setOldUnitDataCurrentPage(sequenceId, unit.state[UnitStateKey.CURRENT_PAGE_ID]);
 
           try {
