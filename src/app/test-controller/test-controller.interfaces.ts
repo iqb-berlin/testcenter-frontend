@@ -15,18 +15,13 @@ export enum WindowFocusState {
 }
 
 // for backend ++++++++++++++++++++++++++++++++++++++++++++++++++++++
-export interface KeyValuePair {
-  [K: string]: string;
-}
-
 export type UnitData = {
   data: string;
-  state: KeyValuePair[];
+  state: { [k in UnitStateKey]?: string };
   playerId: string;
-} & (
-  | { definitionRef: string; definition?: string; }
-  | { definitionRef?: string; definition: string; }
-);
+  definitionRef?: string;
+  definition?: string;
+};
 
 export interface TestData {
   xml: string;
