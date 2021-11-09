@@ -1,5 +1,7 @@
 import { NavigationLeaveRestrictions, Testlet, UnitDef } from './test-controller.classes';
-import {KeyValuePair, UnitData, UnitStateKey} from "./test-controller.interfaces";
+import { KeyValuePair, UnitData } from './test-controller.interfaces';
+// eslint-disable-next-line import/extensions
+import { BookletConfig } from '../config/booklet-config';
 
 // helper functions to construct testdata
 type NonFunctionPropertyNames<T> = {
@@ -27,7 +29,7 @@ const unit = (params: NonFunctionProperties<UnitDef>) => {
     params.navigationLeaveRestrictions
   );
   unitInstance.locked = params.locked;
-  // unitInstance.playerId = params.playerId;
+  unitInstance.playerId = params.playerId;
   return unitInstance;
 };
 
@@ -41,6 +43,7 @@ export const TestBookletXML = `<Booklet>
   <BookletConfig>
     <Config key="force_presentation_complete">ON</Config>
     <Config key="force_response_complete">OFF</Config>
+    <Config key="loading_mode">LAZY</Config>
   </BookletConfig>
 
   <Units>
@@ -72,13 +75,13 @@ export const TestBookletXML = `<Booklet>
 export const TestUnits: { [unitId: string]: UnitData } =
 {
   u1: {
-    data: 'some data from a previous session',
+    data: '{"all": "data from a previous session"}',
     state: <KeyValuePair[]>[],
     playerId: 'a-player',
     definition: 'the unit (1) definition itself'
   },
   u2: {
-    data: 'some data from a previous session',
+    data: '{"all": "data from a previous session"}',
     state: <KeyValuePair[]>[
       { PRESENTATION_PROGRESS: 'some' }
     ],
@@ -86,24 +89,30 @@ export const TestUnits: { [unitId: string]: UnitData } =
     definition: 'the unit (2) definition itself'
   },
   u3: {
-    data: 'some data from a previous session',
+    data: '{"all": "data from a previous session"}',
     state: <KeyValuePair[]>[],
     playerId: 'a-player-but-version-2',
     definition: 'the unit (3) definition itself'
   },
   u4: {
-    data: 'some data from a previous session',
+    data: '{"all": "data from a previous session"}',
     state: <KeyValuePair[]>[],
     playerId: 'a-player',
     definition: 'the unit (4) definition itself'
   },
   u5: {
-    data: 'some data from a previous session',
+    data: '{"all": "data from a previous session"}',
     state: <KeyValuePair[]>[],
     playerId: 'a-player',
     definition: 'the unit (5) definition itself'
   }
 };
+
+export const TestUnitDefinitionsPerSequenceId = Object.values(TestUnits)
+  .reduce((agg: { [index: number]: string }, unitData: UnitData, index) => {
+    agg[index + 1] = unitData.definition;
+    return agg;
+  }, {});
 
 export const TestResources = {
   'a-player': 'a player',
@@ -129,7 +138,7 @@ export const TestBooklet = testlet({
       alias: 'u1',
       naviButtonLabel: null,
       navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-      playerId: ''
+      playerId: 'a-player'
     }),
     testlet({
       sequenceId: 0,
@@ -148,7 +157,7 @@ export const TestBooklet = testlet({
           alias: 'u2',
           naviButtonLabel: null,
           navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-          playerId: ''
+          playerId: 'another-player'
         }),
         testlet({
           sequenceId: 0,
@@ -167,7 +176,7 @@ export const TestBooklet = testlet({
               alias: 'u3',
               naviButtonLabel: null,
               navigationLeaveRestrictions: new NavigationLeaveRestrictions('ON', 'OFF'),
-              playerId: ''
+              playerId: 'a-player-but-version-2'
             })
           ]
         }),
@@ -180,7 +189,7 @@ export const TestBooklet = testlet({
           alias: 'u4',
           naviButtonLabel: null,
           navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-          playerId: ''
+          playerId: 'a-player'
         })
       ]
     }),
@@ -193,7 +202,12 @@ export const TestBooklet = testlet({
       alias: 'u5',
       naviButtonLabel: null,
       navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-      playerId: ''
+      playerId: 'a-player'
     })
   ]
 });
+
+export const TestBookletConfig = new BookletConfig();
+TestBookletConfig.force_presentation_complete = 'ON';
+TestBookletConfig.force_response_complete = 'OFF';
+TestBookletConfig.loading_mode = 'LAZY';

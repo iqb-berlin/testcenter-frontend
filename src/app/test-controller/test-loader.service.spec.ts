@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import { TestBed } from '@angular/core/testing';
 import { CustomtextService } from 'iqb-components';
 import { Observable, of } from 'rxjs';
@@ -5,8 +6,17 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { TestLoaderService } from './test-loader.service';
-import { TestBooklet, TestBookletXML, TestUnits } from './unit-test-example-data.spec';
-import { LoadingFile, StateReportEntry, TestData, UnitData } from './test-controller.interfaces';
+import {
+  TestBooklet,
+  TestBookletConfig,
+  TestBookletXML,
+  TestUnitDefinitionsPerSequenceId,
+  TestUnits
+} from './unit-test-example-data.spec';
+import {
+  LoadingFile, StateReportEntry, TestData, UnitData
+} from './test-controller.interfaces';
+import { json } from './unit-test.util';
 
 const MockBackendService = {
   getTestData: (): Observable<TestData> => of({
@@ -36,17 +46,13 @@ describe('TestLoaderService', () => {
           provide: BackendService,
           useValue: MockBackendService
         },
-        // {
-        //   provide: TestControllerService,
-        //   useValue: Test
-        // },
         {
           provide: CustomtextService,
           useValue: MockCustomtextService
         }
       ],
       imports: [
-        RouterTestingModule.withRoutes([])
+        RouterTestingModule.withRoutes([{ path: 't/u/1', redirectTo: '' }])
       ]
     })
       .compileComponents();
@@ -60,18 +66,23 @@ describe('TestLoaderService', () => {
 
   describe('getBookletFromXml', () => {
     it('should read booklet content correctly', () => {
-      // eslint-disable-next-line @typescript-eslint/dot-notation
       const booklet = service['getBookletFromXml'](TestBookletXML);
-      const bookletJSON = JSON.parse(JSON.stringify(booklet));
-      const testBookletJSON = JSON.parse(JSON.stringify(TestBooklet));
-      expect(bookletJSON).toEqual(testBookletJSON);
+
+      expect(json(booklet)).toEqual(json(TestBooklet));
     });
   });
 
   fdescribe('loadTest', () => {
-    it('should load the test and all it\'s files', () => {
-      const testMayStartPromise = service.loadTest();
-      // eslint-disable-next-line no-underscore-dangle
+    it('should load and parse the booklet', async () => {
+      await service.loadTest();
+      expect(json(service.tcs.rootTestlet)).toEqual(json(TestBooklet));
+      expect(service.tcs.bookletConfig).toEqual(TestBookletConfig);
+    });
+
+    it('should load the units and their definitions', async () => {
+      await service.loadTest();
+      expect(service.tcs['unitDefinitions']).toEqual(TestUnitDefinitionsPerSequenceId);
+      expect(service.tcs.bookletConfig).toEqual(TestBookletConfig);
     });
   });
 });

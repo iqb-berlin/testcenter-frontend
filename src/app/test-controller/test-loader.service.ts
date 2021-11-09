@@ -12,7 +12,7 @@ import {
   isLoadingFileLoaded,
   isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress,
   StateReportEntry, TaggedString,
-  TestControllerState, TestData, TestLogEntryKey,
+  TestControllerState, TestLogEntryKey,
   TestStateKey,
   UnitStateKey
 } from './test-controller.interfaces';
@@ -58,7 +58,9 @@ export class TestLoaderService {
 
       const testData = await this.bs.getTestData(this.tcs.testId).toPromise();
       this.tcs.testMode = new TestMode(testData.mode);
-      this.parseBooklet(testData);
+      this.applyLasteState(testData.laststate);
+      this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
+
       await this.loadUnits();
       this.setUpResumeNavTarget();
       this.prepareUnitContentLoadingQueueOrder();
@@ -85,34 +87,29 @@ export class TestLoaderService {
     this.unitContentLoadingQueue = [];
   }
 
-  private parseBooklet(testData: TestData): void {
+  private applyLasteState(lastState: StateReportEntry[]): void {
     this.navTargetUnitId = '';
     this.newTestStatus = TestControllerState.RUNNING;
-    if (testData.laststate !== null) {
-      Object.keys(testData.laststate).forEach(stateKey => {
+    if (lastState !== null) {
+      Object.keys(lastState).forEach(stateKey => {
         switch (stateKey) {
           case (TestStateKey.CURRENT_UNIT_ID):
-            this.navTargetUnitId = testData.laststate[stateKey];
+            this.navTargetUnitId = lastState[stateKey];
             break;
           case (TestStateKey.TESTLETS_TIMELEFT):
-            this.tcs.lastMaxTimerState = JSON.parse(testData.laststate[stateKey]);
+            this.tcs.lastMaxTimerState = JSON.parse(lastState[stateKey]);
             break;
           case (TestStateKey.CONTROLLER):
-            if (testData.laststate[stateKey] === TestControllerState.PAUSED) {
+            if (lastState[stateKey] === TestControllerState.PAUSED) {
               this.newTestStatus = TestControllerState.PAUSED;
             }
             break;
           case (TestStateKey.TESTLETS_CLEARED_CODE):
-            this.tcs.clearCodeTestlets = JSON.parse(testData.laststate[stateKey]);
+            this.tcs.clearCodeTestlets = JSON.parse(lastState[stateKey]);
             break;
           default:
         }
       });
-    }
-    this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
-
-    if (this.tcs.rootTestlet === null) {
-      throw Error('Problem beim Parsen der Testinformation');
     }
   }
 
@@ -353,7 +350,7 @@ export class TestLoaderService {
       }
     } catch (error) {
       console.error('error reading booklet XML:', error);
-      rootTestlet = null;
+      throw Error('Problem beim Parsen der Testinformation');
     }
     return rootTestlet;
   }
