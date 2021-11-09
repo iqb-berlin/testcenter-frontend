@@ -1,5 +1,5 @@
 import { NavigationLeaveRestrictions, Testlet, UnitDef } from './test-controller.classes';
-import { KeyValuePair, UnitData } from './test-controller.interfaces';
+import { UnitData } from './test-controller.interfaces';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../config/booklet-config';
 
@@ -31,6 +31,11 @@ const unit = (params: NonFunctionProperties<UnitDef>) => {
   unitInstance.locked = params.locked;
   unitInstance.playerId = params.playerId;
   return unitInstance;
+};
+
+const perSequenceId = (agg: { [index: number]: string }, stuff: string, index) => {
+  agg[index + 1] = stuff;
+  return agg;
 };
 
 // the data
@@ -76,50 +81,78 @@ export const TestUnits: { [unitId: string]: UnitData } =
 {
   u1: {
     data: '{"all": "data from a previous session"}',
-    state: <KeyValuePair[]>[],
+    state: {},
     playerId: 'a-player',
     definition: 'the unit (1) definition itself'
   },
   u2: {
     data: '{"all": "data from a previous session"}',
-    state: <KeyValuePair[]>[
-      { PRESENTATION_PROGRESS: 'some' }
-    ],
+    state: {
+      PRESENTATION_PROGRESS: 'some',
+      CURRENT_PAGE_ID: '1',
+      CURRENT_PAGE_NR: '1'
+    },
     playerId: 'another-player',
-    definition: 'the unit (2) definition itself'
+    definitionRef: 'TestResource'
   },
   u3: {
     data: '{"all": "data from a previous session"}',
-    state: <KeyValuePair[]>[],
+    state: {
+      RESPONSE_PROGRESS: 'complete'
+    },
     playerId: 'a-player-but-version-2',
     definition: 'the unit (3) definition itself'
   },
   u4: {
     data: '{"all": "data from a previous session"}',
-    state: <KeyValuePair[]>[],
+    state: {
+      CURRENT_PAGE_ID: '2'
+    },
     playerId: 'a-player',
     definition: 'the unit (4) definition itself'
   },
   u5: {
     data: '{"all": "data from a previous session"}',
-    state: <KeyValuePair[]>[],
+    state: {},
     playerId: 'a-player',
     definition: 'the unit (5) definition itself'
   }
 };
 
-export const TestUnitDefinitionsPerSequenceId = Object.values(TestUnits)
-  .reduce((agg: { [index: number]: string }, unitData: UnitData, index) => {
-    agg[index + 1] = unitData.definition;
-    return agg;
-  }, {});
+export const TestPlayers = {
+  'A-PLAYER.HTML': 'a player',
+  'ANOTHER-PLAYER.HTML': 'another player',
+  'A-PLAYER-BUT-VERSION-2.HTML': 'a player, but version 2'
+};
 
-export const TestResources = {
-  'a-player': 'a player',
-  'another-player': 'another player',
-  'a-player-but-version-2': 'a player, but version 2',
+export const TestExternalUnitContents = {
   TestResource: 'the unit (2) definition'
 };
+
+export const TestResources = {
+  ...TestPlayers,
+  ...TestExternalUnitContents
+};
+
+export const TestUnitDefinitionsPerSequenceId = Object.values(TestUnits)
+  .map(unitDef => (unitDef.definitionRef ? TestExternalUnitContents[unitDef.definitionRef] : unitDef.definition))
+  .reduce(perSequenceId, {});
+
+export const TestUnitStateDataParts = Object.values(TestUnits)
+  .map(unitDef => JSON.parse(unitDef.data))
+  .reduce(perSequenceId, {});
+
+export const TestUnitPresentationProgressStates = Object.values(TestUnits)
+  .map(unitDef => unitDef.state.PRESENTATION_PROGRESS)
+  .reduce(perSequenceId, {});
+
+export const TestUnitResponseProgressStates = Object.values(TestUnits)
+  .map(unitDef => unitDef.state.RESPONSE_PROGRESS)
+  .reduce(perSequenceId, {});
+
+export const TestUnitStateCurrentPages = Object.values(TestUnits)
+  .map(unitDef => unitDef.state.CURRENT_PAGE_ID)
+  .reduce(perSequenceId, {});
 
 export const TestBooklet = testlet({
   sequenceId: 0,

@@ -9,9 +9,9 @@ import { TestLoaderService } from './test-loader.service';
 import {
   TestBooklet,
   TestBookletConfig,
-  TestBookletXML,
-  TestUnitDefinitionsPerSequenceId,
-  TestUnits
+  TestBookletXML, TestPlayers, TestResources,
+  TestUnitDefinitionsPerSequenceId, TestUnitPresentationProgressStates, TestUnitResponseProgressStates,
+  TestUnits, TestUnitStateCurrentPages, TestUnitStateDataParts
 } from './unit-test-example-data.spec';
 import {
   LoadingFile, StateReportEntry, TestData, UnitData
@@ -25,18 +25,25 @@ const MockBackendService = {
     laststate: <StateReportEntry[]>[]
   }),
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getUnitData: (testId: string, unitid: string, unitalias: string):
   Observable<UnitData | boolean> => of(TestUnits[unitid] || false),
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getResource: (testId: string, resId: string, versionning = false):
-  Observable<LoadingFile> => of({ content: 'blurb' })
+  Observable<LoadingFile> => of(
+    { progress: 0 },
+    { progress: 50 },
+    { progress: 75 },
+    { progress: 100 },
+    { content: TestResources[resId] }
+  )
 };
 
 const MockCustomtextService = {
 };
 
 let service: TestLoaderService;
-let tcs: TestLoaderService;
 
 describe('TestLoaderService', () => {
   beforeEach(() => {
@@ -79,10 +86,19 @@ describe('TestLoaderService', () => {
       expect(service.tcs.bookletConfig).toEqual(TestBookletConfig);
     });
 
-    it('should load the units and their definitions', async () => {
+    it('should load the units, their definitions and their players', async () => {
       await service.loadTest();
       expect(service.tcs['unitDefinitions']).toEqual(TestUnitDefinitionsPerSequenceId);
       expect(service.tcs.bookletConfig).toEqual(TestBookletConfig);
+      expect(service.tcs['players']).toEqual(TestPlayers);
+    });
+
+    it('should restore previous unit-states when loading test', async () => {
+      await service.loadTest();
+      expect(service.tcs['unitStateDataParts']).toEqual(TestUnitStateDataParts);
+      expect(service.tcs['unitPresentationProgressStates']).toEqual(TestUnitPresentationProgressStates);
+      expect(service.tcs['unitResponseProgressStates']).toEqual(TestUnitResponseProgressStates);
+      expect(service.tcs['unitStateCurrentPages']).toEqual(TestUnitStateCurrentPages);
     });
   });
 });
