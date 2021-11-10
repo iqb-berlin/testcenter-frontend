@@ -77,7 +77,7 @@ export enum TestLogEntryKey {
 }
 
 export interface StateReportEntry {
-  key: string; // TestStateKey | TestLogEntryKey | UnitStateKey | PlayerLogKey (unknown, up to the player)
+  key: TestStateKey | TestLogEntryKey | UnitStateKey | string;
   timeStamp: number;
   content: string;
 }
