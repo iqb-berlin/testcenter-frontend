@@ -37,7 +37,7 @@ export class TestLoaderService {
   private lastUnitSequenceId = 0;
   private unitContentLoadingQueue: TaggedString[] = [];
   private navTargetUnitId: string;
-  private newTestStatus: TestControllerState;
+  private resumeTestStatus: TestControllerState;
   private totalLoadingProgress: { [loadingId: string]: number } = {};
 
   constructor(
@@ -68,7 +68,12 @@ export class TestLoaderService {
     } catch (e) {
       return Promise.reject(e);
     }
-    return this.loadUnitContents(); // the promise resolves, when it is allowed to start
+    return this.loadUnitContents()
+      .then(() => {
+        this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitSequenceId.toString());
+        this.tcs.testStatus$.next(this.resumeTestStatus);
+      });
+    // when this promise resolves, it is allowed to start the test
   }
 
   reset(): void {
@@ -89,7 +94,7 @@ export class TestLoaderService {
 
   private applyLasteState(lastState: StateReportEntry[]): void {
     this.navTargetUnitId = '';
-    this.newTestStatus = TestControllerState.RUNNING;
+    this.resumeTestStatus = TestControllerState.RUNNING;
     if (lastState !== null) {
       Object.keys(lastState).forEach(stateKey => {
         switch (stateKey) {
@@ -101,7 +106,7 @@ export class TestLoaderService {
             break;
           case (TestStateKey.CONTROLLER):
             if (lastState[stateKey] === TestControllerState.PAUSED) {
-              this.newTestStatus = TestControllerState.PAUSED;
+              this.resumeTestStatus = TestControllerState.PAUSED;
             }
             break;
           case (TestStateKey.TESTLETS_CLEARED_CODE):
@@ -167,7 +172,7 @@ export class TestLoaderService {
             return of(sequenceId);
           }
 
-          this.tcs.addPlayer(unit.playerId, '');
+          // this.tcs.addPlayer(unit.playerId, '');
           const playerFileId = TestControllerService.normaliseId(unit.playerId, 'html');
           return this.bs.getResource(this.tcs.testId, playerFileId, true)
             .pipe(
@@ -225,8 +230,6 @@ export class TestLoaderService {
 
     return new Promise<void>((resolve, reject) => {
       if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
-        this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitSequenceId.toString());
-        this.tcs.testStatus$.next(this.newTestStatus);
         resolve();
       }
 
@@ -266,8 +269,6 @@ export class TestLoaderService {
             }
             this.tcs.loadProgressValue = 100;
             if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
-              this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitSequenceId.toString());
-              this.tcs.testStatus$.next(this.newTestStatus);
               resolve();
             }
           }
@@ -298,6 +299,7 @@ export class TestLoaderService {
   }
 
   private getBookletFromXml(xmlString: string): Testlet {
+    console.log(xmlString);
     let rootTestlet: Testlet = null;
 
     try {
