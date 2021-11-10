@@ -1,5 +1,5 @@
 import { NavigationLeaveRestrictions, Testlet, UnitDef } from './test-controller.classes';
-import { UnitData } from './test-controller.interfaces';
+import { StateReportEntry, TestStateKey, UnitData } from './test-controller.interfaces';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../config/booklet-config';
 
@@ -77,6 +77,11 @@ export const TestBookletXML = `<Booklet>
   </Units>
 </Booklet>`;
 
+export const TestBookletXmlVariants = {
+  original: TestBookletXML,
+  widthLoadingModeEager: TestBookletXML.replace('key="loading_mode">LAZY', 'key="loading_mode">EAGER')
+};
+
 export const TestUnits: { [unitId: string]: UnitData } =
 {
   u1: {
@@ -93,7 +98,7 @@ export const TestUnits: { [unitId: string]: UnitData } =
       CURRENT_PAGE_NR: '1'
     },
     playerId: 'another-player',
-    definitionRef: 'TestResource'
+    definitionRef: 'test-unit-content-u2'
   },
   u3: {
     data: '{"all": "data from a previous session"}',
@@ -101,7 +106,7 @@ export const TestUnits: { [unitId: string]: UnitData } =
       RESPONSE_PROGRESS: 'complete'
     },
     playerId: 'a-player-but-version-2',
-    definition: 'the unit (3) definition itself'
+    definitionRef: 'test-unit-content-u3'
   },
   u4: {
     data: '{"all": "data from a previous session"}',
@@ -126,7 +131,8 @@ export const TestPlayers = {
 };
 
 export const TestExternalUnitContents = {
-  TestResource: 'the unit (2) definition'
+  'test-unit-content-u2': 'the unit (2) definition',
+  'test-unit-content-u3': 'the unit (3) definition'
 };
 
 export const TestResources = {
@@ -153,6 +159,12 @@ export const TestUnitResponseProgressStates = Object.values(TestUnits)
 export const TestUnitStateCurrentPages = Object.values(TestUnits)
   .map(unitDef => unitDef.state.CURRENT_PAGE_ID)
   .reduce(perSequenceId, {});
+
+export const TestTestState: StateReportEntry[] = [{
+  key: TestStateKey.CURRENT_UNIT_ID,
+  content: 'u3',
+  timeStamp: 0
+}];
 
 export const TestBooklet = testlet({
   sequenceId: 0,
