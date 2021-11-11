@@ -93,29 +93,32 @@ export class TestLoaderService {
   }
 
   private applyLasteState(lastState: StateReportEntry[]): void {
+    console.log(lastState);
     this.navTargetUnitId = '';
     this.resumeTestStatus = TestControllerState.RUNNING;
-    if (lastState !== null) {
-      Object.keys(lastState).forEach(stateKey => {
-        switch (stateKey) {
-          case (TestStateKey.CURRENT_UNIT_ID):
-            this.navTargetUnitId = lastState[stateKey];
-            break;
-          case (TestStateKey.TESTLETS_TIMELEFT):
-            this.tcs.lastMaxTimerState = JSON.parse(lastState[stateKey]);
-            break;
-          case (TestStateKey.CONTROLLER):
-            if (lastState[stateKey] === TestControllerState.PAUSED) {
-              this.resumeTestStatus = TestControllerState.PAUSED;
-            }
-            break;
-          case (TestStateKey.TESTLETS_CLEARED_CODE):
-            this.tcs.clearCodeTestlets = JSON.parse(lastState[stateKey]);
-            break;
-          default:
-        }
-      });
+    if (!lastState) {
+      return;
     }
+    lastState.forEach(stateEntry => {
+      switch (stateEntry.key) {
+        case (TestStateKey.CURRENT_UNIT_ID):
+          console.log('CURRENT_UNIT_ID', stateEntry.content);
+          this.navTargetUnitId = stateEntry.content;
+          break;
+        case (TestStateKey.TESTLETS_TIMELEFT):
+          this.tcs.lastMaxTimerState = JSON.parse(stateEntry.content);
+          break;
+        case (TestStateKey.CONTROLLER):
+          if (stateEntry.content === TestControllerState.PAUSED) {
+            this.resumeTestStatus = TestControllerState.PAUSED;
+          }
+          break;
+        case (TestStateKey.TESTLETS_CLEARED_CODE):
+          this.tcs.clearCodeTestlets = JSON.parse(stateEntry.content);
+          break;
+        default:
+      }
+    });
   }
 
   private loadUnits(): Promise<number> {
@@ -299,7 +302,6 @@ export class TestLoaderService {
   }
 
   private getBookletFromXml(xmlString: string): Testlet {
-    console.log(xmlString);
     let rootTestlet: Testlet = null;
 
     try {
