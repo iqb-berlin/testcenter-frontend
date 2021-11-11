@@ -58,18 +58,21 @@ export class Watcher {
 
   watchMethod(
     objectName: string, object: unknown, methodName: string,
-    filterArgumentsForLogger: (value, index: number) => boolean = () => true
+    argumentsMapForLogger: { [argNr: number]: null|((unknown) => unknown) } = {}
   ): Observable<unknown> {
     const watcherName = `${objectName}.${methodName}`;
     const methodShadow = `__________${methodName}`;
     this.registerWatcher(watcherName);
     const watch$ = new Subject();
+
     object[methodShadow] = object[methodName];
     object[methodName] = (...args) => {
-      // eslint-disable-next-line prefer-rest-params
+      const mappedArguments = args
+        .map((arg, argNr) => (argumentsMapForLogger[argNr] ? argumentsMapForLogger[argNr](arg) : arg))
+        .filter((_, argNr) => argumentsMapForLogger[argNr] !== null);
       this.eventLog.push({
         name: watcherName,
-        value: args.filter(filterArgumentsForLogger)
+        value: mappedArguments
       });
       watch$.next(args);
       object[methodShadow](...args);

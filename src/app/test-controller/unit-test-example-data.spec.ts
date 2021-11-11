@@ -79,11 +79,10 @@ export const TestBookletXML = `<Booklet>
 
 export const TestBookletXmlVariants = {
   original: TestBookletXML,
-  widthLoadingModeEager: TestBookletXML.replace('key="loading_mode">LAZY', 'key="loading_mode">EAGER')
+  withLoadingModeEager: TestBookletXML.replace('key="loading_mode">LAZY', 'key="loading_mode">EAGER')
 };
 
-export const TestUnits: { [unitId: string]: UnitData } =
-{
+export const TestUnits: { [unitId: string]: UnitData } = {
   u1: {
     data: '{"all": "data from a previous session"}',
     state: {},
@@ -160,11 +159,13 @@ export const TestUnitStateCurrentPages = Object.values(TestUnits)
   .map(unitDef => unitDef.state.CURRENT_PAGE_ID)
   .reduce(perSequenceId, {});
 
-export const TestTestState: StateReportEntry[] = [{
-  key: TestStateKey.CURRENT_UNIT_ID,
-  content: 'u3',
-  timeStamp: 0
-}];
+export const TestTestState: StateReportEntry[] = [
+  {
+    key: TestStateKey.CURRENT_UNIT_ID,
+    content: 'u3',
+    timeStamp: 0
+  }
+];
 
 export const TestBooklet = testlet({
   sequenceId: 0,
