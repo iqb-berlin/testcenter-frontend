@@ -25,7 +25,7 @@ export class TestControllerService {
   testId = '';
   testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
   testStatusEnum = TestControllerState;
-  loadProgressValue = 0;
+  totalLoadingProgress = 0;
   clearCodeTestlets: string[] = [];
 
   testMode = new TestMode();
@@ -387,7 +387,7 @@ export class TestControllerService {
   }
 
   errorOut(): void {
-    this.loadProgressValue = 0;
+    this.totalLoadingProgress = 0;
     this.testStatus$.next(TestControllerState.ERROR);
     this.setUnitNavigationRequest(UnitNavigationTarget.ERROR);
   }

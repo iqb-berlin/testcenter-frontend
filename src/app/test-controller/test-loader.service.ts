@@ -12,7 +12,7 @@ import {
   isLoadingFileLoaded,
   isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress,
   StateReportEntry, TaggedString,
-  TestControllerState, TestLogEntryKey,
+  TestControllerState, TestData, TestLogEntryKey,
   TestStateKey,
   UnitStateKey
 } from './test-controller.interfaces';
@@ -33,12 +33,10 @@ import { BookletConfig } from '../config/booklet-config';
 export class TestLoaderService {
   private loadStartTimeStamp = 0;
   private unitContentLoadSubscription: Subscription = null;
-  private environment: EnvironmentData;
+  private environment: EnvironmentData; // TODO (possible refactoring) outsource to a service or what
   private lastUnitSequenceId = 0;
   private unitContentLoadingQueue: TaggedString[] = [];
-  private navTargetUnitId: string;
-  private resumeTestStatus: TestControllerState;
-  private totalLoadingProgress: { [loadingId: string]: number } = {};
+  private totalLoadingProgressParts: { [loadingId: string]: number } = {};
 
   constructor(
     @Inject('APP_VERSION') public appVersion: string,
@@ -50,28 +48,26 @@ export class TestLoaderService {
   }
 
   async loadTest(): Promise<void> {
+    let testData: TestData;
     try {
       this.reset();
 
       this.tcs.testStatus$.next(TestControllerState.LOADING);
       LocalStorage.setTestId(this.tcs.testId);
 
-      const testData = await this.bs.getTestData(this.tcs.testId).toPromise();
+      testData = await this.bs.getTestData(this.tcs.testId).toPromise();
       this.tcs.testMode = new TestMode(testData.mode);
-      this.applyLasteState(testData.laststate);
       this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
 
       await this.loadUnits();
-      this.setUpResumeNavTarget();
-      this.prepareUnitContentLoadingQueueOrder();
+      this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');
       this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
     } catch (e) {
       return Promise.reject(e);
     }
     return this.loadUnitContents()
       .then(() => {
-        this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitSequenceId.toString());
-        this.tcs.testStatus$.next(this.resumeTestStatus);
+        this.resumeTest(testData.laststate);
       });
     // when this promise resolves, it is allowed to start the test
   }
@@ -84,31 +80,29 @@ export class TestLoaderService {
     this.tcs.testMode = new TestMode();
     this.tcs.resetDataStore();
 
-    this.tcs.loadProgressValue = 0;
-    this.totalLoadingProgress = {};
+    this.tcs.totalLoadingProgress = 0;
+    this.totalLoadingProgressParts = {};
 
     this.environment = new EnvironmentData(this.appVersion);
     this.loadStartTimeStamp = Date.now();
     this.unitContentLoadingQueue = [];
   }
 
-  private applyLasteState(lastState: { [k in TestStateKey]?: string }): void {
-    this.navTargetUnitId = '';
-    this.resumeTestStatus = TestControllerState.RUNNING;
-    if (!lastState) {
-      return;
-    }
+  private resumeTest(lastState: { [k in TestStateKey]?: string }): void {
+    let resumeTestStatus = TestControllerState.RUNNING;
+    let resumeCurrentUnitSequenceId = 1;
     Object.keys(lastState).forEach(stateKey => {
       switch (stateKey) {
         case (TestStateKey.CURRENT_UNIT_ID):
-          this.navTargetUnitId = lastState[stateKey];
+          resumeCurrentUnitSequenceId = this.tcs.rootTestlet.getSequenceIdByUnitAlias(lastState[stateKey]) || 1;
           break;
         case (TestStateKey.TESTLETS_TIMELEFT):
           this.tcs.lastMaxTimerState = JSON.parse(lastState[stateKey]);
           break;
         case (TestStateKey.CONTROLLER):
           if (lastState[stateKey] === TestControllerState.PAUSED) {
-            this.resumeTestStatus = TestControllerState.PAUSED;
+            resumeTestStatus = TestControllerState.PAUSED;
+            this.tcs.resumeTargetUnitSequenceId = resumeCurrentUnitSequenceId;
           }
           break;
         case (TestStateKey.TESTLETS_CLEARED_CODE):
@@ -117,14 +111,16 @@ export class TestLoaderService {
         default:
       }
     });
+    this.tcs.setUnitNavigationRequest(resumeCurrentUnitSequenceId.toString());
+    this.tcs.testStatus$.next(resumeTestStatus);
   }
 
   private loadUnits(): Promise<number> {
     const sequence = [];
     for (let i = 1; i < this.lastUnitSequenceId; i++) {
-      this.totalLoadingProgress[`unit-${i}`] = 0;
-      this.totalLoadingProgress[`player-${i}`] = 0;
-      this.totalLoadingProgress[`content-${i}`] = 0;
+      this.totalLoadingProgressParts[`unit-${i}`] = 0;
+      this.totalLoadingProgressParts[`player-${i}`] = 0;
+      this.totalLoadingProgressParts[`content-${i}`] = 0;
       sequence.push(i);
     }
     return from(sequence)
@@ -193,22 +189,12 @@ export class TestLoaderService {
       );
   }
 
-  private setUpResumeNavTarget(): void {
-    let navTarget = 1;
-    if (this.navTargetUnitId) {
-      const tmpNavTarget = this.tcs.rootTestlet.getSequenceIdByUnitAlias(this.navTargetUnitId);
-      if (tmpNavTarget > 0) {
-        navTarget = tmpNavTarget;
-      }
-    }
-    this.tcs.resumeTargetUnitSequenceId = navTarget;
-  }
-
-  private prepareUnitContentLoadingQueueOrder(): void {
+  private prepareUnitContentLoadingQueueOrder(currentUnitId: string = '1'): void {
+    const currentUnitSequenceId = this.tcs.rootTestlet.getSequenceIdByUnitAlias(currentUnitId);
     const queue = this.unitContentLoadingQueue;
     let firstToLoadQueuePosition;
     for (firstToLoadQueuePosition = 0; firstToLoadQueuePosition < queue.length; firstToLoadQueuePosition++) {
-      if (Number(queue[firstToLoadQueuePosition % queue.length].tag) >= this.tcs.resumeTargetUnitSequenceId) {
+      if (Number(queue[firstToLoadQueuePosition % queue.length].tag) >= currentUnitSequenceId) {
         break;
       }
     }
@@ -268,7 +254,7 @@ export class TestLoaderService {
                 key: TestLogEntryKey.LOADCOMPLETE, timeStamp: Date.now(), content: JSON.stringify(this.environment)
               }]);
             }
-            this.tcs.loadProgressValue = 100;
+            this.tcs.totalLoadingProgress = 100;
             if (this.tcs.bookletConfig.loading_mode === 'EAGER') {
               resolve();
             }
@@ -293,10 +279,10 @@ export class TestLoaderService {
     if (typeof progress.progress !== 'number') {
       return;
     }
-    this.totalLoadingProgress[file] = progress.progress;
-    const sumOfProgresses = Object.values(this.totalLoadingProgress).reduce((i, a) => i + a, 0);
-    const maxProgresses = Object.values(this.totalLoadingProgress).length * 100;
-    this.tcs.loadProgressValue = (sumOfProgresses / maxProgresses) * 100;
+    this.totalLoadingProgressParts[file] = progress.progress;
+    const sumOfProgresses = Object.values(this.totalLoadingProgressParts).reduce((i, a) => i + a, 0);
+    const maxProgresses = Object.values(this.totalLoadingProgressParts).length * 100;
+    this.tcs.totalLoadingProgress = (sumOfProgresses / maxProgresses) * 100;
   }
 
   private getBookletFromXml(xmlString: string): Testlet {
