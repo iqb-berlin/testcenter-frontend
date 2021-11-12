@@ -1,7 +1,7 @@
-import { NavigationLeaveRestrictions, Testlet, UnitDef } from './test-controller.classes';
-import { TestStateKey, UnitData } from './test-controller.interfaces';
+import { NavigationLeaveRestrictions, Testlet, UnitDef } from '../classes/test-controller.classes';
+import { TestStateKey, UnitData } from '../interfaces/test-controller.interfaces';
 // eslint-disable-next-line import/extensions
-import { BookletConfig } from '../config/booklet-config';
+import { BookletConfig } from '../../config/booklet-config';
 
 // helper functions to construct testdata
 type NonFunctionPropertyNames<T> = {

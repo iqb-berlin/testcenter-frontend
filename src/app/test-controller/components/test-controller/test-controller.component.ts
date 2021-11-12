@@ -21,15 +21,15 @@ import {
   TestStateKey, UnitNaviButtonData,
   UnitNavigationTarget,
   WindowFocusState
-} from './test-controller.interfaces';
-import { BackendService } from './backend.service';
-import { MainDataService } from '../maindata.service';
-import { TestControllerService } from './test-controller.service';
-import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
-import { CommandService } from './command.service';
-import { TestLoaderService } from './test-loader.service';
-import { MaxTimerData } from './test-controller.classes';
-import { ApiError } from '../app.interfaces';
+} from '../../interfaces/test-controller.interfaces';
+import { BackendService } from '../../services/backend.service';
+import { MainDataService } from '../../../maindata.service';
+import { TestControllerService } from '../../services/test-controller.service';
+import { ReviewDialogComponent } from '../review-dialog/review-dialog.component';
+import { CommandService } from '../../services/command.service';
+import { TestLoaderService } from '../../services/test-loader.service';
+import { MaxTimerData } from '../../classes/test-controller.classes';
+import { ApiError } from '../../../app.interfaces';
 
 @Component({
   templateUrl: './test-controller.component.html',

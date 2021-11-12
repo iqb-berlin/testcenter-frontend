@@ -15,17 +15,17 @@ import {
   TestControllerState, TestData, TestLogEntryKey,
   TestStateKey,
   UnitStateKey
-} from './test-controller.interfaces';
-import { TestMode } from '../config/test-mode';
+} from '../interfaces/test-controller.interfaces';
+import { TestMode } from '../../config/test-mode';
 import {
   EnvironmentData, NavigationLeaveRestrictions, Testlet, UnitDef
-} from './test-controller.classes';
-import { MainDataService } from '../maindata.service';
+} from '../classes/test-controller.classes';
+import { MainDataService } from '../../maindata.service';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
-import { LocalStorage } from './local-storage.util';
+import { LocalStorage } from '../utils/local-storage.util';
 // eslint-disable-next-line import/extensions
-import { BookletConfig } from '../config/booklet-config';
+import { BookletConfig } from '../../config/booklet-config';
 
 @Injectable({
   providedIn: 'root'

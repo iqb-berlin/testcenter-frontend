@@ -20,16 +20,16 @@ import { MatIconModule } from '@angular/material/icon';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
-import { unitRouteGuards } from './unithost/unit-route-guards';
-import { TestControllerComponent } from './test-controller.component';
-import { UnithostComponent } from './unithost/unithost.component';
-import { TestControllerRoutingModule } from './test-controller-routing.module';
-import { TestStatusComponent } from './test-status/test-status.component';
-import { UnitMenuComponent } from './unit-menu/unit-menu.component';
-import { testControllerRouteGuards } from './test-controller-route-guards';
+import { ReviewDialogComponent } from './components/review-dialog/review-dialog.component';
+import { unitRouteGuards } from './routing/unit-route-guards';
+import { TestControllerComponent } from './components/test-controller/test-controller.component';
+import { UnithostComponent } from './components/unithost/unithost.component';
+import { TestControllerRoutingModule } from './routing/test-controller-routing.module';
+import { TestStatusComponent } from './components/test-status/test-status.component';
+import { UnitMenuComponent } from './components/unit-menu/unit-menu.component';
+import { testControllerRouteGuards } from './routing/test-controller-route-guards';
 
-export { TestControllerService } from './test-controller.service';
+export { TestControllerService } from './services/test-controller.service';
 
 @NgModule({
   imports: [

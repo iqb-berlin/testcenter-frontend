@@ -4,19 +4,19 @@ import {
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { MaxTimerData, Testlet } from './test-controller.classes';
+import { MaxTimerData, Testlet } from '../classes/test-controller.classes';
 import {
   KeyValuePairNumber, LoadingProgress,
   MaxTimerDataType, StateReportEntry,
   TestControllerState, TestStateKey,
   UnitNavigationTarget,
   UnitStateData, UnitStateKey, WindowFocusState
-} from './test-controller.interfaces';
+} from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
-import { TestMode } from '../config/test-mode';
+import { TestMode } from '../../config/test-mode';
 // eslint-disable-next-line import/extensions
-import { BookletConfig } from '../config/booklet-config';
-import { VeronaNavigationDeniedReason } from './verona.interfaces';
+import { BookletConfig } from '../../config/booklet-config';
+import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
 
 @Injectable({
   providedIn: 'root'

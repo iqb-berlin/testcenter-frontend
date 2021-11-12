@@ -10,12 +10,12 @@ import { Observable, of } from 'rxjs';
 import { MainDataService } from 'src/app/maindata.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { NavigationLeaveRestrictionValue, TestControllerState } from '../test-controller.interfaces';
-import { UnitControllerData } from '../test-controller.classes';
-import { UnithostComponent } from './unithost.component';
-import { TestControllerService } from '../test-controller.service';
-import { VeronaNavigationDeniedReason } from '../verona.interfaces';
-import { LocalStorage } from '../local-storage.util';
+import { NavigationLeaveRestrictionValue, TestControllerState } from '../interfaces/test-controller.interfaces';
+import { UnitControllerData } from '../classes/test-controller.classes';
+import { UnithostComponent } from '../components/unithost/unithost.component';
+import { TestControllerService } from '../services/test-controller.service';
+import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
+import { LocalStorage } from '../utils/local-storage.util';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {

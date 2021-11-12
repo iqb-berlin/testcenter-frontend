@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { TestControllerService } from './test-controller.service';
-import { BackendService } from '../workspace-admin/backend.service';
+import { BackendService } from '../../workspace-admin/backend.service';
 
 class MockBackendService {
 }

@@ -13,11 +13,11 @@ import {
   TestBookletXML, TestBookletXmlVariants, TestPlayers, TestResources, TestTestState,
   TestUnitDefinitionsPerSequenceId, TestUnitPresentationProgressStates, TestUnitResponseProgressStates,
   TestUnits, TestUnitStateCurrentPages, TestUnitStateDataParts
-} from './unit-test-example-data.spec';
+} from '../unit-test-data/unit-test-example-data.spec';
 import {
   LoadingFile, LoadingProgress, TestData, UnitData
-} from './test-controller.interfaces';
-import { Watcher, json, WatcherLogEntry } from './unit-test.util';
+} from '../interfaces/test-controller.interfaces';
+import { Watcher, json, WatcherLogEntry } from '../unit-test-data/unit-test.util';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
 

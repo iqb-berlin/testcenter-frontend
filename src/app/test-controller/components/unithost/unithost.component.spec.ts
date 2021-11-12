@@ -7,12 +7,12 @@ import { CommonModule } from '@angular/common';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { UnithostComponent } from './unithost.component';
 import { ReviewDialogComponent } from '../review-dialog/review-dialog.component';
-import { TestControllerService } from '../test-controller.service';
-import { BackendService } from '../backend.service';
-import { MainDataService } from '../../maindata.service';
+import { TestControllerService } from '../../services/test-controller.service';
+import { BackendService } from '../../services/backend.service';
+import { MainDataService } from '../../../maindata.service';
 // eslint-disable-next-line import/extensions
-import { BookletConfig } from '../../config/booklet-config';
-import { VeronaNavigationDeniedReason } from '../verona.interfaces';
+import { BookletConfig } from '../../../config/booklet-config';
+import { VeronaNavigationDeniedReason } from '../../interfaces/verona.interfaces';
 
 const bookletConfig = new BookletConfig();
 bookletConfig.setFromKeyValuePairs({

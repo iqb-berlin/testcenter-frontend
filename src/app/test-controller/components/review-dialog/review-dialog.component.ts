@@ -1,7 +1,7 @@
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, Inject } from '@angular/core';
-import { ReviewDialogData } from '../test-controller.interfaces';
+import { ReviewDialogData } from '../../interfaces/test-controller.interfaces';
 
 @Component({
   templateUrl: './review-dialog.component.html'

@@ -18,9 +18,9 @@ import {
 import { HttpClient } from '@angular/common/http';
 import {
   Command, commandKeywords, isKnownCommand, TestControllerState
-} from './test-controller.interfaces';
+} from '../interfaces/test-controller.interfaces';
 import { TestControllerService } from './test-controller.service';
-import { WebsocketBackendService } from '../shared/websocket-backend.service';
+import { WebsocketBackendService } from '../../shared/websocket-backend.service';
 
 type TestStartedOrStopped = 'started' | 'terminated' | '';
 

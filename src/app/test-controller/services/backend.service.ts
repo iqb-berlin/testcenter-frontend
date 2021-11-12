@@ -7,8 +7,8 @@ import { Observable, of, Subscription } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
 import {
   UnitData, TestData, StateReportEntry, LoadingFile
-} from './test-controller.interfaces';
-import { ApiError } from '../app.interfaces';
+} from '../interfaces/test-controller.interfaces';
+import { ApiError } from '../../app.interfaces';
 
 @Injectable({
   providedIn: 'root'

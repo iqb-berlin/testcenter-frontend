@@ -12,12 +12,12 @@ import {
   StateReportEntry,
   UnitStateKey,
   UnitPlayerState, LoadingProgress, UnitNavigationTarget
-} from '../test-controller.interfaces';
-import { BackendService } from '../backend.service';
-import { TestControllerService } from '../test-controller.service';
-import { MainDataService } from '../../maindata.service';
-import { VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig } from '../verona.interfaces';
-import { Testlet, UnitControllerData } from '../test-controller.classes';
+} from '../../interfaces/test-controller.interfaces';
+import { BackendService } from '../../services/backend.service';
+import { TestControllerService } from '../../services/test-controller.service';
+import { MainDataService } from '../../../maindata.service';
+import { VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig } from '../../interfaces/verona.interfaces';
+import { Testlet, UnitControllerData } from '../../classes/test-controller.classes';
 
 declare let srcDoc;
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { TestControllerService } from '../test-controller.service';
-import { UnitNaviButtonData } from '../test-controller.interfaces';
+import { TestControllerService } from '../../services/test-controller.service';
+import { UnitNaviButtonData } from '../../interfaces/test-controller.interfaces';
 
 @Component({
   selector: 'unit-menu',

@@ -11,20 +11,20 @@ import { CommonModule } from '@angular/common';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Component } from '@angular/core';
-import { BackendService } from '../group-monitor/backend.service';
-import { CommandService } from './command.service';
+import { BackendService } from '../../../group-monitor/backend.service';
+import { CommandService } from '../../services/command.service';
 import { TestControllerComponent } from './test-controller.component';
-import { MainDataService } from '../maindata.service';
+import { MainDataService } from '../../../maindata.service';
 import {
   Command, TestControllerState, TestData, WindowFocusState
-} from './test-controller.interfaces';
-import { ConnectionStatus } from '../shared/websocket-backend.service';
-import { TestControllerService } from './test-controller.service';
-import { AppError } from '../app.interfaces';
-import { TestMode } from '../config/test-mode';
+} from '../../interfaces/test-controller.interfaces';
+import { ConnectionStatus } from '../../../shared/websocket-backend.service';
+import { TestControllerService } from '../../services/test-controller.service';
+import { AppError } from '../../../app.interfaces';
+import { TestMode } from '../../../config/test-mode';
 // eslint-disable-next-line import/extensions
-import { BookletConfig } from '../config/booklet-config';
-import { MaxTimerData } from './test-controller.classes';
+import { BookletConfig } from '../../../config/booklet-config';
+import { MaxTimerData } from '../../classes/test-controller.classes';
 // import { UnitMenuComponent } from './unit-menu/unit-menu.component';
 
 const testData$ = new Subject<boolean|TestData>();

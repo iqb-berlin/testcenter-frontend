@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { TestControllerService } from '../test-controller.service';
-import { MainDataService } from '../../maindata.service';
-import { AppError } from '../../app.interfaces';
+import { TestControllerService } from '../../services/test-controller.service';
+import { MainDataService } from '../../../maindata.service';
+import { AppError } from '../../../app.interfaces';
 
 @Component({
   templateUrl: './test-status.component.html',

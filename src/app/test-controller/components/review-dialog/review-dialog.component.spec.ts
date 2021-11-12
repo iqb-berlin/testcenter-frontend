@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ReviewDialogData } from '../test-controller.interfaces';
+import { ReviewDialogData } from '../../interfaces/test-controller.interfaces';
 import { ReviewDialogComponent } from './review-dialog.component';
 
 describe('ReviewDialogComponent', () => {

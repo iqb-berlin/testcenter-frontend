@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 
-import { MaxTimerDataType, NavigationLeaveRestrictionValue } from './test-controller.interfaces';
+import { MaxTimerDataType, NavigationLeaveRestrictionValue } from '../interfaces/test-controller.interfaces';
 
 export class TestletContentElement {
   readonly sequenceId: number;
