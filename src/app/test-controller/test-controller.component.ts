@@ -116,8 +116,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               }
               if (error instanceof Error) {
                 this.mds.appError$.next({
-                  label: error.message,
-                  description: '',
+                  label: 'Kritischer Fehler',
+                  description: error.message,
                   category: 'PROBLEM'
                 });
               }
