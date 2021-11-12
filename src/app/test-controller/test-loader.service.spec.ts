@@ -19,33 +19,42 @@ import {
 } from './test-controller.interfaces';
 import { Watcher, json, WatcherLogEntry } from './unit-test.util';
 
-const MockBackendService = {
-  getTestData: (testId: keyof typeof TestBookletXmlVariants): Observable<TestData> => {
-    console.log('LOAD', testId);
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
+
+class MockBackendService {
+  // eslint-disable-next-line class-methods-use-this
+  getTestData(testId: keyof typeof TestBookletXmlVariants): Observable<TestData> {
     return of({
       xml: TestBookletXmlVariants[testId],
       mode: 'run-hot-return',
       laststate: TestTestState
     });
-  },
+  }
 
-  getUnitData: (testId: string, unitid: string): Observable<UnitData | boolean> => of(TestUnits[unitid] || false),
+  // eslint-disable-next-line class-methods-use-this
+  getUnitData(testId: string, unitid: string): Observable<UnitData | boolean> {
+    return of(TestUnits[unitid] || false);
+  }
 
-  getResource: (testId: string, resId: string): Observable<LoadingFile> => of(
-    { progress: 0 },
-    { progress: 50 },
-    { progress: 75 },
-    { progress: 100 },
-    { content: TestResources[resId] }
-  )
-    .pipe(
-      delay(1)
-    ),
+  // eslint-disable-next-line class-methods-use-this
+  getResource(testId: string, resId: string): Observable<LoadingFile> {
+    return of(
+      { progress: 0 },
+      { progress: 50 },
+      { progress: 75 },
+      { progress: 100 },
+      { content: TestResources[resId] }
+    )
+      .pipe(
+        delay(1)
+      );
+  }
 
+  // eslint-disable-next-line class-methods-use-this
   addTestLog(): Subscription {
     return of().subscribe();
   }
-};
+}
 
 const MockCustomtextService = {
 };
@@ -64,9 +73,11 @@ describe('TestLoaderService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        TestLoaderService,
+        TestControllerService,
         {
           provide: BackendService,
-          useValue: MockBackendService
+          useValue: new MockBackendService()
         },
         {
           provide: CustomtextService,
@@ -76,15 +87,8 @@ describe('TestLoaderService', () => {
           provide: Router,
           useValue: MockRouter
         }
-      ],
-      // imports: [
-      //   RouterTestingModule.withRoutes(
-      //     Object.keys(TestBookletXmlVariants)
-      //       .map(key => ({ path: `t/${key}/u/*`, redirectTo: '' }))
-      //   )
-      // ]
-    })
-      .compileComponents();
+      ]
+    });
     service = TestBed.inject(TestLoaderService);
     service.tcs = TestBed.inject(TestControllerService);
   });
@@ -101,7 +105,7 @@ describe('TestLoaderService', () => {
     });
   });
 
-  fdescribe('(loadTest)', () => {
+  describe('(loadTest)', () => {
     it('should load and parse the booklet', async () => {
       await service.loadTest();
       expect(json(service.tcs.rootTestlet)).toEqual(json(TestBooklet));
@@ -198,49 +202,43 @@ describe('TestLoaderService', () => {
           { name: 'tcs.loadProgressValue', value: 86.66666666666667 }, // unit 5 player (already loaded)
 
           // queue external unit contents
-          { name: 'tcs.setUnitLoadProgress$', value: [2] },
-          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 'PENDING' } },
           { name: 'tcs.setUnitLoadProgress$', value: [3] },
           { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 'PENDING' } },
+          { name: 'tcs.setUnitLoadProgress$', value: [2] },
+          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 'PENDING' } },
 
           // start here because loading is lazy
           { name: 'tcs.testStatus$', value: 'RUNNING' },
           { name: 'tls.loadTest', value: undefined },
 
-          // load external unit contents
-          { name: 'tcs.loadProgressValue', value: 86.66666666666667 }, // 0% of unit 2 content
-          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 0 } },
-          { name: 'tcs.loadProgressValue', value: 90 }, // 50% of unit 2 content
-          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 50 } },
-          { name: 'tcs.loadProgressValue', value: 91.66666666666666 }, // 75% of unit 2 content
-          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 75 } },
-          { name: 'tcs.loadProgressValue', value: 93.33333333333333 }, // 100% of unit 2 content
-          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 100 } },
-          { name: 'tcs.loadProgressValue', value: 93.33333333333333 }, // 0% of unit 3 content
+          // load external unit contents - start with unit 3, because it's the current unit
+          { name: 'tcs.loadProgressValue', value: 86.66666666666667 }, // 0% of unit 3 content
           { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 0 } },
-          { name: 'tcs.loadProgressValue', value: 96.66666666666667 }, // 50% of unit 3 content
+          { name: 'tcs.loadProgressValue', value: 90 }, // 50% of unit 3 content
           { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 50 } },
-          { name: 'tcs.loadProgressValue', value: 98.33333333333333 }, // 75% of unit 3 content
+          { name: 'tcs.loadProgressValue', value: 91.66666666666666 }, // 75% of unit 3 content
           { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 75 } },
-          { name: 'tcs.loadProgressValue', value: 100 }, // 100% of unit 3 content
+          { name: 'tcs.loadProgressValue', value: 93.33333333333333 }, // 100% of unit 3 content
           { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 100 } },
+          { name: 'tcs.loadProgressValue', value: 93.33333333333333 }, // 0% of unit 2 content
+          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 0 } },
+          { name: 'tcs.loadProgressValue', value: 96.66666666666667 }, // 50% of unit 2 content
+          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 50 } },
+          { name: 'tcs.loadProgressValue', value: 98.33333333333333 }, // 75% of unit 2 content
+          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 75 } },
+          { name: 'tcs.loadProgressValue', value: 100 }, // 100% of unit 2 content
+          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 100 } },
 
           // finish
           { name: 'bs.addTestLog', value: ['LOADCOMPLETE'] },
           { name: 'tcs.loadProgressValue', value: 100 }
         ];
-        // watcher.eventLog.forEach(logEntry => {
-        //   console.log(logEntry.name, logEntry.value);
-        // });
-        expect(watcher.eventLog).toEqual(expectedProtocol);
+
+        expect(watcher.log).toEqual(expectedProtocol);
       });
 
-      xit('when loading_mode is EAGER', async () => {
+      it('when loading_mode is EAGER', async () => {
         await loadTestWatched('withLoadingModeEager');
-
-        watcher.eventLog.forEach(logEntry => {
-          console.log(logEntry.name, logEntry.value);
-        });
 
         const expectedProtocol: WatcherLogEntry[] = [
           { name: 'tcs.testStatus$', value: 'INIT' },
@@ -294,27 +292,27 @@ describe('TestLoaderService', () => {
           { name: 'tcs.loadProgressValue', value: 80 }, // unit 5 content (was embedded)
           { name: 'tcs.loadProgressValue', value: 86.66666666666667 }, // unit 5 player (already loaded)
 
-          // external unit contents
-          { name: 'tcs.setUnitLoadProgress$', value: [2] },
-          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 'PENDING' } },
+          // external unit contents - start with unit 3, because it's the current unit
           { name: 'tcs.setUnitLoadProgress$', value: [3] },
           { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 'PENDING' } },
-          { name: 'tcs.loadProgressValue', value: 86.66666666666667 }, // 0% of unit 2 content
-          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 0 } },
-          { name: 'tcs.loadProgressValue', value: 90 }, // 50% of unit 2 content
-          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 50 } },
-          { name: 'tcs.loadProgressValue', value: 91.66666666666666 }, // 75% of unit 2 content
-          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 75 } },
-          { name: 'tcs.loadProgressValue', value: 93.33333333333333 }, // 100% of unit 2 content
-          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 100 } },
-          { name: 'tcs.loadProgressValue', value: 93.33333333333333 }, // 0% of unit 3 content
+          { name: 'tcs.setUnitLoadProgress$', value: [2] },
+          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 'PENDING' } },
+          { name: 'tcs.loadProgressValue', value: 86.66666666666667 }, // 0% of unit 3 content
           { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 0 } },
-          { name: 'tcs.loadProgressValue', value: 96.66666666666667 }, // 50% of unit 3 content
+          { name: 'tcs.loadProgressValue', value: 90 }, // 50% of unit 3 content
           { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 50 } },
-          { name: 'tcs.loadProgressValue', value: 98.33333333333333 }, // 75% of unit 3 content
+          { name: 'tcs.loadProgressValue', value: 91.66666666666666 }, // 75% of unit 3 content
           { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 75 } },
-          { name: 'tcs.loadProgressValue', value: 100 }, // 100% of unit 3 content
+          { name: 'tcs.loadProgressValue', value: 93.33333333333333 }, // 100% of unit 3 content
           { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 100 } },
+          { name: 'tcs.loadProgressValue', value: 93.33333333333333 }, // 0% of unit 2 content
+          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 0 } },
+          { name: 'tcs.loadProgressValue', value: 96.66666666666667 }, // 50% of unit 2 content
+          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 50 } },
+          { name: 'tcs.loadProgressValue', value: 98.33333333333333 }, // 75% of unit 2 content
+          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 75 } },
+          { name: 'tcs.loadProgressValue', value: 100 }, // 100% of unit 2 content
+          { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 100 } },
 
           // don't start until now because loadingMode is EAGER
           { name: 'bs.addTestLog', value: ['LOADCOMPLETE'] },
@@ -323,7 +321,7 @@ describe('TestLoaderService', () => {
           { name: 'tls.loadTest', value: undefined }
         ];
 
-        expect(watcher.eventLog).toEqual(expectedProtocol);
+        expect(watcher.log).toEqual(expectedProtocol);
       });
     });
   });

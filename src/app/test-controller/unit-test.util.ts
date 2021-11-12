@@ -12,8 +12,18 @@ export interface WatcherLogEntry {
   error?: string
 }
 
+/**
+ * A helper to watch property-changes, functions calls, observables etc. on different object to test the correct order
+ * of those events.
+ *
+ * Writing my's own watcher class might be a little bit naïve approach, but I did not find a way to test the correct
+ * order of different types of events like property changes, observable events and promise resolving wie the
+ * SpyOn-technique. This surely reflects the incoherence of the coding style in the whole test-controller module, which
+ * I could not entirely wipe out by now. The module might one day be more slimlined and therefore more straightforward
+ * to test.
+ */
 export class Watcher {
-  eventLog: WatcherLogEntry[] = [];
+  log: WatcherLogEntry[] = [];
   private watcherNames: string[] = [];
 
   private registerWatcher(watcherName: string): void {
@@ -28,7 +38,7 @@ export class Watcher {
     observable
       .pipe(shareReplay())
       .subscribe({
-        next: value => this.eventLog.push({
+        next: value => this.log.push({
           value,
           name: watcherName
         })
@@ -45,7 +55,7 @@ export class Watcher {
     object[propertyShadow] = object[propertyName];
     Object.defineProperty(object, propertyName, {
       set(value) {
-        self.eventLog.push({ name: watcherName, value });
+        self.log.push({ name: watcherName, value });
         watch$.next(value);
         this[propertyShadow] = value;
       },
@@ -61,22 +71,27 @@ export class Watcher {
     argumentsMapForLogger: { [argNr: number]: null|((unknown) => unknown) } = {}
   ): Observable<unknown> {
     const watcherName = `${objectName}.${methodName}`;
-    const methodShadow = `__________${methodName}`;
     this.registerWatcher(watcherName);
     const watch$ = new Subject();
-
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    const methodShadow = `__________${methodName}`;
     object[methodShadow] = object[methodName];
-    object[methodName] = (...args) => {
-      const mappedArguments = args
-        .map((arg, argNr) => (argumentsMapForLogger[argNr] ? argumentsMapForLogger[argNr](arg) : arg))
-        .filter((_, argNr) => argumentsMapForLogger[argNr] !== null);
-      this.eventLog.push({
-        name: watcherName,
-        value: mappedArguments
-      });
-      watch$.next(args);
-      object[methodShadow](...args);
-    };
+    Object.defineProperty(object, methodName, {
+      get() {
+        return (...args) => {
+          const mappedArguments = args
+            .map((arg, argNr) => (argumentsMapForLogger[argNr] ? argumentsMapForLogger[argNr](arg) : arg))
+            .filter((_, argNr) => argumentsMapForLogger[argNr] !== null);
+          self.log.push({
+            name: watcherName,
+            value: mappedArguments
+          });
+          watch$.next(args);
+          return object[methodShadow](...args);
+        };
+      }
+    });
     return watch$;
   }
 
@@ -84,14 +99,20 @@ export class Watcher {
     this.registerWatcher(watcherName);
     return promiseToWatch
       .then(value => {
-        this.eventLog.push({ name: watcherName, value });
+        this.log.push({ name: watcherName, value });
         return value;
       })
       .catch(
         error => {
-          this.eventLog.push({ name: watcherName, value: '', error });
+          this.log.push({ name: watcherName, value: '', error });
           return error;
         }
       );
+  }
+
+  dump(): void {
+    this.log.forEach(logEntry => {
+      console.log(logEntry.name, logEntry.value);
+    });
   }
 }
