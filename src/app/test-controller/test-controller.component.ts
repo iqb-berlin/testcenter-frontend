@@ -182,7 +182,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         distinctUntilChanged()
       )
       .subscribe(isWsConnected => {
-        // console.log('ISCO', isWsConnected, this.tcs.testMode.saveResponses);
         if (this.tcs.testMode.saveResponses) {
           this.bs.updateTestState(this.tcs.testId, [{
             key: TestStateKey.CONNECTION,
@@ -247,7 +246,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   handleCommand(commandName: string, params: string[]): void {
-    console.log(`[${commandName}](${params.join(', ')})`);
     switch (commandName.toLowerCase()) {
       case 'debug':
         this.debugPane = params.length === 0 || params[0].toLowerCase() !== 'off';
@@ -300,7 +298,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case MaxTimerDataType.ENDED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', { duration: 3000 });
         this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
-        console.log('setTimeLeft 1 - handleMaxTimer ENDED');
         this.tcs.lastMaxTimerState[maxTimerData.testletId] = 0;
         if (this.tcs.testMode.saveResponses) {
           this.bs.updateTestState(
@@ -322,7 +319,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case MaxTimerDataType.CANCELLED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', { duration: 3000 });
         this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
-        console.log('setTimeLeft 2 - handleMaxTimer CANCELLED');
         this.tcs.lastMaxTimerState[maxTimerData.testletId] = 0;
         if (this.tcs.testMode.saveResponses) {
           this.bs.updateTestState(
@@ -338,7 +334,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         break;
       case MaxTimerDataType.INTERRUPTED:
         this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, this.tcs.lastMaxTimerState[maxTimerData.testletId]);
-        console.log('setTimeLeft 3 - handleMaxTimer INTERRUPTED');
         this.timerValue = null;
         break;
       case MaxTimerDataType.STEP:
