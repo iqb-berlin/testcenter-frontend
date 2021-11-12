@@ -1,5 +1,5 @@
 import { NavigationLeaveRestrictions, Testlet, UnitDef } from './test-controller.classes';
-import { StateReportEntry, TestStateKey, UnitData } from './test-controller.interfaces';
+import { TestStateKey, UnitData } from './test-controller.interfaces';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../config/booklet-config';
 
@@ -159,13 +159,9 @@ export const TestUnitStateCurrentPages = Object.values(TestUnits)
   .map(unitDef => unitDef.state.CURRENT_PAGE_ID)
   .reduce(perSequenceId, {});
 
-export const TestTestState: StateReportEntry[] = [
-  {
-    key: TestStateKey.CURRENT_UNIT_ID,
-    content: 'u3',
-    timeStamp: 0
-  }
-];
+export const TestTestState: { [k in TestStateKey]?: string } = {
+  CURRENT_UNIT_ID: 'u3'
+};
 
 export const TestBooklet = testlet({
   sequenceId: 0,

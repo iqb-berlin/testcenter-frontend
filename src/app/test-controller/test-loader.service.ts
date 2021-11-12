@@ -92,29 +92,27 @@ export class TestLoaderService {
     this.unitContentLoadingQueue = [];
   }
 
-  private applyLasteState(lastState: StateReportEntry[]): void {
-    console.log(lastState);
+  private applyLasteState(lastState: { [k in TestStateKey]?: string }): void {
     this.navTargetUnitId = '';
     this.resumeTestStatus = TestControllerState.RUNNING;
     if (!lastState) {
       return;
     }
-    lastState.forEach(stateEntry => {
-      switch (stateEntry.key) {
+    Object.keys(lastState).forEach(stateKey => {
+      switch (stateKey) {
         case (TestStateKey.CURRENT_UNIT_ID):
-          console.log('CURRENT_UNIT_ID', stateEntry.content);
-          this.navTargetUnitId = stateEntry.content;
+          this.navTargetUnitId = lastState[stateKey];
           break;
         case (TestStateKey.TESTLETS_TIMELEFT):
-          this.tcs.lastMaxTimerState = JSON.parse(stateEntry.content);
+          this.tcs.lastMaxTimerState = JSON.parse(lastState[stateKey]);
           break;
         case (TestStateKey.CONTROLLER):
-          if (stateEntry.content === TestControllerState.PAUSED) {
+          if (lastState[stateKey] === TestControllerState.PAUSED) {
             this.resumeTestStatus = TestControllerState.PAUSED;
           }
           break;
         case (TestStateKey.TESTLETS_CLEARED_CODE):
-          this.tcs.clearCodeTestlets = JSON.parse(stateEntry.content);
+          this.tcs.clearCodeTestlets = JSON.parse(lastState[stateKey]);
           break;
         default:
       }

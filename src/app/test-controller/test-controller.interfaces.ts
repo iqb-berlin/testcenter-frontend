@@ -26,7 +26,7 @@ export type UnitData = {
 export interface TestData {
   xml: string;
   mode: string;
-  laststate: StateReportEntry[];
+  laststate: { [k in TestStateKey]?: string };
 }
 
 export enum TestStateKey {
