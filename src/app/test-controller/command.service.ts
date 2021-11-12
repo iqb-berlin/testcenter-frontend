@@ -1,5 +1,5 @@
 import {
-  Inject, Injectable, OnDestroy, SkipSelf
+  Inject, Injectable, OnDestroy
 } from '@angular/core';
 import {
   of, Subject, Subscription, timer
@@ -89,13 +89,13 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
         filter((command: Command) => (this.executedCommandIds.indexOf(command.id) < 0)),
         // min delay between items
         concatMap((command: Command) => timer(1000).pipe(ignoreElements(), startWith(command))),
-        mergeMap((command: Command) => {
-          return this.http.patch(`${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed`, {})
+        mergeMap((command: Command) =>
+          // eslint-disable-next-line
+          this.http.patch(`${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed`, {})
             .pipe(
               map(() => command),
               tap(cmd => this.executedCommandIds.push(cmd.id))
-            );
-        })
+            ))
       ).subscribe(command => this.command$.next(command));
   }
 
