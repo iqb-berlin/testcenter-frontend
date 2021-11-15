@@ -15,7 +15,7 @@ export const TestBookletXML = `<Booklet>
   <BookletConfig>
     <Config key="force_presentation_complete">ON</Config>
     <Config key="force_response_complete">OFF</Config>
-    <Config key="loading_mode">LAZY</Config>
+    <Config key="loading_mode">EAGER</Config>
   </BookletConfig>
 
   <Units>
@@ -45,8 +45,12 @@ export const TestBookletXML = `<Booklet>
 </Booklet>`;
 
 export const TestBookletXmlVariants = {
-  withLoadingModeLazy: TestBookletXML,
-  withLoadingModeEager: TestBookletXML.replace('key="loading_mode">LAZY', 'key="loading_mode">EAGER')
+  withLoadingModeEager: TestBookletXML,
+  withLoadingModeLazy: TestBookletXML.replace('key="loading_mode">EAGER', 'key="loading_mode">LAZY'),
+  withMissingUnit: TestBookletXML.replace('<Unit id="u2"', '<Unit id="MISSING"'),
+  withBrokenBooklet: 'Broken < stuff',
+  withMissingPlayer: TestBookletXML,
+  withMissingUnitContent: TestBookletXML
 };
 
 export const TestUnits: { [unitId: string]: UnitData } = {
@@ -221,11 +225,10 @@ TestBookletConfig.force_presentation_complete = 'ON';
 TestBookletConfig.force_response_complete = 'OFF';
 TestBookletConfig.loading_mode = 'EAGER';
 
-export const loadingProtocols: { [testId in keyof typeof TestBookletXmlVariants]: WatcherLogEntry[] } = {
+export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVariants]: WatcherLogEntry[] } = {
   withLoadingModeLazy: [
     { name: 'tcs.testStatus$', value: 'INIT' },
     { name: 'tcs.totalLoadingProgress', value: 0 },
-    // eslint-disable-next-line max-len,object-curly-newline
     { name: 'tcs.testStatus$', value: 'LOADING' },
 
     // unit 1
@@ -310,7 +313,6 @@ export const loadingProtocols: { [testId in keyof typeof TestBookletXmlVariants]
   withLoadingModeEager: [
     { name: 'tcs.testStatus$', value: 'INIT' },
     { name: 'tcs.totalLoadingProgress', value: 0 },
-    // eslint-disable-next-line max-len,object-curly-newline
     { name: 'tcs.testStatus$', value: 'LOADING' },
 
     // unit 1
@@ -386,5 +388,85 @@ export const loadingProtocols: { [testId in keyof typeof TestBookletXmlVariants]
     { name: 'tcs.totalLoadingProgress', value: 100 },
     { name: 'tcs.testStatus$', value: 'RUNNING' },
     { name: 'tls.loadTest', value: undefined }
+  ],
+
+  withMissingUnit: [
+    { name: 'tcs.testStatus$', value: 'INIT' },
+    { name: 'tcs.totalLoadingProgress', value: 0 },
+    { name: 'tcs.testStatus$', value: 'LOADING' },
+    { name: 'tcs.totalLoadingProgress', value: 6.666666666666667 }, // unit 1
+    { name: 'tcs.setUnitLoadProgress$', value: [1] },
+    { name: 'tcs.unitContentLoadProgress$[1]', value: { progress: 100 } },
+    { name: 'tcs.totalLoadingProgress', value: 13.333333333333334 }, // unit 1 content (was embedded)
+    { name: 'tcs.totalLoadingProgress', value: 13.333333333333334 }, // 0% of a-player
+    { name: 'tcs.totalLoadingProgress', value: 16.666666666666664 }, // 50% of a-player
+    { name: 'tcs.totalLoadingProgress', value: 18.333333333333332 }, // 75% of a-player
+    { name: 'tcs.totalLoadingProgress', value: 20 }, // 100% of a-player
+    { name: 'tcs.totalLoadingProgress', value: 20 }, // 100% of a-player (again)
+    { name: 'tcs.addPlayer', value: ['a-player'] },
+    { name: 'tls.loadTest', value: '', error: 'error requesting unit withMissingUnit/MISSING' }
+  ],
+
+  withBrokenBooklet: [
+    { name: 'tcs.testStatus$', value: 'INIT' },
+    { name: 'tcs.totalLoadingProgress', value: 0 },
+    { name: 'tcs.testStatus$', value: 'LOADING' },
+    { name: 'tls.loadTest', value: '', error: 'Root element fo Booklet should be <Booklet>' }
+  ],
+
+  withMissingPlayer: [
+    { name: 'tcs.testStatus$', value: 'INIT' },
+    { name: 'tcs.totalLoadingProgress', value: 0 },
+    { name: 'tcs.testStatus$', value: 'LOADING' },
+    { name: 'tcs.totalLoadingProgress', value: 6.666666666666667 }, // unit 1
+    { name: 'tcs.setUnitLoadProgress$', value: [1] },
+    { name: 'tcs.unitContentLoadProgress$[1]', value: { progress: 100 } },
+    { name: 'tcs.totalLoadingProgress', value: 13.333333333333334 }, // unit 1 content (was embedded)
+    { name: 'tls.loadTest', value: '', error: 'player is missing' }
+  ],
+
+  withMissingUnitContent: [
+    { name: 'tcs.testStatus$', value: 'INIT' },
+    { name: 'tcs.totalLoadingProgress', value: 0 },
+    { name: 'tcs.testStatus$', value: 'LOADING' },
+    { name: 'tcs.totalLoadingProgress', value: 6.666666666666667 }, // unit 1
+    { name: 'tcs.setUnitLoadProgress$', value: [1] },
+    { name: 'tcs.unitContentLoadProgress$[1]', value: { progress: 100 } },
+    { name: 'tcs.totalLoadingProgress', value: 13.333333333333334 }, // unit 1 content (was embedded)
+    { name: 'tcs.totalLoadingProgress', value: 13.333333333333334 }, // 0% of a-player
+    { name: 'tcs.totalLoadingProgress', value: 16.666666666666664 }, // 50% of a-player
+    { name: 'tcs.totalLoadingProgress', value: 18.333333333333332 }, // 75% of a-player
+    { name: 'tcs.totalLoadingProgress', value: 20 }, // 100% of a-player
+    { name: 'tcs.totalLoadingProgress', value: 20 }, // 100% of a-player (again)
+    { name: 'tcs.addPlayer', value: ['a-player'] },
+    { name: 'tcs.totalLoadingProgress', value: 26.666666666666668 }, // unit 2
+    { name: 'tcs.totalLoadingProgress', value: 26.666666666666668 }, // 0% of another player
+    { name: 'tcs.totalLoadingProgress', value: 30 }, // 50% of another player
+    { name: 'tcs.totalLoadingProgress', value: 31.666666666666664 }, // 75% of another-player
+    { name: 'tcs.totalLoadingProgress', value: 33.33333333333333 }, // 100% of another-player
+    { name: 'tcs.totalLoadingProgress', value: 33.33333333333333 }, // 100% of another-player (again)
+    { name: 'tcs.addPlayer', value: ['another-player'] },
+    { name: 'tcs.totalLoadingProgress', value: 40 }, // unit 3
+    { name: 'tcs.totalLoadingProgress', value: 40 }, // 0% of a-player-but-version-2
+    { name: 'tcs.totalLoadingProgress', value: 43.333333333333336 }, // 50% of a-player-but-version-2
+    { name: 'tcs.totalLoadingProgress', value: 45 }, // 75% of a-player-but-version-2
+    { name: 'tcs.totalLoadingProgress', value: 46.666666666666664 }, // 100% of a-player-but-version-2
+    { name: 'tcs.totalLoadingProgress', value: 46.666666666666664 }, // 100% of a-player-but-version-2 (again)
+    { name: 'tcs.addPlayer', value: ['a-player-but-version-2'] },
+    { name: 'tcs.totalLoadingProgress', value: 53.333333333333336 }, // unit 4
+    { name: 'tcs.setUnitLoadProgress$', value: [4] },
+    { name: 'tcs.unitContentLoadProgress$[4]', value: { progress: 100 } },
+    { name: 'tcs.totalLoadingProgress', value: 60 }, // unit 4 content (was embedded)
+    { name: 'tcs.totalLoadingProgress', value: 66.66666666666666 }, // unit 4 player (already loaded)
+    { name: 'tcs.totalLoadingProgress', value: 73.33333333333333 }, // unit 5
+    { name: 'tcs.setUnitLoadProgress$', value: [5] },
+    { name: 'tcs.unitContentLoadProgress$[5]', value: { progress: 100 } },
+    { name: 'tcs.totalLoadingProgress', value: 80 }, // unit 5 content (was embedded)
+    { name: 'tcs.totalLoadingProgress', value: 86.66666666666667 }, // unit 5 player (already loaded)
+    { name: 'tcs.setUnitLoadProgress$', value: [3] },
+    { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 'PENDING' } },
+    { name: 'tcs.setUnitLoadProgress$', value: [2] },
+    { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 'PENDING' } },
+    { name: 'tls.loadTest', value: '', error: 'resource is missing' }
   ]
 };

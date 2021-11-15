@@ -287,59 +287,56 @@ export class TestLoaderService {
 
   private getBookletFromXml(xmlString: string): Testlet {
     let rootTestlet: Testlet = null;
+    const oParser = new DOMParser();
+    const oDOM = oParser.parseFromString(xmlString, 'text/xml');
 
-    try {
-      const oParser = new DOMParser();
-      const oDOM = oParser.parseFromString(xmlString, 'text/xml');
-      if (oDOM.documentElement.nodeName === 'Booklet') {
-        const metadataElements = oDOM.documentElement.getElementsByTagName('Metadata');
-        if (metadataElements.length > 0) {
-          const metadataElement = metadataElements[0];
-          const IdElement = metadataElement.getElementsByTagName('Id')[0];
-          const LabelElement = metadataElement.getElementsByTagName('Label')[0];
-          rootTestlet = new Testlet(0, IdElement.textContent, LabelElement.textContent);
-          const unitsElements = oDOM.documentElement.getElementsByTagName('Units');
-          if (unitsElements.length > 0) {
-            const customTextsElements = oDOM.documentElement.getElementsByTagName('CustomTexts');
-            if (customTextsElements.length > 0) {
-              const customTexts = TestLoaderService.getChildElements(customTextsElements[0]);
-              const customTextsForBooklet = {};
-              for (let childIndex = 0; childIndex < customTexts.length; childIndex++) {
-                if (customTexts[childIndex].nodeName === 'Text') {
-                  const customTextKey = customTexts[childIndex].getAttribute('key');
-                  if ((typeof customTextKey !== 'undefined') && (customTextKey !== null)) {
-                    customTextsForBooklet[customTextKey] = customTexts[childIndex].textContent;
-                  }
-                }
-              }
-              this.cts.addCustomTexts(customTextsForBooklet);
+    if (oDOM.documentElement.nodeName !== 'Booklet') {
+      throw Error('Root element fo Booklet should be <Booklet>');
+    }
+    const metadataElements = oDOM.documentElement.getElementsByTagName('Metadata');
+    if (metadataElements.length === 0) {
+      throw Error('<Metadata>-Element missing');
+    }
+    const metadataElement = metadataElements[0];
+    const IdElement = metadataElement.getElementsByTagName('Id')[0];
+    const LabelElement = metadataElement.getElementsByTagName('Label')[0];
+    rootTestlet = new Testlet(0, IdElement.textContent, LabelElement.textContent);
+    const unitsElements = oDOM.documentElement.getElementsByTagName('Units');
+    if (unitsElements.length > 0) {
+      const customTextsElements = oDOM.documentElement.getElementsByTagName('CustomTexts');
+      if (customTextsElements.length > 0) {
+        const customTexts = TestLoaderService.getChildElements(customTextsElements[0]);
+        const customTextsForBooklet = {};
+        for (let childIndex = 0; childIndex < customTexts.length; childIndex++) {
+          if (customTexts[childIndex].nodeName === 'Text') {
+            const customTextKey = customTexts[childIndex].getAttribute('key');
+            if ((typeof customTextKey !== 'undefined') && (customTextKey !== null)) {
+              customTextsForBooklet[customTextKey] = customTexts[childIndex].textContent;
             }
-
-            const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
-
-            this.tcs.bookletConfig = new BookletConfig();
-            this.tcs.bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
-            if (bookletConfigElements.length > 0) {
-              this.tcs.bookletConfig.setFromXml(bookletConfigElements[0]);
-            }
-
-            // recursive call through all testlets
-            this.lastUnitSequenceId = 1;
-            this.tcs.allUnitIds = [];
-            this.addTestletContentFromBookletXml(
-              rootTestlet,
-              unitsElements[0],
-              new NavigationLeaveRestrictions(
-                this.tcs.bookletConfig.force_presentation_complete,
-                this.tcs.bookletConfig.force_response_complete
-              )
-            );
           }
         }
+        this.cts.addCustomTexts(customTextsForBooklet);
       }
-    } catch (error) {
-      console.error('error reading booklet XML:', error);
-      throw Error('Problem beim Parsen der Testinformation');
+
+      const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
+
+      this.tcs.bookletConfig = new BookletConfig();
+      this.tcs.bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
+      if (bookletConfigElements.length > 0) {
+        this.tcs.bookletConfig.setFromXml(bookletConfigElements[0]);
+      }
+
+      // recursive call through all testlets
+      this.lastUnitSequenceId = 1;
+      this.tcs.allUnitIds = [];
+      this.addTestletContentFromBookletXml(
+        rootTestlet,
+        unitsElements[0],
+        new NavigationLeaveRestrictions(
+          this.tcs.bookletConfig.force_presentation_complete,
+          this.tcs.bookletConfig.force_response_complete
+        )
+      );
     }
     return rootTestlet;
   }

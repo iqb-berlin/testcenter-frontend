@@ -1,60 +1,21 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import { TestBed } from '@angular/core/testing';
 import { CustomtextService } from 'iqb-components';
-import { Observable, of, Subscription } from 'rxjs';
-import { delay, takeWhile } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { takeWhile } from 'rxjs/operators';
 import { NavigationExtras, Router } from '@angular/router';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { TestLoaderService } from './test-loader.service';
 import {
-  loadingProtocols,
-  TestBooklet,
-  TestBookletConfig,
-  TestBookletXmlVariants, TestPlayers, TestResources, TestTestState,
+  TestLoadingProtocols, TestBooklet, TestBookletConfig, TestBookletXmlVariants, TestPlayers,
   TestUnitDefinitionsPerSequenceId, TestUnitPresentationProgressStates, TestUnitResponseProgressStates,
-  TestUnits, TestUnitStateCurrentPages, TestUnitStateDataParts
-} from '../unit-test-data/unit-test-example-data';
-import {
-  LoadingFile, LoadingProgress, TestData, UnitData
-} from '../interfaces/test-controller.interfaces';
+  TestUnitStateCurrentPages, TestUnitStateDataParts
+} from '../unit-test-data/test-data';
+import { LoadingProgress } from '../interfaces/test-controller.interfaces';
 import { json } from '../unit-test-data/unit-test.util';
 import { Watcher } from '../unit-test-data/watcher';
-
-class MockBackendService {
-  // eslint-disable-next-line class-methods-use-this
-  getTestData(testId: keyof typeof TestBookletXmlVariants): Observable<TestData> {
-    return of({
-      xml: TestBookletXmlVariants[testId],
-      mode: 'run-hot-return',
-      laststate: TestTestState
-    });
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  getUnitData(testId: string, unitid: string): Observable<UnitData | boolean> {
-    return of(TestUnits[unitid] || false);
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  getResource(testId: string, resId: string): Observable<LoadingFile> {
-    return of(
-      { progress: 0 },
-      { progress: 50 },
-      { progress: 75 },
-      { progress: 100 },
-      { content: TestResources[resId] }
-    )
-      .pipe(
-        delay(1)
-      );
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  addTestLog(): Subscription {
-    return of().subscribe();
-  }
-}
+import { MockBackendService } from '../unit-test-data/mock-backend.service';
 
 const MockCustomtextService = {
 };
@@ -142,12 +103,50 @@ describe('TestLoaderService', () => {
 
       it('when loading_mode is LAZY', async () => {
         await loadTestWatched('withLoadingModeLazy');
-        expect(watcher.log).toEqual(loadingProtocols.withLoadingModeLazy);
+        expect(watcher.log).toEqual(TestLoadingProtocols.withLoadingModeLazy);
       });
 
       it('when loading_mode is EAGER', async () => {
         await loadTestWatched('withLoadingModeEager');
-        expect(watcher.log).toEqual(loadingProtocols.withLoadingModeEager);
+        expect(watcher.log).toEqual(TestLoadingProtocols.withLoadingModeEager);
+      });
+
+      it('even with missing unit', async () => {
+        try {
+          await loadTestWatched('withMissingUnit');
+          // eslint-disable-next-line no-empty
+        } catch (e) { }
+        expect(watcher.log).toEqual(TestLoadingProtocols.withMissingUnit);
+      });
+
+      it('even with broken booklet', async () => {
+        try {
+          await loadTestWatched('withBrokenBooklet');
+          // eslint-disable-next-line no-empty
+        } catch (e) {
+          watcher.dump();
+        }
+        expect(watcher.log).toEqual(TestLoadingProtocols.withBrokenBooklet);
+      });
+
+      it('even with missing player', async () => {
+        try {
+          await loadTestWatched('withMissingPlayer');
+          // eslint-disable-next-line no-empty
+        } catch (e) {
+          watcher.dump();
+        }
+        expect(watcher.log).toEqual(TestLoadingProtocols.withMissingPlayer);
+      });
+
+      it('even with missing unit-content', async () => {
+        try {
+          await loadTestWatched('withMissingUnitContent');
+          // eslint-disable-next-line no-empty
+        } catch (e) {
+          watcher.dump();
+        }
+        expect(watcher.log).toEqual(TestLoadingProtocols.withMissingUnitContent);
       });
     });
   });

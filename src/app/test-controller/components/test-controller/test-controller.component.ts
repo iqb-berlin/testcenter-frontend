@@ -36,7 +36,7 @@ import { ApiError } from '../../../app.interfaces';
   styleUrls: ['./test-controller.component.css']
 })
 export class TestControllerComponent implements OnInit, OnDestroy {
-  private subscriptions: { [key: string]: Subscription|null } = {
+  private subscriptions: { [key: string]: Subscription | null } = {
     errorReporting: null,
     testStatus: null,
     routing: null,
@@ -108,7 +108,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               this.startConnectionStatusLogging();
               this.setUnitScreenHeader();
             })
-            .catch((error: string|Error|ApiError) => {
+            .catch((error: string | Error | ApiError) => {
               console.log('error', error);
               if (typeof error === 'string') {
                 // interceptor already pushed mds.appError$

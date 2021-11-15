@@ -104,9 +104,10 @@ export class Watcher {
         return value;
       })
       .catch(
-        error => {
-          this.addLog({ name: watcherName, value: '', error });
-          return error;
+        (error: Error | string) => {
+          const errMsg = error instanceof Error ? error.message : error;
+          this.addLog({ name: watcherName, value: '', error: errMsg });
+          throw error instanceof Error ? error : new Error(errMsg);
         }
       );
   }
@@ -114,7 +115,11 @@ export class Watcher {
   dump(): void {
     this.log.forEach(logEntry => {
       // eslint-disable-next-line no-console
-      console.log(logEntry.name, logEntry.value);
+      console.log(`{ name: '${logEntry.name}', value: ${JSON.stringify(logEntry.value)} }`);
+      if (logEntry.error) {
+        // eslint-disable-next-line no-console
+        console.log('error: ', logEntry.error);
+      }
     });
   }
 }

@@ -25,7 +25,7 @@ export class UnitActivateGuard implements CanActivate {
     private router: Router
   ) {}
 
-  canActivate(route: ActivatedRouteSnapshot): Observable<boolean>|boolean {
+  canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
     const targetUnitSequenceId: number = Number(route.params.u);
     if (this.tcs.rootTestlet === null) {
       const oldTestId = LocalStorage.getTestId();
@@ -82,6 +82,8 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       .pipe(
         map(cdresult => {
           if ((typeof cdresult === 'undefined') || (cdresult === false)) {
+            // eslint-disable-next-line no-self-assign
+            this.tcs.currentUnitSequenceId = this.tcs.currentUnitSequenceId; // to refresh menu
             return false;
           }
           this.tcs.cancelMaxTimer(); // does locking the block
@@ -102,7 +104,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     return this.notifyNavigationDenied(reasons, direction);
   }
 
-  private checkCompleteness(direction: 'Next'|'Prev'): VeronaNavigationDeniedReason[] {
+  private checkCompleteness(direction: 'Next' | 'Prev'): VeronaNavigationDeniedReason[] {
     const unit = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId);
     const reasons: VeronaNavigationDeniedReason[] = [];
     const checkOnValue = {
@@ -142,7 +144,11 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
           showcancel: false
         }
       });
-      return dialogCDRef.afterClosed().pipe(map(() => false));
+      return dialogCDRef.afterClosed().pipe(map(() => {
+        // eslint-disable-next-line no-self-assign
+        this.tcs.currentUnitSequenceId = this.tcs.currentUnitSequenceId; // to refresh menu
+        return false;
+      }));
     }
     this.snackBar.open(
       `Im Hot-Modus dürfte hier nicht ${(dir === 'Next') ? 'weiter' : ' zurück'}geblättert
