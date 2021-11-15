@@ -25,7 +25,9 @@ export class TestControllerService {
   testId = '';
   testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
   testStatusEnum = TestControllerState;
+
   totalLoadingProgress = 0;
+
   clearCodeTestlets: string[] = [];
 
   testMode = new TestMode();
@@ -35,16 +37,20 @@ export class TestControllerService {
   maxTimeTimer$ = new Subject<MaxTimerData>();
   currentMaxTimerTestletId = '';
   private maxTimeIntervalSubscription: Subscription = null;
+  lastMaxTimerState: KeyValuePairNumber = {};
+  // TODO most likely lastMaxTimerState would be redundant, when maxTimeTimer$ was a BehaviourSubject
 
   currentUnitDbKey = '';
   currentUnitTitle = '';
 
   allUnitIds: string[] = [];
 
+  private unitStateDataToSave$ = new Subject<UnitStateData>();
+  windowFocusState$ = new Subject<WindowFocusState>();
+
   resumeTargetUnitSequenceId = 0;
 
   private _navigationDenial = new Subject<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }>();
-
   get navigationDenial(): Observable<{ sourceUnitSequenceId: number, reason: VeronaNavigationDeniedReason[] }> {
     return this._navigationDenial;
   }
@@ -62,8 +68,12 @@ export class TestControllerService {
     return this._currentUnitSequenceId$.asObservable();
   }
 
-  lastMaxTimerState: KeyValuePairNumber = {};
-
+  /**
+   * the structure of this service is a little bit weird. instead of distributing the UnitDefs into the several arrays
+   * below we could store a single artraay with UnitDefs (wich would be a flattend version of the rooot testlet). Thus
+   * we would could get rid of all thos arrays, get-, set- and has- functions. I leave this out for the next
+   * refactoring. TODO simply data structure
+   */
   private players: { [filename: string]: string } = {};
   private unitDefinitions: { [sequenceId: number]: string } = {};
   private unitStateDataParts: { [sequenceId: number]: string } = {};
@@ -71,9 +81,6 @@ export class TestControllerService {
   private unitResponseProgressStates: { [sequenceId: number]: string } = {};
   private unitStateCurrentPages: { [sequenceId: number]: string } = {};
   private unitContentLoadProgress$: { [sequenceId: number]: Observable<LoadingProgress> } = {};
-
-  private unitStateDataToSave$ = new Subject<UnitStateData>();
-  windowFocusState$ = new Subject<WindowFocusState>();
 
   constructor(
     private router: Router,
