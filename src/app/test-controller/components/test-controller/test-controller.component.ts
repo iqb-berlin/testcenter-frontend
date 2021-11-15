@@ -298,14 +298,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case MaxTimerDataType.ENDED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', { duration: 3000 });
         this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
-        this.tcs.lastMaxTimerState[maxTimerData.testletId] = 0;
+        this.tcs.maxTimeTimers[maxTimerData.testletId] = 0;
         if (this.tcs.testMode.saveResponses) {
           this.bs.updateTestState(
             this.tcs.testId,
             [<StateReportEntry>{
               key: TestStateKey.TESTLETS_TIMELEFT,
               timeStamp: Date.now(),
-              content: JSON.stringify(this.tcs.lastMaxTimerState)
+              content: JSON.stringify(this.tcs.maxTimeTimers)
             }]
           );
         }
@@ -319,34 +319,34 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case MaxTimerDataType.CANCELLED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', { duration: 3000 });
         this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
-        this.tcs.lastMaxTimerState[maxTimerData.testletId] = 0;
+        this.tcs.maxTimeTimers[maxTimerData.testletId] = 0;
         if (this.tcs.testMode.saveResponses) {
           this.bs.updateTestState(
             this.tcs.testId,
             [<StateReportEntry>{
               key: TestStateKey.TESTLETS_TIMELEFT,
               timeStamp: Date.now(),
-              content: JSON.stringify(this.tcs.lastMaxTimerState)
+              content: JSON.stringify(this.tcs.maxTimeTimers)
             }]
           );
         }
         this.timerValue = null;
         break;
       case MaxTimerDataType.INTERRUPTED:
-        this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, this.tcs.lastMaxTimerState[maxTimerData.testletId]);
+        this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, this.tcs.maxTimeTimers[maxTimerData.testletId]);
         this.timerValue = null;
         break;
       case MaxTimerDataType.STEP:
         this.timerValue = maxTimerData;
         if ((maxTimerData.timeLeftSeconds % 15) === 0) {
-          this.tcs.lastMaxTimerState[maxTimerData.testletId] = Math.round(maxTimerData.timeLeftSeconds / 60);
+          this.tcs.maxTimeTimers[maxTimerData.testletId] = Math.round(maxTimerData.timeLeftSeconds / 60);
           if (this.tcs.testMode.saveResponses) {
             this.bs.updateTestState(
               this.tcs.testId,
               [<StateReportEntry>{
                 key: TestStateKey.TESTLETS_TIMELEFT,
                 timeStamp: Date.now(),
-                content: JSON.stringify(this.tcs.lastMaxTimerState)
+                content: JSON.stringify(this.tcs.maxTimeTimers)
               }]
             );
           }

@@ -57,6 +57,7 @@ export class TestLoaderService {
 
       testData = await this.bs.getTestData(this.tcs.testId).toPromise();
       this.tcs.testMode = new TestMode(testData.mode);
+      this.restoreRestrictions(testData.laststate);
       this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
 
       await this.loadUnits();
@@ -96,14 +97,25 @@ export class TestLoaderService {
         case (TestStateKey.CURRENT_UNIT_ID):
           resumeCurrentUnitSequenceId = this.tcs.rootTestlet.getSequenceIdByUnitAlias(lastState[stateKey]) || 1;
           break;
-        case (TestStateKey.TESTLETS_TIMELEFT):
-          this.tcs.lastMaxTimerState = JSON.parse(lastState[stateKey]);
-          break;
         case (TestStateKey.CONTROLLER):
           if (lastState[stateKey] === TestControllerState.PAUSED) {
             resumeTestStatus = TestControllerState.PAUSED;
             this.tcs.resumeTargetUnitSequenceId = resumeCurrentUnitSequenceId;
           }
+          break;
+        default:
+      }
+    });
+    this.tcs.setUnitNavigationRequest(resumeCurrentUnitSequenceId.toString());
+    this.tcs.testStatus$.next(resumeTestStatus);
+  }
+
+  private restoreRestrictions(lastState: { [k in TestStateKey]?: string }): void {
+    Object.keys(lastState).forEach(stateKey => {
+      switch (stateKey) {
+        case (TestStateKey.TESTLETS_TIMELEFT):
+          this.tcs.maxTimeTimers = JSON.parse(lastState[stateKey]);
+          console.log(this.tcs.maxTimeTimers);
           break;
         case (TestStateKey.TESTLETS_CLEARED_CODE):
           this.tcs.clearCodeTestlets = JSON.parse(lastState[stateKey]);
@@ -111,8 +123,6 @@ export class TestLoaderService {
         default:
       }
     });
-    this.tcs.setUnitNavigationRequest(resumeCurrentUnitSequenceId.toString());
-    this.tcs.testStatus$.next(resumeTestStatus);
   }
 
   private loadUnits(): Promise<number> {
@@ -395,9 +405,9 @@ export class TestLoaderService {
         targetTestlet.codePrompt = codePrompt;
       }
       targetTestlet.maxTimeLeft = maxTime;
-      if (this.tcs.lastMaxTimerState) {
-        if (targetTestlet.id in this.tcs.lastMaxTimerState) {
-          targetTestlet.maxTimeLeft = this.tcs.lastMaxTimerState[targetTestlet.id];
+      if (this.tcs.maxTimeTimers) {
+        if (targetTestlet.id in this.tcs.maxTimeTimers) {
+          targetTestlet.maxTimeLeft = this.tcs.maxTimeTimers[targetTestlet.id];
         }
       }
       const newNavigationLeaveRestrictions =

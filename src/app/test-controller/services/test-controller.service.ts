@@ -37,8 +37,7 @@ export class TestControllerService {
   maxTimeTimer$ = new Subject<MaxTimerData>();
   currentMaxTimerTestletId = '';
   private maxTimeIntervalSubscription: Subscription = null;
-  lastMaxTimerState: KeyValuePairNumber = {};
-  // TODO most likely lastMaxTimerState would be redundant, when maxTimeTimer$ was a BehaviourSubject
+  maxTimeTimers: KeyValuePairNumber = {};
 
   currentUnitDbKey = '';
   currentUnitTitle = '';
@@ -116,7 +115,7 @@ export class TestControllerService {
       this.maxTimeIntervalSubscription = null;
     }
     this.currentMaxTimerTestletId = '';
-    this.lastMaxTimerState = {};
+    this.maxTimeTimers = {};
     this.unitPresentationProgressStates = {};
   }
 
