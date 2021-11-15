@@ -147,11 +147,6 @@ mat-button-toggle-group {
   line-height: 36px !important;
 }
 
-.mat-button-disabled.mat-button-disabled,
-.mat-button-disabled.mat-button-disabled {
-  background-color: lightgray
-}
-
 .mat-button-toggle-checked .mat-button-toggle-button,
 .mat-button-toggle-checked .mat-button-toggle-button {
   background-color: var(--accent);
