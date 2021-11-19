@@ -130,7 +130,7 @@ export class Testlet extends TestletContentElement {
   }
 
   getSequenceIdByUnitAlias(alias: string): number {
-    let myReturn = -1;
+    let myReturn = 0;
     for (let i = 0; i < this.children.length; i++) {
       const tce = this.children[i];
       if (tce instanceof Testlet) {

@@ -1,20 +1,15 @@
 /* eslint-disable no-console */
 import { Inject, Injectable } from '@angular/core';
 import {
-  BehaviorSubject,
-  from, Observable, of, Subject, Subscription, throwError
+  BehaviorSubject, from, Observable, of, Subject, Subscription, throwError
 } from 'rxjs';
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
 import { CustomtextService } from 'iqb-components';
 import {
-  isLoadingFileLoaded,
-  isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress,
-  StateReportEntry, TaggedString,
-  TestControllerState, TestData, TestLogEntryKey,
-  TestStateKey,
-  UnitStateKey
+  isLoadingFileLoaded, isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress, StateReportEntry, TaggedString,
+  TestControllerState, TestData, TestLogEntryKey, TestStateKey, UnitNavigationTarget, UnitStateKey
 } from '../interfaces/test-controller.interfaces';
 import { TestMode } from '../../config/test-mode';
 import {
@@ -90,24 +85,15 @@ export class TestLoaderService {
   }
 
   private resumeTest(lastState: { [k in TestStateKey]?: string }): void {
-    let resumeTestStatus = TestControllerState.RUNNING;
-    let resumeCurrentUnitSequenceId = 1;
-    Object.keys(lastState).forEach(stateKey => {
-      switch (stateKey) {
-        case (TestStateKey.CURRENT_UNIT_ID):
-          resumeCurrentUnitSequenceId = this.tcs.rootTestlet.getSequenceIdByUnitAlias(lastState[stateKey]) || 1;
-          break;
-        case (TestStateKey.CONTROLLER):
-          if (lastState[stateKey] === TestControllerState.PAUSED) {
-            resumeTestStatus = TestControllerState.PAUSED;
-            this.tcs.resumeTargetUnitSequenceId = resumeCurrentUnitSequenceId;
-          }
-          break;
-        default:
-      }
-    });
-    this.tcs.setUnitNavigationRequest(resumeCurrentUnitSequenceId.toString());
-    this.tcs.testStatus$.next(resumeTestStatus);
+    this.tcs.resumeTargetUnitSequenceId =
+      this.tcs.rootTestlet.getSequenceIdByUnitAlias(lastState[TestStateKey.CURRENT_UNIT_ID]) || 1;
+    if (lastState[TestStateKey.CONTROLLER] && (lastState[TestStateKey.CONTROLLER] === TestControllerState.PAUSED)) {
+      this.tcs.testStatus$.next(TestControllerState.PAUSED);
+      this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
+      return;
+    }
+    this.tcs.testStatus$.next(TestControllerState.RUNNING);
+    this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitSequenceId.toString());
   }
 
   private restoreRestrictions(lastState: { [k in TestStateKey]?: string }): void {
@@ -115,7 +101,6 @@ export class TestLoaderService {
       switch (stateKey) {
         case (TestStateKey.TESTLETS_TIMELEFT):
           this.tcs.maxTimeTimers = JSON.parse(lastState[stateKey]);
-          console.log(this.tcs.maxTimeTimers);
           break;
         case (TestStateKey.TESTLETS_CLEARED_CODE):
           this.tcs.clearCodeTestlets = JSON.parse(lastState[stateKey]);
