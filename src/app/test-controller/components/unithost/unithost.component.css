@@ -50,10 +50,12 @@
   width: 100%;
   top: 0;
   height: 39px;
-  padding: 0;
   font-size: 1.5em;
   background-color: white;
   border-bottom: solid 1px black;
+  white-space: nowrap;
+  text-overflow: clip;
+  overflow: hidden;
 }
 
 .is-waiting #iframe-host,
