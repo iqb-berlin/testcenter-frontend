@@ -51,16 +51,16 @@ test-e2e:
     - make run-detached
     - make test-e2e
 
-code_quality:
-  stage: check
+#code_quality:
+#  stage: check
 sast:
   stage: check
 .secret-analyzer:
   stage: check
 dependency_scanning:
   stage: check
-license_scanning:
-  stage: check
+#license_scanning:
+#  stage: check
 
 deploy-tagged-docker-image:
   stage: deploy
