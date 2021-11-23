@@ -194,7 +194,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   showReviewDialog(): void {
     if (this.tcs.rootTestlet === null) {
-      this.snackBar.open('Kein Testheft verfügbar.', '', { duration: 3000 });
+      this.snackBar.open('Kein Testheft verfügbar.', '', { duration: 5000 });
     } else {
       const authData = MainDataService.getAuthData();
       const dialogRef = this.reviewDialog.open(ReviewDialogComponent, {
@@ -220,9 +220,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 result.sender ? `${result.sender}: ${result.entry}` : result.entry
               ).subscribe(ok => {
                 if (!ok) {
-                  this.snackBar.open('Konnte Kommentar nicht speichern', '', { duration: 3000 });
+                  this.snackBar.open('Konnte Kommentar nicht speichern', '', { duration: 5000 });
                 } else {
-                  this.snackBar.open('Kommentar gespeichert', '', { duration: 1000 });
+                  this.snackBar.open('Kommentar gespeichert', '', { duration: 5000 });
                 }
               });
             } else {
@@ -233,9 +233,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 result.sender ? `${result.sender}: ${result.entry}` : result.entry
               ).subscribe(ok => {
                 if (!ok) {
-                  this.snackBar.open('Konnte Kommentar nicht speichern', '', { duration: 3000 });
+                  this.snackBar.open('Konnte Kommentar nicht speichern', '', { duration: 5000 });
                 } else {
-                  this.snackBar.open('Kommentar gespeichert', '', { duration: 1000 });
+                  this.snackBar.open('Kommentar gespeichert', '', { duration: 5000 });
                 }
               });
             }
@@ -292,11 +292,11 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     switch (maxTimerData.type) {
       case MaxTimerDataType.STARTED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') +
-          maxTimerData.timeLeftMinString, '', { duration: 3000 });
+          maxTimerData.timeLeftMinString, '', { duration: 5000 });
         this.timerValue = maxTimerData;
         break;
       case MaxTimerDataType.ENDED:
-        this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', { duration: 3000 });
+        this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', { duration: 5000 });
         this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
         this.tcs.maxTimeTimers[maxTimerData.testletId] = 0;
         if (this.tcs.testMode.saveResponses) {
@@ -317,7 +317,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         break;
       case MaxTimerDataType.CANCELLED:
-        this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', { duration: 3000 });
+        this.snackBar.open(this.cts.getCustomText('booklet_msgTimerCancelled'), '', { duration: 5000 });
         this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
         this.tcs.maxTimeTimers[maxTimerData.testletId] = 0;
         if (this.tcs.testMode.saveResponses) {
@@ -352,9 +352,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           }
         }
         if ((maxTimerData.timeLeftSeconds / 60) === 5) {
-          this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver5Minutes'), '', { duration: 3000 });
+          this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver5Minutes'), '', { duration: 5000 });
         } else if ((maxTimerData.timeLeftSeconds / 60) === 1) {
-          this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver1Minute'), '', { duration: 3000 });
+          this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver1Minute'), '', { duration: 5000 });
         }
         break;
       default:
