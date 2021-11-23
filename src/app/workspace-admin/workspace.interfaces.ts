@@ -13,7 +13,13 @@ export interface IQBFile {
     info: string[];
   },
   info: {
-    [key: string]: string|number;
+    totalSize?: number;
+    testtakers?: number;
+    veronaVersion?: string;
+    version?: string;
+    playerId?: string;
+    description?: string;
+    label?: string;
   }
 }
 

@@ -160,6 +160,7 @@ export class FilesComponent implements OnInit {
       this.bs.getFiles(this.wds.wsId)
         .pipe(map(fileList => this.addFrontendChecksToFiles(fileList)))
         .subscribe(fileList => {
+          console.log(fileList);
           this.files = {};
           Object.keys(fileList)
             .forEach(type => {
@@ -207,8 +208,8 @@ export class FilesComponent implements OnInit {
   }
 
   private addFrontendChecksToFile(file: IQBFile): IQBFile {
-    if (typeof file.info['verona-version'] !== 'undefined') {
-      const fileMayor = parseInt(file.info['verona-version'].toString().split('.').shift(), 10);
+    if (!file.info.veronaVersion) {
+      const fileMayor = parseInt(file.info.veronaVersion.toString().split('.').shift(), 10);
       if (typeof file.report.error === 'undefined') {
         // eslint-disable-next-line no-param-reassign
         file.report.error = [];
@@ -225,7 +226,7 @@ export class FilesComponent implements OnInit {
     this.mds.setSpinnerOn();
     this.bs.downloadFile(this.wds.wsId, file.type, file.name)
       .subscribe(
-        (fileData: Blob|boolean) => {
+        (fileData: Blob | boolean) => {
           this.mds.setSpinnerOff();
           if (fileData !== false) {
             saveAs(fileData as Blob, file.name);
