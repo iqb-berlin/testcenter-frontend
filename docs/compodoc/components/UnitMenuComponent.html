@@ -8,7 +8,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
-	      <link rel="stylesheet" href="../styles/style.css">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
     </head>
     <body>
 
@@ -35,7 +36,9 @@
 
 <ol class="breadcrumb">
   <li>Components</li>
-  <li>UnitMenuComponent</li>
+  <li
+  >
+  UnitMenuComponent</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -61,8 +64,9 @@
     <h3>File</h3>
 </p>
 <p class="comment">
-    <code>src/app/test-controller/unit-menu/unit-menu.component.ts</code>
+    <code>src/app/test-controller/components/unit-menu/unit-menu.component.ts</code>
 </p>
+
 
 
 
@@ -89,6 +93,10 @@
 
 
 
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>unit-menu</code></td>
+            </tr>
 
             <tr>
                 <td class="col-md-3">styleUrls</td>
@@ -126,14 +134,11 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#loginName">loginName</a>
+                                <a href="#menu" >menu</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
-                                <a href="#tcs">tcs</a>
-                            </li>
-                            <li>
-                                <a href="#unitMenuButtonList">unitMenuButtonList</a>
+                                <a href="#tcs" >tcs</a>
                             </li>
                         </ul>
                     </td>
@@ -148,10 +153,13 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#ngOnInit">ngOnInit</a>
+                                <a href="#isArray" >isArray</a>
                             </li>
                             <li>
-                                <a href="#terminateTest">terminateTest</a>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#terminateTest" >terminateTest</a>
                             </li>
                         </ul>
                     </td>
@@ -171,12 +179,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(tcs: <a href="../injectables/TestControllerService.html">TestControllerService</a>)</code>
+<code>constructor(tcs: <a href="../injectables/TestControllerService.html" target="_self">TestControllerService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/app/test-controller/unit-menu/unit-menu.component.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/app/test-controller/components/unit-menu/unit-menu.component.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -227,11 +235,74 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="isArray"></a>
+                    <span class="name">
+                        <span ><b>isArray</b></span>
+                        <a href="#isArray"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>isArray(obj)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">src/app/test-controller/components/unit-menu/unit-menu.component.ts:50</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>obj</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="ngOnInit"></a>
                     <span class="name">
-                        <b>
-                            ngOnInit
-                        </b>
+                        <span ><b>ngOnInit</b></span>
                         <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -245,8 +316,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">src/app/test-controller/unit-menu/unit-menu.component.ts:18</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">src/app/test-controller/components/unit-menu/unit-menu.component.ts:17</a></div>
                 </td>
             </tr>
 
@@ -268,9 +339,7 @@
                 <td class="col-md-4">
                     <a name="terminateTest"></a>
                     <span class="name">
-                        <b>
-                            terminateTest
-                        </b>
+                        <span ><b>terminateTest</b></span>
                         <a href="#terminateTest"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -284,8 +353,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="55"
-                            class="link-to-prism">src/app/test-controller/unit-menu/unit-menu.component.ts:55</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">src/app/test-controller/components/unit-menu/unit-menu.component.ts:54</a></div>
                 </td>
             </tr>
 
@@ -304,101 +373,67 @@
 </section>
     <section>
     
-        <h3 id="inputs">
-            Properties
-        </h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="menu"></a>
+                    <span class="name">
+                        <span ><b>menu</b></span>
+                        <a href="#menu"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="loginName"></a>
-                        <span class="name">
-                            <b>
-                            loginName</b>
-                            <a href="#loginName"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>    <code>Array&lt;string | []&gt;</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/app/test-controller/components/unit-menu/unit-menu.component.ts:11</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>&#x27;??&#x27;</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">src/app/test-controller/unit-menu/unit-menu.component.ts:12</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tcs"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>tcs</b></span>
+                        <a href="#tcs"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="tcs"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Public</span>
-                            tcs</b>
-                            <a href="#tcs"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="../injectables/TestControllerService.html" target="_self" >TestControllerService</a></code>
+
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="../injectables/TestControllerService.html" target="_self" >TestControllerService</a></code>
-
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/app/test-controller/components/unit-menu/unit-menu.component.ts:14</a></div>
                         </td>
                     </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/test-controller/unit-menu/unit-menu.component.ts:15</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="unitMenuButtonList"></a>
-                        <span class="name">
-                            <b>
-                            unitMenuButtonList</b>
-                            <a href="#unitMenuButtonList"><span class="icon ion-ios-link"></span></a>
-                        </span>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>    <code>UnitMenuButtonData[]</code>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>[]</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">src/app/test-controller/unit-menu/unit-menu.component.ts:11</a></div>
-                            </td>
-                        </tr>
-
-
-            </tbody>
-        </table>
+        </tbody>
+    </table>
 </section>
 
 </div>
@@ -406,115 +441,101 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, OnInit } from &#x27;@angular/core&#x27;;
-import { TestControllerService } from &#x27;../test-controller.service&#x27;;
-import { UnitMenuButtonData } from &#x27;../test-controller.interfaces&#x27;;
-import { MainDataService } from &#x27;../../maindata.service&#x27;;
+import { TestControllerService } from &#x27;../../services/test-controller.service&#x27;;
+import { UnitNaviButtonData } from &#x27;../../interfaces/test-controller.interfaces&#x27;;
 
 @Component({
+  selector: &#x27;unit-menu&#x27;,
   templateUrl: &#x27;./unit-menu.component.html&#x27;,
   styleUrls: [&#x27;./unit-menu.component.css&#x27;]
 })
 export class UnitMenuComponent implements OnInit {
-  unitMenuButtonList: UnitMenuButtonData[] &#x3D; [];
-  loginName &#x3D; &#x27;??&#x27;;
+  menu: Array&lt;string|UnitNaviButtonData[]&gt; &#x3D; [];
 
   constructor(
     public tcs: TestControllerService
   ) { }
 
   ngOnInit(): void {
-    this.unitMenuButtonList &#x3D; [];
-    setTimeout(() &#x3D;&gt; {
-      const authData &#x3D; MainDataService.getAuthData();
-      if (authData) {
-        this.loginName &#x3D; authData.displayName;
+    this.tcs.currentUnitSequenceId$.subscribe(() &#x3D;&gt; {
+      if (this.tcs.rootTestlet &#x3D;&#x3D; null) {
+        return;
       }
+      this.menu &#x3D; [];
+      let prevBlockLabel &#x3D; &#x27;&#x27;;
+      let blockUnitList: UnitNaviButtonData[] &#x3D; [];
+      const unitCount &#x3D; this.tcs.rootTestlet.getMaxSequenceId() - 1;
 
-      let testletMarkerSwitch &#x3D; true;
-      let prevTestletLabel &#x3D; &#x27;&#x27;;
-      if (this.tcs.bookletConfig.unit_menu !&#x3D;&#x3D; &#x27;OFF&#x27; || this.tcs.testMode.showUnitMenu) {
-        for (let unitIndex &#x3D; 0; unitIndex &lt; this.tcs.unitListForNaviButtons.length; unitIndex++) {
-          if (this.tcs.unitListForNaviButtons[unitIndex].longLabel.trim()
-            &amp;&amp; (!this.tcs.unitListForNaviButtons[unitIndex].disabled || this.tcs.bookletConfig.unit_menu &#x3D;&#x3D;&#x3D; &#x27;FULL&#x27;)) {
-            const testletLabel &#x3D; this.tcs.unitListForNaviButtons[unitIndex].testletLabel;
-            let testletMarker &#x3D; &#x27;testlet-marker-non&#x27;;
-            if (testletLabel) {
-              if (testletLabel !&#x3D;&#x3D; prevTestletLabel) {
-                testletMarkerSwitch &#x3D; !testletMarkerSwitch;
-                prevTestletLabel &#x3D; testletLabel;
-              }
-              testletMarker &#x3D; testletMarkerSwitch ? &#x27;testlet-marker-a&#x27; : &#x27;testlet-marker-b&#x27;;
-            }
-            this.unitMenuButtonList.push({
-              sequenceId: this.tcs.unitListForNaviButtons[unitIndex].sequenceId,
-              label: this.tcs.unitListForNaviButtons[unitIndex].longLabel,
-              isCurrent: this.tcs.unitListForNaviButtons[unitIndex].isCurrent,
-              isDisabled: this.tcs.unitListForNaviButtons[unitIndex].disabled,
-              testletLabel,
-              testletMarker
-            });
-          }
+      for (let sequenceId &#x3D; 1; sequenceId &lt;&#x3D; unitCount; sequenceId++) {
+        const unitData &#x3D; this.tcs.rootTestlet.getUnitAt(sequenceId);
+        const unitButtonData: UnitNaviButtonData &#x3D; {
+          sequenceId,
+          shortLabel: unitData.unitDef.naviButtonLabel,
+          longLabel: unitData.unitDef.title,
+          testletLabel: unitData.testletLabel,
+          disabled: unitData.unitDef.locked,
+          isCurrent: sequenceId &#x3D;&#x3D;&#x3D; this.tcs.currentUnitSequenceId
+        };
+        const blockLabel &#x3D; unitData.testletLabel || &#x27;&#x27;;
+        if (blockLabel !&#x3D;&#x3D; prevBlockLabel) {
+          this.menu.push(prevBlockLabel, blockUnitList);
+          blockUnitList &#x3D; [];
         }
+        blockUnitList.push(unitButtonData);
+        prevBlockLabel &#x3D; blockLabel;
       }
+      this.menu.push(prevBlockLabel, blockUnitList);
     });
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  isArray(obj: unknown): boolean {
+    return Array.isArray(obj);
+  }
+
   terminateTest(): void {
-    this.tcs.terminateTest(&#x27;BOOKLETLOCKEDbyTESTEE&#x27;);
+    this.tcs.terminateTest(&#x27;BOOKLETLOCKEDbyTESTEE&#x27;, false);
   }
 }
 </code></pre>
     </div>
 
     <div class="tab-pane fade " id="c-templateData">
-        <pre class="line-numbers"><code class="language-html">&lt;div class&#x3D;&quot;menu-body&quot;&gt;
-  &lt;div fxLayout&#x3D;&quot;row wrap&quot; fxLayoutAlign&#x3D;&quot;center stretch&quot;&gt;
-    &lt;mat-card fxFlex&#x3D;&quot;0 0 400px&quot; fxLayout&#x3D;&quot;column&quot; *ngIf&#x3D;&quot;unitMenuButtonList.length &gt; 0&quot;&gt;
-      &lt;mat-card-title&gt;{{ &#x27;Aufgaben&#x27; | customtext:&#x27;booklet_tasklisttitle&#x27; | async }}&lt;/mat-card-title&gt;
-      &lt;mat-card-content&gt;
-        &lt;div fxLayout&#x3D;&quot;column&quot; fxLayoutAlign&#x3D;&quot;center stretch&quot;&gt;
-          &lt;div *ngFor&#x3D;&quot;let u of unitMenuButtonList&quot; fxLayout&#x3D;&quot;column&quot; fxLayoutAlign&#x3D;&quot;center stretch&quot;&gt;
-            &lt;div fxLayout&#x3D;&quot;row&quot; fxLayoutAlign&#x3D;&quot;space-between stretch&quot;&gt;
-              &lt;div [class]&#x3D;&quot;u.testletMarker&quot; [matTooltip]&#x3D;&quot;u.testletLabel&quot; fxFlex&#x3D;&quot;0 0 10px&quot;&gt;&lt;/div&gt;
-              &lt;div [class]&#x3D;&quot;u.isCurrent ? &#x27;active-unit&#x27; : &#x27;non-active-unit&#x27;&quot; fxFlex fxLayout&#x3D;&quot;column&quot;&gt;
-                &lt;button mat-flat-button (click)&#x3D;&quot;tcs.setUnitNavigationRequest(u.sequenceId.toString())&quot; [disabled]&#x3D;&quot;u.isDisabled&quot;&gt;
-                  {{u.label}}
-                &lt;/button&gt;
-              &lt;/div&gt;
-            &lt;/div&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/mat-card-content&gt;
-      &lt;mat-card-actions&gt;
-        &lt;button mat-raised-button color&#x3D;&quot;primary&quot; (click)&#x3D;&quot;terminateTest()&quot;&gt;
-          {{ &#x27;Test beenden&#x27;  | customtext:&#x27;login_testEndButtonLabel&#x27; | async}}
-        &lt;/button&gt;
-      &lt;/mat-card-actions&gt;
-    &lt;/mat-card&gt;
-
-    &lt;mat-card fxFlex&#x3D;&quot;0 0 400px&quot; fxLayout&#x3D;&quot;column&quot; *ngIf&#x3D;&quot;unitMenuButtonList.length &#x3D;&#x3D;&#x3D; 0&quot; class&#x3D;&quot;mat-card-box&quot;&gt;
-      &lt;mat-card-title&gt;{{ tcs.rootTestlet?.title }}&lt;/mat-card-title&gt;
-      &lt;mat-card-content&gt;
-        &lt;p&gt;&lt;b&gt;Angemeldet als &quot;{{loginName}}&quot;&lt;/b&gt;&lt;/p&gt;
-        &lt;p&gt;&lt;b&gt;{{tcs.testMode.modeLabel}}&lt;/b&gt;&lt;/p&gt;
-        &lt;p *ngIf&#x3D;&quot;(tcs.testStatus$ | async) &#x3D;&#x3D;&#x3D; tcs.testStatusEnum.ERROR&quot; style&#x3D;&quot;color: chocolate&quot;&gt;
-          &lt;b&gt;{{ &#x27;Es ist ein Fehler aufgetreten.&#x27; | customtext:&#x27;booklet_errormessage&#x27; | async }} &lt;/b&gt;
-        &lt;/p&gt;
-        &lt;p *ngIf&#x3D;&quot;(tcs.testStatus$ | async) &#x3D;&#x3D;&#x3D; tcs.testStatusEnum.PAUSED&quot; style&#x3D;&quot;color: chocolate&quot;&gt;
-          &lt;b&gt;{{ &#x27;Testpause&#x27; | customtext:&#x27;booklet_pausedmessage&#x27; | async }} &lt;/b&gt;
-        &lt;/p&gt;
-        &lt;p *ngIf&#x3D;&quot;(tcs.testStatus$ | async) &#x3D;&#x3D;&#x3D; tcs.testStatusEnum.RUNNING&quot; style&#x3D;&quot;color: chocolate&quot;&gt;
-          &lt;b&gt;Der Test ist aktiv.&lt;/b&gt;
-        &lt;/p&gt;
-      &lt;/mat-card-content&gt;
-      &lt;mat-card-actions&gt;
-        &lt;button mat-raised-button color&#x3D;&quot;primary&quot; (click)&#x3D;&quot;terminateTest()&quot;&gt;
-          {{ &#x27;Test beenden&#x27;  | customtext:&#x27;login_testEndButtonLabel&#x27; | async}}
-        &lt;/button&gt;
-      &lt;/mat-card-actions&gt;
-    &lt;/mat-card&gt;
-  &lt;/div&gt;
+        <pre class="line-numbers"><code class="language-html">&lt;div class&#x3D;&quot;sidebar-main&quot;&gt;
+  &lt;h3&gt;{{ &#x27;Aufgaben&#x27; | customtext:&#x27;booklet_tasklisttitle&#x27; | async }}&lt;/h3&gt;
+  &lt;ng-container *ngFor&#x3D;&quot;let blockLabelOrUnitList of menu; let i &#x3D; index&quot;&gt;
+    &lt;div
+      *ngIf&#x3D;&quot;isArray(blockLabelOrUnitList); else testLetLabel&quot;
+      style&#x3D;&quot;width: 100%&quot;
+    &gt;
+      &lt;a mat-raised-button
+        *ngFor&#x3D;&quot;let u of blockLabelOrUnitList&quot;
+        [class]&#x3D;&quot;{&#x27;current&#x27;: u.isCurrent}&quot;
+        (click)&#x3D;&quot;tcs.setUnitNavigationRequest(u.sequenceId.toString())&quot;
+        [disabled]&#x3D;&quot;u.disabled&quot;
+      &gt;
+        &lt;mat-icon *ngIf&#x3D;&quot;!tcs.isUnitContentLoaded(u.sequenceId)&quot; matTooltip&#x3D;&quot;wird geladen&quot;&gt;
+          hourglass_empty
+        &lt;/mat-icon&gt;
+        {{u.longLabel}}
+      &lt;/a&gt;
+    &lt;/div&gt;
+    &lt;ng-template #testLetLabel&gt;
+      &lt;h4 *ngIf&#x3D;&quot;blockLabelOrUnitList || i &gt; 0&quot; class&#x3D;&#x27;testlet-label&#x27;&gt;
+        {{blockLabelOrUnitList}}
+      &lt;/h4&gt;
+    &lt;/ng-template&gt;
+  &lt;/ng-container&gt;
 &lt;/div&gt;
+
+&lt;div class&#x3D;&quot;sidebar-bottom&quot;&gt;
+  &lt;a mat-raised-button color&#x3D;&quot;primary&quot; (click)&#x3D;&quot;terminateTest()&quot;&gt;
+    {{ &#x27;Test beenden&#x27;  | customtext:&#x27;login_testEndButtonLabel&#x27; | async}}
+  &lt;/a&gt;
+&lt;/div&gt;
+
+
+
 </code></pre>
     </div>
 
@@ -522,44 +543,48 @@ export class UnitMenuComponent implements OnInit {
                 <p class="comment">
                     <code>./unit-menu.component.css</code>
                 </p>
-                <pre class="line-numbers"><code class="language-scss">.menu-body {
-  position: absolute;
+                <pre class="line-numbers"><code class="language-scss">:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-main {
+  padding: 15px;
+  margin-bottom: 1em;
+  flex: 1;
+}
+
+.sidebar-bottom {
+  padding: 15px;
+}
+
+.testlet-label {
+  text-align: center;
+  margin-bottom: 4px;
   width: 100%;
 }
 
-mat-card {
-  margin: 10px;
+h3 {
+  text-align: center;
+  margin-bottom: 1em;
+  width: 100%;
 }
 
-.mat-card-box {
-  background-color: var(--tc-box-background)
-}
-
-.active-unit {
-  background-color: #b2ff59;
-  padding: 4px;
+a {
+  width: 100%;
+  margin-bottom: 0.4em;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.non-active-unit {
-  background-color: transparent;
-  padding: 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+a:last-of-type {
+  margin-bottom: 0;
 }
 
-.testlet-marker-non {
-  background-color: transparent;
+.current {
+  background: var(--accent);
 }
 
-.testlet-marker-a {
-  background-color: royalblue;
-}
-
-.testlet-marker-b {
-  background-color: mediumorchid;
-}
 </code></pre>
     </div>
 
@@ -588,8 +613,8 @@ mat-card {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><div class="menu-body">  <div fxLayout="row wrap" fxLayoutAlign="center stretch">    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="unitMenuButtonList.length > 0">      <mat-card-title>{{ \'Aufgaben\' | customtext:\'booklet_tasklisttitle\' | async }}</mat-card-title>      <mat-card-content>        <div fxLayout="column" fxLayoutAlign="center stretch">          <div *ngFor="let u of unitMenuButtonList" fxLayout="column" fxLayoutAlign="center stretch">            <div fxLayout="row" fxLayoutAlign="space-between stretch">              <div [class]="u.testletMarker" [matTooltip]="u.testletLabel" fxFlex="0 0 10px"></div>              <div [class]="u.isCurrent ? \'active-unit\' : \'non-active-unit\'" fxFlex fxLayout="column">                <button mat-flat-button (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())" [disabled]="u.isDisabled">                  {{u.label}}                </button>              </div>            </div>          </div>        </div>      </mat-card-content>      <mat-card-actions>        <button mat-raised-button color="primary" (click)="terminateTest()">          {{ \'Test beenden\'  | customtext:\'login_testEndButtonLabel\' | async}}        </button>      </mat-card-actions>    </mat-card>    <mat-card fxFlex="0 0 400px" fxLayout="column" *ngIf="unitMenuButtonList.length === 0" class="mat-card-box">      <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>      <mat-card-content>        <p><b>Angemeldet als "{{loginName}}"</b></p>        <p><b>{{tcs.testMode.modeLabel}}</b></p>        <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.ERROR" style="color: chocolate">          <b>{{ \'Es ist ein Fehler aufgetreten.\' | customtext:\'booklet_errormessage\' | async }} </b>        </p>        <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.PAUSED" style="color: chocolate">          <b>{{ \'Testpause\' | customtext:\'booklet_pausedmessage\' | async }} </b>        </p>        <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING" style="color: chocolate">          <b>Der Test ist aktiv.</b>        </p>      </mat-card-content>      <mat-card-actions>        <button mat-raised-button color="primary" (click)="terminateTest()">          {{ \'Test beenden\'  | customtext:\'login_testEndButtonLabel\' | async}}        </button>      </mat-card-actions>    </mat-card>  </div></div></div>'
-    var COMPONENTS = [{'name': 'AdminStarterComponent', 'selector': ''},{'name': 'AppComponent', 'selector': 'tc-root'},{'name': 'AppConfigComponent', 'selector': 'app-app-config'},{'name': 'AppRootComponent', 'selector': ''},{'name': 'CodeInputComponent', 'selector': ''},{'name': 'EditCustomTextComponent', 'selector': 'app-custom-text'},{'name': 'EditCustomTextsComponent', 'selector': 'app-custom-texts'},{'name': 'EditworkspaceComponent', 'selector': ''},{'name': 'FilesComponent', 'selector': ''},{'name': 'GroupMonitorComponent', 'selector': 'app-group-monitor'},{'name': 'IqbFilesUploadComponent', 'selector': 'iqb-files-upload'},{'name': 'IqbFilesUploadQueueComponent', 'selector': 'iqb-files-upload-queue'},{'name': 'LegalNoticeComponent', 'selector': ''},{'name': 'LoginComponent', 'selector': ''},{'name': 'MonitorStarterComponent', 'selector': ''},{'name': 'NetworkCheckComponent', 'selector': ''},{'name': 'NewpasswordComponent', 'selector': ''},{'name': 'NewuserComponent', 'selector': ''},{'name': 'NewworkspaceComponent', 'selector': ''},{'name': 'QuestionnaireComponent', 'selector': ''},{'name': 'ReportComponent', 'selector': ''},{'name': 'ResultsComponent', 'selector': ''},{'name': 'ReviewDialogComponent', 'selector': ''},{'name': 'RouteDispatcherComponent', 'selector': ''},{'name': 'SaveReportComponent', 'selector': 'app-save-report'},{'name': 'SettingsComponent', 'selector': ''},{'name': 'StatusCardComponent', 'selector': 'status-card'},{'name': 'SuperadminComponent', 'selector': ''},{'name': 'SuperadminPasswordRequestComponent', 'selector': ''},{'name': 'SysCheckComponent', 'selector': ''},{'name': 'SyscheckComponent', 'selector': ''},{'name': 'SysCheckStarterComponent', 'selector': ''},{'name': 'TcSpeedChartComponent', 'selector': 'tc-speed-chart'},{'name': 'TestControllerComponent', 'selector': ''},{'name': 'TestSessionComponent', 'selector': 'tc-test-session'},{'name': 'TestStarterComponent', 'selector': ''},{'name': 'TestStatusComponent', 'selector': ''},{'name': 'UnitCheckComponent', 'selector': 'iqb-unit-check'},{'name': 'UnithostComponent', 'selector': ''},{'name': 'UnitMenuComponent', 'selector': ''},{'name': 'UnlockInputComponent', 'selector': ''},{'name': 'UsersComponent', 'selector': ''},{'name': 'WelcomeComponent', 'selector': ''},{'name': 'WorkspaceComponent', 'selector': ''},{'name': 'WorkspacesComponent', 'selector': ''}];
+        var COMPONENT_TEMPLATE = '<div><div class="sidebar-main">  <h3>{{ \'Aufgaben\' | customtext:\'booklet_tasklisttitle\' | async }}</h3>  <ng-container *ngFor="let blockLabelOrUnitList of menu; let i = index">    <div      *ngIf="isArray(blockLabelOrUnitList); else testLetLabel"      style="width: 100%"    >      <a mat-raised-button        *ngFor="let u of blockLabelOrUnitList"        [class]="{\'current\': u.isCurrent}"        (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())"        [disabled]="u.disabled"      >        <mat-icon *ngIf="!tcs.isUnitContentLoaded(u.sequenceId)" matTooltip="wird geladen">          hourglass_empty        </mat-icon>        {{u.longLabel}}      </a>    </div>    <ng-template #testLetLabel>      <h4 *ngIf="blockLabelOrUnitList || i > 0" class=\'testlet-label\'>        {{blockLabelOrUnitList}}      </h4>    </ng-template>  </ng-container></div><div class="sidebar-bottom">  <a mat-raised-button color="primary" (click)="terminateTest()">    {{ \'Test beenden\'  | customtext:\'login_testEndButtonLabel\' | async}}  </a></div></div>'
+    var COMPONENTS = [{'name': 'AdminStarterComponent', 'selector': ''},{'name': 'AppComponent', 'selector': 'tc-root'},{'name': 'AppConfigComponent', 'selector': 'app-app-config'},{'name': 'AppRootComponent', 'selector': ''},{'name': 'CodeInputComponent', 'selector': ''},{'name': 'EditCustomTextComponent', 'selector': 'app-custom-text'},{'name': 'EditCustomTextsComponent', 'selector': 'app-custom-texts'},{'name': 'EditworkspaceComponent', 'selector': ''},{'name': 'FilesComponent', 'selector': ''},{'name': 'GroupMonitorComponent', 'selector': 'app-group-monitor'},{'name': 'IqbFilesUploadComponent', 'selector': 'iqb-files-upload'},{'name': 'IqbFilesUploadQueueComponent', 'selector': 'iqb-files-upload-queue'},{'name': 'LegalNoticeComponent', 'selector': ''},{'name': 'LoginComponent', 'selector': ''},{'name': 'MonitorStarterComponent', 'selector': ''},{'name': 'NetworkCheckComponent', 'selector': ''},{'name': 'NewpasswordComponent', 'selector': ''},{'name': 'NewuserComponent', 'selector': ''},{'name': 'NewworkspaceComponent', 'selector': ''},{'name': 'QuestionnaireComponent', 'selector': ''},{'name': 'ReportComponent', 'selector': ''},{'name': 'ResultsComponent', 'selector': ''},{'name': 'ReviewDialogComponent', 'selector': ''},{'name': 'RouteDispatcherComponent', 'selector': ''},{'name': 'SaveReportComponent', 'selector': 'app-save-report'},{'name': 'SettingsComponent', 'selector': ''},{'name': 'StatusCardComponent', 'selector': 'status-card'},{'name': 'SuperadminComponent', 'selector': ''},{'name': 'SuperadminPasswordRequestComponent', 'selector': ''},{'name': 'SysCheckComponent', 'selector': ''},{'name': 'SyscheckComponent', 'selector': ''},{'name': 'SysCheckStarterComponent', 'selector': ''},{'name': 'TcSpeedChartComponent', 'selector': 'tc-speed-chart'},{'name': 'TestControllerComponent', 'selector': ''},{'name': 'TestSessionComponent', 'selector': 'tc-test-session'},{'name': 'TestStarterComponent', 'selector': ''},{'name': 'TestStatusComponent', 'selector': ''},{'name': 'UnitCheckComponent', 'selector': 'iqb-unit-check'},{'name': 'UnithostComponent', 'selector': ''},{'name': 'UnitMenuComponent', 'selector': 'unit-menu'},{'name': 'UsersComponent', 'selector': ''},{'name': 'WelcomeComponent', 'selector': ''},{'name': 'WorkspaceComponent', 'selector': ''},{'name': 'WorkspacesComponent', 'selector': ''}];
     var DIRECTIVES = [{'name': 'IqbFilesUploadInputForDirective', 'selector': 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]'}];
     var ACTUAL_COMPONENT = {'name': 'UnitMenuComponent'};
 </script>
@@ -604,14 +629,14 @@ mat-card {
 
 
 
-                   
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -632,9 +657,9 @@ mat-card {
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
-       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+
        <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>
 

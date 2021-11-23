@@ -8,7 +8,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
-	      <link rel="stylesheet" href="../styles/style.css">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
     </head>
     <body>
 
@@ -43,7 +44,9 @@
 
 <ol class="breadcrumb">
   <li>Interfaces</li>
-  <li>IQBFile</li>
+  <li
+  >
+  IQBFile</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -66,6 +69,7 @@
 
 
 
+
         <section>
             <h3 id="index">Index</h3>
             <table class="table table-sm table-bordered index-table">
@@ -79,25 +83,46 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                        <a href="#info">info</a>
+                                        <a href="#info" 
+>
+                                            info
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#isChecked">isChecked</a>
+                                        <a href="#isChecked" 
+>
+                                            isChecked
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#modificationTime">modificationTime</a>
+                                        <a href="#modificationTime" 
+>
+                                            modificationTime
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#name">name</a>
+                                        <a href="#name" 
+>
+                                            name
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#report">report</a>
+                                        <a href="#report" 
+>
+                                            report
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#size">size</a>
+                                        <a href="#size" 
+>
+                                            size
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#type">type</a>
+                                        <a href="#type" 
+>
+                                            type
+                                        </a>
                                 </li>
                             </ul>
                         </td>
@@ -115,7 +140,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="info"></a>
-                                        <span class="name"><b>info</b><a href="#info"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>info</b>
+                                            <a href="#info">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -144,7 +173,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="isChecked"></a>
-                                        <span class="name"><b>isChecked</b><a href="#isChecked"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>isChecked</b>
+                                            <a href="#isChecked">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -173,7 +206,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="modificationTime"></a>
-                                        <span class="name"><b>modificationTime</b><a href="#modificationTime"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>modificationTime</b>
+                                            <a href="#modificationTime">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -202,7 +239,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="name"></a>
-                                        <span class="name"><b>name</b><a href="#name"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>name</b>
+                                            <a href="#name">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -231,7 +272,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="report"></a>
-                                        <span class="name"><b>report</b><a href="#report"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>report</b>
+                                            <a href="#report">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -260,7 +305,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="size"></a>
-                                        <span class="name"><b>size</b><a href="#size"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>size</b>
+                                            <a href="#size">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -289,7 +338,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="type"></a>
-                                        <span class="name"><b>type</b><a href="#type"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>type</b>
+                                            <a href="#type">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -341,6 +394,13 @@ export type GetFileResponseData &#x3D; {
   [type in IQBFileType]: IQBFile[]
 };
 
+export enum ReportType {
+  SYSTEM_CHECK &#x3D; &#x27;sys-check&#x27;,
+  RESPONSE &#x3D; &#x27;response&#x27;,
+  LOG &#x3D; &#x27;log&#x27;,
+  REVIEW &#x3D; &#x27;review&#x27;
+}
+
 export interface UnitResponse {
   groupname: string;
   loginname: string;
@@ -348,10 +408,8 @@ export interface UnitResponse {
   bookletname: string;
   unitname: string;
   responses: string;
-  restorepoint: string;
   responsetype: string;
   responses_ts: number;
-  restorepoint_ts: number;
   laststate: string;
 }
 
@@ -408,14 +466,14 @@ export interface SysCheckStatistics {
 </div>
 
 
-                   
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -436,9 +494,9 @@ export interface SysCheckStatistics {
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
-       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+
        <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>
 

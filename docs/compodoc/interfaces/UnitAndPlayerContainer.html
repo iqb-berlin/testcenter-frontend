@@ -8,7 +8,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
-	      <link rel="stylesheet" href="../styles/style.css">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
     </head>
     <body>
 
@@ -43,7 +44,9 @@
 
 <ol class="breadcrumb">
   <li>Interfaces</li>
-  <li>UnitAndPlayerContainer</li>
+  <li
+  >
+  UnitAndPlayerContainer</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -66,6 +69,7 @@
 
 
 
+
         <section>
             <h3 id="index">Index</h3>
             <table class="table table-sm table-bordered index-table">
@@ -79,22 +83,40 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                        <a href="#def">def</a>
+                                        <a href="#def" 
+>
+                                            def
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#duration">duration</a>
+                                        <a href="#duration" 
+>
+                                            duration
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#key">key</a>
+                                        <a href="#key" 
+>
+                                            key
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#label">label</a>
+                                        <a href="#label" 
+>
+                                            label
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#player">player</a>
+                                        <a href="#player" 
+>
+                                            player
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#player_id">player_id</a>
+                                        <a href="#player_id" 
+>
+                                            player_id
+                                        </a>
                                 </li>
                             </ul>
                         </td>
@@ -112,7 +134,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="def"></a>
-                                        <span class="name"><b>def</b><a href="#def"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>def</b>
+                                            <a href="#def">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -141,7 +167,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="duration"></a>
-                                        <span class="name"><b>duration</b><a href="#duration"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>duration</b>
+                                            <a href="#duration">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -170,7 +200,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="key"></a>
-                                        <span class="name"><b>key</b><a href="#key"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>key</b>
+                                            <a href="#key">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -199,7 +233,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="label"></a>
-                                        <span class="name"><b>label</b><a href="#label"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>label</b>
+                                            <a href="#label">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -228,7 +266,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="player"></a>
-                                        <span class="name"><b>player</b><a href="#player"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>player</b>
+                                            <a href="#player">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -257,7 +299,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="player_id"></a>
-                                        <span class="name"><b>player_id</b><a href="#player_id"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>player_id</b>
+                                            <a href="#player_id">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -393,14 +439,14 @@ export interface StepDef {
 </div>
 
 
-                   
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -421,9 +467,9 @@ export interface StepDef {
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
-       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+
        <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>
 

@@ -8,7 +8,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
-	      <link rel="stylesheet" href="../styles/style.css">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
     </head>
     <body>
 
@@ -43,7 +44,9 @@
 
 <ol class="breadcrumb">
   <li>Interfaces</li>
-  <li>KeyValuePairNumber</li>
+  <li
+  >
+  KeyValuePairNumber</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -61,8 +64,9 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/app/test-controller/test-controller.interfaces.ts</code>
+            <code>src/app/test-controller/interfaces/test-controller.interfaces.ts</code>
         </p>
+
 
 
 
@@ -80,7 +84,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="183" class="link-to-prism">src/app/test-controller/test-controller.interfaces.ts:183</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="159" class="link-to-prism">src/app/test-controller/interfaces/test-controller.interfaces.ts:159</a></div>
                             </td>
                         </tr>
             </tbody>
@@ -106,35 +110,19 @@ export enum WindowFocusState {
   UNKNOWN &#x3D; &#x27;UNKNOWN&#x27;
 }
 
-// testcontroller restrictions +++++++++++++++++++++++++++++++++++
-export interface StartLockData {
-  title: string;
-  prompt: string;
-  codes: CodeInputData[];
-}
-
-export interface CodeInputData {
-  testletId: string;
-  prompt: string;
-  code: string;
-  value: string;
-}
-
 // for backend ++++++++++++++++++++++++++++++++++++++++++++++++++++++
-export interface KeyValuePair {
-  [K: string]: string;
-}
-
-export interface UnitData {
-  xml: string;
-  restorepoint: string;
-  laststate: KeyValuePair[];
-}
+export type UnitData &#x3D; {
+  data: string;
+  state: { [k in UnitStateKey]?: string };
+  playerId: string;
+  definitionRef?: string;
+  definition?: string;
+};
 
 export interface TestData {
   xml: string;
   mode: string;
-  laststate: StateReportEntry[];
+  laststate: { [k in TestStateKey]?: string };
 }
 
 export enum TestStateKey {
@@ -147,7 +135,7 @@ export enum TestStateKey {
 }
 
 /**
- * TestState.FOCUS
+ * TestState.state
  * In what state is the whole controller?
  */
 export enum TestControllerState {
@@ -185,7 +173,7 @@ export enum TestLogEntryKey {
 }
 
 export interface StateReportEntry {
-  key: string; // TestStateKey | TestLogEntryKey | UnitStateKey | PlayerLogKey (unknown, up to the player)
+  key: TestStateKey | TestLogEntryKey | UnitStateKey | string;
   timeStamp: number;
   content: string;
 }
@@ -216,15 +204,6 @@ export interface UnitLogData {
   unitDbKey: string;
   timestamp: number;
   entry: string;
-}
-
-export interface UnitMenuButtonData {
-  sequenceId: number;
-  label: string;
-  isCurrent: boolean;
-  isDisabled: boolean;
-  testletLabel: string;
-  testletMarker: string;
 }
 
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++
@@ -268,8 +247,9 @@ export enum NoUnitFlag {
 
 export interface PendingUnitData {
   playerId: string;
-  unitState: string;
+  unitDataParts: string;
   unitDefinition: string;
+  currentPage: string;
 }
 
 export interface KeyValuePairNumber {
@@ -283,7 +263,6 @@ export enum UnitNavigationTarget {
   FIRST &#x3D; &#x27;#first&#x27;,
   LAST &#x3D; &#x27;#last&#x27;,
   END &#x3D; &#x27;#end&#x27;,
-  MENU &#x3D; &#x27;#menu&#x27;,
   PAUSE &#x3D; &#x27;#pause&#x27;
 }
 
@@ -305,19 +284,40 @@ export interface Command {
   arguments: string[];
   timestamp: number;
 }
+
+export type NavigationLeaveRestrictionValue &#x3D; &#x27;ON&#x27; | &#x27;OFF&#x27; | &#x27;ALWAYS&#x27;;
+export function isNavigationLeaveRestrictionValue(s: string): s is NavigationLeaveRestrictionValue {
+  return [&#x27;ON&#x27;, &#x27;OFF&#x27;, &#x27;ALWAYS&#x27;].indexOf(s) &gt; -1;
+}
+
+export interface LoadingProgress {
+  progress: number | &#x27;UNKNOWN&#x27; | &#x27;PENDING&#x27;;
+}
+
+// export type LoadingProgress &#x3D; LoadingProgressSpecial | LoadingProgressRegular;
+
+export interface LoadedFile {
+  content: string;
+}
+
+export type LoadingFile &#x3D; LoadingProgress | LoadedFile;
+
+export function isLoadingFileLoaded(loadingFile: LoadingFile): loadingFile is LoadedFile {
+  return &#x27;content&#x27; in loadingFile;
+}
 </code></pre>
     </div>
 </div>
 
 
-                   
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -338,9 +338,9 @@ export interface Command {
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
-       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+
        <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>
 

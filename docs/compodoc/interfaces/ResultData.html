@@ -8,7 +8,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
-	      <link rel="stylesheet" href="../styles/style.css">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
     </head>
     <body>
 
@@ -43,7 +44,9 @@
 
 <ol class="breadcrumb">
   <li>Interfaces</li>
-  <li>ResultData</li>
+  <li
+  >
+  ResultData</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -66,6 +69,7 @@
 
 
 
+
         <section>
             <h3 id="index">Index</h3>
             <table class="table table-sm table-bordered index-table">
@@ -79,22 +83,40 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                        <a href="#bookletsStarted">bookletsStarted</a>
+                                        <a href="#bookletsStarted" 
+>
+                                            bookletsStarted
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#groupname">groupname</a>
+                                        <a href="#groupname" 
+>
+                                            groupname
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#lastchange">lastchange</a>
+                                        <a href="#lastchange" 
+>
+                                            lastchange
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#num_units_max">num_units_max</a>
+                                        <a href="#num_units_max" 
+>
+                                            num_units_max
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#num_units_mean">num_units_mean</a>
+                                        <a href="#num_units_mean" 
+>
+                                            num_units_mean
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#num_units_min">num_units_min</a>
+                                        <a href="#num_units_min" 
+>
+                                            num_units_min
+                                        </a>
                                 </li>
                             </ul>
                         </td>
@@ -112,7 +134,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="bookletsStarted"></a>
-                                        <span class="name"><b>bookletsStarted</b><a href="#bookletsStarted"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>bookletsStarted</b>
+                                            <a href="#bookletsStarted">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -141,7 +167,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="groupname"></a>
-                                        <span class="name"><b>groupname</b><a href="#groupname"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>groupname</b>
+                                            <a href="#groupname">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -170,7 +200,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="lastchange"></a>
-                                        <span class="name"><b>lastchange</b><a href="#lastchange"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>lastchange</b>
+                                            <a href="#lastchange">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -199,7 +233,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="num_units_max"></a>
-                                        <span class="name"><b>num_units_max</b><a href="#num_units_max"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>num_units_max</b>
+                                            <a href="#num_units_max">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -228,7 +266,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="num_units_mean"></a>
-                                        <span class="name"><b>num_units_mean</b><a href="#num_units_mean"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>num_units_mean</b>
+                                            <a href="#num_units_mean">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -257,7 +299,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="num_units_min"></a>
-                                        <span class="name"><b>num_units_min</b><a href="#num_units_min"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>num_units_min</b>
+                                            <a href="#num_units_min">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -309,6 +355,13 @@ export type GetFileResponseData &#x3D; {
   [type in IQBFileType]: IQBFile[]
 };
 
+export enum ReportType {
+  SYSTEM_CHECK &#x3D; &#x27;sys-check&#x27;,
+  RESPONSE &#x3D; &#x27;response&#x27;,
+  LOG &#x3D; &#x27;log&#x27;,
+  REVIEW &#x3D; &#x27;review&#x27;
+}
+
 export interface UnitResponse {
   groupname: string;
   loginname: string;
@@ -316,10 +369,8 @@ export interface UnitResponse {
   bookletname: string;
   unitname: string;
   responses: string;
-  restorepoint: string;
   responsetype: string;
   responses_ts: number;
-  restorepoint_ts: number;
   laststate: string;
 }
 
@@ -376,14 +427,14 @@ export interface SysCheckStatistics {
 </div>
 
 
-                   
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -404,9 +455,9 @@ export interface SysCheckStatistics {
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
-       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+
        <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>
 

@@ -8,7 +8,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
-	      <link rel="stylesheet" href="../styles/style.css">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
     </head>
     <body>
 
@@ -43,7 +44,9 @@
 
 <ol class="breadcrumb">
   <li>Interfaces</li>
-  <li>FileStats</li>
+  <li
+  >
+  FileStats</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -66,6 +69,7 @@
 
 
 
+
         <section>
             <h3 id="index">Index</h3>
             <table class="table table-sm table-bordered index-table">
@@ -79,13 +83,22 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                        <a href="#invalid">invalid</a>
+                                        <a href="#invalid" 
+>
+                                            invalid
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#testtakers">testtakers</a>
+                                        <a href="#testtakers" 
+>
+                                            testtakers
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#total">total</a>
+                                        <a href="#total" 
+>
+                                            total
+                                        </a>
                                 </li>
                             </ul>
                         </td>
@@ -103,7 +116,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="invalid"></a>
-                                        <span class="name"><b>invalid</b><a href="#invalid"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>invalid</b>
+                                            <a href="#invalid">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -126,7 +143,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="testtakers"></a>
-                                        <span class="name"><b>testtakers</b><a href="#testtakers"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>testtakers</b>
+                                            <a href="#testtakers">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -155,7 +176,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="total"></a>
-                                        <span class="name"><b>total</b><a href="#total"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>total</b>
+                                            <a href="#total">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -254,7 +279,8 @@ export class FilesComponent implements OnInit {
 
   constructor(
     @Inject(&#x27;SERVER_URL&#x27;) private serverUrl: string,
-    @Inject(&#x27;VERONA_API_VERSION_SUPPORTED&#x27;) private veronaApiVersionSupported: string,
+    @Inject(&#x27;VERONA_PLAYER_API_VERSION_MIN&#x27;) public veronaPlayerApiVersionMin: number,
+    @Inject(&#x27;VERONA_PLAYER_API_VERSION_MAX&#x27;) public veronaPlayerApiVersionMax: number,
     private bs: BackendService,
     public wds: WorkspaceDataService,
     public confirmDialog: MatDialog,
@@ -298,7 +324,7 @@ export class FilesComponent implements OnInit {
         width: &#x27;400px&#x27;,
         data: &lt;ConfirmDialogData&gt;{
           title: &#x27;Löschen von Dateien&#x27;,
-          content: &#x60;Sie haben ${p ? filesToDelete.length : &#x27;eine&#x27;} Datei${p ? &#x27;en&#x27; : &#x27;&#x27;}\&#x60; 
+          content: &#x60;Sie haben ${p ? filesToDelete.length : &#x27;eine&#x27;} Datei${p ? &#x27;en&#x27; : &#x27;&#x27;}\&#x60;
             ausgewählt. Soll${p ? &#x27;en&#x27; : &#x27;&#x27;}  diese gelöscht werden?&#x60;,
           confirmbuttonlabel: &#x27;Löschen&#x27;,
           showcancel: true
@@ -308,7 +334,7 @@ export class FilesComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result &#x3D;&gt; {
         if (result !&#x3D;&#x3D; false) {
           this.mds.setSpinnerOn();
-          this.bs.deleteFiles(filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) &#x3D;&gt; {
+          this.bs.deleteFiles(this.wds.wsId, filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) &#x3D;&gt; {
             const message &#x3D; [];
             if (fileDeletionReport.deleted.length &gt; 0) {
               message.push(&#x60;${fileDeletionReport.deleted.length} Dateien erfolgreich gelöscht.&#x60;);
@@ -317,7 +343,7 @@ export class FilesComponent implements OnInit {
               message.push(&#x60;${fileDeletionReport.not_allowed.length} Dateien konnten nicht gelöscht werden.&#x60;);
             }
             if (fileDeletionReport.was_used.length &gt; 0) {
-              message.push(&#x60;${fileDeletionReport.was_used.length} Dateien werden von anderen verwendet 
+              message.push(&#x60;${fileDeletionReport.was_used.length} Dateien werden von anderen verwendet
               und wurden nicht gelöscht.&#x60;);
             }
             this.snackBar.open(message.join(&#x27;&lt;br&gt;&#x27;), message.length &gt; 1 ? &#x27;Achtung&#x27; : &#x27;&#x27;, { duration: 1000 });
@@ -342,7 +368,7 @@ export class FilesComponent implements OnInit {
       this.files &#x3D; {};
       this.mds.setSpinnerOff();
     } else {
-      this.bs.getFiles()
+      this.bs.getFiles(this.wds.wsId)
         .pipe(map(fileList &#x3D;&gt; this.addFrontendChecksToFiles(fileList)))
         .subscribe(fileList &#x3D;&gt; {
           this.files &#x3D; {};
@@ -393,15 +419,14 @@ export class FilesComponent implements OnInit {
 
   private addFrontendChecksToFile(file: IQBFile): IQBFile {
     if (typeof file.info[&#x27;verona-version&#x27;] !&#x3D;&#x3D; &#x27;undefined&#x27;) {
-      const fileMayor &#x3D; file.info[&#x27;verona-version&#x27;].toString().split(&#x27;.&#x27;).shift();
-      const systemMayor &#x3D; this.veronaApiVersionSupported.split(&#x27;.&#x27;).shift();
-      if (fileMayor !&#x3D;&#x3D; systemMayor) {
-        if (typeof file.report.error &#x3D;&#x3D;&#x3D; &#x27;undefined&#x27;) {
-          // eslint-disable-next-line no-param-reassign
-          file.report.error &#x3D; [];
-        }
-        file.report.error.push(&#x60;Verona Version of this Player is not compatible 
-          with this system&#x27;s version (\&#x60;${this.veronaApiVersionSupported}\&#x60;)!&#x60;);
+      const fileMayor &#x3D; parseInt(file.info[&#x27;verona-version&#x27;].toString().split(&#x27;.&#x27;).shift(), 10);
+      if (typeof file.report.error &#x3D;&#x3D;&#x3D; &#x27;undefined&#x27;) {
+        // eslint-disable-next-line no-param-reassign
+        file.report.error &#x3D; [];
+      }
+      if (fileMayor &lt; this.veronaPlayerApiVersionMin || fileMayor &gt; this.veronaPlayerApiVersionMax) {
+        file.report.error.push(&#x60;Verona Version \&#x60;${fileMayor}\&#x60; is not supported
+          (only versions between \&#x60;${this.veronaPlayerApiVersionMin}\&#x60; and \&#x60;${this.veronaPlayerApiVersionMax}\&#x60;)&#x60;);
       }
     }
     return file;
@@ -409,7 +434,7 @@ export class FilesComponent implements OnInit {
 
   download(file: IQBFile): void {
     this.mds.setSpinnerOn();
-    this.bs.downloadFile(file.type, file.name)
+    this.bs.downloadFile(this.wds.wsId, file.type, file.name)
       .subscribe(
         (fileData: Blob|boolean) &#x3D;&gt; {
           this.mds.setSpinnerOff();
@@ -439,14 +464,14 @@ export class FilesComponent implements OnInit {
 </div>
 
 
-                   
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -467,9 +492,9 @@ export class FilesComponent implements OnInit {
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
-       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+
        <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>
 

@@ -8,7 +8,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
-	      <link rel="stylesheet" href="../styles/style.css">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
     </head>
     <body>
 
@@ -38,7 +39,7 @@
 
 <ol class="breadcrumb">
   <li>Injectables</li>
-  <li>CommandService</li>
+  <li >CommandService</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -56,8 +57,9 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/app/test-controller/command.service.ts</code>
+            <code>src/app/test-controller/services/command.service.ts</code>
         </p>
+
 
 
             <p class="comment">
@@ -81,115 +83,80 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#command$">command$</a>
+                                <a href="#command$" >command$</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#commandReceived$">commandReceived$</a>
+                                <a href="#commandReceived$" >commandReceived$</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#commandSubscription">commandSubscription</a>
+                                <a href="#commandSubscription" >commandSubscription</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#executedCommandIds">executedCommandIds</a>
+                                <a href="#executedCommandIds" >executedCommandIds</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
-                                <a href="#initialData">initialData</a>
+                                <a href="#initialData" >initialData</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
-                                <a href="#isProductionMode">isProductionMode</a>
+                                <a href="#isProductionMode" >isProductionMode</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
-                                <a href="#pollingEndpoint">pollingEndpoint</a>
+                                <a href="#pollingEndpoint" >pollingEndpoint</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
-                                <a href="#pollingInterval">pollingInterval</a>
+                                <a href="#pollingInterval" >pollingInterval</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#testStartedSubscription">testStartedSubscription</a>
+                                <a href="#testStartedSubscription" >testStartedSubscription</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
-                                <a href="#wsChannelName">wsChannelName</a>
+                                <a href="#wsChannelName" >wsChannelName</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
-                                <a href="#connectionClosed">connectionClosed</a>
+                                <a href="#connectionClosed" >connectionClosed</a>
                             </li>
                             <li>
-                                <a href="#connectionStatus$">connectionStatus$</a>
+                                <a href="#connectionStatus$" >connectionStatus$</a>
                             </li>
                             <li>
-                                <a href="#data$">data$</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Protected</span>
-                                    <span class="modifier">Abstract</span>
-                                <a href="#initialData">initialData</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Protected</span>
-                                    <span class="modifier">Abstract</span>
-                                <a href="#pollingEndpoint">pollingEndpoint</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Protected</span>
-                                    <span class="modifier">Abstract</span>
-                                <a href="#pollingInterval">pollingInterval</a>
+                                <a href="#data$" >data$</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#pollingTimeoutId">pollingTimeoutId</a>
+                                <a href="#pollingTimeoutId" >pollingTimeoutId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#wsConnectionStatusSubscription" >wsConnectionStatusSubscription</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#wsDataSubscription" >wsDataSubscription</a>
+                            </li>
+                            <li>
+                                <a href="#wsConnected$" >wsConnected$</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#wsSubject$" >wsSubject$</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#wsSubscription" >wsSubscription</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
-                                    <span class="modifier">Abstract</span>
-                                <a href="#wsChannelName">wsChannelName</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#wsConnectionStatusSubscription">wsConnectionStatusSubscription</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#wsDataSubscription">wsDataSubscription</a>
-                            </li>
-                            <li>
-                                <a href="#wsConnected$">wsConnected$</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#wsSubject$">wsSubject$</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#wsSubscription">wsSubscription</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Protected</span>
-                                <a href="#wsUrl">wsUrl</a>
-                            </li>
-                            <li>
-                                <a href="#wsConnected$">wsConnected$</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#wsSubject$">wsSubject$</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#wsSubscription">wsSubscription</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Protected</span>
-                                <a href="#wsUrl">wsUrl</a>
+                                <a href="#wsUrl" >wsUrl</a>
                             </li>
                         </ul>
                     </td>
@@ -205,84 +172,68 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#commandFromTerminal">commandFromTerminal</a>
+                                <a href="#commandFromTerminal" >commandFromTerminal</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Static</span>
-                                <a href="#commandToString">commandToString</a>
+                                <a href="#commandToString" >commandToString</a>
                             </li>
                             <li>
-                                <a href="#ngOnDestroy">ngOnDestroy</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#setUpGlobalCommandsForDebug">setUpGlobalCommandsForDebug</a>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#subscribeReceivedCommands">subscribeReceivedCommands</a>
+                                <a href="#setUpGlobalCommandsForDebug" >setUpGlobalCommandsForDebug</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#subscribeTestStarted">subscribeTestStarted</a>
+                                <a href="#subscribeReceivedCommands" >subscribeReceivedCommands</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#subscribeTestStarted" >subscribeTestStarted</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Static</span>
-                                <a href="#testStartedOrStopped">testStartedOrStopped</a>
+                                <a href="#testStartedOrStopped" >testStartedOrStopped</a>
                             </li>
                             <li>
-                                <a href="#cutConnection">cutConnection</a>
-                            </li>
-                            <li>
-                                <a href="#ngOnDestroy">ngOnDestroy</a>
+                                <a href="#cutConnection" >cutConnection</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
-                                <a href="#observeEndpointAndChannel">observeEndpointAndChannel</a>
+                                <a href="#observeEndpointAndChannel" >observeEndpointAndChannel</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#pollNext">pollNext</a>
+                                <a href="#pollNext" >pollNext</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#scheduleNextPoll">scheduleNextPoll</a>
+                                <a href="#scheduleNextPoll" >scheduleNextPoll</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#subScribeToWsChannel">subScribeToWsChannel</a>
+                                <a href="#subScribeToWsChannel" >subScribeToWsChannel</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#unsubscribeFromWebsocket">unsubscribeFromWebsocket</a>
+                                <a href="#unsubscribeFromWebsocket" >unsubscribeFromWebsocket</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
-                                <a href="#closeConnection">closeConnection</a>
+                                <a href="#closeConnection" >closeConnection</a>
                             </li>
                             <li>
-                                <a href="#connect">connect</a>
+                                <a href="#connect" >connect</a>
                             </li>
                             <li>
-                                <a href="#getChannel">getChannel</a>
+                                <a href="#getChannel" >getChannel</a>
                             </li>
                             <li>
-                                <a href="#send">send</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Protected</span>
-                                <a href="#closeConnection">closeConnection</a>
-                            </li>
-                            <li>
-                                <a href="#connect">connect</a>
-                            </li>
-                            <li>
-                                <a href="#getChannel">getChannel</a>
-                            </li>
-                            <li>
-                                <a href="#send">send</a>
+                                <a href="#send" >send</a>
                             </li>
                         </ul>
                     </td>
@@ -302,12 +253,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(isProductionMode: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, tcs: <a href="../injectables/TestControllerService.html">TestControllerService</a>, serverUrl: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, http: <a href="https://angular.io/api/common/http/HttpClient" target="_blank">HttpClient</a>)</code>
+<code>constructor(isProductionMode: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, tcs: <a href="../injectables/TestControllerService.html" target="_self">TestControllerService</a>, serverUrl: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, http: <a href="https://angular.io/api/common/http/HttpClient" target="_blank">HttpClient</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/test-controller/command.service.ts:41</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/test-controller/services/command.service.ts:41</a></div>
                             </td>
                         </tr>
 
@@ -392,10 +343,8 @@
                 <td class="col-md-4">
                     <a name="commandFromTerminal"></a>
                     <span class="name">
-                        <b>
-                            <span class="modifier">Private</span>
-                            commandFromTerminal
-                        </b>
+                        <span class="modifier">Private</span>
+                        <span ><b>commandFromTerminal</b></span>
                         <a href="#commandFromTerminal"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -411,7 +360,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="135"
-                            class="link-to-prism">src/app/test-controller/command.service.ts:135</a></div>
+                            class="link-to-prism">src/app/test-controller/services/command.service.ts:135</a></div>
                 </td>
             </tr>
 
@@ -421,6 +370,7 @@
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -476,11 +426,9 @@
                 <td class="col-md-4">
                     <a name="commandToString"></a>
                     <span class="name">
-                        <b>
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Static</span>
-                            commandToString
-                        </b>
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Static</span>
+                        <span ><b>commandToString</b></span>
                         <a href="#commandToString"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -488,7 +436,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>commandToString(command: <a href="../interfaces/Command.html">Command</a>)</code>
+                    <code>commandToString(command: <a href="../interfaces/Command.html" target="_self">Command</a>)</code>
                 </td>
             </tr>
 
@@ -496,7 +444,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">src/app/test-controller/command.service.ts:60</a></div>
+                            class="link-to-prism">src/app/test-controller/services/command.service.ts:60</a></div>
                 </td>
             </tr>
 
@@ -506,6 +454,7 @@
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -549,9 +498,7 @@
                 <td class="col-md-4">
                     <a name="ngOnDestroy"></a>
                     <span class="name">
-                        <b>
-                            ngOnDestroy
-                        </b>
+                        <span ><b>ngOnDestroy</b></span>
                         <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -565,8 +512,14 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="77"
-                            class="link-to-prism">src/app/test-controller/command.service.ts:77</a></div>
+                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:77</a></code>
+</div>
                 </td>
             </tr>
 
@@ -588,10 +541,8 @@
                 <td class="col-md-4">
                     <a name="setUpGlobalCommandsForDebug"></a>
                     <span class="name">
-                        <b>
-                            <span class="modifier">Private</span>
-                            setUpGlobalCommandsForDebug
-                        </b>
+                        <span class="modifier">Private</span>
+                        <span ><b>setUpGlobalCommandsForDebug</b></span>
                         <a href="#setUpGlobalCommandsForDebug"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -607,7 +558,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="126"
-                            class="link-to-prism">src/app/test-controller/command.service.ts:126</a></div>
+                            class="link-to-prism">src/app/test-controller/services/command.service.ts:126</a></div>
                 </td>
             </tr>
 
@@ -629,10 +580,8 @@
                 <td class="col-md-4">
                     <a name="subscribeReceivedCommands"></a>
                     <span class="name">
-                        <b>
-                            <span class="modifier">Private</span>
-                            subscribeReceivedCommands
-                        </b>
+                        <span class="modifier">Private</span>
+                        <span ><b>subscribeReceivedCommands</b></span>
                         <a href="#subscribeReceivedCommands"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -648,7 +597,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="86"
-                            class="link-to-prism">src/app/test-controller/command.service.ts:86</a></div>
+                            class="link-to-prism">src/app/test-controller/services/command.service.ts:86</a></div>
                 </td>
             </tr>
 
@@ -670,10 +619,8 @@
                 <td class="col-md-4">
                     <a name="subscribeTestStarted"></a>
                     <span class="name">
-                        <b>
-                            <span class="modifier">Private</span>
-                            subscribeTestStarted
-                        </b>
+                        <span class="modifier">Private</span>
+                        <span ><b>subscribeTestStarted</b></span>
                         <a href="#subscribeTestStarted"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -689,7 +636,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="102"
-                            class="link-to-prism">src/app/test-controller/command.service.ts:102</a></div>
+                            class="link-to-prism">src/app/test-controller/services/command.service.ts:102</a></div>
                 </td>
             </tr>
 
@@ -711,11 +658,9 @@
                 <td class="col-md-4">
                     <a name="testStartedOrStopped"></a>
                     <span class="name">
-                        <b>
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Static</span>
-                            testStartedOrStopped
-                        </b>
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Static</span>
+                        <span ><b>testStartedOrStopped</b></span>
                         <a href="#testStartedOrStopped"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -723,7 +668,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>testStartedOrStopped(testStatus: <a href="../undefineds/TestControllerState.html">TestControllerState</a>)</code>
+                    <code>testStartedOrStopped(testStatus: <a href="../undefineds/TestControllerState.html" target="_self">TestControllerState</a>)</code>
                 </td>
             </tr>
 
@@ -731,7 +676,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="64"
-                            class="link-to-prism">src/app/test-controller/command.service.ts:64</a></div>
+                            class="link-to-prism">src/app/test-controller/services/command.service.ts:64</a></div>
                 </td>
             </tr>
 
@@ -741,6 +686,7 @@
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -784,9 +730,7 @@
                 <td class="col-md-4">
                     <a name="cutConnection"></a>
                     <span class="name">
-                        <b>
-                            cutConnection
-                        </b>
+                        <span ><b>cutConnection</b></span>
                         <a href="#cutConnection"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -827,57 +771,10 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="ngOnDestroy"></a>
-                    <span class="name">
-                        <b>
-                            ngOnDestroy
-                        </b>
-                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>ngOnDestroy()</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:37</a></code>
-</div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="observeEndpointAndChannel"></a>
                     <span class="name">
-                        <b>
-                            <span class="modifier">Protected</span>
-                            observeEndpointAndChannel
-                        </b>
+                        <span class="modifier">Protected</span>
+                        <span ><b>observeEndpointAndChannel</b></span>
                         <a href="#observeEndpointAndChannel"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -921,10 +818,8 @@
                 <td class="col-md-4">
                     <a name="pollNext"></a>
                     <span class="name">
-                        <b>
-                            <span class="modifier">Private</span>
-                            pollNext
-                        </b>
+                        <span class="modifier">Private</span>
+                        <span ><b>pollNext</b></span>
                         <a href="#pollNext"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -968,10 +863,8 @@
                 <td class="col-md-4">
                     <a name="scheduleNextPoll"></a>
                     <span class="name">
-                        <b>
-                            <span class="modifier">Private</span>
-                            scheduleNextPoll
-                        </b>
+                        <span class="modifier">Private</span>
+                        <span ><b>scheduleNextPoll</b></span>
                         <a href="#scheduleNextPoll"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -1015,10 +908,8 @@
                 <td class="col-md-4">
                     <a name="subScribeToWsChannel"></a>
                     <span class="name">
-                        <b>
-                            <span class="modifier">Private</span>
-                            subScribeToWsChannel
-                        </b>
+                        <span class="modifier">Private</span>
+                        <span ><b>subScribeToWsChannel</b></span>
                         <a href="#subScribeToWsChannel"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -1062,10 +953,8 @@
                 <td class="col-md-4">
                     <a name="unsubscribeFromWebsocket"></a>
                     <span class="name">
-                        <b>
-                            <span class="modifier">Private</span>
-                            unsubscribeFromWebsocket
-                        </b>
+                        <span class="modifier">Private</span>
+                        <span ><b>unsubscribeFromWebsocket</b></span>
                         <a href="#unsubscribeFromWebsocket"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -1109,274 +998,8 @@
                 <td class="col-md-4">
                     <a name="closeConnection"></a>
                     <span class="name">
-                        <b>
-                            <span class="modifier">Protected</span>
-                            closeConnection
-                        </b>
-                        <a href="#closeConnection"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>closeConnection()</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:47</a></code>
-</div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="connect"></a>
-                    <span class="name">
-                        <b>
-                            connect
-                        </b>
-                        <a href="#connect"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>connect()</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:18</a></code>
-</div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getChannel"></a>
-                    <span class="name">
-                        <b>
-                            getChannel
-                        </b>
-                        <a href="#getChannel"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>getChannel(channelName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:66</a></code>
-</div>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Type parameters :</b>
-                    <ul class="type-parameters">
-                        <li>T</li>
-                    </ul>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>channelName</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>Observable&lt;T&gt;</code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="send"></a>
-                    <span class="name">
-                        <b>
-                            send
-                        </b>
-                        <a href="#send"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>send(event: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:58</a></code>
-</div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>event</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>data</td>
-                                    <td>
-                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="closeConnection"></a>
-                    <span class="name">
-                        <b>
-                            <span class="modifier">Protected</span>
-                            closeConnection
-                        </b>
+                        <span class="modifier">Protected</span>
+                        <span ><b>closeConnection</b></span>
                         <a href="#closeConnection"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -1420,9 +1043,7 @@
                 <td class="col-md-4">
                     <a name="connect"></a>
                     <span class="name">
-                        <b>
-                            connect
-                        </b>
+                        <span ><b>connect</b></span>
                         <a href="#connect"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -1465,9 +1086,7 @@
                 <td class="col-md-4">
                     <a name="getChannel"></a>
                     <span class="name">
-                        <b>
-                            getChannel
-                        </b>
+                        <span ><b>getChannel</b></span>
                         <a href="#getChannel"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -1506,6 +1125,7 @@
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -1549,9 +1169,7 @@
                 <td class="col-md-4">
                     <a name="send"></a>
                     <span class="name">
-                        <b>
-                            send
-                        </b>
+                        <span ><b>send</b></span>
                         <a href="#send"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -1582,6 +1200,7 @@
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -1634,989 +1253,710 @@
 </section>
             <section>
     
-        <h3 id="inputs">
-            Properties
-        </h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="command$"></a>
+                    <span class="name">
+                        <span ><b>command$</b></span>
+                        <a href="#command$"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="command$"></a>
-                        <span class="name">
-                            <b>
-                            command$</b>
-                            <a href="#command$"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="../interfaces/Command.html" target="_self" >Subject&lt;Command&gt;</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Subject&lt;Command&gt;()</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="../interfaces/Command.html" target="_self" >Subject&lt;Command&gt;</a></code>
-
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/app/test-controller/services/command.service.ts:31</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>new Subject&lt;Command&gt;()</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/app/test-controller/command.service.ts:31</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="commandReceived$"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>commandReceived$</b></span>
+                        <a href="#commandReceived$"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="commandReceived$"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Private</span>
-                            commandReceived$</b>
-                            <a href="#commandReceived$"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="../interfaces/Command.html" target="_self" >Subject&lt;Command&gt;</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Subject&lt;Command&gt;()</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="../interfaces/Command.html" target="_self" >Subject&lt;Command&gt;</a></code>
-
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/app/test-controller/services/command.service.ts:38</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>new Subject&lt;Command&gt;()</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/app/test-controller/command.service.ts:38</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="commandSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>commandSubscription</b></span>
+                        <a href="#commandSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="commandSubscription"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Private</span>
-                            commandSubscription</b>
-                            <a href="#commandSubscription"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>    <code>Subscription</code>
+
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>    <code>Subscription</code>
-
+                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/app/test-controller/services/command.service.ts:39</a></div>
                         </td>
                     </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/app/test-controller/command.service.ts:39</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="executedCommandIds"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>executedCommandIds</b></span>
+                        <a href="#executedCommandIds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="executedCommandIds"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Private</span>
-                            executedCommandIds</b>
-                            <a href="#executedCommandIds"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>    <code>number[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>    <code>number[]</code>
-
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/test-controller/services/command.service.ts:41</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>[]</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">src/app/test-controller/command.service.ts:41</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initialData"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>initialData</b></span>
+                        <a href="#initialData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="initialData"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Protected</span>
-                            initialData</b>
-                            <a href="#initialData"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>    <code>[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:33</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isProductionMode"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>isProductionMode</b></span>
+                        <a href="#isProductionMode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Inject(&#x27;IS_PRODUCTION_MODE&#x27;)<br />
+                        </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>    <code>[]</code>
-
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/test-controller/services/command.service.ts:44</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>[]</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/app/test-controller/command.service.ts:33</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="pollingEndpoint"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>pollingEndpoint</b></span>
+                        <a href="#pollingEndpoint"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="isProductionMode"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Public</span>
-                            isProductionMode</b>
-                            <a href="#isProductionMode"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:34</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="pollingInterval"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>pollingInterval</b></span>
+                        <a href="#pollingInterval"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>5000</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
+</div>
+                            </td>
+                        </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:35</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="testStartedSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>testStartedSubscription</b></span>
+                        <a href="#testStartedSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription</code>
+
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/app/test-controller/services/command.service.ts:40</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <b>Decorators : </b>
-                            <br />
-                            <code>
-                                @Inject(&#x27;IS_PRODUCTION_MODE&#x27;)<br />
-                            </code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/test-controller/command.service.ts:44</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="wsChannelName"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>wsChannelName</b></span>
+                        <a href="#wsChannelName"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="pollingEndpoint"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Protected</span>
-                            pollingEndpoint</b>
-                            <a href="#pollingEndpoint"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>&#x27;&#x27;</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/app/test-controller/command.service.ts:34</a></div>
-                            </td>
-                        </tr>
-
-
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="pollingInterval"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Protected</span>
-                            pollingInterval</b>
-                            <a href="#pollingInterval"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Default value : </i><code>&#x27;commands&#x27;</code>
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>5000</code>
-                        </td>
-                    </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/app/test-controller/command.service.ts:35</a></div>
+                                <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
+</div>
                             </td>
                         </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:36</a></code>
+</div>
+                        </td>
+                    </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="connectionClosed"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>connectionClosed</b></span>
+                        <a href="#connectionClosed"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="testStartedSubscription"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Private</span>
-                            testStartedSubscription</b>
-                            <a href="#testStartedSubscription"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Default value : </i><code>true</code>
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>    <code>Subscription</code>
-
-                        </td>
-                    </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">src/app/test-controller/command.service.ts:40</a></div>
+                                <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
+</div>
                             </td>
                         </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:28</a></code>
+</div>
+                        </td>
+                    </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="connectionStatus$"></a>
+                    <span class="name">
+                        <span ><b>connectionStatus$</b></span>
+                        <a href="#connectionStatus$"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="wsChannelName"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Protected</span>
-                            wsChannelName</b>
-                            <a href="#wsChannelName"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#ConnectionStatus" target="_self" >BehaviorSubject&lt;ConnectionStatus&gt;</a></code>
+
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>&#x27;commands&#x27;</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">src/app/test-controller/command.service.ts:36</a></div>
-                            </td>
-                        </tr>
-
-
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="connectionClosed"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Protected</span>
-                            connectionClosed</b>
-                            <a href="#connectionClosed"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Default value : </i><code>new BehaviorSubject&lt;ConnectionStatus&gt;(&#x27;initial&#x27;)</code>
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>true</code>
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                                </td>
-                            </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:28</a></code>
+                                <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
 </div>
                             </td>
                         </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:22</a></code>
+</div>
+                        </td>
+                    </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="data$"></a>
+                    <span class="name">
+                        <span ><b>data$</b></span>
+                        <a href="#data$"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="connectionStatus$"></a>
-                        <span class="name">
-                            <b>
-                            connectionStatus$</b>
-                            <a href="#connectionStatus$"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>    <code>BehaviorSubject&lt;T&gt;</code>
+
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#ConnectionStatus" target="_self" >BehaviorSubject&lt;ConnectionStatus&gt;</a></code>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>new BehaviorSubject&lt;ConnectionStatus&gt;(&#x27;initial&#x27;)</code>
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                                </td>
-                            </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:22</a></code>
+                                <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
 </div>
                             </td>
                         </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:21</a></code>
+</div>
+                        </td>
+                    </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="pollingTimeoutId"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>pollingTimeoutId</b></span>
+                        <a href="#pollingTimeoutId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="data$"></a>
-                        <span class="name">
-                            <b>
-                            data$</b>
-                            <a href="#data$"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>    <code>BehaviorSubject&lt;T&gt;</code>
-
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                                </td>
-                            </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:21</a></code>
-</div>
-                            </td>
-                        </tr>
-
-
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="initialData"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Protected</span>
-                                <span class="modifier">Abstract</span>
-                            initialData</b>
-                            <a href="#initialData"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Default value : </i><code>null</code>
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>    <code>T</code>
-
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                                </td>
-                            </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:19</a></code>
+                                <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
 </div>
                             </td>
                         </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:26</a></code>
+</div>
+                        </td>
+                    </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="wsConnectionStatusSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>wsConnectionStatusSubscription</b></span>
+                        <a href="#wsConnectionStatusSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="pollingEndpoint"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Protected</span>
-                                <span class="modifier">Abstract</span>
-                            pollingEndpoint</b>
-                            <a href="#pollingEndpoint"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>    <code>Subscription</code>
+
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                                </td>
-                            </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:16</a></code>
-</div>
-                            </td>
-                        </tr>
-
-
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="pollingInterval"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Protected</span>
-                                <span class="modifier">Abstract</span>
-                            pollingInterval</b>
-                            <a href="#pollingInterval"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Default value : </i><code>null</code>
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                                </td>
-                            </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:17</a></code>
+                                <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
 </div>
                             </td>
                         </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:24</a></code>
+</div>
+                        </td>
+                    </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="wsDataSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>wsDataSubscription</b></span>
+                        <a href="#wsDataSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="pollingTimeoutId"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Private</span>
-                            pollingTimeoutId</b>
-                            <a href="#pollingTimeoutId"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>    <code>Subscription</code>
+
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>null</code>
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                                </td>
-                            </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:26</a></code>
-</div>
-                            </td>
-                        </tr>
-
-
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="wsChannelName"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Protected</span>
-                                <span class="modifier">Abstract</span>
-                            wsChannelName</b>
-                            <a href="#wsChannelName"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Default value : </i><code>null</code>
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                                </td>
-                            </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:18</a></code>
+                                <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
 </div>
                             </td>
                         </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:25</a></code>
+</div>
+                        </td>
+                    </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="wsConnected$"></a>
+                    <span class="name">
+                        <span ><b>wsConnected$</b></span>
+                        <a href="#wsConnected$"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="wsConnectionStatusSubscription"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Private</span>
-                            wsConnectionStatusSubscription</b>
-                            <a href="#wsConnectionStatusSubscription"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Default value : </i><code>new BehaviorSubject&lt;boolean&gt;(null)</code>
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>    <code>Subscription</code>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>null</code>
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                                </td>
-                            </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:24</a></code>
+                                <div class="io-line">Inherited from         <code><a href="../classes/WebsocketService.html" target="_self" >WebsocketService</a></code>
 </div>
                             </td>
                         </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/WebsocketService.html#source" target="_self" >WebsocketService:15</a></code>
+</div>
+                        </td>
+                    </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="wsSubject$"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>wsSubject$</b></span>
+                        <a href="#wsSubject$"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="wsDataSubscription"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Private</span>
-                            wsDataSubscription</b>
-                            <a href="#wsDataSubscription"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>    <code>WebSocketSubject&lt;any&gt;</code>
+
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>    <code>Subscription</code>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>null</code>
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                                </td>
-                            </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:25</a></code>
+                                <div class="io-line">Inherited from         <code><a href="../classes/WebsocketService.html" target="_self" >WebsocketService</a></code>
 </div>
                             </td>
                         </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/WebsocketService.html#source" target="_self" >WebsocketService:14</a></code>
+</div>
+                        </td>
+                    </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="wsSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>wsSubscription</b></span>
+                        <a href="#wsSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="wsConnected$"></a>
-                        <span class="name">
-                            <b>
-                            wsConnected$</b>
-                            <a href="#wsConnected$"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>    <code>Subscription</code>
+
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>new BehaviorSubject&lt;boolean&gt;(null)</code>
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                                </td>
-                            </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:15</a></code>
+                                <div class="io-line">Inherited from         <code><a href="../classes/WebsocketService.html" target="_self" >WebsocketService</a></code>
 </div>
                             </td>
                         </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/WebsocketService.html#source" target="_self" >WebsocketService:16</a></code>
+</div>
+                        </td>
+                    </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="wsUrl"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>wsUrl</b></span>
+                        <a href="#wsUrl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="wsSubject$"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Private</span>
-                            wsSubject$</b>
-                            <a href="#wsSubject$"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>    <code>WebSocketSubject&lt;any&gt;</code>
-
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                                </td>
-                            </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:14</a></code>
-</div>
-                            </td>
-                        </tr>
-
-
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="wsSubscription"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Private</span>
-                            wsSubscription</b>
-                            <a href="#wsSubscription"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>    <code>Subscription</code>
-
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                                </td>
-                            </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:16</a></code>
+                                <div class="io-line">Inherited from         <code><a href="../classes/WebsocketService.html" target="_self" >WebsocketService</a></code>
 </div>
                             </td>
                         </tr>
-
-
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="wsUrl"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Protected</span>
-                            wsUrl</b>
-                            <a href="#wsUrl"><span class="icon ion-ios-link"></span></a>
-                        </span>
-                    </td>
-                </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
+                                <div class="io-line">Defined in         <code><a href="../classes/WebsocketService.html#source" target="_self" >WebsocketService:13</a></code>
+</div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>&#x27;&#x27;</code>
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../injectables/WebsocketBackendService.html" target="_self" >WebsocketBackendService</a></code>
-</div>
-                                </td>
-                            </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../injectables/WebsocketBackendService.html#source" target="_self" >WebsocketBackendService:13</a></code>
-</div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="wsConnected$"></a>
-                        <span class="name">
-                            <b>
-                            wsConnected$</b>
-                            <a href="#wsConnected$"><span class="icon ion-ios-link"></span></a>
-                        </span>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>new BehaviorSubject&lt;boolean&gt;(null)</code>
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../classes/WebsocketService.html" target="_self" >WebsocketService</a></code>
-</div>
-                                </td>
-                            </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../classes/WebsocketService.html#source" target="_self" >WebsocketService:15</a></code>
-</div>
-                            </td>
-                        </tr>
-
-
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="wsSubject$"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Private</span>
-                            wsSubject$</b>
-                            <a href="#wsSubject$"><span class="icon ion-ios-link"></span></a>
-                        </span>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>    <code>WebSocketSubject&lt;any&gt;</code>
-
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../classes/WebsocketService.html" target="_self" >WebsocketService</a></code>
-</div>
-                                </td>
-                            </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../classes/WebsocketService.html#source" target="_self" >WebsocketService:14</a></code>
-</div>
-                            </td>
-                        </tr>
-
-
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="wsSubscription"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Private</span>
-                            wsSubscription</b>
-                            <a href="#wsSubscription"><span class="icon ion-ios-link"></span></a>
-                        </span>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>    <code>Subscription</code>
-
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../classes/WebsocketService.html" target="_self" >WebsocketService</a></code>
-</div>
-                                </td>
-                            </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../classes/WebsocketService.html#source" target="_self" >WebsocketService:16</a></code>
-</div>
-                            </td>
-                        </tr>
-
-
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="wsUrl"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Protected</span>
-                            wsUrl</b>
-                            <a href="#wsUrl"><span class="icon ion-ios-link"></span></a>
-                        </span>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>&#x27;&#x27;</code>
-                        </td>
-                    </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Inherited from         <code><a href="../classes/WebsocketService.html" target="_self" >WebsocketService</a></code>
-</div>
-                                </td>
-                            </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in         <code><a href="../classes/WebsocketService.html#source" target="_self" >WebsocketService:13</a></code>
-</div>
-                            </td>
-                        </tr>
-
-
-            </tbody>
-        </table>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -2624,7 +1964,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
-  Inject, Injectable, OnDestroy, SkipSelf
+  Inject, Injectable, OnDestroy
 } from &#x27;@angular/core&#x27;;
 import {
   of, Subject, Subscription, timer
@@ -2643,9 +1983,9 @@ import {
 import { HttpClient } from &#x27;@angular/common/http&#x27;;
 import {
   Command, commandKeywords, isKnownCommand, TestControllerState
-} from &#x27;./test-controller.interfaces&#x27;;
+} from &#x27;../interfaces/test-controller.interfaces&#x27;;
 import { TestControllerService } from &#x27;./test-controller.service&#x27;;
-import { WebsocketBackendService } from &#x27;../shared/websocket-backend.service&#x27;;
+import { WebsocketBackendService } from &#x27;../../shared/websocket-backend.service&#x27;;
 
 type TestStartedOrStopped &#x3D; &#x27;started&#x27; | &#x27;terminated&#x27; | &#x27;&#x27;;
 
@@ -2714,13 +2054,13 @@ export class CommandService extends WebsocketBackendService&lt;Command[]&gt; imp
         filter((command: Command) &#x3D;&gt; (this.executedCommandIds.indexOf(command.id) &lt; 0)),
         // min delay between items
         concatMap((command: Command) &#x3D;&gt; timer(1000).pipe(ignoreElements(), startWith(command))),
-        mergeMap((command: Command) &#x3D;&gt; {
-          return this.http.patch(&#x60;${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed&#x60;, {})
+        mergeMap((command: Command) &#x3D;&gt;
+          // eslint-disable-next-line
+          this.http.patch(&#x60;${this.serverUrl}test/${this.tcs.testId}/command/${command.id}/executed&#x60;, {})
             .pipe(
               map(() &#x3D;&gt; command),
               tap(cmd &#x3D;&gt; this.executedCommandIds.push(cmd.id))
-            );
-        })
+            ))
       ).subscribe(command &#x3D;&gt; this.command$.next(command));
   }
 
@@ -2786,14 +2126,14 @@ export class CommandService extends WebsocketBackendService&lt;Command[]&gt; imp
 
 
 
-                   
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -2814,9 +2154,9 @@ export class CommandService extends WebsocketBackendService&lt;Command[]&gt; imp
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
-       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+
        <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>
 

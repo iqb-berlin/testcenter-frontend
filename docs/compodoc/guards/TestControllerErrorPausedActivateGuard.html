@@ -8,7 +8,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
-	      <link rel="stylesheet" href="../styles/style.css">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
     </head>
     <body>
 
@@ -40,7 +41,7 @@
 
 <ol class="breadcrumb">
     <li>Guards</li>
-    <li>TestControllerErrorPausedActivateGuard</li>
+    <li >TestControllerErrorPausedActivateGuard</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -58,8 +59,9 @@
             <h3>File</h3>
             </p>
             <p class="comment">
-                <code>src/app/test-controller/test-controller-route-guards.ts</code>
+                <code>src/app/test-controller/routing/test-controller-route-guards.ts</code>
             </p>
+
 
 
 
@@ -79,7 +81,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#canActivate">canActivate</a>
+                                <a href="#canActivate" >canActivate</a>
                             </li>
                         </ul>
                     </td>
@@ -99,12 +101,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(tcs: <a href="../injectables/TestControllerService.html">TestControllerService</a>)</code>
+<code>constructor(tcs: <a href="../injectables/TestControllerService.html" target="_self">TestControllerService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/test-controller/test-controller-route-guards.ts:45</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/app/test-controller/routing/test-controller-route-guards.ts:31</a></div>
                             </td>
                         </tr>
 
@@ -153,24 +155,22 @@
                 <td class="col-md-4">
                     <a name="canActivate"></a>
                     <span class="name">
-                        <b>
-                            canActivate
-                        </b>
+                        <span ><b>canActivate</b></span>
                         <a href="#canActivate"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>canActivate(next: <a href="https://angular.io/api/router/ActivatedRouteSnapshot" target="_blank">ActivatedRouteSnapshot</a>, state: <a href="https://angular.io/api/router/RouterStateSnapshot" target="_blank">RouterStateSnapshot</a>)</code>
+<code>canActivate()</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">src/app/test-controller/test-controller-route-guards.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="37"
+                            class="link-to-prism">src/app/test-controller/routing/test-controller-route-guards.ts:37</a></div>
                 </td>
             </tr>
 
@@ -179,51 +179,8 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Parameters :</b>
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>next</td>
-                                    <td>
-                                                <code><a href="https://angular.io/api/router/ActivatedRouteSnapshot" target="_blank" >ActivatedRouteSnapshot</a></code>
-                                    </td>
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>state</td>
-                                    <td>
-                                                <code><a href="https://angular.io/api/router/RouterStateSnapshot" target="_blank" >RouterStateSnapshot</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>Observable | boolean</code>
-
-                    </div>
-                    <div class="io-description">
-                        
                     </div>
                 </td>
             </tr>
@@ -235,43 +192,29 @@
 
         <div class="tab-pane fade  tab-source-code" id="c-source">
             <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@angular/core&#x27;;
-import {
-  ActivatedRouteSnapshot, CanActivate, CanDeactivate, RouterStateSnapshot
-} from &#x27;@angular/router&#x27;;
-import { Observable } from &#x27;rxjs&#x27;;
-import { TestControllerComponent } from &#x27;./test-controller.component&#x27;;
-import { TestControllerState, UnitNavigationTarget } from &#x27;./test-controller.interfaces&#x27;;
-import { TestControllerService } from &#x27;./test-controller.service&#x27;;
+import { CanActivate, CanDeactivate } from &#x27;@angular/router&#x27;;
+import { TestControllerComponent } from &#x27;../components/test-controller/test-controller.component&#x27;;
+import { TestControllerState, UnitNavigationTarget } from &#x27;../interfaces/test-controller.interfaces&#x27;;
+import { TestControllerService } from &#x27;../services/test-controller.service&#x27;;
+import { LocalStorage } from &#x27;../utils/local-storage.util&#x27;;
 
 @Injectable()
 export class TestControllerDeactivateGuard implements CanDeactivate&lt;TestControllerComponent&gt; {
   constructor(
-    private tcs: TestControllerService,
+    private tcs: TestControllerService
   ) {
   }
 
-  canDeactivate(
-    component: TestControllerComponent,
-    currentRoute: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable&lt;boolean&gt; | Promise&lt;boolean&gt; | boolean {
+  canDeactivate(): boolean {
     if (this.tcs.testMode.saveResponses) {
       const testStatus: TestControllerState &#x3D; this.tcs.testStatus$.getValue();
-      if ((testStatus !&#x3D;&#x3D; TestControllerState.ERROR) &amp;&amp; (testStatus !&#x3D;&#x3D; TestControllerState.FINISHED)) {
-        if (this.tcs.bookletConfig.unit_menu !&#x3D;&#x3D; &#x27;OFF&#x27; || this.tcs.testMode.showUnitMenu) {
-          this.tcs.setUnitNavigationRequest(UnitNavigationTarget.MENU);
-        } else {
-          this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
-        }
+      if ((testStatus &#x3D;&#x3D;&#x3D; TestControllerState.RUNNING) || (testStatus &#x3D;&#x3D;&#x3D; TestControllerState.PAUSED)) {
+        this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
         return false;
-      } else {
-        localStorage.removeItem(TestControllerComponent.localStorageTestKey);
-        return true;
       }
-    } else {
-      localStorage.removeItem(TestControllerComponent.localStorageTestKey);
-      return true;
     }
+    LocalStorage.removeTestId();
+    return true;
   }
 }
 
@@ -282,11 +225,11 @@ export class TestControllerErrorPausedActivateGuard implements CanActivate {
   ) {
   }
 
-  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable&lt;boolean&gt; | boolean {
+  canActivate(): boolean {
     const testStatus: TestControllerState &#x3D; this.tcs.testStatus$.getValue();
-    return (testStatus !&#x3D;&#x3D; TestControllerState.ERROR)
-      &amp;&amp; (testStatus !&#x3D;&#x3D; TestControllerState.FINISHED)
-      &amp;&amp; (testStatus !&#x3D;&#x3D; TestControllerState.PAUSED);
+    return (testStatus !&#x3D;&#x3D; TestControllerState.ERROR) &amp;&amp;
+      (testStatus !&#x3D;&#x3D; TestControllerState.FINISHED) &amp;&amp;
+      (testStatus !&#x3D;&#x3D; TestControllerState.PAUSED);
   }
 }
 
@@ -299,14 +242,14 @@ export const testControllerRouteGuards &#x3D; [TestControllerDeactivateGuard, Te
 
 
 
-                   
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -327,9 +270,9 @@ export const testControllerRouteGuards &#x3D; [TestControllerDeactivateGuard, Te
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
-       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+
        <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>
 

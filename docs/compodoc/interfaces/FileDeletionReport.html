@@ -8,7 +8,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
-	      <link rel="stylesheet" href="../styles/style.css">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
     </head>
     <body>
 
@@ -43,7 +44,9 @@
 
 <ol class="breadcrumb">
   <li>Interfaces</li>
-  <li>FileDeletionReport</li>
+  <li
+  >
+  FileDeletionReport</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -66,6 +69,7 @@
 
 
 
+
         <section>
             <h3 id="index">Index</h3>
             <table class="table table-sm table-bordered index-table">
@@ -79,16 +83,28 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                        <a href="#deleted">deleted</a>
+                                        <a href="#deleted" 
+>
+                                            deleted
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#did_not_exist">did_not_exist</a>
+                                        <a href="#did_not_exist" 
+>
+                                            did_not_exist
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#not_allowed">not_allowed</a>
+                                        <a href="#not_allowed" 
+>
+                                            not_allowed
+                                        </a>
                                 </li>
                                 <li>
-                                        <a href="#was_used">was_used</a>
+                                        <a href="#was_used" 
+>
+                                            was_used
+                                        </a>
                                 </li>
                             </ul>
                         </td>
@@ -106,7 +122,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="deleted"></a>
-                                        <span class="name"><b>deleted</b><a href="#deleted"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>deleted</b>
+                                            <a href="#deleted">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -135,7 +155,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="did_not_exist"></a>
-                                        <span class="name"><b>did_not_exist</b><a href="#did_not_exist"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>did_not_exist</b>
+                                            <a href="#did_not_exist">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -164,7 +188,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="not_allowed"></a>
-                                        <span class="name"><b>not_allowed</b><a href="#not_allowed"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>not_allowed</b>
+                                            <a href="#not_allowed">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -193,7 +221,11 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <a name="was_used"></a>
-                                        <span class="name"><b>was_used</b><a href="#was_used"><span class="icon ion-ios-link"></span></a></span>
+                                        <span class="name "><b>was_used</b>
+                                            <a href="#was_used">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -254,14 +286,14 @@ export interface UploadResponse {
 </div>
 
 
-                   
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -282,9 +314,9 @@ export interface UploadResponse {
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
-       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+
        <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>
 

@@ -8,7 +8,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
-	      <link rel="stylesheet" href="../styles/style.css">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
     </head>
     <body>
 
@@ -38,7 +39,7 @@
 
 <ol class="breadcrumb">
   <li>Injectables</li>
-  <li>SysCheckDataService</li>
+  <li >SysCheckDataService</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -62,6 +63,7 @@
 
 
 
+
             <section>
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
@@ -75,49 +77,49 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#checkConfig">checkConfig</a>
+                                <a href="#checkConfig" >checkConfig</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#currentStep">currentStep</a>
+                                <a href="#currentStep" >currentStep</a>
                             </li>
                             <li>
-                                <a href="#environmentReport">environmentReport</a>
+                                <a href="#environmentReport" >environmentReport</a>
                             </li>
                             <li>
-                                <a href="#loadConfigComplete">loadConfigComplete</a>
+                                <a href="#loadConfigComplete" >loadConfigComplete</a>
                             </li>
                             <li>
-                                <a href="#networkCheckStatus">networkCheckStatus</a>
+                                <a href="#networkCheckStatus" >networkCheckStatus</a>
                             </li>
                             <li>
-                                <a href="#networkReport">networkReport</a>
+                                <a href="#networkReport" >networkReport</a>
                             </li>
                             <li>
-                                <a href="#nextStep">nextStep</a>
+                                <a href="#nextStep" >nextStep</a>
                             </li>
                             <li>
-                                <a href="#prevStep">prevStep</a>
+                                <a href="#prevStep" >prevStep</a>
                             </li>
                             <li>
-                                <a href="#questionnaireReport">questionnaireReport</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#stepDefs">stepDefs</a>
-                            </li>
-                            <li>
-                                <a href="#stepLabels">stepLabels</a>
+                                <a href="#questionnaireReport" >questionnaireReport</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#steps">steps</a>
+                                <a href="#stepDefs" >stepDefs</a>
                             </li>
                             <li>
-                                <a href="#timeCheckDone">timeCheckDone</a>
+                                <a href="#stepLabels" >stepLabels</a>
                             </li>
                             <li>
-                                <a href="#unitAndPlayerContainer">unitAndPlayerContainer</a>
+                                    <span class="modifier">Private</span>
+                                <a href="#steps" >steps</a>
+                            </li>
+                            <li>
+                                <a href="#timeCheckDone" >timeCheckDone</a>
+                            </li>
+                            <li>
+                                <a href="#unitAndPlayerContainer" >unitAndPlayerContainer</a>
                             </li>
                         </ul>
                     </td>
@@ -132,10 +134,10 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#setNewCurrentStep">setNewCurrentStep</a>
+                                <a href="#setNewCurrentStep" >setNewCurrentStep</a>
                             </li>
                             <li>
-                                <a href="#setSteps">setSteps</a>
+                                <a href="#setSteps" >setSteps</a>
                             </li>
                         </ul>
                     </td>
@@ -161,9 +163,7 @@
                 <td class="col-md-4">
                     <a name="setNewCurrentStep"></a>
                     <span class="name">
-                        <b>
-                            setNewCurrentStep
-                        </b>
+                        <span ><b>setNewCurrentStep</b></span>
                         <a href="#setNewCurrentStep"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -188,6 +188,7 @@
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -231,9 +232,7 @@
                 <td class="col-md-4">
                     <a name="setSteps"></a>
                     <span class="name">
-                        <b>
-                            setSteps
-                        </b>
+                        <span ><b>setSteps</b></span>
                         <a href="#setSteps"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
@@ -267,319 +266,309 @@
 </section>
             <section>
     
-        <h3 id="inputs">
-            Properties
-        </h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkConfig"></a>
+                    <span class="name">
+                        <span ><b>checkConfig</b></span>
+                        <a href="#checkConfig"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="checkConfig"></a>
-                        <span class="name">
-                            <b>
-                            checkConfig</b>
-                            <a href="#checkConfig"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="../interfaces/CheckConfig.html" target="_self" >CheckConfig</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>null</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="../interfaces/CheckConfig.html" target="_self" >CheckConfig</a></code>
-
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:42</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>null</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:42</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="currentStep"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>currentStep</b></span>
+                        <a href="#currentStep"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="currentStep"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Private</span>
-                            currentStep</b>
-                            <a href="#currentStep"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:16</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>0</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:16</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="environmentReport"></a>
+                    <span class="name">
+                        <span ><b>environmentReport</b></span>
+                        <a href="#environmentReport"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="environmentReport"></a>
-                        <span class="name">
-                            <b>
-                            environmentReport</b>
-                            <a href="#environmentReport"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="../interfaces/ReportEntry.html" target="_self" >ReportEntry[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="../interfaces/ReportEntry.html" target="_self" >ReportEntry[]</a></code>
-
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:45</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>[]</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:45</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loadConfigComplete"></a>
+                    <span class="name">
+                        <span ><b>loadConfigComplete</b></span>
+                        <a href="#loadConfigComplete"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="loadConfigComplete"></a>
-                        <span class="name">
-                            <b>
-                            loadConfigComplete</b>
-                            <a href="#loadConfigComplete"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Default value : </i><code>false</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Default value : </i><code>false</code>
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:43</a></div>
                         </td>
                     </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:43</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="networkCheckStatus"></a>
+                    <span class="name">
+                        <span ><b>networkCheckStatus</b></span>
+                        <a href="#networkCheckStatus"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="networkCheckStatus"></a>
-                        <span class="name">
-                            <b>
-                            networkCheckStatus</b>
-                            <a href="#networkCheckStatus"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="../interfaces/NetworkCheckStatus.html" target="_self" >NetworkCheckStatus</a></code>
+
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="../interfaces/NetworkCheckStatus.html" target="_self" >NetworkCheckStatus</a></code>
-
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>{
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
     done: true,
     message: &#x27;Messung noch nicht gestartet&#x27;,
     avgUploadSpeedBytesPerSecond: -1,
     avgDownloadSpeedBytesPerSecond: -1
   }</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:48</a></div>
-                            </td>
-                        </tr>
-
-
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="networkReport"></a>
-                        <span class="name">
-                            <b>
-                            networkReport</b>
-                            <a href="#networkReport"><span class="icon ion-ios-link"></span></a>
-                        </span>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="../interfaces/ReportEntry.html" target="_self" >ReportEntry[]</a></code>
-
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:48</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>[]</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:46</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="networkReport"></a>
+                    <span class="name">
+                        <span ><b>networkReport</b></span>
+                        <a href="#networkReport"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="nextStep"></a>
-                        <span class="name">
-                            <b>
-                            nextStep</b>
-                            <a href="#nextStep"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="../interfaces/ReportEntry.html" target="_self" >ReportEntry[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
+                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:46</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>&#x27;&#x27;</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:17</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="nextStep"></a>
+                    <span class="name">
+                        <span ><b>nextStep</b></span>
+                        <a href="#nextStep"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="prevStep"></a>
-                        <span class="name">
-                            <b>
-                            prevStep</b>
-                            <a href="#prevStep"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:17</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>&#x27;&#x27;</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:18</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="prevStep"></a>
+                    <span class="name">
+                        <span ><b>prevStep</b></span>
+                        <a href="#prevStep"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="questionnaireReport"></a>
-                        <span class="name">
-                            <b>
-                            questionnaireReport</b>
-                            <a href="#questionnaireReport"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="../interfaces/ReportEntry.html" target="_self" >ReportEntry[]</a></code>
-
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:18</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>[]</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:47</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="questionnaireReport"></a>
+                    <span class="name">
+                        <span ><b>questionnaireReport</b></span>
+                        <a href="#questionnaireReport"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="stepDefs"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Private</span>
-                            stepDefs</b>
-                            <a href="#stepDefs"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>        <code><a href="../interfaces/ReportEntry.html" target="_self" >ReportEntry[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="../interfaces/StepDef.html" target="_self" >StepDef[]</a></code>
-
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:47</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>[
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="stepDefs"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>stepDefs</b></span>
+                        <a href="#stepDefs"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/StepDef.html" target="_self" >StepDef[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[
     {
       route: &#x27;w&#x27;,
       label: &#x27;Ermitteln von Systemdaten (Betriebssystem, Browser)&#x27;
@@ -601,140 +590,136 @@
       label: &#x27;Senden eines Berichtes (Kennwort erforderlich)&#x27;
     }
   ]</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:19</a></div>
-                            </td>
-                        </tr>
-
-
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="stepLabels"></a>
-                        <span class="name">
-                            <b>
-                            stepLabels</b>
-                            <a href="#stepLabels"><span class="icon ion-ios-link"></span></a>
-                        </span>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>    <code>string[]</code>
-
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:19</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>[]</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:15</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="stepLabels"></a>
+                    <span class="name">
+                        <span ><b>stepLabels</b></span>
+                        <a href="#stepLabels"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="steps"></a>
-                        <span class="name">
-                            <b>
-                                <span class="modifier">Private</span>
-                            steps</b>
-                            <a href="#steps"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>    <code>string[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>    <code>string[]</code>
-
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:15</a></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>Default value : </i><code>[]</code>
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:14</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="steps"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>steps</b></span>
+                        <a href="#steps"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="timeCheckDone"></a>
-                        <span class="name">
-                            <b>
-                            timeCheckDone</b>
-                            <a href="#timeCheckDone"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Type : </i>    <code>string[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Default value : </i><code>false</code>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:14</a></div>
                         </td>
                     </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:55</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
-        <table class="table table-sm table-bordered">
-            <tbody>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="timeCheckDone"></a>
+                    <span class="name">
+                        <span ><b>timeCheckDone</b></span>
+                        <a href="#timeCheckDone"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <a name="unitAndPlayerContainer"></a>
-                        <span class="name">
-                            <b>
-                            unitAndPlayerContainer</b>
-                            <a href="#unitAndPlayerContainer"><span class="icon ion-ios-link"></span></a>
-                        </span>
+                        <i>Default value : </i><code>false</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Type : </i>        <code><a href="../interfaces/UnitAndPlayerContainer.html" target="_self" >UnitAndPlayerContainer</a></code>
-
+                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:55</a></div>
                         </td>
                     </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="unitAndPlayerContainer"></a>
+                    <span class="name">
+                        <span ><b>unitAndPlayerContainer</b></span>
+                        <a href="#unitAndPlayerContainer"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/UnitAndPlayerContainer.html" target="_self" >UnitAndPlayerContainer</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>null</code>
+                    </td>
+                </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>Default value : </i><code>null</code>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:44</a></div>
                         </td>
                     </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/sys-check/sys-check-data.service.ts:44</a></div>
-                            </td>
-                        </tr>
 
 
-            </tbody>
-        </table>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -836,14 +821,14 @@ export class SysCheckDataService {
 
 
 
-                   
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -864,9 +849,9 @@ export class SysCheckDataService {
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
-       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+
        <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>
 

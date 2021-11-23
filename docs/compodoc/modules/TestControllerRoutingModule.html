@@ -8,7 +8,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
-	      <link rel="stylesheet" href="../styles/style.css">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
     </head>
     <body>
 
@@ -34,7 +35,7 @@
 
 <ol class="breadcrumb">
     <li>Modules</li>
-    <li>TestControllerRoutingModule</li>
+    <li >TestControllerRoutingModule</li>
 </ol>
 
 
@@ -54,8 +55,9 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/app/test-controller/test-controller-routing.module.ts</code>
+            <code>src/app/test-controller/routing/test-controller-routing.module.ts</code>
         </p>
+
 
 
 
@@ -72,13 +74,11 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NgModule } from &#x27;@angular/core&#x27;;
 import { Routes, RouterModule } from &#x27;@angular/router&#x27;;
-import { UnitActivateGuard, UnitDeactivateGuard } from &#x27;./unithost/unit-route-guards&#x27;;
-import { UnithostComponent } from &#x27;./unithost/unithost.component&#x27;;
-import { TestControllerComponent } from &#x27;./test-controller.component&#x27;;
-import { TestStatusComponent } from &#x27;./test-status/test-status.component&#x27;;
+import { UnitActivateGuard, UnitDeactivateGuard } from &#x27;./unit-route-guards&#x27;;
+import { UnithostComponent } from &#x27;../components/unithost/unithost.component&#x27;;
+import { TestControllerComponent } from &#x27;../components/test-controller/test-controller.component&#x27;;
+import { TestStatusComponent } from &#x27;../components/test-status/test-status.component&#x27;;
 import { TestControllerDeactivateGuard, TestControllerErrorPausedActivateGuard } from &#x27;./test-controller-route-guards&#x27;;
-import { UnlockInputComponent } from &#x27;./unlock-input/unlock-input.component&#x27;;
-import { UnitMenuComponent } from &#x27;./unit-menu/unit-menu.component&#x27;;
 
 const routes: Routes &#x3D; [
   {
@@ -92,17 +92,8 @@ const routes: Routes &#x3D; [
         pathMatch: &#x27;full&#x27;
       },
       {
-        path: &#x27;unlock&#x27;,
-        component: UnlockInputComponent
-      },
-      {
         path: &#x27;status&#x27;,
         component: TestStatusComponent
-      },
-      {
-        path: &#x27;menu&#x27;,
-        component: UnitMenuComponent,
-        canActivate: [TestControllerErrorPausedActivateGuard]
       },
       {
         path: &#x27;u/:u&#x27;,
@@ -132,14 +123,14 @@ export class TestControllerRoutingModule { }
 
 
 
-                   
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -160,9 +151,9 @@ export class TestControllerRoutingModule { }
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
-       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+
        <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>
 

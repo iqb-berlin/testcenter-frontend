@@ -8,7 +8,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
-	      <link rel="stylesheet" href="../styles/style.css">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
     </head>
     <body>
 
@@ -38,7 +39,7 @@
 
 <ol class="breadcrumb">
   <li>Injectables</li>
-  <li>BackendService</li>
+  <li >BackendService</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -56,8 +57,9 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/app/test-controller/backend.service.ts</code>
+            <code>src/app/workspace-admin/backend.service.ts</code>
         </p>
+
 
 
 
@@ -76,40 +78,46 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#addTestLog">addTestLog</a>
+                                <a href="#deleteData" >deleteData</a>
                             </li>
                             <li>
-                                <a href="#addUnitLog">addUnitLog</a>
+                                <a href="#deleteFiles" >deleteFiles</a>
                             </li>
                             <li>
-                                <a href="#getResource">getResource</a>
+                                <a href="#deleteSysCheckReports" >deleteSysCheckReports</a>
                             </li>
                             <li>
-                                <a href="#getTestData">getTestData</a>
+                                <a href="#downloadFile" >downloadFile</a>
                             </li>
                             <li>
-                                <a href="#getUnitData">getUnitData</a>
+                                <a href="#getFiles" >getFiles</a>
                             </li>
                             <li>
-                                <a href="#lockTest">lockTest</a>
+                                <a href="#getLogs" class="deprecated-name">getLogs</a>
                             </li>
                             <li>
-                                <a href="#notifyDyingTest">notifyDyingTest</a>
+                                <a href="#getReport" >getReport</a>
                             </li>
                             <li>
-                                <a href="#saveTestReview">saveTestReview</a>
+                                <a href="#getResponses" class="deprecated-name">getResponses</a>
                             </li>
                             <li>
-                                <a href="#saveUnitReview">saveUnitReview</a>
+                                <a href="#getResultData" >getResultData</a>
                             </li>
                             <li>
-                                <a href="#updateTestState">updateTestState</a>
+                                <a href="#getReviews" class="deprecated-name">getReviews</a>
                             </li>
                             <li>
-                                <a href="#updateUnitState">updateUnitState</a>
+                                <a href="#getSysCheckReport" class="deprecated-name">getSysCheckReport</a>
                             </li>
                             <li>
-                                <a href="#updateUnitStateData">updateUnitStateData</a>
+                                <a href="#getSysCheckReportList" >getSysCheckReportList</a>
+                            </li>
+                            <li>
+                                <a href="#getWorkspaceData" >getWorkspaceData</a>
+                            </li>
+                            <li>
+                                <a href="#uploadFile" >uploadFile</a>
                             </li>
                         </ul>
                     </td>
@@ -134,7 +142,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/app/test-controller/backend.service.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">src/app/workspace-admin/backend.service.ts:27</a></div>
                             </td>
                         </tr>
 
@@ -193,26 +201,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="addTestLog"></a>
+                    <a name="deleteData"></a>
                     <span class="name">
-                        <b>
-                            addTestLog
-                        </b>
-                        <a href="#addTestLog"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>deleteData</b></span>
+                        <a href="#deleteData"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>addTestLog(testId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, logEntries: StateReportEntry[])</code>
+<code>deleteData(workspaceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, groups: string[])</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="96"
-                            class="link-to-prism">src/app/test-controller/backend.service.ts:96</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="134"
+                            class="link-to-prism">src/app/workspace-admin/backend.service.ts:134</a></div>
                 </td>
             </tr>
 
@@ -222,88 +228,7 @@
 
                     <div class="io-description">
                         <b>Parameters :</b>
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>testId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>logEntries</td>
-                                    <td>
-                                            <code>StateReportEntry[]</code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>Subscription</code>
-
-                    </div>
-                    <div class="io-description">
                         
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="addUnitLog"></a>
-                    <span class="name">
-                        <b>
-                            addUnitLog
-                        </b>
-                        <a href="#addUnitLog"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>addUnitLog(testId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, unitName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, logEntries: StateReportEntry[])</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="108"
-                            class="link-to-prism">src/app/test-controller/backend.service.ts:108</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
                         <table class="params">
                             <thead>
                                 <tr>
@@ -314,7 +239,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>testId</td>
+                                    <td>workspaceId</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -326,394 +251,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>unitName</td>
+                                    <td>groups</td>
                                     <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>logEntries</td>
-                                    <td>
-                                            <code>StateReportEntry[]</code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>Subscription</code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getResource"></a>
-                    <span class="name">
-                        <b>
-                            getResource
-                        </b>
-                        <a href="#getResource"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>getResource(testId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, internalKey: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, resId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, versionning)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="71"
-                            class="link-to-prism">src/app/test-controller/backend.service.ts:71</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                    <td>Default value</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>testId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-                                    <td>
-                                    </td>
-
-                                </tr>
-                                <tr>
-                                    <td>internalKey</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-                                    <td>
-                                    </td>
-
-                                </tr>
-                                <tr>
-                                    <td>resId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-                                    <td>
-                                    </td>
-
-                                </tr>
-                                <tr>
-                                    <td>versionning</td>
-                                    <td>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-                                    <td>
-                                        <code>false</code>
-                                    </td>
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/TaggedString.html" target="_self" >Observable&lt;TaggedString | number&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getTestData"></a>
-                    <span class="name">
-                        <b>
-                            getTestData
-                        </b>
-                        <a href="#getTestData"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>getTestData(testId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">src/app/test-controller/backend.service.ts:49</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>testId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/TestData.html" target="_self" >Observable&lt;TestData | boolean&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getUnitData"></a>
-                    <span class="name">
-                        <b>
-                            getUnitData
-                        </b>
-                        <a href="#getUnitData"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>getUnitData(testId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, unitid: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, unitalias: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">src/app/test-controller/backend.service.ts:60</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>testId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>unitid</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>unitalias</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>Observable&lt;UnitData | boolean&gt;</code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="lockTest"></a>
-                    <span class="name">
-                        <b>
-                            lockTest
-                        </b>
-                        <a href="#lockTest"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>lockTest(testId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, timeStamp: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, content: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="150"
-                            class="link-to-prism">src/app/test-controller/backend.service.ts:150</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>testId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>timeStamp</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>content</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            <code>string[]</code>
                                     </td>
 
                                     <td>
@@ -742,26 +282,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="notifyDyingTest"></a>
+                    <a name="deleteFiles"></a>
                     <span class="name">
-                        <b>
-                            notifyDyingTest
-                        </b>
-                        <a href="#notifyDyingTest"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>deleteFiles</b></span>
+                        <a href="#deleteFiles"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>notifyDyingTest(testId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>deleteFiles(workspaceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, filesToDelete: Array<string>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="114"
-                            class="link-to-prism">src/app/test-controller/backend.service.ts:114</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">src/app/workspace-admin/backend.service.ts:56</a></div>
                 </td>
             </tr>
 
@@ -771,6 +309,7 @@
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -781,9 +320,21 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>testId</td>
+                                    <td>workspaceId</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>filesToDelete</td>
+                                    <td>
+                                            <code>Array&lt;string&gt;</code>
                                     </td>
 
                                     <td>
@@ -798,7 +349,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/FileDeletionReport.html" target="_self" >Observable&lt;FileDeletionReport&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -812,26 +363,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="saveTestReview"></a>
+                    <a name="deleteSysCheckReports"></a>
                     <span class="name">
-                        <b>
-                            saveTestReview
-                        </b>
-                        <a href="#saveTestReview"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>deleteSysCheckReports</b></span>
+                        <a href="#deleteSysCheckReports"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>saveTestReview(testId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, priority: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, categories: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, entry: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>deleteSysCheckReports(workspaceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, checkIds: string[])</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">src/app/test-controller/backend.service.ts:37</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="190"
+                            class="link-to-prism">src/app/workspace-admin/backend.service.ts:190</a></div>
                 </td>
             </tr>
 
@@ -841,6 +390,7 @@
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -851,7 +401,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>testId</td>
+                                    <td>workspaceId</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -863,33 +413,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>priority</td>
+                                    <td>checkIds</td>
                                     <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>categories</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>entry</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            <code>string[]</code>
                                     </td>
 
                                     <td>
@@ -904,7 +430,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Observable&lt;boolean&gt;</code>
+                        <b>Returns : </b>        <code><a href="../interfaces/FileDeletionReport.html" target="_self" >Observable&lt;FileDeletionReport&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -918,26 +444,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="saveUnitReview"></a>
+                    <a name="downloadFile"></a>
                     <span class="name">
-                        <b>
-                            saveUnitReview
-                        </b>
-                        <a href="#saveUnitReview"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>downloadFile</b></span>
+                        <a href="#downloadFile"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>saveUnitReview(testId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, unitName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, priority: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, categories: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, entry: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>downloadFile(workspaceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, fileType: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, fileName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="24"
-                            class="link-to-prism">src/app/test-controller/backend.service.ts:24</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="229"
+                            class="link-to-prism">src/app/workspace-admin/backend.service.ts:229</a></div>
                 </td>
             </tr>
 
@@ -947,6 +471,7 @@
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -957,7 +482,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>testId</td>
+                                    <td>workspaceId</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -969,7 +494,7 @@
 
                                 </tr>
                                 <tr>
-                                    <td>unitName</td>
+                                    <td>fileType</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -981,31 +506,7 @@
 
                                 </tr>
                                 <tr>
-                                    <td>priority</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>categories</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>entry</td>
+                                    <td>fileName</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -1022,7 +523,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Observable&lt;boolean&gt;</code>
+                        <b>Returns : </b>    <code>Observable&lt;Blob | boolean&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -1036,26 +537,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="updateTestState"></a>
+                    <a name="getFiles"></a>
                     <span class="name">
-                        <b>
-                            updateTestState
-                        </b>
-                        <a href="#updateTestState"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getFiles</b></span>
+                        <a href="#getFiles"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>updateTestState(testId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, newState: StateReportEntry[])</code>
+<code>getFiles(workspaceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="90"
-                            class="link-to-prism">src/app/test-controller/backend.service.ts:90</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="45"
+                            class="link-to-prism">src/app/workspace-admin/backend.service.ts:45</a></div>
                 </td>
             </tr>
 
@@ -1065,6 +564,7 @@
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -1075,21 +575,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>testId</td>
+                                    <td>workspaceId</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>newState</td>
-                                    <td>
-                                            <code>StateReportEntry[]</code>
                                     </td>
 
                                     <td>
@@ -1104,7 +592,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Subscription</code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#GetFileResponseData" target="_self" >Observable&lt;GetFileResponseData&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1118,26 +606,29 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="updateUnitState"></a>
+                    <a name="getLogs"></a>
                     <span class="name">
-                        <b>
-                            updateUnitState
-                        </b>
-                        <a href="#updateUnitState"><span class="icon ion-ios-link"></span></a>
+                        <span class="deprecated-name"><b>getLogs</b></span>
+                        <a href="#getLogs"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
+                <td class="col-md-4 deprecated">
+                    
+                </td>
+            </tr>
+            <tr>
                 <td class="col-md-4">
-<code>updateUnitState(testId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, unitName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, newState: StateReportEntry[])</code>
+<code>getLogs(workspaceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, groups: string[])</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="102"
-                            class="link-to-prism">src/app/test-controller/backend.service.ts:102</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="106"
+                            class="link-to-prism">src/app/workspace-admin/backend.service.ts:106</a></div>
                 </td>
             </tr>
 
@@ -1147,6 +638,7 @@
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -1157,7 +649,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>testId</td>
+                                    <td>workspaceId</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -1169,21 +661,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>unitName</td>
+                                    <td>groups</td>
                                     <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>newState</td>
-                                    <td>
-                                            <code>StateReportEntry[]</code>
+                                            <code>string[]</code>
                                     </td>
 
                                     <td>
@@ -1198,7 +678,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Subscription</code>
+                        <b>Returns : </b>        <code><a href="../interfaces/LogData.html" target="_self" >Observable&lt;LogData[]&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1212,26 +692,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="updateUnitStateData"></a>
+                    <a name="getReport"></a>
                     <span class="name">
-                        <b>
-                            updateUnitStateData
-                        </b>
-                        <a href="#updateUnitStateData"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getReport</b></span>
+                        <a href="#getReport"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>updateUnitStateData(testId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, timeStamp: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, unitName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, dataPartsAllString: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, unitStateDataType: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>getReport(workspaceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, reportType: <a href="../undefineds/ReportType.html" target="_self">ReportType</a>, dataIds: string[])</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="125"
-                            class="link-to-prism">src/app/test-controller/backend.service.ts:125</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="209"
+                            class="link-to-prism">src/app/workspace-admin/backend.service.ts:209</a></div>
                 </td>
             </tr>
 
@@ -1241,6 +719,7 @@
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -1251,7 +730,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>testId</td>
+                                    <td>workspaceId</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -1263,9 +742,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>timeStamp</td>
+                                    <td>reportType</td>
                                     <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#ReportType" target="_self" >ReportType</a></code>
                                     </td>
 
                                     <td>
@@ -1275,7 +754,81 @@
 
                                 </tr>
                                 <tr>
-                                    <td>unitName</td>
+                                    <td>dataIds</td>
+                                    <td>
+                                            <code>string[]</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;Blob | boolean&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getResponses"></a>
+                    <span class="name">
+                        <span class="deprecated-name"><b>getResponses</b></span>
+                        <a href="#getResponses"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4 deprecated">
+                    
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getResponses(workspaceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, groups: string[])</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="89"
+                            class="link-to-prism">src/app/workspace-admin/backend.service.ts:89</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>workspaceId</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -1287,9 +840,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>dataPartsAllString</td>
+                                    <td>groups</td>
                                     <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            <code>string[]</code>
                                     </td>
 
                                     <td>
@@ -1298,8 +851,65 @@
 
 
                                 </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;UnitResponse[]&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getResultData"></a>
+                    <span class="name">
+                        <span ><b>getResultData</b></span>
+                        <a href="#getResultData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getResultData(workspaceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="72"
+                            class="link-to-prism">src/app/workspace-admin/backend.service.ts:72</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
                                 <tr>
-                                    <td>unitStateDataType</td>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>workspaceId</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -1316,7 +926,434 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Observable&lt;boolean&gt;</code>
+                        <b>Returns : </b>        <code><a href="../interfaces/ResultData.html" target="_self" >Observable&lt;ResultData[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getReviews"></a>
+                    <span class="name">
+                        <span class="deprecated-name"><b>getReviews</b></span>
+                        <a href="#getReviews"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4 deprecated">
+                    
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getReviews(workspaceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, groups: string[])</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="123"
+                            class="link-to-prism">src/app/workspace-admin/backend.service.ts:123</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>workspaceId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>groups</td>
+                                    <td>
+                                            <code>string[]</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/ReviewData.html" target="_self" >Observable&lt;ReviewData[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSysCheckReport"></a>
+                    <span class="name">
+                        <span class="deprecated-name"><b>getSysCheckReport</b></span>
+                        <a href="#getSysCheckReport"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4 deprecated">
+                    
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getSysCheckReport(workspaceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, reports: string[], enclosure: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, delimiter: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, lineEnding: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="166"
+                            class="link-to-prism">src/app/workspace-admin/backend.service.ts:166</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>workspaceId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>reports</td>
+                                    <td>
+                                            <code>string[]</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>enclosure</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>delimiter</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>lineEnding</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;Blob | boolean&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSysCheckReportList"></a>
+                    <span class="name">
+                        <span ><b>getSysCheckReportList</b></span>
+                        <a href="#getSysCheckReportList"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getSysCheckReportList(workspaceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="146"
+                            class="link-to-prism">src/app/workspace-admin/backend.service.ts:146</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>workspaceId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/SysCheckStatistics.html" target="_self" >Observable&lt;SysCheckStatistics[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getWorkspaceData"></a>
+                    <span class="name">
+                        <span ><b>getWorkspaceData</b></span>
+                        <a href="#getWorkspaceData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getWorkspaceData(workspaceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">src/app/workspace-admin/backend.service.ts:34</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>workspaceId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/WorkspaceData.html" target="_self" >Observable&lt;WorkspaceData | number&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="uploadFile"></a>
+                    <span class="name">
+                        <span ><b>uploadFile</b></span>
+                        <a href="#uploadFile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>uploadFile(workspaceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, formData: FormData)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="240"
+                            class="link-to-prism">src/app/workspace-admin/backend.service.ts:240</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>workspaceId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>formData</td>
+                                    <td>
+                                            <code>FormData</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/UploadResponse.html" target="_self" >Observable&lt;UploadResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1332,163 +1369,290 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Inject } from &#x27;@angular/core&#x27;;
-import { HttpClient, HttpParams } from &#x27;@angular/common/http&#x27;;
-import { Observable, of, Subscription } from &#x27;rxjs&#x27;;
-import { catchError, map, switchMap } from &#x27;rxjs/operators&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Inject, SkipSelf } from &#x27;@angular/core&#x27;;
 import {
-  UnitData,
-  TaggedString,
-  TestData,
-  StateReportEntry
-} from &#x27;./test-controller.interfaces&#x27;;
-import { ApiError } from &#x27;../app.interfaces&#x27;;
+  HttpClient, HttpErrorResponse, HttpEvent, HttpEventType
+} from &#x27;@angular/common/http&#x27;;
+
+import { Observable, of } from &#x27;rxjs&#x27;;
+import { catchError, filter, map } from &#x27;rxjs/operators&#x27;;
+
+import {
+  GetFileResponseData,
+  SysCheckStatistics,
+  ReviewData,
+  LogData,
+  UnitResponse,
+  ResultData,
+  ReportType
+} from &#x27;./workspace.interfaces&#x27;;
+import {
+  FileDeletionReport, UploadReport, UploadResponse, UploadStatus
+} from &#x27;./files/files.interfaces&#x27;;
+import { ApiError, WorkspaceData } from &#x27;../app.interfaces&#x27;;
 
 @Injectable({
   providedIn: &#x27;root&#x27;
 })
 export class BackendService {
   constructor(
-    @Inject(&#x27;SERVER_URL&#x27;) private serverUrl: string,
-    private http: HttpClient
+    @Inject(&#x27;SERVER_URL&#x27;) private readonly serverUrl: string,
+    @SkipSelf() private http: HttpClient
   ) {
   }
 
-  saveUnitReview(testId: string, unitName: string, priority: number, categories: string, entry: string)
-    : Observable&lt;boolean&gt; {
+  getWorkspaceData(workspaceId: string): Observable&lt;WorkspaceData | number&gt; {
     return this.http
-      .put(&#x60;${this.serverUrl}test/${testId}/unit/${unitName}/review&#x60;, { priority, categories, entry })
-      .pipe(
-        map(() &#x3D;&gt; true),
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;saveUnitReview Api-Error: ${err.code} ${err.info} &#x60;);
-          return of(false);
-        })
-      );
-  }
-
-  saveTestReview(testId: string, priority: number, categories: string, entry: string): Observable&lt;boolean&gt; {
-    return this.http
-      .put(&#x60;${this.serverUrl}test/${testId}/review&#x60;, { priority, categories, entry })
-      .pipe(
-        map(() &#x3D;&gt; true),
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;saveTestReview Api-Error: ${err.code} ${err.info} &#x60;);
-          return of(false);
-        })
-      );
-  }
-
-  getTestData(testId: string): Observable&lt;TestData | boolean&gt; {
-    return this.http
-      .get&lt;TestData&gt;(&#x60;${this.serverUrl}test/${testId}&#x60;)
+      .get&lt;WorkspaceData&gt;(&#x60;${this.serverUrl}workspace/${workspaceId}&#x60;)
       .pipe(
         catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;getTestData Api-Error: ${err.code} ${err.info} &#x60;);
-          return of(false);
-        })
-      );
-  }
-
-  getUnitData(testId: string, unitid: string, unitalias: string): Observable&lt;UnitData | boolean&gt; {
-    return this.http
-      .get&lt;UnitData&gt;(&#x60;${this.serverUrl}test/${testId}/unit/${unitid}/alias/${unitalias}&#x60;)
-      .pipe(
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;getUnitData Api-Error: ${err.code} ${err.info} &#x60;);
-          return of(false);
-        })
-      );
-  }
-
-  getResource(testId: string, internalKey: string, resId: string,
-              versionning &#x3D; false): Observable&lt;TaggedString | number&gt; {
-    return this.http
-      .get(
-        &#x60;${this.serverUrl}test/${testId}/resource/${resId}&#x60;,
-        {
-          params: new HttpParams().set(&#x27;v&#x27;, versionning ? &#x27;1&#x27; : &#x27;f&#x27;),
-          responseType: &#x27;text&#x27;
-        }
-      )
-      .pipe(
-        map(def &#x3D;&gt; &lt;TaggedString&gt;{ tag: internalKey, value: def }),
-        catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;getResource Api-Error: ${err.code} ${err.info} &#x60;);
+          console.warn(&#x60;getWorkspaceData Api-Error: ${err.code} ${err.info} &#x60;);
           return of(err.code);
         })
       );
   }
 
-  updateTestState(testId: string, newState: StateReportEntry[]): Subscription {
+  getFiles(workspaceId: string): Observable&lt;GetFileResponseData&gt; {
     return this.http
-      .patch(&#x60;${this.serverUrl}test/${testId}/state&#x60;, newState)
-      .subscribe({ error: (err: ApiError) &#x3D;&gt; console.error(&#x60;updateTestState Api-Error: ${err.code} ${err.info}&#x60;) });
-  }
-
-  addTestLog(testId: string, logEntries: StateReportEntry[]): Subscription {
-    return this.http
-      .put(&#x60;${this.serverUrl}test/${testId}/log&#x60;, logEntries)
-      .subscribe({ error: (err: ApiError) &#x3D;&gt; console.error(&#x60;addTestLog Api-Error: ${err.code} ${err.info}&#x60;) });
-  }
-
-  updateUnitState(testId: string, unitName: string, newState: StateReportEntry[]): Subscription {
-    return this.http
-      .patch(&#x60;${this.serverUrl}test/${testId}/unit/${unitName}/state&#x60;, newState)
-      .subscribe({ error: (err: ApiError) &#x3D;&gt; console.error(&#x60;setUnitState Api-Error: ${err.code} ${err.info}&#x60;) });
-  }
-
-  addUnitLog(testId: string, unitName: string, logEntries: StateReportEntry[]): Subscription {
-    return this.http
-      .put(&#x60;${this.serverUrl}test/${testId}/unit/${unitName}/log&#x60;, logEntries)
-      .subscribe({ error: (err: ApiError) &#x3D;&gt; console.error(&#x60;addUnitLog Api-Error: ${err.code} ${err.info}&#x60;) });
-  }
-
-  notifyDyingTest(testId: string): void {
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon(&#x60;${this.serverUrl}test/${testId}/connection-lost&#x60;);
-    } else {
-      fetch(&#x60;${this.serverUrl}test/${testId}/connection-lost&#x60;, {
-        keepalive: true,
-        method: &#x27;POST&#x27;
-      });
-    }
-  }
-
-  updateUnitStateData(testId: string, timeStamp: number, unitName: string,
-                      dataPartsAllString: string, unitStateDataType: string) : Observable&lt;boolean&gt; {
-    // TODO remove after api changed
-    const response &#x3D; dataPartsAllString;
-    const restorePoint &#x3D; dataPartsAllString;
-    const responseType &#x3D; unitStateDataType;
-    return this.http
-      .put(&#x60;${this.serverUrl}test/${testId}/unit/${unitName}/response&#x60;, { timeStamp, response, responseType })
+      .get&lt;GetFileResponseData&gt;(&#x60;${this.serverUrl}workspace/${workspaceId}/files&#x60;)
       .pipe(
-        switchMap(() &#x3D;&gt; this.http
-          .patch(&#x60;${this.serverUrl}test/${testId}/unit/${unitName}/restorepoint&#x60;, { timeStamp, restorePoint })
-          .pipe(
-            map(() &#x3D;&gt; true),
-            catchError((err: ApiError) &#x3D;&gt; {
-              console.warn(&#x60;newUnitStateData/restorepoint Api-Error: ${err.code} ${err.info} &#x60;);
-              return of(false);
-            })
-          )),
         catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;newUnitStateData/response Api-Error: ${err.code} ${err.info} &#x60;);
+          console.warn(&#x60;getFiles Api-Error: ${err.code} ${err.info} &#x60;);
+          return [];
+        })
+      );
+  }
+
+  deleteFiles(workspaceId: string, filesToDelete: Array&lt;string&gt;): Observable&lt;FileDeletionReport&gt; {
+    const endpointUrl &#x3D; &#x60;${this.serverUrl}workspace/${workspaceId}/files&#x60;;
+    return this.http
+      .request&lt;FileDeletionReport&gt;(&#x27;delete&#x27;, endpointUrl, { body: { f: filesToDelete } })
+      .pipe(
+        catchError((err: ApiError) &#x3D;&gt; {
+          console.warn(&#x60;deleteFiles Api-Error: ${err.code} ${err.info} &#x60;);
+          return of(&lt;FileDeletionReport&gt; {
+            deleted: [],
+            not_allowed: [&#x60;deleteFiles Api-Error: ${err.code} ${err.info} &#x60;],
+            did_not_exist: []
+          });
+        })
+      );
+  }
+
+  getResultData(workspaceId: string): Observable&lt;ResultData[]&gt; {
+    return this.http
+      .get&lt;ResultData[]&gt;(&#x60;${this.serverUrl}workspace/${workspaceId}/results&#x60;, {})
+      .pipe(
+        catchError((err: ApiError) &#x3D;&gt; {
+          console.warn(&#x60;getResultData Api-Error: ${err.code} ${err.info} &#x60;);
+          return [];
+        })
+      );
+  }
+
+  /**
+   *
+   * @param workspaceId
+   * @param groups
+   * @deprecated
+   */
+  getResponses(workspaceId: string, groups: string[]): Observable&lt;UnitResponse[]&gt; {
+    return this.http
+      .get&lt;UnitResponse[]&gt;(&#x60;${this.serverUrl}workspace/${workspaceId}/responses&#x60;, { params: { groups: groups.join(&#x27;,&#x27;) } })
+      .pipe(
+        catchError((err: ApiError) &#x3D;&gt; {
+          console.warn(&#x60;getResponses Api-Error: ${err.code} ${err.info} &#x60;);
+          return [];
+        })
+      );
+  }
+
+  /**
+   *
+   * @param workspaceId
+   * @param groups
+   * @deprecated
+   */
+  getLogs(workspaceId: string, groups: string[]): Observable&lt;LogData[]&gt; {
+    return this.http
+      .get&lt;LogData[]&gt;(&#x60;${this.serverUrl}workspace/${workspaceId}/logs&#x60;, { params: { groups: groups.join(&#x27;,&#x27;) } })
+      .pipe(
+        catchError((err: ApiError) &#x3D;&gt; {
+          console.warn(&#x60;getLogs Api-Error: ${err.code} ${err.info} &#x60;);
+          return [];
+        })
+      );
+  }
+
+  /**
+   *
+   * @param workspaceId
+   * @param groups
+   * @deprecated
+   */
+  getReviews(workspaceId: string, groups: string[]): Observable&lt;ReviewData[]&gt; {
+    return this.http
+      .get&lt;ReviewData[]&gt;(&#x60;${this.serverUrl}workspace/${workspaceId}/reviews&#x60;, { params: { groups: groups.join(&#x27;,&#x27;) } })
+      .pipe(
+        catchError((err: ApiError) &#x3D;&gt; {
+          console.warn(&#x60;getReviews Api-Error: ${err.code} ${err.info} &#x60;);
+          return [];
+        })
+      );
+  }
+
+  deleteData(workspaceId: string, groups: string[]): Observable&lt;boolean&gt; {
+    return this.http
+      .request(&#x27;delete&#x27;, &#x60;${this.serverUrl}workspace/${workspaceId}/responses&#x60;, { body: { groups } })
+      .pipe(
+        map(() &#x3D;&gt; true),
+        catchError((err: ApiError) &#x3D;&gt; {
+          console.warn(&#x60;deleteData Api-Error: ${err.code} ${err.info} &#x60;);
           return of(false);
         })
       );
   }
 
-  lockTest(testId: string, timeStamp: number, content: string): Observable&lt;boolean&gt; {
+  getSysCheckReportList(workspaceId: string): Observable&lt;SysCheckStatistics[]&gt; {
     return this.http
-      .patch&lt;boolean&gt;(&#x60;${this.serverUrl}test/${testId}/lock&#x60;, { timeStamp, content })
+      .get&lt;ReviewData[]&gt;(&#x60;${this.serverUrl}workspace/${workspaceId}/sys-check/reports/overview&#x60;)
       .pipe(
-        map(() &#x3D;&gt; true),
         catchError((err: ApiError) &#x3D;&gt; {
-          console.warn(&#x60;lockBooklet Api-Error: ${err.code} ${err.info} &#x60;);
+          console.warn(&#x60;getSysCheckReportList Api-Error: ${err.code} ${err.info} &#x60;);
+          return [];
+        })
+      );
+  }
+
+  /**
+   *
+   * @param workspaceId
+   * @param reports
+   * @param enclosure
+   * @param delimiter
+   * @param lineEnding
+   * @deprecated
+   */
+  getSysCheckReport(workspaceId: string, reports: string[], enclosure: string, delimiter: string, lineEnding: string)
+    : Observable&lt;Blob | boolean&gt; {
+    return this.http
+      .get(&#x60;${this.serverUrl}workspace/${workspaceId}/sys-check/reports&#x60;,
+        {
+          params: {
+            checkIds: reports.join(&#x27;,&#x27;),
+            delimiter,
+            enclosure,
+            lineEnding
+          },
+          headers: {
+            Accept: &#x27;text/csv&#x27;
+          },
+          responseType: &#x27;blob&#x27;
+        })
+      .pipe(
+        catchError((err: ApiError) &#x3D;&gt; {
+          console.warn(&#x60;getSysCheckReport Api-Error: ${err.code} ${err.info} &#x60;);
           return of(false);
         })
+      );
+  }
+
+  deleteSysCheckReports(workspaceId: string, checkIds: string[]): Observable &lt;FileDeletionReport&gt; {
+    return this.http
+      .request&lt;FileDeletionReport&gt;(
+      &#x27;delete&#x27;,
+      &#x60;${this.serverUrl}workspace/${workspaceId}/sys-check/reports&#x60;,
+      { body: { checkIds } }
+    )
+      .pipe(
+        catchError((err: ApiError) &#x3D;&gt; {
+          console.warn(&#x60;deleteSysCheckReports Api-Error: ${err.code} ${err.info} &#x60;);
+          return of(&lt;FileDeletionReport&gt; {
+            deleted: [],
+            not_allowed: [&#x60;deleteSysCheckReports Api-Error: ${err.code} ${err.info} &#x60;],
+            did_not_exist: []
+          });
+        })
+      );
+  }
+
+  getReport(workspaceId: string, reportType: ReportType, dataIds: string[]) : Observable&lt;Blob | boolean&gt; {
+    return this.http
+      .get(&#x60;${this.serverUrl}workspace/${workspaceId}/report/${reportType}&#x60;,
+        {
+          params: {
+            dataIds: dataIds.join(&#x27;,&#x27;)
+          },
+          headers: {
+            Accept: &#x27;text/csv&#x27;
+          },
+          responseType: &#x27;blob&#x27;
+        })
+      .pipe(
+        catchError((err: ApiError) &#x3D;&gt; {
+          console.warn(&#x60;getReports Api-Error: ${err.code} ${err.info} &#x60;);
+          return of(false);
+        })
+      );
+  }
+
+  downloadFile(workspaceId: string, fileType: string, fileName: string): Observable&lt;Blob | boolean&gt; {
+    return this.http
+      .get(&#x60;${this.serverUrl}workspace/${workspaceId}/file/${fileType}/${fileName}&#x60;, { responseType: &#x27;blob&#x27; })
+      .pipe(
+        catchError((err: ApiError) &#x3D;&gt; {
+          console.warn(&#x60;downloadFile Api-Error: ${err.code} ${err.info} &#x60;);
+          return of(false);
+        })
+      );
+  }
+
+  uploadFile(workspaceId: string, formData: FormData): Observable&lt;UploadResponse&gt; {
+    return this.http.post&lt;UploadReport&gt;(
+      &#x60;${this.serverUrl}workspace/${workspaceId}/file&#x60;,
+      formData,
+      {
+        // TODO de-comment, if backend UploadedFilesHandler.class.php l. 47 was fixed
+        // headers: new HttpHeaders().set(&#x27;Content-Type&#x27;, &#x27;multipart/form-data&#x27;),
+        observe: &#x27;events&#x27;,
+        reportProgress: true,
+        responseType: &#x27;json&#x27;
+      }
+    )
+      .pipe(
+        catchError((err: ApiError) &#x3D;&gt; {
+          console.warn(&#x60;downloadFile Api-Error: ${err.code} ${err.info} &#x60;);
+          let errorText &#x3D; &#x27;Hochladen nicht erfolgreich.&#x27;;
+          if (err instanceof HttpErrorResponse) {
+            errorText &#x3D; (err as HttpErrorResponse).message;
+          } else if (err instanceof ApiError) {
+            const slashPos &#x3D; err.info.indexOf(&#x27; // &#x27;);
+            errorText &#x3D; (slashPos &gt; 0) ? err.info.substr(slashPos + 4) : err.info;
+          }
+          return of({
+            progress: 0,
+            status: UploadStatus.error,
+            report: { &#x27;&#x27;: { error: [errorText] } }
+          });
+        }),
+        map((event: HttpEvent&lt;UploadReport&gt;) &#x3D;&gt; {
+          if (event.type &#x3D;&#x3D;&#x3D; HttpEventType.UploadProgress) {
+            return {
+              progress: Math.floor((event.loaded * 100) / event.total),
+              status: UploadStatus.busy,
+              report: {}
+            };
+          }
+          if (event.type &#x3D;&#x3D;&#x3D; HttpEventType.Response) {
+            return {
+              progress: 100,
+              status: UploadStatus.ok,
+              report: event.body
+            };
+          }
+          return null;
+        }),
+        filter((response: UploadResponse|null) &#x3D;&gt; !!response)
       );
   }
 }
@@ -1503,14 +1667,14 @@ export class BackendService {
 
 
 
-                   
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -1531,9 +1695,9 @@ export class BackendService {
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
-       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+
        <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>
 
