@@ -20,8 +20,12 @@ interface Verona3PlayerConfig extends Verona2PlayerConfig {
   startPage?: string;
 }
 
+interface Verona4PlayerConfig extends Verona3PlayerConfig {
+  directDownloadUrl?: string;
+}
+
 type Verona3NavigationDeniedReason = 'presentationIncomplete' | 'responsesIncomplete';
 
-export { Verona3PlayerConfig as VeronaPlayerConfig };
+export { Verona4PlayerConfig as VeronaPlayerConfig };
 export { Verona2NavigationTarget as VeronaNavigationTarget };
 export { Verona3NavigationDeniedReason as VeronaNavigationDeniedReason };

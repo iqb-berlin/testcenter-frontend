@@ -15,7 +15,7 @@ import { ApiError } from '../../app.interfaces';
 })
 export class BackendService {
   constructor(
-    @Inject('SERVER_URL') private serverUrl: string,
+    @Inject('SERVER_URL') public serverUrl: string,
     private http: HttpClient
   ) {
   }

@@ -337,7 +337,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
       stateReportPolicy: this.tcs.bookletConfig.stateReportPolicy,
       unitNumber: this.currentUnitSequenceId,
       unitTitle: this.tcs.currentUnitTitle,
-      unitId: this.currentUnit.unitDef.alias
+      unitId: this.currentUnit.unitDef.alias,
+      directDownloadUrl: `${this.bs.serverUrl}${MainDataService.getAuthData()?.token}/resource`
     };
     if (this.pendingUnitData.currentPage && (this.tcs.bookletConfig.restore_current_page_on_return === 'ON')) {
       playerConfig.startPage = this.pendingUnitData.currentPage;

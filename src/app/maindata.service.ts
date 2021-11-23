@@ -16,7 +16,7 @@ const localStorageAuthDataKey = 'iqb-tc-a';
 })
 export class MainDataService {
   appError$ = new ReplaySubject<AppError>(1);
-  _authData$ = new Subject<AuthData>();
+  private _authData$ = new Subject<AuthData>();
   get authData$(): Observable<AuthData> {
     return this._authData$.asObservable();
   }
@@ -34,36 +34,34 @@ export class MainDataService {
   postMessage$ = new Subject<MessageEvent>();
   appWindowHasFocus$ = new Subject<boolean>();
 
+  // TODO refactor this, it's very inefficient
+  // everytime authData is needed, getAuthData gets called and localstorage gets accessed.
+  // better would be to access it once at loading time abd later use the valueOf _authData$
+
   static getAuthData(): AuthData {
-    let myReturn: AuthData = null;
     const storageEntry = localStorage.getItem(localStorageAuthDataKey);
-    if (storageEntry !== null) {
-      if (storageEntry.length > 0) {
-        try {
-          myReturn = JSON.parse(storageEntry as string);
-        } catch (e) {
-          console.warn('corrupt localStorage authData entry');
-          myReturn = null;
-        }
-      }
+    if (!storageEntry) {
+      return null;
     }
-    return myReturn;
+    try {
+      return JSON.parse(storageEntry as string);
+    } catch (e) {
+      console.warn('corrupt localStorage authData entry');
+      return null;
+    }
   }
 
   static getTestConfig(): KeyValuePairs {
-    let myReturn: KeyValuePairs = null;
     const storageEntry = localStorage.getItem(localStorageTestConfigKey);
-    if (storageEntry !== null) {
-      if (storageEntry.length > 0) {
-        try {
-          myReturn = JSON.parse(storageEntry as string);
-        } catch (e) {
-          console.warn('corrupt localStorage testConfig entry');
-          myReturn = null;
-        }
-      }
+    if (!storageEntry) {
+      return null;
     }
-    return myReturn;
+    try {
+      return JSON.parse(storageEntry as string);
+    } catch (e) {
+      console.warn('corrupt localStorage testConfig entry');
+      return null;
+    }
   }
 
   constructor(
