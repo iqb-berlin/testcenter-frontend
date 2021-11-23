@@ -306,7 +306,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private prepareIframe(): void {
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
+    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin allow-popups');
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.adjustIframeSize();
     this.iFrameHostElement.appendChild(this.iFrameItemplayer);
