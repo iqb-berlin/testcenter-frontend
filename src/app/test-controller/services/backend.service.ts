@@ -6,7 +6,7 @@ import {
 import { Observable, of, Subscription } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
 import {
-  UnitData, TestData, StateReportEntry, LoadingFile
+  UnitData, TestData, StateReportEntry, LoadingFile, KeyValuePairString
 } from '../interfaces/test-controller.interfaces';
 import { ApiError } from '../../app.interfaces';
 
@@ -134,11 +134,11 @@ export class BackendService {
     }
   }
 
-  updateUnitStateData(testId: string, unitId: string, dataPartsAll: string, responseType: string): Observable<boolean> {
-    const response = dataPartsAll;
+  updateDataParts(testId: string, unitId: string,
+                  dataParts: KeyValuePairString, responseType: string): Observable<boolean> {
     const timeStamp = Date.now();
     return this.http
-      .put(`${this.serverUrl}test/${testId}/unit/${unitId}/response`, { timeStamp, response, responseType })
+      .put(`${this.serverUrl}test/${testId}/unit/${unitId}/response`, { timeStamp, dataParts, responseType })
       .pipe(
         map(() => true),
         catchError((err: ApiError) => {

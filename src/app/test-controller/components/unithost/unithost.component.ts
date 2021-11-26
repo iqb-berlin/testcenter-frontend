@@ -16,7 +16,9 @@ import {
 import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
 import { MainDataService } from '../../../maindata.service';
-import { VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig } from '../../interfaces/verona.interfaces';
+import {
+  VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig
+} from '../../interfaces/verona.interfaces';
 import { Testlet, UnitControllerData } from '../../classes/test-controller.classes';
 
 declare let srcDoc;
@@ -91,7 +93,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         if (!this.pendingUnitData || this.pendingUnitData.playerId !== msgPlayerId) {
           this.pendingUnitData = {
             unitDefinition: '',
-            unitDataParts: '',
+            unitDataParts: {},
             playerId: '',
             currentPage: null
           };
@@ -103,12 +105,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
         }
         this.postMessageTarget = messageEvent.source as Window;
 
+        console.log(this.pendingUnitData.unitDataParts);
         this.postMessageTarget.postMessage({
           type: 'vopStartCommand',
           sessionId: this.itemplayerSessionId,
           unitDefinition: this.pendingUnitData.unitDefinition,
           unitState: {
-            dataParts: { all: this.pendingUnitData.unitDataParts }
+            dataParts: this.pendingUnitData.unitDataParts
           },
           playerConfig: this.getPlayerConfig()
         }, '*');
@@ -154,10 +157,17 @@ export class UnithostComponent implements OnInit, OnDestroy {
               this.tcs.newUnitStateResponseProgress(unitDbKey, this.currentUnitSequenceId, responseProgress);
             }
 
-            const unitDataPartsAll = unitState?.dataParts?.all;
-            if (unitDataPartsAll) {
+            if (unitState?.dataParts) {
+              // in pre-verona4-times it was not entirely clear if the stringification of the dataParts should be made
+              // by the player itself ot the host. To maintain backwards-compatibility we check this here.
+              Object.keys(unitState.dataParts)
+                .forEach(dataPartId => {
+                  if (typeof unitState.dataParts[dataPartId] !== 'string') {
+                    unitState.dataParts[dataPartId] = JSON.stringify(unitState.dataParts[dataPartId]);
+                  }
+                });
               this.tcs.newUnitStateData(unitDbKey, this.currentUnitSequenceId,
-                unitDataPartsAll, unitState.unitStateDataType);
+                unitState.dataParts, unitState.unitStateDataType);
             }
           }
           if (msgData.log) {
@@ -274,15 +284,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     this.pendingUnitData = {
       playerId: this.itemplayerSessionId,
-      unitDefinition: this.tcs.hasUnitDefinition(this.currentUnitSequenceId) ?
-        this.tcs.getUnitDefinition(this.currentUnitSequenceId) :
-        null,
-      unitDataParts: this.tcs.hasUnitStateDataParts(this.currentUnitSequenceId) ?
-        this.tcs.getUnitStateDataParts(this.currentUnitSequenceId) :
-        null,
-      currentPage: this.tcs.hasUnitStateCurrentPage(this.currentUnitSequenceId) ?
-        this.tcs.getUnitStateCurrentPage(this.currentUnitSequenceId) :
-        null
+      unitDefinition: this.tcs.getUnitDefinition(this.currentUnitSequenceId),
+      unitDataParts: this.tcs.getUnitStateDataParts(this.currentUnitSequenceId),
+      currentPage: this.tcs.getUnitStateCurrentPage(this.currentUnitSequenceId)
     };
     this.leaveWarning = false;
 

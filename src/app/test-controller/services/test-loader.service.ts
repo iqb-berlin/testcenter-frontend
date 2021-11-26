@@ -136,16 +136,11 @@ export class TestLoaderService {
           this.incrementTotalProgress({ progress: 100 }, `unit-${sequenceId}`);
 
           this.tcs.setOldUnitPresentationProgress(sequenceId, unit.state[UnitStateKey.PRESENTATION_PROGRESS]);
-          this.tcs.setOldUnitResponseProgress(sequenceId, unit.state[UnitStateKey.RESPONSE_PROGRESS]);
-          this.tcs.setOldUnitDataCurrentPage(sequenceId, unit.state[UnitStateKey.CURRENT_PAGE_ID]);
+          this.tcs.setUnitResponseProgress(sequenceId, unit.state[UnitStateKey.RESPONSE_PROGRESS]);
+          this.tcs.setUnitDataCurrentPage(sequenceId, unit.state[UnitStateKey.CURRENT_PAGE_ID]);
 
-          try {
-            const dataParts = unit.data ? JSON.parse(unit.data) : '';
-            // TODO why has the above to be done. an issue in the simple-player?
-            this.tcs.addUnitStateDataParts(sequenceId, dataParts);
-          } catch (error) {
-            console.warn(`error parsing unit state ${this.tcs.testId}/${unitDef.id} (${error.toString()})`, unit.data);
-          }
+          this.tcs.addUnitStateDataParts(sequenceId, unit.data);
+          // TODO handle older simple player versions which expect unstringified data
 
           unitDef.playerId = unit.playerId;
           if (unit.definitionRef) {

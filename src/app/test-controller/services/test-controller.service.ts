@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { MaxTimerData, Testlet } from '../classes/test-controller.classes';
 import {
-  KeyValuePairNumber, LoadingProgress,
+  KeyValuePairNumber, KeyValuePairString, LoadingProgress,
   MaxTimerDataType, StateReportEntry,
   TestControllerState, TestStateKey,
   UnitNavigationTarget,
@@ -75,7 +75,7 @@ export class TestControllerService {
    */
   private players: { [filename: string]: string } = {};
   private unitDefinitions: { [sequenceId: number]: string } = {};
-  private unitStateDataParts: { [sequenceId: number]: string } = {};
+  private unitStateDataParts: { [sequenceId: number]: KeyValuePairString } = {};
   private unitPresentationProgressStates: { [sequenceId: number]: string } = {};
   private unitResponseProgressStates: { [sequenceId: number]: string } = {};
   private unitStateCurrentPages: { [sequenceId: number]: string } = {};
@@ -87,12 +87,12 @@ export class TestControllerService {
   ) {
     this.unitStateDataToSave$
       .pipe(debounceTime(200))
-      .subscribe(unitStateData => {
-        this.bs.updateUnitStateData(
+      .subscribe(dataParts => {
+        this.bs.updateDataParts(
           this.testId,
-          unitStateData.unitDbKey,
-          JSON.stringify(unitStateData.dataPartsAllString),
-          unitStateData.unitStateDataType
+          dataParts.unitDbKey,
+          dataParts.dataParts,
+          dataParts.unitStateDataType
         ).subscribe(ok => {
           if (!ok) {
             console.warn('storing unitData failed');
@@ -145,24 +145,21 @@ export class TestControllerService {
     this.unitDefinitions[sequenceId] = uDef;
   }
 
-  hasUnitDefinition(sequenceId: number): boolean {
-    return sequenceId in this.unitDefinitions;
+  getUnitDefinition(sequenceId: number): string | null {
+    return this.unitDefinitions[sequenceId] ?? null;
   }
 
-  getUnitDefinition(sequenceId: number): string {
-    return this.unitDefinitions[sequenceId];
+  addUnitStateDataParts(unitSequenceId: number, dataParts: KeyValuePairString): void {
+    console.log(
+      'addUnitStateDataParts',
+      { unitSequenceId, dataParts }
+    );
+    this.unitStateDataParts[unitSequenceId] = { ...this.unitStateDataParts[unitSequenceId], ...dataParts };
   }
 
-  hasUnitStateDataParts(sequenceId: number): boolean {
-    return sequenceId in this.unitStateDataParts;
-  }
-
-  getUnitStateDataParts(sequenceId: number): string {
-    return this.unitStateDataParts[sequenceId];
-  }
-
-  addUnitStateDataParts(unitSequenceId: number, dataPartsAllString: string): void {
-    this.unitStateDataParts[unitSequenceId] = dataPartsAllString;
+  getUnitStateDataParts(sequenceId: number): KeyValuePairString | null {
+    console.log(this.unitStateDataParts);
+    return this.unitStateDataParts[sequenceId] ?? null;
   }
 
   setOldUnitPresentationProgress(sequenceId: number, state: string): void {
@@ -181,7 +178,7 @@ export class TestControllerService {
     return sequenceId in this.unitResponseProgressStates;
   }
 
-  setOldUnitResponseProgress(sequenceId: number, state: string): void {
+  setUnitResponseProgress(sequenceId: number, state: string): void {
     this.unitResponseProgressStates[sequenceId] = state;
   }
 
@@ -189,15 +186,11 @@ export class TestControllerService {
     return this.unitResponseProgressStates[sequenceId];
   }
 
-  hasUnitStateCurrentPage(sequenceId: number): boolean {
-    return sequenceId in this.unitStateCurrentPages;
-  }
-
   getUnitStateCurrentPage(sequenceId: number): string {
-    return this.unitStateCurrentPages[sequenceId];
+    return this.unitStateCurrentPages[sequenceId] ?? null;
   }
 
-  setOldUnitDataCurrentPage(sequenceId: number, pageId: string): void {
+  setUnitDataCurrentPage(sequenceId: number, pageId: string): void {
     this.unitStateCurrentPages[sequenceId] = pageId;
   }
 
@@ -209,10 +202,10 @@ export class TestControllerService {
     return this.unitContentLoadProgress$[sequenceId];
   }
 
-  newUnitStateData(unitDbKey: string, sequenceId: number, dataPartsAllString: string, unitStateDataType: string): void {
-    this.unitStateDataParts[sequenceId] = dataPartsAllString;
+  newUnitStateData(unitDbKey: string, sequenceId: number, dataParts: KeyValuePairString, unitStateDataType: string): void {
+    this.unitStateDataParts[sequenceId] = dataParts;
     if (this.testMode.saveResponses) {
-      this.unitStateDataToSave$.next({ unitDbKey, dataPartsAllString, unitStateDataType });
+      this.unitStateDataToSave$.next({ unitDbKey, dataParts, unitStateDataType });
     }
   }
 
