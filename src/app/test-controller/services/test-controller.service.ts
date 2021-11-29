@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { debounceTime, map, takeUntil } from 'rxjs/operators';
 import {
   BehaviorSubject, interval, Observable, Subject, Subscription, timer
@@ -68,10 +69,12 @@ export class TestControllerService {
   }
 
   /**
-   * the structure of this service is a little bit weird. instead of distributing the UnitDefs into the several arrays
-   * below we could store a single artraay with UnitDefs (wich would be a flattend version of the rooot testlet). Thus
-   * we would could get rid of all thos arrays, get-, set- and has- functions. I leave this out for the next
-   * refactoring. TODO simply data structure
+   * the structure of this service is weird: instead of distributing the UnitDefs into the several arrays
+   * below we could store a single array with UnitDefs (wich would be a flattened version of the root testlet). Thus
+   * we would could get rid of all those arrays, get-, set- and has- functions. I leave this out for the next
+   * refactoring. Also those data-stores are only used to transfer restored data from loading process to the moment of
+   * sending vopStartCommand. They are almost never updated.
+   * TODO simplify data structure
    */
   private players: { [filename: string]: string } = {};
   private unitDefinitions: { [sequenceId: number]: string } = {};
@@ -80,6 +83,8 @@ export class TestControllerService {
   private unitResponseProgressStates: { [sequenceId: number]: string } = {};
   private unitStateCurrentPages: { [sequenceId: number]: string } = {};
   private unitContentLoadProgress$: { [sequenceId: number]: Observable<LoadingProgress> } = {};
+  private unitDefinitionTypes: { [sequenceId: number]: string } = {};
+  private unitStateDataTypes: { [sequenceId: number]: string } = {};
 
   constructor(
     private router: Router,
@@ -117,6 +122,8 @@ export class TestControllerService {
     this.currentMaxTimerTestletId = '';
     this.maxTimeTimers = {};
     this.unitPresentationProgressStates = {};
+    this.unitDefinitionTypes = {};
+    this.unitStateDataTypes = {};
   }
 
   // uppercase and add extension if not part
@@ -127,6 +134,24 @@ export class TestControllerService {
       normalisedId += `.${normalisedExtension}`;
     }
     return normalisedId;
+  }
+
+  updateUnitStateDataParts(unitDbKey: string, sequenceId: number, dataParts: KeyValuePairString,
+                           unitStateDataType: string): void {
+    const changedParts:KeyValuePairString = {};
+    Object.keys(dataParts)
+      .forEach(dataPartId => {
+        if (
+          !this.unitStateDataParts[sequenceId][dataPartId] ||
+          (this.unitStateDataParts[sequenceId][dataPartId] !== dataParts[dataPartId])
+        ) {
+          this.unitStateDataParts[sequenceId][dataPartId] = dataParts[dataPartId];
+          changedParts[dataPartId] = dataParts[dataPartId];
+        }
+      });
+    if (Object.keys(changedParts).length && this.testMode.saveResponses) {
+      this.unitStateDataToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
+    }
   }
 
   addPlayer(id: string, player: string): void {
@@ -141,7 +166,7 @@ export class TestControllerService {
     return this.players[TestControllerService.normaliseId(id, 'html')];
   }
 
-  addUnitDefinition(sequenceId: number, uDef: string): void {
+  setUnitDefinition(sequenceId: number, uDef: string): void {
     this.unitDefinitions[sequenceId] = uDef;
   }
 
@@ -149,20 +174,15 @@ export class TestControllerService {
     return this.unitDefinitions[sequenceId] ?? null;
   }
 
-  addUnitStateDataParts(unitSequenceId: number, dataParts: KeyValuePairString): void {
-    console.log(
-      'addUnitStateDataParts',
-      { unitSequenceId, dataParts }
-    );
-    this.unitStateDataParts[unitSequenceId] = { ...this.unitStateDataParts[unitSequenceId], ...dataParts };
+  setUnitStateDataParts(unitSequenceId: number, dataParts: KeyValuePairString): void {
+    this.unitStateDataParts[unitSequenceId] = dataParts;
   }
 
   getUnitStateDataParts(sequenceId: number): KeyValuePairString | null {
-    console.log(this.unitStateDataParts);
     return this.unitStateDataParts[sequenceId] ?? null;
   }
 
-  setOldUnitPresentationProgress(sequenceId: number, state: string): void {
+  setUnitPresentationProgress(sequenceId: number, state: string): void {
     this.unitPresentationProgressStates[sequenceId] = state;
   }
 
@@ -202,11 +222,20 @@ export class TestControllerService {
     return this.unitContentLoadProgress$[sequenceId];
   }
 
-  newUnitStateData(unitDbKey: string, sequenceId: number, dataParts: KeyValuePairString, unitStateDataType: string): void {
-    this.unitStateDataParts[sequenceId] = dataParts;
-    if (this.testMode.saveResponses) {
-      this.unitStateDataToSave$.next({ unitDbKey, dataParts, unitStateDataType });
-    }
+  setUnitDefinitionType(sequenceId: number, unitDefinitionType: string): void {
+    this.unitDefinitionTypes[sequenceId] = unitDefinitionType;
+  }
+
+  getUnitDefinitionType(sequenceId: number): string {
+    return this.unitDefinitionTypes[sequenceId];
+  }
+
+  setUnitStateDataType(sequenceId: number, unitStateDataType: string): void {
+    this.unitStateDataTypes[sequenceId] = unitStateDataType;
+  }
+
+  getUnitStateDataType(sequenceId: number): string {
+    return this.unitStateDataTypes[sequenceId];
   }
 
   addClearedCodeTestlet(testletId: string): void {

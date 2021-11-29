@@ -135,12 +135,11 @@ export class TestLoaderService {
 
           this.incrementTotalProgress({ progress: 100 }, `unit-${sequenceId}`);
 
-          this.tcs.setOldUnitPresentationProgress(sequenceId, unit.state[UnitStateKey.PRESENTATION_PROGRESS]);
+          this.tcs.setUnitPresentationProgress(sequenceId, unit.state[UnitStateKey.PRESENTATION_PROGRESS]);
           this.tcs.setUnitResponseProgress(sequenceId, unit.state[UnitStateKey.RESPONSE_PROGRESS]);
           this.tcs.setUnitDataCurrentPage(sequenceId, unit.state[UnitStateKey.CURRENT_PAGE_ID]);
-
-          this.tcs.addUnitStateDataParts(sequenceId, unit.data);
-          // TODO handle older simple player versions which expect unstringified data
+          this.tcs.setUnitStateDataParts(sequenceId, unit.dataParts);
+          this.tcs.setUnitStateDataType(sequenceId, unit.unitStateDataType);
 
           unitDef.playerId = unit.playerId;
           if (unit.definitionRef) {
@@ -149,7 +148,8 @@ export class TestLoaderService {
               value: unit.definitionRef
             });
           } else {
-            this.tcs.addUnitDefinition(sequenceId, unit.definition);
+            this.tcs.setUnitDefinitionType(sequenceId, unit.playerId);
+            this.tcs.setUnitDefinition(sequenceId, unit.definition);
             this.tcs.setUnitLoadProgress$(sequenceId, of({ progress: 100 }));
             this.incrementTotalProgress({ progress: 100 }, `content-${sequenceId}`);
           }
@@ -224,7 +224,7 @@ export class TestLoaderService {
                   if (!isLoadingFileLoaded(loadingFile)) {
                     return loadingFile;
                   }
-                  this.tcs.addUnitDefinition(unitSequenceID, loadingFile.content);
+                  this.tcs.setUnitDefinition(unitSequenceID, loadingFile.content);
                   return { progress: 100 };
                 }),
                 distinctUntilChanged((v1, v2) => v1.progress === v2.progress),

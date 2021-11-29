@@ -16,7 +16,8 @@ export enum WindowFocusState {
 
 // for backend ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 export type UnitData = {
-  data: KeyValuePairString;
+  dataParts: KeyValuePairString;
+  unitStateDataType: string,
   state: { [k in UnitStateKey]?: string };
   playerId: string;
   definitionRef?: string;
@@ -154,6 +155,8 @@ export interface PendingUnitData {
   unitDataParts: KeyValuePairString;
   unitDefinition: string;
   currentPage: string;
+  unitDefinitionType: string;
+  unitStateDataType: string;
 }
 
 export interface KeyValuePairNumber {

@@ -40,7 +40,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private itemplayerSessionId = '';
   private postMessageTarget: Window = null;
-  private pendingUnitData: PendingUnitData = null;
+  private pendingUnitData: PendingUnitData = null; // TODO this is redundant, get rid of it
 
   knownPages: { id: string; label: string }[];
   unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
@@ -95,7 +95,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
             unitDefinition: '',
             unitDataParts: {},
             playerId: '',
-            currentPage: null
+            currentPage: null,
+            unitDefinitionType: '',
+            unitStateDataType: ''
           };
         }
         if (this.tcs.testMode.saveResponses) {
@@ -105,12 +107,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
         }
         this.postMessageTarget = messageEvent.source as Window;
 
-        console.log(this.pendingUnitData.unitDataParts);
         this.postMessageTarget.postMessage({
           type: 'vopStartCommand',
           sessionId: this.itemplayerSessionId,
           unitDefinition: this.pendingUnitData.unitDefinition,
+          unitDefinitionType: this.pendingUnitData.unitDefinitionType,
           unitState: {
+            unitStateDataType: this.pendingUnitData.unitStateDataType,
             dataParts: this.pendingUnitData.unitDataParts
           },
           playerConfig: this.getPlayerConfig()
@@ -166,7 +169,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
                     unitState.dataParts[dataPartId] = JSON.stringify(unitState.dataParts[dataPartId]);
                   }
                 });
-              this.tcs.newUnitStateData(unitDbKey, this.currentUnitSequenceId,
+              this.tcs.updateUnitStateDataParts(unitDbKey, this.currentUnitSequenceId,
                 unitState.dataParts, unitState.unitStateDataType);
             }
           }
@@ -286,7 +289,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
       playerId: this.itemplayerSessionId,
       unitDefinition: this.tcs.getUnitDefinition(this.currentUnitSequenceId),
       unitDataParts: this.tcs.getUnitStateDataParts(this.currentUnitSequenceId),
-      currentPage: this.tcs.getUnitStateCurrentPage(this.currentUnitSequenceId)
+      currentPage: this.tcs.getUnitStateCurrentPage(this.currentUnitSequenceId),
+      unitDefinitionType: this.tcs.getUnitDefinitionType(this.currentUnitSequenceId),
+      unitStateDataType: this.tcs.getUnitStateDataType(this.currentUnitSequenceId)
     };
     this.leaveWarning = false;
 

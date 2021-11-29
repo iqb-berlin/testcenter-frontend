@@ -55,42 +55,47 @@ export const TestBookletXmlVariants = {
 
 export const TestUnits: { [unitId: string]: UnitData } = {
   u1: {
-    data: '{"all": "data from a previous session"}',
+    dataParts: { all: 'data from a previous session' },
     state: {},
     playerId: 'a-player',
-    definition: 'the unit (1) definition itself'
+    definition: 'the unit (1) definition itself',
+    unitStateDataType: 'the-data-type'
   },
   u2: {
-    data: '{"all": "data from a previous session"}',
+    dataParts: { all: 'data from a previous session' },
     state: {
       PRESENTATION_PROGRESS: 'some',
       CURRENT_PAGE_ID: '1',
       CURRENT_PAGE_NR: '1'
     },
     playerId: 'another-player',
-    definitionRef: 'test-unit-content-u2'
+    definitionRef: 'test-unit-content-u2',
+    unitStateDataType: 'the-data-type'
   },
   u3: {
-    data: '{"all": "data from a previous session"}',
+    dataParts: { all: 'data from a previous session' },
     state: {
       RESPONSE_PROGRESS: 'complete'
     },
     playerId: 'a-player-but-version-2',
-    definitionRef: 'test-unit-content-u3'
+    definitionRef: 'test-unit-content-u3',
+    unitStateDataType: 'the-data-type'
   },
   u4: {
-    data: '{"all": "data from a previous session"}',
+    dataParts: { all: 'data from a previous session' },
     state: {
       CURRENT_PAGE_ID: '2'
     },
     playerId: 'a-player',
-    definition: 'the unit (4) definition itself'
+    definition: 'the unit (4) definition itself',
+    unitStateDataType: 'the-data-type'
   },
   u5: {
-    data: '{"all": "data from a previous session"}',
+    dataParts: { all: 'data from a previous session' },
     state: {},
     playerId: 'a-player',
-    definition: 'the unit (5) definition itself'
+    definition: 'the unit (5) definition itself',
+    unitStateDataType: 'the-data-type'
   }
 };
 
@@ -115,7 +120,7 @@ export const TestUnitDefinitionsPerSequenceId = Object.values(TestUnits)
   .reduce(perSequenceId, {});
 
 export const TestUnitStateDataParts = Object.values(TestUnits)
-  .map(unitDef => JSON.parse(unitDef.data))
+  .map(unitDef => unitDef.dataParts)
   .reduce(perSequenceId, {});
 
 export const TestUnitPresentationProgressStates = Object.values(TestUnits)
