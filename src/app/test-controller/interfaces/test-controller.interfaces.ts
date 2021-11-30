@@ -1,4 +1,6 @@
 // used everywhere
+import { VeronaProgress } from './verona.interfaces';
+
 export interface TaggedString {
   tag: string;
   value: string;
@@ -152,11 +154,15 @@ export enum NoUnitFlag {
 
 export interface PendingUnitData {
   playerId: string;
-  unitDataParts: KeyValuePairString;
   unitDefinition: string;
   currentPage: string;
   unitDefinitionType: string;
-  unitStateDataType: string;
+  unitState: {
+    unitStateDataType: string;
+    dataParts: KeyValuePairString;
+    presentationProgress: VeronaProgress;
+    responseProgress: VeronaProgress;
+  }
 }
 
 export interface KeyValuePairNumber {

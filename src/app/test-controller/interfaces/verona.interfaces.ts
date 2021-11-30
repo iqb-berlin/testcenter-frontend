@@ -26,6 +26,9 @@ interface Verona4PlayerConfig extends Verona3PlayerConfig {
 
 type Verona3NavigationDeniedReason = 'presentationIncomplete' | 'responsesIncomplete';
 
+type Verona3Progress = 'none' | 'some' | 'complete';
+
 export { Verona4PlayerConfig as VeronaPlayerConfig };
 export { Verona2NavigationTarget as VeronaNavigationTarget };
 export { Verona3NavigationDeniedReason as VeronaNavigationDeniedReason };
+export { Verona3Progress as VeronaProgress };

@@ -17,7 +17,7 @@ import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
 import { MainDataService } from '../../../maindata.service';
 import {
-  VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig
+  VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig, VeronaProgress
 } from '../../interfaces/verona.interfaces';
 import { Testlet, UnitControllerData } from '../../classes/test-controller.classes';
 
@@ -92,12 +92,16 @@ export class UnithostComponent implements OnInit, OnDestroy {
         // TODO add apiVersion check
         if (!this.pendingUnitData || this.pendingUnitData.playerId !== msgPlayerId) {
           this.pendingUnitData = {
-            unitDefinition: '',
-            unitDataParts: {},
-            playerId: '',
-            currentPage: null,
             unitDefinitionType: '',
-            unitStateDataType: ''
+            unitDefinition: '',
+            unitState: {
+              unitStateDataType: '',
+              dataParts: {},
+              presentationProgress: 'none',
+              responseProgress: 'none'
+            },
+            playerId: '',
+            currentPage: null
           };
         }
         if (this.tcs.testMode.saveResponses) {
@@ -108,14 +112,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
         this.postMessageTarget = messageEvent.source as Window;
 
         this.postMessageTarget.postMessage({
-          type: 'vopStartCommand',
+          type: '',
           sessionId: this.itemplayerSessionId,
           unitDefinition: this.pendingUnitData.unitDefinition,
           unitDefinitionType: this.pendingUnitData.unitDefinitionType,
-          unitState: {
-            unitStateDataType: this.pendingUnitData.unitStateDataType,
-            dataParts: this.pendingUnitData.unitDataParts
-          },
+          unitState: this.pendingUnitData.unitState,
           playerConfig: this.getPlayerConfig()
         }, '*');
 
@@ -127,7 +128,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
         if (msgPlayerId === this.itemplayerSessionId) {
           if (msgData.playerState) {
             const { playerState } = msgData;
-
             this.knownPages = Object.keys(playerState.validPages)
               .map(id => ({ id, label: playerState.validPages[id] }));
             this.currentPageIndex = this.knownPages.findIndex(page => page.id === playerState.currentPage);
@@ -288,10 +288,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.pendingUnitData = {
       playerId: this.itemplayerSessionId,
       unitDefinition: this.tcs.getUnitDefinition(this.currentUnitSequenceId),
-      unitDataParts: this.tcs.getUnitStateDataParts(this.currentUnitSequenceId),
       currentPage: this.tcs.getUnitStateCurrentPage(this.currentUnitSequenceId),
       unitDefinitionType: this.tcs.getUnitDefinitionType(this.currentUnitSequenceId),
-      unitStateDataType: this.tcs.getUnitStateDataType(this.currentUnitSequenceId)
+      unitState: {
+        dataParts: this.tcs.getUnitStateDataParts(this.currentUnitSequenceId),
+        unitStateDataType: this.tcs.getUnitStateDataType(this.currentUnitSequenceId),
+        presentationProgress: <VeronaProgress> this.tcs.getUnitPresentationProgress(this.currentUnitSequenceId),
+        responseProgress: <VeronaProgress> this.tcs.getUnitResponseProgress(this.currentUnitSequenceId)
+      }
     };
     this.leaveWarning = false;
 
