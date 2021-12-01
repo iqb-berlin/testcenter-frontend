@@ -56,7 +56,7 @@ pagingMode (https://verona-interfaces.github.io/player/#operation-publish-vopSta
   * "concat-scroll-snap": concat-scroll-snap
 
 #### `stateReportPolicy`
-stateReportPolicy (https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand)
+stateReportPolicy (https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand) - **Achtung**. die Eigenschaft ist nicht implementiert, es wird immer eager verwendet.
   * "none": pages are separated
   * "eager" (default): concat-scroll
   * "on-demand": concat-scroll-snap

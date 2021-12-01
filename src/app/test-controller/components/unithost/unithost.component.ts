@@ -112,7 +112,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         this.postMessageTarget = messageEvent.source as Window;
 
         this.postMessageTarget.postMessage({
-          type: '',
+          type: 'vopStartCommand',
           sessionId: this.itemplayerSessionId,
           unitDefinition: this.pendingUnitData.unitDefinition,
           unitDefinitionType: this.pendingUnitData.unitDefinitionType,
@@ -128,8 +128,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
         if (msgPlayerId === this.itemplayerSessionId) {
           if (msgData.playerState) {
             const { playerState } = msgData;
+
             this.knownPages = Object.keys(playerState.validPages)
               .map(id => ({ id, label: playerState.validPages[id] }));
+
             this.currentPageIndex = this.knownPages.findIndex(page => page.id === playerState.currentPage);
 
             if (typeof playerState.currentPage !== 'undefined') {
@@ -319,7 +321,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private prepareIframe(): void {
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin allow-popups');
+    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups');
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.adjustIframeSize();
     this.iFrameHostElement.appendChild(this.iFrameItemplayer);
@@ -347,7 +349,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
       ),
       logPolicy: this.tcs.bookletConfig.logPolicy,
       pagingMode: this.tcs.bookletConfig.pagingMode,
-      stateReportPolicy: this.tcs.bookletConfig.stateReportPolicy,
+      stateReportPolicy: 'eager', // TODO implement stateReportPolicy 'on-demand' and 'none', then this can be
+      // stateReportPolicy: this.tcs.bookletConfig.stateReportPolicy,
       unitNumber: this.currentUnitSequenceId,
       unitTitle: this.tcs.currentUnitTitle,
       unitId: this.currentUnit.unitDef.alias,
