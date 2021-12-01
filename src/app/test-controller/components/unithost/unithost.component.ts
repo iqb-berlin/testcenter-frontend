@@ -321,11 +321,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private prepareIframe(): void {
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups');
+    if (!('srcdoc' in this.iFrameItemplayer)) { // in IE11, we use a polyfill. But this can not work with sandbox
+      this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups');
+    }
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.adjustIframeSize();
     this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-    srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(this.currentUnit.unitDef.playerId));
+    srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(this.currentUnit.unitDef.playerId), { force: false });
   }
 
   private adjustIframeSize(): void {
