@@ -4,7 +4,7 @@
   "iqb": {
     "verona-player-api-versions": {
       "min": 2,
-      "max": 3
+      "max": 4
     }
   },
   "license": "MIT",

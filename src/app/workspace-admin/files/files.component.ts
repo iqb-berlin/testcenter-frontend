@@ -160,7 +160,6 @@ export class FilesComponent implements OnInit {
       this.bs.getFiles(this.wds.wsId)
         .pipe(map(fileList => this.addFrontendChecksToFiles(fileList)))
         .subscribe(fileList => {
-          console.log(fileList);
           this.files = {};
           Object.keys(fileList)
             .forEach(type => {
@@ -208,7 +207,7 @@ export class FilesComponent implements OnInit {
   }
 
   private addFrontendChecksToFile(file: IQBFile): IQBFile {
-    if (!file.info.veronaVersion) {
+    if (file.info.veronaVersion) {
       const fileMayor = parseInt(file.info.veronaVersion.toString().split('.').shift(), 10);
       if (typeof file.report.error === 'undefined') {
         // eslint-disable-next-line no-param-reassign
