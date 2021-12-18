@@ -117,7 +117,7 @@
     fxLayoutGap="10px"
     *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM'"
   >
-    <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="knownPages && knownPages.length">
+    <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="knownPages && knownPages.length && (knownPages.length > 1)">
       <div id="page-navigation-prompt">
         {{ ''  | customtext:'login_pagesNaviPrompt' | async}}
       </div>
