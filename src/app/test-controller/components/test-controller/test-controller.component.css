@@ -22,7 +22,6 @@ h1 {
   word-wrap: break-word;
   overflow: hidden;
   text-overflow: clip;
-  width: 80%;
   line-height: 30px;
   max-height: 60px;
 }
