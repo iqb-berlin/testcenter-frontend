@@ -13,7 +13,7 @@ all booklets, if no other configuration is found. This is a simple JSON file wit
 key value pairs. Example:
 ```
 {
-    "force_responses_complete": "OFF",
+    "force_response_complete": "OFF",
     "unit_navibuttons": "ARROWS_ONLY",
 ...
 }
