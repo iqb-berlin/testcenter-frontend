@@ -87,7 +87,7 @@
       "WITH_BLOCK_TITLE": "Seitenkopf wird angezeigt mit Titel des Aufgabenblocks (s. Booklet-XML)",
       "EMPTY": "Seitenkopf wird angezeigt (leer)"
     },
-    "defaultvalue": "WITH_UNIT_TITLE"
+    "defaultvalue": "EMPTY"
   },
   "unit_title": {
     "label": "Festlegung, ob oberhalb des Unitbereiches eine Zeile mit dem Unit-Titel gezeigt werden soll",

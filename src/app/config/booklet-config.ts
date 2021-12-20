@@ -11,7 +11,7 @@ export class BookletConfig {
 	unit_menu: "OFF" | "FULL" = "OFF";
 	force_presentation_complete: "OFF" | "ALWAYS" | "ON" = "OFF";
 	force_response_complete: "OFF" | "ALWAYS" | "ON" = "OFF";
-	unit_screenheader: "OFF" | "WITH_UNIT_TITLE" | "WITH_BOOKLET_TITLE" | "WITH_BLOCK_TITLE" | "EMPTY" = "WITH_UNIT_TITLE";
+	unit_screenheader: "OFF" | "WITH_UNIT_TITLE" | "WITH_BOOKLET_TITLE" | "WITH_BLOCK_TITLE" | "EMPTY" = "EMPTY";
 	unit_title: "OFF" | "ON" = "ON";
 	unit_show_time_left: "OFF" | "ON" = "OFF";
 	show_end_button_in_player: "OFF" | "ALWAYS" | "ONLY_LAST_UNIT" = "OFF";

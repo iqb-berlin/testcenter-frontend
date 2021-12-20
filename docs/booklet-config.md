@@ -92,10 +92,10 @@ Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht beantworte
 #### `unit_screenheader`
 Legt fest, ob im obersten Seitenbereich Platz für Logo, Navigations-Buttons u. ä. gelassen wird.
   * "OFF": Kein Seitenkopf. Achtung: Logo bleibt sichtbar (überlappt).
-  * "WITH_UNIT_TITLE" (default): Seitenkopf wird angezeigt mit Titel der Unit (s. Booklet-XML)
+  * "WITH_UNIT_TITLE": Seitenkopf wird angezeigt mit Titel der Unit (s. Booklet-XML)
   * "WITH_BOOKLET_TITLE": Seitenkopf wird angezeigt mit Titel des Booklets (s. Booklet-XML)
   * "WITH_BLOCK_TITLE": Seitenkopf wird angezeigt mit Titel des Aufgabenblocks (s. Booklet-XML)
-  * "EMPTY": Seitenkopf wird angezeigt (leer)
+  * "EMPTY" (default): Seitenkopf wird angezeigt (leer)
 
 #### `unit_title`
 Festlegung, ob oberhalb des Unitbereiches eine Zeile mit dem Unit-Titel gezeigt werden soll
