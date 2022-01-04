@@ -87,8 +87,10 @@ export class UnithostComponent implements OnInit, OnDestroy {
       msgPlayerId = this.itemplayerSessionId;
     }
 
+    // todo: remove 'player'
     switch (msgType) {
       case 'vopReadyNotification':
+      case 'player':
         // TODO add apiVersion check
         if (!this.pendingUnitData || this.pendingUnitData.playerId !== msgPlayerId) {
           this.pendingUnitData = {
