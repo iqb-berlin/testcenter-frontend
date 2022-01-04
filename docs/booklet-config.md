@@ -83,6 +83,12 @@ Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht vollständ
   * "ALWAYS": Das Verlassen der unvollständig betrachteten Aufgabe nicht verhindert.
   * "ON": Das Verlassen der unvollständig betrachteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll.
 
+#### `force_response_complete`
+Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht beantwortet wurde
+  * "OFF" (default): Das Verlassen der unvollständig beantworteten Aufgabe wird nicht verhindert.
+  * "ALWAYS": Das Verlassen der unvollständig beantworteten Aufgabe nicht verhindert.
+  * "ON": Das Verlassen der unvollständig beantworteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll.
+
 #### `controller_design`
 Über diesen Parameter können verschiedene Design-Einstellungen gemeinsam festgelegt werden
   * "2018": Runde Schalter für die Unit-Navigation
