@@ -10,7 +10,7 @@ export class BookletConfig {
 	unit_navibuttons: "OFF" | "ARROWS_ONLY" | "FULL" = "FULL";
 	unit_menu: "OFF" | "FULL" = "OFF";
 	force_presentation_complete: "OFF" | "ALWAYS" | "ON" = "OFF";
-	force_response_complete: "OFF" | "ALWAYS" | "ON" = "OFF";
+	controller_design: "2018" | "2022" = "2022";
 	unit_screenheader: "OFF" | "WITH_UNIT_TITLE" | "WITH_BOOKLET_TITLE" | "WITH_BLOCK_TITLE" | "EMPTY" = "EMPTY";
 	unit_title: "OFF" | "ON" = "ON";
 	unit_show_time_left: "OFF" | "ON" = "OFF";
@@ -28,7 +28,7 @@ export class BookletConfig {
 			if (config['unit_navibuttons']) { this.unit_navibuttons = config['unit_navibuttons']}
 			if (config['unit_menu']) { this.unit_menu = config['unit_menu']}
 			if (config['force_presentation_complete']) { this.force_presentation_complete = config['force_presentation_complete']}
-			if (config['force_response_complete']) { this.force_response_complete = config['force_response_complete']}
+			if (config['controller_design']) { this.controller_design = config['controller_design']}
 			if (config['unit_screenheader']) { this.unit_screenheader = config['unit_screenheader']}
 			if (config['unit_title']) { this.unit_title = config['unit_title']}
 			if (config['unit_show_time_left']) { this.unit_show_time_left = config['unit_show_time_left']}
@@ -69,8 +69,8 @@ export class BookletConfig {
 					case 'force_presentation_complete':
 						this.force_presentation_complete = configValue;
 						break;
-					case 'force_response_complete':
-						this.force_response_complete = configValue;
+					case 'controller_design':
+						this.controller_design = configValue;
 						break;
 					case 'unit_screenheader':
 						this.unit_screenheader = configValue;

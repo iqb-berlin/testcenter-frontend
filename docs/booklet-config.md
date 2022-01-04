@@ -46,8 +46,8 @@ Ladeverhalten beim Start
 Erfassen und Speichern von Log-Daten
   * "disabled": Ausgeschaltet
   * "lean": Nur wichtige Meldungen
-  * "rich" (default): Alles außer debug-informationen
-  * "debug": Auch debug-informationen
+  * "rich" (default): Alles außer debug-Informationen
+  * "debug": Auch debug-Informationen
 
 #### `pagingMode`
 pagingMode (https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand)
@@ -79,15 +79,14 @@ Extra-Seite mit großen Buttons für Aufgaben zum direkten Springen
 
 #### `force_presentation_complete`
 Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht vollständig angezeigt wurde
-  * "OFF" (default): Das Verlasen der unvollständig betrachteten Aufgabe wird nicht verhindert.
-  * "ALWAYS": Das Verlasen der unvollständig betrachteten Aufgabe nicht verhindert.
-  * "ON": Das Verlasen der unvollständig betrachteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll.
+  * "OFF" (default): Das Verlassen der unvollständig betrachteten Aufgabe wird nicht verhindert.
+  * "ALWAYS": Das Verlassen der unvollständig betrachteten Aufgabe nicht verhindert.
+  * "ON": Das Verlassen der unvollständig betrachteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll.
 
-#### `force_response_complete`
-Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht beantwortet wurde
-  * "OFF" (default): Das Verlasen der unvollständig beantworteten Aufgabe wird nicht verhindert.
-  * "ALWAYS": Das Verlasen der unvollständig beantworteten Aufgabe nicht verhindert.
-  * "ON": Das Verlasen der unvollständig beantworteten Aufgabe wird verhindert, wenn vorwärts geblättert werden soll.
+#### `controller_design`
+Über diesen Parameter können verschiedene Design-Einstellungen gemeinsam festgelegt werden
+  * "2018": Runde Schalter für die Unit-Navigation
+  * "2022" (default): Eckige Schalter für die Unit-Navigation
 
 #### `unit_screenheader`
 Legt fest, ob im obersten Seitenbereich Platz für Logo, Navigations-Buttons u. ä. gelassen wird.
