@@ -16,66 +16,65 @@
   <p class="timer" *ngIf="tcs.testMode.showTimeLeft || (tcs.bookletConfig.unit_show_time_left === 'ON')">
     {{timerValue?.timeLeftString}}
   </p>
-  <a mat-fab
-     *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING) && (tcs.bookletConfig.controller_design === '2018')"
-     class="plus-buttons"
-     [disabled]="tcs.currentUnitSequenceId <= 1"
-     (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
-     matTooltip="Zurück"
-  >
-    <i class="material-icons">chevron_left</i>
-  </a>
-  <mat-button-toggle-group
+  <div
     *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
-    fxLayout="row wrap"
-    fxLayoutAlign="start center"
-    class="main-buttons"
+    id="unitNav"
   >
-    <mat-button-toggle
-      *ngIf="tcs.bookletConfig.controller_design !== '2018'"
-      #prevButton="matButtonToggle"
-      [disabled]="tcs.currentUnitSequenceId <= 1"
-      (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS); prevButton.checked = false;"
-      matTooltip="Zurück"
-      fxFlex="none"
+    <a mat-fab
+       *ngIf="tcs.bookletConfig.controller_design === '2018'"
+       [disabled]="tcs.currentUnitSequenceId <= 1"
+       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
+       matTooltip="Zurück"
     >
       <i class="material-icons">chevron_left</i>
-    </mat-button-toggle>
-
-    <span #navButtons *ngIf="tcs.bookletConfig.unit_navibuttons !== 'ARROWS_ONLY'" class="nav-buttons">
-      <mat-button-toggle
-        *ngFor="let u of unitNavigationList; let index = index"
-        fxLayoutAlign="start center"
-        [checked]="u.isCurrent"
-        [class]="{'current-unit': u.isCurrent}"
-        (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())"
-        [disabled]="u.disabled"
-        [matTooltip]="u.longLabel + (!tcs.isUnitContentLoaded(u.sequenceId) ? ' (wird noch geladen!)' : '')"
-      >
-        {{ u.shortLabel }}
-      </mat-button-toggle>
-    </span>
-
-    <mat-button-toggle
+    </a>
+    <a mat-flat-button
+       *ngIf="tcs.bookletConfig.controller_design !== '2018'"
+       [disabled]="tcs.currentUnitSequenceId <= 1"
+       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
+       matTooltip="Zurück"
+       fxFlex="none"
+    >
+      <i class="material-icons">chevron_left</i>
+    </a>
+    <mat-button-toggle-group
+      *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
+      fxLayout="row wrap"
+      fxLayoutAlign="start center"
+      class="main-buttons"
+    >
+      <span #navButtons *ngIf="tcs.bookletConfig.unit_navibuttons !== 'ARROWS_ONLY'" class="nav-buttons">
+        <mat-button-toggle
+          *ngFor="let u of unitNavigationList; let index = index"
+          fxLayoutAlign="start center"
+          [checked]="u.isCurrent"
+          [class]="{'current-unit': u.isCurrent}"
+          (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())"
+          [disabled]="u.disabled"
+          [matTooltip]="u.longLabel + (!tcs.isUnitContentLoaded(u.sequenceId) ? ' (wird noch geladen!)' : '')"
+        >
+          {{ u.shortLabel }}
+        </mat-button-toggle>
+      </span>
+    </mat-button-toggle-group>
+    <a mat-fab
+       *ngIf="tcs.bookletConfig.controller_design === '2018'"
+       [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
+       (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
+       matTooltip="Weiter"
+    >
+      <i class="material-icons">chevron_right</i>
+    </a>
+    <a mat-flat-button
       *ngIf="tcs.bookletConfig.controller_design !== '2018'"
-      #nextButton="matButtonToggle"
       [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
-      (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT); nextButton.checked = false;"
+      (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
       matTooltip="Weiter"
       fxFlex="none"
     >
       <i class="material-icons">chevron_right</i>
-    </mat-button-toggle>
-  </mat-button-toggle-group>
-  <a mat-fab
-     *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING) && (tcs.bookletConfig.controller_design === '2018')"
-     class="plus-buttons"
-     [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
-     (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
-     matTooltip="Weiter"
-  >
-    <i class="material-icons">chevron_right</i>
-  </a>
+    </a>
+  </div>
 
   <div class="plus-buttons" fxFlex="none" fxLayout="row">
     <button
