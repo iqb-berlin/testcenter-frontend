@@ -112,7 +112,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
           }]);
         }
         this.postMessageTarget = messageEvent.source as Window;
-
+        this.postMessageTarget.focus();
         this.postMessageTarget.postMessage({
           type: 'vopStartCommand',
           sessionId: this.itemplayerSessionId,
