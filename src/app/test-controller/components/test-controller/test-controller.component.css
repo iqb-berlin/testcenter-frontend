@@ -84,6 +84,7 @@ h1 {
 #unitNav .mat-list-base,
 #unitNav .mat-list-item {
   padding: 0;
+  font-size: 12px;
 }
 #unitNav .mat-list-option {
   height: auto;
