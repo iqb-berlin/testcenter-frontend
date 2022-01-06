@@ -50,13 +50,21 @@
                           fxLayout="row wrap"
                           fxLayoutAlign="start center"
                           fxFlex="0 1 auto"
+                          role="menubar"
       >
         <div [class]="u.isCurrent ? 'unit-nav-item-selected' : 'unit-nav-item'"
              *ngFor="let u of unitNavigationList"
+             (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())"
              fxLayout="row"
              fxLayoutAlign="start center"
              fxFlex>
-          <mat-list-option [value]="u.sequenceId.toString()" [selected]="u.isCurrent" fxFlex>
+          <mat-list-option
+            [value]="u.sequenceId.toString()"
+            [selected]="u.isCurrent"
+            fxFlex
+            role="menuitem"
+            [attr.aria-label]="u.longLabel"
+          >
             {{u.shortLabel ? u.shortLabel : '&nbsp;'}}
           </mat-list-option>
         </div>

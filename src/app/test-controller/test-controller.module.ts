@@ -28,7 +28,7 @@ import { TestControllerRoutingModule } from './routing/test-controller-routing.m
 import { TestStatusComponent } from './components/test-status/test-status.component';
 import { UnitMenuComponent } from './components/unit-menu/unit-menu.component';
 import { testControllerRouteGuards } from './routing/test-controller-route-guards';
-import {MatListModule} from "@angular/material/list";
+import { MatListModule } from '@angular/material/list';
 
 export { TestControllerService } from './services/test-controller.service';
 
