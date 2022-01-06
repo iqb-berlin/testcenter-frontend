@@ -22,7 +22,6 @@
     fxLayout="row"
     fxLayoutAlign="end center"
   >
-    <p fxFlex>jo jo jo</p>
     <a mat-fab
        *ngIf="tcs.bookletConfig.controller_design === '2018'"
        [disabled]="tcs.currentUnitSequenceId <= 1"
@@ -42,16 +41,23 @@
       <i class="material-icons">chevron_left</i>
     </a>
     <mat-selection-list #unitList [multiple]="false"
-      *ngIf="tcs.bookletConfig.unit_navibuttons !== 'ARROWS_ONLY'"
-      (selectionChange)="tcs.setUnitNavigationRequest(unitList.selectedOptions.selected[0].value)"
-      fxFlex="0 1 auto"
-      fxLayout="row"
+                        *ngIf="tcs.bookletConfig.unit_navibuttons !== 'ARROWS_ONLY'"
+                        (selectionChange)="tcs.setUnitNavigationRequest(unitList.selectedOptions.selected[0].value)"
+                        fxLayout="row wrap"
+                        fxLayoutAlign="start center"
+                        fxFlex="0 1 auto"
     >
-        <mat-list-option *ngFor="let u of unitNavigationList"
-                         [value]="u.sequenceId.toString()" [selected]="u.isCurrent" class="unit-nav-item">
+      <div [class]="u.isCurrent ? 'unit-nav-item-selected' : 'unit-nav-item'"
+           *ngFor="let u of unitNavigationList"
+           fxLayout="row"
+           fxLayoutAlign="start center"
+           fxFlex>
+        <mat-list-option [value]="u.sequenceId.toString()" [selected]="u.isCurrent" fxFlex>
           {{u.shortLabel ? u.shortLabel : '&nbsp;'}}
         </mat-list-option>
+      </div>
     </mat-selection-list>
+
     <a mat-fab
        *ngIf="tcs.bookletConfig.controller_design === '2018'"
        [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
