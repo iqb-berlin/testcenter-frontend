@@ -198,7 +198,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     } else {
       const authData = MainDataService.getAuthData();
       const dialogRef = this.reviewDialog.open(ReviewDialogComponent, {
-        width: '700px',
         data: <ReviewDialogData>{
           loginname: authData.displayName,
           bookletname: this.tcs.rootTestlet.title,
@@ -211,6 +210,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         if (typeof result !== 'undefined') {
           if (result !== false) {
             const targetSelection = result.target;
+            ReviewDialogComponent.oldName = result.sender;
             if (targetSelection === 'u') {
               this.bs.saveUnitReview(
                 this.tcs.testId,
