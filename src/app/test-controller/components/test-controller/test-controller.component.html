@@ -9,9 +9,8 @@
 </div>
 
 <div id="header" fxLayout="row" fxLayoutAlign="end center" *ngIf="tcs.bookletConfig.unit_screenheader !== 'OFF'">
-  <h1>{{unitScreenHeader}}</h1>
-
-  <span fxFlex></span>
+  <h1 *ngIf="unitScreenHeader">{{unitScreenHeader}}</h1>
+  <h1 fxFlex>Kann ja wohl nicht wahr sein</h1>
 
   <p class="timer" *ngIf="tcs.testMode.showTimeLeft || (tcs.bookletConfig.unit_show_time_left === 'ON')">
     {{timerValue?.timeLeftString}}
@@ -19,12 +18,17 @@
   <div
     *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
     id="unitNav"
+    fxFlex
+    fxLayout="row"
+    fxLayoutAlign="end center"
   >
+    <p fxFlex>jo jo jo</p>
     <a mat-fab
        *ngIf="tcs.bookletConfig.controller_design === '2018'"
        [disabled]="tcs.currentUnitSequenceId <= 1"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
        matTooltip="Zurück"
+       fxFlex="none"
     >
       <i class="material-icons">chevron_left</i>
     </a>
@@ -37,31 +41,23 @@
     >
       <i class="material-icons">chevron_left</i>
     </a>
-    <mat-button-toggle-group
-      *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
-      fxLayout="row wrap"
-      fxLayoutAlign="start center"
-      class="main-buttons"
+    <mat-selection-list #unitList [multiple]="false"
+      *ngIf="tcs.bookletConfig.unit_navibuttons !== 'ARROWS_ONLY'"
+      (selectionChange)="tcs.setUnitNavigationRequest(unitList.selectedOptions.selected[0].value)"
+      fxFlex="0 1 auto"
+      fxLayout="row"
     >
-      <span #navButtons *ngIf="tcs.bookletConfig.unit_navibuttons !== 'ARROWS_ONLY'" class="nav-buttons">
-        <mat-button-toggle
-          *ngFor="let u of unitNavigationList; let index = index"
-          fxLayoutAlign="start center"
-          [checked]="u.isCurrent"
-          [class]="{'current-unit': u.isCurrent}"
-          (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())"
-          [disabled]="u.disabled"
-          [matTooltip]="u.longLabel + (!tcs.isUnitContentLoaded(u.sequenceId) ? ' (wird noch geladen!)' : '')"
-        >
-          {{ u.shortLabel }}
-        </mat-button-toggle>
-      </span>
-    </mat-button-toggle-group>
+        <mat-list-option *ngFor="let u of unitNavigationList"
+                         [value]="u.sequenceId.toString()" [selected]="u.isCurrent" class="unit-nav-item">
+          {{u.shortLabel ? u.shortLabel : '&nbsp;'}}
+        </mat-list-option>
+    </mat-selection-list>
     <a mat-fab
        *ngIf="tcs.bookletConfig.controller_design === '2018'"
        [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
        matTooltip="Weiter"
+       fxFlex="none"
     >
       <i class="material-icons">chevron_right</i>
     </a>
@@ -76,13 +72,12 @@
     </a>
   </div>
 
-  <div class="plus-buttons" fxFlex="none" fxLayout="row">
+  <div class="plus-buttons" fxLayout="row" fxFlex="none">
     <button
       mat-button
       (click)="showReviewDialog()"
       *ngIf="tcs.testMode.canReview"
       matTooltip="Kommentar senden"
-      fxFlex="none"
     >
       <mat-icon>rate_review</mat-icon>
     </button>
@@ -91,7 +86,6 @@
       (click)="toggleSidebar()"
       *ngIf="(tcs.bookletConfig.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
       matTooltip="Zur Aufgabenliste"
-      fxFlex="none"
     >
       <mat-icon>menu</mat-icon>
     </button>

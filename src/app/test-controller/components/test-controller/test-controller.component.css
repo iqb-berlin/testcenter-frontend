@@ -70,6 +70,39 @@ h1 {
   padding: 0 12px;
 }
 
+#unitNav mat-list-option {
+  height: auto;
+}
+:host ::ng-deep .mat-list-text { padding: 0!important; }
+
+:host ::ng-deep .mat-list-item-content { padding: 0 8px!important; }
+
+/* :host ::ng-deep .mat-focus-indicator { background-color: red; } */
+
+#unitNav .mat-list-base,
+#unitNav .mat-list-item {
+  padding: 0;
+}
+#unitNav .mat-list-option {
+  border-left: lightgray 1px solid;
+  line-height: 36px!important;
+}
+
+#unitNav .mat-list-option:last-child {
+  border-right: lightgray 1px solid;
+}
+
+#unitNav .mat-list-single-selected-option {
+  background-color: var(--accent);
+}
+.unit-nav-button {
+  padding: 0;
+}
+#unitNav mat-selection-list {
+  overflow-x: auto;
+  background-color: white;
+}
+
 .debug-pane {
   color: orange;
   position: absolute;
