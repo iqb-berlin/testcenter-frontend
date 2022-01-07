@@ -1,15 +1,15 @@
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Component, Inject } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit } from '@angular/core';
 import { ReviewDialogData } from '../../interfaces/test-controller.interfaces';
 
 @Component({
   templateUrl: './review-dialog.component.html'
 })
-export class ReviewDialogComponent {
+export class ReviewDialogComponent implements OnInit {
   reviewform = new FormGroup({
     target: new FormControl('u', Validators.required),
-    priority: new FormControl('', Validators.required),
+    priority: new FormControl(''),
     tech: new FormControl(''),
     content: new FormControl(''),
     design: new FormControl(''),
@@ -20,8 +20,16 @@ export class ReviewDialogComponent {
   static oldName = '';
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: ReviewDialogData
+    @Inject(MAT_DIALOG_DATA) public data: ReviewDialogData,
+    private element: ElementRef
   ) { }
+
+  ngOnInit(): void {
+    const firstInputElement = this.element.nativeElement.querySelector('input');
+    if (firstInputElement) {
+      firstInputElement.focus();
+    }
+  }
 
   getCategories(): string {
     let myreturn = '';
