@@ -9,7 +9,9 @@
 </div>
 
 <div id="header" fxLayout="row" fxLayoutAlign="space-between center" *ngIf="tcs.bookletConfig.unit_screenheader !== 'OFF'">
-  <h1 fxFlex="0 1 auto" *ngIf="unitScreenHeader">{{unitScreenHeader}}</h1>
+  <div fxFlex="0 1 auto">
+    <h1 *ngIf="unitScreenHeader">{{unitScreenHeader}}</h1>
+  </div>
 
   <p class="timer" *ngIf="tcs.testMode.showTimeLeft || (tcs.bookletConfig.unit_show_time_left === 'ON')">
     {{timerValue?.timeLeftString}}
