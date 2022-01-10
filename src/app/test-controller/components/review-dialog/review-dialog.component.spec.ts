@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ReviewDialogData } from '../../interfaces/test-controller.interfaces';
 import { ReviewDialogComponent } from './review-dialog.component';
+import { MatDividerModule } from '@angular/material/divider';
 
 describe('ReviewDialogComponent', () => {
   let component: ReviewDialogComponent;
@@ -33,7 +34,8 @@ describe('ReviewDialogComponent', () => {
         MatFormFieldModule,
         MatIconModule,
         MatCheckboxModule, MatTooltipModule,
-        NoopAnimationsModule
+        NoopAnimationsModule,
+        MatDividerModule
       ],
       providers: [
         MatDialog,
