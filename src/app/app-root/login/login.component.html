@@ -4,10 +4,12 @@
       <mat-card-title>Anmelden</mat-card-title>
       <mat-card-content *ngIf="mds.appConfig?.isValidApiVersion">
         <mat-form-field>
-          <input matInput formControlName="name" placeholder="Anmeldename" (keyup.enter)="pw.focus()">
+          <mat-label>Anmeldename</mat-label>
+          <input matInput formControlName="name" (keyup.enter)="pw.focus()">
         </mat-form-field>
         <mat-form-field>
-          <input matInput #pw [type]="showPassword ? 'text' : 'password'" formControlName="pw" placeholder="Kennwort">
+          <mat-label>Kennwort</mat-label>
+          <input matInput #pw [type]="showPassword ? 'text' : 'password'" formControlName="pw">
           <mat-icon
             id="toggle-show-password"
             (click)="showPassword = !showPassword"
@@ -25,7 +27,7 @@
         <alert level="error" text="Die Verbindung mit dem Server ist nicht möglich."></alert>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button type="submit" [disabled]="loginForm.invalid" color="primary">Weiter</button>
+        <a mat-raised-button type="submit" [disabled]="loginForm.invalid" color="primary">Weiter</a>
       </mat-card-actions>
     </mat-card>
   </form>
@@ -38,8 +40,8 @@
       <status-card></status-card>
     </mat-card-content>
     <mat-card-actions>
-      <button *ngIf="this.mds.sysCheckAvailable" [routerLink]="['/r/check-starter']" mat-raised-button color="primary">System-Check</button>
-      <button [routerLink]="['/legal-notice']" mat-raised-button color="primary">Impressum/Datenschutz</button>
+      <a *ngIf="this.mds.sysCheckAvailable" [routerLink]="['/r/check-starter']" mat-raised-button color="primary">System-Check</a>
+      <a [routerLink]="['/legal-notice']" mat-raised-button color="primary">Impressum/Datenschutz</a>
     </mat-card-actions>
   </mat-card>
 </div>
