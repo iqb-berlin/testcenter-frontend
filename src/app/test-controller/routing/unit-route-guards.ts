@@ -150,9 +150,13 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
         return false;
       }));
     }
+    const reasonTexts = {
+      presentationIncomplete: 'Es wurde nicht alles gesehen/abgespielt.',
+      responsesIncomplete: 'Es wurde nicht alles bearbeitet.'
+    };
     this.snackBar.open(
-      `Im Hot-Modus dürfte hier nicht ${(dir === 'Next') ? 'weiter' : ' zurück'}geblättert
-                werden: ${reasons.join(', ')}.`,
+      `Im Testmodus dürfte hier nicht ${(dir === 'Next') ? 'weiter' : ' zurück'}geblättert
+                werden: ${reasons.map(r => reasonTexts[r]).join(' ')}.`,
       'Blättern',
       { duration: 3000 }
     );
