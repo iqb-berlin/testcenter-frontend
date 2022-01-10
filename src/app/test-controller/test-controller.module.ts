@@ -20,6 +20,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
 import { ReviewDialogComponent } from './components/review-dialog/review-dialog.component';
 import { unitRouteGuards } from './routing/unit-route-guards';
 import { TestControllerComponent } from './components/test-controller/test-controller.component';
@@ -28,8 +30,6 @@ import { TestControllerRoutingModule } from './routing/test-controller-routing.m
 import { TestStatusComponent } from './components/test-status/test-status.component';
 import { UnitMenuComponent } from './components/unit-menu/unit-menu.component';
 import { testControllerRouteGuards } from './routing/test-controller-route-guards';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatListModule } from '@angular/material/list';
 
 export { TestControllerService } from './services/test-controller.service';
 
@@ -58,7 +58,7 @@ export { TestControllerService } from './services/test-controller.service';
     MatButtonToggleModule,
     FormsModule,
     MatSidenavModule,
-    MatDividerModule
+    MatDividerModule,
     MatListModule
   ],
   declarations: [
