@@ -29,6 +29,7 @@ import { TestStatusComponent } from './components/test-status/test-status.compon
 import { UnitMenuComponent } from './components/unit-menu/unit-menu.component';
 import { testControllerRouteGuards } from './routing/test-controller-route-guards';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
 
 export { TestControllerService } from './services/test-controller.service';
 
@@ -58,6 +59,7 @@ export { TestControllerService } from './services/test-controller.service';
     FormsModule,
     MatSidenavModule,
     MatDividerModule
+    MatListModule
   ],
   declarations: [
     UnithostComponent,
