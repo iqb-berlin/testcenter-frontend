@@ -18,6 +18,7 @@ export class BookletConfig {
 	show_end_button_in_player: "OFF" | "ALWAYS" | "ONLY_LAST_UNIT" = "OFF";
 	restore_current_page_on_return: "OFF" | "ON" = "OFF";
 	allow_player_to_terminate_test: "OFF" | "LAST_UNIT" | "ON" = "ON";
+	lock_test_on_termination: "ON" | "OFF" = "OFF";
 
 	public setFromKeyValuePairs(config) {
 		if (config) {
@@ -37,6 +38,7 @@ export class BookletConfig {
 			if (config['show_end_button_in_player']) { this.show_end_button_in_player = config['show_end_button_in_player']}
 			if (config['restore_current_page_on_return']) { this.restore_current_page_on_return = config['restore_current_page_on_return']}
 			if (config['allow_player_to_terminate_test']) { this.allow_player_to_terminate_test = config['allow_player_to_terminate_test']}
+			if (config['lock_test_on_termination']) { this.lock_test_on_termination = config['lock_test_on_termination']}
 		}
 	}
 
@@ -94,6 +96,9 @@ export class BookletConfig {
 						break;
 					case 'allow_player_to_terminate_test':
 						this.allow_player_to_terminate_test = configValue;
+						break;
+					case 'lock_test_on_termination':
+						this.lock_test_on_termination = configValue;
 						break;
 				}
 			}

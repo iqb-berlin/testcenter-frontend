@@ -23,7 +23,7 @@ We synchronize version-numbers of front- and backend to 12 because there will be
     between ths current and the target unit.
 * You can now restrict your units to can only be left when everything was seen and/or edited. For this there are 
   booklet-parameter `force_presentation_complete` and `force_response_complete` as well as new Restriction-Element called `<DenyNavigationOnIncomplete>`.
-* new useful booklet-parameters `restore_current_page_on_return`, `show_end_button_in_player`, `allow_player_to_terminate_test`.
+* new useful booklet-parameters `restore_current_page_on_return`, `show_end_button_in_player`, `allow_player_to_terminate_test`, `lock_test_on_termination`.
 
 ### Known Issues
 * This version of the Testcenter is compatible with all known players that use the Verona2, Verona3 oder Verona4 interface. A noteworthy exception is the simple player 2. 

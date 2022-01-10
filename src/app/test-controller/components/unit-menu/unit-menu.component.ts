@@ -8,7 +8,7 @@ import { UnitNaviButtonData } from '../../interfaces/test-controller.interfaces'
   styleUrls: ['./unit-menu.component.css']
 })
 export class UnitMenuComponent implements OnInit {
-  menu: Array<string|UnitNaviButtonData[]> = [];
+  menu: Array<string | UnitNaviButtonData[]> = [];
 
   constructor(
     public tcs: TestControllerService
@@ -52,6 +52,6 @@ export class UnitMenuComponent implements OnInit {
   }
 
   terminateTest(): void {
-    this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', false);
+    this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', false, this.tcs.bookletConfig.lock_test_on_termination === 'ON');
   }
 }

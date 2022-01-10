@@ -138,5 +138,13 @@
       "ON": "Der Player darf den laufenden test immer beenden. (`force_presentation_complete` und `force_response_complete` gelten trotzdem!)."
     },
     "defaultvalue": "ON"
+  },
+  "lock_test_on_termination": {
+    "label": "Legt fest, ob der test gesperrt werden soll, wenn er beendet wird. Dies ist mit Vorsicht zu benutzen.",
+    "options": {
+      "ON": "Ja, der Test soll gesperrt werden, wenn er beendet wird. Dies ist mit Vorsicht zu benutzen.",
+      "OFF": "Nein, der test kann nach dem Beenden wieder aufgerufen werden, so lange der account aktiv ist."
+    },
+    "defaultvalue": "OFF"
   }
 }

@@ -399,7 +399,11 @@ export class TestControllerService {
             { state: { force } });
           break;
         case UnitNavigationTarget.END:
-          this.terminateTest(force ? 'BOOKLETLOCKEDforced' : 'BOOKLETLOCKEDbyTESTEE', force);
+          this.terminateTest(
+            force ? 'BOOKLETLOCKEDforced' : 'BOOKLETLOCKEDbyTESTEE',
+            force,
+            this.bookletConfig.lock_test_on_termination === 'ON'
+          );
           break;
 
         default:

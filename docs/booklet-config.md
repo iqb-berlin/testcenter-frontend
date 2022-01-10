@@ -128,3 +128,8 @@ Legt fest, ob der Player des laufenden Test beenden darf, in dem er z. B. einen 
   * "OFF": Der Player darf den laufenden Test nicht beenden.
   * "LAST_UNIT": Der Player darf den laufenden Test nur Beenden, wenn die letzte Unit erreicht ist.
   * "ON" (default): Der Player darf den laufenden test immer beenden. (`force_presentation_complete` und `force_response_complete` gelten trotzdem!).
+
+#### `lock_test_on_termination`
+Legt fest, ob der test gesperrt werden soll, wenn er beendet wird. Dies ist mit Vorsicht zu benutzen.
+  * "ON": Ja, der Test soll gesperrt werden, wenn er beendet wird. Dies ist mit Vorsicht zu benutzen.
+  * "OFF" (default): Nein, der test kann nach dem Beenden wieder aufgerufen werden, so lange der account aktiv ist.
