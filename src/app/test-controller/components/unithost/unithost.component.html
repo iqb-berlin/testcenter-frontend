@@ -30,7 +30,7 @@
           {{'Aufgabe wird geladen' | customtext:'booklet_loadingUnit' | async}}
         </mat-card-subtitle>
         <mat-card-subtitle *ngIf="currentUnit?.unitDef?.locked">
-          {{'Aufgabenzeit ist Abgelaufen' | customtext:'booklet_lockedBlock' | async}}
+          {{'Aufgabenzeit ist abgelaufen' | customtext:'booklet_lockedBlock' | async}}
         </mat-card-subtitle>
         <mat-card-subtitle *ngIf="currentUnit.codeRequiringTestlets.length">
           {{'Aufgabenblock erfordert ein Freigabewort' | customtext:'booklet_codeToEnterTitle' | async}}
