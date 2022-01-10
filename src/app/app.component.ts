@@ -57,8 +57,7 @@ export class AppComponent implements OnInit, OnDestroy {
         const msgData = event.data;
         const msgType = msgData.type;
         if ((msgType !== undefined) && (msgType !== null)) {
-          // todo remove 'player'
-          if ((msgType.substr(0, 2) === 'vo') || msgType === 'player') {
+          if ((msgType.substr(0, 2) === 'vo')) {
             this.mds.postMessage$.next(event);
           }
         }
