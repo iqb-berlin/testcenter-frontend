@@ -73,9 +73,9 @@ Navigationsbuttons für die Navigation zwischen den Aufgaben
   * "FULL" (default): Buttons für 'Weiter' und 'Zurück' und dazwischen kleine Buttons für jede Aufgabe anzeigen
 
 #### `unit_menu`
-Extra-Seite mit großen Buttons für Aufgaben zum direkten Springen
-  * "OFF" (default): Ausgeschaltet
-  * "FULL": Eingeschaltet - auch die Aufgaben anzeigen, die nicht mehr freigegeben sind (gegraut)
+Der Knopf- für die Unit-Menü-Sidebar soll angezeigt werden
+  * "OFF" (default): Nein
+  * "FULL": Ja
 
 #### `force_presentation_complete`
 Legt fest, ob eine eine Aufgabe verlassen werden darf, die noch nicht vollständig angezeigt wurde

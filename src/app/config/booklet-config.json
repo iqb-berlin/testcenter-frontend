@@ -53,10 +53,10 @@
     "defaultvalue": "FULL"
   },
   "unit_menu": {
-    "label": "Extra-Seite mit großen Buttons für Aufgaben zum direkten Springen",
+    "label": "Der Knopf- für die Unit-Menü-Sidebar soll angezeigt werden",
     "options": {
-      "OFF": "Ausgeschaltet",
-      "FULL": "Eingeschaltet - auch die Aufgaben anzeigen, die nicht mehr freigegeben sind (gegraut)"
+      "OFF": "Nein",
+      "FULL": "Ja"
     },
     "defaultvalue": "OFF"
   },
