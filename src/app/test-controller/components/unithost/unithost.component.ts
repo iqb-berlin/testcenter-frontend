@@ -307,6 +307,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private startTimerIfNecessary(): void {
+    if (!this.tcs.testMode.forceTimeRestrictions) {
+      return;
+    }
     if (this.currentUnit.maxTimerRequiringTestlet === null) {
       return;
     }
