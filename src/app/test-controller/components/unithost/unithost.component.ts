@@ -128,11 +128,14 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
       case 'vopStateChangedNotification':
         if (msgPlayerId === this.itemplayerSessionId) {
+          console.log('vopStateChangedNotification', msgData);
           if (msgData.playerState) {
             const { playerState } = msgData;
 
-            this.knownPages = Object.keys(playerState.validPages)
-              .map(id => ({ id, label: playerState.validPages[id] }));
+            if (playerState.validPages) {
+              this.knownPages = Object.keys(playerState.validPages)
+                .map(id => ({ id, label: playerState.validPages[id] }));
+            }
 
             this.currentPageIndex = this.knownPages.findIndex(page => page.id === playerState.currentPage);
 
