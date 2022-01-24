@@ -15,12 +15,12 @@ class MockBackendService {
   // eslint-disable-next-line class-methods-use-this
   getResultData(): Observable<ResultData[]> {
     return of([{
-      groupname: 'a_group',
+      groupName: 'a_group',
       bookletsStarted: 5,
-      num_units_min: 5,
-      num_units_max: 10,
-      num_units_mean: 7.5,
-      lastchange: 100080050
+      numUnitsMin: 5,
+      numUnitsMax: 10,
+      numUnitsAvg: 7.5,
+      lastChange: 100080050
     }]);
   }
 }

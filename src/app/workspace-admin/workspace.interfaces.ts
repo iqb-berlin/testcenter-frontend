@@ -46,24 +46,13 @@ export interface UnitResponse {
   laststate: string;
 }
 
-export interface MonitorData {
-  groupname: string;
-  loginsPrepared: number;
-  personsPrepared: number;
-  bookletsPrepared: number;
-  bookletsStarted: number;
-  bookletsLocked: number;
-  laststart: Date;
-  laststartStr: string;
-}
-
 export interface ResultData {
-  groupname: string;
+  groupName: string;
   bookletsStarted: number;
-  num_units_min: number;
-  num_units_max: number;
-  num_units_mean: number;
-  lastchange: number;
+  numUnitsMin: number;
+  numUnitsMax: number;
+  numUnitsAvg: number;
+  lastChange: number;
 }
 
 export interface LogData {

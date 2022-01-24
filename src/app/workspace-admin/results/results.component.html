@@ -34,9 +34,9 @@
       </mat-cell>
     </ng-container>
 
-    <ng-container matColumnDef="groupname">
+    <ng-container matColumnDef="groupName">
       <mat-header-cell *matHeaderCellDef mat-sort-header fxFlex="300px">Login-Gruppe</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxFlex="300px">{{element.groupname}}</mat-cell>
+      <mat-cell *matCellDef="let element" fxFlex="300px">{{element.groupName}}</mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="bookletsStarted">
@@ -44,25 +44,25 @@
       <mat-cell *matCellDef="let element" fxLayoutAlign="center center"> {{element.bookletsStarted}} </mat-cell>
     </ng-container>
 
-    <ng-container matColumnDef="num_units_min">
+    <ng-container matColumnDef="numUnitsMin">
       <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Aufgaben min</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.num_units_min}} </mat-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.numUnitsMin}} </mat-cell>
     </ng-container>
 
-    <ng-container matColumnDef="num_units_max">
+    <ng-container matColumnDef="numUnitsMax">
       <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Aufgaben max</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.num_units_max}} </mat-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.numUnitsMax}} </mat-cell>
     </ng-container>
 
-    <ng-container matColumnDef="num_units_mean">
+    <ng-container matColumnDef="numUnitsAvg">
       <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Aufgaben Mittelwert</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.num_units_mean | number:'1.1-1'}} </mat-cell>
+      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.numUnitsAvg | number:'1.1-1'}} </mat-cell>
     </ng-container>
 
-    <ng-container matColumnDef="lastchange">
+    <ng-container matColumnDef="lastChange">
       <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Letzte Änderung</mat-header-cell>
       <mat-cell *matCellDef="let element" fxLayoutAlign="center center">
-        <span *ngIf="element.lastchange !== '0'">{{element.lastchange | date:'dd.MM.yyyy HH:mm'}}</span>
+        <span *ngIf="element.lastChange !== '0'">{{element.lastChange * 1000 | date:'dd.MM.yyyy HH:mm'}}</span>
       </mat-cell>
     </ng-container>
 
