@@ -191,8 +191,8 @@ export class FilesComponent implements OnInit {
           if (file.report.error && file.report.error.length) {
             stats.invalid[type] += 1;
             stats.total.invalid += 1;
-            stats.testtakers += (typeof file.info.testtakers === 'number') ? file.info.testtakers : 0;
           }
+          stats.testtakers += (typeof file.info.testtakers === 'number') ? file.info.testtakers : 0;
         });
       });
     return stats;
