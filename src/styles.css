@@ -9,22 +9,12 @@ body {
   width: 100%;
   height: 100%;
   margin: 0;
-  font-family: "Orienta", sans-serif;
+  font-family: "Roboto", sans-serif;
   background: var(--tc-body-background);
 }
 
 .mat-tooltip {
   font-size: 100%
-}
-
-/* orienta-regular - latin */
-@font-face {
-  font-family: 'Orienta';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Orienta'), local('Orienta-Regular'),
-       url('assets/orienta-v5-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-       url('assets/orienta-v5-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
 
