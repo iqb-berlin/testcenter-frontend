@@ -1,5 +1,11 @@
 # Changelog
 
+## 12.0.2
+Use Font Roboto everywhere
+
+## 12.0.1
+Fix critical bug in login
+
 ## 12.0.0
 This Version implements Verona 3 and Verona 4 specs.
 
