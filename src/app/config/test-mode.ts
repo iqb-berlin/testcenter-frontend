@@ -10,7 +10,7 @@ export class TestMode {
 	forceTimeRestrictions: false;
 	forceNaviRestrictions: false;
 	presetCode: true;
-	showTimeLeft: true;
+	showTimeLeft: false;
 	showUnitMenu: false;
 	receiveRemoteCommands: false;
 	modeLabel: "Nur Ansicht (Demo)";
