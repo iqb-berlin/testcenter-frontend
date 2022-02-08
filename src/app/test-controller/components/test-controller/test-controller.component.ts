@@ -30,7 +30,6 @@ import { CommandService } from '../../services/command.service';
 import { TestLoaderService } from '../../services/test-loader.service';
 import { MaxTimerData } from '../../classes/test-controller.classes';
 import { ApiError } from '../../../app.interfaces';
-import { MatListOption } from "@angular/material/list";
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -150,10 +149,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       }]);
     }
   };
-
-  checkOption(options: MatListOption[]) {
-    console.log(options.map(o => o.value));
-  }
 
   private startAppFocusLogging() {
     if (!this.tcs.testMode.saveResponses) {
@@ -318,7 +313,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions) {
           const nextUnlockedUSId = this.tcs.rootTestlet.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
-          this.tcs.setUnitNavigationRequest(nextUnlockedUSId.toString(10));
+          this.tcs.setUnitNavigationRequest(nextUnlockedUSId.toString(10), true);
         }
         break;
       case MaxTimerDataType.CANCELLED:
