@@ -181,13 +181,13 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
 
     const forceNavigation = this.router.getCurrentNavigation().extras?.state?.force ?? false;
 
-    return this.checkAndSolve_maxTime(newUnit, forceNavigation)
+    return this.checkAndSolve_Completeness(newUnit, forceNavigation)
       .pipe(
         switchMap(cAsC => {
           if (!cAsC) {
             return of(false);
           }
-          return this.checkAndSolve_Completeness(newUnit, forceNavigation);
+          return this.checkAndSolve_maxTime(newUnit, forceNavigation);
         })
       );
   }
