@@ -1,4 +1,4 @@
-import { NavigationLeaveRestrictions } from '../classes/test-controller.classes';
+import { NavigationLeaveRestrictions, Testlet } from '../classes/test-controller.classes';
 import { TestStateKey, UnitData } from '../interfaces/test-controller.interfaces';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../../config/booklet-config';
@@ -475,3 +475,99 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tls.loadTest', value: '', error: 'resource is missing' }
   ]
 };
+
+export const getBookletWithTwoBlocks = (): Testlet => testlet({
+  codePrompt: 'a',
+  codeToEnter: '',
+  id: '',
+  maxTimeLeft: 0,
+  sequenceId: 0,
+  title: 'root',
+  children: [
+    unit({
+      sequenceId: 1,
+      id: 'u1',
+      title: 'l',
+      children: [],
+      locked: false,
+      alias: 'u1',
+      naviButtonLabel: null,
+      navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
+      playerId: 'a-player'
+    }),
+    testlet({
+      codePrompt: '',
+      codeToEnter: '',
+      id: 'first_block',
+      maxTimeLeft: 0,
+      sequenceId: 0,
+      title: '',
+      children: [
+        unit({
+          sequenceId: 2,
+          id: 'u2',
+          title: 'l',
+          children: [],
+          locked: false,
+          alias: 'u2',
+          naviButtonLabel: null,
+          navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
+          playerId: 'a-player'
+        }),
+        testlet({
+          codePrompt: '',
+          codeToEnter: '',
+          id: 'sub_testlet_of_first_block',
+          maxTimeLeft: 0,
+          sequenceId: 0,
+          title: '',
+          children: [
+            unit({
+              sequenceId: 3,
+              id: 'u3',
+              title: 'l',
+              children: [],
+              locked: false,
+              alias: 'u3',
+              naviButtonLabel: null,
+              navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
+              playerId: 'a-player'
+            })
+          ]
+        })
+      ]
+    }),
+    testlet({
+      codePrompt: '',
+      codeToEnter: '',
+      id: 'second_block',
+      maxTimeLeft: 0,
+      sequenceId: 0,
+      title: '',
+      children: [
+        unit({
+          sequenceId: 4,
+          id: 'u4',
+          title: 'l',
+          children: [],
+          locked: false,
+          alias: 'u4',
+          naviButtonLabel: null,
+          navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
+          playerId: 'a-player'
+        })
+      ]
+    }),
+    unit({
+      sequenceId: 5,
+      id: 'u5',
+      title: 'l',
+      children: [],
+      locked: false,
+      alias: 'u5',
+      naviButtonLabel: null,
+      navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
+      playerId: 'a-player'
+    })
+  ]
+});

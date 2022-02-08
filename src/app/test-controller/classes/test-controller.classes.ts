@@ -130,23 +130,21 @@ export class Testlet extends TestletContentElement {
   }
 
   getSequenceIdByUnitAlias(alias: string): number {
-    let myReturn = 0;
     for (let i = 0; i < this.children.length; i++) {
-      const tce = this.children[i];
-      if (tce instanceof Testlet) {
-        const localTestlet = tce as Testlet;
-        myReturn = localTestlet.getSequenceIdByUnitAlias(alias);
-        if (myReturn >= 0) {
-          break;
+      const child = this.children[i];
+      if (child instanceof UnitDef) {
+        if (child.alias === alias) {
+          return child.sequenceId;
         }
-      } else if (tce instanceof UnitDef) {
-        if (tce.alias === alias) {
-          myReturn = (tce as UnitDef).sequenceId;
-          break;
+      }
+      if (child instanceof Testlet) {
+        const sequenceId = child.getSequenceIdByUnitAlias(alias);
+        if (sequenceId) {
+          return sequenceId;
         }
       }
     }
-    return myReturn;
+    return 0;
   }
 
   getTestlet(testletId: string): Testlet {
