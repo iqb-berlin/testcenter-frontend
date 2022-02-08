@@ -2,7 +2,8 @@
 
 ## [next]
 Various Bugfixes:
-* When you visited a test in demo-mode as a monitor, and terminated it, you returned to the starter but didn't see the monitor-monitor button again. That got fixed.
+* (#341) When you visited a test in demo-mode as a monitor, and terminated it, you returned to the starter but didn't see the monitor-monitor button again. That got fixed.
+* (#340) After reload you return to the correct unit now 
 
 ## 12.0.2
 Use Font Roboto everywhere
