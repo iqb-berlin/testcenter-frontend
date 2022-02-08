@@ -59,6 +59,9 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     if (!this.tcs.currentMaxTimerTestletId) { // leaving unit is not in a timed block
       return of(true);
     }
+    if (!this.tcs.testMode.forceTimeRestrictions) {
+      return of(true);
+    }
     if (newUnit && newUnit.maxTimerRequiringTestlet && // staying in the same timed block
       (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
     ) {

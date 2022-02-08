@@ -297,7 +297,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         break;
       case MaxTimerDataType.ENDED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimeOver'), '', { duration: 5000 });
-        this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
         this.tcs.maxTimeTimers[maxTimerData.testletId] = 0;
         if (this.tcs.testMode.saveResponses) {
           this.bs.updateTestState(
@@ -312,6 +311,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.timerRunning = false;
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions) {
+          this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
           const nextUnlockedUSId = this.tcs.rootTestlet.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
           this.tcs.setUnitNavigationRequest(nextUnlockedUSId.toString(10), true);
         }
