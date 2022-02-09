@@ -1,6 +1,6 @@
 {
   "name": "itc-ng",
-  "version": "12.0.1",
+  "version": "12.0.2",
   "iqb": {
     "verona-player-api-versions": {
       "min": 2,
