@@ -64,7 +64,7 @@
     "@angular/compiler-cli": "~12.1.0",
     "@angular/language-service": "~12.1.0",
     "@compodoc/compodoc": "^1.1.11",
-    "@iqb/eslint-config": "0.0.12",
+    "@iqb/eslint-config": "1.0.2",
     "@types/jasminewd2": "~2.0.8",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
