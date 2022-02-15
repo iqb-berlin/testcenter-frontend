@@ -55,11 +55,11 @@ export class DirectLoginActivateGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | boolean {
-    const directLoginName = state.url.substr(1);
-    if (directLoginName.length > 0 && directLoginName.indexOf('/') < 0) {
-      return this.bs.nameOnlyLogin(directLoginName)
+    const name = state.url.substr(1);
+    if (name.length > 0 && name.indexOf('/') < 0) {
+      return this.bs.loginAsLogin({ name })
         .pipe(
-          map((authDataResponse: AuthData|number) => {
+          map((authDataResponse: AuthData | number) => {
             if (typeof authDataResponse !== 'number') {
               this.mds.setAuthData(authDataResponse as AuthData);
               this.router.navigate(['/r']);

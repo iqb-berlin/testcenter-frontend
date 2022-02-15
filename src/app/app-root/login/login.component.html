@@ -1,15 +1,15 @@
 <div fxLayout="row wrap" fxLayoutAlign="center stretch">
-  <form [formGroup]="loginForm" (ngSubmit)="login()">
+  <form [formGroup]="loginForm" (ngSubmit)="login($event.submitter.id)">
     <mat-card fxFlex="0 0 400px">
       <mat-card-title>Anmelden</mat-card-title>
       <mat-card-content *ngIf="mds.appConfig?.isValidApiVersion">
         <mat-form-field>
           <mat-label>Anmeldename</mat-label>
-          <input matInput formControlName="name" (keyup.enter)="pw.focus()">
+          <input matInput formControlName="name" (keyup.enter)="pw.focus()" (keyup)="clearWarning()">
         </mat-form-field>
         <mat-form-field>
           <mat-label>Kennwort</mat-label>
-          <input matInput #pw [type]="showPassword ? 'text' : 'password'" formControlName="pw">
+          <input matInput #pw [type]="showPassword ? 'text' : 'password'" formControlName="pw" (keyup)="clearWarning()">
           <mat-icon
             id="toggle-show-password"
             (click)="showPassword = !showPassword"
@@ -27,7 +27,9 @@
         <alert level="error" text="Die Verbindung mit dem Server ist nicht möglich."></alert>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button type="submit" [disabled]="loginForm.invalid" color="primary">Weiter</button>
+        <button id="login" mat-raised-button type="submit" [disabled]="!loginForm.get('name').valid" color="primary">Weiter</button>
+        <div fxFlex></div>
+        <button id="admin" mat-raised-button type="submit" [disabled]="loginForm.invalid" color="secondary">Weiter als Admin</button>
       </mat-card-actions>
     </mat-card>
   </form>
