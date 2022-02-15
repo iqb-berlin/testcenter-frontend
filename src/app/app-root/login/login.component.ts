@@ -1,4 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component, Inject, OnDestroy, OnInit
+} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -15,7 +17,10 @@ import { BackendService } from '../../backend.service';
     '.mat-form-field {display: block}',
     '.mat-card {display: flex; justify-content: start; flex-direction: column; flex-wrap: wrap}',
     '.mat-card-content {flex-grow: 1; overflow: auto}',
-    '#admin {margin-right: 0}'
+    '#admin {margin-right: 0}',
+    '#version-number {' +
+      'position: fixed; bottom: 0; right: 0; background: rgba(255,255,255, 0.3); color: black; padding: 1px 3px' +
+    '}'
   ]
 })
 
@@ -35,7 +40,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     public mds: MainDataService,
     private bs: BackendService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    @Inject('APP_VERSION') public appVersion: string
   ) { }
 
   ngOnInit(): void {
