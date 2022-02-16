@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { TestControllerService } from '../../services/test-controller.service';
-import { MainDataService } from '../../../maindata.service';
+import { MainDataService } from '../../../shared/shared.module';
 import { AppError } from '../../../app.interfaces';
 
 @Component({

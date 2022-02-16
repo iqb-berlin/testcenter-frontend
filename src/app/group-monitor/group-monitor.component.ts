@@ -10,7 +10,8 @@ import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { switchMap } from 'rxjs/operators';
 import {
-  ConfirmDialogComponent, ConfirmDialogData, CustomtextService, ConnectionStatus
+  ConfirmDialogComponent, ConfirmDialogData, CustomtextService, ConnectionStatus,
+  MainDataService
 } from '../shared/shared.module';
 import { BackendService } from './backend.service';
 import {
@@ -20,7 +21,6 @@ import {
 } from './group-monitor.interfaces';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { BookletUtil } from './booklet/booklet.util';
-import { MainDataService } from '../maindata.service';
 
 @Component({
   selector: 'app-group-monitor',

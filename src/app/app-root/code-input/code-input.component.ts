@@ -3,9 +3,9 @@ import { Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import {
-  CustomtextService, MessageDialogComponent, MessageDialogData, MessageType
+  CustomtextService, MessageDialogComponent, MessageDialogData, MessageType,
+  MainDataService
 } from '../../shared/shared.module';
-import { MainDataService } from '../../maindata.service';
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
 

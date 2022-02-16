@@ -2,7 +2,7 @@ import {
   Component, OnInit, HostListener, OnDestroy
 } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { MainDataService } from '../../maindata.service';
+import { MainDataService } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { SysCheckDataService } from '../sys-check-data.service';
 
@@ -14,7 +14,7 @@ declare let srcDoc: any;
   styleUrls: ['./unit-check.component.css']
 })
 export class UnitCheckComponent implements OnInit, OnDestroy {
-  public pageList: PageData[] = [];
+  pageList: PageData[] = [];
   private iFrameHostElement: HTMLElement;
   private iFrameItemplayer: HTMLIFrameElement = null;
   private postMessageSubscription: Subscription = null;
@@ -31,7 +31,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:resize')
-  public onResize(): any {
+  onResize(): any {
     if (this.iFrameItemplayer && this.iFrameHostElement) {
       const divHeight = this.iFrameHostElement.clientHeight;
       this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));

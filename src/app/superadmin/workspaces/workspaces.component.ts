@@ -5,10 +5,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MainDataService } from 'src/app/maindata.service';
 import {
   ConfirmDialogComponent, ConfirmDialogData,
-  MessageDialogComponent, MessageDialogData, MessageType
+  MessageDialogComponent, MessageDialogData, MessageType, MainDataService
 } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { NewworkspaceComponent } from './newworkspace/newworkspace.component';

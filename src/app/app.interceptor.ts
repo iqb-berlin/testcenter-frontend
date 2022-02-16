@@ -6,7 +6,7 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { MainDataService } from './maindata.service';
+import { MainDataService } from './shared/shared.module';
 import { ApiError } from './app.interfaces';
 
 @Injectable()

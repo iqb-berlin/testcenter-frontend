@@ -10,14 +10,13 @@ import { saveAs } from 'file-saver';
 import { map } from 'rxjs/operators';
 import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType
+  MessageDialogData, MessageType, MainDataService
 } from '../../shared/shared.module';
 import { WorkspaceDataService } from '../workspacedata.service';
 import {
   IQBFileType, GetFileResponseData, IQBFile, IQBFileTypes
 } from '../workspace.interfaces';
 import { BackendService } from '../backend.service';
-import { MainDataService } from '../../maindata.service';
 import { IqbFilesUploadQueueComponent } from './iqb-files-upload-queue/iqb-files-upload-queue.component';
 import { FileDeletionReport } from './files.interfaces';
 

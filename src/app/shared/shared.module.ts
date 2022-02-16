@@ -15,10 +15,9 @@ import { MessageDialogData, MessageType } from './interfaces/message-dialog.inte
 import { BytesPipe } from './pipes/bytes/bytes.pipe';
 import { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 import { CustomtextService } from './services/customtext/customtext.service';
-import { CustomTextData, CustomTextDefs } from './interfaces/customtext.interfaces';
 import { AlertComponent } from './components/alert/alert.component';
-import { WebsocketService } from './services/websocket/websocket.service';
 import { WebsocketBackendService } from './services/websocket-backend/websocket-backend.service';
+import { MainDataService } from './services/maindata/maindata.service';
 
 @NgModule({
   imports: [
@@ -49,10 +48,6 @@ import { WebsocketBackendService } from './services/websocket-backend/websocket-
     BytesPipe,
     CustomtextPipe,
     AlertComponent
-  ],
-  providers: [
-    CustomtextService,
-    WebsocketService
   ]
 })
 export class SharedModule {}
@@ -65,3 +60,5 @@ export { ConfirmDialogData } from './interfaces/confirm-dialog.interfaces';
 export { AlertComponent } from './components/alert/alert.component';
 export { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 export { ConnectionStatus } from './interfaces/websocket-backend.interfaces';
+export { MainDataService } from './services/maindata/maindata.service';
+export { SysConfig, AppSettings } from './interfaces/app-config.interfaces';

@@ -2,12 +2,13 @@ import { Inject, Injectable } from '@angular/core';
 import {
   BehaviorSubject, Observable, ReplaySubject, Subject
 } from 'rxjs';
-import { CustomtextService } from './shared/shared.module';
+import { CustomtextService } from '../customtext/customtext.service';
 import {
   AppError,
   AuthData, KeyValuePairs
-} from './app.interfaces';
-import { AppConfig, localStorageTestConfigKey } from './config/app.config';
+} from '../../../app.interfaces';
+import { AppConfig } from '../../classes/app.config';
+import { localStorageTestConfigKey } from '../../interfaces/app-config.interfaces';
 
 const localStorageAuthDataKey = 'iqb-tc-a';
 
@@ -30,7 +31,6 @@ export class MainDataService {
   appSubTitle$ = new BehaviorSubject<string>('');
   globalWarning = '';
 
-  // set by app.component.ts
   postMessage$ = new Subject<MessageEvent>();
   appWindowHasFocus$ = new Subject<boolean>();
 

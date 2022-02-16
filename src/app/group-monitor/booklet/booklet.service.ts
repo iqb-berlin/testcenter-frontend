@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { MainDataService } from '../../maindata.service';
+import { MainDataService } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import {
   Booklet, BookletError, BookletMetadata, isUnit, Restrictions, Testlet, Unit
@@ -13,30 +13,30 @@ import { BookletConfig } from '../../config/booklet-config';
 
 @Injectable()
 export class BookletService {
-  booklets: Observable<Booklet|BookletError>[] = [];
+  booklets: Observable<Booklet | BookletError>[] = [];
 
   constructor(
     private bs: BackendService
   ) { }
 
-  getBooklet(bookletName = ''): Observable<Booklet|BookletError> {
+  getBooklet(bookletName = ''): Observable<Booklet | BookletError> {
     if (typeof this.booklets[bookletName] !== 'undefined') {
       return this.booklets[bookletName];
     }
     if (bookletName === '') {
-      this.booklets[bookletName] = of<Booklet|BookletError>({ error: 'missing-id', species: null });
+      this.booklets[bookletName] = of<Booklet | BookletError>({ error: 'missing-id', species: null });
     } else {
       this.booklets[bookletName] = this.bs.getBooklet(bookletName)
         .pipe(
           // eslint-disable-next-line max-len
-          map((response: string|BookletError) => (typeof response === 'string' ? BookletService.parseBookletXml(response) : response)),
+          map((response: string | BookletError) => (typeof response === 'string' ? BookletService.parseBookletXml(response) : response)),
           shareReplay(1)
         );
     }
     return this.booklets[bookletName];
   }
 
-  private static parseBookletXml(xmlString: string): Booklet|BookletError {
+  private static parseBookletXml(xmlString: string): Booklet | BookletError {
     try {
       const domParser = new DOMParser();
       const bookletElement = domParser.parseFromString(xmlString, 'text/xml').documentElement;
@@ -106,7 +106,7 @@ export class BookletService {
     };
   }
 
-  private static parseUnitOrTestlet(unitOrTestletElement: Element): (Unit|Testlet) {
+  private static parseUnitOrTestlet(unitOrTestletElement: Element): (Unit | Testlet) {
     if (unitOrTestletElement.tagName === 'Unit') {
       return {
         id: unitOrTestletElement.getAttribute('alias') || unitOrTestletElement.getAttribute('id'),

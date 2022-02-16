@@ -10,11 +10,10 @@ import { CommonModule } from '@angular/common';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Component } from '@angular/core';
-import { CustomtextService, ConnectionStatus } from '../../../shared/shared.module';
+import { CustomtextService, ConnectionStatus, MainDataService } from '../../../shared/shared.module';
 import { BackendService } from '../../services/backend.service';
 import { CommandService } from '../../services/command.service';
 import { TestControllerComponent } from './test-controller.component';
-import { MainDataService } from '../../../maindata.service';
 import {
   Command, TestControllerState, TestData, WindowFocusState
 } from '../../interfaces/test-controller.interfaces';

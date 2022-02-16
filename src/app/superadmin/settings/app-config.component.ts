@@ -2,9 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { AppConfig, AppSettings, standardLogo } from '../../config/app.config';
-import { MainDataService } from '../../maindata.service';
+import { AppConfig } from '../../shared/classes/app.config';
+import { MainDataService } from '../../shared/services/maindata/maindata.service';
 import { BackendService } from '../backend.service';
+import { AppSettings, standardLogo } from '../../shared/interfaces/app-config.interfaces';
 
 @Component({
   selector: 'app-app-config',

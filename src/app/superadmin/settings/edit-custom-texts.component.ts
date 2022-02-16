@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { CustomtextService } from '../../shared/shared.module';
+import { CustomtextService, MainDataService } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
-import { MainDataService } from '../../maindata.service';
 import allCustomTexts from '../../config/custom-texts.json';
 import { EditCustomTextComponent } from './edit-custom-text.component';
 import { KeyValuePairs } from '../../app.interfaces';

@@ -7,7 +7,7 @@ import {
   IdAndName, IdLabelSelectedData, IdRoleData, UserData
 } from './superadmin.interfaces';
 import { ApiError, KeyValuePairs } from '../app.interfaces';
-import { AppSettings } from '../config/app.config';
+import { AppSettings } from '../shared/shared.module';
 
 @Injectable({
   providedIn: 'root'

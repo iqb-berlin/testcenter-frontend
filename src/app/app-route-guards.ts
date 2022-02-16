@@ -5,7 +5,7 @@ import {
 } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { MainDataService } from './maindata.service';
+import { MainDataService } from './shared/shared.module';
 import { AuthAccessKeyType, AuthData, AuthFlagType } from './app.interfaces';
 import { BackendService } from './backend.service';
 

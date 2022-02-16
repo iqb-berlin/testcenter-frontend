@@ -9,7 +9,7 @@ import {
   WorkspaceData,
   BookletData, ApiError, AccessObject
 } from './app.interfaces';
-import { SysConfig } from './config/app.config';
+import { SysConfig } from './shared/shared.module';
 
 @Injectable({
   providedIn: 'root'

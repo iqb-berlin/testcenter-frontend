@@ -2,9 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { from, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { concatMap, map } from 'rxjs/operators';
-import { CustomtextService } from '../../shared/shared.module';
+import { CustomtextService, MainDataService } from '../../shared/shared.module';
 import { BackendService } from '../../backend.service';
-import { MainDataService } from '../../maindata.service';
 import {
   AccessObject, AuthAccessKeyType, AuthData, BookletData
 } from '../../app.interfaces';
