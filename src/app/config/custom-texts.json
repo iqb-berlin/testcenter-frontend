@@ -119,6 +119,14 @@
     "label": "Untertitel des Ladebalkens, xxx% geladen",
     "defaultvalue": "geladen"
   },
+  "booklet_loading": {
+    "label": "Test wird geladen",
+    "defaultvalue": "bitte warten"
+  },
+  "booklet_lockedBlock": {
+    "label": "Zeit von zeitgesteuertem Aufgabenblock ist abgelaufen",
+    "defaultvalue": "Aufgabenzeit ist abgelaufen"
+  },
   "syscheck_questionsRequiredMessage": {
     "label": "Nachricht an die Testperson, wenn einige Fragen, die als 'required' markiert sind, nicht beantwortet wurden",
     "defaultvalue": "Bitte prüfen Sie die Eingaben (unvollständig):"

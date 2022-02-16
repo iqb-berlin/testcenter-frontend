@@ -55,17 +55,16 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     private router: Router
   ) {}
 
-  private checkAndSolve_maxTime(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
+  private checkAndSolveMaxTime(newUnit: UnitControllerData): Observable<boolean> {
     if (!this.tcs.currentMaxTimerTestletId) { // leaving unit is not in a timed block
+      return of(true);
+    }
+    if (!this.tcs.testMode.forceTimeRestrictions) {
       return of(true);
     }
     if (newUnit && newUnit.maxTimerRequiringTestlet && // staying in the same timed block
       (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
     ) {
-      return of(true);
-    }
-    if (force) {
-      this.tcs.interruptMaxTimer();
       return of(true);
     }
     const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
@@ -92,10 +91,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       );
   }
 
-  private checkAndSolve_Completeness(newUnit: UnitControllerData, force: boolean): Observable<boolean> {
-    if (force) {
-      return of(true);
-    }
+  private checkAndSolveCompleteness(newUnit: UnitControllerData): Observable<boolean> {
     const direction = (newUnit && this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) ? 'Next' : 'Prev';
     const reasons = this.checkCompleteness(direction);
     if (!reasons.length) {
@@ -106,6 +102,9 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
 
   private checkCompleteness(direction: 'Next' | 'Prev'): VeronaNavigationDeniedReason[] {
     const unit = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId);
+    if (unit.unitDef.locked) {
+      return [];
+    }
     const reasons: VeronaNavigationDeniedReason[] = [];
     const checkOnValue = {
       Next: <NavigationLeaveRestrictionValue[]>['ON', 'ALWAYS'],
@@ -180,15 +179,14 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     }
 
     const forceNavigation = this.router.getCurrentNavigation().extras?.state?.force ?? false;
+    if (forceNavigation) {
+      this.tcs.interruptMaxTimer();
+      return of(true);
+    }
 
-    return this.checkAndSolve_maxTime(newUnit, forceNavigation)
+    return this.checkAndSolveCompleteness(newUnit)
       .pipe(
-        switchMap(cAsC => {
-          if (!cAsC) {
-            return of(false);
-          }
-          return this.checkAndSolve_Completeness(newUnit, forceNavigation);
-        })
+        switchMap(cAsC => (!cAsC ? of(false) : this.checkAndSolveMaxTime(newUnit)))
       );
   }
 }

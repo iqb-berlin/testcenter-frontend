@@ -124,7 +124,6 @@ describe('TestLoaderService', () => {
           await loadTestWatched('withBrokenBooklet');
           // eslint-disable-next-line no-empty
         } catch (e) {
-          watcher.dump();
         }
         expect(watcher.log).toEqual(TestLoadingProtocols.withBrokenBooklet);
       });
@@ -134,7 +133,6 @@ describe('TestLoaderService', () => {
           await loadTestWatched('withMissingPlayer');
           // eslint-disable-next-line no-empty
         } catch (e) {
-          watcher.dump();
         }
         expect(watcher.log).toEqual(TestLoadingProtocols.withMissingPlayer);
       });
@@ -144,7 +142,6 @@ describe('TestLoaderService', () => {
           await loadTestWatched('withMissingUnitContent');
           // eslint-disable-next-line no-empty
         } catch (e) {
-          watcher.dump();
         }
         expect(watcher.log).toEqual(TestLoadingProtocols.withMissingUnitContent);
       });
