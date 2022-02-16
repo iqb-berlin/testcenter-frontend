@@ -59,7 +59,7 @@ export class DirectLoginActivateGuard implements CanActivate {
     if (directLoginName.length > 0 && directLoginName.indexOf('/') < 0) {
       return this.bs.nameOnlyLogin(directLoginName)
         .pipe(
-          map((authDataResponse: AuthData|number) => {
+          map((authDataResponse: AuthData | number) => {
             if (typeof authDataResponse !== 'number') {
               this.mds.setAuthData(authDataResponse as AuthData);
               this.router.navigate(['/r']);

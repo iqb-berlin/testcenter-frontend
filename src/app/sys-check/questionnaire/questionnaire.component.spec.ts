@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IqbComponentsModule } from 'iqb-components';
 import { MatCardModule } from '@angular/material/card';
+import { SharedModule } from '../../shared/shared.module';
 import { QuestionnaireComponent } from './questionnaire.component';
 
 describe('QuestionnaireComponent', () => {
@@ -10,7 +10,7 @@ describe('QuestionnaireComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [QuestionnaireComponent],
-      imports: [IqbComponentsModule, MatCardModule]
+      imports: [SharedModule, MatCardModule]
     })
       .compileComponents();
   }));

@@ -6,7 +6,7 @@ import {
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
-import { CustomtextService } from 'iqb-components';
+import { CustomtextService } from '../../shared/shared.module';
 import {
   isLoadingFileLoaded, isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress, StateReportEntry, TaggedString,
   TestControllerState, TestData, TestLogEntryKey, TestStateKey, UnitNavigationTarget, UnitStateKey

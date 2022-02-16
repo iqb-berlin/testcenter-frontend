@@ -5,11 +5,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
+import { MainDataService } from 'src/app/maindata.service';
 import {
   ConfirmDialogComponent, ConfirmDialogData,
   MessageDialogComponent, MessageDialogData, MessageType
-} from 'iqb-components';
-import { MainDataService } from 'src/app/maindata.service';
+} from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { NewworkspaceComponent } from './newworkspace/newworkspace.component';
 import { EditworkspaceComponent } from './editworkspace/editworkspace.component';
@@ -20,15 +20,15 @@ import { IdAndName, IdRoleData } from '../superadmin.interfaces';
   styleUrls: ['./workspaces.component.css']
 })
 export class WorkspacesComponent implements OnInit {
-  public objectsDatasource: MatTableDataSource<IdAndName>;
-  public displayedColumns = ['selectCheckbox', 'name'];
-  public tableselectionCheckbox = new SelectionModel <IdAndName>(true, []);
-  public tableselectionRow = new SelectionModel <IdAndName>(false, []);
-  public selectedWorkspaceId = 0;
-  public selectedWorkspaceName = '';
-  public pendingUserChanges = false;
-  public UserlistDatasource: MatTableDataSource<IdRoleData>;
-  public displayedUserColumns = ['selectCheckbox', 'name'];
+  objectsDatasource: MatTableDataSource<IdAndName>;
+  displayedColumns = ['selectCheckbox', 'name'];
+  tableselectionCheckbox = new SelectionModel <IdAndName>(true, []);
+  tableselectionRow = new SelectionModel <IdAndName>(false, []);
+  selectedWorkspaceId = 0;
+  selectedWorkspaceName = '';
+  pendingUserChanges = false;
+  UserlistDatasource: MatTableDataSource<IdRoleData>;
+  displayedUserColumns = ['selectCheckbox', 'name'];
 
   @ViewChild(MatSort) sort: MatSort;
 

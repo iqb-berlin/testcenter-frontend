@@ -5,7 +5,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { IqbComponentsModule } from 'iqb-components';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -19,6 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatStepperModule } from '@angular/material/stepper';
 import { RouterModule } from '@angular/router';
+import { SharedModule } from '../shared/shared.module';
 import { TcSpeedChartComponent } from './network-check/tc-speed-chart.component';
 import { SaveReportComponent } from './report/save-report/save-report.component';
 import { ReportComponent } from './report/report.component';
@@ -52,7 +52,7 @@ import { SysCheckDataService } from './sys-check-data.service';
     MatTooltipModule,
     ReactiveFormsModule,
     SysCheckRoutingModule,
-    IqbComponentsModule.forChild(),
+    SharedModule,
     RouterModule
   ],
   declarations: [

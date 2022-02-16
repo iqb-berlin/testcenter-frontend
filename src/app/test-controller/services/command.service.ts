@@ -20,7 +20,7 @@ import {
   Command, commandKeywords, isKnownCommand, TestControllerState
 } from '../interfaces/test-controller.interfaces';
 import { TestControllerService } from './test-controller.service';
-import { WebsocketBackendService } from '../../shared/websocket-backend.service';
+import { WebsocketBackendService } from '../../shared/shared.module';
 
 type TestStartedOrStopped = 'started' | 'terminated' | '';
 

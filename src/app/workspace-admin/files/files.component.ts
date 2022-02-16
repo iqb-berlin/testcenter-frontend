@@ -7,11 +7,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 
 import { saveAs } from 'file-saver';
+import { map } from 'rxjs/operators';
 import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
   MessageDialogData, MessageType
-} from 'iqb-components';
-import { map } from 'rxjs/operators';
+} from '../../shared/shared.module';
 import { WorkspaceDataService } from '../workspacedata.service';
 import {
   IQBFileType, GetFileResponseData, IQBFile, IQBFileTypes

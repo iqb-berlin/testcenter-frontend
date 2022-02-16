@@ -6,10 +6,12 @@ import { Sort } from '@angular/material/sort';
 import { MatSidenav } from '@angular/material/sidenav';
 import { interval, Observable, Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from 'iqb-components';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { switchMap } from 'rxjs/operators';
+import {
+  ConfirmDialogComponent, ConfirmDialogData, CustomtextService, ConnectionStatus
+} from '../shared/shared.module';
 import { BackendService } from './backend.service';
 import {
   GroupData,
@@ -17,7 +19,6 @@ import {
   TestViewDisplayOptionKey, Selected, TestSession, TestSessionSetStats, CommandResponse, UIMessage, isBooklet
 } from './group-monitor.interfaces';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
-import { ConnectionStatus } from '../shared/websocket-backend.service';
 import { BookletUtil } from './booklet/booklet.util';
 import { MainDataService } from '../maindata.service';
 

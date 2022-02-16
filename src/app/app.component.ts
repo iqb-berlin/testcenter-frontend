@@ -2,8 +2,8 @@ import {
   Component, OnDestroy, OnInit
 } from '@angular/core';
 import { Subscription, combineLatest } from 'rxjs';
-import { CustomtextService } from 'iqb-components';
 import { DomSanitizer, Title } from '@angular/platform-browser';
+import { CustomtextService } from './shared/shared.module';
 import { MainDataService } from './maindata.service';
 import { BackendService } from './backend.service';
 import { AppError } from './app.interfaces';

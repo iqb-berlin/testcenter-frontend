@@ -9,9 +9,9 @@ import {
 import {
   debounceTime, distinctUntilChanged, filter, map
 } from 'rxjs/operators';
-import { CustomtextService } from 'iqb-components';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CustomtextService } from '../../../shared/shared.module';
 import {
   AppFocusState,
   Command, MaxTimerDataType,

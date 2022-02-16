@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { CustomtextService } from 'iqb-components';
+import { CustomtextService } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { MainDataService } from '../../maindata.service';
 import allCustomTexts from '../../config/custom-texts.json';

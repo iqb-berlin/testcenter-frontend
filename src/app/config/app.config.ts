@@ -1,5 +1,5 @@
-import { CustomtextService } from 'iqb-components';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { CustomtextService } from '../shared/shared.module';
 import customTextsDefault from './custom-texts.json';
 import { KeyValuePairs } from '../app.interfaces';
 

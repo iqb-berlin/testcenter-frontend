@@ -22,7 +22,7 @@ import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
-import { IqbComponentsModule } from 'iqb-components';
+import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BackendService } from './backend.service';
@@ -76,7 +76,7 @@ import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.compo
     HttpClientModule,
     RouterModule,
     AppRoutingModule,
-    IqbComponentsModule.forRoot()
+    SharedModule
   ],
   providers: [
     BackendService,

@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import {
   BehaviorSubject, Observable, ReplaySubject, Subject
 } from 'rxjs';
-import { CustomtextService } from 'iqb-components';
+import { CustomtextService } from './shared/shared.module';
 import {
   AppError,
   AuthData, KeyValuePairs
