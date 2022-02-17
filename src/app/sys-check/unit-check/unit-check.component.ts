@@ -15,6 +15,7 @@ declare let srcDoc: any;
 })
 export class UnitCheckComponent implements OnInit, OnDestroy {
   pageList: PageData[] = [];
+  currentPage: number;
   private iFrameHostElement: HTMLElement;
   private iFrameItemplayer: HTMLIFrameElement = null;
   private postMessageSubscription: Subscription = null;
@@ -53,24 +54,23 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
               case 'vopReadyNotification':
                 this.iFrameItemplayer.setAttribute('height', String(Math.trunc(this.iFrameHostElement.clientHeight)));
                 this.postMessageTarget = m.source as Window;
-                if (typeof this.postMessageTarget !== 'undefined') {
-                  this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
-                  this.postMessageTarget.postMessage({
-                    type: 'vopStartCommand',
-                    sessionId: this.itemplayerSessionId,
-                    unitDefinition: this.pendingUnitDef,
-                    playerConfig: {
-                      logPolicy: 'disabled',
-                      stateReportPolicy: 'none'
-                    }
-                  }, '*');
-                }
-                break;
+                this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
+                this.postMessageTarget.postMessage({
+                  type: 'vopStartCommand',
+                  sessionId: this.itemplayerSessionId,
+                  unitDefinition: this.pendingUnitDef,
+                  playerConfig: {
+                    logPolicy: 'disabled',
+                    stateReportPolicy: 'eager'
+                  }
+                }, '*');
 
+              // eslint-disable-next-line no-fallthrough
               case 'vopStateChangedNotification':
                 if (msgData.playerState) {
                   const { playerState } = msgData;
                   this.setPageList(Object.keys(playerState.validPages), playerState.currentPage);
+                  this.currentPage = playerState.currentPage;
                 }
                 break;
 
