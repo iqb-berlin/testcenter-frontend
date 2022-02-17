@@ -13,7 +13,9 @@ import { BackendService } from '../../backend.service';
   templateUrl: './code-input.component.html',
   styles: [
     'mat-card {margin: 10px;}',
-    '.mat-card-box {background-color: var(--tc-box-background)}'
+    '.mat-card-box {background-color: var(--tc-box-background)}',
+    '.mat-card {display: flex; justify-content: start; flex-direction: column; flex-wrap: wrap}',
+    '.mat-card-content {flex-grow: 1; overflow: auto}'
   ]
 })
 export class CodeInputComponent implements OnInit {

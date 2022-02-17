@@ -1,4 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component, Inject, OnDestroy, OnInit
+} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -14,7 +16,11 @@ import { BackendService } from '../../backend.service';
     '#toggle-show-password {cursor: pointer}',
     '.mat-form-field {display: block}',
     '.mat-card {display: flex; justify-content: start; flex-direction: column; flex-wrap: wrap}',
-    '.mat-card-content {flex-grow: 1; overflow: auto}'
+    '.mat-card-content {flex-grow: 1; overflow: auto}',
+    '#admin {margin-right: 0}',
+    '#version-number {' +
+      'position: fixed; bottom: 0; right: 0; background: rgba(255,255,255, 0.3); color: black; padding: 1px 3px' +
+    '}'
   ]
 })
 
@@ -27,14 +33,15 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   loginForm = new FormGroup({
     name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
-    pw: new FormControl('')
+    pw: new FormControl('', [Validators.required, Validators.minLength(7)])
   });
 
   constructor(
     public mds: MainDataService,
     private bs: BackendService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    @Inject('APP_VERSION') public appVersion: string
   ) { }
 
   ngOnInit(): void {
@@ -44,11 +51,11 @@ export class LoginComponent implements OnInit, OnDestroy {
       .subscribe(params => { this.returnTo = params.returnTo; });
   }
 
-  login(): void {
+  login(loginType: 'admin' | 'login'): void {
     const loginData = this.loginForm.value;
     LoginComponent.oldLoginName = loginData.name;
     this.mds.setSpinnerOn();
-    this.bs.login(loginData.name, loginData.pw).subscribe(
+    this.bs.login(loginType, loginData.name, loginData.pw).subscribe(
       authData => {
         this.mds.setSpinnerOff();
         this.problemText = '';
@@ -66,6 +73,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.problemText = 'Problem bei der Anmeldung.';
             // app.interceptor will show error message
           }
+          this.loginForm.reset();
         } else {
           const authDataTyped = authData as AuthData;
           this.mds.setAuthData(authDataTyped);
@@ -81,6 +89,10 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
       }
     );
+  }
+
+  clearWarning(): void {
+    this.problemText = '';
   }
 
   ngOnDestroy(): void {

@@ -15,7 +15,7 @@ import { ReportType, ResultData } from '../workspace.interfaces';
 })
 export class ResultsComponent implements OnInit {
   displayedColumns: string[] = [
-    'selectCheckbox', 'groupname', 'bookletsStarted', 'num_units_min', 'num_units_max', 'num_units_mean', 'lastchange'
+    'selectCheckbox', 'groupName', 'bookletsStarted', 'numUnitsMin', 'numUnitsMax', 'numUnitsAvg', 'lastChange'
   ];
 
   resultDataSource = new MatTableDataSource<ResultData>([]);
@@ -79,7 +79,7 @@ export class ResultsComponent implements OnInit {
       const dataIds: string[] = [];
 
       this.tableselectionCheckbox.selected.forEach(element => {
-        dataIds.push(element.groupname);
+        dataIds.push(element.groupName);
       });
 
       this.wds.downloadReport(dataIds, reportType, filename);
@@ -92,7 +92,7 @@ export class ResultsComponent implements OnInit {
     if (this.tableselectionCheckbox.selected.length > 0) {
       const selectedGroups: string[] = [];
       this.tableselectionCheckbox.selected.forEach(element => {
-        selectedGroups.push(element.groupname);
+        selectedGroups.push(element.groupName);
       });
 
       let prompt = 'Es werden alle Antwort- und Logdaten in der Datenbank für diese ';

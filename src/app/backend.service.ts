@@ -2,7 +2,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import {
   SysCheckInfo,
   AuthData,
@@ -20,41 +20,20 @@ export class BackendService {
     private http: HttpClient
   ) {}
 
-  login(name: string, password: string): Observable<AuthData | number> {
-    if (password) {
-      return this.http
-        .put<AuthData>(`${this.serverUrl}session/admin`, { name, password })
-        .pipe(
-          catchError((err: ApiError) => {
-            console.warn(`login Api-Error: ${err.code} ${err.info} `);
-            return of(err.code);
-          }),
-          switchMap(authData => {
-            if (typeof authData === 'number') {
-              const errCode = authData as number;
-              if (errCode === 400) {
-                return this.http
-                  .put<AuthData>(`${this.serverUrl}session/login`, { name, password })
-                  .pipe(catchError((err: ApiError) => of(err.code)));
-              }
-              return of(errCode);
-            }
-            return of(authData);
-          })
-        );
-    }
-    return this.nameOnlyLogin(name);
+  login(type: 'admin' | 'login', name: string, password: string = undefined): Observable<AuthData | number> {
+    return (type === 'admin') ? this.loginAsAdmin({ name, password }) : this.loginAsLogin({ name, password });
   }
 
-  nameOnlyLogin(name: string): Observable<AuthData | number> {
+  loginAsAdmin(credentials: { name: string, password: string }): Observable<AuthData | number> {
     return this.http
-      .put<AuthData>(`${this.serverUrl}session/login`, { name })
-      .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`nameOnlyLogin Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
-      );
+      .put<AuthData>(`${this.serverUrl}session/admin`, credentials)
+      .pipe(catchError((err: ApiError) => of(err.code)));
+  }
+
+  loginAsLogin(credentials: { name: string, password?: string }): Observable<AuthData | number> {
+    return this.http
+      .put<AuthData>(`${this.serverUrl}session/login`, credentials)
+      .pipe(catchError((err: ApiError) => of(err.code)));
   }
 
   codeLogin(code: string): Observable<AuthData | number> {

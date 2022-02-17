@@ -80,15 +80,12 @@ export class BackendService {
       );
   }
 
-  /**
-   *
-   * @param workspaceId
-   * @param groups
-   * @deprecated
-   */
   getResponses(workspaceId: string, groups: string[]): Observable<UnitResponse[]> {
     return this.http
-      .get<UnitResponse[]>(`${this.serverUrl}workspace/${workspaceId}/responses`, { params: { groups: groups.join(',') } })
+      .get<UnitResponse[]>(
+      `${this.serverUrl}workspace/${workspaceId}/responses`,
+      { params: { groups: groups.join(',') } }
+    )
       .pipe(
         catchError((err: ApiError) => {
           console.warn(`getResponses Api-Error: ${err.code} ${err.info} `);
@@ -97,12 +94,6 @@ export class BackendService {
       );
   }
 
-  /**
-   *
-   * @param workspaceId
-   * @param groups
-   * @deprecated
-   */
   getLogs(workspaceId: string, groups: string[]): Observable<LogData[]> {
     return this.http
       .get<LogData[]>(`${this.serverUrl}workspace/${workspaceId}/logs`, { params: { groups: groups.join(',') } })
@@ -114,12 +105,6 @@ export class BackendService {
       );
   }
 
-  /**
-   *
-   * @param workspaceId
-   * @param groups
-   * @deprecated
-   */
   getReviews(workspaceId: string, groups: string[]): Observable<ReviewData[]> {
     return this.http
       .get<ReviewData[]>(`${this.serverUrl}workspace/${workspaceId}/reviews`, { params: { groups: groups.join(',') } })
@@ -154,15 +139,6 @@ export class BackendService {
       );
   }
 
-  /**
-   *
-   * @param workspaceId
-   * @param reports
-   * @param enclosure
-   * @param delimiter
-   * @param lineEnding
-   * @deprecated
-   */
   getSysCheckReport(workspaceId: string, reports: string[], enclosure: string, delimiter: string, lineEnding: string)
     : Observable<Blob | boolean> {
     return this.http
@@ -282,7 +258,7 @@ export class BackendService {
           }
           return null;
         }),
-        filter((response: UploadResponse|null) => !!response)
+        filter((response: UploadResponse | null) => !!response)
       );
   }
 }

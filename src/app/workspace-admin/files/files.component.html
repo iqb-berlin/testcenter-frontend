@@ -51,6 +51,7 @@
                       <mat-card-subtitle>{{element.info.description}}</mat-card-subtitle>
                     </mat-card-header>
                     <mat-card-content>
+                      <alert level="info" *ngIf="element.info.testtakers" text="{{element.info.testtakers}} Teilnehmer definiert"></alert>
                       <ng-container *ngFor="let level of ['error', 'warning', 'info']">
                         <div *ngFor="let message of element.report[level]">
                           <alert [level]="level" [text]="message"></alert>
