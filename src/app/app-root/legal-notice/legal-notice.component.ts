@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MainDataService } from '../../maindata.service';
+import { MainDataService } from '../../shared/shared.module';
 
 @Component({
   templateUrl: './legal-notice.component.html',

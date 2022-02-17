@@ -1,9 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-
 import { Subscription } from 'rxjs';
-
-import { MainDataService } from '../maindata.service';
+import { MainDataService } from '../shared/shared.module';
 import { BackendService } from './backend.service';
 import { WorkspaceDataService } from './workspacedata.service';
 

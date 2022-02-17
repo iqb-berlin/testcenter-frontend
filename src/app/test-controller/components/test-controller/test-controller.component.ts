@@ -9,9 +9,9 @@ import {
 import {
   debounceTime, distinctUntilChanged, filter, map
 } from 'rxjs/operators';
-import { CustomtextService } from 'iqb-components';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CustomtextService, MainDataService } from '../../../shared/shared.module';
 import {
   AppFocusState,
   Command, MaxTimerDataType,
@@ -23,7 +23,6 @@ import {
   WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
 import { BackendService } from '../../services/backend.service';
-import { MainDataService } from '../../../maindata.service';
 import { TestControllerService } from '../../services/test-controller.service';
 import { ReviewDialogComponent } from '../review-dialog/review-dialog.component';
 import { CommandService } from '../../services/command.service';

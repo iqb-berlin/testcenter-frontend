@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import { TestBed } from '@angular/core/testing';
-import { CustomtextService } from 'iqb-components';
 import { Observable } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
 import { NavigationExtras, Router } from '@angular/router';
+import { CustomtextService } from '../../shared/shared.module';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { TestLoaderService } from './test-loader.service';
@@ -22,7 +22,7 @@ const MockCustomtextService = {
 
 const MockRouter = {
   log: <string[]>[],
-  navigate(commands: string[], extras?: NavigationExtras): Promise<boolean> {
+  navigate(commands: string[]): Promise<boolean> {
     this.log.push(...commands);
     return Promise.resolve(true);
   }

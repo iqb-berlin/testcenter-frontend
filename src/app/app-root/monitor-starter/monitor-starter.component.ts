@@ -2,9 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { from, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { concatMap, map } from 'rxjs/operators';
-import { CustomtextService } from 'iqb-components';
+import { CustomtextService, MainDataService } from '../../shared/shared.module';
 import { BackendService } from '../../backend.service';
-import { MainDataService } from '../../maindata.service';
 import {
   AccessObject, AuthAccessKeyType, AuthData, BookletData
 } from '../../app.interfaces';
@@ -14,7 +13,7 @@ import {
   styleUrls: ['./monitor-starter.component.css']
 })
 export class MonitorStarterComponent implements OnInit, OnDestroy {
-  accessObjects: { [accessType: string]: (AccessObject|BookletData)[] } = {};
+  accessObjects: { [accessType: string]: (AccessObject | BookletData)[] } = {};
   private getMonitorDataSubscription: Subscription = null;
   AuthAccessKeyType = AuthAccessKeyType;
   problemText: string;

@@ -3,7 +3,7 @@ import { from, Subscription } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { BackendService } from '../../backend.service';
-import { MainDataService } from '../../maindata.service';
+import { MainDataService } from '../../shared/shared.module';
 import { AuthAccessKeyType, AuthData, BookletData } from '../../app.interfaces';
 
 @Component({

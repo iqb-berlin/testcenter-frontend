@@ -1,15 +1,16 @@
 /* eslint-disable max-classes-per-file,no-console */
 
-import { ConfirmDialogComponent, ConfirmDialogData, CustomtextService } from 'iqb-components';
 import { map, switchMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import {
   ActivatedRouteSnapshot, CanActivate, CanDeactivate, Router, RouterStateSnapshot
 } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { MainDataService } from 'src/app/maindata.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  ConfirmDialogComponent, ConfirmDialogData, CustomtextService, MainDataService
+} from '../../shared/shared.module';
 import { NavigationLeaveRestrictionValue, TestControllerState } from '../interfaces/test-controller.interfaces';
 import { UnitControllerData } from '../classes/test-controller.classes';
 import { UnithostComponent } from '../components/unithost/unithost.component';

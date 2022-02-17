@@ -4,7 +4,7 @@ import { from, Subscription } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { BackendService } from '../../backend.service';
 import { AuthAccessKeyType, AuthData, WorkspaceData } from '../../app.interfaces';
-import { MainDataService } from '../../maindata.service';
+import { MainDataService } from '../../shared/shared.module';
 
 @Component({
   templateUrl: './admin-starter.component.html',

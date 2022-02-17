@@ -6,7 +6,7 @@ import {
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
-import { CustomtextService } from 'iqb-components';
+import { CustomtextService, MainDataService } from '../../shared/shared.module';
 import {
   isLoadingFileLoaded, isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress, StateReportEntry, TaggedString,
   TestControllerState, TestData, TestLogEntryKey, TestStateKey, UnitNavigationTarget, UnitStateKey
@@ -15,7 +15,6 @@ import { TestMode } from '../../config/test-mode';
 import {
   EnvironmentData, NavigationLeaveRestrictions, Testlet, UnitDef
 } from '../classes/test-controller.classes';
-import { MainDataService } from '../../maindata.service';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { LocalStorage } from '../utils/local-storage.util';

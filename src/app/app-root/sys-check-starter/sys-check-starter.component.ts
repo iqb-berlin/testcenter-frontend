@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BackendService } from '../../backend.service';
-import { MainDataService } from '../../maindata.service';
+import { MainDataService } from '../../shared/shared.module';
 import { SysCheckInfo } from '../../app.interfaces';
 
 @Component({

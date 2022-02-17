@@ -28,16 +28,12 @@
 
 #pageNav {
   position: absolute;
-  width: 100%;
+  right: 0;
   height: 45px;
   bottom: 0;
   padding: 0 30px;
   font-size: 1.2em;
-}
-
-#pageNavPrompt {
-  padding: 2px 8px;
-  color: white;
+  background: transparent;
 }
 
 #pageNav button {

@@ -4,10 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-
-import { ConfirmDialogComponent, ConfirmDialogData } from 'iqb-components';
-
-import { MainDataService } from '../../maindata.service';
+import { ConfirmDialogComponent, ConfirmDialogData, MainDataService } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { ReportType, SysCheckStatistics } from '../workspace.interfaces';

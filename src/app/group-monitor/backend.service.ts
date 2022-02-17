@@ -5,7 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 import {
   BookletError, CommandResponse, GroupData, TestSessionData
 } from './group-monitor.interfaces';
-import { WebsocketBackendService } from '../shared/websocket-backend.service';
+import { WebsocketBackendService } from '../shared/shared.module';
 import { ApiError } from '../app.interfaces';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class BackendService extends WebsocketBackendService<TestSessionData[]> {
     return this.observeEndpointAndChannel();
   }
 
-  getBooklet(bookletName: string): Observable<string|BookletError> {
+  getBooklet(bookletName: string): Observable<string | BookletError> {
     const headers = new HttpHeaders({ 'Content-Type': 'text/xml' }).set('Accept', 'text/xml');
     const missingFileError: BookletError = { error: 'missing-file', species: null };
     const generalError: BookletError = { error: 'general', species: null };

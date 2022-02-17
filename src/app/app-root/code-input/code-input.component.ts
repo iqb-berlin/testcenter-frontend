@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import {
-  CustomtextService, MessageDialogComponent, MessageDialogData, MessageType
-} from 'iqb-components';
 import { MatDialog } from '@angular/material/dialog';
-import { MainDataService } from '../../maindata.service';
+import {
+  CustomtextService, MessageDialogComponent, MessageDialogData, MessageType,
+  MainDataService
+} from '../../shared/shared.module';
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
 

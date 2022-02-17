@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
 import { saveAs } from 'file-saver';
-
-import { MainDataService } from '../maindata.service';
+import { MainDataService } from '../shared/shared.module';
 import { BackendService } from './backend.service';
 import { ReportType } from './workspace.interfaces';
 

@@ -15,8 +15,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { CdkTableModule } from '@angular/cdk/table';
 
-import { IqbComponentsModule } from 'iqb-components';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { SharedModule } from '../shared/shared.module';
 import { GroupMonitorRoutingModule } from './group-monitor-routing.module';
 import { GroupMonitorComponent } from './group-monitor.component';
 import { BackendService } from './backend.service';
@@ -47,7 +47,7 @@ import { TestSessionManager } from './test-session-manager/test-session-manager.
     MatSidenavModule,
     MatCheckboxModule,
     MatSlideToggleModule,
-    IqbComponentsModule
+    SharedModule
   ],
   providers: [
     BackendService,

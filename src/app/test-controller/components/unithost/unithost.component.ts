@@ -15,7 +15,7 @@ import {
 } from '../../interfaces/test-controller.interfaces';
 import { BackendService } from '../../services/backend.service';
 import { TestControllerService } from '../../services/test-controller.service';
-import { MainDataService } from '../../../maindata.service';
+import { MainDataService } from '../../../shared/shared.module';
 import {
   VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig, VeronaProgress
 } from '../../interfaces/verona.interfaces';

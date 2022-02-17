@@ -1,9 +1,8 @@
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { CustomtextService } from 'iqb-components';
+import { CustomtextService, MainDataService } from '../shared/shared.module';
 import { BackendService } from './backend.service';
 import { SysCheckDataService } from './sys-check-data.service';
-import { MainDataService } from '../maindata.service';
 import { UnitAndPlayerContainer } from './sys-check.interfaces';
 
 @Component({

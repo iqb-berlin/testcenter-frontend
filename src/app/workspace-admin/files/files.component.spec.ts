@@ -7,11 +7,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { Observable, of } from 'rxjs';
-import { IqbComponentsModule } from 'iqb-components';
+import { SharedModule } from '../../shared/shared.module';
 import { FilesComponent } from './files.component';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
-import { MainDataService } from '../../maindata.service';
 import { GetFileResponseData } from '../workspace.interfaces';
 import { IqbFilesUploadQueueComponent } from './iqb-files-upload-queue/iqb-files-upload-queue.component';
 import { IqbFilesUploadInputForDirective } from './iqb-files-upload-input-for/iqb-files-upload-input-for.directive';
@@ -48,15 +47,14 @@ describe('FilesComponent', () => {
         MatTableModule,
         MatIconModule,
         MatCheckboxModule,
-        IqbComponentsModule
+        SharedModule
       ],
       providers: [
         {
           provide: BackendService,
           useValue: new MockBackendService()
         },
-        WorkspaceDataService,
-        MainDataService
+        WorkspaceDataService
       ]
     })
       .compileComponents();

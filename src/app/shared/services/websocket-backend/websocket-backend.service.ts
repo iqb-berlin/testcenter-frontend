@@ -6,10 +6,9 @@ import {
   catchError, map, skipWhile, tap
 } from 'rxjs/operators';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { ApiError } from '../app.interfaces';
-import { WebsocketService } from './websocket.service';
-
-export type ConnectionStatus = 'initial' | 'ws-offline' | 'ws-online' | 'polling-sleep' | 'polling-fetch' | 'error';
+import { ApiError } from '../../../app.interfaces';
+import { WebsocketService } from '../websocket/websocket.service';
+import { ConnectionStatus } from '../../interfaces/websocket-backend.interfaces';
 
 @Injectable()
 export abstract class WebsocketBackendService<T> extends WebsocketService implements OnDestroy {

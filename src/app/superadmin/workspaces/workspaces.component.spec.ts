@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Observable, of } from 'rxjs';
 import { BackendService } from '../backend.service';
 import { WorkspacesComponent } from './workspaces.component';
-import { MainDataService } from '../../maindata.service';
+import { MainDataService } from '../../shared/shared.module';
 import { IdAndName } from '../superadmin.interfaces';
 
 class MockBackendService {
