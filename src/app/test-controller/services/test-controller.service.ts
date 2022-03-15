@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-import { debounceTime, map, takeUntil } from 'rxjs/operators';
+import { debounce, debounceTime, map, takeUntil } from 'rxjs/operators';
 import {
-  BehaviorSubject, interval, Observable, Subject, Subscription, timer
+  BehaviorSubject, empty, interval, Observable, Subject, Subscription, timer
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -86,18 +86,40 @@ export class TestControllerService {
   private unitDefinitionTypes: { [sequenceId: number]: string } = {};
   private unitStateDataTypes: { [sequenceId: number]: string } = {};
 
+  private lastUnitStateDataToSave: UnitStateData;
+
   constructor(
     private router: Router,
     private bs: BackendService
   ) {
+    const sameKeys = (u1: UnitStateData, u2: UnitStateData): boolean =>
+      // eslint-disable-next-line implicit-arrow-linebreak
+      !!(Object.keys(u1.dataParts).filter(k => Object.keys(u2.dataParts).includes(k))).length;
+
     this.unitStateDataToSave$
-      .pipe(debounceTime(200))
-      .subscribe(dataParts => {
+      .pipe(
+        debounce(unitStateData => {
+          const id = `${unitStateData.unitDbKey}: ${Object.keys(unitStateData.dataParts).map(k => `${k} -> ${unitStateData.dataParts[k]}`).join(', ')}`;
+          if (
+            this.lastUnitStateDataToSave && (
+              (unitStateData.unitDbKey !== this.lastUnitStateDataToSave.unitDbKey) ||
+              !sameKeys(unitStateData, this.lastUnitStateDataToSave)
+            )
+          ) {
+            console.log(`RUN: ${id}`);
+            this.lastUnitStateDataToSave = unitStateData;
+            return empty();
+          }
+          console.log(`DEBOUNCE: ${id}`);
+          return timer(200);
+        })
+      )
+      .subscribe(unitStateData => {
         this.bs.updateDataParts(
           this.testId,
-          dataParts.unitDbKey,
-          dataParts.dataParts,
-          dataParts.unitStateDataType
+          unitStateData.unitDbKey,
+          unitStateData.dataParts,
+          unitStateData.unitStateDataType
         ).subscribe(ok => {
           if (!ok) {
             console.warn('storing unitData failed');
@@ -138,20 +160,24 @@ export class TestControllerService {
 
   updateUnitStateDataParts(unitDbKey: string, sequenceId: number, dataParts: KeyValuePairString,
                            unitStateDataType: string): void {
-    const changedParts:KeyValuePairString = {};
-    Object.keys(dataParts)
-      .forEach(dataPartId => {
-        if (
-          !this.unitStateDataParts[sequenceId][dataPartId] ||
-          (this.unitStateDataParts[sequenceId][dataPartId] !== dataParts[dataPartId])
-        ) {
-          this.unitStateDataParts[sequenceId][dataPartId] = dataParts[dataPartId];
-          changedParts[dataPartId] = dataParts[dataPartId];
-        }
-      });
-    if (Object.keys(changedParts).length && this.testMode.saveResponses) {
-      this.unitStateDataToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
-    }
+    // const changedParts:KeyValuePairString = {};
+    // Object.keys(dataParts)
+    //   .forEach(dataPartId => {
+    //     if (
+    //       !this.unitStateDataParts[sequenceId][dataPartId] ||
+    //       (this.unitStateDataParts[sequenceId][dataPartId] !== dataParts[dataPartId])
+    //     ) {
+    //       this.unitStateDataParts[sequenceId][dataPartId] = dataParts[dataPartId];
+    //       changedParts[dataPartId] = dataParts[dataPartId];
+    //     }
+    //   });
+
+    this.unitStateDataParts[sequenceId] = { ...this.unitStateDataParts[sequenceId], ...dataParts };
+    this.unitStateDataToSave$.next({ unitDbKey, dataParts, unitStateDataType });
+
+    // if (Object.keys(changedParts).length && this.testMode.saveResponses) {
+    //   this.unitStateDataToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
+    // }
   }
 
   addPlayer(id: string, player: string): void {
