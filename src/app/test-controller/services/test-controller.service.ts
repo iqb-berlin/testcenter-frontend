@@ -1,7 +1,17 @@
 /* eslint-disable no-console */
-import { debounce, debounceTime, map, takeUntil } from 'rxjs/operators';
 import {
-  BehaviorSubject, empty, interval, Observable, Subject, Subscription, timer
+  buffer, bufferWhen,
+  debounce,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  takeUntil,
+  takeWhile,
+  tap
+} from 'rxjs/operators';
+import {
+  BehaviorSubject, combineLatest, empty, interval, Observable, Subject, Subscription, timer
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -45,7 +55,6 @@ export class TestControllerService {
 
   allUnitIds: string[] = [];
 
-  private unitStateDataToSave$ = new Subject<UnitStateData>();
   windowFocusState$ = new Subject<WindowFocusState>();
 
   resumeTargetUnitSequenceId = 0;
@@ -86,35 +95,51 @@ export class TestControllerService {
   private unitDefinitionTypes: { [sequenceId: number]: string } = {};
   private unitStateDataTypes: { [sequenceId: number]: string } = {};
 
-  private lastUnitStateDataToSave: UnitStateData;
+  private unitStateDataToSave$ = new Subject<UnitStateData>();
+  private unitStateDataChanged$: Observable<true>;
+  private interval$: Observable<number>;
+  private unitStateDataToSaveSubscription: Subscription;
 
   constructor(
     private router: Router,
     private bs: BackendService
   ) {
+    this.setupUnitStateBuffer();
+  }
+
+  setupUnitStateBuffer(): void {
     const sameKeys = (u1: UnitStateData, u2: UnitStateData): boolean =>
       // eslint-disable-next-line implicit-arrow-linebreak
       !!(Object.keys(u1.dataParts).filter(k => Object.keys(u2.dataParts).includes(k))).length;
 
-    this.unitStateDataToSave$
+    const compareUnitStateData = (u1: UnitStateData, u2: UnitStateData): boolean => true; //(u1.unitDbKey === u2.unitDbKey);
+
+    this.interval$ = interval(200);
+
+    this.unitStateDataChanged$ = combineLatest([
+      this.unitStateDataToSave$.pipe(distinctUntilChanged<UnitStateData>(compareUnitStateData), map(() => 'changed')),
+      this.interval$.pipe(map(() => 'interval'))
+    ])
       .pipe(
-        debounce(unitStateData => {
-          const id = `${unitStateData.unitDbKey}: ${Object.keys(unitStateData.dataParts).map(k => `${k} -> ${unitStateData.dataParts[k]}`).join(', ')}`;
-          if (
-            this.lastUnitStateDataToSave && (
-              (unitStateData.unitDbKey !== this.lastUnitStateDataToSave.unitDbKey) ||
-              !sameKeys(unitStateData, this.lastUnitStateDataToSave)
-            )
-          ) {
-            console.log(`RUN: ${id}`);
-            this.lastUnitStateDataToSave = unitStateData;
-            return empty();
-          }
-          console.log(`DEBOUNCE: ${id}`);
-          return timer(200);
-        })
+        tap(d => `CLEAR BUFFER by ${d}`),
+        takeWhile(() => !!this.interval$),
+        map(() => true)
+      );
+
+    this.unitStateDataToSaveSubscription = this.unitStateDataToSave$
+      .pipe(
+        bufferWhen(() => interval(200)),
+        tap(y => console.log('!', y)),
+        filter(x => !!x.length),
+        tap(y => console.log('!!', y)),
+        map((x: UnitStateData[]): UnitStateData => ({
+          unitDbKey: x[0].unitDbKey,
+          dataParts: Object.assign({}, ...x.map(entry => entry.dataParts)),
+          unitStateDataType: x[0].unitStateDataType
+        }))
       )
       .subscribe(unitStateData => {
+        console.log('!!!', unitStateData);
         this.bs.updateDataParts(
           this.testId,
           unitStateData.unitDbKey,
@@ -126,6 +151,12 @@ export class TestControllerService {
           }
         });
       });
+  }
+
+  destroyUnitStateBuffer(): void {
+    this.unitStateDataToSaveSubscription.unsubscribe();
+    this.interval$ = undefined;
+    this.unitStateDataChanged$ = undefined;
   }
 
   resetDataStore(): void {
@@ -160,24 +191,26 @@ export class TestControllerService {
 
   updateUnitStateDataParts(unitDbKey: string, sequenceId: number, dataParts: KeyValuePairString,
                            unitStateDataType: string): void {
-    // const changedParts:KeyValuePairString = {};
-    // Object.keys(dataParts)
-    //   .forEach(dataPartId => {
-    //     if (
-    //       !this.unitStateDataParts[sequenceId][dataPartId] ||
-    //       (this.unitStateDataParts[sequenceId][dataPartId] !== dataParts[dataPartId])
-    //     ) {
-    //       this.unitStateDataParts[sequenceId][dataPartId] = dataParts[dataPartId];
-    //       changedParts[dataPartId] = dataParts[dataPartId];
-    //     }
-    //   });
+    const changedParts:KeyValuePairString = {};
 
-    this.unitStateDataParts[sequenceId] = { ...this.unitStateDataParts[sequenceId], ...dataParts };
-    this.unitStateDataToSave$.next({ unitDbKey, dataParts, unitStateDataType });
+    Object.keys(dataParts)
+      .forEach(dataPartId => {
+        if (
+          !this.unitStateDataParts[sequenceId][dataPartId] ||
+          (this.unitStateDataParts[sequenceId][dataPartId] !== dataParts[dataPartId])
+        ) {
+          this.unitStateDataParts[sequenceId][dataPartId] = dataParts[dataPartId];
+          changedParts[dataPartId] = dataParts[dataPartId];
+        }
+      });
 
-    // if (Object.keys(changedParts).length && this.testMode.saveResponses) {
-    //   this.unitStateDataToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
-    // }
+    // this.unitStateDataParts[sequenceId] = { ...this.unitStateDataParts[sequenceId], ...dataParts };
+    // this.unitStateDataToSave$.next({ unitDbKey, dataParts, unitStateDataType });
+
+    if (Object.keys(changedParts).length && this.testMode.saveResponses) {
+      console.log(`CHANGED ${Object.keys(changedParts).join()}`);
+      this.unitStateDataToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
+    }
   }
 
   addPlayer(id: string, player: string): void {

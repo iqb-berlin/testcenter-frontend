@@ -14,7 +14,7 @@ class MockBackendService {
   updateDataParts(
     testId: string, unitDbKey: string, dataParts: KeyValuePairString, unitStateDataType: string
   ): Observable<boolean> {
-    // console.log(testId, unitDbKey, dataParts, unitStateDataType);
+    console.log('uploaded', testId, unitDbKey, dataParts, unitStateDataType);
     uploadedData.push({ unitDbKey, dataParts, unitStateDataType });
     return of(true);
   }
@@ -57,50 +57,47 @@ describe('TestControllerService', () => {
   });
 
   fdescribe('updateDataParts', () => {
-
-    beforeEach(() => {
+    it('should XXXXXXXXXXXX', fakeAsync(() => {
       service.setUnitStateDataParts(1, {});
       service.testMode = new TestMode('hot');
       service.testId = '111';
-    });
+      service.setupUnitStateBuffer();
 
-    it('should collect changed dataParts while debouncing the upload', fakeAsync(() => {
       const expectedUploadedData: UnitStateData[] = [];
 
-      service.updateUnitStateDataParts('unit1', 1, { a: 'A', b: 'B' }, 'aType');
+      service.updateUnitStateDataParts('unit1', 1, { a: 'A', b: 'B' }, 'aType1');
       tick(10);
-      expect(uploadedData)
-        .withContext('call 1 after 100ms should be debounced...')
-        .toEqual(expectedUploadedData);
+      expect(uploadedData).withContext('Debounce DataParts forwarding').toEqual(expectedUploadedData);
 
-      tick(300);
+      tick(201);
       expectedUploadedData.push({
         unitDbKey: 'unit1',
         dataParts: { a: 'A', b: 'B' },
-        unitStateDataType: 'aType'
+        unitStateDataType: 'aType1'
       });
-      expect(uploadedData)
-        .withContext('... and be forwarded, if nothing else happens')
-        .toEqual(expectedUploadedData);
+      expect(uploadedData).withContext('Debounce DataParts forwarding ii').toEqual(expectedUploadedData);
 
-      service.updateUnitStateDataParts('unit1', 1, { b: 'BB', c: 'CCa' }, 'aType');
+      service.updateUnitStateDataParts('unit1', 1, { a: 'A', b: 'B' }, 'aType2');
+      tick(250);
+      expect(uploadedData).withContext('Skip when nothing changes').toEqual(expectedUploadedData);
+
+      service.updateUnitStateDataParts('unit1', 1, { a: 'A2', b: 'B' }, 'aType3');
       tick(10);
-      service.updateUnitStateDataParts('unit1', 1, { b: 'BB', c: 'CCb' }, 'aType');
-      tick(300);
+      service.updateUnitStateDataParts('unit1', 1, { b: 'B', c: 'C' }, 'aType4');
+      tick(250);
       expectedUploadedData.push({
         unitDbKey: 'unit1',
-        dataParts: { b: 'BB', c: 'CCb' },
-        unitStateDataType: 'aType'
+        dataParts: { a: 'A2', c: 'C' },
+        unitStateDataType: 'aType3'
       });
-      expect(uploadedData)
-        .withContext('the first copy of an duplicate update should be filtered')
-        .toEqual(expectedUploadedData);
+      expect(uploadedData).withContext('Merge debounced changes').toEqual(expectedUploadedData);
 
       tick(300);
       service.updateUnitStateDataParts('unit1', 1, { b: 'BBBB', c: 'CCCC' }, 'aType');
       tick(10);
       service.updateUnitStateDataParts('unit2', 1, { b: 'BBBB', c: 'CCCC' }, 'aType');
-      tick(200);
+      service.updateUnitStateDataParts('unit2', 1, { b: 'BBBB', c: 'CCCC' }, 'aType');
+      tick(250);
       expectedUploadedData.push({
         unitDbKey: 'unit1',
         dataParts: { b: 'BBBB', c: 'CCCC' },
@@ -117,19 +114,7 @@ describe('TestControllerService', () => {
         .withContext('when unitId changes debounce timer should be killed')
         .toEqual(expectedUploadedData);
 
-      tick(300);
-      service.updateUnitStateDataParts('unit1', 1, { a: 'A', b: 'B' }, 'aType');
-      tick(10);
-      service.updateUnitStateDataParts('unit1', 1, { b: 'BBB', c: 'CCC' }, 'aType');
-      tick(300);
-      expectedUploadedData.push({
-        unitDbKey: 'unit1',
-        dataParts: { a: 'A', b: 'BBB', c: 'CCC' },
-        unitStateDataType: 'aType'
-      });
-      expect(uploadedData)
-        .withContext('call 1 and 2 are merged after timeout')
-        .toEqual(expectedUploadedData);
+      service.destroyUnitStateBuffer();
     }));
   });
 });
