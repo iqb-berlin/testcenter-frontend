@@ -1,17 +1,12 @@
 /* eslint-disable no-console */
 import {
-  buffer, bufferWhen,
-  debounce,
-  debounceTime,
-  distinctUntilChanged,
+  bufferTime, concatMap,
   filter,
-  map,
-  takeUntil,
-  takeWhile,
-  tap
+  map, switchMap,
+  takeUntil
 } from 'rxjs/operators';
 import {
-  BehaviorSubject, combineLatest, empty, interval, Observable, Subject, Subscription, timer
+  BehaviorSubject, interval, Observable, Subject, Subscription, timer
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -33,6 +28,8 @@ import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
   providedIn: 'root'
 })
 export class TestControllerService {
+  static readonly unitDataBufferMs = 1000;
+
   testId = '';
   testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
   testStatusEnum = TestControllerState;
@@ -96,8 +93,6 @@ export class TestControllerService {
   private unitStateDataTypes: { [sequenceId: number]: string } = {};
 
   private unitStateDataToSave$ = new Subject<UnitStateData>();
-  private unitStateDataChanged$: Observable<true>;
-  private interval$: Observable<number>;
   private unitStateDataToSaveSubscription: Subscription;
 
   constructor(
@@ -108,55 +103,48 @@ export class TestControllerService {
   }
 
   setupUnitStateBuffer(): void {
-    const sameKeys = (u1: UnitStateData, u2: UnitStateData): boolean =>
-      // eslint-disable-next-line implicit-arrow-linebreak
-      !!(Object.keys(u1.dataParts).filter(k => Object.keys(u2.dataParts).includes(k))).length;
-
-    const compareUnitStateData = (u1: UnitStateData, u2: UnitStateData): boolean => true; //(u1.unitDbKey === u2.unitDbKey);
-
-    this.interval$ = interval(200);
-
-    this.unitStateDataChanged$ = combineLatest([
-      this.unitStateDataToSave$.pipe(distinctUntilChanged<UnitStateData>(compareUnitStateData), map(() => 'changed')),
-      this.interval$.pipe(map(() => 'interval'))
-    ])
-      .pipe(
-        tap(d => `CLEAR BUFFER by ${d}`),
-        takeWhile(() => !!this.interval$),
-        map(() => true)
-      );
-
+    this.destroyUnitStateBuffer(); // important when called from unit-test with fakeAsync
+    // the last butter when test gets terminated is lost. Seems not to be important, but noteworthy
     this.unitStateDataToSaveSubscription = this.unitStateDataToSave$
       .pipe(
-        bufferWhen(() => interval(200)),
-        tap(y => console.log('!', y)),
-        filter(x => !!x.length),
-        tap(y => console.log('!!', y)),
-        map((x: UnitStateData[]): UnitStateData => ({
-          unitDbKey: x[0].unitDbKey,
-          dataParts: Object.assign({}, ...x.map(entry => entry.dataParts)),
-          unitStateDataType: x[0].unitStateDataType
-        }))
+        bufferTime(TestControllerService.unitDataBufferMs),
+        filter(stateDataBuffer => !!stateDataBuffer.length),
+        concatMap(stateDataBuffer => {
+          const sortedByUnit = stateDataBuffer
+            .reduce(
+              (agg, unitStateData) => {
+                if (!agg[unitStateData.unitDbKey]) agg[unitStateData.unitDbKey] = [];
+                agg[unitStateData.unitDbKey].push(unitStateData);
+                return agg;
+              },
+              <{ [unitId: string]: UnitStateData[] }>{}
+            );
+          return Object.keys(sortedByUnit)
+            .map(unitId => ({
+              unitDbKey: unitId,
+              dataParts: Object.assign({}, ...sortedByUnit[unitId].map(entry => entry.dataParts)),
+              // verona4 does not support different dataTypes for different Chunks
+              unitStateDataType: sortedByUnit[unitId][0].unitStateDataType
+            }));
+        }),
+        switchMap(
+          (changedStates: UnitStateData): Observable<boolean> => this.bs.updateDataParts(
+            this.testId,
+            changedStates.unitDbKey,
+            changedStates.dataParts,
+            changedStates.unitStateDataType
+          )
+        )
       )
-      .subscribe(unitStateData => {
-        console.log('!!!', unitStateData);
-        this.bs.updateDataParts(
-          this.testId,
-          unitStateData.unitDbKey,
-          unitStateData.dataParts,
-          unitStateData.unitStateDataType
-        ).subscribe(ok => {
-          if (!ok) {
-            console.warn('storing unitData failed');
-          }
-        });
+      .subscribe(ok => {
+        if (!ok) {
+          console.warn('storing unitData failed');
+        }
       });
   }
 
   destroyUnitStateBuffer(): void {
-    this.unitStateDataToSaveSubscription.unsubscribe();
-    this.interval$ = undefined;
-    this.unitStateDataChanged$ = undefined;
+    if (this.unitStateDataToSaveSubscription) this.unitStateDataToSaveSubscription.unsubscribe();
   }
 
   resetDataStore(): void {
@@ -195,6 +183,9 @@ export class TestControllerService {
 
     Object.keys(dataParts)
       .forEach(dataPartId => {
+        if (!this.unitStateDataParts[sequenceId]) {
+          this.unitStateDataParts[sequenceId] = {};
+        }
         if (
           !this.unitStateDataParts[sequenceId][dataPartId] ||
           (this.unitStateDataParts[sequenceId][dataPartId] !== dataParts[dataPartId])
@@ -203,12 +194,7 @@ export class TestControllerService {
           changedParts[dataPartId] = dataParts[dataPartId];
         }
       });
-
-    // this.unitStateDataParts[sequenceId] = { ...this.unitStateDataParts[sequenceId], ...dataParts };
-    // this.unitStateDataToSave$.next({ unitDbKey, dataParts, unitStateDataType });
-
     if (Object.keys(changedParts).length && this.testMode.saveResponses) {
-      console.log(`CHANGED ${Object.keys(changedParts).join()}`);
       this.unitStateDataToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
     }
   }
@@ -411,7 +397,7 @@ export class TestControllerService {
     }
 
     const oldTestStatus = this.testStatus$.getValue();
-    this.testStatus$.next(TestControllerState.TERMINATED); // last state that will an can be logged
+    this.testStatus$.next(TestControllerState.TERMINATED); // last state that will and can be logged
 
     this.router.navigate(['/'], { state: { force } })
       .then(navigationSuccessful => {

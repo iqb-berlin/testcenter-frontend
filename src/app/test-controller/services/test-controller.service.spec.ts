@@ -14,7 +14,6 @@ class MockBackendService {
   updateDataParts(
     testId: string, unitDbKey: string, dataParts: KeyValuePairString, unitStateDataType: string
   ): Observable<boolean> {
-    console.log('uploaded', testId, unitDbKey, dataParts, unitStateDataType);
     uploadedData.push({ unitDbKey, dataParts, unitStateDataType });
     return of(true);
   }
@@ -56,65 +55,61 @@ describe('TestControllerService', () => {
     expect(TestControllerService.normaliseId(' whatever  8.html')).toEqual('WHATEVER  8.HTML');
   });
 
-  fdescribe('updateDataParts', () => {
-    it('should XXXXXXXXXXXX', fakeAsync(() => {
-      service.setUnitStateDataParts(1, {});
-      service.testMode = new TestMode('hot');
-      service.testId = '111';
-      service.setupUnitStateBuffer();
+  fit('Incoming dataParts should be forwarded to backend buffered and filtered for changed parts', fakeAsync(() => {
+    service.setUnitStateDataParts(1, {}); // redo subscription inside of fakeAsync
+    service.testMode = new TestMode('hot');
+    service.testId = '111';
+    service.setupUnitStateBuffer();
+    const u = TestControllerService.unitDataBufferMs;
 
-      const expectedUploadedData: UnitStateData[] = [];
+    const expectedUploadedData: UnitStateData[] = [];
 
-      service.updateUnitStateDataParts('unit1', 1, { a: 'A', b: 'B' }, 'aType1');
-      tick(10);
-      expect(uploadedData).withContext('Debounce DataParts forwarding').toEqual(expectedUploadedData);
+    service.updateUnitStateDataParts('unit1', 1, { a: 'initial A', b: 'initial B' }, 'aType');
+    tick(u * 0.1);
+    expect(uploadedData).withContext('Debounce DataParts forwarding').toEqual(expectedUploadedData);
 
-      tick(201);
-      expectedUploadedData.push({
-        unitDbKey: 'unit1',
-        dataParts: { a: 'A', b: 'B' },
-        unitStateDataType: 'aType1'
-      });
-      expect(uploadedData).withContext('Debounce DataParts forwarding ii').toEqual(expectedUploadedData);
+    tick(u * 1.5);
+    expectedUploadedData.push({
+      unitDbKey: 'unit1',
+      dataParts: { a: 'initial A', b: 'initial B' },
+      unitStateDataType: 'aType'
+    });
+    expect(uploadedData).withContext('Debounce DataParts forwarding ii').toEqual(expectedUploadedData);
 
-      service.updateUnitStateDataParts('unit1', 1, { a: 'A', b: 'B' }, 'aType2');
-      tick(250);
-      expect(uploadedData).withContext('Skip when nothing changes').toEqual(expectedUploadedData);
+    service.updateUnitStateDataParts('unit1', 1, { a: 'initial A' }, 'aType');
+    tick(u * 1.5);
+    expect(uploadedData).withContext('Skip when nothing changes').toEqual(expectedUploadedData);
 
-      service.updateUnitStateDataParts('unit1', 1, { a: 'A2', b: 'B' }, 'aType3');
-      tick(10);
-      service.updateUnitStateDataParts('unit1', 1, { b: 'B', c: 'C' }, 'aType4');
-      tick(250);
-      expectedUploadedData.push({
-        unitDbKey: 'unit1',
-        dataParts: { a: 'A2', c: 'C' },
-        unitStateDataType: 'aType3'
-      });
-      expect(uploadedData).withContext('Merge debounced changes').toEqual(expectedUploadedData);
+    service.updateUnitStateDataParts('unit1', 1, { a: 'new A', b: 'initial B' }, 'aType');
+    tick(u * 0.1);
+    service.updateUnitStateDataParts('unit1', 1, { b: 'initial B', c: 'used C the first time' }, 'aType');
+    tick(u * 1.5);
+    expectedUploadedData.push({
+      unitDbKey: 'unit1',
+      dataParts: { a: 'new A', c: 'used C the first time' },
+      unitStateDataType: 'aType'
+    });
+    expect(uploadedData).withContext('Merge debounced changes').toEqual(expectedUploadedData);
 
-      tick(300);
-      service.updateUnitStateDataParts('unit1', 1, { b: 'BBBB', c: 'CCCC' }, 'aType');
-      tick(10);
-      service.updateUnitStateDataParts('unit2', 1, { b: 'BBBB', c: 'CCCC' }, 'aType');
-      service.updateUnitStateDataParts('unit2', 1, { b: 'BBBB', c: 'CCCC' }, 'aType');
-      tick(250);
-      expectedUploadedData.push({
-        unitDbKey: 'unit1',
-        dataParts: { b: 'BBBB', c: 'CCCC' },
-        unitStateDataType: 'aType'
-      }, {
-        unitDbKey: 'unit2',
-        dataParts: { b: 'BBBB', c: 'CCCC' },
-        unitStateDataType: 'aType'
-      });
-      uploadedData.forEach(d => {
-        console.log(`[= ${d.unitDbKey}: ${Object.keys(d.dataParts).map(k => `${k} -> ${d.dataParts[k]}`).join(', ')}]`);
-      });
-      expect(uploadedData)
-        .withContext('when unitId changes debounce timer should be killed')
-        .toEqual(expectedUploadedData);
+    tick(u * 1.5);
+    service.updateUnitStateDataParts('unit1', 1, { b: 'brand new B', c: 'brand new C' }, 'aType');
+    tick(u * 0.1);
+    service.updateUnitStateDataParts('unit2', 2, { b: 'skipThisB', c: 'TakeThisC' }, 'anotherType');
+    service.updateUnitStateDataParts('unit2', 2, { b: 'andApplyThisB', c: 'TakeThisC' }, 'anotherType');
+    tick(u * 1.5);
+    expectedUploadedData.push({
+      unitDbKey: 'unit1',
+      dataParts: { b: 'brand new B', c: 'brand new C' },
+      unitStateDataType: 'aType'
+    }, {
+      unitDbKey: 'unit2',
+      dataParts: { b: 'andApplyThisB', c: 'TakeThisC' },
+      unitStateDataType: 'anotherType'
+    });
+    expect(uploadedData)
+      .withContext('when unitId changes debounce timer should be killed')
+      .toEqual(expectedUploadedData);
 
-      service.destroyUnitStateBuffer();
-    }));
-  });
+    service.destroyUnitStateBuffer();
+  }));
 });
