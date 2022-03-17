@@ -55,7 +55,7 @@ describe('TestControllerService', () => {
     expect(TestControllerService.normaliseId(' whatever  8.html')).toEqual('WHATEVER  8.HTML');
   });
 
-  fit('Incoming dataParts should be forwarded to backend buffered and filtered for changed parts', fakeAsync(() => {
+  it('Incoming dataParts should be forwarded to backend buffered and filtered for changed parts', fakeAsync(() => {
     service.setUnitStateDataParts(1, {}); // redo subscription inside of fakeAsync
     service.testMode = new TestMode('hot');
     service.testId = '111';
