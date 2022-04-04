@@ -1,9 +1,6 @@
 /* eslint-disable no-console */
 import {
-  bufferTime, concatMap,
-  filter,
-  map, switchMap,
-  takeUntil
+  bufferTime, concatMap, filter, map, takeUntil
 } from 'rxjs/operators';
 import {
   BehaviorSubject, interval, Observable, Subject, Subscription, timer
@@ -104,7 +101,7 @@ export class TestControllerService {
 
   setupUnitStateBuffer(): void {
     this.destroyUnitStateBuffer(); // important when called from unit-test with fakeAsync
-    // the last butter when test gets terminated is lost. Seems not to be important, but noteworthy
+    // the last buffer when test gets terminated is lost. Seems not to be important, but noteworthy
     this.unitStateDataToSaveSubscription = this.unitStateDataToSave$
       .pipe(
         bufferTime(TestControllerService.unitDataBufferMs),
@@ -126,20 +123,19 @@ export class TestControllerService {
               // verona4 does not support different dataTypes for different Chunks
               unitStateDataType: sortedByUnit[unitId][0].unitStateDataType
             }));
-        }),
-        switchMap(
-          (changedStates: UnitStateData): Observable<boolean> => this.bs.updateDataParts(
-            this.testId,
-            changedStates.unitDbKey,
-            changedStates.dataParts,
-            changedStates.unitStateDataType
-          )
-        )
+        })
       )
-      .subscribe(ok => {
-        if (!ok) {
-          console.warn('storing unitData failed');
-        }
+      .subscribe(changedStates => {
+        this.bs.updateDataParts(
+          this.testId,
+          changedStates.unitDbKey,
+          changedStates.dataParts,
+          changedStates.unitStateDataType
+        ).subscribe(ok => {
+          if (!ok) {
+            console.warn('storing unitData failed');
+          }
+        });
       });
   }
 
@@ -195,6 +191,7 @@ export class TestControllerService {
         }
       });
     if (Object.keys(changedParts).length && this.testMode.saveResponses) {
+      console.log('XXXXXX', changedParts);
       this.unitStateDataToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
     }
   }
