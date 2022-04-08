@@ -51,7 +51,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       .subscribe(params => { this.returnTo = params.returnTo; });
   }
 
-  login(loginType: 'admin' | 'login'): void {
+  login(loginType: 'admin' | 'login' = 'login'): void {
     const loginData = this.loginForm.value;
     LoginComponent.oldLoginName = loginData.name;
     this.mds.setSpinnerOn();
