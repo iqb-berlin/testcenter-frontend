@@ -1,5 +1,11 @@
 # Changelog
 
+## 12.0.4
+* Various Bugfixes: 
+* (#361, clock and messages in 
+* (#373, #359, #376, #358, #374) could not leave unit behind codeword when navigationRestrictions
+* (#379, #372) testee was required to enter codeword even when forced into block by monitor
+
 ## 12.0.3
 Various Bugfixes:
 * (#341) When you visited a test in demo-mode as a monitor, and terminated it, you returned to the starter but didn't see the monitor-monitor button again. That got fixed.
