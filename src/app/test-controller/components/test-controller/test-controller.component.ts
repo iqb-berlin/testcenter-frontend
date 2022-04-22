@@ -46,8 +46,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     connectionStatus: null
   };
 
-  private timerRunning = false;
-
   timerValue: MaxTimerData = null;
   unitNavigationTarget = UnitNavigationTarget;
   unitNavigationList: UnitNaviButtonData[] = [];
@@ -316,7 +314,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             }]
           );
         }
-        this.timerRunning = false;
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions) {
           this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
