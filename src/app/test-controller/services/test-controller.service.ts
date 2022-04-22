@@ -191,7 +191,6 @@ export class TestControllerService {
         }
       });
     if (Object.keys(changedParts).length && this.testMode.saveResponses) {
-      console.log('XXXXXX', changedParts);
       this.unitStateDataToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
     }
   }
@@ -419,7 +418,7 @@ export class TestControllerService {
 
   setUnitNavigationRequest(navString: string, force = false): void {
     if (!this.rootTestlet) {
-      this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true });
+      this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
     } else {
       switch (navString) {
         case UnitNavigationTarget.ERROR:
