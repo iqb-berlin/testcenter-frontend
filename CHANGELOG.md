@@ -1,10 +1,19 @@
 # Changelog
 
-## 12.0.4
+## 12.1.3
 * Various Bugfixes: 
 * (#361, clock and messages in 
 * (#373, #359, #376, #358, #374) could not leave unit behind codeword when navigationRestrictions
 * (#379, #372) testee was required to enter codeword even when forced into block by monitor
+
+## 12.1.2
+* Fix Login on Safari
+
+## 12.1.1
+* Fix Bug which led to data-loss if units and players changed very fast
+
+## 12.1.0
+* There are two separate login-buttons for logins and admins now!
 
 ## 12.0.3
 Various Bugfixes:
