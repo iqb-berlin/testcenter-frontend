@@ -2,7 +2,7 @@
 
 ## 12.1.3
 * Various Bugfixes: 
-* (#361, clock and messages in 
+* (#361) clock and messages in demo-mode are broken
 * (#373, #359, #376, #358, #374) could not leave unit behind codeword when navigationRestrictions
 * (#379, #372) testee was required to enter codeword even when forced into block by monitor
 
