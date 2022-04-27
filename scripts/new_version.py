@@ -85,8 +85,8 @@ def _stop_software():
 def _run_tests():
     time.sleep(10)
     subprocess.run('make test-unit', shell=True, check=True)
-    time.sleep(10)
-    subprocess.run('make test-e2e', shell=True, check=True)
+    # time.sleep(10)
+    # subprocess.run('make test-e2e', shell=True, check=True)
 
 
 def _git_tag():
@@ -119,10 +119,12 @@ new_version = _increment_version(old_version)
 _update_version_in_file(new_version)
 _run_software()
 try:
-    _run_tests()  # TODO continues even if it fails!
+    _run_tests()  # TODO continues even if it fails! (sometimes)
 except subprocess.SubprocessError:
+    print(f"some test failed. aborting...")
     _stop_software()
     _undo_version_update_in_files()
 _stop_software()
 _update_package_lock()
 _git_tag()
+
