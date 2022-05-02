@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.1.6
+* (#382) When "Finish Test" gets hit, NavigationRestrictions will be checked.
+
 ## 12.1.4
 * Fix Navigation Bug from 12.1.3: When a testlet had a locking code, but was unlocked, the unit didn't get tested
   for force_presentation_complete/force_response_complete when leaving.
