@@ -1,6 +1,10 @@
 # Changelog
 
-## 2.1.6
+## 12.1.7
+* (#385) Fix Bug: If testee is on the please-enter-code-screen and group-monitor moves him to the same block, 
+  it should become unlocked (but didn't).
+
+## 12.1.6
 * (#382) When "Finish Test" gets hit, NavigationRestrictions will be checked.
 
 ## 12.1.4
