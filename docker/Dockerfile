@@ -27,7 +27,7 @@ CMD ng serve --disableHostCheck --host 0.0.0.0
 
 # ===========================================
 
-FROM nginx:1.19.1-alpine as prod
+FROM nginx:1.22.0-alpine as prod
 
 COPY --from=dev /app/dist /usr/share/nginx/html
 
