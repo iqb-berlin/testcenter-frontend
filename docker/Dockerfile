@@ -10,7 +10,8 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 
 COPY package.json /app/package.json
-RUN npm install
+COPY package-lock.json /app/package-lock.json
+RUN npm ci
 
 # install webdriver for browser testing
 RUN npm i --prefix=./node_modules/protractor --save webdriver-manager@latest
