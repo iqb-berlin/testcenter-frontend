@@ -15,7 +15,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --output-hashing all",
     "test": "ng test  --watch=false",
     "lint": "ng lint",
     "e2e": "ng e2e",

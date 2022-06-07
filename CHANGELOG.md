@@ -1,5 +1,8 @@
 # Changelog
 
+## 12.1.8
+* (#212) fix cache-related issues after updates
+
 ## 12.1.7
 * (#385) Fix Bug: If testee is on the please-enter-code-screen and group-monitor moves him to the same block, 
   it should become unlocked (but didn't).
