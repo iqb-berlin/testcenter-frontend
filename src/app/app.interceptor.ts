@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Injectable } from '@angular/core';
 import { Router, RouterState } from '@angular/router';
 import {
@@ -93,6 +94,7 @@ export class AuthInterceptor implements HttpInterceptor {
                   break;
 
                 default:
+                  console.log(httpError);
                   label = 'Unbekanntes Verbindungsproblem';
               }
               if (!ignoreError) {
